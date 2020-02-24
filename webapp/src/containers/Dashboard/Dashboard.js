@@ -1,14 +1,9 @@
 import React, { Component } from "react";
-import Dashlet from "../../components/Dashlet/Dashlet";
+import Layout from "../../hoc/Layout/Layout";
 
 class Dashboard extends Component {
   render() {
-    return (
-      <div>
-        <Dashlet />
-      </div>
-    );
+    return <Layout></Layout>;
   }
 }
-
 export default Dashboard;

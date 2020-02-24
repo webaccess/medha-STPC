@@ -1,14 +1,18 @@
 import React from "react";
 
 import siteLogo from "../../assets/images/logo.png";
-import styles from "./Logo.module.css";
 
-const logo = props => {
+const Logo = props => {
   return (
-    <div className={styles.Logo}>
-      <img src={siteLogo} alt="UPSTC-Logo" />
-    </div>
+    <img
+      src={siteLogo}
+      style={{
+        display: "block",
+        width: "175px"
+      }}
+      alt={"logo"}
+    />
   );
 };
 
-export default logo;
+export default Logo;
