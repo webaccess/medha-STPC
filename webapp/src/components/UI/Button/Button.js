@@ -1,14 +1,16 @@
 import React from "react";
-
-import styles from "./Button.module.css";
+import { Button } from "@material-ui/core";
 
 const button = props => (
-  <button
-    className={[styles.Button, styles[props.btnType]].join(" ")}
+  <Button
+    variant={props.variant ? props.variant : "contained"}
+    color={props.color ? props.color : "primary"}
+    type={props.type ? props.type : "button"}
+    size={props.size ? props.size : "medium"}
     onClick={props.clicked}
   >
     {props.children}
-  </button>
+  </Button>
 );
 
 export default button;

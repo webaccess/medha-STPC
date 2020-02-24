@@ -9,7 +9,7 @@ const navigationItems = props => {
       <NavigationItem link="/" active>
         Dashboard
       </NavigationItem>
-      <NavigationItem link="/">Logout</NavigationItem>
+      <NavigationItem link="/logout">Logout</NavigationItem>
     </ul>
   );
 };
