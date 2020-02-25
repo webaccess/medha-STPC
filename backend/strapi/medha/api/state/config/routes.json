@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/zones",
+      "handler": "state.zones",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

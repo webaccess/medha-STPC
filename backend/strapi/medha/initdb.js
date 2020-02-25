@@ -1,7 +1,14 @@
 const fs = require("fs");
 const bookshelf = require("./config/config.js");
 const apiFolder = "./api/";
-const roles = require("./roles.json");
+const _data = require("./data.js");
+
+const minimist = require("minimist");
+const args = minimist(process.argv.slice(2), {
+  "--": true
+});
+const _skip = args["--"].length > 0;
+const skip = new RegExp(args["--"].join("|"), "i");
 
 let controllerActionWithoutUser = fs
   .readdirSync(apiFolder, { withFileTypes: true })
@@ -31,7 +38,8 @@ const allControllerActions = Object.assign(controllerActionWithoutUser, {
   }
 });
 
-const data = Object.keys(roles).map(r => {
+const roles = _data.roles;
+const _roleRequestData = Object.keys(roles).map(r => {
   const { controllers, grantAllPermissions } = roles[r];
   const updatedController = controllers.reduce((result, controller) => {
     const { name, action } = controller;
@@ -105,44 +113,232 @@ function addPermissionsToGivenRole(role, id) {
   });
 }
 
-data.forEach(role => {
-  bookshelf
-    .model("role")
-    .fetchAll()
-    .then(model => {
-      const response = model.toJSON();
-      const isRolePresent = response.find(r => r.name === role.name);
-      if (isRolePresent) {
+/**
+ * If args presents roles then skip role creation
+ */
+if (!(_skip && skip.test("roles"))) {
+  _roleRequestData.forEach(role => {
+    bookshelf
+      .model("role")
+      .fetchAll()
+      .then(model => {
+        const response = model.toJSON();
+        const isRolePresent = response.find(r => r.name === role.name);
+        if (isRolePresent) {
+          bookshelf
+            .model("permission")
+            .where({ role: isRolePresent.id })
+            .destroy()
+            .then(() => {
+              console.log(
+                `Deleting existing permissions for role ${isRolePresent.name}\nAdding new permissions\n`
+              );
+              addPermissionsToGivenRole(role, isRolePresent.id);
+            });
+        } else {
+          // Creating role
+          bookshelf
+            .model("role")
+            .forge({
+              name: role.name,
+              description: role.description,
+              type: role.name
+            })
+            .save()
+            .then(r => {
+              const _role = r.toJSON();
+              addPermissionsToGivenRole(role, _role.id);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
+      })
+      .catch(failed => {
+        console.log({ failed });
+      });
+  });
+}
+
+/**
+ * If args presents states then skip state creation
+ */
+
+if (!(_skip && skip.test("states"))) {
+  const states = _data.states;
+
+  const _stateRequestData = Object.keys(states).map(state => {
+    const { zones } = states[state];
+    // Create Zone request data
+    const _zoneRequestData = Object.keys(zones).map(zone => {
+      const { rpcs } = zones[zone];
+      return {
+        name: zone,
+        rpcs: rpcs.map(rpc => {
+          return { name: rpc };
+        })
+      };
+    });
+
+    return {
+      name: state,
+      zones: _zoneRequestData
+    };
+  });
+
+  /**
+   * Creating all states
+   */
+
+  async function allStates() {
+    return await bookshelf
+      .model("state")
+      .fetchAll()
+      .then(res => res.toJSON());
+  }
+
+  async function allZones() {
+    return await bookshelf
+      .model("zone")
+      .fetchAll()
+      .then(res => res.toJSON());
+  }
+
+  async function allRPCs() {
+    return await bookshelf
+      .model("rpc")
+      .fetchAll()
+      .then(res => res.toJSON());
+  }
+
+  (async () => {
+    var _allState = await allStates();
+    var _allZones = await allZones();
+    var _allRPCs = await allRPCs();
+
+    _stateRequestData.forEach(state => {
+      const isStateNew = _allState.find(
+        d => d.name.toLowerCase() === state.name.toLowerCase()
+      );
+      if (!isStateNew) {
         bookshelf
-          .model("permission")
-          .where({ role: isRolePresent.id })
-          .destroy()
-          .then(() => {
-            console.log(
-              `Deleting existing permissions for role ${isRolePresent.name}\nAdding new permissions\n`
-            );
-            addPermissionsToGivenRole(role, isRolePresent.id);
-          });
-      } else {
-        // Creating role
-        bookshelf
-          .model("role")
+          .model("state")
           .forge({
-            name: role.name,
-            description: role.description,
-            type: role.name
+            name: state.name
           })
           .save()
-          .then(r => {
-            const _role = r.toJSON();
-            addPermissionsToGivenRole(role, _role.id);
-          })
-          .catch(error => {
-            console.log(error);
+          .then(() => {
+            console.log(`Added state ${state.name}`);
           });
+      } else {
+        console.log(`Skipping state ${state.name}...`);
       }
-    })
-    .catch(failed => {
-      console.log({ failed });
     });
-});
+
+    _stateRequestData.forEach(state => {
+      const { zones } = state;
+      zones.forEach(zone => {
+        const isZoneNew = _allZones.find(
+          z => z.name.toLowerCase() === zone.name.toLowerCase()
+        );
+
+        if (!isZoneNew) {
+          bookshelf
+            .model("zone")
+            .forge({
+              name: zone.name
+            })
+            .save()
+            .then(() => {
+              console.log(`Added zone ${zone.name}`);
+            });
+        } else {
+          console.log(`Skipping zone ${zone.name}...`);
+        }
+      });
+    });
+
+    _stateRequestData.forEach(state => {
+      const { zones } = state;
+      zones.forEach(zone => {
+        const { rpcs } = zone;
+        rpcs.forEach(rpc => {
+          const isRPCnew = _allRPCs.find(
+            z => z.name.toLowerCase() === rpc.name.toLowerCase()
+          );
+
+          if (!isRPCnew) {
+            bookshelf
+              .model("rpc")
+              .forge({
+                name: rpc.name
+              })
+              .save()
+              .then(() => {
+                console.log(`Added RPC ${rpc.name}`);
+              });
+          } else {
+            console.log(`Skipping RPC ${rpc.name}...`);
+          }
+        });
+      });
+    });
+
+    _allState = await allStates();
+    _allZones = await allZones();
+    _allRPCs = await allRPCs();
+
+    /**
+     * Mapping zone to state and rpc to zone
+     */
+
+    _stateRequestData.forEach(state => {
+      const { zones } = state;
+      const _state = _allState.find(
+        s => s.name.toLowerCase() === state.name.toLowerCase()
+      );
+      zones.forEach(zone => {
+        const _zone = _allZones.find(
+          z => z.name.toLowerCase() === zone.name.toLowerCase()
+        );
+        bookshelf
+          .model("zone")
+          .where({
+            id: _zone.id
+          })
+          .save(
+            {
+              state: _state.id
+            },
+            { patch: true }
+          )
+          .then(() => {
+            console.log(`Mapped ${zone.name} to ${state.name}`);
+
+            const { rpcs } = zone;
+            rpcs.forEach(rpc => {
+              const _rpc = _allRPCs.find(
+                r => r.name.toLowerCase() === rpc.name.toLowerCase()
+              );
+              bookshelf
+                .model("rpc")
+                .where({
+                  id: _rpc.id
+                })
+                .save(
+                  {
+                    zone: _zone.id
+                  },
+                  {
+                    patch: true
+                  }
+                )
+                .then(() => {
+                  console.log(`Mapped ${rpc.name} to ${zone.name}`);
+                });
+            });
+          });
+      });
+    });
+  })();
+}
