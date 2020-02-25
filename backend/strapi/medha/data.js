@@ -411,26 +411,6 @@ const roles = {
  * state-> multiple zones -> zones with multiple rpcs
  */
 const states = {
-  Karnataka: {
-    zones: {
-      "North-KN": {
-        rpcs: []
-      },
-      "South-KN": {
-        rpcs: ["Bangalore"]
-      }
-    }
-  },
-  Maharashtra: {
-    zones: {
-      "West-MH": {
-        rpcs: ["Pune", "Mumbai", "Nashik"]
-      },
-      "East-MH": {
-        rpcs: ["Nagpur", "Amravati"]
-      }
-    }
-  },
   "Uttar Pradesh": {
     zones: {
       "West-UP": {
@@ -442,7 +422,16 @@ const states = {
       "Central-UP": {
         rpcs: ["Kanpur", "Prayagrai"]
       }
-    }
+    },
+    districts: [
+      "Agra",
+      "Firozabad",
+      "Mainpuri",
+      "Mathura",
+      "Varanasi",
+      "Jaunpur",
+      "Ghazipur"
+    ]
   }
 };
 
