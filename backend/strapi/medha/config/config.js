@@ -16,7 +16,10 @@ const bookshelf = require("bookshelf")(knex);
  */
 bookshelf.model("state", {
   requireFetch: false,
-  tableName: "states"
+  tableName: "states",
+  zones() {
+    return this.hasMany("zone", "state", "id");
+  }
 });
 
 bookshelf.model("zone", {
