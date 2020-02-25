@@ -29,7 +29,7 @@
       "path": "/states",
       "handler": "state.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
