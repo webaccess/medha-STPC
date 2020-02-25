@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
-import { get, isEmpty } from "lodash";
+import { get } from "lodash";
 import useStyles from "./LoginStyles";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
@@ -15,6 +15,7 @@ import { Grid, Button, TextField, Link, Typography } from "@material-ui/core";
 import validateInput from "../../../components/Validation/ValidateInput/ValidateInput";
 import Alert from "../../../components/AlertMessage/Alert";
 import Logo from "../../../components/Logo/Logo";
+import Input from "../../../components/UI/Input/Input";
 
 const identifier = "identifier";
 const password = "password";
@@ -32,6 +33,22 @@ const LogIn = props => {
     isSuccess: false
   });
 
+  function checkAllKeysPresent(obj) {
+    let areFieldsValid = false;
+    Object.keys(form).map(field => {
+      if (form[field]["required"] === true && obj.hasOwnProperty(field)) {
+        areFieldsValid = true;
+      } else {
+        areFieldsValid = false;
+      }
+    });
+    return areFieldsValid;
+  }
+
+  function count(obj) {
+    return !Object.keys(obj).length ? true : false;
+  }
+
   useEffect(() => {
     Object.keys(formState.values).map(field => {
       const errors = validateInput(
@@ -40,7 +57,12 @@ const LogIn = props => {
       );
       setFormState(formState => ({
         ...formState,
-        isValid: errors.length ? false : true,
+        isValid:
+          !errors.length &&
+          count(formState.errors) &&
+          checkAllKeysPresent(formState.values)
+            ? true
+            : false,
         errors: errors.length
           ? {
               ...formState.errors,
@@ -71,7 +93,7 @@ const LogIn = props => {
   };
 
   if (ifSuccess && auth.getToken()) {
-    return <Redirect to="/" />;
+    return <Redirect to={routeConstants.DASHBOARD_URL} />;
   }
 
   const handleSignIn = event => {

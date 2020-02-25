@@ -24,13 +24,13 @@
     },
     {
       "name": "Profile",
-      "link": "",
+      "link": "/",
       "Icon": ""
     },
     {
       "name": "User Management",
-      "link": "/Logout",
-      "Icon": ""
+      "link": "/adduser",
+      "Icon": "AccessAlarm"
     },
     {
       "name": "Masters",

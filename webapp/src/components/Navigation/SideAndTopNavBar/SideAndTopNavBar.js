@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -6,34 +6,22 @@ import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import menuItems from "./menuItems.json";
+import MenuItems from "./MenuItems";
 import { get } from "lodash";
-
+import { NavLink as RouterLink } from "react-router-dom";
+import * as routeConstants from "../../../components/Constants/RouteConstants";
+import clsx from "clsx";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Logo from "../../Logo/Logo";
-import DashboardIcon from "@material-ui/icons/Dashboard";
 import { IconButton, colors } from "@material-ui/core";
 import InputIcon from "@material-ui/icons/Input";
-import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 
-const drawerWidth = 240;
-const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor: theme.palette.background.paper
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-    [theme.breakpoints.up("sm")]: {
-      display: "none"
-    }
-  },
+const useDrawerStyles = makeStyles(theme => ({
   drawer: {
     width: 240,
     [theme.breakpoints.up("lg")]: {
@@ -41,21 +29,40 @@ const useStyles = makeStyles(theme => ({
       height: "calc(100% - 64px)"
     }
   },
-  toolbar: theme.mixins.toolbar,
-  drawerPaper: {
-    width: drawerWidth
+  root: {
+    backgroundColor: theme.palette.white,
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    padding: theme.spacing(2),
+    boxShadow: "none"
   },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3)
+  divider: {
+    margin: theme.spacing(2, 0)
   },
-  nested: {
-    paddingLeft: theme.spacing(4),
-    paddingTop: 0,
-    paddingBottom: 0
+  nav: {
+    marginBottom: theme.spacing(2)
+  }
+}));
+
+const useTopBarStyles = makeStyles(theme => ({
+  root: {
+    boxShadow: "none"
   },
   flexGrow: {
     flexGrow: 1
+  },
+  signOutButton: {
+    marginLeft: theme.spacing(1)
+  }
+}));
+
+const useListStyles = makeStyles(theme => ({
+  root: {},
+  item: {
+    display: "flex",
+    paddingTop: 0,
+    paddingBottom: 0
   },
   button: {
     color: colors.blueGrey[800],
@@ -81,16 +88,19 @@ const useStyles = makeStyles(theme => ({
       color: theme.palette.primary.main
     }
   },
-  item: {
-    display: "flex",
+  nested: {
+    paddingLeft: theme.spacing(4),
     paddingTop: 0,
     paddingBottom: 0
   }
 }));
 
 function SideAndTopNavBar(props) {
-  const { container } = props;
-  const classes = useStyles();
+  const { container, className, ...rest } = props;
+  const classes = useDrawerStyles();
+  const topBarClasses = useTopBarStyles();
+  const listClasses = useListStyles();
+
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [subListState, setSubListState] = React.useState({});
@@ -103,10 +113,16 @@ function SideAndTopNavBar(props) {
     setSubListState({ ...subListState, [name]: !get(subListState, name) });
   };
 
-  const inputs = get(menuItems, ["SuperAdmin"], []);
+  const CustomRouterLink = forwardRef((props, ref) => (
+    <div ref={ref}>
+      <RouterLink {...props} />
+    </div>
+  ));
+
+  const inputs = get(MenuItems(), ["SuperAdmin"], []);
 
   const drawer = (
-    <div>
+    <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.toolbar} />
       <Divider />
 
@@ -114,25 +130,25 @@ function SideAndTopNavBar(props) {
         return (
           <div key={list.name}>
             {list.items != null ? (
-              <List component="nav" aria-labelledby="nested-list-subheader">
+              <List {...rest} className={clsx(listClasses.root, className)}>
                 <ListItem
-                  button
+                  className={listClasses.item}
+                  disableGutters
+                  key={list.name}
                   onClick={e => handleClick(list.name)}
-                  className={classes.item}
                 >
-                  <ListItemIcon>
-                    <DashboardIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={list.name}
-                    activeclassname={classes.active}
-                    className={classes.button}
-                  />
-                  {get(subListState, list.name) ? (
-                    <ExpandLess />
-                  ) : (
-                    <ExpandMore />
-                  )}
+                  <Button
+                    activeClassName={listClasses.active}
+                    className={listClasses.button}
+                  >
+                    <div className={listClasses.icon}>{list.Icon}</div>
+                    {list.name}
+                    {get(subListState, list.name) ? (
+                      <ExpandLess />
+                    ) : (
+                      <ExpandMore />
+                    )}
+                  </Button>
                 </ListItem>
                 <Collapse
                   in={get(subListState, list.name)}
@@ -143,18 +159,18 @@ function SideAndTopNavBar(props) {
                     {list.items.map(subList => {
                       return (
                         <ListItem
-                          button
-                          className={classes.nested}
+                          className={(listClasses.item, listClasses.nested)}
+                          disableGutters
                           key={subList.name}
                         >
-                          <ListItemIcon>
-                            <DashboardIcon />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={subList.name}
-                            activeclassname={classes.active}
-                            className={classes.button}
-                          />
+                          <Button
+                            activeClassName={listClasses.active}
+                            className={listClasses.button}
+                            component={CustomRouterLink}
+                            to={subList.link}
+                          >
+                            {subList.name}
+                          </Button>
                         </ListItem>
                       );
                     })}
@@ -162,18 +178,21 @@ function SideAndTopNavBar(props) {
                 </Collapse>
               </List>
             ) : (
-              <List component="nav" aria-labelledby="nested-list-subheader">
-                <ListItem button className={classes.item}>
-                  <ListItemIcon>
-                    <DashboardIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    component={Link}
+              <List {...rest} className={clsx(listClasses.root, className)}>
+                <ListItem
+                  className={listClasses.item}
+                  disableGutters
+                  key={list.name}
+                >
+                  <Button
+                    activeClassName={listClasses.active}
+                    className={listClasses.button}
+                    component={CustomRouterLink}
                     to={list.link}
-                    primary={list.name}
-                    activeclassname={classes.active}
-                    className={classes.button}
-                  />
+                  >
+                    <div className={listClasses.icon}>{list.Icon}</div>
+                    {list.name}
+                  </Button>
                 </ListItem>
               </List>
             )}
@@ -184,21 +203,25 @@ function SideAndTopNavBar(props) {
   );
 
   return (
-    <div className={classes.root}>
-      <AppBar position="fixed">
+    <div className={topBarClasses.root}>
+      <AppBar position="fixed" className={topBarClasses.root}>
         <Toolbar>
           <Logo />
-          <div className={classes.flexGrow} />
+          <div className={topBarClasses.flexGrow} />
           <Hidden mdDown>
-            <IconButton className={classes.signOutButton} color="inherit">
-              <Link to="/logout">
-                <InputIcon />
-              </Link>
+            <IconButton
+              className={topBarClasses.signOutButton}
+              color="inherit"
+              component={CustomRouterLink}
+              to={routeConstants.LOGOUT_URL}
+            >
+              <InputIcon />
             </IconButton>
             <Drawer
               classes={{
                 paper: classes.drawer
               }}
+              anchor="left"
               variant="permanent"
               open
             >

@@ -36,17 +36,44 @@ const ForgotPassword = props => {
     otp: "",
     otpResent: false,
     otpSent: false,
-    otpVerify: false
+    otpVerify: false,
+    passChangeSuccess: false,
+    passChangeFailure: false,
+    formType: authPageConstants.FORM_TYPE_ENTER_MOBILE
   });
 
   const handleSubmit = evt => {
     if (formState.otpSent === false) {
       sendOtp();
-    } else if (formState.otpSent === true || formState.otpResent === true) {
+    } else if (
+      (formState.otpSent === true || formState.otpResent === true) &&
+      formState.otpVerify === false
+    ) {
       verifyOtp();
+    } else if (formState.otpVerify === true) {
+      console.log("change password");
     }
     evt.preventDefault();
   };
+
+  function checkAllKeysPresent(obj) {
+    let areFieldsValid = false;
+
+    Object.keys(form).map(field => {
+      if (field === newPassword || field === confirmNewPassword) {
+        if (form[field]["required"] === true && obj.hasOwnProperty(field)) {
+          areFieldsValid = true;
+        } else {
+          areFieldsValid = false;
+        }
+      }
+    });
+    return areFieldsValid;
+  }
+
+  function count(obj) {
+    return !Object.keys(obj).length ? true : false;
+  }
 
   useEffect(() => {
     Object.keys(formState.values).map(field => {
@@ -62,16 +89,34 @@ const ForgotPassword = props => {
       ) {
         errors.push("new password and confirm password doesn't match");
       }
-      setFormState(formState => ({
-        ...formState,
-        isValid: errors.length ? false : true,
-        errors: errors.length
-          ? {
-              ...formState.errors,
-              [field]: errors
-            }
-          : formState.errors
-      }));
+      formState.formType === authPageConstants.FORM_TYPE_CHANGE_PASS
+        ? setFormState(formState => ({
+            ...formState,
+            isValid:
+              !errors.length &&
+              count(formState.errors) &&
+              checkAllKeysPresent(formState.values)
+                ? true
+                : false,
+            errors:
+              errors.length && form
+                ? {
+                    ...formState.errors,
+                    [field]: errors
+                  }
+                : formState.errors
+          }))
+        : setFormState(formState => ({
+            ...formState,
+            isValid: errors.length ? false : true,
+            errors:
+              errors.length && form
+                ? {
+                    ...formState.errors,
+                    [field]: errors
+                  }
+                : formState.errors
+          }));
       if (!errors.length && formState.errors.hasOwnProperty(field)) {
         delete formState.errors[field];
       }
@@ -104,7 +149,8 @@ const ForgotPassword = props => {
       ...formState,
       otp: otp.toString(),
       otpSent: true,
-      isValid: false
+      isValid: false,
+      formType: authPageConstants.FORM_TYPE_VERIFY_OTP
     }));
   };
 
@@ -127,7 +173,8 @@ const ForgotPassword = props => {
       setFormState(formState => ({
         ...formState,
         otpVerify: true,
-        isValid: false
+        isValid: false,
+        formType: authPageConstants.FORM_TYPE_CHANGE_PASS
       }));
     } else {
       setIsOtpVerificationFailed(true);

@@ -18,3 +18,6 @@ export const BACK_TO_LOGIN_TEXT = "Take me back to login page";
 export const PASS_SAVE_BUTTON = "Save Password";
 export const VERIFY_OTP_BUTTON = "Verify Otp";
 export const RESEND_OTP_BUTTON = "Resend Otp";
+export const FORM_TYPE_ENTER_MOBILE = "verify_mobile";
+export const FORM_TYPE_VERIFY_OTP = "verify_otp";
+export const FORM_TYPE_CHANGE_PASS = "change_pass";
