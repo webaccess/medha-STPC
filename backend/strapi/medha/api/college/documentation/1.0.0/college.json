@@ -701,6 +701,26 @@
                 "type": "string"
               }
             }
+          },
+          "district": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
+          },
+          "strength": {
+            "type": "integer"
           }
         }
       },
@@ -735,6 +755,12 @@
           },
           "principal": {
             "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "strength": {
+            "type": "integer"
           }
         }
       }

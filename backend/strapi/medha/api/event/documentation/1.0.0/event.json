@@ -598,6 +598,12 @@
               },
               "principal": {
                 "type": "string"
+              },
+              "district": {
+                "type": "string"
+              },
+              "strength": {
+                "type": "integer"
               }
             }
           },
