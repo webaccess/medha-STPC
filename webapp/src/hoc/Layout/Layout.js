@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import SideAndTopNavBar from "../../components/Navigation/SideAndTopNavBar/SideAndTopNavBar";
+import SideAndTopNavBar from "../../components/SideAndTopNavBar/SideAndTopNavBar";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { useMediaQuery } from "@material-ui/core";
 

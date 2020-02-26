@@ -1,28 +1,10 @@
 import React, { Component } from "react";
-import InputText from "../../components/InputText/InputText";
 import axios from "axios";
-import Button from "../../components/UI/Button/Button";
 import Layout from "../../hoc/Layout/Layout.js";
-import Viewstates from "./ViewStates.js";
+import { InputText, Button } from "../../components";
 import { withStyles } from "@material-ui/core/styles";
-import * as strapiConstants from "../../components/Constants/StrapiApiConstants";
-
-const useStyles = theme => ({
-  button: {
-    marginTop: "25px",
-    marginLeft: "75px"
-  },
-  align: {
-    marginLeft: "250px"
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2)
-  }
-});
+import * as strapiConstants from "../../constants/StrapiApiConstants";
+import useStyles from "./AddStateStyles";
 
 class AddState extends Component {
   constructor() {
@@ -50,7 +32,6 @@ class AddState extends Component {
   }
   render() {
     const { classes } = this.props;
-
     return (
       <div>
         <Layout>

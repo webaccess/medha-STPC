@@ -1,13 +1,9 @@
 import React, { forwardRef } from "react";
 import axios from "axios";
-import Table from "../../components/DataTable/Table.js";
-import { TextField, Button } from "@material-ui/core";
-import Modal from "../../components/UI/Modal/Modal";
-import Select from "@material-ui/core/Select";
-import Spinner from "../../components/UI/Spinner/Spinner";
 import { NavLink as RouterLink } from "react-router-dom";
-import * as routeConstants from "../../components/Constants/RouteConstants";
-import styles from "./Rpc.module.css";
+import { Table, Modal, Spinner } from "../../components";
+import { TextField, Button, Select } from "@material-ui/core";
+import * as routeConstants from "../../constants/RouteConstants";
 
 export default class ViewRpc extends React.Component {
   statename = [];
@@ -20,15 +16,12 @@ export default class ViewRpc extends React.Component {
       DeleteIsShowing: false,
       selectedid: [],
       getzone: [],
-      selectedid: [],
       editrpc: [],
       editzone: []
     };
-    let data = [];
   }
 
   componentDidMount() {
-    // console.log(constant.API)
     axios.get("http://192.168.2.87:1337/rpcs").then(res => {
       console.log(res.data);
       this.setState({ getrpc: res.data });
@@ -39,14 +32,11 @@ export default class ViewRpc extends React.Component {
     });
   }
   geteditit = cellid => {
-    console.log("mayank", cellid);
     this.setState({ selectedid: cellid });
     this.setState({ isShowing: true });
   };
   getdeleteid = cellid => {
-    console.log("dta", cellid);
     this.setState({ selectedid: cellid });
-    console.log("delete", this.state.selectedid);
     this.setState({ DeleteIsShowing: true });
   };
   closeModalHandler = () => {
@@ -114,7 +104,6 @@ export default class ViewRpc extends React.Component {
     this.data = [];
     for (let i in this.state.getrpc) {
       var temp = {};
-      console.log("hello", this.state.getrpc[i]["id"]);
       temp["id"] = this.state.getrpc[i]["id"];
       temp["name"] = this.state.getrpc[i]["name"];
       temp["zone"] = this.state.getrpc[i]["zone"]["name"];
@@ -129,7 +118,6 @@ export default class ViewRpc extends React.Component {
           variant="contained"
           to={routeConstants.ADD_RPC}
           component={this.CustomRouterLink}
-          className={styles.addbutton}
         >
           Add rpc
         </Button>

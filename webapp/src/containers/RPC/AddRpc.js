@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import InputText from "../../components/InputText/InputText";
 import axios from "axios";
-import Button from "../../components/UI/Button/Button";
+import { withStyles } from "@material-ui/core/styles";
+
+import { InputText, Button } from "../../components";
+
 import Select from "@material-ui/core/Select";
 import Layout from "../../hoc/Layout/Layout.js";
-import ViewRpc from "./ViewRpc";
-import { withStyles } from "@material-ui/core/styles";
-import * as strapiConstants from "../../components/Constants/StrapiApiConstants";
+
+import * as strapiConstants from "../../constants/StrapiApiConstants";
 
 const useStyles = theme => ({
   button: {

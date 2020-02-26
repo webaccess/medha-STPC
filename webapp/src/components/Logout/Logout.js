@@ -6,7 +6,7 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
 import auth from "../Auth/Auth";
-import * as routeConstants from "../Constants/RouteConstants";
+import * as routeConstants from "../../constants/RouteConstants";
 
 /** For Logout */
 export default function Logout(props) {
