@@ -649,7 +649,8 @@
               "username",
               "email",
               "first_name",
-              "last_name"
+              "last_name",
+              "contact_number"
             ],
             "properties": {
               "id": {
@@ -701,6 +702,26 @@
                 "type": "string"
               }
             }
+          },
+          "district": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
+          },
+          "strength": {
+            "type": "integer"
           }
         }
       },
@@ -735,6 +756,12 @@
           },
           "principal": {
             "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "strength": {
+            "type": "integer"
           }
         }
       }

@@ -59,6 +59,7 @@ bookshelf.model("collegeStreams", {
 });
 
 bookshelf.model("college", {
+  requireFetch: false,
   tableName: "colleges",
   streams() {
     return this.belongsToMany("stream").through(
@@ -86,6 +87,7 @@ bookshelf.model("education", {
 });
 
 bookshelf.model("role", {
+  requireFetch: false,
   tableName: "users-permissions_role"
 });
 
@@ -161,6 +163,13 @@ bookshelf.model("activity", {
   },
   question_set() {
     return this.hasMany("question_set", "question_set", "id");
+  }
+});
+bookshelf.model("district", {
+  requireFetch: false,
+  tableName: "districts",
+  state() {
+    return this.belongsTo("state", "state", "id");
   }
 });
 

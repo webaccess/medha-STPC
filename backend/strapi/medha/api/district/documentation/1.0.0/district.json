@@ -1,6 +1,6 @@
 {
   "paths": {
-    "/events": {
+    "/districts": {
       "get": {
         "deprecated": false,
         "description": "",
@@ -12,7 +12,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Event"
+                    "$ref": "#/components/schemas/District"
                   }
                 }
               }
@@ -51,7 +51,7 @@
         },
         "summary": "",
         "tags": [
-          "Event"
+          "District"
         ],
         "parameters": [
           {
@@ -201,7 +201,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Event"
+                  "$ref": "#/components/schemas/District"
                 }
               }
             }
@@ -239,7 +239,7 @@
         },
         "summary": "",
         "tags": [
-          "Event"
+          "District"
         ],
         "requestBody": {
           "description": "",
@@ -247,14 +247,14 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewEvent"
+                "$ref": "#/components/schemas/NewDistrict"
               }
             }
           }
         }
       }
     },
-    "/events/count": {
+    "/districts/count": {
       "get": {
         "deprecated": false,
         "description": "",
@@ -306,12 +306,12 @@
         },
         "summary": "",
         "tags": [
-          "Event"
+          "District"
         ],
         "parameters": []
       }
     },
-    "/events/{id}": {
+    "/districts/{id}": {
       "get": {
         "deprecated": false,
         "description": "",
@@ -321,7 +321,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Event"
+                  "$ref": "#/components/schemas/District"
                 }
               }
             }
@@ -359,7 +359,7 @@
         },
         "summary": "",
         "tags": [
-          "Event"
+          "District"
         ],
         "parameters": [
           {
@@ -383,7 +383,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Event"
+                  "$ref": "#/components/schemas/District"
                 }
               }
             }
@@ -421,7 +421,7 @@
         },
         "summary": "",
         "tags": [
-          "Event"
+          "District"
         ],
         "requestBody": {
           "description": "",
@@ -429,7 +429,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewEvent"
+                "$ref": "#/components/schemas/NewDistrict"
               }
             }
           }
@@ -495,7 +495,7 @@
         },
         "summary": "",
         "tags": [
-          "Event"
+          "District"
         ],
         "parameters": [
           {
@@ -514,36 +514,19 @@
   },
   "components": {
     "schemas": {
-      "Event": {
+      "District": {
         "required": [
           "id",
-          "Title",
-          "description",
-          "start_date_time",
-          "end_date_time",
-          "address",
-          "age"
+          "name"
         ],
         "properties": {
           "id": {
             "type": "string"
           },
-          "Title": {
+          "name": {
             "type": "string"
           },
-          "description": {
-            "type": "string"
-          },
-          "start_date_time": {
-            "type": "datetime"
-          },
-          "end_date_time": {
-            "type": "datetime"
-          },
-          "address": {
-            "type": "string"
-          },
-          "rpc": {
+          "state": {
             "required": [
               "id",
               "name"
@@ -554,194 +537,20 @@
               },
               "name": {
                 "type": "string"
-              },
-              "zone": {
-                "type": "string"
-              },
-              "main_college": {
-                "type": "string"
-              }
-            }
-          },
-          "colleges": {
-            "required": [
-              "id",
-              "name",
-              "college_code",
-              "address",
-              "college_email"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "rpc": {
-                "type": "string"
-              },
-              "college_code": {
-                "type": "string"
-              },
-              "address": {
-                "type": "string"
-              },
-              "contact_number": {
-                "type": "string"
-              },
-              "college_email": {
-                "type": "string"
-              },
-              "streams": {
-                "type": "string"
-              },
-              "principal": {
-                "type": "string"
-              },
-              "district": {
-                "type": "string"
-              },
-              "strength": {
-                "type": "integer"
-              }
-            }
-          },
-          "streams": {
-            "required": [
-              "id",
-              "name"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            }
-          },
-          "age": {
-            "type": "integer"
-          },
-          "upload_logo": {
-            "required": [
-              "id",
-              "name",
-              "hash",
-              "mime",
-              "size",
-              "url",
-              "provider"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "hash": {
-                "type": "string"
-              },
-              "sha256": {
-                "type": "string"
-              },
-              "ext": {
-                "type": "string"
-              },
-              "mime": {
-                "type": "string"
-              },
-              "size": {
-                "type": "number"
-              },
-              "url": {
-                "type": "string"
-              },
-              "provider": {
-                "type": "string"
-              },
-              "provider_metadata": {
-                "type": "object"
-              },
-              "related": {
-                "type": "string"
-              }
-            }
-          },
-          "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "questions": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "activities": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "events": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           }
         }
       },
-      "NewEvent": {
+      "NewDistrict": {
         "required": [
-          "Title",
-          "description",
-          "start_date_time",
-          "end_date_time",
-          "address",
-          "age"
+          "name"
         ],
         "properties": {
-          "Title": {
+          "name": {
             "type": "string"
           },
-          "description": {
-            "type": "string"
-          },
-          "start_date_time": {
-            "type": "datetime"
-          },
-          "end_date_time": {
-            "type": "datetime"
-          },
-          "address": {
-            "type": "string"
-          },
-          "rpc": {
-            "type": "string"
-          },
-          "colleges": {
-            "type": "string"
-          },
-          "streams": {
-            "type": "string"
-          },
-          "age": {
-            "type": "integer"
-          },
-          "question_set": {
+          "state": {
             "type": "string"
           }
         }
@@ -750,7 +559,7 @@
   },
   "tags": [
     {
-      "name": "Event"
+      "name": "District"
     }
   ]
 }

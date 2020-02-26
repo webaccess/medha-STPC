@@ -40,6 +40,12 @@
     "principal": {
       "plugin": "users-permissions",
       "model": "user"
+    },
+    "district": {
+      "model": "district"
+    },
+    "strength": {
+      "type": "integer"
     }
   }
 }

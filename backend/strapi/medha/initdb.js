@@ -34,7 +34,9 @@ const allControllerActions = Object.assign(controllerActionWithoutUser, {
     create: { enabled: false },
     update: { enabled: false },
     delete: { enabled: false },
-    me: { enabled: false }
+    me: { enabled: false },
+    changepassword: { enabled: false },
+    forgotpassword: { enabled: false }
   }
 });
 
@@ -168,7 +170,7 @@ if (!(_skip && skip.test("states"))) {
   const states = _data.states;
 
   const _stateRequestData = Object.keys(states).map(state => {
-    const { zones } = states[state];
+    const { zones, districts } = states[state];
     // Create Zone request data
     const _zoneRequestData = Object.keys(zones).map(zone => {
       const { rpcs } = zones[zone];
@@ -182,6 +184,7 @@ if (!(_skip && skip.test("states"))) {
 
     return {
       name: state,
+      districts: districts,
       zones: _zoneRequestData
     };
   });
@@ -211,10 +214,18 @@ if (!(_skip && skip.test("states"))) {
       .then(res => res.toJSON());
   }
 
+  async function allDistricts() {
+    return await bookshelf
+      .model("district")
+      .fetchAll()
+      .then(res => res.toJSON());
+  }
+
   (async () => {
     var _allState = await allStates();
     var _allZones = await allZones();
     var _allRPCs = await allRPCs();
+    var _allDistricts = await allDistricts();
 
     _stateRequestData.forEach(state => {
       const isStateNew = _allState.find(
@@ -259,6 +270,29 @@ if (!(_skip && skip.test("states"))) {
     });
 
     _stateRequestData.forEach(state => {
+      const { districts } = state;
+      districts.forEach(district => {
+        const isDistrictNew = _allDistricts.find(
+          d => d.name.toLowerCase() === district.toLowerCase()
+        );
+
+        if (!isDistrictNew) {
+          bookshelf
+            .model("district")
+            .forge({
+              name: district
+            })
+            .save()
+            .then(() => {
+              console.log(`Added district ${district}`);
+            });
+        } else {
+          console.log(`Skipping district ${district}...`);
+        }
+      });
+    });
+
+    _stateRequestData.forEach(state => {
       const { zones } = state;
       zones.forEach(zone => {
         const { rpcs } = zone;
@@ -287,13 +321,14 @@ if (!(_skip && skip.test("states"))) {
     _allState = await allStates();
     _allZones = await allZones();
     _allRPCs = await allRPCs();
+    _allDistricts = await allDistricts();
 
     /**
      * Mapping zone to state and rpc to zone
      */
 
     _stateRequestData.forEach(state => {
-      const { zones } = state;
+      const { zones, districts } = state;
       const _state = _allState.find(
         s => s.name.toLowerCase() === state.name.toLowerCase()
       );
@@ -337,6 +372,27 @@ if (!(_skip && skip.test("states"))) {
                   console.log(`Mapped ${rpc.name} to ${zone.name}`);
                 });
             });
+          });
+      });
+
+      districts.forEach(district => {
+        const _district = _allDistricts.find(
+          d => d.name.toLowerCase() === district.toLowerCase()
+        );
+
+        bookshelf
+          .model("district")
+          .where({
+            id: _district.id
+          })
+          .save(
+            {
+              state: _state.id
+            },
+            { patch: true }
+          )
+          .then(() => {
+            console.log(`Mapped district ${district} to ${state.name}`);
           });
       });
     });
