@@ -2,14 +2,12 @@ const fs = require("fs");
 const bookshelf = require("./config/config.js");
 const apiFolder = "./api/";
 const _data = require("./data.js");
-
 const minimist = require("minimist");
 const args = minimist(process.argv.slice(2), {
   "--": true
 });
 const _skip = args["--"].length > 0;
 const skip = new RegExp(args["--"].join("|"), "i");
-
 let controllerActionWithoutUser = fs
   .readdirSync(apiFolder, { withFileTypes: true })
   .filter(api => api.isDirectory())
@@ -25,7 +23,6 @@ let controllerActionWithoutUser = fs
     acc[name] = actionObj;
     return acc;
   }, {});
-
 const allControllerActions = Object.assign(controllerActionWithoutUser, {
   user: {
     find: { enabled: false },
@@ -39,7 +36,6 @@ const allControllerActions = Object.assign(controllerActionWithoutUser, {
     forgotpassword: { enabled: false }
   }
 });
-
 const roles = _data.roles;
 const _roleRequestData = Object.keys(roles).map(r => {
   const { controllers, grantAllPermissions } = roles[r];
@@ -54,7 +50,6 @@ const _roleRequestData = Object.keys(roles).map(r => {
         },
         {}
       );
-
       result[name] = updatedActions;
       return result;
     } else {
@@ -72,12 +67,10 @@ const _roleRequestData = Object.keys(roles).map(r => {
           return acc;
         }, {});
       }
-
       result[name] = updatedActions;
       return result;
     }
   }, {});
-
   return {
     name: r,
     description: r,
@@ -88,7 +81,6 @@ const _roleRequestData = Object.keys(roles).map(r => {
     }
   };
 });
-
 function addPermissionsToGivenRole(role, id) {
   /**
    * Creating permissions WRT to controllers and mapping to created role
@@ -114,7 +106,6 @@ function addPermissionsToGivenRole(role, id) {
     console.log("\n");
   });
 }
-
 /**
  * If args presents roles then skip role creation
  */
@@ -161,14 +152,11 @@ if (!(_skip && skip.test("roles"))) {
       });
   });
 }
-
 /**
  * If args presents states then skip state creation
  */
-
 if (!(_skip && skip.test("states"))) {
   const states = _data.states;
-
   const _stateRequestData = Object.keys(states).map(state => {
     const { zones, districts } = states[state];
     // Create Zone request data
@@ -181,52 +169,44 @@ if (!(_skip && skip.test("states"))) {
         })
       };
     });
-
     return {
       name: state,
       districts: districts,
       zones: _zoneRequestData
     };
   });
-
   /**
    * Creating all states
    */
-
   async function allStates() {
     return await bookshelf
       .model("state")
       .fetchAll()
       .then(res => res.toJSON());
   }
-
   async function allZones() {
     return await bookshelf
       .model("zone")
       .fetchAll()
       .then(res => res.toJSON());
   }
-
   async function allRPCs() {
     return await bookshelf
       .model("rpc")
       .fetchAll()
       .then(res => res.toJSON());
   }
-
   async function allDistricts() {
     return await bookshelf
       .model("district")
       .fetchAll()
       .then(res => res.toJSON());
   }
-
   (async () => {
     var _allState = await allStates();
     var _allZones = await allZones();
     var _allRPCs = await allRPCs();
     var _allDistricts = await allDistricts();
-
     _stateRequestData.forEach(state => {
       const isStateNew = _allState.find(
         d => d.name.toLowerCase() === state.name.toLowerCase()
@@ -245,14 +225,12 @@ if (!(_skip && skip.test("states"))) {
         console.log(`Skipping state ${state.name}...`);
       }
     });
-
     _stateRequestData.forEach(state => {
       const { zones } = state;
       zones.forEach(zone => {
         const isZoneNew = _allZones.find(
           z => z.name.toLowerCase() === zone.name.toLowerCase()
         );
-
         if (!isZoneNew) {
           bookshelf
             .model("zone")
@@ -268,14 +246,12 @@ if (!(_skip && skip.test("states"))) {
         }
       });
     });
-
     _stateRequestData.forEach(state => {
       const { districts } = state;
       districts.forEach(district => {
         const isDistrictNew = _allDistricts.find(
           d => d.name.toLowerCase() === district.toLowerCase()
         );
-
         if (!isDistrictNew) {
           bookshelf
             .model("district")
@@ -291,7 +267,6 @@ if (!(_skip && skip.test("states"))) {
         }
       });
     });
-
     _stateRequestData.forEach(state => {
       const { zones } = state;
       zones.forEach(zone => {
@@ -300,7 +275,6 @@ if (!(_skip && skip.test("states"))) {
           const isRPCnew = _allRPCs.find(
             z => z.name.toLowerCase() === rpc.name.toLowerCase()
           );
-
           if (!isRPCnew) {
             bookshelf
               .model("rpc")
@@ -317,16 +291,13 @@ if (!(_skip && skip.test("states"))) {
         });
       });
     });
-
     _allState = await allStates();
     _allZones = await allZones();
     _allRPCs = await allRPCs();
     _allDistricts = await allDistricts();
-
     /**
      * Mapping zone to state and rpc to zone
      */
-
     _stateRequestData.forEach(state => {
       const { zones, districts } = state;
       const _state = _allState.find(
@@ -349,7 +320,6 @@ if (!(_skip && skip.test("states"))) {
           )
           .then(() => {
             console.log(`Mapped ${zone.name} to ${state.name}`);
-
             const { rpcs } = zone;
             rpcs.forEach(rpc => {
               const _rpc = _allRPCs.find(
@@ -374,12 +344,10 @@ if (!(_skip && skip.test("states"))) {
             });
           });
       });
-
       districts.forEach(district => {
         const _district = _allDistricts.find(
           d => d.name.toLowerCase() === district.toLowerCase()
         );
-
         bookshelf
           .model("district")
           .where({

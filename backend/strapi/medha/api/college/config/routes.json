@@ -37,7 +37,7 @@
       "path": "/colleges",
       "handler": "college.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -45,7 +45,7 @@
       "path": "/colleges/:id",
       "handler": "college.update",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
