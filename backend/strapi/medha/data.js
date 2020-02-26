@@ -71,7 +71,7 @@ const roles = {
       },
       {
         name: "user",
-        action: ["find", "findone", "me"]
+        action: ["find", "findone", "me", "forgotpassword", "changepassword"]
       },
       {
         name: "zone",
@@ -152,7 +152,7 @@ const roles = {
       },
       {
         name: "user",
-        action: ["me"]
+        action: ["me", "forgotpassword", "changepassword"]
       },
       {
         name: "zone",
@@ -233,7 +233,7 @@ const roles = {
       },
       {
         name: "user",
-        action: ["me"]
+        action: ["me", "forgotpassword", "changepassword"]
       },
       {
         name: "zone",
@@ -314,7 +314,7 @@ const roles = {
       },
       {
         name: "user",
-        action: ["me"]
+        action: ["me", "forgotpassword", "changepassword"]
       },
       {
         name: "zone",
