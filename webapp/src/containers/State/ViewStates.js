@@ -1,27 +1,10 @@
 import React, { forwardRef } from "react";
 import axios from "axios";
-import Table from "../../components/DataTable/Table.js";
-import { TextField, Button } from "@material-ui/core";
-import Modal from "../../components/UI/Modal/Modal";
-import * as strapiConstants from "../../components/Constants/StrapiApiConstants";
-import * as routeConstants from "../../components/Constants/RouteConstants";
-import Spinner from "../../components/UI/Spinner/Spinner";
 import { NavLink as RouterLink } from "react-router-dom";
-import styles from "./State.module.css";
-
-const useStyles = theme => ({
-  button: {
-    marginTop: "25px",
-    marginLeft: "50px"
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2)
-  }
-});
+import { Table, Modal, Spinner } from "../../components";
+import { TextField, Button } from "@material-ui/core";
+import * as strapiConstants from "../../constants/StrapiApiConstants";
+import * as routeConstants from "../../constants/RouteConstants";
 
 export default class Viewstates extends React.Component {
   constructor(props) {
@@ -107,7 +90,6 @@ export default class Viewstates extends React.Component {
           variant="contained"
           to={routeConstants.ADD_STATES}
           component={this.CustomRouterLink}
-          className={styles.addbutton}
         >
           Add state
         </Button>

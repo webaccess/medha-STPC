@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from "react";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
 import { get } from "lodash";
-import useStyles from "./LoginStyles";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
-import auth from "../../../components/Auth/Auth";
-import * as routeConstants from "../../../components/Constants/RouteConstants";
-import * as authPageConstants from "../../../components/Constants/AuthPageConstants";
-import * as strapiApiConstants from "../../../components/Constants/StrapiApiConstants";
+import {
+  Grid,
+  Button,
+  TextField,
+  Link,
+  Typography,
+  CssBaseline,
+  Box,
+  Container
+} from "@material-ui/core";
+import useStyles from "./LoginStyles";
 import form from "./loginform.json";
-import { Grid, Button, TextField, Link, Typography } from "@material-ui/core";
-import validateInput from "../../../components/Validation/ValidateInput/ValidateInput";
-import Alert from "../../../components/AlertMessage/Alert";
-import Logo from "../../../components/Logo/Logo";
-import Input from "../../../components/UI/Input/Input";
+import {
+  Alert,
+  Auth as auth,
+  Validation as validateInput,
+  Logo
+} from "../../../components";
+import * as routeConstants from "../../../constants/RouteConstants";
+import * as authPageConstants from "../../../constants/AuthPageConstants";
+import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 
 const identifier = "identifier";
 const password = "password";

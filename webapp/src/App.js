@@ -1,13 +1,19 @@
 import React, { Component } from "react";
-
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import PrivateRoute from "./components/AuthRoute/PrivateRoute";
+
+import PrivateRoute from "./authroute/PrivateRoute";
 import Dashboard from "./containers/Dashboard/Dashboard";
-import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
-import LoginRoute from "./components/AuthRoute/LoginRoute";
-import ForgotPasswordRoute from "./components/AuthRoute/ForgotPasswordRoute";
+
+import { NotFoundPage } from "./components";
+// import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
+import * as routeConstants from "./constants/RouteConstants";
+import { LoginRoute, ForgotPasswordRoute, RouteWithLayout } from "./authroute";
+// import LoginRoute from "./components/AuthRoute/LoginRoute";
+// import ForgotPasswordRoute from "./components/AuthRoute/ForgotPasswordRoute";
+// import RouteWithLayout from "./components/AuthRoute/RouteWithLayout";
+
 import Logout from "./components/Logout/Logout";
-import * as routeConstants from "./components/Constants/RouteConstants";
+
 import AddUser from "./containers/AddUser/AddUser";
 import AddRpc from "./containers/RPC/AddRpc";
 import ViewRpc from "./containers/RPC/ViewRpc";
@@ -16,7 +22,7 @@ import ViewStates from "./containers/State/ViewStates";
 import AddZone from "./containers/Zone/AddZone";
 import ViewZone from "./containers/Zone/ViewZone";
 import Layout from "./hoc/Layout/Layout";
-import RouteWithLayout from "./components/AuthRoute/RouteWithLayout";
+
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "./theme";
 

@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import Container from "@material-ui/core/Container";
-import useStyles from "./ForgotPasswordStyles";
-import validateInput from "../../../components/Validation/ValidateInput/ValidateInput";
-import form from "./forgotPassword.json";
 import { get } from "lodash";
-import * as authPageConstants from "../../../components/Constants/AuthPageConstants";
-import * as routeConstants from "../../../components/Constants/RouteConstants";
+import { Alert, Logo, Validation as validateInput } from "../../../components";
+import {
+  Button,
+  CssBaseline,
+  TextField,
+  Link,
+  Grid,
+  Box,
+  Typography,
+  Container
+} from "@material-ui/core";
 
-import Alert from "../../../components/AlertMessage/Alert";
-import Logo from "../../../components/Logo/Logo";
+import useStyles from "./ForgotPasswordStyles";
+import form from "./forgotPassword.json";
+
+import * as authPageConstants from "../../../constants/AuthPageConstants";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 const newPassword = "newPassword";
 const confirmNewPassword = "confirmNewPassword";
