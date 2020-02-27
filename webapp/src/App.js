@@ -40,6 +40,7 @@ class App extends Component {
                 path={routeConstants.SIGN_IN_URL}
                 exact
                 type={"login"}
+                layout={Layout}
               />
               <Route
                 path={routeConstants.LOGOUT_URL}
@@ -50,10 +51,12 @@ class App extends Component {
                 path={routeConstants.FORGOT_PASSWORD_URL}
                 exact
                 type={"forgot-password"}
+                layout={Layout}
               />
               <Route
                 path={routeConstants.NOT_FOUND_URL}
                 component={NotFoundPage}
+                exact
               />
               <RouteWithLayout
                 component={AddUser}

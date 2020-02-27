@@ -24,6 +24,7 @@ import InputIcon from "@material-ui/icons/Input";
 import * as routeConstants from "../../constants/RouteConstants";
 import Logo from "../Logo/Logo";
 import MenuItems from "./Component/MenuItems";
+import auth from "../../components/Auth/Auth";
 
 const useDrawerStyles = makeStyles(theme => ({
   drawer: {
@@ -211,47 +212,54 @@ function SideAndTopNavBar(props) {
       <AppBar position="fixed" className={topBarClasses.root}>
         <Toolbar>
           <Logo />
-          <div className={topBarClasses.flexGrow} />
-          <Hidden mdDown>
-            <IconButton
-              className={topBarClasses.signOutButton}
-              color="inherit"
-              component={CustomRouterLink}
-              to={routeConstants.LOGOUT_URL}
-            >
-              <InputIcon />
-            </IconButton>
-            <Drawer
-              classes={{
-                paper: classes.drawer
-              }}
-              anchor="left"
-              variant="permanent"
-              open
-            >
-              {drawer}
-            </Drawer>
-          </Hidden>
-          <Hidden lgUp>
-            <IconButton color="inherit" onClick={handleDrawerToggle}>
-              <MenuIcon />
-            </IconButton>
-            <Drawer
-              container={container}
-              variant="temporary"
-              anchor={theme.direction === "rtl" ? "right" : "left"}
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              classes={{
-                paper: classes.drawerPaper
-              }}
-              ModalProps={{
-                keepMounted: true // Better open performance on mobile.
-              }}
-            >
-              {drawer}
-            </Drawer>
-          </Hidden>
+          {auth.getToken() !== null ? (
+            <div>
+              <div className={topBarClasses.flexGrow} />
+              <Hidden mdDown>
+                <IconButton
+                  className={topBarClasses.signOutButton}
+                  color="inherit"
+                  component={CustomRouterLink}
+                  to={routeConstants.LOGOUT_URL}
+                >
+                  <InputIcon />
+                </IconButton>
+
+                <Drawer
+                  classes={{
+                    paper: classes.drawer
+                  }}
+                  anchor="left"
+                  variant="permanent"
+                  open
+                >
+                  {drawer}
+                </Drawer>
+              </Hidden>
+              <Hidden lgUp>
+                <IconButton color="inherit" onClick={handleDrawerToggle}>
+                  <MenuIcon />
+                </IconButton>
+                <Drawer
+                  container={container}
+                  variant="temporary"
+                  anchor={theme.direction === "rtl" ? "right" : "left"}
+                  open={mobileOpen}
+                  onClose={handleDrawerToggle}
+                  classes={{
+                    paper: classes.drawerPaper
+                  }}
+                  ModalProps={{
+                    keepMounted: true // Better open performance on mobile.
+                  }}
+                >
+                  {drawer}
+                </Drawer>
+              </Hidden>
+            </div>
+          ) : (
+            ""
+          )}
         </Toolbar>
       </AppBar>
     </div>

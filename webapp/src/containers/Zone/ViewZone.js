@@ -79,12 +79,28 @@ const ViewZone = props => {
 
   const handleChange = (event, value) => {
     formState.filterData = value;
+    {
+      console.log(
+        "FilterData",
+        formState.filterData,
+        formState.data,
+        formState.viewzones
+      );
+    }
   };
 
   const searchFilter = () => {
     formState.data = [];
     formState.viewzones = [];
     getZoneData();
+    {
+      console.log(
+        "searchFilter",
+        formState.filterData,
+        formState.data,
+        formState.viewzones
+      );
+    }
   };
 
   const clearFilter = () => {

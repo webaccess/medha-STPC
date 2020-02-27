@@ -3,6 +3,7 @@ import clsx from "clsx";
 import SideAndTopNavBar from "../../components/SideAndTopNavBar/SideAndTopNavBar";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { useMediaQuery } from "@material-ui/core";
+import auth from "../../components/Auth/Auth";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,17 +30,31 @@ const Layout = props => {
     defaultMatches: true
   });
 
-  return (
-    <div
-      className={clsx({
-        [classes.root]: true,
-        [classes.shiftContent]: isDesktop
-      })}
-    >
-      <SideAndTopNavBar />
-      <main className={classes.content}>{children}</main>
-    </div>
-  );
+  if (auth.getToken() != null && isDesktop) {
+    return (
+      <div
+        className={clsx({
+          [classes.root]: true,
+          [classes.shiftContent]: isDesktop
+        })}
+      >
+        <SideAndTopNavBar />
+        <main className={classes.content}>{children}</main>
+      </div>
+    );
+  } else {
+    return (
+      <div
+        className={clsx({
+          [classes.root]: true,
+          [classes.shiftContent]: false
+        })}
+      >
+        <SideAndTopNavBar />
+        <main className={classes.content}>{children}</main>
+      </div>
+    );
+  }
 };
 
 export default Layout;

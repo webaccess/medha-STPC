@@ -11,6 +11,7 @@ import * as routeConstants from "../constants/RouteConstants";
 
 /** For login */
 export default function LoginRoute(props) {
+  const { layout: Layout, ...rest } = props;
   if (props.type === "login") {
     if (auth.getToken() !== null) {
       return (
@@ -22,7 +23,11 @@ export default function LoginRoute(props) {
         />
       );
     } else {
-      return <LogIn from={props.location} />;
+      return (
+        <Layout>
+          <LogIn from={props.location} />
+        </Layout>
+      );
     }
   } else {
     return (
