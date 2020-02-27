@@ -64,7 +64,6 @@ module.exports = {
       email,
       username,
       password,
-      role,
       contact_number,
       first_name,
       last_name
@@ -121,6 +120,10 @@ module.exports = {
     }
 
     try {
+      params.password = await strapi.plugins[
+        "users-permissions"
+      ].services.user.hashPassword(params);
+
       const user = await strapi
         .query("user", "users-permissions")
         .create(params);
@@ -138,19 +141,5 @@ module.exports = {
     } catch (err) {
       ctx.response.badRequest("Something went wrong...");
     }
-  },
-
-  /**
-   * Forgot password
-   */
-  async forgotPassword(ctx) {
-    ctx.send({});
-  },
-
-  /**
-   * Change password
-   */
-  async changePassword(ctx) {
-    ctx.send({});
   }
 };
