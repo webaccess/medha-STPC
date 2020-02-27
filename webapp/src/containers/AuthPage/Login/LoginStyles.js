@@ -13,6 +13,12 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2)
+  },
+  margin: {
+    marginTop: theme.spacing(2)
+  },
+  withoutLabel: {
+    marginTop: theme.spacing(3)
   }
 }));
 

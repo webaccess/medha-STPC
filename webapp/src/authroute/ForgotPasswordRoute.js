@@ -11,6 +11,7 @@ import * as routeConstants from "../constants/RouteConstants";
 
 /** For ForgotPassword */
 export default function ForgotPasswordRoute(props) {
+  const { layout: Layout, ...rest } = props;
   if (props.type === "forgot-password") {
     if (auth.getToken() !== null) {
       return (
@@ -22,7 +23,11 @@ export default function ForgotPasswordRoute(props) {
         />
       );
     } else {
-      return <ForgotPassword from={props.location} />;
+      return (
+        <Layout>
+          <ForgotPassword from={props.location} />
+        </Layout>
+      );
     }
   } else {
     return (

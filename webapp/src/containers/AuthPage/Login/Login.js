@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import clsx from "clsx";
 import { get } from "lodash";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
@@ -10,7 +11,13 @@ import {
   Typography,
   CssBaseline,
   Box,
-  Container
+  Container,
+  FormHelperText,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  IconButton,
+  InputAdornment
 } from "@material-ui/core";
 import useStyles from "./LoginStyles";
 import form from "./loginform.json";
@@ -23,6 +30,8 @@ import {
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as authPageConstants from "../../../constants/AuthPageConstants";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 const identifier = "identifier";
 const password = "password";
@@ -37,7 +46,8 @@ const LogIn = props => {
     values: {},
     touched: {},
     errors: {},
-    isSuccess: false
+    isSuccess: false,
+    showPassword: false
   });
 
   function checkAllKeysPresent(obj) {
@@ -131,6 +141,17 @@ const LogIn = props => {
       });
   };
 
+  const handleClickShowPassword = () => {
+    setFormState({
+      ...formState,
+      showPassword: !formState.showPassword
+    });
+  };
+
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -164,25 +185,53 @@ const LogIn = props => {
             type={get(form[identifier], "type")}
             value={formState.values[identifier] || ""}
           />
-          <TextField
-            id={get(form[password], "id")}
-            variant="outlined"
-            margin="normal"
-            error={hasError(password)}
+
+          <FormControl
             fullWidth
-            helperText={
-              hasError(password)
+            className={clsx(classes.margin, classes.textField)}
+            variant="outlined"
+          >
+            <InputLabel
+              htmlFor="outlined-adornment-password"
+              fullWidth
+              error={hasError(password)}
+            >
+              Password
+            </InputLabel>
+            <OutlinedInput
+              id={get(form[password], "id")}
+              name={password}
+              type={formState.showPassword ? "text" : "password"}
+              value={formState.values[password] || ""}
+              onChange={handleChange}
+              fullWidth
+              error={hasError(password)}
+              endAdornment={
+                <InputAdornment position="end" error={hasError(password)}>
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {formState.showPassword ? (
+                      <Visibility />
+                    ) : (
+                      <VisibilityOff />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              }
+              labelWidth={70}
+            ></OutlinedInput>
+            <FormHelperText error={hasError(password)}>
+              {hasError(password)
                 ? formState.errors[password].map(error => {
                     return error + " ";
                   })
-                : null
-            }
-            label={get(form[password], "label")}
-            name={password}
-            onChange={handleChange}
-            type={get(form[password], "type")}
-            value={formState.values[password] || ""}
-          />
+                : null}
+            </FormHelperText>
+          </FormControl>
           <Button
             color="primary"
             disabled={!formState.isValid}
