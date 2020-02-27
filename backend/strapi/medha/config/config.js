@@ -96,6 +96,7 @@ bookshelf.model("permission", {
 });
 
 bookshelf.model("user", {
+  requireFetch: false,
   tableName: "users-permissions_user",
   state() {
     return this.belongsTo("state", "state", "id");
