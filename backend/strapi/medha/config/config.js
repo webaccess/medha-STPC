@@ -125,6 +125,47 @@ bookshelf.model("student", {
   }
 });
 
+bookshelf.model("academic_year", {
+  tableName: "academic_years"
+});
+
+bookshelf.model("academic_history", {
+  tableName: "academic_histories",
+  student() {
+    return this.belongsTo("student", "student", "id");
+  },
+  academic_year() {
+    return this.belongsTo("academic_year", "academic_year", "id");
+  }
+});
+
+bookshelf.model("question", {
+  tableName: "questions"
+});
+
+bookshelf.model("question_set", {
+  tableName: "question_sets"
+});
+
+bookshelf.model("activity", {
+  tableName: "activities",
+  academic_year() {
+    return this.belongsTo("academic_year", "academic_year", "id");
+  },
+  college() {
+    return this.belongsTo("college", "college", "id");
+  },
+  stream() {
+    return this.belongsToMany("stream").through(
+      "activityStreams",
+      "activity_id",
+      "stream_id"
+    );
+  },
+  question_set() {
+    return this.hasMany("question_set", "question_set", "id");
+  }
+});
 bookshelf.model("district", {
   requireFetch: false,
   tableName: "districts",
