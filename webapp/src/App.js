@@ -1,20 +1,18 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import PrivateRoute from "./authroute/PrivateRoute";
-import Dashboard from "./containers/Dashboard/Dashboard";
+import { NotFoundPage, Logout } from "./components";
 
-import { NotFoundPage } from "./components";
-// import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
 import * as routeConstants from "./constants/RouteConstants";
-import { LoginRoute, ForgotPasswordRoute, RouteWithLayout } from "./authroute";
-// import LoginRoute from "./components/AuthRoute/LoginRoute";
-// import ForgotPasswordRoute from "./components/AuthRoute/ForgotPasswordRoute";
-// import RouteWithLayout from "./components/AuthRoute/RouteWithLayout";
+import {
+  LoginRoute,
+  ForgotPasswordRoute,
+  RouteWithLayout,
+  PrivateRoute
+} from "./authroute";
 
-import Logout from "./components/Logout/Logout";
-
-import AddUser from "./containers/AddUser/AddUser";
+import Dashboard from "./containers/Dashboard/Dashboard";
+import AddUser from "./containers/User/AddUser/AddUser";
 import AddRpc from "./containers/RPC/AddRpc";
 import ViewRpc from "./containers/RPC/ViewRpc";
 import AddStates from "./containers/State/AddState";
