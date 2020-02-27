@@ -2,7 +2,7 @@
   "routes": [
     {
       "method": "POST",
-      "path": "/otps/send",
+      "path": "/otps/requestotp",
       "handler": "otp.requestotp",
       "config": {
         "policies": []
@@ -10,7 +10,7 @@
     },
     {
       "method": "POST",
-      "path": "/otps/verify",
+      "path": "/otps/validateotp",
       "handler": "otp.validateotp",
       "config": {
         "policies": []
