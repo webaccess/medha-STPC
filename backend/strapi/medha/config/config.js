@@ -173,4 +173,8 @@ bookshelf.model("district", {
   }
 });
 
+bookshelf.model("otp", {
+  tableName: "otps"
+});
+
 module.exports = bookshelf;
