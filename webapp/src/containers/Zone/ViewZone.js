@@ -11,66 +11,100 @@ import {
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../constants/StrapiApiConstants";
-import Spinner from "../../components/Spinner/Spinner";
-
+import { Table, Spinner } from "../../components";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import Table from "../../components/Table/Table.js";
 import styles from "./Zone.module.css";
 import useStyles from "./ZoneStyles";
+import * as serviceProviders from "../../api/Axios";
+import * as formUtilities from "../../Utilities/FormUtilities";
+
+const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+const STATES_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 
 const ViewZone = props => {
   const [formState, setFormState] = useState({
     data: [],
     viewzones: [],
-    isShowing: false,
-    DeleteIsShowing: false,
-    selectedid: [],
     getstates: [],
-    editstate: [],
-    editzone: [],
-    filterData: {}
+    filterData: {},
+    cellId: "",
+    isEdit: false,
+    isDelete: false,
+    showModal: false
   });
 
   useEffect(() => {
     getZoneData();
-    axios
-      .get(strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES)
+    serviceProviders
+      .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
           getstates: res.data
         }));
+      })
+      .catch(error => {
+        console.log("error");
       });
   }, []);
 
   const getZoneData = () => {
-    axios({
-      method: "get",
-      url: strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES,
-      params: { name: formState.filterData["name"] }
-    }).then(res => {
-      setFormState(formState => ({
-        ...formState,
-        viewzones: res.data
-      }));
-    });
+    let params = {};
+    if (!formUtilities.checkEmpty(formState.filterData)) {
+      params = { id: formState.filterData["id"] };
+    }
+    serviceProviders
+      .serviceProviderForGetRequest(ZONES_URL, params)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          viewzones: res.data
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
   };
 
   const restoreData = () => {
-    axios({
-      method: "get",
-      url: strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES,
-      params: {}
-    }).then(res => {
-      setFormState(formState => ({
-        ...formState,
-        viewzones: res.data
-      }));
-    });
+    serviceProviders
+      .serviceProviderForGetRequest(ZONES_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          viewzones: res.data
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  const getDataForEdit = async id => {
+    let params = {};
+    if (!formUtilities.checkEmpty(formState.filterData)) {
+      params = { id: id };
+    }
+    serviceProviders
+      .serviceProviderForGetRequest(ZONES_URL, params)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          filterData: res.data[0],
+          showModal: true
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
   };
 
   const editCell = event => {
-    console.log("Edit ", event.target.id);
+    getDataForEdit(event.target.id);
   };
 
   const deleteCell = event => {
@@ -79,28 +113,12 @@ const ViewZone = props => {
 
   const handleChange = (event, value) => {
     formState.filterData = value;
-    {
-      console.log(
-        "FilterData",
-        formState.filterData,
-        formState.data,
-        formState.viewzones
-      );
-    }
   };
 
   const searchFilter = () => {
     formState.data = [];
     formState.viewzones = [];
     getZoneData();
-    {
-      console.log(
-        "searchFilter",
-        formState.filterData,
-        formState.data,
-        formState.viewzones
-      );
-    }
   };
 
   const clearFilter = () => {
@@ -110,10 +128,18 @@ const ViewZone = props => {
     restoreData();
   };
 
+  const handleCloseModal = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModal: false
+    }));
+  };
+
   const column = [
     { name: "Id", sortable: true, selector: "id" },
     { name: "Zone", sortable: true, selector: "name" },
     { name: "States", sortable: true, selector: "state" },
+    /** Columns for edit and delete */
     {
       cell: cell => (
         <i
@@ -143,7 +169,7 @@ const ViewZone = props => {
   formState.data = [];
 
   /** Set zone data to data in formState */
-  if (formState.viewzones.length) {
+  if (formState.viewzones) {
     for (let i in formState.viewzones) {
       var temp = {};
       temp["id"] = formState.viewzones[i]["id"];
@@ -217,6 +243,31 @@ const ViewZone = props => {
         ) : (
           <Spinner />
         )}
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={formState.showModal}
+          onClose={handleCloseModal}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500
+          }}
+        >
+          <Fade in={formState.showModal}>
+            <div className={classes.paper}>
+              <h2 id="transition-modal-title">Edit</h2>
+              <TextField
+                required
+                id="filled-required"
+                label="Required"
+                value={formState.filterData["name"]}
+                variant="filled"
+              />
+            </div>
+          </Fade>
+        </Modal>
       </Grid>
     </div>
   );
