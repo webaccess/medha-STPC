@@ -9,7 +9,6 @@ const bookshelf = require("../../../config/config.js");
 module.exports = {
   async requestotp(ctx, next) {
     const num = ctx.request.body.contact_number;
-    //console.log(sms);
     let OTP, buffer;
     buffer = crypto.randomBytes(2);
     OTP = parseInt(buffer.toString("hex"), 16);
@@ -20,7 +19,7 @@ module.exports = {
         .model("otp")
         .forge({ contact_number: num, otp: OTP })
         .save();
-      if (result) ctx.body = OTP;
+      if (result) ctx.body = "ok";
     } catch (err) {
       console.log(err);
     }
@@ -65,6 +64,30 @@ module.exports = {
     } catch (err) {
       console.log(err);
       ctx.body = err;
+    }
+  },
+  async requestotpforstudent(ctx, next) {
+    const { contact_number } = ctx.request.body;
+    let OTP, buffer;
+    try {
+      const data = await bookshelf
+        .model("user")
+        .where({ contact_number: contact_number })
+        .fetch();
+      if (!!data) {
+        ctx.response.forbidden("user already exist");
+      } else {
+        buffer = crypto.randomBytes(2);
+        OTP = parseInt(buffer.toString("hex"), 16);
+        console.log(OTP);
+        await bookshelf
+          .model("otp")
+          .forge({ contact_number: contact_number, otp: OTP })
+          .save();
+        ctx.body = "ok";
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 };

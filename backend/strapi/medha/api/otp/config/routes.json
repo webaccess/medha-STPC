@@ -2,6 +2,14 @@
   "routes": [
     {
       "method": "POST",
+      "path": "/otps/requestotpforstudent",
+      "handler": "otp.requestotpforstudent",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
       "path": "/otps/requestotp",
       "handler": "otp.requestotp",
       "config": {
