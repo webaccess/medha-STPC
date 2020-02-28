@@ -56,7 +56,7 @@ const MenuItems = props => {
           },
           {
             name: "College",
-            link: ""
+            link: routeConstants.VIEW_COLLEGE
           }
         ]
       }

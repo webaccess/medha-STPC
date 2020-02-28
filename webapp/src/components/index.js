@@ -14,3 +14,4 @@ export { default as SideAndTopNavBar } from "./SideAndTopNavBar";
 export { default as Spinner } from "./Spinner";
 export { default as Table } from "./Table";
 export { default as Typography } from "./Typography";
+export { default as CustomRouterLink } from "./CustomRouterLink";

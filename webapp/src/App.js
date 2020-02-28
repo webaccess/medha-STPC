@@ -12,6 +12,8 @@ import {
 } from "./authroute";
 
 import Dashboard from "./containers/Dashboard/Dashboard";
+import AddCollege from "./containers/College/AddCollege";
+import ViewCollege from "./containers/College/ManageCollege";
 import AddUser from "./containers/User/AddUser/AddUser";
 import AddRpc from "./containers/RPC/AddRpc";
 import ViewRpc from "./containers/RPC/ViewRpc";
@@ -99,6 +101,18 @@ class App extends Component {
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ZONES}
+              />
+              <RouteWithLayout
+                component={AddCollege}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_COLLEGE}
+              />
+              <RouteWithLayout
+                component={ViewCollege}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_COLLEGE}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>

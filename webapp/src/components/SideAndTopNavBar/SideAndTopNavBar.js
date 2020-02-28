@@ -24,7 +24,7 @@ import InputIcon from "@material-ui/icons/Input";
 import * as routeConstants from "../../constants/RouteConstants";
 import Logo from "../Logo/Logo";
 import MenuItems from "./Component/MenuItems";
-import auth from "../../components/Auth/Auth";
+import { Auth as auth, CustomRouterLink } from "../../components";
 
 const useDrawerStyles = makeStyles(theme => ({
   drawer: {
@@ -118,12 +118,6 @@ function SideAndTopNavBar(props) {
     setSubListState({ ...subListState, [name]: !get(subListState, name) });
   };
 
-  const CustomRouterLink = forwardRef((props, ref) => (
-    <div ref={ref}>
-      <RouterLink {...props} />
-    </div>
-  ));
-
   const inputs = get(MenuItems(), ["SuperAdmin"], []);
 
   const drawer = (
@@ -143,7 +137,7 @@ function SideAndTopNavBar(props) {
                   onClick={e => handleClick(list.name)}
                 >
                   <Button
-                    activeClassName={listClasses.active}
+                    activeclassname={listClasses.active}
                     className={listClasses.button}
                   >
                     <div className={listClasses.icon}>{list.Icon}</div>
@@ -169,7 +163,7 @@ function SideAndTopNavBar(props) {
                           key={subList.name}
                         >
                           <Button
-                            activeClassName={listClasses.active}
+                            activeclassname={listClasses.active}
                             className={listClasses.button}
                             component={CustomRouterLink}
                             to={subList.link}
@@ -190,7 +184,7 @@ function SideAndTopNavBar(props) {
                   key={list.name}
                 >
                   <Button
-                    activeClassName={listClasses.active}
+                    activeclassname={listClasses.active}
                     className={listClasses.button}
                     component={CustomRouterLink}
                     to={list.link}
