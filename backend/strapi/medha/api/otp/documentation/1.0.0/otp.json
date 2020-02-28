@@ -1,10 +1,6 @@
 {
   "paths": {
-<<<<<<< HEAD
     "/otps/requestotpforstudent": {
-=======
-    "/otps/requestotp": {
->>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
       "post": {
         "deprecated": false,
         "description": "Create a new record",
@@ -55,9 +51,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -75,7 +69,6 @@
         }
       }
     },
-<<<<<<< HEAD
     "/otps/requestotp": {
       "post": {
         "deprecated": false,
@@ -127,9 +120,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -147,8 +138,6 @@
         }
       }
     },
-=======
->>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
     "/otps/validateotp": {
       "post": {
         "deprecated": false,
@@ -200,9 +189,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -270,9 +257,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "_limit",
@@ -458,9 +443,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -525,9 +508,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": []
       }
     },
@@ -578,9 +559,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "id",
@@ -640,9 +619,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -714,9 +691,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "id",
@@ -735,11 +710,7 @@
   "components": {
     "schemas": {
       "Otp": {
-        "required": [
-          "id",
-          "contact_number",
-          "otp"
-        ],
+        "required": ["id", "contact_number", "otp"],
         "properties": {
           "id": {
             "type": "string"
@@ -756,10 +727,7 @@
         }
       },
       "NewOtp": {
-        "required": [
-          "contact_number",
-          "otp"
-        ],
+        "required": ["contact_number", "otp"],
         "properties": {
           "contact_number": {
             "type": "string"
