@@ -1,6 +1,6 @@
 {
   "paths": {
-    "/otps/send": {
+    "/otps/requestotp": {
       "post": {
         "deprecated": false,
         "description": "Create a new record",
@@ -71,7 +71,7 @@
         }
       }
     },
-    "/otps/verify": {
+    "/otps/validateotp": {
       "post": {
         "deprecated": false,
         "description": "Create a new record",
