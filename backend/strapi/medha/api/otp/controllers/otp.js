@@ -9,25 +9,14 @@ const bookshelf = require("../../../config/config.js");
 module.exports = {
   async requestotp(ctx, next) {
     const num = ctx.request.body.contact_number;
-<<<<<<< HEAD
-    let OTP, buffer;
-    buffer = crypto.randomBytes(2);
-    OTP = parseInt(buffer.toString("hex"), 16);
-    console.log(OTP);
-=======
     const buffer = crypto.randomBytes(2);
     const OTP = parseInt(buffer.toString("hex"), 16);
->>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
     try {
       const result = await bookshelf
         .model("otp")
         .forge({ contact_number: num, otp: OTP })
         .save();
-<<<<<<< HEAD
-      if (result) ctx.body = "ok";
-=======
       if (result) ctx.body = { status: "OK" };
->>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
     } catch (err) {
       console.log(err);
     }
