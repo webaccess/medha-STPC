@@ -11,3 +11,5 @@ export const VIEW_RPC = "/rpc";
 export const ADD_STATES = "/add-states";
 export const ADD_ZONES = "/add-zones";
 export const ADD_RPC = "/add-rpc";
+export const ADD_COLLEGE = "/add-college";
+export const VIEW_COLLEGE = "/view-college";

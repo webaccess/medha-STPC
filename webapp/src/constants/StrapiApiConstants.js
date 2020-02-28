@@ -4,3 +4,5 @@ export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "states";
 export const STRAPI_RPCS = "rpcs";
 export const STRAPI_COLLEGES = "colleges";
+export const STRAPI_STREAMS = "colleges";
+export const STRAPI_USERS = "users";
