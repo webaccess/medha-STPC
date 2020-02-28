@@ -435,7 +435,10 @@ const states = {
   }
 };
 
+const allowedPublicRoutes = ["requestotp", "validateotp"];
+
 module.exports = Object.freeze({
   roles,
-  states
+  states,
+  allowedPublicRoutes
 });

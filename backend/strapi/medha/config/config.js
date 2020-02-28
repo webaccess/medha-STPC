@@ -92,7 +92,10 @@ bookshelf.model("role", {
 });
 
 bookshelf.model("permission", {
-  tableName: "users-permissions_permission"
+  tableName: "users-permissions_permission",
+  role() {
+    return this.belongsTo("role", "role", "id");
+  }
 });
 
 bookshelf.model("user", {
