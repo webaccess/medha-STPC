@@ -91,26 +91,26 @@ export const setStreams = (id, name) => {
 };
 
 export const setCollege = (
-  id
-  // name,
-  // college_code,
-  // address,
-  // contact_number,
-  // college_email,
-  // principal = null,
-  // rpc = null,
-  // streams = []
+  id,
+  name,
+  college_code,
+  address,
+  contact_number,
+  college_email,
+  principal = null,
+  rpc = null,
+  streams = []
 ) => {
   return {
-    id: id
-    // name: name,
-    // college_code: college_code,
-    // address: address,
-    // contact_number: contact_number,
-    // college_email: college_email,
-    // principal: principal,
-    // rpc: rpc,
-    // streams: streams
+    id: id,
+    name: name,
+    college_code: college_code,
+    address: address,
+    contact_number: contact_number,
+    college_email: college_email,
+    principal: principal,
+    rpc: rpc,
+    streams: streams
   };
 };
 
