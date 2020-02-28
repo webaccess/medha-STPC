@@ -76,6 +76,13 @@ export const setMainCollege = id => {
   };
 };
 
+export const setRole = id => {
+  return {
+    id: id
+  };
+};
+
+
 export const setStreams = (id, name) => {
   return {
     id: id,
@@ -84,26 +91,26 @@ export const setStreams = (id, name) => {
 };
 
 export const setCollege = (
-  id,
-  name,
-  college_code,
-  address,
-  contact_number,
-  college_email,
-  principal = null,
-  rpc = null,
-  streams = []
+  id
+  // name,
+  // college_code,
+  // address,
+  // contact_number,
+  // college_email,
+  // principal = null,
+  // rpc = null,
+  // streams = []
 ) => {
   return {
-    id: id,
-    name: name,
-    college_code: college_code,
-    address: address,
-    contact_number: contact_number,
-    college_email: college_email,
-    principal: principal,
-    rpc: rpc,
-    streams: streams
+    id: id
+    // name: name,
+    // college_code: college_code,
+    // address: address,
+    // contact_number: contact_number,
+    // college_email: college_email,
+    // principal: principal,
+    // rpc: rpc,
+    // streams: streams
   };
 };
 
@@ -152,5 +159,33 @@ export const addZone = (
   return {
     name : name,
     state : state
+  };
+};
+
+export const addUser = (
+  username,
+  email,
+  first_name,
+  last_name,
+  password,
+  contact_number,
+  state  = null, 
+  zone  = null,
+  rpc  = null,
+  college  = null,
+  role = null
+) => { 
+  return {
+    username: username,
+    email: email,
+    first_name: first_name, 
+    last_name: last_name,
+    password: password,
+    contact_number: contact_number,
+    state: state,
+    zone: zone,
+    rpc: rpc,
+    college: college,
+    role: role
   };
 };
