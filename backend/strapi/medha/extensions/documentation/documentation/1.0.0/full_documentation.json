@@ -14,7 +14,11 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
+<<<<<<< HEAD
     "x-generation-date": "02/27/2020 5:10:35 PM"
+=======
+    "x-generation-date": "02/27/2020 4:17:56 PM"
+>>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -5798,6 +5802,7 @@
         ]
       }
     },
+<<<<<<< HEAD
     "/otps/requestotpforstudent": {
       "post": {
         "deprecated": false,
@@ -5869,6 +5874,8 @@
         }
       }
     },
+=======
+>>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
     "/otps/requestotp": {
       "post": {
         "deprecated": false,

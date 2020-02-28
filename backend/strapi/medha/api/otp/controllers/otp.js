@@ -9,17 +9,25 @@ const bookshelf = require("../../../config/config.js");
 module.exports = {
   async requestotp(ctx, next) {
     const num = ctx.request.body.contact_number;
+<<<<<<< HEAD
     let OTP, buffer;
     buffer = crypto.randomBytes(2);
     OTP = parseInt(buffer.toString("hex"), 16);
     console.log(OTP);
+=======
+    const buffer = crypto.randomBytes(2);
+    const OTP = parseInt(buffer.toString("hex"), 16);
+>>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
     try {
-      console.log("Hello" + OTP);
       const result = await bookshelf
         .model("otp")
         .forge({ contact_number: num, otp: OTP })
         .save();
+<<<<<<< HEAD
       if (result) ctx.body = "ok";
+=======
+      if (result) ctx.body = { status: "OK" };
+>>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
     } catch (err) {
       console.log(err);
     }
@@ -27,22 +35,19 @@ module.exports = {
   async validateotp(ctx, next) {
     const { otp, contact_number } = ctx.request.body;
     let today = new Date();
-    let result,
-      flag = false;
+
     try {
       const data = await bookshelf
         .model("otp")
         .where({ contact_number: contact_number, otp: otp, isVerified: null })
         .fetch();
 
-      result = data.toJSON();
-      console.log(result);
+      const result = data.toJSON();
       let createdAt = new Date(result.created_at);
 
       const diff = (today.getTime() - createdAt.getTime()) / 60000;
-      console.log(diff);
       if (diff > 60.0) {
-        ctx.response.requestTimeout("Your time has expired for verifyin.");
+        ctx.response.requestTimeout("OTP has expired");
       } else {
         data.save({ isVerified: true }, { patch: true });
 

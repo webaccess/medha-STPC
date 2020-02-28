@@ -364,3 +364,38 @@ if (!(_skip && skip.test("states"))) {
     });
   })();
 }
+
+async function getAllOTPpermissions() {
+  return await bookshelf
+    .model("permission")
+    .where({
+      controller: "otp"
+    })
+    .fetchAll({
+      withRelated: [
+        "role",
+        {
+          role: query => {
+            query.where({
+              name: "Public"
+            });
+          }
+        }
+      ]
+    });
+}
+
+(async () => {
+  const data = await getAllOTPpermissions();
+  data.forEach(model => {
+    const json = model.toJSON();
+    if (
+      model.role &&
+      Object.keys(json.role).length &&
+      _data.allowedPublicRoutes.includes(json.action)
+    ) {
+      model.save({ enabled: true }, { patch: true });
+      console.log(`Added ${json.action} to Public role`);
+    }
+  });
+})();
