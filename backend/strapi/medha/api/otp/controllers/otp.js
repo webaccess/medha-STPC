@@ -7,7 +7,7 @@
 var crypto = require("crypto");
 const bookshelf = require("../../../config/config.js");
 module.exports = {
-  async requestotp(ctx, next) {
+  async requestOTP(ctx, next) {
     const num = ctx.request.body.contact_number;
     const buffer = crypto.randomBytes(2);
     const OTP = parseInt(buffer.toString("hex"), 16);
@@ -21,7 +21,7 @@ module.exports = {
       console.log(err);
     }
   },
-  async validateotp(ctx, next) {
+  async validateOTP(ctx, next) {
     const { otp, contact_number } = ctx.request.body;
     let today = new Date();
 
@@ -60,7 +60,7 @@ module.exports = {
       ctx.body = err;
     }
   },
-  async requestotpforstudent(ctx, next) {
+  async requestOTPForStudent(ctx, next) {
     const { contact_number } = ctx.request.body;
     let OTP, buffer;
     try {
@@ -69,16 +69,15 @@ module.exports = {
         .where({ contact_number: contact_number })
         .fetch();
       if (!!data) {
-        ctx.response.forbidden("user already exist");
+        ctx.response.forbidden("Student already exist...");
       } else {
         buffer = crypto.randomBytes(2);
         OTP = parseInt(buffer.toString("hex"), 16);
-        console.log(OTP);
         await bookshelf
           .model("otp")
           .forge({ contact_number: contact_number, otp: OTP })
           .save();
-        ctx.body = "ok";
+        ctx.body = { status: "ok" };
       }
     } catch (err) {
       console.log(err);

@@ -3,7 +3,7 @@
     {
       "method": "POST",
       "path": "/otps/requestotpforstudent",
-      "handler": "otp.requestotpforstudent",
+      "handler": "otp.requestOTPForStudent",
       "config": {
         "policies": []
       }
@@ -11,7 +11,7 @@
     {
       "method": "POST",
       "path": "/otps/requestotp",
-      "handler": "otp.requestotp",
+      "handler": "otp.requestOTP",
       "config": {
         "policies": []
       }
@@ -19,7 +19,7 @@
     {
       "method": "POST",
       "path": "/otps/validateotp",
-      "handler": "otp.validateotp",
+      "handler": "otp.validateOTP",
       "config": {
         "policies": []
       }
