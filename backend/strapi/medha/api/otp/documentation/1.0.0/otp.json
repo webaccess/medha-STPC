@@ -1,10 +1,6 @@
 {
   "paths": {
-<<<<<<< HEAD
     "/otps/requestotpforstudent": {
-=======
-    "/otps/requestotp": {
->>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
       "post": {
         "deprecated": false,
         "description": "Create a new record",
@@ -75,7 +71,6 @@
         }
       }
     },
-<<<<<<< HEAD
     "/otps/requestotp": {
       "post": {
         "deprecated": false,
@@ -147,8 +142,6 @@
         }
       }
     },
-=======
->>>>>>> ebb6701b7907b31b1aa6fbcaaa0542abca51005b
     "/otps/validateotp": {
       "post": {
         "deprecated": false,
