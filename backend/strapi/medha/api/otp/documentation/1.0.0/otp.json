@@ -51,9 +51,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -122,9 +120,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -193,9 +189,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -263,9 +257,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "_limit",
@@ -451,9 +443,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -518,9 +508,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": []
       }
     },
@@ -571,9 +559,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "id",
@@ -633,9 +619,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -707,9 +691,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "id",
@@ -728,11 +710,7 @@
   "components": {
     "schemas": {
       "Otp": {
-        "required": [
-          "id",
-          "contact_number",
-          "otp"
-        ],
+        "required": ["id", "contact_number", "otp"],
         "properties": {
           "id": {
             "type": "string"
@@ -749,10 +727,7 @@
         }
       },
       "NewOtp": {
-        "required": [
-          "contact_number",
-          "otp"
-        ],
+        "required": ["contact_number", "otp"],
         "properties": {
           "contact_number": {
             "type": "string"
