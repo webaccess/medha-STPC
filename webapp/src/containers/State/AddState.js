@@ -1,64 +1,182 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import Layout from "../../hoc/Layout/Layout.js";
-import { InputText, Button } from "../../components";
-import { withStyles } from "@material-ui/core/styles";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
+import { get } from "lodash";
+import { Alert } from "../../components";
 import useStyles from "./AddStateStyles";
+import * as databaseUtilities from "../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../Utilities/FormUtilities";
+import * as strapiApiConstants from "../../constants/StrapiApiConstants"
+import AddStateForm from "./AddStateForm";
+import * as genericConstants from "../../constants/GenericConstants";
+import {
+  Card,
+  CardHeader,
+  CardActionArea,
+  CardContent,
+  CardActions,
+  TextField,
+  Grid,
+  Button,
+  Divider,
+  Typography
+} from "@material-ui/core";
 
-class AddState extends Component {
-  constructor() {
-    super();
-    this.state = {
-      addstate: ""
-    };
-  }
-  handleChange(event) {
-    this.setState({ addstate: event.target.value });
-  }
-  handleSubmit(event) {
+const AddState = props => {
+  const state = "state";
+  const content = "content"
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isFailed, setIsFailed] = useState(false);
+  const classes = useStyles();
+
+  const [formState, setFormState] = useState({
+    isValid: false,
+    values: {},
+    touched: {},
+    errors: {},
+    isSuccess: false
+  });
+
+  const handleChange = e => {
+    e.persist();
+    setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [e.target.name]: e.target.value
+      },
+      touched: {
+        ...formState.touched,
+        [e.target.name]: true
+      }
+    }));
+    if (formState.errors.hasOwnProperty(e.target.name)) {
+      delete formState.errors[e.target.name];
+    }
+  };
+
+  const handleSubmit = event => {
     event.preventDefault();
-    var name = this.state.addstate;
-    axios
-      .post(strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES, {
-        name
-      })
-      .then(res => {
-        window.location.reload();
-      })
-      .catch(error => {
-        console.log("Error > ", error.response);
-      });
-  }
-  render() {
-    const { classes } = this.props;
-    return (
-      <div>
-        <Layout>
-          <div>
-            <h1>States</h1>
-            <form onSubmit={this.handleSubmit.bind(this)}>
-              <span>State Name </span>
-              <InputText
-                value={this.state.addstate}
-                name="addstate"
-                onChange={this.handleChange.bind(this)}
-                placeholder="Add States"
-              />
-              <br></br>
-              <div className={classes.button}>
-                <Button type="submit" value="submit">
-                  Save
-                </Button>{" "}
-                <Button>Cancel</Button>
-              </div>
-            </form>
-            {/* <Viewstates /> */}
-          </div>
-        </Layout>
-      </div>
+    let isValid = false;
+    let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
+      formState.values,
+      AddStateForm
     );
-  }
-}
+    if (checkAllFieldsValid) {
+      formState.errors = formUtilities.setErrors(formState.values, AddStateForm);
+      if (formUtilities.checkEmpty(formState.errors)) {
+        isValid = true;
+      }
+    } else {
+      formState.values = formUtilities.getListOfKeysNotPresent(
+        formState.values,
+        AddStateForm
+      );
+      formState.errors = formUtilities.setErrors(formState.values, AddStateForm);
+      console.log("not all keys present ", formState);
+    }
+    console.log(isValid, formState);
+    if (isValid) {
+      console.log("formValid");
+      postStateData();
 
-export default withStyles(useStyles)(AddState);
+      /** Call axios from here */
+      setFormState(formState => ({
+        ...formState,
+        isValid: true
+      }));
+    } else {
+      console.log("formInValid");
+      setFormState(formState => ({
+        ...formState,
+        isValid: false
+      }));
+    }
+  };
+
+  const postStateData = async () => {
+    let postData = databaseUtilities.addState(
+      formState.values[state],
+    )
+    axios({
+      method: "post",
+      async: false,
+      url: strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
+      data: postData
+    })
+    .then(res => {
+      console.log(res);
+      setIsFailed(false);
+      setIsSuccess(true);
+    })
+    .catch(error => {
+      console.log(error);
+      setIsSuccess(false);
+      setIsFailed(true);
+    });
+
+    /** Set state to reload form */
+    setFormState(formState => ({
+      ...formState,
+      isValid: true
+    }));
+  };
+
+  const hasError = field => (formState.errors[field] ? true : false);
+
+  return (
+    <Grid >
+      <Grid item xs={12} className={classes.title}>      
+        <Typography variant="h4" gutterBottom>
+          {get(AddStateForm[content], "title")}
+        </Typography></Grid>
+        
+      <Grid item xs={12} className={classes.formgrid}>
+   
+          {isSuccess ? (
+            <Alert severity="success" className={classes.message}>
+              {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+            </Alert>
+          ) : null}
+          {isFailed ? (
+            <Alert severity="error">
+              {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+            </Alert>
+          ) : null}
+
+        <Card className={classes.root} variant="outlined">
+          <form autoComplete="off" noValidate onSubmit={handleSubmit} >
+            <CardHeader  />
+            <CardActionArea>
+              <CardContent>  
+                  <TextField 
+                    label= {get(AddStateForm[state], "label")}
+                    name={state}
+                    value={formState.values[state] || ""}
+                    error={hasError(state)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      hasError(state)
+                        ? formState.errors[state].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />      
+              </CardContent> 
+            </CardActionArea> 
+            <Divider />
+            <CardActions>
+              <Button variant="contained" color="primary" type="submit">
+                {get(AddStateForm[content], "button")}
+              </Button>
+            </CardActions>
+          </form>
+        </Card>
+      </Grid>
+    </Grid>  
+  )
+};
+export default (AddState);

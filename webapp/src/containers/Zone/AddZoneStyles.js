@@ -2,14 +2,14 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: 345,
+    maxWidth: 345
   },
-  formgrid:{
+  formgrid: {
     marginTop: theme.spacing(4),
-    alignItems: 'center',
+    alignItems: "center",
     marginLeft: theme.spacing(4)
   },
-  title:{
+  title: {
     marginTop: theme.spacing(2),
     marginLeft: theme.spacing(2)
   },

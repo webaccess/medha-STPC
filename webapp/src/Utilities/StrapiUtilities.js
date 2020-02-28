@@ -136,4 +136,21 @@ export const addCollege = (
     rpc: rpc,
     streams: streams
   };
+
+};
+
+export const addState = (name) => {
+  return {
+    name : name,
+  };
+};
+
+export const addZone = (
+  name,
+  state= null
+  ) => {
+  return {
+    name : name,
+    state : state
+  };
 };
