@@ -85,7 +85,7 @@ const AddUserForm = {
     required: false,
     placeholder: "contact",
     autoFocus: true,
-    type: "text",
+    type: "integer",
     validations: {
     }
   },
@@ -96,7 +96,7 @@ const AddUserForm = {
     required: false,
     placeholder: "active",
     autoFocus: true,
-    type: "text",
+    type: "checkbox",
     validations: {
     }
   },

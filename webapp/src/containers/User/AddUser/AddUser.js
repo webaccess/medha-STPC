@@ -7,7 +7,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./AddUserStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import { Alert } from "../../../components";
+import { Alert , CustomRouterLink} from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 
 import {
@@ -18,7 +18,10 @@ import {
   Divider,
   Grid,
   Button,
-  TextField
+  TextField,
+  FormGroup,
+  FormControlLabel,
+  Switch
 } from "@material-ui/core";
 
 const firstname = "firstname";
@@ -50,6 +53,7 @@ const Adduser = props => {
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [roles, setRoles] = useState([]);
+
 
   useEffect(() => {
     /* TO GET STATES AND STATE ZONE RPC COLLEGE & ROLE IN AUTOCOMPLETE */
@@ -106,9 +110,11 @@ const Adduser = props => {
     e.persist();
     setFormState(formState => ({
       ...formState,
+
       values: {
         ...formState.values,
-        [e.target.name]: e.target.value
+        [e.target.name]:
+          e.target.type === "checkbox" ? e.target.checked : e.target.value
       },
       touched: {
         ...formState.touched,
@@ -189,6 +195,7 @@ const Adduser = props => {
       formState.values[lastname],
       formState.values[password],
       formState.values[contact],
+      formState.values[active],
       formState.values[state]
         ? databaseUtilities.setState(formState.values[state])
         : null,
@@ -234,7 +241,7 @@ const Adduser = props => {
   return (
     <Card>
       <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <CardHeader title="Add User" />
+        <CardHeader title={genericConstants.ADD_USER_TITLE} />
         <Divider />
         <CardContent>
           <Grid>
@@ -327,7 +334,6 @@ const Adduser = props => {
               />
             </Grid>
           </Grid>
-
           <Grid container spacing={6}>
             <Grid item md={4} xs={12}>
               <TextField
@@ -384,7 +390,7 @@ const Adduser = props => {
                   <TextField
                     {...params}
                     error={hasError(role)}
-                    label="Role"
+                    label={get(AddUserForm[role], "label")}
                     variant="outlined"
                     name="tester"
                     helperText={
@@ -410,7 +416,7 @@ const Adduser = props => {
                 renderInput={params => (
                   <TextField
                     {...params}
-                    label="State"
+                    label={get(AddUserForm[state], "label")}
                     variant="outlined"
                     error={hasError(state)}
                     helperText={
@@ -424,7 +430,29 @@ const Adduser = props => {
                 )}
               />
             </Grid>
-            <Grid item md={4} xs={12}></Grid>
+            <Grid item md={4} xs={12}>
+              <FormGroup row>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      name={active}
+                      checked={formState.values[active]}
+                      onChange={handleChange}
+                      value={formState.values[active]}
+                      error={hasError(active)}
+                      helperText={
+                        hasError(active)
+                          ? formState.errors[active].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  }
+                  label={get(AddUserForm[active], "label")}
+                />
+              </FormGroup>
+            </Grid>
           </Grid>
           <Grid container spacing={3}>
             <Grid item md={4} xs={12}>
@@ -439,7 +467,7 @@ const Adduser = props => {
                 renderInput={params => (
                   <TextField
                     {...params}
-                    label="Zone"
+                    label={get(AddUserForm[zone], "label")}
                     variant="outlined"
                     error={hasError(zone)}
                     helperText={
@@ -465,7 +493,7 @@ const Adduser = props => {
                 renderInput={params => (
                   <TextField
                     {...params}
-                    label="RPC"
+                    label={get(AddUserForm[rpc], "label")}
                     variant="outlined"
                     error={hasError(rpc)}
                     helperText={
@@ -491,7 +519,7 @@ const Adduser = props => {
                 renderInput={params => (
                   <TextField
                     {...params}
-                    label="Colleges"
+                    label={get(AddUserForm[college], "label")}
                     variant="outlined"
                     error={hasError(college)}
                     helperText={
@@ -509,9 +537,20 @@ const Adduser = props => {
         </CardContent>
         <Divider />
         <CardActions>
-          <Button variant="contained" color="primary" type="submit">
-            Add User
+          <Button 
+            variant="contained" 
+            color="primary" 
+            type="submit">
+            {genericConstants.SAVE_BUTTON_TEXT}
           </Button>
+          <Button
+                variant="contained"
+                color="secondary"
+                component={CustomRouterLink}
+                to="/"
+              >
+                {genericConstants.CANCEL_BUTTON_TEXT}
+              </Button>
         </CardActions>
       </form>
     </Card>
