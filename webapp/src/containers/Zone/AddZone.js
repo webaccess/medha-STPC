@@ -238,7 +238,11 @@ const AddZone = props => {
             </CardActionArea>
             <Divider />
             <CardActions>
-              <Button variant="contained" color="primary" type="submit">
+              <Button 
+                variant="contained" 
+                color="primary" 
+                type="submit"
+              >
                 {get(AddZoneForm[content], "button")}
               </Button>
               <Button
