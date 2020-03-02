@@ -12,10 +12,8 @@ import {
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Table, Spinner } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import styles from "../ZoneStyles";
-import useStyles from "../ZoneStyles";
+import useStyles from "./ViewZoneStyles";
 import * as serviceProviders from "../../../api/Axios";
-import * as formUtilities from "../../../Utilities/FormUtilities";
 import EditZone from "./EditZone";
 import DeleteZone from "./DeleteZone";
 import { CustomRouterLink } from "../../../components";
@@ -262,7 +260,7 @@ const ViewZone = props => {
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <Grid item>
-            <Typography variant="h1" className={styles.header}>
+            <Typography variant="h1" className={classes.header}>
               Manage Zone
             </Typography>
           </Grid>
@@ -281,7 +279,7 @@ const ViewZone = props => {
           </Grid>
         </Grid>
         {/* This is used for the filterig data */}
-        <Card className={styles.filterButton}>
+        <Card className={classes.filterButton}>
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>

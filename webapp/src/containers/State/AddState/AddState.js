@@ -1,25 +1,21 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { get } from "lodash";
-import { Alert } from "../../../components";
-import useStyles from "../AddStateStyles";
+import useStyles from "./AddStateStyles";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import AddStateForm from "../AddStateForm";
+import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProviders from "../../../api/Axios";
+import { Alert, SaveButton, CancelButton } from "../../../components";
 
 import {
   Card,
-  CardHeader,
-  CardActionArea,
   CardContent,
   CardActions,
   TextField,
   Grid,
-  Button,
-  Divider,
   Typography
 } from "@material-ui/core";
 
@@ -99,11 +95,6 @@ const AddState = props => {
 
   const postStateData = async () => {
     let postData = databaseUtilities.addState(formState.values[state]);
-    // axios({
-    //   method: "post",
-    //   async: false,
-    //   url: strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
-    //   data: postData
 
     serviceProviders
       .serviceProviderForPostRequest(
@@ -136,9 +127,7 @@ const AddState = props => {
         <Typography variant="h4" gutterBottom>
           {get(AddStateForm[content], "title")}
         </Typography>
-      </Grid>
 
-      <Grid item xs={12} className={classes.formgrid}>
         {isSuccess ? (
           <Alert severity="success" className={classes.message}>
             {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
@@ -149,36 +138,50 @@ const AddState = props => {
             {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
           </Alert>
         ) : null}
-
+      </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <CardHeader />
-            <CardActionArea>
-              <CardContent>
-                <TextField
-                  label={get(AddStateForm[state], "label")}
-                  name={state}
-                  value={formState.values[state] || ""}
-                  error={hasError(state)}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  onChange={handleChange}
-                  helperText={
-                    hasError(state)
-                      ? formState.errors[state].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </CardContent>
-            </CardActionArea>
-            <Divider />
-            <CardActions>
-              <Button variant="contained" color="primary" type="submit">
-                {get(AddStateForm[content], "button")}
-              </Button>
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    label={get(AddStateForm[state], "label")}
+                    name={state}
+                    value={formState.values[state] || ""}
+                    error={hasError(state)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      hasError(state)
+                        ? formState.errors[state].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    className={classes.elementroot}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+            <CardActions className={classes.btnspace}>
+              <SaveButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                className={classes.submitbtn}
+              >
+                {genericConstants.SAVE_BUTTON_TEXT}
+              </SaveButton>
+              <CancelButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                to={routeConstants.VIEW_STATES}
+                className={classes.resetbtn}
+              />
             </CardActions>
           </form>
         </Card>
