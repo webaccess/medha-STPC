@@ -1,5 +1,4 @@
 import { Validation as validateInput } from "../components";
-import axios from "axios";
 
 /** Function to check if required fields are present in the set values of form*/
 export const checkAllKeysPresent = (objectWithKeys, schema) => {

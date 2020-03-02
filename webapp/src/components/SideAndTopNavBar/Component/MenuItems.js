@@ -8,7 +8,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 
 const MenuItems = props => {
   const menuItems = {
-    SuperAdmin: [
+    Medha_Admin: [
       {
         name: "Training",
         Icon: <AssignmentOutlinedIcon />,
