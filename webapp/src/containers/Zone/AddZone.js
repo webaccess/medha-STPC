@@ -7,8 +7,10 @@ import AddZoneForm from "./AddZoneForm";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../Utilities/FormUtilities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {CustomRouterLink ,Alert} from "../../components";
+import { CustomRouterLink, Alert } from "../../components";
 import * as genericConstants from "../../constants/GenericConstants";
+import * as routeConstants from "../../constants/RouteConstants";
+
 import {
   Card,
   CardHeader,
@@ -22,9 +24,7 @@ import {
   Typography
 } from "@material-ui/core";
 
-
 const AddZone = props => {
-  
   const zone = "zone";
   const state = "state";
   const content = "content";
@@ -168,9 +168,8 @@ const AddZone = props => {
           {get(AddZoneForm[content], "title")}
         </Typography>
       </Grid>
-      
+
       <Grid item xs={12} className={classes.formgrid}>
-        
         {isSuccess ? (
           <Alert severity="success" className={classes.message}>
             {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
@@ -238,18 +237,14 @@ const AddZone = props => {
             </CardActionArea>
             <Divider />
             <CardActions>
-              <Button 
-                variant="contained" 
-                color="primary" 
-                type="submit"
-              >
+              <Button variant="contained" color="primary" type="submit">
                 {get(AddZoneForm[content], "button")}
               </Button>
               <Button
                 variant="contained"
                 color="secondary"
                 component={CustomRouterLink}
-                to="/zones"
+                to={routeConstants.VIEW_ZONES}
               >
                 {get(AddZoneForm[content], "cancel")}
               </Button>

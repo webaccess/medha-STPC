@@ -23,9 +23,21 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
+    border: "primary",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3)
+  },
+  textMargin: {
+    margin: "10px"
+  },
+  autoCompleteField: {
+    width: 200
+  },
+  noDataMargin: {
+    margin: "auto"
+  },
+  addZoneButton: {
+    float: "right"
   }
 }));
 

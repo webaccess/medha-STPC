@@ -55,6 +55,7 @@ const AddRpc = props => {
         setGetColleges(res.data);
       });
   }, []);
+
   useEffect(() => {
     /** TO GET ZONE IN AUTOCOMPLETE ON THE CHANGE OF STATES */
 
@@ -67,24 +68,29 @@ const AddRpc = props => {
     });
   }, [formState.values[stateName]]);
 
-  const handleChange = e => {
+  /** This handle change is used to handle changes to text field */
+  const handleChange = event => {
     /** TO SET VALUES IN FORMSTATE */
-    e.persist();
+    event.persist();
     setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [e.target.name]: e.target.value
+        [event.target.name]: event.target.value
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true
+        [event.target.name]: true
       }
     }));
-    if (formState.errors.hasOwnProperty(e.target.name)) {
-      delete formState.errors[e.target.name];
+
+    /** This is used to remove any existing errors if present in text field */
+    if (formState.errors.hasOwnProperty(event.target.name)) {
+      delete formState.errors[event.target.name];
     }
   };
+
+  /** This handle change is used to handle changes to auto complete */
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (value !== null) {
@@ -99,18 +105,24 @@ const AddRpc = props => {
           [eventName]: true
         }
       }));
+
+      /** This is used to remove any existing errors if present in auto complete */
       if (formState.errors.hasOwnProperty(eventName)) {
         delete formState.errors[eventName];
       }
     } else {
+      /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
   };
 
+  /** This checks if the corresponding field has errors */
   const hasError = field => (formState.errors[field] ? true : false);
 
+  /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
     let isValid = false;
+    /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
       AddRpcSchema
@@ -121,6 +133,7 @@ const AddRpc = props => {
         formState.values,
         AddRpcSchema
       );
+      /** Checks if the form is empty */
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
@@ -130,6 +143,7 @@ const AddRpc = props => {
         formState.values,
         AddRpcSchema
       );
+      /** This sets errors by comparing it with the json schema provided */
       formState.errors = formUtilities.setErrors(
         formState.values,
         AddRpcSchema
@@ -209,7 +223,7 @@ const AddRpc = props => {
                     fullWidth
                     id={get(AddRpcSchema[rpcName], "id")}
                     label={get(AddRpcSchema[rpcName], "label")}
-                    margin="dense"
+                    margin="normal"
                     name={rpcName}
                     onChange={handleChange}
                     required

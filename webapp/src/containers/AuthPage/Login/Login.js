@@ -145,6 +145,7 @@ const LogIn = props => {
       )
       .then(response => {
         auth.setToken(response.data.jwt, true);
+        auth.setUserInfo(response.data.user, true);
         setIfSuccess(true);
         // Handle success.
       })

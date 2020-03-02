@@ -119,7 +119,7 @@ function SideAndTopNavBar(props) {
     setSubListState({ ...subListState, [name]: !get(subListState, name) });
   };
 
-  const inputs = get(MenuItems(), ["SuperAdmin"], []);
+  const inputs = get(MenuItems(), ["Medha_Admin"], []);
 
   const drawer = (
     <div {...rest} className={clsx(classes.root, className)}>

@@ -7,5 +7,3 @@ export const STRAPI_COLLEGES = "colleges";
 export const STRAPI_STREAMS = "colleges";
 export const STRAPI_USERS = "users";
 export const STRAPI_ROLES = "users-permissions/roles";
-
-

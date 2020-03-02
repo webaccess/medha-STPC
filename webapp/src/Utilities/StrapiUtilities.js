@@ -44,10 +44,9 @@
  */
 
 /**  Setters */
-export const setState = (id, name) => {
+export const setState = id => {
   return {
-    id: id,
-    name: name
+    id: id
   };
 };
 
@@ -82,35 +81,17 @@ export const setRole = id => {
   };
 };
 
-
-export const setStreams = (id, name) => {
+export const setStreams = (id) => {
   return {
-    id: id,
-    name: name
+    id: id
   };
 };
 
 export const setCollege = (
-  id,
-  name,
-  college_code,
-  address,
-  contact_number,
-  college_email,
-  principal = null,
-  rpc = null,
-  streams = []
+  id
 ) => {
   return {
-    id: id,
-    name: name,
-    college_code: college_code,
-    address: address,
-    contact_number: contact_number,
-    college_email: college_email,
-    principal: principal,
-    rpc: rpc,
-    streams: streams
+    id: id
   };
 };
 
@@ -143,22 +124,18 @@ export const addCollege = (
     rpc: rpc,
     streams: streams
   };
-
 };
 
-export const addState = (name) => {
+export const addState = name => {
   return {
-    name : name,
+    name: name
   };
 };
 
-export const addZone = (
-  name,
-  state= null
-  ) => {
+export const addZone = (name, state = null) => {
   return {
-    name : name,
-    state : state
+    name: name,
+    state: state
   };
 };
 
@@ -170,16 +147,16 @@ export const addUser = (
   password,
   contact_number,
   confirmed = false,
-  state  = null, 
-  zone  = null,
-  rpc  = null,
-  college  = null,
+  state = null,
+  zone = null,
+  rpc = null,
+  college = null,
   role = null
-) => { 
+) => {
   return {
     username: username,
     email: email,
-    first_name: first_name, 
+    first_name: first_name,
     last_name: last_name,
     password: password,
     contact_number: contact_number,
