@@ -1,4 +1,4 @@
-const AddCollegeFormSchema = {
+const CollegeFormSchema = {
   collegeName: {
     label: "Add College",
     id: "name",
@@ -139,4 +139,4 @@ const AddCollegeFormSchema = {
     validations: {}
   }
 };
-export default AddCollegeFormSchema;
+export default CollegeFormSchema;

@@ -6,3 +6,4 @@ export const ADD_RPC_TITLE = "Add RPC";
 export const ADD_USER_TITLE = "Add User";
 export const EDIT_TEXT = "Edit";
 export const DELETE_TEXT = "Delete";
+export const ADD_COLLEGE_TEXT = "Add College";
