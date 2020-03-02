@@ -1,4 +1,9 @@
 const ZoneSchema = {
+  content: {
+    title: "Add Zone",
+    button: "Save",
+    cancel: "Cancel"
+  },
   zoneName: {
     label: "Zone Name",
     id: "zoneName",

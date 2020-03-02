@@ -9,17 +9,17 @@ import {
   Typography
 } from "@material-ui/core";
 
-import * as strapiConstants from "../../constants/StrapiApiConstants";
-import { Table, Spinner } from "../../components";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import { Table, Spinner } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import styles from "./Zone.module.css";
-import useStyles from "./ZoneStyles";
-import * as serviceProviders from "../../api/Axios";
-import * as formUtilities from "../../Utilities/FormUtilities";
+import styles from "../ZoneStyles";
+import useStyles from "../ZoneStyles";
+import * as serviceProviders from "../../../api/Axios";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 import EditZone from "./EditZone";
 import DeleteZone from "./DeleteZone";
-import { CustomRouterLink } from "../../components";
-import * as routeConstants from "../../constants/RouteConstants";
+import { CustomRouterLink } from "../../../components";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const STATES_URL =
@@ -113,7 +113,7 @@ const ViewZone = props => {
 
   const getDataForEdit = async id => {
     await serviceProviders
-      .serviceProviderForUpdateRequest(ZONES_URL, id)
+      .serviceProviderForGetOneRequest(ZONES_URL, id)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -260,23 +260,25 @@ const ViewZone = props => {
   return (
     <div className={classes.root}>
       <Grid container spacing={4}>
-        <Grid item>
-          <Typography variant="h1" className={styles.header}>
-            Manage Zone
-          </Typography>
-        </Grid>
-        <Grid item sm>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={clearFilter}
-            disableElevation
-            className={classes.addZoneButton}
-            component={CustomRouterLink}
-            to={routeConstants.ADD_ZONES}
-          >
-            Add Zone
-          </Button>
+        <Grid item xs={12}>
+          <Grid item>
+            <Typography variant="h1" className={styles.header}>
+              Manage Zone
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={clearFilter}
+              disableElevation
+              className={classes.addZoneButton}
+              component={CustomRouterLink}
+              to={routeConstants.ADD_ZONES}
+            >
+              Add Zone
+            </Button>
+          </Grid>
         </Grid>
         {/* This is used for the filterig data */}
         <Card className={styles.filterButton}>

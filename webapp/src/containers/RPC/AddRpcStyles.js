@@ -15,6 +15,9 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(2),
     marginLeft: theme.spacing(2)
+  },
+  addRpcButton: {
+    float: "right"
   }
 }));
 export default useStyles;

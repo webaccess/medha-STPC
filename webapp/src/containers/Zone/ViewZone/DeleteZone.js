@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 
 import { TextField, Button, Grid, Typography } from "@material-ui/core";
 
-import * as strapiConstants from "../../constants/StrapiApiConstants";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "./ZoneStyles";
-import * as serviceProviders from "../../api/Axios";
-import * as formUtilities from "../../Utilities/FormUtilities";
-import * as strapiUtilities from "../../Utilities/StrapiUtilities";
+import useStyles from "../ZoneStyles";
+import * as serviceProviders from "../../../api/Axios";
+import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
 
-import * as genericConstants from "../../constants/GenericConstants";
-import ZoneSchema from "./ZoneSchema";
+import * as genericConstants from "../../../constants/GenericConstants";
+import ZoneSchema from "../ZoneSchema";
 import { get } from "lodash";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
