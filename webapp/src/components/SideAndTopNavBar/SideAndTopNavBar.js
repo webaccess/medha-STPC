@@ -25,6 +25,7 @@ import * as routeConstants from "../../constants/RouteConstants";
 import Logo from "../Logo/Logo";
 import MenuItems from "./Component/MenuItems";
 import { Auth as auth, CustomRouterLink } from "../../components";
+import { fontSize } from "@material-ui/system";
 
 const useDrawerStyles = makeStyles(theme => ({
   drawer: {
@@ -59,7 +60,7 @@ const useTopBarStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   signOutButton: {
-    marginLeft: theme.spacing(1)
+    // marginLeft: theme.spacing(1)
   },
   loginButtonFlex: {
     display: "flex",
@@ -76,12 +77,13 @@ const useListStyles = makeStyles(theme => ({
   },
   button: {
     color: colors.blueGrey[800],
-    padding: "10px 8px",
+    padding: "5px 10px",
     justifyContent: "flex-start",
     textTransform: "none",
     letterSpacing: 0,
     width: "100%",
-    fontWeight: theme.typography.fontWeightMedium
+    fontWeight: theme.typography.fontWeightBoldm,
+    borderRadius: "0px"
   },
   icon: {
     color: theme.palette.icon,
@@ -89,7 +91,7 @@ const useListStyles = makeStyles(theme => ({
     height: 24,
     display: "flex",
     alignItems: "center",
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(2)
   },
   active: {
     color: theme.palette.primary.main,
@@ -99,9 +101,18 @@ const useListStyles = makeStyles(theme => ({
     }
   },
   nested: {
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(0),
     paddingTop: 0,
-    paddingBottom: 0
+    paddingBottom: 0,
+    "& a": {
+      fontSize: "12px",
+      paddingLeft: "51px",
+      paddingTop: "3px",
+      paddingBottom: "3px",
+      "&:hover": {
+        color: "#43a047"
+      }
+    }
   }
 }));
 
@@ -128,7 +139,6 @@ function SideAndTopNavBar(props) {
   const drawer = (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.toolbar} />
-      <Divider />
 
       {inputs.map(list => {
         return (
