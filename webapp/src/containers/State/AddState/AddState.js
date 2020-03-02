@@ -4,7 +4,7 @@ import useStyles from "./AddStateStyles";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
-import AddStateForm from "../AddStateForm";
+import StateSchema from "../StateSchema";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProviders from "../../../api/Axios";
@@ -57,12 +57,12 @@ const AddState = props => {
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
-      AddStateForm
+      StateSchema
     );
     if (checkAllFieldsValid) {
       formState.errors = formUtilities.setErrors(
         formState.values,
-        AddStateForm
+        StateSchema
       );
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
@@ -70,11 +70,11 @@ const AddState = props => {
     } else {
       formState.values = formUtilities.getListOfKeysNotPresent(
         formState.values,
-        AddStateForm
+        StateSchema
       );
       formState.errors = formUtilities.setErrors(
         formState.values,
-        AddStateForm
+        StateSchema
       );
     }
     if (isValid) {
@@ -125,7 +125,7 @@ const AddState = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {get(AddStateForm[content], "title")}
+          {get(StateSchema[content], "title")}
         </Typography>
 
         {isSuccess ? (
@@ -146,7 +146,7 @@ const AddState = props => {
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
                   <TextField
-                    label={get(AddStateForm[state], "label")}
+                    label={get(StateSchema[state], "label")}
                     name={state}
                     value={formState.values[state] || ""}
                     error={hasError(state)}

@@ -18,7 +18,7 @@ import AddUser from "./containers/User/AddUser/AddUser";
 import AddRpc from "./containers/RPC/AddRpc/AddRpc";
 import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";
 import AddStates from "./containers/State/AddState/AddState";
-import ViewStates from "./containers/State/ViewStates/ViewStates";
+import ViewStates from "./containers/State/ViewState/ViewState";
 import AddZone from "./containers/Zone/AddZone/AddZone";
 import ViewZone from "./containers/Zone/ViewZone/ViewZone";
 import Layout from "./hoc/Layout/Layout";
