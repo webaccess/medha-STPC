@@ -1,8 +1,7 @@
 .Logo {
-  background-color: white;
+  background-color: transparent;
   padding: 8px;
-  height: 35px !important;
-  width: 98px !important;
+  height: 60px !important;
   box-sizing: border-box;
   border-radius: 5px;
 }

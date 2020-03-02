@@ -10,34 +10,43 @@ import {
   Link,
   Typography,
   CssBaseline,
-  Box,
-  Container,
   FormHelperText,
   FormControl,
   InputLabel,
   OutlinedInput,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  CardContent,
+  CardMedia,
+  Card,
+  Icon,
+  Paper,
+  Hidden,
+  useMediaQuery
 } from "@material-ui/core";
 import useStyles from "./LoginStyles";
 import form from "./loginform.json";
 import {
   Alert,
   Auth as auth,
-  Validation as validateInput,
-  Logo
+  Validation as validateInput
 } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as authPageConstants from "../../../constants/AuthPageConstants";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { useTheme } from "@material-ui/core/styles";
+
+import image from "../../../assets/images/login-img.png";
+import CardIcon from "../../../components/Card/CardIcon.js";
 
 const identifier = "identifier";
 const password = "password";
 
 const LogIn = props => {
   const classes = useStyles();
+  const theme = useTheme();
   const [ifSuccess, setIfSuccess] = React.useState(false);
   const [ifFailure, setIfFailure] = React.useState(false);
 
@@ -65,6 +74,10 @@ const LogIn = props => {
   function count(obj) {
     return !Object.keys(obj).length ? true : false;
   }
+
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"), {
+    defaultMatches: true
+  });
 
   useEffect(() => {
     Object.keys(formState.values).map(field => {
@@ -153,113 +166,174 @@ const LogIn = props => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Box mt={1}>
-          <center>
-            <Logo />
-          </center>
-        </Box>
-        <Typography component="h1" variant="h5" style={{ marginTop: ".9rem" }}>
-          {authPageConstants.SIGN_IN_HEADER}
-        </Typography>
-        <form className={classes.form} noValidate onSubmit={handleSignIn}>
-          <TextField
-            id={get(form[identifier], "id")}
-            variant="outlined"
-            margin="normal"
-            error={hasError("identifier")}
-            fullWidth
-            autoFocus={get(form[identifier], "autoFocus")}
-            helperText={
-              hasError(identifier)
-                ? formState.errors[identifier].map(error => {
-                    return error + " ";
-                  })
-                : null
-            }
-            label={get(form[identifier], "label")}
-            name={identifier}
-            onChange={handleChange}
-            type={get(form[identifier], "type")}
-            value={formState.values[identifier] || ""}
-          />
+    <div className={classes.masterlogin2}>
+      <div className={classes.masterlogin1}>
+        <div className={classes.masterlogin}>
+          <Paper className={isDesktop ? classes.rootDesktop : classes.root}>
+            <div className={classes.loginlock}>
+              <CardIcon color="warning">
+                <Icon>lock</Icon>
+              </CardIcon>
+            </div>
+            <CardContent>
+              {console.log("inContainer", formState.showPassword)}
+              <CssBaseline />
+              <div className={classes.paper}>
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  style={{ marginBottom: "2.5rem", fontWeight: "700" }}
+                >
+                  {authPageConstants.SIGN_IN_HEADER}
+                </Typography>
+                <form
+                  className={classes.form}
+                  noValidate
+                  onSubmit={handleSignIn}
+                >
+                  <TextField
+                    id={get(form[identifier], "id")}
+                    variant="outlined"
+                    margin="normal"
+                    error={hasError("identifier")}
+                    fullWidth
+                    autoFocus={get(form[identifier], "autoFocus")}
+                    helperText={
+                      hasError(identifier)
+                        ? formState.errors[identifier].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    label={get(form[identifier], "label")}
+                    name={identifier}
+                    onChange={handleChange}
+                    type={get(form[identifier], "type")}
+                    value={formState.values[identifier] || ""}
+                    InputLabelProps={{
+                      classes: {
+                        root: classes.cssLabel,
+                        focused: classes.cssFocused
+                      }
+                    }}
+                    InputProps={{
+                      classes: {
+                        root: classes.cssOutlinedInput,
+                        focused: classes.cssFocused,
+                        notchedOutline: classes.notchedOutline
+                      }
+                    }}
+                  />
 
-          <FormControl
-            fullWidth
-            className={clsx(classes.margin, classes.textField)}
-            variant="outlined"
-          >
-            <InputLabel
-              htmlFor="outlined-adornment-password"
-              fullWidth
-              error={hasError(password)}
-            >
-              Password
-            </InputLabel>
-            <OutlinedInput
-              id={get(form[password], "id")}
-              name={password}
-              type={formState.showPassword ? "text" : "password"}
-              value={formState.values[password] || ""}
-              onChange={handleChange}
-              fullWidth
-              error={hasError(password)}
-              endAdornment={
-                <InputAdornment position="end" error={hasError(password)}>
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
+                  <FormControl
+                    fullWidth
+                    className={clsx(classes.margin, classes.textField)}
+                    variant="outlined"
                   >
-                    {formState.showPassword ? (
-                      <Visibility />
-                    ) : (
-                      <VisibilityOff />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              }
-              labelWidth={70}
-            ></OutlinedInput>
-            <FormHelperText error={hasError(password)}>
-              {hasError(password)
-                ? formState.errors[password].map(error => {
-                    return error + " ";
-                  })
-                : null}
-            </FormHelperText>
-          </FormControl>
-          <Button
-            color="primary"
-            disabled={!formState.isValid}
-            type="submit"
-            fullWidth
-            variant="contained"
-            className={classes.submit}
-          >
-            {authPageConstants.SIGN_IN_BUTTON}
-          </Button>
-          <Grid container>
-            <Grid item xs={6} style={{ textAlign: "center" }}>
-              <Link href={routeConstants.FORGOT_PASSWORD_URL} variant="body2">
-                {authPageConstants.FORGOT_PASSWORD_ROUTE_TEXT}
-              </Link>
-            </Grid>
-            <Grid item xs={6} style={{ textAlign: "center" }}>
-              <Link href={routeConstants.NEW_REGISTRATION_URL} variant="body2">
-                {authPageConstants.NEW_REG_ROUTE_TEXT}
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
+                    <InputLabel
+                      htmlFor="outlined-adornment-password"
+                      fullWidth
+                      error={hasError(password)}
+                    >
+                      Password
+                    </InputLabel>
+                    <OutlinedInput
+                      id={get(form[password], "id")}
+                      name={password}
+                      type={formState.showPassword ? "text" : "password"}
+                      value={formState.values[password] || ""}
+                      onChange={handleChange}
+                      fullWidth
+                      error={hasError(password)}
+                      endAdornment={
+                        <InputAdornment
+                          position="end"
+                          error={hasError(password)}
+                        >
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {formState.showPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      labelWidth={70}
+                      InputLabelProps={{
+                        classes: {
+                          root: classes.cssLabel,
+                          focused: classes.cssFocused
+                        }
+                      }}
+                      InputProps={{
+                        classes: {
+                          root: classes.cssOutlinedInput,
+                          focused: classes.cssFocused,
+                          notchedOutline: classes.notchedOutline
+                        }
+                      }}
+                    ></OutlinedInput>
+                    <FormHelperText error={hasError(password)}>
+                      {hasError(password)
+                        ? formState.errors[password].map(error => {
+                            return error + " ";
+                          })
+                        : null}
+                    </FormHelperText>
+                  </FormControl>
+                  <Button
+                    color="primary"
+                    disabled={!formState.isValid}
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    className={classes.submit}
+                  >
+                    {authPageConstants.SIGN_IN_BUTTON}
+                  </Button>
+                  <Grid container>
+                    <Grid item xs={6} style={{ textAlign: "center" }}>
+                      <Link
+                        href={routeConstants.FORGOT_PASSWORD_URL}
+                        variant="body2"
+                        className={classes.linkColor}
+                      >
+                        {authPageConstants.FORGOT_PASSWORD_ROUTE_TEXT}
+                      </Link>
+                    </Grid>
+                    <Grid item xs={6} style={{ textAlign: "center" }}>
+                      <Link
+                        href={routeConstants.NEW_REGISTRATION_URL}
+                        variant="body2"
+                        className={classes.linkColor}
+                      >
+                        {authPageConstants.NEW_REG_ROUTE_TEXT}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </form>
+              </div>
+              {ifFailure ? (
+                <Alert severity="error">{authPageConstants.INVALID_USER}</Alert>
+              ) : null}
+            </CardContent>
+            <Hidden mdDown>
+              <CardMedia
+                className={classes.cover}
+                image={image}
+                title="Live from space album cover"
+              />
+            </Hidden>
+          </Paper>
+        </div>
       </div>
-      {ifFailure ? (
-        <Alert severity="error">{authPageConstants.INVALID_USER}</Alert>
-      ) : null}
-    </Container>
+    </div>
   );
 };
 

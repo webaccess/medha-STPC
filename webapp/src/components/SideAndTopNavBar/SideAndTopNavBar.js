@@ -52,7 +52,8 @@ const useDrawerStyles = makeStyles(theme => ({
 
 const useTopBarStyles = makeStyles(theme => ({
   root: {
-    boxShadow: "none"
+    boxShadow: "none",
+    backgroundColor: "#000000"
   },
   flexGrow: {
     flexGrow: 1
