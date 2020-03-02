@@ -17,7 +17,10 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: 240
   },
   content: {
-    height: "100%"
+    height: "100%",
+    backgroundColor: "#f4f6f8",
+    padding: "25px",
+    minHeight: "490px"
   }
 }));
 
