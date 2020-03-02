@@ -1,4 +1,4 @@
-const AddStateForm = {
+const StateSchema = {
   content: {
     title: "Add State",
     button: "Save",
@@ -19,4 +19,4 @@ const AddStateForm = {
     }
   },
 };
-export default AddStateForm;
+export default StateSchema;

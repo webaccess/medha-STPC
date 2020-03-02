@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import AddUserForm from "./AddUserForm";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import { get } from "lodash";
@@ -9,6 +8,7 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import { Alert , CustomRouterLink} from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as serviceProvider from "../../../api/Axios"
 
 import {
   Card,
@@ -57,8 +57,17 @@ const Adduser = props => {
 
   useEffect(() => {
     /* TO GET STATES AND STATE ZONE RPC COLLEGE & ROLE IN AUTOCOMPLETE */
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
+    // axios
+    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
+    //   .then(res => {
+    //     setStates(res.data);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    serviceProvider
+      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
       .then(res => {
         setStates(res.data);
       })
@@ -66,8 +75,17 @@ const Adduser = props => {
         console.log(error);
       });
 
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES)
+    // axios
+    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES)
+    //   .then(res => {
+    //     setZones(res.data);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    serviceProvider
+      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES)
       .then(res => {
         setZones(res.data);
       })
@@ -75,8 +93,17 @@ const Adduser = props => {
         console.log(error);
       });
 
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS)
+    // axios
+    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS)
+    //   .then(res => {
+    //     setRpcs(res.data);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    serviceProvider
+      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS)
       .then(res => {
         setRpcs(res.data);
       })
@@ -84,10 +111,19 @@ const Adduser = props => {
         console.log(error);
       });
 
-    axios
-      .get(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
-      )
+    // axios
+    //   .get(
+    //     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
+    //   )
+    //   .then(res => {
+    //     setColleges(res.data);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    serviceProvider
+      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES)
       .then(res => {
         setColleges(res.data);
       })
@@ -95,15 +131,27 @@ const Adduser = props => {
         console.log(error);
       });
 
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES)
+    // axios
+    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES)
+    //   .then(res => {
+    //     setRoles(res.data.roles);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    serviceProvider
+      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES)
       .then(res => {
-        setRoles(res.data.roles);
+        setRoles(res.data);
       })
       .catch(error => {
         console.log(error);
       });
+
+
   }, []);
+
 
   const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
@@ -212,14 +260,31 @@ const Adduser = props => {
         ? databaseUtilities.setRole(formState.values[role])
         : null
     );
-    axios({
-      method: "post",
-      async: false,
-      url: strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
-      data: postData
-    })
+    // axios({
+    //   method: "post",
+    //   async: false,
+    //   url: strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
+    //   data: postData
+    // })
+    //   .then(res => {
+    //     console.log(res);
+    //     setIsFailed(false);
+    //     setIsSuccess(true);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //     setIsSuccess(false);
+    //     setIsFailed(true);
+    //   });
+
+    serviceProvider
+      .serviceProviderForPostRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
+        postData
+      )
       .then(res => {
         console.log(res);
+        setStates(res.data);
         setIsFailed(false);
         setIsSuccess(true);
       })
@@ -547,7 +612,7 @@ const Adduser = props => {
                 variant="contained"
                 color="secondary"
                 component={CustomRouterLink}
-                to="/"
+                to="#"
               >
                 {genericConstants.CANCEL_BUTTON_TEXT}
               </Button>
