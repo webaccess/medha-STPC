@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
   },
   masterlogin2: {
     display: "flex",
-    minHeight: "100vh"
+    minHeight: "75vh"
   },
   masterlogin1: {
     flexGrow: "1",

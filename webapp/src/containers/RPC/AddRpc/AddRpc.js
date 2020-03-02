@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import AddRpcSchema from "../AddRpcSchema";
-import useStyles from "../AddRpcStyles.js";
+import useStyles from "./AddRpcStyles";
 import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import {
   Card,
-  CardHeader,
   CardContent,
   CardActions,
   Grid,
-  Button,
   TextField,
   Typography
 } from "@material-ui/core";
@@ -19,7 +17,7 @@ import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";
-import CustomRouterLink from "../../../components/CustomRouterLink/CustomRouterLink.js";
+import { SaveButton, CancelButton } from "../../../components";
 import Alert from "../../../components/Alert/Alert.js";
 import * as serviceProviders from "../../../api/Axios";
 
@@ -223,10 +221,9 @@ const AddRpc = props => {
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <CardHeader />
             <CardContent>
-              <Grid container spacing={3}>
-                <Grid item md={6} xs={12}>
+              <Grid container spacing={2}>
+                <Grid item md={12} xs={12}>
                   <TextField
                     fullWidth
                     id={get(AddRpcSchema[rpcName], "id")}
@@ -246,9 +243,10 @@ const AddRpc = props => {
                         : null
                     }
                     variant="outlined"
+                    className={classes.elementroot}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <Autocomplete
                     id={get(AddRpcSchema[stateName], "id")}
                     options={states}
@@ -275,9 +273,10 @@ const AddRpc = props => {
                         variant="outlined"
                       />
                     )}
+                    className={classes.elementroot}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <Autocomplete
                     id="combo-box-demo"
                     options={zones}
@@ -304,9 +303,10 @@ const AddRpc = props => {
                         variant="outlined"
                       />
                     )}
+                    className={classes.elementroot}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <Autocomplete
                     id="combo-box-demo"
                     options={getColleges}
@@ -333,23 +333,27 @@ const AddRpc = props => {
                         variant="outlined"
                       />
                     )}
+                    className={classes.elementroot}
                   />
                 </Grid>
               </Grid>
             </CardContent>
-            <CardActions>
-              <Button type="submit" color="primary" variant="contained">
-                {genericConstants.SAVE_BUTTON_TEXT}
-              </Button>
-              <Button
+            <CardActions className={classes.btnspace}>
+              <SaveButton
                 type="submit"
                 color="primary"
                 variant="contained"
-                component={CustomRouterLink}
-                to={routeConstants.VIEW_RPC}
+                className={classes.submitbtn}
               >
-                {genericConstants.CANCEL_BUTTON_TEXT}
-              </Button>
+                {genericConstants.SAVE_BUTTON_TEXT}
+              </SaveButton>
+              <CancelButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                to={routeConstants.VIEW_RPC}
+                className={classes.resetbtn}
+              />
             </CardActions>
           </form>
         </Card>

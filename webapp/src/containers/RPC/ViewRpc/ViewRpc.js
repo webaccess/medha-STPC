@@ -7,8 +7,7 @@ import {
   Grid,
   Typography
 } from "@material-ui/core";
-import styles from "../RpcStyles.js";
-import useStyles from "../AddRpcStyles";
+import useStyles from "./ViewRpcStyles.js";
 import { CustomRouterLink } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -18,7 +17,7 @@ const ViewRpc = props => {
     <div className={classes.root}>
       <Grid container spacing={4}>
         <Grid item xs={12}>
-          <Typography variant="h1" className={styles.header}>
+          <Typography variant="h1" className={classes.header}>
             Manage RPC
           </Typography>
         </Grid>

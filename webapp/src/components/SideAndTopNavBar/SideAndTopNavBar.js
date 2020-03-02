@@ -60,6 +60,10 @@ const useTopBarStyles = makeStyles(theme => ({
   },
   signOutButton: {
     marginLeft: theme.spacing(1)
+  },
+  loginButtonFlex: {
+    display: "flex",
+    flexGrow: "1"
   }
 }));
 
@@ -208,7 +212,7 @@ function SideAndTopNavBar(props) {
         <Toolbar>
           <Logo />
           {auth.getToken() !== null ? (
-            <div>
+            <div className={topBarClasses.loginButtonFlex}>
               <div className={topBarClasses.flexGrow} />
               <Hidden mdDown>
                 <IconButton
