@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { get } from "lodash";
-import useStyles from "./AddZoneStyles";
-import * as strapiApiConstants from "../../constants/StrapiApiConstants";
-import AddZoneForm from "./AddZoneForm";
-import * as databaseUtilities from "../../Utilities/StrapiUtilities";
-import * as formUtilities from "../../Utilities/FormUtilities";
+import useStyles from "../ZoneStyles";
+import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
+import AddZoneForm from "../ZoneSchema";
+import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CustomRouterLink, Alert } from "../../components";
-import * as genericConstants from "../../constants/GenericConstants";
-import * as routeConstants from "../../constants/RouteConstants";
+import { CustomRouterLink, Alert } from "../../../components";
+import * as genericConstants from "../../../constants/GenericConstants";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 import {
   Card,
@@ -23,10 +23,16 @@ import {
   Divider,
   Typography
 } from "@material-ui/core";
+import * as serviceProviders from "../../../api/Axios";
+
+const ZONE_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
+const STATES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
 
 const AddZone = props => {
-  const zone = "zone";
-  const state = "state";
+  const zone = "zoneName";
+  const state = "stateName";
   const content = "content";
   const classes = useStyles();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -43,10 +49,13 @@ const AddZone = props => {
   const [states, setStates] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
+    serviceProviders
+      .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
         setStates(res.data);
+      })
+      .catch(error => {
+        console.log("error > ", error);
       });
   }, []);
 
@@ -107,11 +116,8 @@ const AddZone = props => {
         AddZoneForm
       );
       formState.errors = formUtilities.setErrors(formState.values, AddZoneForm);
-      console.log("not all keys present ", formState);
     }
-    console.log(isValid, formState);
     if (isValid) {
-      console.log("formValid");
       postZoneData();
 
       /** Call axios from here */
@@ -120,7 +126,6 @@ const AddZone = props => {
         isValid: true
       }));
     } else {
-      console.log("formInValid");
       setFormState(formState => ({
         ...formState,
         isValid: false
@@ -135,12 +140,9 @@ const AddZone = props => {
         ? databaseUtilities.setState(formState.values[state])
         : null
     );
-    axios({
-      method: "post",
-      async: false,
-      url: strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES,
-      data: postData
-    })
+
+    serviceProviders
+      .serviceProviderForPostRequest(ZONE_URL, postData)
       .then(res => {
         console.log(res);
         setIsFailed(false);
@@ -206,7 +208,7 @@ const AddZone = props => {
                       }
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs>
                     <Autocomplete
                       id="combo-box-demo"
                       className={classes.root}

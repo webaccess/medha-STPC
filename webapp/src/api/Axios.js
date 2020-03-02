@@ -24,7 +24,7 @@ export const serviceProviderForGetRequest = async (
     });
 };
 
-export const serviceProviderForUpdateRequest = async (
+export const serviceProviderForGetOneRequest = async (
   url,
   id,
   headers = HEADERS
@@ -83,7 +83,7 @@ export const serviceProviderForPostRequest = async (
   return await axios(URL, {
     method: "POST",
     headers: HEADERS,
-    body: payload
+    data: payload
   })
     .then(response => response)
     .catch(error => {

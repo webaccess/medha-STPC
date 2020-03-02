@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import AddRpcSchema from "./AddRpcSchema.js";
-import useStyles from "./AddRpcStyles.js";
+import AddRpcSchema from "../AddRpcSchema";
+import useStyles from "../AddRpcStyles.js";
 import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
@@ -14,18 +14,25 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
-import * as formUtilities from "../../Utilities/FormUtilities";
-import * as databaseUtilities from "../../Utilities/StrapiUtilities";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
-import * as routeConstants from "../../constants/RouteConstants";
-import * as genericConstants from "../../constants/GenericConstants.js";
-import CustomRouterLink from "../../components/CustomRouterLink/CustomRouterLink.js";
-import Alert from "../../components/Alert/Alert.js";
+import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as routeConstants from "../../../constants/RouteConstants";
+import * as genericConstants from "../../../constants/GenericConstants.js";
+import CustomRouterLink from "../../../components/CustomRouterLink/CustomRouterLink.js";
+import Alert from "../../../components/Alert/Alert.js";
+import * as serviceProviders from "../../../api/Axios";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
 const zoneName = "zoneName";
 const collegeName = "collegeName";
+
+const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
+const COLLEGE_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
+const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
 const AddRpc = props => {
   const classes = useStyles();
@@ -44,28 +51,32 @@ const AddRpc = props => {
 
   useEffect(() => {
     /* TO GET STATES AND COLLEGE IN AUTOCOMPLETE */
-    axios
-      .get(strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES)
-      .then(res => {
-        setStates(res.data);
-      });
-    axios
-      .get(strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES)
-      .then(res => {
-        setGetColleges(res.data);
-      });
+    serviceProviders.serviceProviderForGetRequest(STATE_URL).then(res => {
+      setStates(res.data);
+    });
+    serviceProviders.serviceProviderForGetRequest(COLLEGE_URL).then(res => {
+      setGetColleges(res.data);
+    });
   }, []);
+
+  useEffect(() => {}, [zones]);
 
   useEffect(() => {
     /** TO GET ZONE IN AUTOCOMPLETE ON THE CHANGE OF STATES */
-
-    axios({
-      method: "get",
-      url: strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES,
-      params: { "state.id": formState.values[stateName] }
-    }).then(res => {
-      setZones(res.data);
-    });
+    let url =
+      STATE_URL +
+      "/" +
+      formState.values[stateName] +
+      "/" +
+      strapiConstants.STRAPI_ZONES;
+    serviceProviders
+      .serviceProviderForGetRequest(url)
+      .then(res => {
+        setZones(res.data[0].zones);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
   }, [formState.values[stateName]]);
 
   /** This handle change is used to handle changes to text field */
@@ -171,12 +182,9 @@ const AddRpc = props => {
         ? databaseUtilities.setMainCollege(formState.values[collegeName])
         : null
     );
-    axios({
-      method: "post",
-      async: false,
-      url: strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS,
-      data: postData
-    })
+
+    serviceProviders
+      .serviceProviderForPostRequest(RPCS_URL, postData)
       .then(res => {
         console.log(res);
         setIsFailed(false);
@@ -242,7 +250,7 @@ const AddRpc = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id={get(AddRpcSchema[stateName], "id")}
                     options={states}
                     getOptionLabel={option => option.name}
                     onChange={(event, value) => {

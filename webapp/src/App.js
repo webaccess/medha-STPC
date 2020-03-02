@@ -15,12 +15,12 @@ import Dashboard from "./containers/Dashboard/Dashboard";
 import AddCollege from "./containers/College/AddCollege";
 import ViewCollege from "./containers/College/ManageCollege";
 import AddUser from "./containers/User/AddUser/AddUser";
-import AddRpc from "./containers/RPC/AddRpc";
-import ViewRpc from "./containers/RPC/ViewRpc";
-import AddStates from "./containers/State/AddState";
-import ViewStates from "./containers/State/ViewStates";
-import AddZone from "./containers/Zone/AddZone";
-import ViewZone from "./containers/Zone/ViewZone";
+import AddRpc from "./containers/RPC/AddRpc/AddRpc";
+import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";
+import AddStates from "./containers/State/AddState/AddState";
+import ViewStates from "./containers/State/ViewStates/ViewStates";
+import AddZone from "./containers/Zone/AddZone/AddZone";
+import ViewZone from "./containers/Zone/ViewZone/ViewZone";
 import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";

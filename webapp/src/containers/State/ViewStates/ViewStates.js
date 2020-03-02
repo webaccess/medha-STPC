@@ -1,10 +1,10 @@
 import React, { forwardRef } from "react";
 import axios from "axios";
 import { NavLink as RouterLink } from "react-router-dom";
-import { Table, Modal, Spinner } from "../../components";
+import { Table, Modal, Spinner } from "../../../components";
 import { TextField, Button } from "@material-ui/core";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
-import * as routeConstants from "../../constants/RouteConstants";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 export default class Viewstates extends React.Component {
   constructor(props) {
