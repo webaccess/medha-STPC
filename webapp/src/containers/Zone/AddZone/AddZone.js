@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { get } from "lodash";
-import useStyles from "../ZoneStyles";
+import useStyles from "./AddZoneStyles";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import AddZoneForm from "../ZoneSchema";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CustomRouterLink, Alert } from "../../../components";
+import { SaveButton, CancelButton, Alert } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -169,9 +168,6 @@ const AddZone = props => {
         <Typography variant="h4" gutterBottom>
           {get(AddZoneForm[content], "title")}
         </Typography>
-      </Grid>
-
-      <Grid item xs={12} className={classes.formgrid}>
         {isSuccess ? (
           <Alert severity="success" className={classes.message}>
             {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
@@ -182,74 +178,77 @@ const AddZone = props => {
             {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
           </Alert>
         ) : null}
-
+      </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <CardHeader />
-            <CardActionArea>
-              <CardContent>
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <TextField
-                      label={get(AddZoneForm[zone], "label")}
-                      name={zone}
-                      value={formState.values[zone] || ""}
-                      error={hasError(zone)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      helperText={
-                        hasError(zone)
-                          ? formState.errors[zone].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={states}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(state, event, value);
-                      }}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label={get(AddZoneForm[state], "label")}
-                          variant="outlined"
-                          error={hasError(state)}
-                          helperText={
-                            hasError(state)
-                              ? formState.errors[state].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    label={get(AddZoneForm[zone], "label")}
+                    name={zone}
+                    value={formState.values[zone] || ""}
+                    error={hasError(zone)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      hasError(zone)
+                        ? formState.errors[zone].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    className={classes.elementroot}
+                  />
                 </Grid>
-              </CardContent>
-            </CardActionArea>
-            <Divider />
-            <CardActions>
-              <Button variant="contained" color="primary" type="submit">
-                {get(AddZoneForm[content], "button")}
-              </Button>
-              <Button
+                <Grid item md={12} xs={12}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    className={classes.root}
+                    options={states}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(state, event, value);
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label={get(AddZoneForm[state], "label")}
+                        variant="outlined"
+                        error={hasError(state)}
+                        helperText={
+                          hasError(state)
+                            ? formState.errors[state].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                      />
+                    )}
+                    className={classes.elementroot}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+            <CardActions className={classes.btnspace}>
+              <SaveButton
+                type="submit"
+                color="primary"
                 variant="contained"
-                color="secondary"
-                component={CustomRouterLink}
-                to={routeConstants.VIEW_ZONES}
+                className={classes.submitbtn}
               >
-                {get(AddZoneForm[content], "cancel")}
-              </Button>
+                {genericConstants.SAVE_BUTTON_TEXT}
+              </SaveButton>
+              <CancelButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                to={routeConstants.VIEW_ZONES}
+                className={classes.resetbtn}
+              />
             </CardActions>
           </form>
         </Card>

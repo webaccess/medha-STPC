@@ -7,12 +7,12 @@ const useStyles = makeStyles(theme => ({
   elementroot: {
     width: "30%"
   },
-  btnspace: {
-    padding: "15px 18px 50px"
-  },
   formgrid: {
     marginTop: theme.spacing(2),
     alignItems: "center"
+  },
+  btnspace: {
+    padding: "15px 18px 50px"
   }
 }));
 
