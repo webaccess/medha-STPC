@@ -12,8 +12,8 @@ import {
 } from "./authroute";
 
 import Dashboard from "./containers/Dashboard/Dashboard";
-import AddCollege from "./containers/College/AddCollege";
-import ViewCollege from "./containers/College/ManageCollege";
+import AddCollege from "./containers/College/AddCollege/AddCollege";
+import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
 import AddUser from "./containers/User/AddUser/AddUser";
 import AddRpc from "./containers/RPC/AddRpc/AddRpc";
 import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";

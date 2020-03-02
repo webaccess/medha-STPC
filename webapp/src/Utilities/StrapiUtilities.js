@@ -56,6 +56,12 @@ export const setUser = id => {
   };
 };
 
+export const setAdmins = id => {
+  return {
+    id: id
+  };
+};
+
 export const setZone = id => {
   return {
     id: id
@@ -81,15 +87,13 @@ export const setRole = id => {
   };
 };
 
-export const setStreams = (id) => {
+export const setStreams = id => {
   return {
     id: id
   };
 };
 
-export const setCollege = (
-  id
-) => {
+export const setCollege = id => {
   return {
     id: id
   };
@@ -111,8 +115,8 @@ export const addCollege = (
   contact_number,
   college_email,
   principal = null,
-  rpc = null,
-  streams = []
+  rpc = null
+  // streams = []
 ) => {
   return {
     name: name,
@@ -121,8 +125,8 @@ export const addCollege = (
     contact_number: contact_number,
     college_email: college_email,
     principal: principal,
-    rpc: rpc,
-    streams: streams
+    rpc: rpc
+    //. streams: streams
   };
 };
 
