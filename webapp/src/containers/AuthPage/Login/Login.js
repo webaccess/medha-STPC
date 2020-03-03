@@ -37,7 +37,7 @@ import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { useTheme } from "@material-ui/core/styles";
-
+import * as formUtilities from "../../../Utilities/FormUtilities";
 import image from "../../../assets/images/login-img.png";
 import CardIcon from "../../../components/Card/CardIcon.js";
 
@@ -80,6 +80,62 @@ const LogIn = props => {
   });
 
   useEffect(() => {
+    if (formUtilities.checkAllKeysPresent(formState.values, form)) {
+      Object.keys(formState.values).map(field => {
+        const errors = validateInput(
+          formState.values[field],
+          form[field]["validations"]
+        );
+        setFormState(formState => ({
+          ...formState,
+          isValid:
+            !errors.length &&
+            count(formState.errors) &&
+            checkAllKeysPresent(formState.values)
+              ? true
+              : false,
+          errors: errors.length
+            ? {
+                ...formState.errors,
+                [field]: errors
+              }
+            : formState.errors
+        }));
+        if (!errors.length && formState.errors.hasOwnProperty(field)) {
+          delete formState.errors[field];
+        }
+      });
+    } else {
+      formState.values = formUtilities.getListOfKeysNotPresent(
+        formState.values,
+        form
+      );
+      Object.keys(formState.values).map(field => {
+        const errors = validateInput(
+          formState.values[field],
+          form[field]["validations"]
+        );
+        setFormState(formState => ({
+          ...formState,
+          isValid:
+            !errors.length &&
+            count(formState.errors) &&
+            checkAllKeysPresent(formState.values)
+              ? true
+              : false,
+          errors: errors.length
+            ? {
+                ...formState.errors,
+                [field]: errors
+              }
+            : formState.errors
+        }));
+        if (!errors.length && formState.errors.hasOwnProperty(field)) {
+          delete formState.errors[field];
+        }
+      });
+    }
+
     Object.keys(formState.values).map(field => {
       const errors = validateInput(
         formState.values[field],
