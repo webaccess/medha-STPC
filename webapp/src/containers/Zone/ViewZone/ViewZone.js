@@ -16,7 +16,11 @@ import useStyles from "./ViewZoneStyles";
 import * as serviceProviders from "../../../api/Axios";
 import EditZone from "./EditZone";
 import DeleteZone from "./DeleteZone";
-import { YellowRouteButton, GreenButton, GrayButton } from "../../../components";
+import {
+  YellowRouteButton,
+  GreenButton,
+  GrayButton
+} from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
@@ -276,7 +280,7 @@ const ViewZone = props => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
-          <CardContent>
+          <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <Autocomplete
@@ -304,7 +308,6 @@ const ViewZone = props => {
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
-                  to="#"
                 >
                   Search
                 </GreenButton>
@@ -315,7 +318,6 @@ const ViewZone = props => {
                   color="primary"
                   onClick={clearFilter}
                   disableElevation
-                  to="#"
                 >
                   Reset
                 </GrayButton>

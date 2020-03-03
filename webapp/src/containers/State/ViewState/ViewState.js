@@ -228,7 +228,7 @@ const ViewStates = () => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={styles.filterButton}>
-          <CardContent>
+          <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <Autocomplete
@@ -255,7 +255,6 @@ const ViewStates = () => {
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
-                  to="#"
                 >
                   Search
                 </GreenButton>
@@ -266,7 +265,6 @@ const ViewStates = () => {
                   color="primary"
                   onClick={clearFilter}
                   disableElevation
-                  to="#"
                 >
                   Reset
                 </GrayButton>

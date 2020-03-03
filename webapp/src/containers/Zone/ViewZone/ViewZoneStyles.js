@@ -49,6 +49,9 @@ const useStyles = makeStyles(theme => ({
       flex: "1",
       fontWeight: "700"
     }
+  },
+  Cardtheming: {
+    paddingBottom:"16px !important"
   }
 }));
 
