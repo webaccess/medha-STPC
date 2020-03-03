@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import AddUserForm from "./AddUserForm";
+import UserSchema from "../UserSchema";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "./AddUserStyles";
+import useStyles from "../UserStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import { Alert, GreenButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProvider from "../../../api/Axios";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 import {
   Card,
@@ -54,15 +55,6 @@ const Adduser = props => {
   const [roles, setRoles] = useState([]);
 
   useEffect(() => {
-    /* TO GET STATES AND STATE ZONE RPC COLLEGE & ROLE IN AUTOCOMPLETE */
-    // axios
-    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
-    //   .then(res => {
-    //     setStates(res.data);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
 
     serviceProvider
       .serviceProviderForGetRequest(
@@ -75,15 +67,6 @@ const Adduser = props => {
         console.log(error);
       });
 
-    // axios
-    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES)
-    //   .then(res => {
-    //     setZones(res.data);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
-
     serviceProvider
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
@@ -94,15 +77,6 @@ const Adduser = props => {
       .catch(error => {
         console.log(error);
       });
-
-    // axios
-    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS)
-    //   .then(res => {
-    //     setRpcs(res.data);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
 
     serviceProvider
       .serviceProviderForGetRequest(
@@ -115,16 +89,6 @@ const Adduser = props => {
         console.log(error);
       });
 
-    // axios
-    //   .get(
-    //     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
-    //   )
-    //   .then(res => {
-    //     setColleges(res.data);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
 
     serviceProvider
       .serviceProviderForGetRequest(
@@ -136,15 +100,6 @@ const Adduser = props => {
       .catch(error => {
         console.log(error);
       });
-
-    // axios
-    //   .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES)
-    //   .then(res => {
-    //     setRoles(res.data.roles);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
 
     serviceProvider
       .serviceProviderForGetRequest(
@@ -206,11 +161,11 @@ const Adduser = props => {
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
-      AddUserForm
+      UserSchema
     );
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
-      formState.errors = formUtilities.setErrors(formState.values, AddUserForm);
+      formState.errors = formUtilities.setErrors(formState.values, UserSchema);
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
@@ -218,9 +173,9 @@ const Adduser = props => {
       /** This is used to find out which all required fields are not filled */
       formState.values = formUtilities.getListOfKeysNotPresent(
         formState.values,
-        AddUserForm
+        UserSchema
       );
-      formState.errors = formUtilities.setErrors(formState.values, AddUserForm);
+      formState.errors = formUtilities.setErrors(formState.values, UserSchema);
     }
     console.log(isValid, formState);
     if (isValid) {
@@ -265,22 +220,6 @@ const Adduser = props => {
         ? databaseUtilities.setRole(formState.values[role])
         : null
     );
-    // axios({
-    //   method: "post",
-    //   async: false,
-    //   url: strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
-    //   data: postData
-    // })
-    //   .then(res => {
-    //     console.log(res);
-    //     setIsFailed(false);
-    //     setIsSuccess(true);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     setIsSuccess(false);
-    //     setIsFailed(true);
-    //   });
 
     serviceProvider
       .serviceProviderForPostRequest(
@@ -344,7 +283,7 @@ const Adduser = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={3} xs={12}>
                   <TextField
-                    label={get(AddUserForm[firstname], "label")}
+                    label={get(UserSchema[firstname], "label")}
                     name={firstname}
                     value={formState.values[firstname] || ""}
                     error={hasError(firstname)}
@@ -363,7 +302,7 @@ const Adduser = props => {
                 </Grid>
                 <Grid item md={3} xs={12}>
                   <TextField
-                    label={get(AddUserForm[lastname], "label")}
+                    label={get(UserSchema[lastname], "label")}
                     name={lastname}
                     value={formState.values[lastname] || ""}
                     error={hasError(lastname)}
@@ -382,7 +321,7 @@ const Adduser = props => {
                 </Grid>
                 <Grid item md={3} xs={12}>
                   <TextField
-                    label={get(AddUserForm[email], "label")}
+                    label={get(UserSchema[email], "label")}
                     name={email}
                     value={formState.values[email] || ""}
                     error={hasError(email)}
@@ -401,7 +340,7 @@ const Adduser = props => {
                 </Grid>
                 <Grid item md={3} xs={12}>
                   <TextField
-                    label={get(AddUserForm[contact], "label")}
+                    label={get(UserSchema[contact], "label")}
                     name={contact}
                     value={formState.values[contact] || ""}
                     error={hasError(contact)}
@@ -422,8 +361,8 @@ const Adduser = props => {
               <Grid container spacing={3}>
                 <Grid item md={3} xs={12}>
                   <TextField
-                    id={get(AddUserForm[username], "id")}
-                    label={get(AddUserForm[username], "label")}
+                    id={get(UserSchema[username], "id")}
+                    label={get(UserSchema[username], "label")}
                     name={username}
                     value={formState.values[username] || ""}
                     error={hasError(username)}
@@ -442,7 +381,7 @@ const Adduser = props => {
                 </Grid>
                 <Grid item md={3} xs={12}>
                   <TextField
-                    label={get(AddUserForm[password], "label")}
+                    label={get(UserSchema[password], "label")}
                     name={password}
                     value={formState.values[password] || ""}
                     error={hasError(password)}
@@ -475,7 +414,7 @@ const Adduser = props => {
                       <TextField
                         {...params}
                         error={hasError(role)}
-                        label={get(AddUserForm[role], "label")}
+                        label={get(UserSchema[role], "label")}
                         variant="outlined"
                         name="tester"
                         helperText={
@@ -501,7 +440,7 @@ const Adduser = props => {
                     renderInput={params => (
                       <TextField
                         {...params}
-                        label={get(AddUserForm[state], "label")}
+                        label={get(UserSchema[state], "label")}
                         variant="outlined"
                         error={hasError(state)}
                         helperText={
@@ -534,7 +473,7 @@ const Adduser = props => {
                           }
                         />
                       }
-                      label={get(AddUserForm[active], "label")}
+                      label={get(UserSchema[active], "label")}
                     />
                   </FormGroup>
                 </Grid>
@@ -552,7 +491,7 @@ const Adduser = props => {
                     renderInput={params => (
                       <TextField
                         {...params}
-                        label={get(AddUserForm[zone], "label")}
+                        label={get(UserSchema[zone], "label")}
                         variant="outlined"
                         error={hasError(zone)}
                         helperText={
@@ -578,7 +517,7 @@ const Adduser = props => {
                     renderInput={params => (
                       <TextField
                         {...params}
-                        label={get(AddUserForm[rpc], "label")}
+                        label={get(UserSchema[rpc], "label")}
                         variant="outlined"
                         error={hasError(rpc)}
                         helperText={
@@ -604,7 +543,7 @@ const Adduser = props => {
                     renderInput={params => (
                       <TextField
                         {...params}
-                        label={get(AddUserForm[college], "label")}
+                        label={get(UserSchema[college], "label")}
                         variant="outlined"
                         error={hasError(college)}
                         helperText={
@@ -629,7 +568,7 @@ const Adduser = props => {
                 type="submit"
                 color="primary"
                 variant="contained"
-                to="#"
+                to={routeConstants.VIEW_USER}
               >
                 {genericConstants.CANCEL_BUTTON_TEXT}
               </GrayButton>

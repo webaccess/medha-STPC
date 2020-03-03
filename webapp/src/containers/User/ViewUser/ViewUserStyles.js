@@ -2,7 +2,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: theme.spacing(4)
+    padding: theme.spacing(4),
+    maxWidth: "100%"
   },
   content: {
     display: "content"
@@ -36,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   noDataMargin: {
     margin: "auto"
   },
-  addStateButton: {
+  addUserButton: {
     float: "right"
   }
 }));
