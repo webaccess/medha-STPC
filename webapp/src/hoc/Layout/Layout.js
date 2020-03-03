@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     height: "100%",
     backgroundColor: "#f4f6f8",
     padding: "25px",
-    minHeight: "520px"
+    minHeight: "640px"
   }
 }));
 

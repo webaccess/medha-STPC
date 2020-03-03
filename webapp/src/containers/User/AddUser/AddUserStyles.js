@@ -2,16 +2,21 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: 345,
+    maxWidth: "100%"
   },
-  formgrid:{
-    marginTop: theme.spacing(4),
-    alignItems: 'center',
-    marginLeft: theme.spacing(4)
+  btnspace: {
+    padding: "0px 18px 50px"
   },
-  title:{
+  formgrid: {
     marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(2)
+    alignItems: "center"
+  },
+  divider: {
+    marginTop: "15px",
+    marginBottom: "15px"
+  },
+  addcollegetextfield: {
+    padding: "25px"
   }
 }));
 

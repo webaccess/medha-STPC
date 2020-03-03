@@ -6,9 +6,14 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./AddUserStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import { Alert , CustomRouterLink} from "../../../components";
+import {
+  Alert,
+  CustomRouterLink,
+  SaveButton,
+  CancelButton
+} from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
-import * as serviceProvider from "../../../api/Axios"
+import * as serviceProvider from "../../../api/Axios";
 
 import {
   Card,
@@ -21,7 +26,8 @@ import {
   TextField,
   FormGroup,
   FormControlLabel,
-  Switch
+  Switch,
+  Typography
 } from "@material-ui/core";
 
 const firstname = "firstname";
@@ -38,7 +44,7 @@ const college = "college";
 const active = "active";
 
 const Adduser = props => {
-  const classes = useStyles;
+  const classes = useStyles();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [formState, setFormState] = useState({
@@ -54,7 +60,6 @@ const Adduser = props => {
   const [colleges, setColleges] = useState([]);
   const [roles, setRoles] = useState([]);
 
-
   useEffect(() => {
     /* TO GET STATES AND STATE ZONE RPC COLLEGE & ROLE IN AUTOCOMPLETE */
     // axios
@@ -67,7 +72,9 @@ const Adduser = props => {
     //   });
 
     serviceProvider
-      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
+      )
       .then(res => {
         setStates(res.data);
       })
@@ -85,7 +92,9 @@ const Adduser = props => {
     //   });
 
     serviceProvider
-      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES)
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
+      )
       .then(res => {
         setZones(res.data);
       })
@@ -103,7 +112,9 @@ const Adduser = props => {
     //   });
 
     serviceProvider
-      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS)
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS
+      )
       .then(res => {
         setRpcs(res.data);
       })
@@ -123,7 +134,9 @@ const Adduser = props => {
     //   });
 
     serviceProvider
-      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES)
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
+      )
       .then(res => {
         setColleges(res.data);
       })
@@ -141,17 +154,16 @@ const Adduser = props => {
     //   });
 
     serviceProvider
-      .serviceProviderForGetRequest(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES)
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES
+      )
       .then(res => {
         setRoles(res.data);
       })
       .catch(error => {
         console.log(error);
       });
-
-
   }, []);
-
 
   const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
@@ -304,321 +316,336 @@ const Adduser = props => {
   const hasError = field => (formState.errors[field] ? true : false);
 
   return (
-    <Card>
-      <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <CardHeader title={genericConstants.ADD_USER_TITLE} />
-        <Divider />
-        <CardContent>
-          <Grid>
-            {isSuccess ? (
-              <Alert severity="success" className={classes.message}>
-                {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
-              </Alert>
-            ) : null}
-            {isFailed ? (
-              <Alert severity="error">
-                {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
-              </Alert>
-            ) : null}
-          </Grid>
-          <Grid container spacing={3} className={classes.formgrid}>
-            <Grid item md={6} xs={12}>
-              <TextField
-                label={get(AddUserForm[firstname], "label")}
-                name={firstname}
-                value={formState.values[firstname] || ""}
-                error={hasError(firstname)}
-                variant="outlined"
-                required
-                fullWidth
-                onChange={handleChange}
-                helperText={
-                  hasError(firstname)
-                    ? formState.errors[firstname].map(error => {
-                        return error + " ";
-                      })
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                label={get(AddUserForm[lastname], "label")}
-                name={lastname}
-                value={formState.values[lastname] || ""}
-                error={hasError(lastname)}
-                variant="outlined"
-                required
-                fullWidth
-                onChange={handleChange}
-                helperText={
-                  hasError(lastname)
-                    ? formState.errors[lastname].map(error => {
-                        return error + " ";
-                      })
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                label={get(AddUserForm[email], "label")}
-                name={email}
-                value={formState.values[email] || ""}
-                error={hasError(email)}
-                variant="outlined"
-                required
-                fullWidth
-                onChange={handleChange}
-                helperText={
-                  hasError(email)
-                    ? formState.errors[email].map(error => {
-                        return error + " ";
-                      })
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                label={get(AddUserForm[contact], "label")}
-                name={contact}
-                value={formState.values[contact] || ""}
-                error={hasError(contact)}
-                variant="outlined"
-                required
-                fullWidth
-                onChange={handleChange}
-                helperText={
-                  hasError(contact)
-                    ? formState.errors[contact].map(error => {
-                        return error + " ";
-                      })
-                    : null
-                }
-              />
-            </Grid>
-          </Grid>
-          <Grid container spacing={6}>
-            <Grid item md={4} xs={12}>
-              <TextField
-                id={get(AddUserForm[username], "id")}
-                label={get(AddUserForm[username], "label")}
-                name={username}
-                value={formState.values[username] || ""}
-                error={hasError(username)}
-                variant="outlined"
-                required
-                fullWidth
-                onChange={handleChange}
-                helperText={
-                  hasError(username)
-                    ? formState.errors[username].map(error => {
-                        return error + " ";
-                      })
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item md={4} xs={12}>
-              <TextField
-                label={get(AddUserForm[password], "label")}
-                name={password}
-                value={formState.values[password] || ""}
-                error={hasError(password)}
-                variant="outlined"
-                required
-                fullWidth
-                onChange={handleChange}
-                helperText={
-                  hasError(password)
-                    ? formState.errors[password].map(error => {
-                        return error + " ";
-                      })
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item md={4} xs={12}></Grid>
-          </Grid>
-          <Grid container spacing={3}>
-            <Grid item md={4} xs={12}>
-              <Autocomplete
-                id="combo-box-demo"
-                className={classes.root}
-                options={roles}
-                getOptionLabel={option => option.name}
-                onChange={(event, value) => {
-                  handleChangeAutoComplete(role, event, value);
-                }}
-                renderInput={params => (
+    <Grid>
+      <Grid item xs={12} className={classes.title}>
+        <Typography variant="h4" gutterBottom>
+          {genericConstants.ADD_USER_TITLE}
+        </Typography>
+        {isSuccess ? (
+          <Alert severity="success">
+            {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+          </Alert>
+        ) : null}
+        {isFailed ? (
+          <Alert severity="error">
+            {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+          </Alert>
+        ) : null}
+      </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
+        <Card className={classes.root} variant="outlined">
+          <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+            <CardContent>
+              <Grid>
+                {isSuccess ? (
+                  <Alert severity="success" className={classes.message}>
+                    {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+                  </Alert>
+                ) : null}
+                {isFailed ? (
+                  <Alert severity="error">
+                    {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+                  </Alert>
+                ) : null}
+              </Grid>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={3} xs={12}>
                   <TextField
-                    {...params}
-                    error={hasError(role)}
-                    label={get(AddUserForm[role], "label")}
+                    label={get(AddUserForm[firstname], "label")}
+                    name={firstname}
+                    value={formState.values[firstname] || ""}
+                    error={hasError(firstname)}
                     variant="outlined"
-                    name="tester"
+                    required
+                    fullWidth
+                    onChange={handleChange}
                     helperText={
-                      hasError(role)
-                        ? formState.errors[state].map(error => {
+                      hasError(firstname)
+                        ? formState.errors[firstname].map(error => {
                             return error + " ";
                           })
                         : null
                     }
                   />
-                )}
-              />
-            </Grid>
-            <Grid item md={4} xs={12}>
-              <Autocomplete
-                id="combo-box-demo"
-                className={classes.root}
-                options={states}
-                getOptionLabel={option => option.name}
-                onChange={(event, value) => {
-                  handleChangeAutoComplete(state, event, value);
-                }}
-                renderInput={params => (
+                </Grid>
+                <Grid item md={3} xs={12}>
                   <TextField
-                    {...params}
-                    label={get(AddUserForm[state], "label")}
+                    label={get(AddUserForm[lastname], "label")}
+                    name={lastname}
+                    value={formState.values[lastname] || ""}
+                    error={hasError(lastname)}
                     variant="outlined"
-                    error={hasError(state)}
+                    required
+                    fullWidth
+                    onChange={handleChange}
                     helperText={
-                      hasError(state)
-                        ? formState.errors[state].map(error => {
+                      hasError(lastname)
+                        ? formState.errors[lastname].map(error => {
                             return error + " ";
                           })
                         : null
                     }
                   />
-                )}
-              />
-            </Grid>
-            <Grid item md={4} xs={12}>
-              <FormGroup row>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      name={active}
-                      checked={formState.values[active]}
-                      onChange={handleChange}
-                      value={formState.values[active]}
-                      error={hasError(active)}
-                      helperText={
-                        hasError(active)
-                          ? formState.errors[active].map(error => {
-                              return error + " ";
-                            })
-                          : null
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <TextField
+                    label={get(AddUserForm[email], "label")}
+                    name={email}
+                    value={formState.values[email] || ""}
+                    error={hasError(email)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      hasError(email)
+                        ? formState.errors[email].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <TextField
+                    label={get(AddUserForm[contact], "label")}
+                    name={contact}
+                    value={formState.values[contact] || ""}
+                    error={hasError(contact)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      hasError(contact)
+                        ? formState.errors[contact].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3}>
+                <Grid item md={3} xs={12}>
+                  <TextField
+                    id={get(AddUserForm[username], "id")}
+                    label={get(AddUserForm[username], "label")}
+                    name={username}
+                    value={formState.values[username] || ""}
+                    error={hasError(username)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      hasError(username)
+                        ? formState.errors[username].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <TextField
+                    label={get(AddUserForm[password], "label")}
+                    name={password}
+                    value={formState.values[password] || ""}
+                    error={hasError(password)}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      hasError(password)
+                        ? formState.errors[password].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
+              <Grid container spacing={3}>
+                <Grid item md={3} xs={12}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    className={classes.root}
+                    options={roles}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(role, event, value);
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        error={hasError(role)}
+                        label={get(AddUserForm[role], "label")}
+                        variant="outlined"
+                        name="tester"
+                        helperText={
+                          hasError(role)
+                            ? formState.errors[state].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    className={classes.root}
+                    options={states}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(state, event, value);
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label={get(AddUserForm[state], "label")}
+                        variant="outlined"
+                        error={hasError(state)}
+                        helperText={
+                          hasError(state)
+                            ? formState.errors[state].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item md={4} xs={12}>
+                  <FormGroup row>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          name={active}
+                          checked={formState.values[active]}
+                          onChange={handleChange}
+                          value={formState.values[active]}
+                          error={hasError(active)}
+                          helperText={
+                            hasError(active)
+                              ? formState.errors[active].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
                       }
+                      label={get(AddUserForm[active], "label")}
                     />
-                  }
-                  label={get(AddUserForm[active], "label")}
-                />
-              </FormGroup>
-            </Grid>
-          </Grid>
-          <Grid container spacing={3}>
-            <Grid item md={4} xs={12}>
-              <Autocomplete
-                id="combo-box-demo"
-                className={classes.root}
-                options={zones}
-                getOptionLabel={option => option.name}
-                onChange={(event, value) => {
-                  handleChangeAutoComplete(zone, event, value);
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label={get(AddUserForm[zone], "label")}
-                    variant="outlined"
-                    error={hasError(zone)}
-                    helperText={
-                      hasError(zone)
-                        ? formState.errors[zone].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
+                  </FormGroup>
+                </Grid>
+              </Grid>
+              <Grid container spacing={3}>
+                <Grid item md={3} xs={12}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    className={classes.root}
+                    options={zones}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(zone, event, value);
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label={get(AddUserForm[zone], "label")}
+                        variant="outlined"
+                        error={hasError(zone)}
+                        helperText={
+                          hasError(zone)
+                            ? formState.errors[zone].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item md={4} xs={12}>
-              <Autocomplete
-                id="combo-box-demo"
-                className={classes.root}
-                options={rpcs}
-                getOptionLabel={option => option.name}
-                onChange={(event, value) => {
-                  handleChangeAutoComplete(rpc, event, value);
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label={get(AddUserForm[rpc], "label")}
-                    variant="outlined"
-                    error={hasError(rpc)}
-                    helperText={
-                      hasError(rpc)
-                        ? formState.errors[rpc].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    className={classes.root}
+                    options={rpcs}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(rpc, event, value);
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label={get(AddUserForm[rpc], "label")}
+                        variant="outlined"
+                        error={hasError(rpc)}
+                        helperText={
+                          hasError(rpc)
+                            ? formState.errors[rpc].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item md={4} xs={12}>
-              <Autocomplete
-                id="combo-box-demo"
-                className={classes.root}
-                options={colleges}
-                getOptionLabel={option => option.name}
-                onChange={(event, value) => {
-                  handleChangeAutoComplete(college, event, value);
-                }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label={get(AddUserForm[college], "label")}
-                    variant="outlined"
-                    error={hasError(college)}
-                    helperText={
-                      hasError(college)
-                        ? formState.errors[college].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
+                </Grid>
+                <Grid item md={3} xs={12}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    className={classes.root}
+                    options={colleges}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(college, event, value);
+                    }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label={get(AddUserForm[college], "label")}
+                        variant="outlined"
+                        error={hasError(college)}
+                        helperText={
+                          hasError(college)
+                            ? formState.errors[college].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
-          </Grid>
-        </CardContent>
-        <Divider />
-        <CardActions>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            type="submit">
-            {genericConstants.SAVE_BUTTON_TEXT}
-          </Button>
-          <Button
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
+            </CardContent>
+            <CardActions className={classes.btnspace}>
+              <SaveButton variant="contained" color="primary" type="submit">
+                {genericConstants.SAVE_BUTTON_TEXT}
+              </SaveButton>
+              <CancelButton
                 variant="contained"
                 color="secondary"
                 component={CustomRouterLink}
                 to="#"
+                className={classes.submitbtn}
               >
                 {genericConstants.CANCEL_BUTTON_TEXT}
-              </Button>
-        </CardActions>
-      </form>
-    </Card>
+              </CancelButton>
+            </CardActions>
+          </form>
+        </Card>
+      </Grid>
+    </Grid>
   );
 };
 export default Adduser;
