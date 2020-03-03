@@ -11,13 +11,18 @@ import {
 
 import styles from "../State.module.css";
 import useStyles from "../StateStyles";
-import { CustomRouterLink } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Table, Spinner } from "../../../components";
+import {
+  CustomRouterLink,
+  Table,
+  Spinner,
+  YellowRouteButton
+} from "../../../components";
 import EditState from "./EditState";
 import DeleteState from "./DeleteState";
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -100,7 +105,6 @@ const ViewStates = () => {
       showModalDelete: true
     }));
   };
-
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
@@ -211,7 +215,7 @@ const ViewStates = () => {
           </Typography>
         </Grid>
         <Grid item sm>
-          <Button
+          <YellowRouteButton
             variant="contained"
             color="primary"
             onClick={clearFilter}
@@ -219,9 +223,10 @@ const ViewStates = () => {
             className={classes.addStateButton}
             component={CustomRouterLink}
             to={routeConstants.ADD_STATES}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
           >
             Add State
-          </Button>
+          </YellowRouteButton>
         </Grid>
         {/* This is used for the filterig data */}
         <Card className={styles.filterButton}>

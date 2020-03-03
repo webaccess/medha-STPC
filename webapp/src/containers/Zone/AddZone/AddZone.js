@@ -6,20 +6,16 @@ import AddZoneForm from "../ZoneSchema";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { SaveButton, CancelButton, Alert } from "../../../components";
+import { Alert, GrayButton, GreenButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 
 import {
   Card,
-  CardHeader,
-  CardActionArea,
   CardContent,
   CardActions,
   TextField,
   Grid,
-  Button,
-  Divider,
   Typography
 } from "@material-ui/core";
 import * as serviceProviders from "../../../api/Axios";
@@ -234,21 +230,17 @@ const AddZone = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <SaveButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                className={classes.submitbtn}
-              >
+              <GreenButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </SaveButton>
-              <CancelButton
+              </GreenButton>
+              <GrayButton
                 type="submit"
                 color="primary"
                 variant="contained"
                 to={routeConstants.VIEW_ZONES}
-                className={classes.resetbtn}
-              />
+              >
+                {genericConstants.CANCEL_BUTTON_TEXT}
+              </GrayButton>
             </CardActions>
           </form>
         </Card>

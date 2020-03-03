@@ -1,9 +1,8 @@
 import React from "react";
 import { Button } from "@material-ui/core";
-import * as genericConstants from "../../constants/GenericConstants";
-import useStyles from "./SaveButtonStyles";
+import useStyles from "./GreenButtonStyles";
 
-const SaveButton = props => {
+const GreenButton = props => {
   const classes = useStyles();
   return (
     <Button
@@ -12,9 +11,9 @@ const SaveButton = props => {
       variant={props.variant ? props.variant : "contained"}
       className={classes.submitbtn}
     >
-      {genericConstants.SAVE_BUTTON_TEXT}
+      {props.children}
     </Button>
   );
 };
 
-export default SaveButton;
+export default GreenButton;
