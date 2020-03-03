@@ -3,15 +3,16 @@ const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: "100%"
   },
-  elementroot: {
-    width: "30%"
-  },
   btnspace: {
     padding: "15px 18px 50px"
   },
   formgrid: {
     marginTop: theme.spacing(2),
     alignItems: "center"
+  },
+  divider: {
+    marginTop: "15px",
+    marginBottom: "15px"
   }
 }));
 export default useStyles;
