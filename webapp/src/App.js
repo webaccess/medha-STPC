@@ -15,6 +15,7 @@ import Dashboard from "./containers/Dashboard/Dashboard";
 import AddCollege from "./containers/College/AddCollege/AddCollege";
 import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
 import AddUser from "./containers/User/AddUser/AddUser";
+import ViewUsers from "./containers/User/ViewUser/ViewUser"
 import AddRpc from "./containers/RPC/AddRpc/AddRpc";
 import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";
 import AddStates from "./containers/State/AddState/AddState";
@@ -113,6 +114,12 @@ class App extends Component {
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_COLLEGE}
+              />
+              <RouteWithLayout
+                component={ViewUsers}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_USER}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>

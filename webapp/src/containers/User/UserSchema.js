@@ -1,4 +1,4 @@
-const AddUserForm = {
+const UserSchema = {
   username: {
     label: "User Name",
     id: "username",
@@ -158,4 +158,4 @@ const AddUserForm = {
   },
 };
 
-export default AddUserForm;
+export default UserSchema;

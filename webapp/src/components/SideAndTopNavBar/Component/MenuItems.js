@@ -35,7 +35,7 @@ const MenuItems = props => {
       },
       {
         name: "User Management",
-        link: routeConstants.ADD_USER,
+        link: routeConstants.VIEW_USER,
         Icon: <PeopleOutlineOutlinedIcon />
       },
       {
