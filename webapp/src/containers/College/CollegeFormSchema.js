@@ -119,7 +119,7 @@ const CollegeFormSchema = {
     validations: {}
   },
   admins: {
-    label: "Add admins",
+    label: "TPO Name",
     id: "admins",
     autoComplete: "admins",
     required: false,

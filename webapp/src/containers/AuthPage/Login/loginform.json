@@ -29,10 +29,6 @@
       "required": {
         "value": "true",
         "message": "Passsword is required"
-      },
-      "validatePasswordRegex": {
-        "value": "true",
-        "message": "Password must contain atleast 8 characters with numbers and characters"
       }
     }
   }
