@@ -12,13 +12,15 @@ import {
 import { Table, Spinner } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
-import { CustomRouterLink } from "../../../components";
+import {
+  GrayButton,
+  GreenButton,
+  YellowRouteButton
+} from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
-import useStyles from "./ViewUserStyles"
+import useStyles from "./ViewUserStyles";
 import styles from "../User.module.css";
-
-
-
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
@@ -27,7 +29,6 @@ const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
 
 const ViewUsers = () => {
-
   const classes = useStyles();
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -35,8 +36,8 @@ const ViewUsers = () => {
     users: [],
     zones: [],
     rpcs: [],
-    roles:[],
-    ipcs:[],
+    roles: [],
+    ipcs: [],
     filterDataParameters: {
       ZONE_FILTER: ""
     },
@@ -48,60 +49,59 @@ const ViewUsers = () => {
     showModalDelete: false
   });
 
-  console.log("sam",formState.users);
+  console.log("sam", formState.users);
 
   useEffect(() => {
     /** Seperate function to get zone data */
     getUserData();
 
     serviceProviders
-    .serviceProviderForGetRequest(ZONE_URL)
-    .then(res => {
-      setFormState(formState => ({
-        ...formState,
-        zones: res.data
-      }));
-    })
-    .catch(error => {
-      console.log("error");
-    });
+      .serviceProviderForGetRequest(ZONE_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          zones: res.data
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
 
     serviceProviders
-    .serviceProviderForGetRequest(RPC_URL)
-    .then(res => {
-      setFormState(formState => ({
-        ...formState,
-        rpcs: res.data
-      }));
-    })
-    .catch(error => {
-      console.log("error");
-    });
+      .serviceProviderForGetRequest(RPC_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          rpcs: res.data
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
 
     serviceProviders
-    .serviceProviderForGetRequest(IPC_URL)
-    .then(res => {
-      setFormState(formState => ({
-        ...formState,
-        ipcs: res.data
-      }));
-    })
-    .catch(error => {
-      console.log("error");
-    });
+      .serviceProviderForGetRequest(IPC_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          ipcs: res.data
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
 
     serviceProviders
-    .serviceProviderForGetRequest(ROLE_URL)
-    .then(res => {
-      setFormState(formState => ({
-        ...formState,
-        roles: res.data
-      }));
-    })
-    .catch(error => {
-      console.log("error");
-    });
- 
+      .serviceProviderForGetRequest(ROLE_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          roles: res.data
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
   }, []);
 
   const getUserData = async () => {
@@ -144,7 +144,6 @@ const ViewUsers = () => {
     }
   };
 
-
   const column = [
     { name: "Users", sortable: true, selector: "username" },
     { name: "Zone", sortable: true, selector: "zone" },
@@ -168,9 +167,9 @@ const ViewUsers = () => {
     },
     {
       cell: cell => (
-        <i 
-          className="material-icons" 
-          id={cell.id} 
+        <i
+          className="material-icons"
+          id={cell.id}
           //onClick={deleteCell}
         >
           delete_outline
@@ -182,29 +181,26 @@ const ViewUsers = () => {
   ];
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={4}>
-        <Grid item>
-          <Typography variant="h1" className={styles.header}>
-            Manage User
-          </Typography>
-        </Grid>
-        <Grid item sm>
-          <Button
-            variant="contained"
-            color="primary"
-            //onClick={clearFilter}
-            disableElevation
-            className={classes.addUserButton}
-            component={CustomRouterLink}
-            to={routeConstants.ADD_USER}
-          >
-            Add User
-          </Button>
-        </Grid>
-        {/* This is used for the filterig data */}
-        <Card className={styles.filterButton}>
-          <CardContent>
+    <Grid>
+      <Grid item xs={12} className={classes.title}>
+        <Typography variant="h4" gutterBottom>
+          User
+        </Typography>
+
+        <YellowRouteButton
+          variant="contained"
+          color="primary"
+          //onClick={clearFilter}
+          disableElevation
+          to={routeConstants.ADD_USER}
+          startIcon={<AddCircleOutlineOutlinedIcon />}
+        >
+          Add User
+        </YellowRouteButton>
+      </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
+        <Card>
+          <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <Autocomplete
@@ -224,7 +220,6 @@ const ViewUsers = () => {
                     />
                   )}
                 />
-                
               </Grid>
               <Grid item>
                 <Autocomplete
@@ -244,7 +239,6 @@ const ViewUsers = () => {
                     />
                   )}
                 />
-                
               </Grid>
               <Grid item>
                 <Autocomplete
@@ -264,7 +258,6 @@ const ViewUsers = () => {
                     />
                   )}
                 />
-                
               </Grid>
               <Grid item>
                 <Autocomplete
@@ -284,7 +277,6 @@ const ViewUsers = () => {
                     />
                   )}
                 />
-                
               </Grid>
               <Grid item>
                 <Autocomplete
@@ -304,54 +296,48 @@ const ViewUsers = () => {
                     />
                   )}
                 />
-                
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <Button
+                <GreenButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                 //onClick={searchFilter}
+                  //onClick={searchFilter}
                 >
                   Search
-                </Button>
+                </GreenButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <Button
+                <GrayButton
                   variant="contained"
                   color="primary"
                   //onClick={clearFilter}
                   disableElevation
                 >
                   Reset
-                </Button>
+                </GrayButton>
               </Grid>
             </Grid>
           </CardContent>
         </Card>
+        <Card className={classes.tabledata} variant="outlined">
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                //editEvent={editCell}
 
-
-   
-
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-            
-              data={formState.dataToShow}
-              column={column}
-              //editEvent={editCell}
-              
-
-              //deleteEvent={deleteCell}
-            />
+                //deleteEvent={deleteCell}
+              />
+            ) : (
+              <Spinner />
+            )
           ) : (
-            <Spinner />
-          )
-        ) : (
-          <div className={classes.noDataMargin}>No data to show</div>
-        )}
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
 
-        {/* <EditState
+          {/* <EditState
           showModal={formState.showEditModal}
           //closeModal={handleCloseModal}
           dataToEdit={formState.dataToEdit}
@@ -364,11 +350,10 @@ const ViewUsers = () => {
           id={formState.dataToDelete["id"]}
           //deleteEvent={isDeleteCellCompleted}
         /> */}
+        </Card>
       </Grid>
-    </div>
+    </Grid>
   );
-
-
 };
 
 export default ViewUsers;

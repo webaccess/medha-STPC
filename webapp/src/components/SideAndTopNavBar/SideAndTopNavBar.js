@@ -234,6 +234,23 @@ function SideAndTopNavBar(props) {
                   <InputIcon />
                 </IconButton>
 
+                {/* <AccountCircleOutlinedIcon />
+                <InputLabel>
+                  {"Welcome "}
+                  {auth.getUserInfo()["first_name"] +
+                    " " +
+                    auth.getUserInfo()["last_name"]}
+                </InputLabel>
+                <IconButton
+                  className={topBarClasses.signOutButton}
+                  color="inherit"
+                  component={CustomRouterLink}
+                  to={routeConstants.LOGOUT_URL}
+                >
+                  <InputIcon />
+                  SIGN OUT
+                </IconButton> */}
+
                 <Drawer
                   classes={{
                     paper: classes.drawer

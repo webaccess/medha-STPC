@@ -7,7 +7,7 @@ const useStyles = makeStyles(theme => ({
     padding: "15px 18px 50px"
   },
   formgrid: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(0),
     alignItems: "center"
   },
   divider: {

@@ -13,14 +13,19 @@ import axios from "axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Table, Spinner } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "../CollegeStyles";
+import useStyles from "./ManageCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { CustomRouterLink } from "../../../components";
+import {
+  GrayButton,
+  GreenButton,
+  YellowRouteButton
+} from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import DeleteCollege from "./DeleteCollege";
 import EditCollege from "./EditCollege";
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -359,116 +364,111 @@ const ManageCollege = props => {
 
   const classes = useStyles();
   return (
-    <div className={classes.root}>
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <Grid item>
-            <Typography variant="h1">
-              {genericConstants.MANAGE_COLLEGE_TEXT}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={clearFilter}
-              disableElevation
-              className={classes.addZoneButton}
-              component={CustomRouterLink}
-              to={routeConstants.ADD_COLLEGE}
-            >
-              {genericConstants.ADD_COLLEGE_BUTTON}
-            </Button>
-          </Grid>
-        </Grid>
-        {/* This is used for the filterig data */}
-        <Grid item sm={12}>
-          <Card>
-            <CardContent>
-              <Grid className={classes.filterOptions} container spacing={1}>
-                <Grid item>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    name={COLLEGE_FILTER}
-                    options={formState.colleges}
-                    className={classes.autoCompleteField}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) =>
-                      handleChangeAutoComplete(COLLEGE_FILTER, event, value)
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label="College Name"
-                        className={classes.autoCompleteField}
-                        variant="outlined"
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item className={classes.filterButtonsMargin}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    disableElevation
-                    onClick={searchFilter}
-                  >
-                    {genericConstants.SEARCH_BUTTON_TEXT}
-                  </Button>
-                </Grid>
-                <Grid item className={classes.filterButtonsMargin}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={clearFilter}
-                    disableElevation
-                  >
-                    {genericConstants.RESET_BUTTON_TEXT}
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-              // pagination
-              // paginationServer
-              // paginationTotalRows={totalRows}
-              // onChangeRowsPerPage={handlePerRowsChange}
-              // onChangePage={handlePageChange}
-            />
-          ) : (
-            <Spinner />
-          )
-        ) : (
-          <div className={classes.noDataMargin}>No data to show</div>
-        )}
-        <EditCollege
-          showModal={formState.showEditModal}
-          closeModal={handleCloseModal}
-          dataToEdit={formState.dataToEdit}
-          id={formState.dataToEdit["id"]}
-          editEvent={isEditCellCompleted}
-          statesData={states}
-          userData={user}
-          streamsDataForEdit={streamsData}
-          zonesForEdit={formState.zonesForEdit}
-          rpcsForEdit={formState.rpcsForEdit}
-        />
-        <DeleteCollege
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
-          deleteEvent={isDeleteCellCompleted}
-        />
+    <Grid>
+      <Grid item xs={12} className={classes.title}>
+        <Typography variant="h4" gutterBottom>
+          College
+        </Typography>
+
+        <YellowRouteButton
+          variant="contained"
+          color="primary"
+          onClick={clearFilter}
+          disableElevation
+          to={routeConstants.ADD_COLLEGE}
+          startIcon={<AddCircleOutlineOutlinedIcon />}
+        >
+          Add College
+        </YellowRouteButton>
       </Grid>
-    </div>
+      <Grid item xs={12} className={classes.formgrid}>
+        <Card>
+          <CardContent className={classes.Cardtheming}>
+            <Grid className={classes.filterOptions} container spacing={1}>
+              <Grid item>
+                <Autocomplete
+                  id="combo-box-demo"
+                  name={COLLEGE_FILTER}
+                  options={formState.colleges}
+                  className={classes.autoCompleteField}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(COLLEGE_FILTER, event, value)
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="College Name"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item className={classes.filterButtonsMargin}>
+                <GreenButton
+                  variant="contained"
+                  color="primary"
+                  disableElevation
+                  onClick={searchFilter}
+                >
+                  {genericConstants.SEARCH_BUTTON_TEXT}
+                </GreenButton>
+              </Grid>
+              <Grid item className={classes.filterButtonsMargin}>
+                <GrayButton
+                  variant="contained"
+                  color="primary"
+                  onClick={clearFilter}
+                  disableElevation
+                >
+                  {genericConstants.RESET_BUTTON_TEXT}
+                </GrayButton>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+        <Card className={classes.tabledata} variant="outlined">
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                editEvent={editCell}
+                deleteEvent={deleteCell}
+                // pagination
+                // paginationServer
+                // paginationTotalRows={totalRows}
+                // onChangeRowsPerPage={handlePerRowsChange}
+                // onChangePage={handlePageChange}
+              />
+            ) : (
+              <Spinner />
+            )
+          ) : (
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
+          <EditCollege
+            showModal={formState.showEditModal}
+            closeModal={handleCloseModal}
+            dataToEdit={formState.dataToEdit}
+            id={formState.dataToEdit["id"]}
+            editEvent={isEditCellCompleted}
+            statesData={states}
+            userData={user}
+            streamsDataForEdit={streamsData}
+            zonesForEdit={formState.zonesForEdit}
+            rpcsForEdit={formState.rpcsForEdit}
+          />
+          <DeleteCollege
+            showModal={formState.showModalDelete}
+            closeModal={handleCloseDeleteModal}
+            id={formState.dataToDelete["id"]}
+            deleteEvent={isDeleteCellCompleted}
+          />
+        </Card>
+      </Grid>
+    </Grid>
   );
 };
 

@@ -7,7 +7,7 @@ import {
   Grid,
   Typography
 } from "@material-ui/core";
-import useStyles from "./ViewRpcStyles.js";
+import useStyles from "./ViewRpcStyles";
 import { Table, Spinner, GreenButton, GrayButton } from "../../../components";
 import axios from "axios";
 import DeleteRpc from "./DeleteRpc";
@@ -254,7 +254,7 @@ const ViewRpc = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage RPC
+          RPC
         </Typography>
 
         <YellowRouteButton
@@ -269,7 +269,7 @@ const ViewRpc = props => {
         </YellowRouteButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        <Card className={classes.root} variant="outlined">
+        <Card>
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>

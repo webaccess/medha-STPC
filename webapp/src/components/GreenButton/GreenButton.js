@@ -10,6 +10,7 @@ const GreenButton = props => {
       color={props.color ? props.color : "primary"}
       variant={props.variant ? props.variant : "contained"}
       className={classes.submitbtn}
+      onClick={props.onClick}
     >
       {props.children}
     </Button>
