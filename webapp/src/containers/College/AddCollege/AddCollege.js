@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useStyles from "./AddCollegeStyles";
-import clsx from "clsx";
 import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 import CollegeFormSchema from "../CollegeFormSchema";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
@@ -12,7 +9,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, SaveButton, CancelButton } from "../../../components";
+import { Alert, GrayButton, GreenButton } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import { get } from "lodash";
@@ -22,7 +19,6 @@ import {
   CardActions,
   Divider,
   Grid,
-  Button,
   TextField,
   Typography
 } from "@material-ui/core";
@@ -296,7 +292,7 @@ const AddCollege = props => {
                   />
                 </Grid>
                 <Grid item md={3} xs={12}>
-                   <TextField
+                  <TextField
                     fullWidth
                     id={get(CollegeFormSchema[collegeCode], "id")}
                     label={get(CollegeFormSchema[collegeCode], "label")}
@@ -499,8 +495,9 @@ const AddCollege = props => {
                     }
                     variant="outlined"
                   />
-                </Grid></Grid>
-                <Divider className={classes.divider} />
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
               <Grid container spacing={3}>
                 <Grid item md={4} xs={12}>
                   <FormControl
@@ -631,23 +628,21 @@ const AddCollege = props => {
                       />
                     ) : null}
                   </FormControl>
-                </Grid></Grid></CardContent>
+                </Grid>
+              </Grid>
+            </CardContent>
             <CardActions className={classes.btnspace}>
-              <SaveButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                className={classes.submitbtn}
-              >
+              <GreenButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </SaveButton>
-              <CancelButton
+              </GreenButton>
+              <GrayButton
                 type="submit"
                 color="primary"
                 variant="contained"
                 to={routeConstants.VIEW_COLLEGE}
-                className={classes.resetbtn}
-              />
+              >
+                {genericConstants.CANCEL_BUTTON_TEXT}
+              </GrayButton>
             </CardActions>
           </form>
         </Card>

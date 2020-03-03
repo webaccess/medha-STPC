@@ -6,23 +6,16 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./AddUserStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import {
-  Alert,
-  CustomRouterLink,
-  SaveButton,
-  CancelButton
-} from "../../../components";
+import { Alert, GreenButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProvider from "../../../api/Axios";
 
 import {
   Card,
-  CardHeader,
   CardContent,
   CardActions,
   Divider,
   Grid,
-  Button,
   TextField,
   FormGroup,
   FormControlLabel,
@@ -629,18 +622,17 @@ const Adduser = props => {
               <Divider className={classes.divider} />
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <SaveButton variant="contained" color="primary" type="submit">
+              <GreenButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </SaveButton>
-              <CancelButton
+              </GreenButton>
+              <GrayButton
+                type="submit"
+                color="primary"
                 variant="contained"
-                color="secondary"
-                component={CustomRouterLink}
                 to="#"
-                className={classes.submitbtn}
               >
                 {genericConstants.CANCEL_BUTTON_TEXT}
-              </CancelButton>
+              </GrayButton>
             </CardActions>
           </form>
         </Card>

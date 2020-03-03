@@ -4,7 +4,7 @@ const useStyles = makeStyles(theme => ({
   submitbtn: {
     backgroundColor: "#43a047",
     color: "#fff",
-    borderRadius: "1px",
+    borderRadius: "2px",
     padding: "3px 15px",
     fontSize: "12px",
     fontWeight: "700",

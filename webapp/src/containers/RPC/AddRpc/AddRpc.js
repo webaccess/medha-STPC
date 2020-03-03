@@ -3,7 +3,6 @@ import AddRpcSchema from "../AddRpcSchema";
 import useStyles from "./AddRpcStyles";
 import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import axios from "axios";
 import {
   Card,
   CardContent,
@@ -17,9 +16,8 @@ import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";
-import { SaveButton, CancelButton } from "../../../components";
-import Alert from "../../../components/Alert/Alert.js";
 import * as serviceProviders from "../../../api/Axios";
+import { Alert, GrayButton, GreenButton } from "../../../components";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
@@ -339,21 +337,17 @@ const AddRpc = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <SaveButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                className={classes.submitbtn}
-              >
+              <GreenButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </SaveButton>
-              <CancelButton
+              </GreenButton>
+              <GrayButton
                 type="submit"
                 color="primary"
                 variant="contained"
                 to={routeConstants.VIEW_RPC}
-                className={classes.resetbtn}
-              />
+              >
+                {genericConstants.CANCEL_BUTTON_TEXT}
+              </GrayButton>
             </CardActions>
           </form>
         </Card>

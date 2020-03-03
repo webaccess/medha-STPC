@@ -1,10 +1,9 @@
 import React from "react";
 import { Button } from "@material-ui/core";
-import * as genericConstants from "../../constants/GenericConstants";
-import useStyles from "./CancelButtonStyles";
+import useStyles from "./GrayButtonStyles";
 import { CustomRouterLink } from "../../components";
 
-const CancelButton = props => {
+const GrayButton = props => {
   const classes = useStyles();
   return (
     <Button
@@ -15,9 +14,9 @@ const CancelButton = props => {
       to={props.to}
       className={classes.resetbtn}
     >
-      {genericConstants.CANCEL_BUTTON_TEXT}
+      {props.children}
     </Button>
   );
 };
 
-export default CancelButton;
+export default GrayButton;

@@ -8,7 +8,7 @@ import StateSchema from "../StateSchema";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, SaveButton, CancelButton } from "../../../components";
+import { Alert, GreenButton, GrayButton } from "../../../components";
 
 import {
   Card,
@@ -60,10 +60,7 @@ const AddState = props => {
       StateSchema
     );
     if (checkAllFieldsValid) {
-      formState.errors = formUtilities.setErrors(
-        formState.values,
-        StateSchema
-      );
+      formState.errors = formUtilities.setErrors(formState.values, StateSchema);
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
@@ -72,10 +69,7 @@ const AddState = props => {
         formState.values,
         StateSchema
       );
-      formState.errors = formUtilities.setErrors(
-        formState.values,
-        StateSchema
-      );
+      formState.errors = formUtilities.setErrors(formState.values, StateSchema);
     }
     if (isValid) {
       postStateData();
@@ -167,21 +161,17 @@ const AddState = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <SaveButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                className={classes.submitbtn}
-              >
+              <GreenButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </SaveButton>
-              <CancelButton
+              </GreenButton>
+              <GrayButton
                 type="submit"
                 color="primary"
                 variant="contained"
                 to={routeConstants.VIEW_STATES}
-                className={classes.resetbtn}
-              />
+              >
+                {genericConstants.CANCEL_BUTTON_TEXT}
+              </GrayButton>
             </CardActions>
           </form>
         </Card>
