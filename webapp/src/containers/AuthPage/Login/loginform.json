@@ -32,7 +32,7 @@
       },
       "validatePasswordRegex": {
         "value": "true",
-        "message": "Invalid password format"
+        "message": "Password must contain atleast 8 characters with numbers and characters"
       }
     }
   }
