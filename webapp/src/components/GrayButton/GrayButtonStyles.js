@@ -5,9 +5,10 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#666666",
     color: "#fff",
     borderRadius: "2px",
-    padding: "3px 15px",
-    fontSize: "12px",
+    padding: "8px 15px",
+    fontSize: "13px",
     fontWeight: "700",
+    letterSpacing: "0px",
     "&:hover": {
       background: "#666"
     }

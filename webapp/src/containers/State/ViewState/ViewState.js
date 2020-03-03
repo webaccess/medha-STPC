@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 
 import styles from "../State.module.css";
-import useStyles from "../StateStyles";
+import useStyles from "./ViewStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -18,7 +18,9 @@ import {
   CustomRouterLink,
   Table,
   Spinner,
-  YellowRouteButton
+  YellowRouteButton,
+  GreenButton,
+  GrayButton
 } from "../../../components";
 import EditState from "./EditState";
 import DeleteState from "./DeleteState";
@@ -207,28 +209,24 @@ const ViewStates = () => {
   ];
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={4}>
-        <Grid item>
-          <Typography variant="h1" className={styles.header}>
-            State
-          </Typography>
-        </Grid>
-        <Grid item sm>
-          <YellowRouteButton
-            variant="contained"
-            color="primary"
-            onClick={clearFilter}
-            disableElevation
-            className={classes.addStateButton}
-            component={CustomRouterLink}
-            to={routeConstants.ADD_STATES}
-            startIcon={<AddCircleOutlineOutlinedIcon />}
-          >
-            Add State
-          </YellowRouteButton>
-        </Grid>
-        {/* This is used for the filterig data */}
+    <Grid>
+      <Grid item xs={12} className={classes.title}>
+        <Typography variant="h4" gutterBottom>
+          State
+        </Typography>
+
+        <YellowRouteButton
+          variant="contained"
+          color="primary"
+          onClick={clearFilter}
+          disableElevation
+          to={routeConstants.ADD_STATES}
+          startIcon={<AddCircleOutlineOutlinedIcon />}
+        >
+          Add State
+        </YellowRouteButton>
+      </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
         <Card className={styles.filterButton}>
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -252,24 +250,26 @@ const ViewStates = () => {
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <Button
+                <GreenButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
+                  to="#"
                 >
                   Search
-                </Button>
+                </GreenButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <Button
+                <GrayButton
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}
                   disableElevation
+                  to="#"
                 >
                   Reset
-                </Button>
+                </GrayButton>
               </Grid>
             </Grid>
           </CardContent>
@@ -303,7 +303,7 @@ const ViewStates = () => {
           deleteEvent={isDeleteCellCompleted}
         />
       </Grid>
-    </div>
+    </Grid>
   );
 };
 
