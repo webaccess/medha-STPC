@@ -9,7 +9,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, GrayButton, GreenButton } from "../../../components";
+import { Alert, GreenButton, GrayButton } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import { get } from "lodash";
@@ -268,13 +268,14 @@ const AddCollege = props => {
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={3} xs={12}>
+              <Grid container spacing={3}>
+                <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
                     // helperText="Please specify the college name"
                     id={get(CollegeFormSchema[collegeName], "id")}
                     label={get(CollegeFormSchema[collegeName], "label")}
+                    margin="normal"
                     name={collegeName}
                     onChange={handleChange}
                     required
@@ -291,11 +292,12 @@ const AddCollege = props => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={3} xs={12}>
+                <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
                     id={get(CollegeFormSchema[collegeCode], "id")}
                     label={get(CollegeFormSchema[collegeCode], "label")}
+                    margin="normal"
                     name={collegeCode}
                     onChange={handleChange}
                     required
@@ -311,11 +313,12 @@ const AddCollege = props => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <TextField
                     fullWidth
                     id={get(CollegeFormSchema[address], "id")}
                     label={get(CollegeFormSchema[address], "label")}
+                    margin="normal"
                     name={address}
                     onChange={handleChange}
                     required
@@ -331,7 +334,7 @@ const AddCollege = props => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={3} xs={12}>
+                <Grid item md={6} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
@@ -375,7 +378,7 @@ const AddCollege = props => {
                   </FormControl>
                 </Grid>
 
-                <Grid item md={3} xs={12}>
+                <Grid item md={6} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
@@ -417,7 +420,7 @@ const AddCollege = props => {
                     />
                   </FormControl>
                 </Grid>
-                <Grid item md={3} xs={12}>
+                <Grid item md={6} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
@@ -459,10 +462,11 @@ const AddCollege = props => {
                     />
                   </FormControl>
                 </Grid>
-                <Grid item md={3} xs={12}>
+                <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
                     label="Contact Number"
+                    margin="normal"
                     name={contactNumber}
                     onChange={handleChange}
                     required
@@ -477,11 +481,12 @@ const AddCollege = props => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item md={12} xs={12}>
+                <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
                     label={get(CollegeFormSchema[collegeEmail], "label")}
                     id={get(CollegeFormSchema[collegeEmail], "id")}
+                    margin="normal"
                     name={collegeEmail}
                     onChange={handleChange}
                     required
@@ -496,10 +501,8 @@ const AddCollege = props => {
                     variant="outlined"
                   />
                 </Grid>
-              </Grid>
-              <Divider className={classes.divider} />
-              <Grid container spacing={3}>
-                <Grid item md={4} xs={12}>
+                <Divider />
+                <Grid item md={6} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
@@ -542,7 +545,7 @@ const AddCollege = props => {
                     ) : null}
                   </FormControl>
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item md={6} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
@@ -586,7 +589,7 @@ const AddCollege = props => {
                   </FormControl>
                 </Grid>
                 <Divider />
-                <Grid item md={4} xs={12}>
+                <Grid item md={6} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
@@ -632,7 +635,12 @@ const AddCollege = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <GreenButton type="submit" color="primary" variant="contained">
+              <GreenButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                className={classes.submitbtn}
+              >
                 {genericConstants.SAVE_BUTTON_TEXT}
               </GreenButton>
               <GrayButton
@@ -640,6 +648,7 @@ const AddCollege = props => {
                 color="primary"
                 variant="contained"
                 to={routeConstants.VIEW_COLLEGE}
+                className={classes.resetbtn}
               >
                 {genericConstants.CANCEL_BUTTON_TEXT}
               </GrayButton>

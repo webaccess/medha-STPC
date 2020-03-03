@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Auth as auth } from "../components";
 
-const TOKEN = auth.getToken();
+const TOKEN = JSON.parse(localStorage.getItem("jwtToken"));
 const HEADERS = {
   "content-type": "application/json",
   Authorization: `Bearer ${TOKEN}`
@@ -86,6 +86,28 @@ export const serviceProviderForPostRequest = async (
     data: payload
   })
     .then(response => response)
+    .catch(error => {
+      throw error;
+    });
+};
+
+export const serviceProviderForAllGetRequest = async (
+  url,
+  headers = HEADERS
+) => {
+  let temp = [];
+  for (let i in url) {
+    temp.push(serviceProviderForGetRequest(url[i]));
+  }
+  const URL = temp;
+  // const URL1 = url1;
+  return await axios
+    .all(URL, {
+      headers: HEADERS
+    })
+    .then(response => {
+      return response;
+    })
     .catch(error => {
       throw error;
     });
