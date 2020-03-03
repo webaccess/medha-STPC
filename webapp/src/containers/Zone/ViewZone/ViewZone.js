@@ -16,8 +16,9 @@ import useStyles from "./ViewZoneStyles";
 import * as serviceProviders from "../../../api/Axios";
 import EditZone from "./EditZone";
 import DeleteZone from "./DeleteZone";
-import { CustomRouterLink } from "../../../components";
+import { YellowRouteButton, GreenButton, GrayButton } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const STATES_URL =
@@ -256,30 +257,25 @@ const ViewZone = props => {
 
   const classes = useStyles();
   return (
-    <div className={classes.root}>
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <Grid item>
-            <Typography variant="h1" className={classes.header}>
-              Manage Zone
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={clearFilter}
-              disableElevation
-              className={classes.addZoneButton}
-              component={CustomRouterLink}
-              to={routeConstants.ADD_ZONES}
-            >
-              Add Zone
-            </Button>
-          </Grid>
-        </Grid>
-        {/* This is used for the filterig data */}
-        <Card className={classes.filterButton}>
+    <Grid>
+      <Grid item xs={12} className={classes.title}>
+        <Typography variant="h4" gutterBottom>
+          Zone
+        </Typography>
+
+        <YellowRouteButton
+          variant="contained"
+          color="primary"
+          onClick={clearFilter}
+          disableElevation
+          to={routeConstants.ADD_ZONES}
+          startIcon={<AddCircleOutlineOutlinedIcon />}
+        >
+          Add State
+        </YellowRouteButton>
+      </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
+        <Card className={classes.root} variant="outlined">
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
@@ -302,59 +298,63 @@ const ViewZone = props => {
                   )}
                 />
               </Grid>
-              <Grid item className={classes.filterButtonsMargin}>
-                <Button
+              <Grid className={classes.filterButtonsMargin}>
+                <GreenButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
+                  to="#"
                 >
                   Search
-                </Button>
+                </GreenButton>
               </Grid>
-              <Grid item className={classes.filterButtonsMargin}>
-                <Button
+              <Grid className={classes.filterButtonsMargin}>
+                <GrayButton
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}
                   disableElevation
+                  to="#"
                 >
                   Reset
-                </Button>
+                </GrayButton>
               </Grid>
             </Grid>
           </CardContent>
         </Card>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-            />
+        <Card className={classes.tabledata} variant="outlined">
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                editEvent={editCell}
+                deleteEvent={deleteCell}
+              />
+            ) : (
+              <Spinner />
+            )
           ) : (
-            <Spinner />
-          )
-        ) : (
-          <div className={classes.noDataMargin}>No data to show</div>
-        )}
-        <EditZone
-          states={formState.states}
-          showModal={formState.showEditModal}
-          closeModal={handleCloseModal}
-          dataToEdit={formState.dataToEdit}
-          id={formState.dataToEdit["id"]}
-          editEvent={isEditCellCompleted}
-        />
-        <DeleteZone
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
-          deleteEvent={isDeleteCellCompleted}
-        />
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
+          <EditZone
+            states={formState.states}
+            showModal={formState.showEditModal}
+            closeModal={handleCloseModal}
+            dataToEdit={formState.dataToEdit}
+            id={formState.dataToEdit["id"]}
+            editEvent={isEditCellCompleted}
+          />
+          <DeleteZone
+            showModal={formState.showModalDelete}
+            closeModal={handleCloseDeleteModal}
+            id={formState.dataToDelete["id"]}
+            deleteEvent={isDeleteCellCompleted}
+          />
+        </Card>
       </Grid>
-    </div>
+    </Grid>
   );
 };
 

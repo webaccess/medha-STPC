@@ -5,7 +5,7 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import useStyles from "../StateStyles";
+import useStyles from "./ViewStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 

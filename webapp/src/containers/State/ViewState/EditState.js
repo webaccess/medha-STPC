@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
@@ -6,7 +6,7 @@ import { TextField, Button, Grid, Typography } from "@material-ui/core";
 import { get } from "lodash";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import useStyles from "../StateStyles";
+import useStyles from "./ViewStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiUtilities from "../../../Utilities/StrapiUtilities";

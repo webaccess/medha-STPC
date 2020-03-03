@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    // padding: theme.spacing(1),
+    // padding: theme.spacing(4)
     maxWidth: "100%"
   },
   content: {
@@ -27,8 +27,9 @@ const useStyles = makeStyles(theme => ({
   paper: {
     backgroundColor: theme.palette.background.paper,
     border: "primary",
-    boxShadow: theme.shadows[5]
-    // padding: theme.spacing(2, 0, 3)
+    boxShadow: theme.shadows[5],
+    marginBottom: theme.spacing(3)
+    // padding: theme.spacing(2, 4, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
