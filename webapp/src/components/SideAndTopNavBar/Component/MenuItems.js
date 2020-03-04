@@ -15,22 +15,22 @@ const MenuItems = props => {
         items: [
           {
             name: "Manage Training",
-            link: ""
+            link: routeConstants.MANAGE_TRAINING
           },
           {
             name: "Validate Student",
-            link: ""
+            link: routeConstants.VALIDATE_STUDENT
           }
         ]
       },
       {
         name: "Events",
-        link: "",
+        link: routeConstants.EVENTS,
         Icon: <EmojiFlagsOutlinedIcon />
       },
       {
         name: "Profile",
-        link: routeConstants.DASHBOARD_URL,
+        link: routeConstants.PROFILE,
         Icon: <PersonOutlineOutlinedIcon />
       },
       {

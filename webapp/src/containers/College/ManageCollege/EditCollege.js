@@ -67,6 +67,7 @@ const EditCollege = props => {
   const inputLabel = React.useRef(null);
 
   if (props.showModal && !formState.stateCounter) {
+    console.log(props);
     formState.stateCounter = 0;
     if (props.dataToEdit["name"]) {
       formState.values[COLLEGE_NAME] = props.dataToEdit["name"];
@@ -325,7 +326,9 @@ const EditCollege = props => {
       <Fade in={props.showModal}>
         <div className={classes.paper}>
           <Typography variant={"h2"} className={classes.textMargin}>
-            {genericConstants.EDIT_COLLEGE_TEXT}
+            {!props.isView
+              ? genericConstants.EDIT_COLLEGE_TEXT
+              : genericConstants.VIEW_COLLEGE_TEXT}
           </Typography>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
@@ -343,6 +346,7 @@ const EditCollege = props => {
                       type={get(CollegeFormSchema[COLLEGE_NAME], "type")}
                       value={formState.values[COLLEGE_NAME] || ""}
                       error={hasError(COLLEGE_NAME)}
+                      disabled={props.isView}
                       helperText={
                         hasError(COLLEGE_NAME)
                           ? formState.errors[COLLEGE_NAME].map(error => {
@@ -362,6 +366,7 @@ const EditCollege = props => {
                       name={COLLEGE_CODE}
                       onChange={handleChange}
                       required
+                      disabled={props.isView}
                       value={formState.values[COLLEGE_CODE] || ""}
                       error={hasError(COLLEGE_CODE)}
                       helperText={
@@ -383,6 +388,7 @@ const EditCollege = props => {
                       name={ADDRESS}
                       onChange={handleChange}
                       required
+                      disabled={props.isView}
                       value={formState.values[ADDRESS] || ""}
                       error={hasError(ADDRESS)}
                       helperText={
@@ -422,6 +428,7 @@ const EditCollege = props => {
                           ]
                         }
                         name={STATE}
+                        disabled={props.isView}
                         renderInput={params => (
                           <TextField
                             {...params}
@@ -472,6 +479,7 @@ const EditCollege = props => {
                           ]
                         }
                         name={ZONE}
+                        disabled={props.isView}
                         renderInput={params => (
                           <TextField
                             {...params}
@@ -521,6 +529,7 @@ const EditCollege = props => {
                           ]
                         }
                         name={RPC}
+                        disabled={props.isView}
                         renderInput={params => (
                           <TextField
                             {...params}
@@ -549,6 +558,7 @@ const EditCollege = props => {
                       name={CONTACT_NUMBER}
                       onChange={handleChange}
                       required
+                      disabled={props.isView}
                       value={formState.values[CONTACT_NUMBER] || ""}
                       error={hasError(CONTACT_NUMBER)}
                       helperText={
@@ -569,6 +579,7 @@ const EditCollege = props => {
                       name={COLLEGE_EMAIL}
                       onChange={handleChange}
                       required
+                      disabled={props.isView}
                       value={formState.values[COLLEGE_EMAIL] || ""}
                       error={hasError(COLLEGE_EMAIL)}
                       helperText={
@@ -609,6 +620,7 @@ const EditCollege = props => {
                           ]
                         }
                         name={PRINCIPAL}
+                        disabled={props.isView}
                         renderInput={params => (
                           <TextField
                             {...params}
@@ -650,6 +662,7 @@ const EditCollege = props => {
                           handleChangeAutoComplete(ADMINS, event, value);
                         }}
                         name={ADMINS}
+                        disabled={props.isView}
                         renderInput={params => (
                           <TextField
                             {...params}
@@ -692,6 +705,7 @@ const EditCollege = props => {
                           handleChangeAutoComplete(STREAMS, event, value);
                         }}
                         name={STREAMS}
+                        disabled={props.isView}
                         renderInput={params => (
                           <TextField
                             {...params}
@@ -714,25 +728,27 @@ const EditCollege = props => {
                     </FormControl>
                   </Grid>
                 </Grid>
-                <CardActions className={classes.btnspace}>
-                  <GreenButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    className={classes.submitbtn}
-                  >
-                    {genericConstants.SAVE_BUTTON_TEXT}
-                  </GreenButton>
-                  <GrayButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    to={routeConstants.VIEW_COLLEGE}
-                    className={classes.resetbtn}
-                  >
-                    {genericConstants.CANCEL_BUTTON_TEXT}
-                  </GrayButton>
-                </CardActions>
+                {!props.isView ? (
+                  <CardActions className={classes.btnspace}>
+                    <GreenButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      className={classes.submitbtn}
+                    >
+                      {genericConstants.SAVE_BUTTON_TEXT}
+                    </GreenButton>
+                    <GrayButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      to={routeConstants.VIEW_COLLEGE}
+                      className={classes.resetbtn}
+                    >
+                      {genericConstants.CANCEL_BUTTON_TEXT}
+                    </GrayButton>
+                  </CardActions>
+                ) : null}
               </form>
             </Grid>
           </div>

@@ -1,7 +1,7 @@
 const StateSchema = {
   content: {
     title: "Add State",
-    button: "Save",
+    button: "Save"
   },
   state: {
     label: "State Name",
@@ -17,6 +17,6 @@ const StateSchema = {
         message: "State Name is required"
       }
     }
-  },
+  }
 };
 export default StateSchema;

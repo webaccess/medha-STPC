@@ -225,9 +225,8 @@ const ViewZone = props => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Id", sortable: true, selector: "id" },
-    { name: "Zone", sortable: true, selector: "name" },
-    { name: "States", sortable: true, selector: "state" },
+    { name: "Name", sortable: true, selector: "name" },
+    { name: "State", sortable: true, selector: "state" },
     /** Columns for edit and delete */
     {
       cell: cell => (
@@ -275,7 +274,7 @@ const ViewZone = props => {
           to={routeConstants.ADD_ZONES}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Add State
+          Add Zone
         </YellowRouteButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
