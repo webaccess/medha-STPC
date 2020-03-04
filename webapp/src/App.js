@@ -26,6 +26,9 @@ import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "./theme";
+import Registration from "./containers/Registration/Registration";
+import RequestOtp from "./containers/OTP/Requestotp";
+import VerifyOtp from "./containers/OTP/Verifyotp";
 
 class App extends Component {
   render() {
@@ -50,6 +53,12 @@ class App extends Component {
                 component={Logout}
                 exact
               />
+              <Registration path={routeConstants.NEW_REGISTRATION_URL} exact />
+
+              <RequestOtp path={routeConstants.REQUEST_OTP} exact />
+
+              <VerifyOtp path={routeConstants.VERIFY_OTP} exact />
+
               <ForgotPasswordRoute
                 path={routeConstants.FORGOT_PASSWORD_URL}
                 exact

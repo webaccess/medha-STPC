@@ -366,7 +366,7 @@ const LogIn = props => {
                     </Grid>
                     <Grid item xs={6} style={{ textAlign: "center" }}>
                       <Link
-                        href={routeConstants.NEW_REGISTRATION_URL}
+                        href={routeConstants.REQUEST_OTP}
                         variant="body2"
                         className={classes.linkColor}
                       >
