@@ -256,9 +256,9 @@ function SideAndTopNavBar(props) {
                 </div>
                 <InputLabel>
                   {"Welcome "}
-                  {auth.getUserInfo()["first_name"] +
+                  {/* {auth.getUserInfo()["first_name"] +
                     " " +
-                    auth.getUserInfo()["last_name"]}
+                    auth.getUserInfo()["last_name"]} */}
                 </InputLabel>
                 <IconButton
                   className={topBarClasses.signOutButton}
