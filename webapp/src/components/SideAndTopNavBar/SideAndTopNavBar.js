@@ -14,7 +14,8 @@ import {
   Hidden,
   ListItem,
   Collapse,
-  Button
+  Button,
+  InputLabel
 } from "@material-ui/core";
 
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
@@ -26,6 +27,7 @@ import Logo from "../Logo/Logo";
 import MenuItems from "./Component/MenuItems";
 import { Auth as auth, CustomRouterLink } from "../../components";
 import { fontSize } from "@material-ui/system";
+import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
 
 const useDrawerStyles = makeStyles(theme => ({
   drawer: {
@@ -61,10 +63,26 @@ const useTopBarStyles = makeStyles(theme => ({
   },
   signOutButton: {
     // marginLeft: theme.spacing(1)
+    fontSize: "13px"
   },
   loginButtonFlex: {
     display: "flex",
-    flexGrow: "1"
+    flexGrow: "1",
+    "& icon": {
+      display: "flex",
+      alignSelf: "center"
+    },
+    "& label": {
+      color: "#fff",
+      alignItems: "center",
+      display: "flex",
+      marginRight: "15px"
+    }
+  },
+  Iconroot: {
+    display: "flex",
+    alignSelf: "center",
+    marginRight: "10px"
   }
 }));
 
@@ -225,16 +243,17 @@ function SideAndTopNavBar(props) {
             <div className={topBarClasses.loginButtonFlex}>
               <div className={topBarClasses.flexGrow} />
               <Hidden mdDown>
-                <IconButton
+                {/* <IconButton
                   className={topBarClasses.signOutButton}
                   color="inherit"
                   component={CustomRouterLink}
                   to={routeConstants.LOGOUT_URL}
                 >
                   <InputIcon />
-                </IconButton>
-
-                {/* <AccountCircleOutlinedIcon />
+                </IconButton> */}
+                <div className={topBarClasses.Iconroot}>
+                  <AccountCircleOutlinedIcon />
+                </div>
                 <InputLabel>
                   {"Welcome "}
                   {auth.getUserInfo()["first_name"] +
@@ -247,9 +266,11 @@ function SideAndTopNavBar(props) {
                   component={CustomRouterLink}
                   to={routeConstants.LOGOUT_URL}
                 >
-                  <InputIcon />
+                  <div className={topBarClasses.Iconroot}>
+                    <InputIcon />
+                  </div>
                   SIGN OUT
-                </IconButton> */}
+                </IconButton>
 
                 <Drawer
                   classes={{
