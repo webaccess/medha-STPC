@@ -45,6 +45,7 @@ bookshelf.model("rpc", {
 });
 
 bookshelf.model("stream", {
+  requireFetch: false,
   tableName: "streams"
 });
 
@@ -92,6 +93,7 @@ bookshelf.model("role", {
 });
 
 bookshelf.model("permission", {
+  requireFetch: false,
   tableName: "users-permissions_permission",
   role() {
     return this.belongsTo("role", "role", "id");

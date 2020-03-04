@@ -6,6 +6,7 @@
  */
 
 const bookshelf = require("../../../config/config.js");
+const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 module.exports = {
   /**
    * Retrieve RPCs.
@@ -19,8 +20,19 @@ module.exports = {
     const { role, rpc, zone } = ctx.state.user;
     let data;
     if (role.name === "Medha Admin" || role.name === "Admin") {
+      // const result = await bookshelf
+      //   .model("rpc")
+      //   .fetchAll({ withRelated: ["zone"] });
+
+      const filters = convertRestQueryParams(ctx.request.query);
       const result = await bookshelf
         .model("rpc")
+        .query(
+          buildQuery({
+            model: strapi.models.rpc,
+            filters
+          })
+        )
         .fetchAll({ withRelated: ["zone"] });
       data = result.toJSON();
     }

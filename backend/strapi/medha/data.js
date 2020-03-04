@@ -443,9 +443,12 @@ const allowedPublicRoutes = [
 
 const allowedMedhaAdminRoutes = ["getroles", "getrole"];
 
+const streams = ["Civil", "Computer", "Mechanical", "ENTC", "Instrumental"];
+
 module.exports = Object.freeze({
   roles,
   states,
   allowedPublicRoutes,
-  allowedMedhaAdminRoutes
+  allowedMedhaAdminRoutes,
+  streams
 });

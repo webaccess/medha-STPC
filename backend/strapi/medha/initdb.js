@@ -400,17 +400,24 @@ async function getAllOTPpermissions() {
   });
 })();
 
-async function getMedhaUsersPermissions(role) {
-  return await bookshelf
-    .model("permission")
-    .where({
-      controller: "userspermissions",
-      type: "users-permissions",
-      role: role
-    })
-    .fetchAll({
-      withRelated: ["role"]
-    });
+async function destroyAllUserPermissionsForMedhaAdmin(role) {
+  try {
+    return await bookshelf
+      .model("permission")
+      .where({
+        controller: "userspermissions",
+        type: "users-permissions",
+        role: role
+      })
+      .destroy()
+      .then(() => {
+        console.log(
+          "\nRemoving all custom user permissions for medha admin role"
+        );
+      });
+  } catch (error) {
+    console.log("\nNo custom user permissions found for medha admin role");
+  }
 }
 
 async function getMedhaAdminRole() {
@@ -424,24 +431,61 @@ async function getMedhaAdminRole() {
 }
 
 (async () => {
-  const medhaAdmin = await getMedhaAdminRole();
-  const data = await getMedhaUsersPermissions(medhaAdmin.id);
+  /**
+   * If streams are present it will skip otherwise create new stream
+   */
 
-  if (!data.length) {
-    _data.allowedMedhaAdminRoutes.forEach(role => {
-      bookshelf
-        .model("permission")
-        .forge({
-          type: "users-permissions",
-          controller: "userspermissions",
-          action: role,
-          enabled: true,
-          role: medhaAdmin.id
-        })
-        .save()
-        .then(() => {
-          console.log(`${role} permission added to Medha Admin`);
-        });
-    });
-  }
+  _data.streams.forEach(stream => {
+    bookshelf
+      .model("stream")
+      .where({ name: stream })
+      .fetch()
+      .then(model => {
+        if (!model) {
+          bookshelf
+            .model("stream")
+            .forge({
+              name: stream
+            })
+            .save()
+            .then(() => {
+              console.log(`Added ${stream} to streams`);
+            });
+        }
+      });
+  });
+  /**
+   * Creating custom api routes for medha admin role
+   * Remove all custom permissions and add new
+   */
+  const medhaAdmin = await getMedhaAdminRole();
+  await destroyAllUserPermissionsForMedhaAdmin(medhaAdmin.id);
+  _data.allowedMedhaAdminRoutes.forEach(action => {
+    bookshelf
+      .model("permission")
+      .where({
+        type: "users-permissions",
+        controller: "userspermissions",
+        action: action,
+        role: medhaAdmin.id
+      })
+      .fetch()
+      .then(res => {
+        if (!res) {
+          bookshelf
+            .model("permission")
+            .forge({
+              type: "users-permissions",
+              controller: "userspermissions",
+              action: action,
+              role: medhaAdmin.id,
+              enabled: true
+            })
+            .save()
+            .then(() => {
+              console.log(`${action} permission added to Medha Admin`);
+            });
+        }
+      });
+  });
 })();
