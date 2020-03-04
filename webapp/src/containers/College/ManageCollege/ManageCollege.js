@@ -50,6 +50,7 @@ const ManageCollege = props => {
     states: [],
     isDataEdited: false,
     isDataDeleted: false,
+    isView: false,
     dataToEdit: {},
     dataToDelete: {},
     showEditModal: false,
@@ -105,16 +106,26 @@ const ManageCollege = props => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
+        let college_data = res.data;
+
         /** As college data is in nested form we first convert it into
          * a float structure and store it in data
          */
-        temp = convertCollegeData(res.data);
-        setFormState(formState => ({
-          ...formState,
-          colleges: res.data,
-          dataToShow: temp,
-          tempData: temp
-        }));
+        serviceProviders
+          .serviceProviderForGetRequest(ZONES_URL)
+          .then(res => {
+            formState.zones = res.data;
+            temp = convertCollegeData(college_data);
+            setFormState(formState => ({
+              ...formState,
+              colleges: res.data,
+              dataToShow: temp,
+              tempData: temp
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
       })
       .catch(error => {
         console.log("error", error);
@@ -125,6 +136,7 @@ const ManageCollege = props => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
+        console.log(data[i]);
         var temp = {};
         temp["id"] = data[i]["id"];
         temp["name"] = data[i]["name"];
@@ -133,6 +145,12 @@ const ManageCollege = props => {
         temp["rpc"] = data[i]["rpc"]["name"];
         temp["contact_number"] = data[i]["contact_number"];
         temp["college_email"] = data[i]["college_email"];
+        console.log(formState.zones, data[i]);
+        for (let j in formState.zones) {
+          if (formState.zones[j]["id"] === data[i]["rpc"]["zone"]) {
+            temp["zone_name"] = formState.zones[j]["name"];
+          }
+        }
         x.push(temp);
       }
       return x;
@@ -150,7 +168,8 @@ const ManageCollege = props => {
     getCollegeData();
   };
 
-  const getDataForEdit = async id => {
+  const getDataForEdit = async (id, isView = false) => {
+    console.log("yogesh ", isView, id);
     /** Get college data for edit */
     await serviceProviders
       .serviceProviderForGetOneRequest(COLLEGE_URL, id)
@@ -203,14 +222,32 @@ const ManageCollege = props => {
                     } else {
                       rpcs = data2.data.rpcs;
                     }
-                    setFormState(formState => ({
-                      ...formState,
-                      dataToEdit: editData,
-                      showEditModal: true,
-                      showModalDelete: false,
-                      zonesForEdit: zones,
-                      rpcsForEdit: rpcs
-                    }));
+                    console.log("isView", isView);
+                    if (isView) {
+                      console.log("isView143", isView);
+
+                      setFormState(formState => ({
+                        ...formState,
+                        dataToEdit: editData,
+                        showEditModal: true,
+                        showModalDelete: false,
+                        zonesForEdit: zones,
+                        rpcsForEdit: rpcs,
+                        isView: true
+                      }));
+                    } else {
+                      console.log("isView8678", isView);
+
+                      setFormState(formState => ({
+                        ...formState,
+                        dataToEdit: editData,
+                        showEditModal: true,
+                        showModalDelete: false,
+                        zonesForEdit: zones,
+                        rpcsForEdit: rpcs,
+                        isView: false
+                      }));
+                    }
                   })
                 )
                 .catch(error => {
@@ -229,6 +266,10 @@ const ManageCollege = props => {
 
   const editCell = event => {
     getDataForEdit(event.target.id);
+  };
+
+  const viewCell = event => {
+    getDataForEdit(event.target.id, true);
   };
 
   const isEditCellCompleted = status => {
@@ -323,15 +364,21 @@ const ManageCollege = props => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Id", sortable: true, selector: "id" },
-    { name: "College Name", sortable: true, selector: "name" },
-    { name: "College Code", sortable: true, selector: "college_code" },
-    { name: "Address", sortable: true, selector: "address" },
-    { name: "Rpc", sortable: true, selector: "rpc" },
-    { name: "Contact Number", sortable: true, selector: "contact_number" },
-    { name: "Contact Email", sortable: true, selector: "college_email" },
+    { name: "Name", sortable: true, selector: "name" },
+    { name: "Zone", sortable: true, selector: "zone_name" },
+    { name: "RPC", sortable: true, selector: "rpc" },
 
     /** Columns for edit and delete */
+
+    {
+      cell: cell => (
+        <i class="material-icons" id={cell.id} onClick={viewCell}>
+          view_list
+        </i>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    },
     {
       cell: cell => (
         <i
@@ -436,18 +483,13 @@ const ManageCollege = props => {
                 column={column}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
-                // pagination
-                // paginationServer
-                // paginationTotalRows={totalRows}
-                // onChangeRowsPerPage={handlePerRowsChange}
-                // onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />
             )
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
-          )}
+          )}{" "}
           <EditCollege
             showModal={formState.showEditModal}
             closeModal={handleCloseModal}
@@ -459,6 +501,7 @@ const ManageCollege = props => {
             streamsDataForEdit={streamsData}
             zonesForEdit={formState.zonesForEdit}
             rpcsForEdit={formState.rpcsForEdit}
+            isView={formState.isView}
           />
           <DeleteCollege
             showModal={formState.showModalDelete}

@@ -180,8 +180,7 @@ const ViewStates = () => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Id", sortable: true, selector: "id" },
-    { name: "States", sortable: true, selector: "name" },
+    { name: "Name", sortable: true, selector: "name" },
     /** Columns for edit and delete */
     {
       cell: cell => (

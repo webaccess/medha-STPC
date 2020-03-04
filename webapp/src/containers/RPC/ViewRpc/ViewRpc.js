@@ -216,8 +216,7 @@ const ViewRpc = props => {
   };
 
   const column = [
-    { name: "Id", sortable: true, selector: "id" },
-    { name: "RPCs", sortable: true, selector: "name" },
+    { name: "Name", sortable: true, selector: "name" },
     { name: "Zone", sortable: true, selector: "zone" },
     { name: "State", sortable: true, selector: "state" },
     /** Columns for edit and delete */
@@ -237,11 +236,7 @@ const ViewRpc = props => {
     },
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          // onClick={deleteCell}
-        >
+        <i className="material-icons" id={cell.id} onClick={deleteCell}>
           delete_outline
         </i>
       ),
@@ -338,12 +333,12 @@ const ViewRpc = props => {
           id={formState.dataToEdit["id"]}
           editEvent={isEditCellCompleted}
         /> */}
-          {/* <DeleteRpc
-        showModal={formState.showModalDelete}
-        closeModal={handleCloseDeleteModal}
-        id={formState.dataToDelete["id"]}
-        deleteEvent={isDeleteCellCompleted}
-      /> */}
+          <DeleteRpc
+            showModal={formState.showModalDelete}
+            closeModal={handleCloseDeleteModal}
+            id={formState.dataToDelete["id"]}
+            deleteEvent={isDeleteCellCompleted}
+          />
         </Card>
       </Grid>
     </Grid>

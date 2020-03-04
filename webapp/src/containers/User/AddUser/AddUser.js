@@ -55,7 +55,6 @@ const Adduser = props => {
   const [roles, setRoles] = useState([]);
 
   useEffect(() => {
-
     serviceProvider
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
@@ -89,7 +88,6 @@ const Adduser = props => {
         console.log(error);
       });
 
-
     serviceProvider
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
@@ -106,7 +104,17 @@ const Adduser = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES
       )
       .then(res => {
-        setRoles(res.data);
+        let roles = [];
+        for (let i in res.data.roles) {
+          if (
+            res.data.roles[i]["name"] !== "Admin" &&
+            res.data.roles[i]["name"] !== "Authenticated" &&
+            res.data.roles[i]["name"] !== "Public"
+          ) {
+            roles.push(res.data.roles[i]);
+          }
+        }
+        setRoles(roles);
       })
       .catch(error => {
         console.log(error);
@@ -204,21 +212,11 @@ const Adduser = props => {
       formState.values[password],
       formState.values[contact],
       formState.values[active],
-      formState.values[state]
-        ? databaseUtilities.setState(formState.values[state])
-        : null,
-      formState.values[zone]
-        ? databaseUtilities.setZone(formState.values[zone])
-        : null,
-      formState.values[rpc]
-        ? databaseUtilities.setRpc(formState.values[rpc])
-        : null,
-      formState.values[college]
-        ? databaseUtilities.setCollege(formState.values[college])
-        : null,
-      formState.values[role]
-        ? databaseUtilities.setRole(formState.values[role])
-        : null
+      formState.values[state] ? formState.values[state] : null,
+      formState.values[zone] ? formState.values[zone] : null,
+      formState.values[rpc] ? formState.values[rpc] : null,
+      formState.values[college] ? formState.values[college] : null,
+      formState.values[role] ? formState.values[role] : null
     );
 
     serviceProvider
@@ -268,18 +266,6 @@ const Adduser = props => {
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
-              <Grid>
-                {isSuccess ? (
-                  <Alert severity="success" className={classes.message}>
-                    {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
-                  </Alert>
-                ) : null}
-                {isFailed ? (
-                  <Alert severity="error">
-                    {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
-                  </Alert>
-                ) : null}
-              </Grid>
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={3} xs={12}>
                   <TextField

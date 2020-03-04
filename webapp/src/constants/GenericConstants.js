@@ -19,3 +19,4 @@ export const ADD_COLLEGE_TEXT = "Add College";
 export const MANAGE_COLLEGE_TEXT = "Manage College";
 export const ADD_COLLEGE_BUTTON = "Add College";
 export const EDIT_COLLEGE_TEXT = "Edit College";
+export const VIEW_COLLEGE_TEXT = "View College";

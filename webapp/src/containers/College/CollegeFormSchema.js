@@ -1,6 +1,6 @@
 const CollegeFormSchema = {
   collegeName: {
-    label: "Add College",
+    label: "College Name",
     id: "name",
     autoComplete: "name",
     required: true,
@@ -15,7 +15,7 @@ const CollegeFormSchema = {
     }
   },
   collegeCode: {
-    label: "Add College Code",
+    label: "College Code",
     id: "college_code",
     autoComplete: "college_code",
     required: true,
@@ -30,7 +30,7 @@ const CollegeFormSchema = {
     }
   },
   address: {
-    label: "Add Address",
+    label: "Address",
     id: "address",
     autoComplete: "address",
     required: true,
@@ -45,7 +45,7 @@ const CollegeFormSchema = {
     }
   },
   state: {
-    label: "Add state",
+    label: "State",
     id: "state",
     autoComplete: "state",
     required: false,
@@ -55,7 +55,7 @@ const CollegeFormSchema = {
     validations: {}
   },
   zone: {
-    label: "Add zone",
+    label: "Zone",
     id: "zone",
     autoComplete: "zone",
     required: false,
@@ -65,7 +65,7 @@ const CollegeFormSchema = {
     validations: {}
   },
   rpc: {
-    label: "Add rpc",
+    label: "RPC",
     id: "rpc",
     autoComplete: "rpc",
     required: false,
@@ -75,7 +75,7 @@ const CollegeFormSchema = {
     validations: {}
   },
   contactNumber: {
-    label: "Add contact_number",
+    label: "Contact Number",
     id: "contact_number",
     autoComplete: "contact_number",
     required: true,
@@ -85,12 +85,12 @@ const CollegeFormSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Contact number is required"
+        message: "Contact Number is required"
       }
     }
   },
   collegeEmail: {
-    label: "Add college_email",
+    label: "Email",
     id: "college_email",
     autoComplete: "college_email",
     required: true,
@@ -100,7 +100,7 @@ const CollegeFormSchema = {
     validations: {
       required: {
         value: "true",
-        message: "college_email is required"
+        message: "Email is required"
       },
       validateEmailRegex: {
         value: "true",
@@ -109,7 +109,7 @@ const CollegeFormSchema = {
     }
   },
   principal: {
-    label: "Add principal",
+    label: "Principal Name",
     id: "principal",
     autoComplete: "principal",
     required: false,
@@ -129,7 +129,7 @@ const CollegeFormSchema = {
     validations: {}
   },
   streams: {
-    label: "Add streams",
+    label: "Streams",
     id: "streams",
     autoComplete: "streams",
     required: false,

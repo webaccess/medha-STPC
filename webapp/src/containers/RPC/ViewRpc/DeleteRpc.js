@@ -7,7 +7,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "./ViewRpcStyles";
+import useStyles from "./DeleteRpcStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
@@ -15,7 +15,7 @@ import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
 import * as genericConstants from "../../../constants/GenericConstants";
 // import ZoneSchema from "../ZoneSchema";
 import { get } from "lodash";
-
+import { GreenButton } from "../../../components";
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 // const ZONE_ID = "stateName";
 
@@ -94,23 +94,25 @@ const DeleteRpc = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.DELETE_TEXT}
           </Typography>
-          <Grid item xs={12}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item lg>
-                Do yo want to delete this field?
-              </Grid>
-              <Grid item xs>
-                <Button
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  onClick={handleSubmit}
-                >
-                  {genericConstants.DELETE_TEXT}
-                </Button>
+          <div className={classes.edit_dialog}>
+            <Grid item xs={12}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item lg className={classes.deletemessage}>
+                  Do yo want to delete this field?
+                </Grid>
+                <Grid item xs>
+                  <GreenButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={handleSubmit}
+                  >
+                    {genericConstants.DELETE_TEXT}
+                  </GreenButton>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          </div>
         </div>
       </Fade>
     </Modal>

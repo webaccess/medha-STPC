@@ -20,7 +20,7 @@ const ZoneSchema = {
     }
   },
   stateName: {
-    label: "State Name",
+    label: "State",
     id: "statename",
     autoComplete: "statename",
     required: true,

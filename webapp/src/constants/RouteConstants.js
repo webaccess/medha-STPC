@@ -14,4 +14,7 @@ export const ADD_RPC = "/add-rpc";
 export const ADD_COLLEGE = "/add-college";
 export const VIEW_COLLEGE = "/view-college";
 export const VIEW_USER = "/view-user";
-
+export const MANAGE_TRAINING = "/manage-training";
+export const VALIDATE_STUDENT = "/validate-student";
+export const EVENTS = "/events";
+export const PROFILE = "/profile";

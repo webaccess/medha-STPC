@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
-  Button,
   Card,
   CardContent,
   Grid,
@@ -19,7 +18,6 @@ import {
 } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
 import useStyles from "./ViewUserStyles";
-import styles from "../User.module.css";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
@@ -27,6 +25,12 @@ const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
+
+const ZONE_FILTER = "zoneFilter";
+const RPC_FILTER = "rpcFilter";
+const IPC_FILTER = "ipcFilter";
+const USER_FILTER = "userFilter";
+const ROLE_FILTER = "roleFilter";
 
 const ViewUsers = () => {
   const classes = useStyles();
@@ -39,7 +43,11 @@ const ViewUsers = () => {
     roles: [],
     ipcs: [],
     filterDataParameters: {
-      ZONE_FILTER: ""
+      zoneFilter: "",
+      rpcFilter: "",
+      ipcFilter: "",
+      userFilter: "",
+      roleFilter: ""
     },
     isDataEdited: false,
     isDataDeleted: false,
@@ -49,10 +57,8 @@ const ViewUsers = () => {
     showModalDelete: false
   });
 
-  console.log("sam", formState.users);
-
   useEffect(() => {
-    /** Seperate function to get zone data */
+    /** Seperate function to get user data */
     getUserData();
 
     serviceProviders
@@ -94,9 +100,20 @@ const ViewUsers = () => {
     serviceProviders
       .serviceProviderForGetRequest(ROLE_URL)
       .then(res => {
+        let rolesArray = [];
+        for (let i in res.data.roles) {
+          if (
+            res.data.roles[i]["name"] !== "Admin" &&
+            res.data.roles[i]["name"] !== "Authenticated" &&
+            res.data.roles[i]["name"] !== "Public"
+          ) {
+            rolesArray.push(res.data.roles[i]);
+          }
+        }
         setFormState(formState => ({
           ...formState,
-          roles: res.data
+
+          roles: rolesArray
         }));
       })
       .catch(error => {
@@ -134,9 +151,9 @@ const ViewUsers = () => {
         temp["id"] = data[i]["id"];
         temp["username"] = data[i]["username"];
         temp["role"] = data[i]["role"]["name"];
-        temp["zone"] = data[i]["zone"]["name"];
-        temp["rpc"] = data[i]["rpc"]["name"];
-        temp["college"] = data[i]["college"]["name"];
+        temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
+        temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
+        temp["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
 
         x.push(temp);
       }
@@ -146,10 +163,10 @@ const ViewUsers = () => {
 
   const column = [
     { name: "Users", sortable: true, selector: "username" },
-    { name: "Zone", sortable: true, selector: "zone" },
     { name: "Role", sortable: true, selector: "role" },
+    { name: "Zone", sortable: true, selector: "zone" },
     { name: "RPC", sortable: true, selector: "rpc" },
-    { name: "IPC", sortable: true, selector: "college" },
+    { name: "College", sortable: true, selector: "college" },
     /** Columns for edit and delete */
     {
       cell: cell => (
@@ -180,6 +197,43 @@ const ViewUsers = () => {
     }
   ];
 
+  function refreshPage() {
+    window.location.reload(false);
+  }
+
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    if (value === null) {
+      formState.filterDataParameters[filterName] = "";
+      //restoreData();
+    } else {
+      console.log(formState.filterDataParameters, filterName);
+      formState.filterDataParameters[filterName] =
+        value["name"] || value["username"];
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = () => {
+    console.log("abcd");
+    let filteredData = formState.tempData.filter(function(row) {
+      if (
+        row["username"] === formState.filterDataParameters[USER_FILTER] ||
+        row["role"] === formState.filterDataParameters[ROLE_FILTER] ||
+        row["zone"] === formState.filterDataParameters[ZONE_FILTER] ||
+        row["rpc"] === formState.filterDataParameters[RPC_FILTER] ||
+        row["college"] === formState.filterDataParameters[IPC_FILTER]
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setFormState(formState => ({
+      ...formState,
+      dataToShow: filteredData
+    }));
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -205,12 +259,13 @@ const ViewUsers = () => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
+                  name={USER_FILTER}
                   options={formState.users}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  // onChange={(event, value) =>
-                  //   handleChangeAutoComplete(STATE_FILTER, event, value)
-                  // }
+                  getOptionLabel={option => option.username}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(USER_FILTER, event, value)
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -224,12 +279,13 @@ const ViewUsers = () => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
+                  name={ROLE_FILTER}
                   options={formState.roles}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  // onChange={(event, value) =>
-                  //   handleChangeAutoComplete(STATE_FILTER, event, value)
-                  // }
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(ROLE_FILTER, event, value)
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -243,12 +299,13 @@ const ViewUsers = () => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
+                  name={ZONE_FILTER}
                   options={formState.zones}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  // onChange={(event, value) =>
-                  //   handleChangeAutoComplete(STATE_FILTER, event, value)
-                  // }
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(ZONE_FILTER, event, value)
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -262,12 +319,13 @@ const ViewUsers = () => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
+                  name={RPC_FILTER}
                   options={formState.rpcs}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  // onChange={(event, value) =>
-                  //   handleChangeAutoComplete(STATE_FILTER, event, value)
-                  // }
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(RPC_FILTER, event, value)
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -281,12 +339,13 @@ const ViewUsers = () => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
+                  name={IPC_FILTER}
                   options={formState.ipcs}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  // onChange={(event, value) =>
-                  //   handleChangeAutoComplete(STATE_FILTER, event, value)
-                  // }
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(IPC_FILTER, event, value)
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -302,7 +361,7 @@ const ViewUsers = () => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  //onClick={searchFilter}
+                  onClick={searchFilter}
                 >
                   Search
                 </GreenButton>
@@ -311,7 +370,7 @@ const ViewUsers = () => {
                 <GrayButton
                   variant="contained"
                   color="primary"
-                  //onClick={clearFilter}
+                  onClick={refreshPage}
                   disableElevation
                 >
                   Reset
