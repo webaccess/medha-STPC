@@ -441,8 +441,11 @@ const allowedPublicRoutes = [
   "requestotpforstudent"
 ];
 
+const allowedMedhaAdminRoutes = ["getroles", "getrole"];
+
 module.exports = Object.freeze({
   roles,
   states,
-  allowedPublicRoutes
+  allowedPublicRoutes,
+  allowedMedhaAdminRoutes
 });

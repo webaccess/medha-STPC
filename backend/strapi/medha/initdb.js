@@ -399,3 +399,49 @@ async function getAllOTPpermissions() {
     }
   });
 })();
+
+async function getMedhaUsersPermissions(role) {
+  return await bookshelf
+    .model("permission")
+    .where({
+      controller: "userspermissions",
+      type: "users-permissions",
+      role: role
+    })
+    .fetchAll({
+      withRelated: ["role"]
+    });
+}
+
+async function getMedhaAdminRole() {
+  return await bookshelf
+    .model("role")
+    .where({
+      name: "Medha Admin"
+    })
+    .fetch()
+    .then(model => model.toJSON());
+}
+
+(async () => {
+  const medhaAdmin = await getMedhaAdminRole();
+  const data = await getMedhaUsersPermissions(medhaAdmin.id);
+
+  if (!data.length) {
+    _data.allowedMedhaAdminRoutes.forEach(role => {
+      bookshelf
+        .model("permission")
+        .forge({
+          type: "users-permissions",
+          controller: "userspermissions",
+          action: role,
+          enabled: true,
+          role: medhaAdmin.id
+        })
+        .save()
+        .then(() => {
+          console.log(`${role} permission added to Medha Admin`);
+        });
+    });
+  }
+})();
