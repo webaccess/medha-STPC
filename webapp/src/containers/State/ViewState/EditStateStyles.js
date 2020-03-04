@@ -29,11 +29,8 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "primary",
-    boxShadow: theme.shadows[5],
-    marginBottom: theme.spacing(3),
-    // padding: theme.spacing(2, 4, 3)
-    width: "60%"
+    border: "primary"
+    // padding: theme.spacing(2, 0, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
@@ -64,9 +61,6 @@ const useStyles = makeStyles(theme => ({
   },
   btn_alignment: {
     alignSelf: "center"
-  },
-  btnspace: {
-    paddingTop: "30px"
   }
 }));
 

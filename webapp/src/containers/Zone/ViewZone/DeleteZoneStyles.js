@@ -27,13 +27,13 @@ const useStyles = makeStyles(theme => ({
   edit_dialog: {
     padding: "25px 15px"
   },
+  deletemessage: {
+    flex: "1 auto"
+  },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "primary",
-    boxShadow: theme.shadows[5],
-    marginBottom: theme.spacing(3),
-    // padding: theme.spacing(2, 4, 3)
-    width: "60%"
+    border: "primary"
+    // padding: theme.spacing(2, 0, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
@@ -61,12 +61,6 @@ const useStyles = makeStyles(theme => ({
   },
   Cardtheming: {
     paddingBottom: "16px !important"
-  },
-  btn_alignment: {
-    alignSelf: "center"
-  },
-  btnspace: {
-    paddingTop: "30px"
   }
 }));
 
