@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import {
   TextField,
   Card,
@@ -18,7 +19,7 @@ import {
 } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
 import useStyles from "./ViewUserStyles";
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import DeleteUser from "./DeleteUser"
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
@@ -122,6 +123,7 @@ const ViewUsers = () => {
   }, []);
 
   const getUserData = async () => {
+    
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL)
       .then(res => {
@@ -161,12 +163,41 @@ const ViewUsers = () => {
     }
   };
 
+  const isDeleteCellCompleted = status => {
+    formState.isDataDeleted = status;
+  };
+
+  const deleteCell = event => {
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: { id: event.target.id },
+      showEditModal: false,
+      showModalDelete: true
+    }));
+  };
+
+  /** This is used to handle the close modal event */
+  const handleCloseDeleteModal = () => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setFormState(formState => ({
+      ...formState,
+      showEditModal: false,
+      isDataDeleted: false,
+      showModalDelete: false
+    }));
+    if (formState.isDataDeleted) {
+      getUserData();
+    }
+  };
+  
+
   const column = [
     { name: "Users", sortable: true, selector: "username" },
-    { name: "Role", sortable: true, selector: "role" },
     { name: "Zone", sortable: true, selector: "zone" },
+    { name: "Role", sortable: true, selector: "role" },
     { name: "RPC", sortable: true, selector: "rpc" },
-    { name: "College", sortable: true, selector: "college" },
+    { name: "IPC", sortable: true, selector: "college" },
     /** Columns for edit and delete */
     {
       cell: cell => (
@@ -187,7 +218,7 @@ const ViewUsers = () => {
         <i
           className="material-icons"
           id={cell.id}
-          //onClick={deleteCell}
+          onClick={deleteCell}
         >
           delete_outline
         </i>
@@ -214,20 +245,12 @@ const ViewUsers = () => {
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = () => {
-    console.log("abcd");
-    let filteredData = formState.tempData.filter(function(row) {
-      if (
-        row["username"] === formState.filterDataParameters[USER_FILTER] ||
-        row["role"] === formState.filterDataParameters[ROLE_FILTER] ||
-        row["zone"] === formState.filterDataParameters[ZONE_FILTER] ||
-        row["rpc"] === formState.filterDataParameters[RPC_FILTER] ||
-        row["college"] === formState.filterDataParameters[IPC_FILTER]
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+
+    const filteredData = formState.tempData.filter((dataObj)=>
+      (dataObj.username.indexOf(formState.filterDataParameters[USER_FILTER]) !== -1)&&
+      (dataObj.role.indexOf(formState.filterDataParameters[ROLE_FILTER]) !== -1)&&
+      (dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !== -1));
+
     setFormState(formState => ({
       ...formState,
       dataToShow: filteredData
@@ -387,13 +410,14 @@ const ViewUsers = () => {
                 column={column}
                 //editEvent={editCell}
 
-                //deleteEvent={deleteCell}
+                deleteEvent={deleteCell}
               />
             ) : (
-              <Spinner />
+              <div className={classes.noDataMargin}>No data to show</div>
+
             )
           ) : (
-            <div className={classes.noDataMargin}>No data to show</div>
+            <Spinner />
           )}
 
           {/* <EditState
@@ -402,13 +426,13 @@ const ViewUsers = () => {
           dataToEdit={formState.dataToEdit}
           id={formState.dataToEdit["id"]}
          // editEvent={isEditCellCompleted}
-        />
-        <DeleteState
-          showModal={formState.showModalDelete}
-          //closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
-          //deleteEvent={isDeleteCellCompleted}
         /> */}
+        <DeleteUser
+          showModal={formState.showModalDelete}
+          closeModal={handleCloseDeleteModal}
+          id={formState.dataToDelete["id"]}
+          deleteEvent={isDeleteCellCompleted}
+        /> *
         </Card>
       </Grid>
     </Grid>
