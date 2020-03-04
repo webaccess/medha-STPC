@@ -5,9 +5,10 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import useStyles from "./ViewStateStyles";
+import useStyles from "./DeleteStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
+import { GreenButton } from "../../../components";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_ID = "state";
@@ -86,24 +87,25 @@ const DeleteState = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.DELETE_TEXT}
           </Typography>
+          <div className={classes.edit_dialog}>
           <Grid item xs={12}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item lg>
+              <Grid item lg className={classes.deletemessage}>
                 Do yo want to delete this field?
               </Grid>
               <Grid item xs>
-                <Button
+                <GreenButton
                   type="submit"
                   color="primary"
                   variant="contained"
                   onClick={handleSubmit}
                 >
                   {genericConstants.DELETE_TEXT}
-                </Button>
+                </GreenButton>
               </Grid>
             </Grid>
           </Grid>
-        </div>
+        </div></div>
       </Fade>
     </Modal>
   );

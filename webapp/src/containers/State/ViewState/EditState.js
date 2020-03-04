@@ -6,12 +6,13 @@ import { TextField, Button, Grid, Typography } from "@material-ui/core";
 import { get } from "lodash";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import useStyles from "./ViewStateStyles";
+import useStyles from "./EditStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
 import * as genericConstants from "../../../constants/GenericConstants";
 import StateSchema from "../StateSchema";
+import { GreenButton } from "../../../components";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_SCEHMA_NAME = "state";
@@ -141,45 +142,46 @@ const EditState = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.EDIT_TEXT}
           </Typography>
-          <Grid item xs={12}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item sm>
-                <TextField
-                  fullWidth
-                  id={get(StateSchema[STATE_SCEHMA_NAME], "id")}
-                  label={get(StateSchema[STATE_SCEHMA_NAME], "label")}
-                  name={STATE_SCEHMA_NAME}
-                  value={formState.values[STATE_SCEHMA_NAME] || ""}
-                  onChange={handleChange}
-                  type={get(StateSchema[STATE_SCEHMA_NAME], "type")}
-                  variant="outlined"
-                  margin="normal"
-                  placeholder={get(
-                    StateSchema[STATE_SCEHMA_NAME],
-                    "placeholder"
-                  )}
-                  error={hasError(STATE_SCEHMA_NAME)}
-                  helperText={
-                    hasError(STATE_SCEHMA_NAME)
-                      ? formState.errors[STATE_SCEHMA_NAME].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item xs>
-                <Button
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  onClick={handleSubmit}
-                >
-                  {genericConstants.SAVE_BUTTON_TEXT}
-                </Button>
+          <div className={classes.edit_dialog}>
+            <Grid item xs={12}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item sm>
+                  <TextField
+                    fullWidth
+                    id={get(StateSchema[STATE_SCEHMA_NAME], "id")}
+                    label={get(StateSchema[STATE_SCEHMA_NAME], "label")}
+                    name={STATE_SCEHMA_NAME}
+                    value={formState.values[STATE_SCEHMA_NAME] || ""}
+                    onChange={handleChange}
+                    type={get(StateSchema[STATE_SCEHMA_NAME], "type")}
+                    variant="outlined"
+                    placeholder={get(
+                      StateSchema[STATE_SCEHMA_NAME],
+                      "placeholder"
+                    )}
+                    error={hasError(STATE_SCEHMA_NAME)}
+                    helperText={
+                      hasError(STATE_SCEHMA_NAME)
+                        ? formState.errors[STATE_SCEHMA_NAME].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs className={classes.btn_alignment}>
+                  <GreenButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={handleSubmit}
+                  >
+                    {genericConstants.SAVE_BUTTON_TEXT}
+                  </GreenButton>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          </div>
         </div>
       </Fade>
     </Modal>

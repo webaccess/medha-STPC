@@ -18,7 +18,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "../CollegeStyles";
+import useStyles from "./EditCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
@@ -327,415 +327,415 @@ const EditCollege = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.EDIT_COLLEGE_TEXT}
           </Typography>
-          <Grid item xs={12} className={classes.formgrid}>
-            <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-              <Grid container spacing={3}>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    fullWidth
-                    id={get(CollegeFormSchema[COLLEGE_NAME], "id")}
-                    label={get(CollegeFormSchema[COLLEGE_NAME], "label")}
-                    margin="normal"
-                    name={COLLEGE_NAME}
-                    onChange={handleChange}
-                    required
-                    type={get(CollegeFormSchema[COLLEGE_NAME], "type")}
-                    value={formState.values[COLLEGE_NAME] || ""}
-                    error={hasError(COLLEGE_NAME)}
-                    helperText={
-                      hasError(COLLEGE_NAME)
-                        ? formState.errors[COLLEGE_NAME].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    fullWidth
-                    id={get(CollegeFormSchema[COLLEGE_CODE], "id")}
-                    label={get(CollegeFormSchema[COLLEGE_CODE], "label")}
-                    margin="normal"
-                    name={COLLEGE_CODE}
-                    onChange={handleChange}
-                    required
-                    value={formState.values[COLLEGE_CODE] || ""}
-                    error={hasError(COLLEGE_CODE)}
-                    helperText={
-                      hasError(COLLEGE_CODE)
-                        ? formState.errors[COLLEGE_CODE].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    fullWidth
-                    id={get(CollegeFormSchema[ADDRESS], "id")}
-                    label={get(CollegeFormSchema[ADDRESS], "label")}
-                    margin="normal"
-                    name={ADDRESS}
-                    onChange={handleChange}
-                    required
-                    value={formState.values[ADDRESS] || ""}
-                    error={hasError(ADDRESS)}
-                    helperText={
-                      hasError(ADDRESS)
-                        ? formState.errors[ADDRESS].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel
-                      ref={inputLabel}
-                      id="demo-simple-select-outlined-label"
-                    >
-                      {/* State */}
-                    </InputLabel>
-                    <Autocomplete
-                      id={get(CollegeFormSchema[STATE], "id")}
-                      options={formState.states}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(STATE, event, value);
-                      }}
-                      defaultValue={
-                        formState.states[
-                          formState.states.findIndex(function(item, i) {
-                            return item.id === formState.values[STATE];
-                          })
-                        ]
+          <div className={classes.edit_dialog}>
+            <Grid item xs={12}>
+              <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+                <Grid container spacing={3}>
+                  <Grid item md={3} xs={12}>
+                    <TextField
+                      fullWidth
+                      id={get(CollegeFormSchema[COLLEGE_NAME], "id")}
+                      label={get(CollegeFormSchema[COLLEGE_NAME], "label")}
+                      margin="normal"
+                      name={COLLEGE_NAME}
+                      onChange={handleChange}
+                      required
+                      type={get(CollegeFormSchema[COLLEGE_NAME], "type")}
+                      value={formState.values[COLLEGE_NAME] || ""}
+                      error={hasError(COLLEGE_NAME)}
+                      helperText={
+                        hasError(COLLEGE_NAME)
+                          ? formState.errors[COLLEGE_NAME].map(error => {
+                              return error + " ";
+                            })
+                          : null
                       }
-                      name={STATE}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(STATE)}
-                          helperText={
-                            hasError(STATE)
-                              ? formState.errors[STATE].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          value={option => option.id}
-                          name={STATE}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[STATE], "label")}
-                          variant="outlined"
-                        />
-                      )}
+                      variant="outlined"
                     />
-                  </FormControl>
-                </Grid>
+                  </Grid>
+                  <Grid item md={3} xs={12}>
+                    <TextField
+                      fullWidth
+                      id={get(CollegeFormSchema[COLLEGE_CODE], "id")}
+                      label={get(CollegeFormSchema[COLLEGE_CODE], "label")}
+                      margin="normal"
+                      name={COLLEGE_CODE}
+                      onChange={handleChange}
+                      required
+                      value={formState.values[COLLEGE_CODE] || ""}
+                      error={hasError(COLLEGE_CODE)}
+                      helperText={
+                        hasError(COLLEGE_CODE)
+                          ? formState.errors[COLLEGE_CODE].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      fullWidth
+                      id={get(CollegeFormSchema[ADDRESS], "id")}
+                      label={get(CollegeFormSchema[ADDRESS], "label")}
+                      margin="normal"
+                      name={ADDRESS}
+                      onChange={handleChange}
+                      required
+                      value={formState.values[ADDRESS] || ""}
+                      error={hasError(ADDRESS)}
+                      helperText={
+                        hasError(ADDRESS)
+                          ? formState.errors[ADDRESS].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item md={3} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <InputLabel
+                        ref={inputLabel}
+                        id="demo-simple-select-outlined-label"
+                      >
+                        {/* State */}
+                      </InputLabel>
+                      <Autocomplete
+                        id={get(CollegeFormSchema[STATE], "id")}
+                        options={formState.states}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(STATE, event, value);
+                        }}
+                        defaultValue={
+                          formState.states[
+                            formState.states.findIndex(function(item, i) {
+                              return item.id === formState.values[STATE];
+                            })
+                          ]
+                        }
+                        name={STATE}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(STATE)}
+                            helperText={
+                              hasError(STATE)
+                                ? formState.errors[STATE].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            value={option => option.id}
+                            name={STATE}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[STATE], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
 
-                <Grid item md={3} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel
-                      ref={inputLabel}
-                      id="demo-simple-select-outlined-label"
+                  <Grid item md={3} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
                     >
-                      {/* Zone */}
-                    </InputLabel>
+                      <InputLabel
+                        ref={inputLabel}
+                        id="demo-simple-select-outlined-label"
+                      >
+                        {/* Zone */}
+                      </InputLabel>
 
-                    <Autocomplete
-                      id={get(CollegeFormSchema[ZONE], "id")}
-                      options={formState.zones}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(ZONE, event, value);
-                      }}
-                      defaultValue={
-                        formState.zones[
-                          formState.zones.findIndex(function(item, i) {
-                            return item.id === formState.values[ZONE];
-                          })
-                        ]
-                      }
-                      name={ZONE}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(ZONE)}
-                          helperText={
-                            hasError(ZONE)
-                              ? formState.errors[ZONE].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          value={option => option.id}
-                          name={ZONE}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[ZONE], "label")}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel
-                      ref={inputLabel}
-                      id="demo-simple-select-outlined-label"
+                      <Autocomplete
+                        id={get(CollegeFormSchema[ZONE], "id")}
+                        options={formState.zones}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(ZONE, event, value);
+                        }}
+                        defaultValue={
+                          formState.zones[
+                            formState.zones.findIndex(function(item, i) {
+                              return item.id === formState.values[ZONE];
+                            })
+                          ]
+                        }
+                        name={ZONE}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(ZONE)}
+                            helperText={
+                              hasError(ZONE)
+                                ? formState.errors[ZONE].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            value={option => option.id}
+                            name={ZONE}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[ZONE], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
                     >
-                      {/* RPCs */}
-                    </InputLabel>
+                      <InputLabel
+                        ref={inputLabel}
+                        id="demo-simple-select-outlined-label"
+                      >
+                        {/* RPCs */}
+                      </InputLabel>
 
-                    <Autocomplete
-                      id={get(CollegeFormSchema[RPC], "id")}
-                      options={formState.rpcs}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(RPC, event, value);
-                      }}
-                      defaultValue={
-                        formState.rpcs[
-                          formState.rpcs.findIndex(function(item, i) {
-                            return item.id === formState.values[RPC];
-                          })
-                        ]
+                      <Autocomplete
+                        id={get(CollegeFormSchema[RPC], "id")}
+                        options={formState.rpcs}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(RPC, event, value);
+                        }}
+                        defaultValue={
+                          formState.rpcs[
+                            formState.rpcs.findIndex(function(item, i) {
+                              return item.id === formState.values[RPC];
+                            })
+                          ]
+                        }
+                        name={RPC}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(RPC)}
+                            helperText={
+                              hasError(RPC)
+                                ? formState.errors[RPC].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            value={option => option.id}
+                            name={RPC}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[RPC], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Contact Number"
+                      name={CONTACT_NUMBER}
+                      onChange={handleChange}
+                      required
+                      value={formState.values[CONTACT_NUMBER] || ""}
+                      error={hasError(CONTACT_NUMBER)}
+                      helperText={
+                        hasError(CONTACT_NUMBER)
+                          ? formState.errors[CONTACT_NUMBER].map(error => {
+                              return error + " ";
+                            })
+                          : null
                       }
-                      name={RPC}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(RPC)}
-                          helperText={
-                            hasError(RPC)
-                              ? formState.errors[RPC].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          value={option => option.id}
-                          name={RPC}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[RPC], "label")}
-                          variant="outlined"
-                        />
-                      )}
+                      variant="outlined"
                     />
-                  </FormControl>
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Contact Number"
-                    margin="normal"
-                    name={CONTACT_NUMBER}
-                    onChange={handleChange}
-                    required
-                    value={formState.values[CONTACT_NUMBER] || ""}
-                    error={hasError(CONTACT_NUMBER)}
-                    helperText={
-                      hasError(CONTACT_NUMBER)
-                        ? formState.errors[CONTACT_NUMBER].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    fullWidth
-                    label={get(CollegeFormSchema[COLLEGE_EMAIL], "label")}
-                    id={get(CollegeFormSchema[COLLEGE_EMAIL], "id")}
-                    margin="normal"
-                    name={COLLEGE_EMAIL}
-                    onChange={handleChange}
-                    required
-                    value={formState.values[COLLEGE_EMAIL] || ""}
-                    error={hasError(COLLEGE_EMAIL)}
-                    helperText={
-                      hasError(COLLEGE_EMAIL)
-                        ? formState.errors[COLLEGE_EMAIL].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Divider />
-                <Grid item md={3} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel
-                      ref={inputLabel}
-                      id="demo-simple-select-outlined-label"
-                    >
-                      {/* principal */}
-                    </InputLabel>
-                    <Autocomplete
-                      id={get(CollegeFormSchema[PRINCIPAL], "id")}
-                      options={formState.user}
-                      getOptionLabel={option => option.username}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(PRINCIPAL, event, value);
-                      }}
-                      defaultValue={
-                        formState.user[
-                          formState.user.findIndex(function(item, i) {
-                            return item.id === formState.values[PRINCIPAL];
-                          })
-                        ]
+                  </Grid>
+                  <Grid item md={3} xs={12}>
+                    <TextField
+                      fullWidth
+                      label={get(CollegeFormSchema[COLLEGE_EMAIL], "label")}
+                      id={get(CollegeFormSchema[COLLEGE_EMAIL], "id")}
+                      name={COLLEGE_EMAIL}
+                      onChange={handleChange}
+                      required
+                      value={formState.values[COLLEGE_EMAIL] || ""}
+                      error={hasError(COLLEGE_EMAIL)}
+                      helperText={
+                        hasError(COLLEGE_EMAIL)
+                          ? formState.errors[COLLEGE_EMAIL].map(error => {
+                              return error + " ";
+                            })
+                          : null
                       }
-                      name={PRINCIPAL}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(PRINCIPAL)}
-                          helperText={
-                            hasError(PRINCIPAL)
-                              ? formState.errors[PRINCIPAL].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          value={option => option.id}
-                          name={PRINCIPAL}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[PRINCIPAL], "label")}
-                          variant="outlined"
-                        />
-                      )}
+                      variant="outlined"
                     />
-                  </FormControl>
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel
-                      ref={inputLabel}
-                      id="demo-simple-select-outlined-label"
+                  </Grid>
+                  <Divider />
+                  <Grid item md={3} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
                     >
-                      {/* TPO */}
-                    </InputLabel>
-                    <Autocomplete
-                      id={get(CollegeFormSchema[ADMINS], "id")}
-                      options={formState.user}
-                      getOptionLabel={option => option.username}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(ADMINS, event, value);
-                      }}
-                      name={ADMINS}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(ADMINS)}
-                          helperText={
-                            hasError(ADMINS)
-                              ? formState.errors[ADMINS].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          value={option => option.id}
-                          name={ADMINS}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[ADMINS], "label")}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </FormControl>
-                </Grid>
-                <Divider />
-                <Grid item md={3} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel
-                      ref={inputLabel}
-                      id="demo-simple-select-outlined-label"
+                      <InputLabel
+                        ref={inputLabel}
+                        id="demo-simple-select-outlined-label"
+                      >
+                        {/* principal */}
+                      </InputLabel>
+                      <Autocomplete
+                        id={get(CollegeFormSchema[PRINCIPAL], "id")}
+                        options={formState.user}
+                        getOptionLabel={option => option.username}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(PRINCIPAL, event, value);
+                        }}
+                        defaultValue={
+                          formState.user[
+                            formState.user.findIndex(function(item, i) {
+                              return item.id === formState.values[PRINCIPAL];
+                            })
+                          ]
+                        }
+                        name={PRINCIPAL}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(PRINCIPAL)}
+                            helperText={
+                              hasError(PRINCIPAL)
+                                ? formState.errors[PRINCIPAL].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            value={option => option.id}
+                            name={PRINCIPAL}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[PRINCIPAL], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
                     >
-                      {/* Streams */}
-                    </InputLabel>
-                    <Autocomplete
-                      id={get(CollegeFormSchema[STREAMS], "id")}
-                      options={formState.streamsData}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(STREAMS, event, value);
-                      }}
-                      name={STREAMS}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(STREAMS)}
-                          helperText={
-                            hasError(STREAMS)
-                              ? formState.errors[STREAMS].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          value={option => option.id}
-                          name={STREAMS}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[STREAMS], "label")}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </FormControl>
+                      <InputLabel
+                        ref={inputLabel}
+                        id="demo-simple-select-outlined-label"
+                      >
+                        {/* TPO */}
+                      </InputLabel>
+                      <Autocomplete
+                        id={get(CollegeFormSchema[ADMINS], "id")}
+                        options={formState.user}
+                        getOptionLabel={option => option.username}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(ADMINS, event, value);
+                        }}
+                        name={ADMINS}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(ADMINS)}
+                            helperText={
+                              hasError(ADMINS)
+                                ? formState.errors[ADMINS].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            value={option => option.id}
+                            name={ADMINS}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[ADMINS], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Divider />
+                  <Grid item md={3} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <InputLabel
+                        ref={inputLabel}
+                        id="demo-simple-select-outlined-label"
+                      >
+                        {/* Streams */}
+                      </InputLabel>
+                      <Autocomplete
+                        id={get(CollegeFormSchema[STREAMS], "id")}
+                        options={formState.streamsData}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(STREAMS, event, value);
+                        }}
+                        name={STREAMS}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(STREAMS)}
+                            helperText={
+                              hasError(STREAMS)
+                                ? formState.errors[STREAMS].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            value={option => option.id}
+                            name={STREAMS}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[STREAMS], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <CardActions className={classes.btnspace}>
-                <GreenButton
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  className={classes.submitbtn}
-                >
-                  {genericConstants.SAVE_BUTTON_TEXT}
-                </GreenButton>
-                <GrayButton
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  to={routeConstants.VIEW_COLLEGE}
-                  className={classes.resetbtn}
-                >
-                  {genericConstants.CANCEL_BUTTON_TEXT}
-                </GrayButton>
-              </CardActions>
-            </form>
-          </Grid>
+                <CardActions className={classes.btnspace}>
+                  <GreenButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    className={classes.submitbtn}
+                  >
+                    {genericConstants.SAVE_BUTTON_TEXT}
+                  </GreenButton>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    to={routeConstants.VIEW_COLLEGE}
+                    className={classes.resetbtn}
+                  >
+                    {genericConstants.CANCEL_BUTTON_TEXT}
+                  </GrayButton>
+                </CardActions>
+              </form>
+            </Grid>
+          </div>
         </div>
       </Fade>
     </Modal>

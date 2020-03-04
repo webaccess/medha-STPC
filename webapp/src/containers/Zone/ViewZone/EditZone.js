@@ -7,7 +7,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "./ViewZoneStyles";
+import useStyles from "./EditZoneStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
@@ -15,6 +15,7 @@ import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
 import * as genericConstants from "../../../constants/GenericConstants";
 import ZoneSchema from "../ZoneSchema";
 import { get } from "lodash";
+import { GreenButton } from "../../../components";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const ZONE_SCHEMA_NAME = "zoneName";
@@ -173,78 +174,84 @@ const EditZone = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.EDIT_TEXT}
           </Typography>
-          <Grid item xs={12}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item sm>
-                <TextField
-                  fullWidth
-                  id={get(ZoneSchema[ZONE_SCHEMA_NAME], "id")}
-                  label={get(ZoneSchema[ZONE_SCHEMA_NAME], "label")}
-                  name={ZONE_SCHEMA_NAME}
-                  value={formState.values[ZONE_SCHEMA_NAME] || ""}
-                  onChange={handleChange}
-                  type={get(ZoneSchema[ZONE_SCHEMA_NAME], "type")}
-                  variant="outlined"
-                  margin="normal"
-                  placeholder={get(ZoneSchema[ZONE_SCHEMA_NAME], "placeholder")}
-                  error={hasError(ZONE_SCHEMA_NAME)}
-                  helperText={
-                    hasError(ZONE_SCHEMA_NAME)
-                      ? formState.errors[ZONE_SCHEMA_NAME].map(error => {
-                          return error + " ";
+          <div className={classes.edit_dialog}>
+            <Grid item xs={12}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item sm>
+                  <TextField
+                    fullWidth
+                    id={get(ZoneSchema[ZONE_SCHEMA_NAME], "id")}
+                    label={get(ZoneSchema[ZONE_SCHEMA_NAME], "label")}
+                    name={ZONE_SCHEMA_NAME}
+                    value={formState.values[ZONE_SCHEMA_NAME] || ""}
+                    onChange={handleChange}
+                    type={get(ZoneSchema[ZONE_SCHEMA_NAME], "type")}
+                    variant="outlined"
+                    placeholder={get(
+                      ZoneSchema[ZONE_SCHEMA_NAME],
+                      "placeholder"
+                    )}
+                    error={hasError(ZONE_SCHEMA_NAME)}
+                    helperText={
+                      hasError(ZONE_SCHEMA_NAME)
+                        ? formState.errors[ZONE_SCHEMA_NAME].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item sm>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    options={formState.getstates}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(STATE_SCEHMA_NAME, event, value);
+                    }}
+                    defaultValue={
+                      formState.getstates[
+                        formState.getstates.findIndex(function(item, i) {
+                          return (
+                            item.id === formState.values[STATE_SCEHMA_NAME]
+                          );
                         })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item sm>
-                <Autocomplete
-                  id="combo-box-demo"
-                  options={formState.getstates}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete(STATE_SCEHMA_NAME, event, value);
-                  }}
-                  defaultValue={
-                    formState.getstates[
-                      formState.getstates.findIndex(function(item, i) {
-                        return item.id === formState.values[STATE_SCEHMA_NAME];
-                      })
-                    ]
-                  }
-                  name={get(ZoneSchema[STATE_SCEHMA_NAME], "type")}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      error={hasError(STATE_SCEHMA_NAME)}
-                      helperText={
-                        hasError(STATE_SCEHMA_NAME)
-                          ? formState.errors[STATE_SCEHMA_NAME].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      name={STATE_SCEHMA_NAME}
-                      key={option => option.id}
-                      label={get(ZoneSchema[STATE_SCEHMA_NAME], "label")}
-                      variant="outlined"
-                      className={classes.autoCompleteField}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs>
-                <Button
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  onClick={handleSubmit}
-                >
-                  {genericConstants.SAVE_BUTTON_TEXT}
-                </Button>
+                      ]
+                    }
+                    name={get(ZoneSchema[STATE_SCEHMA_NAME], "type")}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        error={hasError(STATE_SCEHMA_NAME)}
+                        helperText={
+                          hasError(STATE_SCEHMA_NAME)
+                            ? formState.errors[STATE_SCEHMA_NAME].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                        name={STATE_SCEHMA_NAME}
+                        key={option => option.id}
+                        label={get(ZoneSchema[STATE_SCEHMA_NAME], "label")}
+                        variant="outlined"
+                        className={classes.autoCompleteField}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs className={classes.btn_alignment}>
+                  <GreenButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={handleSubmit}
+                  >
+                    {genericConstants.SAVE_BUTTON_TEXT}
+                  </GreenButton>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          </div>
         </div>
       </Fade>
     </Modal>
