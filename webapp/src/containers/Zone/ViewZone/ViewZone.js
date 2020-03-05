@@ -244,7 +244,11 @@ const ViewZone = props => {
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
+        <i
+          className="material-icons tableicons"
+          id={cell.id}
+          onClick={deleteCell}
+        >
           delete_outline
         </i>
       ),

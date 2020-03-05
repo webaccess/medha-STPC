@@ -4,8 +4,9 @@ const useStyles = makeStyles(theme => ({
   resetbtn: {
     backgroundColor: "#666666",
     color: "#fff",
-    borderRadius: "2px",
-    padding: "8px 15px",
+    borderRadius: "3px",
+    padding: "0px 12px",
+    textTransform: "capitalize",
     fontSize: "13px",
     fontWeight: "700",
     letterSpacing: "0px",
