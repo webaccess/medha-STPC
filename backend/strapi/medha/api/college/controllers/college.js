@@ -6,100 +6,255 @@
  */
 
 const bookshelf = require("../../../config/config.js");
+const {
+  convertRestQueryParams,
+  buildQuery,
+  sanitizeEntity
+} = require("strapi-utils");
+const utils = require("../../../config/utils.js");
+
+const sanitizeUser = user =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model
+  });
+
 module.exports = {
   async find(ctx) {
-    const { id, role, rpc, zone, college } = ctx.state.user;
-    console.log(zone);
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /**
+     * public route for colleges
+     */
+    if (!ctx.state.user) {
+      return await bookshelf
+        .model("college")
+        .query(
+          buildQuery({
+            model: strapi.models.college,
+            filters
+          })
+        )
+        .fetchPage({
+          page: page,
+          pageSize: pageSize,
+          columns: ["id", "name"]
+        })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
+    }
+
+    /**
+     * Authenticated user routes
+     */
+
+    const { role, rpc, zone, college } = ctx.state.user;
     if (role.name === "Medha Admin" || role.name === "Admin") {
-      const result = await bookshelf.model("college").fetchAll({
-        withRelated: ["streams", "principal", "admins", "rpc"]
-      });
-      console.log(result);
-      ctx.body = result;
+      return await bookshelf
+        .model("college")
+        .query(
+          buildQuery({
+            model: strapi.models.college,
+            filters
+          })
+        )
+        .fetchPage({
+          page: page,
+          pageSize: pageSize,
+          withRelated: ["streams", "principal", "admins.role", "rpc"]
+        })
+        .then(res => {
+          const data = utils.getPaginatedResponse(res);
+          /**
+           * Here college.admins return all users associated with that college
+           * We need only admins not all users
+           * So we are filtering only those users whose role is `College Admin`
+           */
+          const response = data.result.reduce((acc, college) => {
+            const collegeAdmins = college.admins
+              .map(admin => {
+                if (admin.role.name === "College Admin") {
+                  return sanitizeUser(admin);
+                }
+              })
+              .filter(a => a);
+            college.admins = collegeAdmins;
+            acc.push(college);
+            return acc;
+          }, []);
+          data.result = response;
+          return data;
+        });
     }
 
     if (role.name === "Zonal Admin") {
-      const result = await bookshelf.model("college").fetchAll({
-        require: false,
-        withRelated: [
-          "streams",
-          "principal",
-          "admins",
-          "rpc",
-          {
-            rpc: query => {
-              query.where({
-                zone: zone
-              });
+      return await bookshelf
+        .model("college")
+        .query(
+          buildQuery({
+            model: strapi.models.college,
+            filters
+          })
+        )
+        .fetchPage({
+          require: false,
+          page: page,
+          pageSize: pageSize,
+          withRelated: [
+            "streams",
+            "principal",
+            "admins.role",
+            "rpc",
+            {
+              rpc: query => {
+                query.where({
+                  zone: zone
+                });
+              }
             }
-          }
-        ]
-      });
-      console.log(result);
-      const data = result.toJSON();
-      // const response = data
-      //   .map(obj => {
-      //     if (Object.keys(obj.rpc).length) {
-      //       return obj;
-      //     }
-      //   })
-      //   .filter(a => a);
-
-      const response = data.reduce((accumulator, obj) => {
-        if (Object.keys(obj.rpc).length) {
-          accumulator.push(obj);
-        }
-        return accumulator;
-      }, []);
-
-      // console.log(result);
-      ctx.body = response;
+          ]
+        })
+        .then(res => {
+          const data = utils.getPaginatedResponse(res);
+          const response = data.result.reduce((accumulator, obj) => {
+            /**
+             * Here we need to find all colleges under zonal admin
+             * But we don't have direct relation between zone and college
+             * So by using rpc we are getting zone and then filtering those colleges whose
+             * zone is zonal admin's zone
+             *
+             */
+            if (Object.keys(obj.rpc).length) {
+              /**
+               * Here college.admins return all users associated with that college
+               * We need only admins not all users
+               * So we are filtering only those users whose role is `College Admin`
+               */
+              const collegeAdmins = obj.admins
+                .map(admin => {
+                  if (admin.role.name === "College Admin") {
+                    return sanitizeUser(admin);
+                  }
+                })
+                .filter(a => a);
+              obj.admins = collegeAdmins;
+              accumulator.push(obj);
+            }
+            return accumulator;
+          }, []);
+          data.result = response;
+          return data;
+        });
     }
 
     if (role.name === "RPC Admin") {
-      const result = await bookshelf
+      return await bookshelf
         .model("college")
+        .query(
+          buildQuery({
+            model: strapi.models.college,
+            filters
+          })
+        )
         .where({ rpc: rpc })
-        .fetchAll({ withRelated: ["streams", "principal", "admins"] });
-      console.log(result);
-      ctx.body = result;
+        .fetchPage({
+          page: page,
+          pageSize: pageSize,
+          withRelated: ["streams", "principal", "admins.role"]
+        })
+        .then(res => {
+          const data = utils.getPaginatedResponse(res);
+          const response = data.result.reduce((acc, college) => {
+            const collegeAdmins = college.admins
+              .map(admin => {
+                if (admin.role.name === "College Admin") {
+                  return sanitizeUser(admin);
+                }
+              })
+              .filter(a => a);
+            college.admins = collegeAdmins;
+            acc.push(college);
+            return acc;
+          }, []);
+          data.result = response;
+          return data;
+        });
     }
 
     if (role.name === "College Admin") {
-      const result = await bookshelf
+      return await bookshelf
         .model("college")
+        .query(
+          buildQuery({
+            model: strapi.models.college,
+            filters
+          })
+        )
         .where({ id: college })
-        .fetchAll({ withRelated: ["streams", "principal", "admins"] });
-
-      console.log(result);
-      ctx.body = result;
+        .fetchPage({
+          page: page,
+          pageSize: pageSize,
+          withRelated: ["streams", "principal", "admins"]
+        })
+        .then(res => {
+          const data = utils.getPaginatedResponse(res);
+          const response = data.result.reduce((acc, college) => {
+            const collegeAdmins = college.admins
+              .map(admin => {
+                if (admin.role.name === "College Admin") {
+                  return sanitizeUser(admin);
+                }
+              })
+              .filter(a => a);
+            college.admins = collegeAdmins;
+            acc.push(college);
+            return acc;
+          }, []);
+          data.result = response;
+          return data;
+        });
     }
   },
 
   async showStudents(ctx) {
     const { id } = ctx.params;
-    const { role } = ctx.state.user;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
 
-    const result = await bookshelf.model("student").fetchAll({
-      withRelated: [
-        "user.college",
-        "stream",
-        "educations",
-        {
-          user: query => {
-            query.where({ college: id });
+    return await bookshelf
+      .model("student")
+      .query(
+        buildQuery({
+          model: strapi.models.student,
+          filters
+        })
+      )
+      .fetchPage({
+        page: page,
+        pageSize: pageSize,
+        withRelated: [
+          "user.college",
+          "stream",
+          "educations",
+          {
+            user: query => {
+              query.where({ college: id });
+            }
           }
-        }
-      ]
-    });
-    const data = result.toJSON();
-    const response = data.reduce((accumulator, obj) => {
-      if (Object.keys(obj.user).length) {
-        accumulator.push(obj);
-      }
-      return accumulator;
-    }, []);
-    console.log(response);
-    ctx.body = response;
+        ]
+      })
+      .then(res => {
+        const data = utils.getPaginatedResponse(res);
+        const response = data.result.reduce((acc, obj) => {
+          if (Object.keys(obj.user).length) {
+            obj.user = sanitizeUser(obj.user);
+            acc.push(obj);
+          }
+          return acc;
+        }, []);
+        data.result = response;
+        return data;
+      });
   }
 };

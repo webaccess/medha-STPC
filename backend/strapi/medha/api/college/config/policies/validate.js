@@ -6,7 +6,6 @@
 const bookshelf = require("../../../../config/config.js");
 module.exports = async (ctx, next) => {
   // Add your own logic here.
-  console.log(ctx.request.method);
   if (ctx.request.method === "POST") {
     const {
       name,
@@ -33,7 +32,6 @@ module.exports = async (ctx, next) => {
         .fetch();
 
       if (data) {
-        console.log("rpc exits!!");
       } else ctx.response.notFound("rpc doesn't exist");
     }
     if (streams) {
@@ -43,7 +41,6 @@ module.exports = async (ctx, next) => {
         .fetchAll();
       const result = data.toJSON();
       if (result[0]) {
-        console.log("streams exists");
       } else ctx.response.notFound("streams doesn't exist");
     }
 
@@ -59,7 +56,6 @@ module.exports = async (ctx, next) => {
         .where({ id: rpc })
         .fetch();
       if (data) {
-        console.log("rpc exits!!");
         await next();
       } else ctx.response.notFound("rpc doesn't exist");
     }
@@ -71,7 +67,6 @@ module.exports = async (ctx, next) => {
       const result = data.toJSON();
 
       if (result[0]) {
-        console.log("streams exists");
         await next();
       } else ctx.response.notFound("streams doesn't exist");
     }

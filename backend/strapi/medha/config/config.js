@@ -114,6 +114,9 @@ bookshelf.model("user", {
   },
   college() {
     return this.belongsTo("college", "college", "id");
+  },
+  role() {
+    return this.belongsTo("role", "role", "id");
   }
 });
 

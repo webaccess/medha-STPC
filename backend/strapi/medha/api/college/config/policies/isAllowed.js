@@ -18,7 +18,6 @@ module.exports = async (ctx, next) => {
       .where({ id: id })
       .fetch({ withRelated: ["rpc", "rpc.zone", "admins"] });
     const data = result.toJSON();
-    console.log(data);
     if (!data) ctx.response.notFound("Required College does not exist");
     if (data.rpc.zone.id == zone) await next();
     else ctx.response.forbidden();
@@ -30,7 +29,6 @@ module.exports = async (ctx, next) => {
       .where({ id: id })
       .fetch({ withRelated: ["rpc", "rpc", "admins"] });
     const data = result.toJSON();
-    console.log(data);
     if (!data) ctx.response.notFound("Required College does not exist");
     if (data.rpc.id == rpc) await next();
     else ctx.response.forbidden();
@@ -39,5 +37,4 @@ module.exports = async (ctx, next) => {
   if (role.name === "College Admin" && college == id) {
     await next();
   }
-  console.log("In isAllowed policy.");
 };

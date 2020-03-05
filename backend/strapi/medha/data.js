@@ -435,20 +435,39 @@ const states = {
   }
 };
 
-const allowedPublicRoutes = [
-  "requestotp",
-  "validateotp",
-  "requestotpforstudent"
-];
-
 const allowedMedhaAdminRoutes = ["getroles", "getrole"];
 
 const streams = ["Civil", "Computer", "Mechanical", "ENTC", "Instrumental"];
 
+const publicRoutes = {
+  controllers: [
+    {
+      name: "otp",
+      action: ["requestotp", "validateotp", "requestotpforstudent"]
+    },
+    {
+      name: "state",
+      action: ["find"]
+    },
+    {
+      name: "zone",
+      action: ["find"]
+    },
+    {
+      name: "rpc",
+      action: ["find"]
+    },
+    {
+      name: "college",
+      action: ["find"]
+    }
+  ]
+};
+
 module.exports = Object.freeze({
   roles,
   states,
-  allowedPublicRoutes,
   allowedMedhaAdminRoutes,
-  streams
+  streams,
+  publicRoutes
 });

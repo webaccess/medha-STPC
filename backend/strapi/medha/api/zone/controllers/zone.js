@@ -5,6 +5,8 @@
  * to customize this controller
  */
 const bookshelf = require("../../../config/config.js");
+const utils = require("../../../config/utils.js");
+const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 module.exports = {
   /**
    * Retrieve Zones.
@@ -14,26 +16,68 @@ module.exports = {
    * @return {Array}
    */
   async find(ctx) {
-    const { role, zone } = ctx.state.user;
-    let data;
-    if (role.name === "Medha Admin" || role.name === "Admin") {
-      const result = await bookshelf
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /**
+     * Public role for zones
+     */
+    if (!ctx.state.user) {
+      return await bookshelf
         .model("zone")
-        .fetchAll({ withRelated: ["state"] });
-      data = result;
+        .query(
+          buildQuery({
+            model: strapi.models.zone,
+            filters
+          })
+        )
+        .fetchPage({
+          page: page,
+          pageSize: pageSize,
+          columns: ["id", "name"]
+        })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
+    }
+
+    /**
+     * Authenticated Role
+     */
+
+    const { role, zone } = ctx.state.user;
+    if (role.name === "Medha Admin" || role.name === "Admin") {
+      return await bookshelf
+        .model("zone")
+        .query(
+          buildQuery({
+            model: strapi.models.zone,
+            filters
+          })
+        )
+        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["state"] })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
     }
 
     if (role.name === "Zonal Admin") {
-      const result = await bookshelf
+      return await bookshelf
         .model("zone")
+        .query(
+          buildQuery({
+            model: strapi.models.zone,
+            filters
+          })
+        )
         .where({
           id: zone
         })
-        .fetchAll({ withRelated: ["state"] });
-      data = result;
+        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["state"] })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
     }
-
-    ctx.send(data);
   },
 
   /**

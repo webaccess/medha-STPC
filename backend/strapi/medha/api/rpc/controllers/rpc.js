@@ -7,6 +7,7 @@
 
 const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
+const utils = require("../../../config/utils.js");
 module.exports = {
   /**
    * Retrieve RPCs.
@@ -14,18 +15,16 @@ module.exports = {
    * medha-admin/ admin will get all available RPCs
    * zonal-admin will get RPCs under their zone
    * rpc-admin will get their repective RPC
-   * @return {Object|Array}
+   * @return {Object}
    */
   async find(ctx) {
-    const { role, rpc, zone } = ctx.state.user;
-    let data;
-    if (role.name === "Medha Admin" || role.name === "Admin") {
-      // const result = await bookshelf
-      //   .model("rpc")
-      //   .fetchAll({ withRelated: ["zone"] });
-
-      const filters = convertRestQueryParams(ctx.request.query);
-      const result = await bookshelf
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+    /**
+     * Public route
+     */
+    if (!ctx.state.user) {
+      return await bookshelf
         .model("rpc")
         .query(
           buildQuery({
@@ -33,29 +32,65 @@ module.exports = {
             filters
           })
         )
-        .fetchAll({ withRelated: ["zone"] });
-      data = result.toJSON();
+        .fetchPage({
+          page: page,
+          pageSize: pageSize,
+          columns: ["id", "name"]
+        })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
+    }
+    /**
+     * For authenticated user
+     */
+    const { role, rpc, zone } = ctx.state.user;
+    if (role.name === "Medha Admin" || role.name === "Admin") {
+      return await bookshelf
+        .model("rpc")
+        .query(
+          buildQuery({
+            model: strapi.models.rpc,
+            filters
+          })
+        )
+        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["zone"] })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
     }
 
     if (role.name === "Zonal Admin") {
-      const result = await bookshelf
+      return await bookshelf
         .model("rpc")
+        .query(
+          buildQuery({
+            model: strapi.models.rpc,
+            filters
+          })
+        )
         .where({ zone: zone })
-        .fetchAll({ withRelated: ["zone"] });
-      data = result.toJSON();
+        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["zone"] })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
     }
 
     if (role.name === "RPC Admin") {
-      if (rpc) {
-        const result = await bookshelf
-          .model("rpc")
-          .where({ id: rpc })
-          .fetchAll({ withRelated: ["zone"] });
-        data = result.toJSON();
-      } else data = {};
+      return await bookshelf
+        .model("rpc")
+        .query(
+          buildQuery({
+            model: strapi.models.rpc,
+            filters
+          })
+        )
+        .where({ id: rpc })
+        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["zone"] })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
     }
-
-    ctx.send(data);
   },
 
   /**

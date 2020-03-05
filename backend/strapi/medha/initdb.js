@@ -365,41 +365,6 @@ if (!(_skip && skip.test("states"))) {
   })();
 }
 
-async function getAllOTPpermissions() {
-  return await bookshelf
-    .model("permission")
-    .where({
-      controller: "otp"
-    })
-    .fetchAll({
-      withRelated: [
-        "role",
-        {
-          role: query => {
-            query.where({
-              name: "Public"
-            });
-          }
-        }
-      ]
-    });
-}
-
-(async () => {
-  const data = await getAllOTPpermissions();
-  data.forEach(model => {
-    const json = model.toJSON();
-    if (
-      model.role &&
-      Object.keys(json.role).length &&
-      _data.allowedPublicRoutes.includes(json.action)
-    ) {
-      model.save({ enabled: true }, { patch: true });
-      console.log(`Added ${json.action} to Public role`);
-    }
-  });
-})();
-
 async function destroyAllUserPermissionsForMedhaAdmin(role) {
   try {
     return await bookshelf
@@ -487,5 +452,53 @@ async function getMedhaAdminRole() {
             });
         }
       });
+  });
+})();
+
+async function getPublicRole() {
+  return await bookshelf
+    .model("role")
+    .where({ name: "Public" })
+    .fetch()
+    .then(res => res.toJSON());
+}
+
+async function deleteAllPublicRoute(role) {
+  return await bookshelf
+    .model("permission")
+    .where({
+      role: role.id,
+      type: "application"
+    })
+    .destroy({ require: false })
+    .then(() => {
+      console.log("\nDeleting all public routes...");
+    });
+}
+
+/**
+ * Public routes for dropdown(State, Zone, RPC and College)
+ * Also for student self registration
+ */
+(async () => {
+  const role = await getPublicRole();
+  await deleteAllPublicRoute(role);
+  _data.publicRoutes.controllers.forEach(controller => {
+    const { action, name } = controller;
+    action.forEach(act => {
+      bookshelf
+        .model("permission")
+        .forge({
+          role: role.id,
+          type: "application",
+          controller: name,
+          action: act,
+          enabled: true
+        })
+        .save()
+        .then(() => {
+          console.log(`Added ${act} to controller ${name}`);
+        });
+    });
   });
 })();
