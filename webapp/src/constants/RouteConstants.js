@@ -11,8 +11,12 @@ export const VIEW_RPC = "/view-rpc";
 export const ADD_STATES = "/add-states";
 export const ADD_ZONES = "/add-zones";
 export const ADD_RPC = "/add-rpc";
+/** College */
 export const ADD_COLLEGE = "/add-college";
 export const VIEW_COLLEGE = "/view-college";
+export const EDIT_COLLEGE = "/edit-college";
+
+/** user */
 export const VIEW_USER = "/view-user";
 export const MANAGE_TRAINING = "/manage-training";
 export const VALIDATE_STUDENT = "/validate-student";

@@ -12,10 +12,10 @@ import {
 } from "./authroute";
 
 import Dashboard from "./containers/Dashboard/Dashboard";
-import AddCollege from "./containers/College/AddCollege/AddCollege";
+import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
 import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
 import AddUser from "./containers/User/AddUser/AddUser";
-import ViewUsers from "./containers/User/ViewUser/ViewUser"
+import ViewUsers from "./containers/User/ViewUser/ViewUser";
 import AddRpc from "./containers/RPC/AddRpc/AddRpc";
 import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";
 import AddStates from "./containers/State/AddState/AddState";
@@ -26,6 +26,7 @@ import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "./theme";
+import EditCollegeRoute from "./authroute/EditCollegeRoute";
 
 class App extends Component {
   render() {
@@ -103,11 +104,20 @@ class App extends Component {
                 layout={Layout}
                 path={routeConstants.ADD_ZONES}
               />
+              {/** College */}
+              {/** Add College */}
               <RouteWithLayout
-                component={AddCollege}
+                component={AddEditCollege}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_COLLEGE}
+              />
+              {/** Edit College */}
+              <RouteWithLayout
+                component={EditCollegeRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_COLLEGE}
               />
               <RouteWithLayout
                 component={ViewCollege}

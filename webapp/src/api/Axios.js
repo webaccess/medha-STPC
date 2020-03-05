@@ -56,7 +56,7 @@ export const serviceProviderForPutRequest = async (
 ) => {
   const URL = url;
   return await axios(URL + "/" + id, {
-    method: "Put",
+    method: "PUT",
     headers: headers,
     data: body
   })

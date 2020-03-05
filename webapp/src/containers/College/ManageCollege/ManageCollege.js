@@ -2,20 +2,19 @@ import React, { useState, useEffect } from "react";
 
 import {
   TextField,
-  Button,
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
 
-import axios from "axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Table, Spinner } from "../../../components";
+import { Table, Spinner, Alert } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./ManageCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
-import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as genericConstants from "../../../constants/GenericConstants";
 import {
   GrayButton,
@@ -24,22 +23,18 @@ import {
 } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import DeleteCollege from "./DeleteCollege";
-import EditCollege from "./EditCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import { useHistory } from "react-router-dom";
+import CloseIcon from "@material-ui/icons/Close";
 
-const STATES_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const STREAMS_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
-const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const COLLEGES_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const COLLEGE_FILTER = "collegeName";
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 
 const ManageCollege = props => {
+  const history = useHistory();
+  const [open, setOpen] = React.useState(true);
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
@@ -48,54 +43,40 @@ const ManageCollege = props => {
     zonesForEdit: [],
     rpcsForEdit: [],
     states: [],
-    isDataEdited: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditCollege"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromeditCollege"]
+      ? props["location"]["editedData"]
+      : {},
+    fromeditCollege: props["location"]["fromeditCollege"]
+      ? props["location"]["fromeditCollege"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddCollege"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddCollege"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddCollege: props["location"]["fromAddCollege"]
+      ? props["location"]["fromAddCollege"]
+      : false,
+    /** This is for delete */
     isDataDeleted: false,
-    isView: false,
-    dataToEdit: {},
     dataToDelete: {},
+    isView: false,
     showEditModal: false,
     showModalDelete: false,
     filterDataParameters: {
       COLLEGE_FILTER: ""
     }
   });
-  /** This will change */
-  const [user, setUser] = useState([]);
-  const [states, setStates] = useState([]);
-  const [zones, setZones] = useState([]);
-  const [rpcs, setRpcs] = useState([]);
-  const [streamsData, setStreamsData] = useState([]);
 
-  useEffect(() => {}, [formState.dataToEdit]);
-
-  /** Pre-populate the data with zones data and state data. State data is used while editing the data */
   useEffect(() => {
     /** Seperate function to get zone data */
     getCollegeData();
-    serviceProviders
-      .serviceProviderForGetRequest(USERS_URL)
-      .then(res => {
-        setUser(res.data);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-    serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
-      .then(res => {
-        setStates(res.data);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-    serviceProviders
-      .serviceProviderForGetRequest(STREAMS_URL)
-      .then(res => {
-        setStreamsData(res.data);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
   }, []);
 
   /** This seperate function is used to get the college data*/
@@ -118,7 +99,7 @@ const ManageCollege = props => {
             temp = convertCollegeData(college_data);
             setFormState(formState => ({
               ...formState,
-              colleges: res.data,
+              colleges: college_data,
               dataToShow: temp,
               tempData: temp
             }));
@@ -132,28 +113,27 @@ const ManageCollege = props => {
       });
   };
 
+  /** Converting college unstructured data into structred flat format for passing it into datatable */
   const convertCollegeData = data => {
-    let x = [];
+    let collegeDataArray = [];
     if (data.length > 0) {
       for (let i in data) {
-        console.log(data[i]);
-        var temp = {};
-        temp["id"] = data[i]["id"];
-        temp["name"] = data[i]["name"];
-        temp["college_code"] = data[i]["college_code"];
-        temp["address"] = data[i]["address"];
-        temp["rpc"] = data[i]["rpc"]["name"];
-        temp["contact_number"] = data[i]["contact_number"];
-        temp["college_email"] = data[i]["college_email"];
-        console.log(formState.zones, data[i]);
+        var tempIndividualCollegeData = {};
+        tempIndividualCollegeData["id"] = data[i]["id"];
+        tempIndividualCollegeData["name"] = data[i]["name"];
+        tempIndividualCollegeData["college_code"] = data[i]["college_code"];
+        tempIndividualCollegeData["address"] = data[i]["address"];
+        tempIndividualCollegeData["rpc"] = data[i]["rpc"]["name"];
+        tempIndividualCollegeData["contact_number"] = data[i]["contact_number"];
+        tempIndividualCollegeData["college_email"] = data[i]["college_email"];
         for (let j in formState.zones) {
           if (formState.zones[j]["id"] === data[i]["rpc"]["zone"]) {
-            temp["zone_name"] = formState.zones[j]["name"];
+            tempIndividualCollegeData["zone_name"] = formState.zones[j]["name"];
           }
         }
-        x.push(temp);
+        collegeDataArray.push(tempIndividualCollegeData);
       }
-      return x;
+      return collegeDataArray;
     }
   };
 
@@ -169,7 +149,6 @@ const ManageCollege = props => {
   };
 
   const getDataForEdit = async (id, isView = false) => {
-    console.log("yogesh ", isView, id);
     /** Get college data for edit */
     await serviceProviders
       .serviceProviderForGetOneRequest(COLLEGE_URL, id)
@@ -183,76 +162,15 @@ const ManageCollege = props => {
           editData["rpc"]["zone"] != null
         ) {
           /** If present get state id using that zone */
-          let zones = [];
-          let rpcs = [];
           serviceProviders
             .serviceProviderForGetOneRequest(ZONES_URL, editData["rpc"]["zone"])
             .then(res => {
               editData["state"] = res.data["state"]["id"];
-              /** After getting state id get correspnding all zones and rpcs using that state id to pre populate the edit section */
-
-              let url_array = [];
-              url_array.push(
-                STATES_URL +
-                  "/" +
-                  res.data["state"]["id"] +
-                  "/" +
-                  strapiConstants.STRAPI_ZONES
-              );
-
-              url_array.push(
-                ZONES_URL +
-                  "/" +
-                  editData["rpc"]["zone"] +
-                  "/" +
-                  strapiConstants.STRAPI_RPCS
-              );
-
-              serviceProviders
-                .serviceProviderForAllGetRequest(url_array)
-                .then(
-                  axios.spread((data1, data2) => {
-                    if (Array.isArray(data1.data)) {
-                      zones = data1.data[0].zones;
-                    } else {
-                      zones = data1.data.zones;
-                    }
-                    if (Array.isArray(data2.data)) {
-                      rpcs = data2.data[0].zones;
-                    } else {
-                      rpcs = data2.data.rpcs;
-                    }
-                    console.log("isView", isView);
-                    if (isView) {
-                      console.log("isView143", isView);
-
-                      setFormState(formState => ({
-                        ...formState,
-                        dataToEdit: editData,
-                        showEditModal: true,
-                        showModalDelete: false,
-                        zonesForEdit: zones,
-                        rpcsForEdit: rpcs,
-                        isView: true
-                      }));
-                    } else {
-                      console.log("isView8678", isView);
-
-                      setFormState(formState => ({
-                        ...formState,
-                        dataToEdit: editData,
-                        showEditModal: true,
-                        showModalDelete: false,
-                        zonesForEdit: zones,
-                        rpcsForEdit: rpcs,
-                        isView: false
-                      }));
-                    }
-                  })
-                )
-                .catch(error => {
-                  console.log("error for axios all > ", error);
-                });
+              history.push({
+                pathname: routeConstants.EDIT_COLLEGE,
+                editCollege: true,
+                dataForEdit: editData
+              });
             })
             .catch(error => {
               console.log("error while getting data for edit > ", error);
@@ -270,10 +188,6 @@ const ManageCollege = props => {
 
   const viewCell = event => {
     getDataForEdit(event.target.id, true);
-  };
-
-  const isEditCellCompleted = status => {
-    formState.isDataEdited = status;
   };
 
   const isDeleteCellCompleted = status => {
@@ -324,30 +238,7 @@ const ManageCollege = props => {
     restoreData();
   };
 
-  /** This is used to handle the close modal event */
-  const handleCloseModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    if (formState.isDataEdited) {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false,
-        dataToShow: formState.tempData
-      }));
-      getCollegeData();
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false
-      }));
-    }
-  };
-
-  /** This is used to handle the close modal event */
+  /** This is used to handle the close modal event for delete*/
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
@@ -372,7 +263,7 @@ const ManageCollege = props => {
 
     {
       cell: cell => (
-        <i class="material-icons" id={cell.id} onClick={viewCell}>
+        <i className="material-icons" id={cell.id} onClick={viewCell}>
           view_list
         </i>
       ),
@@ -404,19 +295,13 @@ const ManageCollege = props => {
     }
   ];
 
-  /** Set zone data to data in formState */
-
-  /** Empty the initial nested zones array as we have already added our data in the formState.data array*/
-  //formState.zones = [];
-
   const classes = useStyles();
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          College
+          {genericConstants.VIEW_COLLEGE_TEXT}
         </Typography>
-
         <YellowRouteButton
           variant="contained"
           color="primary"
@@ -425,10 +310,98 @@ const ManageCollege = props => {
           to={routeConstants.ADD_COLLEGE}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Add College
+          {genericConstants.ADD_COLLEGE_BUTTON}
         </YellowRouteButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromeditCollege && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromeditCollege && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddCollege && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddCollege && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -490,19 +463,6 @@ const ManageCollege = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}{" "}
-          <EditCollege
-            showModal={formState.showEditModal}
-            closeModal={handleCloseModal}
-            dataToEdit={formState.dataToEdit}
-            id={formState.dataToEdit["id"]}
-            editEvent={isEditCellCompleted}
-            statesData={states}
-            userData={user}
-            streamsDataForEdit={streamsData}
-            zonesForEdit={formState.zonesForEdit}
-            rpcsForEdit={formState.rpcsForEdit}
-            isView={formState.isView}
-          />
           <DeleteCollege
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}
