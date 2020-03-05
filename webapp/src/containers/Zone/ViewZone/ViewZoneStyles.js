@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     alignSelf: "center",
     marginLeft: "10px"
   },
-  modal: {
+   modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center"

@@ -42,8 +42,8 @@ const useDrawerStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    padding: theme.spacing(2),
-    boxShadow: "none"
+    boxShadow: "none",
+    marginTop: "30px"
   },
   divider: {
     margin: theme.spacing(2, 0)
@@ -90,18 +90,36 @@ const useListStyles = makeStyles(theme => ({
   root: {},
   item: {
     display: "flex",
-    paddingTop: 0,
-    paddingBottom: 0
+    paddingTop: "0",
+    paddingBottom: "0",
+    margin: "0px"
   },
   button: {
     color: colors.blueGrey[800],
-    padding: "5px 10px",
+    padding: "8px 0px 8px 10px",
     justifyContent: "flex-start",
     textTransform: "none",
     letterSpacing: 0,
     width: "100%",
-    fontWeight: theme.typography.fontWeightBoldm,
-    borderRadius: "0px"
+    fontWeight: theme.typography.fontWeightBold,
+    borderRadius: "0px",
+    backgroundColor: "#fff",
+    borderLeft: "4px solid #fff",
+    color: "#010101",
+    textTransform: "Uppercase",
+    "&:hover": {
+      backgroundColor: "#fff7d8",
+      color: "010101",
+      borderLeft: "4px solid #f6c80a"
+    }
+  },
+
+  "@global": {
+    "li > button:nth-of-type(1)": {
+      backgroundColor: "#666",
+      color: "#f6c80a",
+      borderLeft: "4px solid #f6c80a"
+    }
   },
   icon: {
     color: theme.palette.icon,
@@ -109,26 +127,37 @@ const useListStyles = makeStyles(theme => ({
     height: 24,
     display: "flex",
     alignItems: "center",
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
+    color: "#010101"
   },
   active: {
-    color: "#43a047",
-    fontWeight: theme.typography.fontWeightBold,
-    "& $icon": {
-      color: "#43a047"
-    }
+    color: "#010101",
+    backgroundColor: "#f1f1f1",
+    fontWeight: theme.typography.fontWeightBold
+    // borderLeft: "4px solid #f6c80a",
+    // "& $icon": {
+    //   color: "#010101"
+    // }
   },
   nested: {
     paddingLeft: theme.spacing(0),
     paddingTop: 0,
     paddingBottom: 0,
     "& a": {
-      fontSize: "12px",
+      fontSize: "13px",
       paddingLeft: "51px",
-      paddingTop: "3px",
-      paddingBottom: "3px",
+      paddingTop: "5px",
+      paddingBottom: "5px",
+      textTransform: "Capitalize",
+      color: "010101",
+      "&:active": {
+        backgroundColor: "#f1f1f1",
+        color: "010101"
+      },
       "&:hover": {
-        color: "#43a047"
+        backgroundColor: "#f1f1f1",
+        color: "010101",
+        borderLeft: "4px solid #f1f1f1"
       }
     }
   }
