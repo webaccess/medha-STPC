@@ -8,15 +8,12 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { GreenButton } from "../../../components";
-import useStyles  from "./DeleteUserStyles"
-
+import useStyles from "./DeleteUserStyles";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_ID = "UserName";
 
-
 const DeleteUser = props => {
-
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
@@ -27,7 +24,6 @@ const DeleteUser = props => {
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[USER_ID] = props.id;
-    console.log(formState.values[USER_ID]);
     formState.isDeleteData = false;
   }
 
@@ -55,21 +51,39 @@ const DeleteUser = props => {
   };
 
   const deleteData = () => {
-    serviceProviders
-      .serviceProviderForDeleteRequest(USER_URL, props.id)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          isValid: true
-        }));
-        formState.isDeleteData = true;
-        handleCloseModal();
-      })
-      .catch(error => {
-        console.log("error");
-        formState.isDeleteData = false;
-        handleCloseModal();
-      });
+    if (props.isMultiDelete) {
+      serviceProviders
+        .serviceProviderForAllDeleteRequest(USER_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          console.log("error", error);
+          formState.isDeleteData = false;
+          handleCloseModal();
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForDeleteRequest(USER_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal();
+        });
+    }
   };
 
   const classes = useStyles();

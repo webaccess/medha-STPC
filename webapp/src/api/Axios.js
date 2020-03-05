@@ -129,3 +129,29 @@ export const serviceProviderForAllGetRequest = async (
       throw error;
     });
 };
+
+export const serviceProviderForAllDeleteRequest = async (
+  url,
+  arrayId,
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
+) => {
+  let temp = [];
+  for (let i in arrayId) {
+    temp.push(serviceProviderForDeleteRequest(url, arrayId[i]));
+  }
+  const URL = temp;
+  // const URL1 = url1;
+  return await axios
+    .all(URL, {
+      headers: headers
+    })
+    .then(response => {
+      return response;
+    })
+    .catch(error => {
+      throw error;
+    });
+};
