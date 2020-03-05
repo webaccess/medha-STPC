@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import useStyles from "./AddCollegeStyles";
+import useStyles from "./AddEditCollegeStyles";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import CollegeFormSchema from "../CollegeFormSchema";
@@ -11,6 +11,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
 import { Alert, GreenButton, GrayButton } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { useHistory } from "react-router-dom";
 
 import { get } from "lodash";
 import {
@@ -45,14 +46,19 @@ const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const COLLEGES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 
-const AddCollege = props => {
+const AddEditCollege = props => {
+  const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
     touched: {},
     errors: {},
-    isSuccess: false
+    states: [],
+    isSuccess: false,
+    isEditCollege: props["editCollege"] ? props["editCollege"] : false,
+    dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
+    counter: 0
   });
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
@@ -62,11 +68,41 @@ const AddCollege = props => {
   const [streamsData, setStreamsData] = useState([]);
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
+
   React.useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
+
+  /** Part for editing college */
+  if (formState.isEditCollege && !formState.counter) {
+    if (props["dataForEdit"]) {
+      if (props["dataForEdit"]["name"]) {
+        formState.values.collegeName = props["dataForEdit"]["name"];
+      }
+      if (props["dataForEdit"]["college_code"]) {
+        formState.values.collegeCode = props["dataForEdit"]["college_code"];
+      }
+      if (props["dataForEdit"]["address"]) {
+        formState.values.address = props["dataForEdit"]["address"];
+      }
+      if (props["dataForEdit"]["contact_number"]) {
+        formState.values.contactNumber = props["dataForEdit"]["contact_number"];
+      }
+      if (props["dataForEdit"]["college_email"]) {
+        formState.values.collegeEmail = props["dataForEdit"]["college_email"];
+      }
+      if (props["dataForEdit"]["state"]) {
+        formState.values.state = props["dataForEdit"]["state"];
+      }
+      if (props["dataForEdit"]["rpc"]["zone"]) {
+        formState.values.zone = props["dataForEdit"]["rpc"]["zone"];
+      }
+      if (props["dataForEdit"]["rpc"]["id"]) {
+        formState.values.rpc = props["dataForEdit"]["rpc"]["id"];
+      }
+      formState.counter += 1;
+    }
+  }
 
   /** Here we initialize our data */
   useEffect(() => {
@@ -81,6 +117,7 @@ const AddCollege = props => {
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
+        formState.states = res.data;
         setStates(res.data);
       })
       .catch(error => {
@@ -98,42 +135,55 @@ const AddCollege = props => {
 
   /** This gets data into zones when we change the state */
   useEffect(() => {
-    let url =
-      STATES_URL +
-      "/" +
-      formState.values[state] +
-      "/" +
-      strapiConstants.STRAPI_ZONES;
-    serviceProviders
-      .serviceProviderForGetRequest(url)
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setZones(res.data[0].zones);
-        } else {
-          setZones(res.data.zones);
-        }
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    async function fetchData() {
+      let url =
+        STATES_URL +
+        "/" +
+        formState.values[state] +
+        "/" +
+        strapiConstants.STRAPI_ZONES;
+      await serviceProviders
+        .serviceProviderForGetRequest(url)
+        .then(res => {
+          if (Array.isArray(res.data)) {
+            setZones(res.data[0].zones);
+          } else {
+            setZones(res.data.zones);
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
+    if (formState.values[state]) {
+      fetchData();
+    } else {
+      return () => {};
+    }
   }, [formState.values[state]]);
 
   useEffect(() => {
-    let url =
-      ZONES_URL +
-      "/" +
-      formState.values[zone] +
-      "/" +
-      strapiConstants.STRAPI_RPCS;
-    serviceProviders
-      .serviceProviderForGetRequest(url)
-      .then(res => {
-        setRpcs(res.data.rpcs);
-        console.log("rpcdata", res.data);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    async function fetchData() {
+      let url =
+        ZONES_URL +
+        "/" +
+        formState.values[zone] +
+        "/" +
+        strapiConstants.STRAPI_RPCS;
+      await serviceProviders
+        .serviceProviderForGetRequest(url)
+        .then(res => {
+          setRpcs(res.data.rpcs);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
+    if (formState.values[zone]) {
+      fetchData();
+    } else {
+      return () => {};
+    }
   }, [formState.values[zone]]);
 
   const handleChange = e => {
@@ -229,40 +279,68 @@ const AddCollege = props => {
       formState.values[collegeCode],
       formState.values[address],
       formState.values[contactNumber],
-      formState.values[collegeEmail],
+      formState.values[collegeEmail].toLowerCase(),
       formState.values[principal] ? formState.values[principal] : null,
       formState.values[rpc] ? formState.values[rpc] : null
     );
-    serviceProviders
-      .serviceProviderForPostRequest(COLLEGES_URL, postData)
-      .then(res => {
-        console.log(res);
-        setIsFailed(false);
-        setIsSuccess(true);
-      })
-      .catch(error => {
-        console.log(error.response);
-        setIsSuccess(false);
-        setIsFailed(true);
-      });
+    if (formState.isEditCollege) {
+      serviceProviders
+        .serviceProviderForPutRequest(
+          COLLEGES_URL,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_COLLEGE,
+            fromeditCollege: true,
+            isDataEdited: true,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        })
+        .catch(error => {
+          console.log(error.response);
+          history.push({
+            pathname: routeConstants.VIEW_COLLEGE,
+            fromeditCollege: true,
+            isDataEdited: false,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForPostRequest(COLLEGES_URL, postData)
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_COLLEGE,
+            fromAddCollege: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        })
+        .catch(error => {
+          history.push({
+            pathname: routeConstants.VIEW_COLLEGE,
+            fromAddCollege: true,
+            isDataAdded: false,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        });
+    }
   };
 
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.ADD_COLLEGE_TEXT}
+          {formState.isEditCollege
+            ? genericConstants.EDIT_COLLEGE_TEXT
+            : genericConstants.ADD_COLLEGE_TEXT}
         </Typography>
-        {isSuccess ? (
-          <Alert severity="success">
-            {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
-        {isFailed ? (
-          <Alert severity="error">
-            {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
@@ -343,35 +421,41 @@ const AddCollege = props => {
                     >
                       {/* State */}
                     </InputLabel>
-                    {states.length ? (
-                      <Autocomplete
-                        id={get(CollegeFormSchema[state], "id")}
-                        options={states}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(state, event, value);
-                        }}
-                        name={state}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            error={hasError(state)}
-                            helperText={
-                              hasError(state)
-                                ? formState.errors[state].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            value={option => option.id}
-                            name={state}
-                            key={option => option.id}
-                            label={get(CollegeFormSchema[state], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    ) : null}
+                    <Autocomplete
+                      id={get(CollegeFormSchema[state], "id")}
+                      options={states}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(state, event, value);
+                      }}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        states[
+                          states.findIndex(function(item, i) {
+                            return item.id === formState.values[state];
+                          })
+                        ] || ""
+                      }
+                      name={state}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(state)}
+                          helperText={
+                            hasError(state)
+                              ? formState.errors[state].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          value={option => option.id}
+                          name={state}
+                          key={option => option.id}
+                          label={get(CollegeFormSchema[state], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
                   </FormControl>
                 </Grid>
 
@@ -395,6 +479,14 @@ const AddCollege = props => {
                       onChange={(event, value) => {
                         handleChangeAutoComplete(zone, event, value);
                       }}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        zones[
+                          zones.findIndex(function(item, i) {
+                            return item.id === formState.values[zone];
+                          })
+                        ] || "" /** Please give a default " " blank value */
+                      }
                       name={zone}
                       renderInput={params => (
                         <TextField
@@ -438,6 +530,14 @@ const AddCollege = props => {
                         handleChangeAutoComplete(rpc, event, value);
                       }}
                       name={rpc}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        rpcs[
+                          rpcs.findIndex(function(item, i) {
+                            return item.id === formState.values[rpc];
+                          })
+                        ] || "" /** Please give a default " " blank value */
+                      }
                       renderInput={params => (
                         <TextField
                           {...params}
@@ -466,6 +566,7 @@ const AddCollege = props => {
                     name={contactNumber}
                     onChange={handleChange}
                     required
+                    value={formState.values[contactNumber] || ""}
                     error={hasError(contactNumber)}
                     helperText={
                       hasError(contactNumber)
@@ -485,6 +586,7 @@ const AddCollege = props => {
                     name={collegeEmail}
                     onChange={handleChange}
                     required
+                    value={formState.values[collegeEmail] || ""}
                     error={hasError(collegeEmail)}
                     helperText={
                       hasError(collegeEmail)
@@ -519,6 +621,14 @@ const AddCollege = props => {
                         onChange={(event, value) => {
                           handleChangeAutoComplete(principal, event, value);
                         }}
+                        /** This is used to set the default value to the auto complete */
+                        value={
+                          user[
+                            user.findIndex(function(item, i) {
+                              return item.id === formState.values[principal];
+                            })
+                          ] || "" /** Please give a default " " blank value */
+                        }
                         name={principal}
                         renderInput={params => (
                           <TextField
@@ -656,7 +766,7 @@ const AddCollege = props => {
     </Grid>
   );
 };
-AddCollege.propTypes = {
+AddEditCollege.propTypes = {
   className: PropTypes.string
 };
-export default AddCollege;
+export default AddEditCollege;

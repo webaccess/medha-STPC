@@ -5,11 +5,10 @@
  * Users can sort data ASC and DESC and also filter data.
  *
  */
-import React, { useEffect } from "react";
+import React from "react";
 import DataTable from "react-data-table-component";
 import Checkbox from "@material-ui/core/Checkbox";
 import Spinner from "../Spinner/Spinner";
-
 
 const Table = props => {
   return (
