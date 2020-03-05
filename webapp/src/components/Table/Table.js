@@ -22,6 +22,7 @@ const Table = props => {
         actions={props.actions}
         selectableRows
         highlightOnHover
+        onSelectedRowsChange = {props.onSelectedRowsChange}
         persistTableHead
         conditionalRowStyles={props.conditionalRowStyles}
         progressComponent={<Spinner />}
