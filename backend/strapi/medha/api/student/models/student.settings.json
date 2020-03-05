@@ -53,13 +53,16 @@
       ],
       "required": true
     },
-    "role_number": {
+    "roll_number": {
       "type": "integer",
       "required": true
     },
     "educations": {
-      "via": "student",
-      "collection": "education"
+      "collection": "education",
+      "via": "student"
+    },
+    "district": {
+      "model": "district"
     }
   }
 }

@@ -1,6 +1,14 @@
 {
   "routes": [
     {
+      "method": "POST",
+      "path": "/students/register",
+      "handler": "student.register",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/students/me",
       "handler": "student.me",

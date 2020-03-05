@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "02/28/2020 11:46:24 AM"
+    "x-generation-date": "03/05/2020 5:37:10 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -5798,6 +5798,77 @@
         ]
       }
     },
+    "/otps/checkotp": {
+      "post": {
+        "deprecated": false,
+        "description": "Create a new record",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Otp"
+        ],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "foo": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/otps/requestotpforstudent": {
       "post": {
         "deprecated": false,
@@ -9737,6 +9808,77 @@
         ]
       }
     },
+    "/students/register": {
+      "post": {
+        "deprecated": false,
+        "description": "Create a new record",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Student"
+        ],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "foo": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/students/me": {
       "get": {
         "deprecated": false,
@@ -13126,7 +13268,7 @@
               "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number"
             ],
             "properties": {
               "id": {
@@ -13165,7 +13307,7 @@
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -13173,6 +13315,9 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
               }
             }
           },
@@ -13306,7 +13451,7 @@
               "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number"
             ],
             "properties": {
               "id": {
@@ -13345,7 +13490,7 @@
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -13353,6 +13498,9 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
               }
             }
           },
@@ -14006,7 +14154,7 @@
               "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number"
             ],
             "properties": {
               "id": {
@@ -14045,7 +14193,7 @@
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -14053,6 +14201,9 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
               }
             }
           }
@@ -14148,7 +14299,7 @@
               "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number"
             ],
             "properties": {
               "id": {
@@ -14187,7 +14338,7 @@
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -14195,6 +14346,9 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
               }
             }
           },
@@ -15197,7 +15351,7 @@
           "address",
           "date_of_birth",
           "gender",
-          "role_number"
+          "roll_number"
         ],
         "properties": {
           "id": {
@@ -15351,7 +15505,7 @@
               "female"
             ]
           },
-          "role_number": {
+          "roll_number": {
             "type": "integer"
           },
           "educations": {
@@ -15385,6 +15539,23 @@
                 }
               }
             }
+          },
+          "district": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
           }
         }
       },
@@ -15395,7 +15566,7 @@
           "address",
           "date_of_birth",
           "gender",
-          "role_number"
+          "roll_number"
         ],
         "properties": {
           "user": {
@@ -15429,7 +15600,7 @@
               "female"
             ]
           },
-          "role_number": {
+          "roll_number": {
             "type": "integer"
           },
           "educations": {
@@ -15437,6 +15608,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "district": {
+            "type": "string"
           }
         }
       },

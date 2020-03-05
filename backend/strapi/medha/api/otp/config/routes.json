@@ -2,6 +2,14 @@
   "routes": [
     {
       "method": "POST",
+      "path": "/otps/checkotp",
+      "handler": "otp.checkOtp",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
       "path": "/otps/requestotpforstudent",
       "handler": "otp.requestOTPForStudent",
       "config": {

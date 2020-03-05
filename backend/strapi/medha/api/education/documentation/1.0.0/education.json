@@ -546,7 +546,7 @@
               "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number"
             ],
             "properties": {
               "id": {
@@ -585,7 +585,7 @@
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -593,6 +593,9 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
               }
             }
           }

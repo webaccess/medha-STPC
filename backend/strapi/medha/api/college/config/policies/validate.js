@@ -34,17 +34,19 @@ module.exports = async (ctx, next) => {
       if (data) {
       } else ctx.response.notFound("rpc doesn't exist");
     }
-    if (streams) {
+    console.log(streams);
+    if (!streams[0]) await next();
+    else {
       const data = await bookshelf
         .model("stream")
         .where("id", "in", streams)
         .fetchAll();
       const result = data.toJSON();
       if (result[0]) {
+        console.log("streams exists");
+        await next();
       } else ctx.response.notFound("streams doesn't exist");
     }
-
-    await next();
   }
 
   if (ctx.request.method === "PUT") {

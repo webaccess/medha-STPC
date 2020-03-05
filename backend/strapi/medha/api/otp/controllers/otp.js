@@ -82,5 +82,21 @@ module.exports = {
     } catch (err) {
       console.log(err);
     }
+  },
+  async checkOtp(ctx) {
+    const { contactNumber, otp } = ctx.request.body;
+
+    try {
+      const data = await bookshelf
+        .model("otp")
+        .where({ contact_number: contact_number, otp: otp, isVerified: null })
+        .fetch();
+
+      const result = data.toJSON();
+      ctx.body = { status: "ok" };
+    } catch (err) {
+      console.log(err);
+      ctx.body = err;
+    }
   }
 };
