@@ -262,6 +262,33 @@ const ViewUsers = () => {
           className="material-icons"
           id={cell.id}
           value={cell.name}
+          //onClick={blockedCell}
+        >
+          block
+        </i>
+      ),
+      button: true,
+      conditionalCellStyles: [
+        {
+          when: row => row.blocked === true,
+          style: {
+            backgroundColor: "red"
+          }
+        },
+        {
+          when: row => row.blocked === false,
+          style: {
+            backgroundColor: "green"
+          }
+        }
+      ]
+    },
+    {
+      cell: cell => (
+        <i
+          className="material-icons"
+          id={cell.id}
+          value={cell.name}
           //onClick={editCell}
         >
           edit
