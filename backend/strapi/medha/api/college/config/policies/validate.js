@@ -25,7 +25,8 @@ module.exports = async (ctx, next) => {
     if (!college_email)
       ctx.response.badRequest("College Email  field is missing");
 
-    if (rpc) {
+    if (!rpc) ctx.response.badRequest("RPC field is missing");
+    else {
       const data = await bookshelf
         .model("rpc")
         .where({ id: rpc })
@@ -35,7 +36,7 @@ module.exports = async (ctx, next) => {
       } else ctx.response.notFound("rpc doesn't exist");
     }
     console.log(streams);
-    if (!streams[0]) await next();
+    if (!streams || (streams && !streams.length)) await next();
     else {
       const data = await bookshelf
         .model("stream")
