@@ -1349,6 +1349,9 @@
               },
               "strength": {
                 "type": "integer"
+              },
+              "blocked": {
+                "type": "boolean"
               }
             }
           }

@@ -722,6 +722,10 @@
           },
           "strength": {
             "type": "integer"
+          },
+          "blocked": {
+            "type": "boolean",
+            "default": false
           }
         }
       },
@@ -762,6 +766,10 @@
           },
           "strength": {
             "type": "integer"
+          },
+          "blocked": {
+            "type": "boolean",
+            "default": false
           }
         }
       }
