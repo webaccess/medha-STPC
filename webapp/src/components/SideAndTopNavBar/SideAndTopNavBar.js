@@ -199,7 +199,7 @@ function SideAndTopNavBar(props) {
                   onClick={e => handleClick(list.name)}
                 >
                   <Button
-                    activeClassName={listClasses.active}
+                    activeclassname={listClasses.active}
                     className={listClasses.button}
                   >
                     <div className={listClasses.icon}>{list.Icon}</div>
@@ -225,7 +225,7 @@ function SideAndTopNavBar(props) {
                           key={subList.name}
                         >
                           <Button
-                            activeClassName={listClasses.active}
+                            activeclassname={listClasses.active}
                             className={listClasses.button}
                             component={CustomRouterLink}
                             to={subList.link}
@@ -246,7 +246,7 @@ function SideAndTopNavBar(props) {
                   key={list.name}
                 >
                   <Button
-                    activeClassName={listClasses.active}
+                    activeclassname={listClasses.active}
                     className={listClasses.button}
                     component={CustomRouterLink}
                     to={list.link}

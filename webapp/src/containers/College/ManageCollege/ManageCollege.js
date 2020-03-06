@@ -87,7 +87,7 @@ const ManageCollege = props => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
-        let college_data = res.data;
+        let college_data = res.data.result;
 
         /** As college data is in nested form we first convert it into
          * a float structure and store it in data
@@ -95,7 +95,7 @@ const ManageCollege = props => {
         serviceProviders
           .serviceProviderForGetRequest(ZONES_URL)
           .then(res => {
-            formState.zones = res.data;
+            formState.zones = res.data.result;
             temp = convertCollegeData(college_data);
             setFormState(formState => ({
               ...formState,
@@ -461,7 +461,9 @@ const ManageCollege = props => {
               <Spinner />
             )
           ) : (
-            <div className={classes.noDataMargin}>No data to show</div>
+            <div className={classes.noDataMargin}>
+              {genericConstants.NO_DATA_TO_SHOW_TEXT}
+            </div>
           )}{" "}
           <DeleteCollege
             showModal={formState.showModalDelete}
