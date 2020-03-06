@@ -58,7 +58,7 @@ const ViewRpc = props => {
         axios.spread((user1, user2) => {
           setFormState(formState => ({
             ...formState,
-            states: user2.data
+            states: user2.data.result
           }));
           formState.dataToShow = [];
           formState.tempData = [];
@@ -66,10 +66,10 @@ const ViewRpc = props => {
           /** As rpcs data is in nested form we first convert it into
            * a float structure and store it in data
            */
-          temp = convertRpcData(user1.data, user2.data);
+          temp = convertRpcData(user1.data.result, user2.data.result);
           setFormState(formState => ({
             ...formState,
-            rpcs: user1.data,
+            rpcs: user1.data.result,
             dataToShow: temp,
             tempData: temp
           }));
@@ -179,14 +179,11 @@ const ViewRpc = props => {
               strapiConstants.STRAPI_ZONES;
             serviceProviders
               .serviceProviderForGetRequest(zoneStatesurl)
-              .then(res => {
-                console.log("sattesdata for edit", res.data[0]);
-              })
+              .then(res => {})
               .catch(error => {
                 console.log("stateerror", error);
               });
 
-            console.log("zonesedit", res.data);
             setFormState(formState => ({
               ...formState,
               zones: res.data,
@@ -195,10 +192,9 @@ const ViewRpc = props => {
             }));
           })
           .catch(error => {
-            console.log("zonee", error);
+            console.log("error", error);
           });
 
-        console.log("edit", res.data);
         setFormState(formState => ({
           ...formState,
           dataToEdit: res.data,
