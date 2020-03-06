@@ -16,11 +16,8 @@ const knex = require("knex")({
 
 const bookshelf = require("../../../config/config.js");
 const { sanitizeEntity } = require("strapi-utils");
-<<<<<<< Updated upstream
 const utils = require("../../../config/utils.js");
-=======
 const _ = require("lodash");
->>>>>>> Stashed changes
 
 module.exports = {
   /**
