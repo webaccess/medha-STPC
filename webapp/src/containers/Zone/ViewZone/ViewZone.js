@@ -46,10 +46,6 @@ const ViewZone = props => {
     showModalDelete: false
   });
 
-  useEffect(() => {
-    console.log("dataToEdit ", formState.dataToEdit);
-  }, [formState.dataToEdit]);
-
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
   useEffect(() => {
     /** Seperate function to get zone data */
@@ -59,7 +55,7 @@ const ViewZone = props => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          states: res.data
+          states: res.data.result
         }));
       })
       .catch(error => {
@@ -78,11 +74,10 @@ const ViewZone = props => {
         /** As zones data is in nested form we first convert it into
          * a float structure and store it in data
          */
-        console.log("Zone Data > ", res.data);
-        temp = convertZoneData(res.data);
+        temp = convertZoneData(res.data.result);
         setFormState(formState => ({
           ...formState,
-          zones: res.data,
+          zones: res.data.result,
           dataToShow: temp,
           tempData: temp
         }));
@@ -126,10 +121,9 @@ const ViewZone = props => {
         }));
       })
       .catch(error => {
-        console.log("error");
+        console.log("error", error);
       });
   };
-
   const editCell = event => {
     getDataForEdit(event.target.id);
   };

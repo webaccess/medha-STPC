@@ -48,10 +48,10 @@ const AddRpc = props => {
   useEffect(() => {
     /* TO GET STATES AND COLLEGE IN AUTOCOMPLETE */
     serviceProviders.serviceProviderForGetRequest(STATE_URL).then(res => {
-      setStates(res.data);
+      setStates(res.data.result);
     });
     serviceProviders.serviceProviderForGetRequest(COLLEGE_URL).then(res => {
-      setGetColleges(res.data);
+      setGetColleges(res.data.result);
     });
   }, []);
 
@@ -68,7 +68,7 @@ const AddRpc = props => {
     serviceProviders
       .serviceProviderForGetRequest(url)
       .then(res => {
-        setZones(res.data[0].zones);
+        setZones(res.data.zones);
       })
       .catch(error => {
         console.log("error", error);
@@ -178,11 +178,9 @@ const AddRpc = props => {
         ? databaseUtilities.setMainCollege(formState.values[collegeName])
         : null
     );
-
     serviceProviders
       .serviceProviderForPostRequest(RPCS_URL, postData)
       .then(res => {
-        console.log(res);
         setIsFailed(false);
         setIsSuccess(true);
       })
