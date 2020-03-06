@@ -30,7 +30,7 @@ const allControllerActions = Object.assign(controllerActionWithoutUser, {
     findone: { enabled: false },
     create: { enabled: false },
     update: { enabled: false },
-    delete: { enabled: false },
+    destroy: { enabled: false },
     me: { enabled: false }
   }
 });

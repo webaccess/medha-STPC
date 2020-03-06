@@ -9,12 +9,19 @@ function getRequestParams(params) {
 
 function getPaginatedResponse(response) {
   return {
-    result: response ? response.toJSON() : [],
+    result: response ? response.toJSON() : null,
     ...response.pagination
+  };
+}
+
+function getResponse(response) {
+  return {
+    result: response ? response.toJSON() : null
   };
 }
 
 module.exports = {
   getRequestParams,
-  getPaginatedResponse
+  getPaginatedResponse,
+  getResponse
 };

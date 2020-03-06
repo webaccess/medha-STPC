@@ -186,4 +186,28 @@ bookshelf.model("otp", {
   tableName: "otps"
 });
 
+bookshelf.model("activity_batch", {
+  tableName: "activity_batches"
+});
+
+bookshelf.model("activity_batch_attendance", {
+  tableName: "activity_batch_attendances"
+});
+
+bookshelf.model("event", {
+  tableName: "events"
+});
+
+bookshelf.model("event_registration", {
+  tableName: "event_registrations"
+});
+
+bookshelf.model("feedback", {
+  tableName: "feedbacks"
+});
+
+bookshelf.model("response", {
+  tableName: "responses"
+});
+
 module.exports = bookshelf;

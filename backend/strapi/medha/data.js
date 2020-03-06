@@ -76,6 +76,10 @@ const roles = {
       {
         name: "zone",
         action: ["find", "findone", "rpcs", "colleges"]
+      },
+      {
+        name: "district",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -157,6 +161,10 @@ const roles = {
       {
         name: "zone",
         action: ["find", "findone", "rpcs", "colleges"]
+      },
+      {
+        name: "district",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -238,6 +246,10 @@ const roles = {
       {
         name: "zone",
         action: []
+      },
+      {
+        name: "district",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -319,6 +331,10 @@ const roles = {
       {
         name: "zone",
         action: []
+      },
+      {
+        name: "district",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -400,6 +416,10 @@ const roles = {
       {
         name: "zone",
         action: []
+      },
+      {
+        name: "district",
+        action: []
       }
     ],
     grantAllPermissions: true
@@ -459,6 +479,18 @@ const publicRoutes = {
     },
     {
       name: "college",
+      action: ["find"]
+    },
+    {
+      name: "student",
+      action: ["register"]
+    },
+    {
+      name: "district",
+      action: ["find"]
+    },
+    {
+      name: "stream",
       action: ["find"]
     }
   ]
