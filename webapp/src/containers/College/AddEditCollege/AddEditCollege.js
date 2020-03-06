@@ -9,7 +9,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, GreenButton, GrayButton } from "../../../components";
+import { GreenButton, GrayButton } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
 
@@ -117,8 +117,8 @@ const AddEditCollege = props => {
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
-        formState.states = res.data;
-        setStates(res.data);
+        formState.states = res.data.result;
+        setStates(res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -157,9 +157,8 @@ const AddEditCollege = props => {
     }
     if (formState.values[state]) {
       fetchData();
-    } else {
-      return () => {};
     }
+    return () => {};
   }, [formState.values[state]]);
 
   useEffect(() => {
@@ -173,7 +172,11 @@ const AddEditCollege = props => {
       await serviceProviders
         .serviceProviderForGetRequest(url)
         .then(res => {
-          setRpcs(res.data.rpcs);
+          if (Array.isArray(res.data)) {
+            setRpcs(res.data[0].rpcs);
+          } else {
+            setRpcs(res.data.rpcs);
+          }
         })
         .catch(error => {
           console.log("error", error);
@@ -181,9 +184,8 @@ const AddEditCollege = props => {
     }
     if (formState.values[zone]) {
       fetchData();
-    } else {
-      return () => {};
     }
+    return () => {};
   }, [formState.values[zone]]);
 
   const handleChange = e => {
@@ -708,35 +710,33 @@ const AddEditCollege = props => {
                     >
                       {/* Streams */}
                     </InputLabel>
-                    {streams.length ? (
-                      <Autocomplete
-                        id={get(CollegeFormSchema[streams], "id")}
-                        options={streamsData}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(streams, event, value);
-                        }}
-                        name={streams}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            error={hasError(streams)}
-                            helperText={
-                              hasError(streams)
-                                ? formState.errors[streams].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            value={option => option.id}
-                            name={principal}
-                            key={option => option.id}
-                            label={get(CollegeFormSchema[streams], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    ) : null}
+                    <Autocomplete
+                      id={get(CollegeFormSchema[streams], "id")}
+                      options={streamsData}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(streams, event, value);
+                      }}
+                      name={streams}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(streams)}
+                          helperText={
+                            hasError(streams)
+                              ? formState.errors[streams].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          value={option => option.id}
+                          name={principal}
+                          key={option => option.id}
+                          label={get(CollegeFormSchema[streams], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
                   </FormControl>
                 </Grid>
               </Grid>

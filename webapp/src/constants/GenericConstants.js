@@ -7,6 +7,7 @@ export const EDIT_TEXT = "Edit";
 export const DELETE_TEXT = "Delete";
 export const SEARCH_BUTTON_TEXT = "Search";
 export const RESET_BUTTON_TEXT = "Reset";
+export const NO_DATA_TO_SHOW_TEXT = "No data to show";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";
