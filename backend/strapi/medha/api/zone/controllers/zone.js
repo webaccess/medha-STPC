@@ -116,5 +116,18 @@ module.exports = {
         data.colleges = colleges;
         return data;
       });
+  },
+
+  async findOne(ctx) {
+    const { id } = ctx.params;
+    return await bookshelf
+      .model("zone")
+      .where({ id: id })
+      .fetch({
+        require: false
+      })
+      .then(res => {
+        return utils.getResponse(res);
+      });
   }
 };

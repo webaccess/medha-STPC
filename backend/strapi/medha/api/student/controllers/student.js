@@ -7,6 +7,7 @@
 
 const bookshelf = require("../../../config/config.js");
 const { sanitizeEntity } = require("strapi-utils");
+const utils = require("../../../config/utils.js");
 
 module.exports = {
   /**
@@ -15,8 +16,7 @@ module.exports = {
    */
   async me(ctx) {
     const user = ctx.state.user;
-    let data;
-    await bookshelf
+    return await bookshelf
       .model("student")
       .where({ user: user.id })
       .fetch({
@@ -30,12 +30,11 @@ module.exports = {
         ]
       })
       .then(u => {
-        data = sanitizeEntity(u, {
-          model: strapi.query("student").model
-        });
+        const response = utils.getResponse(u);
+        const data = sanitizeUser(response.result);
+        response.result = data;
+        return response;
       });
-
-    ctx.send(data);
   },
   async register(ctx) {
     /* const { otp, contact_number } = ctx.request.body;

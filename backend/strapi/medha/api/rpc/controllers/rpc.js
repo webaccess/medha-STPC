@@ -93,6 +93,19 @@ module.exports = {
     }
   },
 
+  async findOne(ctx) {
+    const { id } = ctx.params;
+    return await bookshelf
+      .model("rpc")
+      .where({ id: id })
+      .fetch({
+        require: false
+      })
+      .then(res => {
+        return utils.getResponse(res);
+      });
+  },
+
   /**
    * Get colleges under RPC.
    * @return {Object|Array}

@@ -20,6 +20,7 @@ const formatError = error => [
 
 const { validate } = require("../validate.js");
 const bookshelf = require("../../../config/config.js");
+const utils = require("../../../config/utils.js");
 module.exports = {
   /**
    * Retrieve authenticated user.
@@ -34,16 +35,16 @@ module.exports = {
       ]);
     }
 
-    let data;
-    await bookshelf
+    return await bookshelf
       .model("user")
       .where({ id: user.id })
       .fetch({ withRelated: ["state", "zone", "rpc", "college"] })
       .then(u => {
-        data = sanitizeUser(u);
+        const response = utils.getResponse(u);
+        const data = sanitizeUser(response.result);
+        response.result = data;
+        return response;
       });
-
-    ctx.send(data);
   },
 
   /**

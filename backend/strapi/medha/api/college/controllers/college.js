@@ -217,6 +217,19 @@ module.exports = {
     }
   },
 
+  async findOne(ctx) {
+    const { id } = ctx.params;
+    return await bookshelf
+      .model("college")
+      .where({ id: id })
+      .fetch({
+        require: false
+      })
+      .then(res => {
+        return utils.getResponse(res);
+      });
+  },
+
   async showStudents(ctx) {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
@@ -246,14 +259,14 @@ module.exports = {
       })
       .then(res => {
         const data = utils.getPaginatedResponse(res);
-        const response = data.result.reduce((acc, obj) => {
-          if (Object.keys(obj.user).length) {
-            obj.user = sanitizeUser(obj.user);
-            acc.push(obj);
-          }
-          return acc;
-        }, []);
-        data.result = response;
+        // const response = data.result.reduce((acc, obj) => {
+        //   if (Object.keys(obj.user).length) {
+        //     obj.user = sanitizeUser(obj.user);
+        //     acc.push(obj);
+        //   }
+        //   return acc;
+        // }, []);
+        // data.result = response;
         return data;
       });
   }
