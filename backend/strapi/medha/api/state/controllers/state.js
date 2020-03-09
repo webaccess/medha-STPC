@@ -71,9 +71,21 @@ module.exports = {
    */
   async zones(ctx) {
     const { id } = ctx.params;
+    const { query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
     return await bookshelf
-      .model("state")
-      .where({ id: id })
-      .fetch({ withRelated: ["zones"] });
+      .model("zone")
+      .query(
+        buildQuery({
+          model: strapi.models.zone,
+          filters
+        })
+      )
+      .where({ state: id })
+      .fetchAll({ withRelated: ["state"] })
+      .then(res => {
+        return utils.getResponse(res);
+      });
   }
 };

@@ -46,53 +46,71 @@ module.exports = {
         return response;
       });
   },
+
   async register(ctx) {
     const { otp, contact_number } = ctx.request.body;
-    let result, college, rpc, state, zone, college_id;
-    let today = new Date();
-    console.log(ctx.request.body);
-    college_id = ctx.request.body.college_id;
-    try {
-      await bookshelf
-        .model("college")
-        .where({ id: college_id })
-        .fetch()
-        .then(data => {
-          college = data.toJSON();
-          console.log(college);
-        });
-      await bookshelf
-        .model("rpc")
-        .where({ id: college.rpc })
-        .fetch()
-        .then(data => {
-          rpc = data.toJSON();
-          console.log(rpc);
-        });
-      await bookshelf
-        .model("zone")
-        .where({ id: rpc.zone })
-        .fetch()
-        .then(data => {
-          zone = data.toJSON();
-          state = zone.state;
-          console.log(zone);
-        });
-
-      // const data = await bookshelf.model("user").forge({username:username,email:email,password:password,role:7,first_name:first_name,last_name:last_name,contact_number:contact_number,state:state,zone:zone,rpc:rpc,college:college}).save();
-    } catch (err) {
-      console.log(err);
+    if (!otp) {
+      return ctx.response.badRequest("OTP is missing");
     }
-    const user = Object.assign(
+
+    if (!contact_number) {
+      return ctx.response.badRequest("Contact no. is missing");
+    }
+
+    const collegeId = ctx.request.body.college_id;
+
+    const college = await bookshelf
+      .model("college")
+      .where({ id: collegeId })
+      .fetch({ require: false })
+      .then(data => {
+        return data ? data.toJSON() : null;
+      });
+
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+    const rpc = await bookshelf
+      .model("rpc")
+      .where({ id: college.rpc })
+      .fetch({ require: false })
+      .then(data => {
+        return data ? data.toJSON() : null;
+      });
+
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    const zone = await bookshelf
+      .model("zone")
+      .where({ id: rpc.zone })
+      .fetch({ require: false })
+      .then(data => {
+        return data ? data.toJSON() : null;
+      });
+
+    if (!zone) {
+      return ctx.response.notFound("Zone does not exist");
+    }
+
+    const studentRole = await bookshelf
+      .model("role")
+      .where({ name: "Authenticated" })
+      .fetch({ require: false })
+      .then(model => (model ? model.toJSON() : null));
+
+    const requestBody = ctx.request.body;
+    const userRequestBody = Object.assign(
       {
-        role: 6,
-        state: state,
+        state: requestBody.state,
         zone: zone.id,
         rpc: rpc.id,
-        college: college_id
+        college: college.id,
+        role: studentRole.id
       },
-      _.omit(ctx.request.body, [
-        "Stream",
+      _.omit(requestBody, [
+        "stream",
         "father_first_name",
         "father_last_name",
         "date_of_birth",
@@ -105,121 +123,43 @@ module.exports = {
         "college_id"
       ])
     );
-    console.log(user);
 
-    /*  bookshelf
-      .transaction(t => {
-        bookshelf
+    await bookshelf
+      .transaction(async t => {
+        await bookshelf
           .model("otp")
-          .where({ contact_number: contact_number, otp: otp, isVerified: null })
-          .fetch({ transacting: t })
-          .then(data => {
-            result = data.toJSON();
-            let createdAt = new Date(result.created_at);
-            const diff = (today.getTime() - createdAt.getTime()) / 60000;
-
-            if (diff > 60.0) {
-              ctx.response.requestTimeout("OTP has expired");
-            } else {
-              data
-                .save({ isVerified: true }, { patch: true }, { transacting: t })
-                .catch(t.rollback)
-                .then(data => {
-                  console.log(data.toJSON());
-
-                  bookshelf
-                    .model("user")
-                    .forge(user)
-                    // .forge({
-                    //   username: username,
-                    //   email: email,
-                    //   password: password,
-                    //   role: 6,
-                    //   first_name: first_name,
-                    //   last_name: last_name,
-                    //   contact_number: contact_number,
-                    //   state: state,
-                    //   zone: zone.id,
-                    //   rpc: rpc.id,
-                    //   college: college_id
-                    // })
-                    .save(null, { transacting: t })
-                    .then(data => {
-                      console.log(data.toJSON());
-                      const user1 = data.toJSON();
-                      console.log(user1.id);
-                      const student = Object.assign(
-                        { user: user1.id },
-                        _.omit(ctx.request.body, [
-                          "username",
-                          "email",
-                          "password",
-                          "first_name",
-                          "last_name",
-                          "contact_number",
-                          "otp",
-                          "college_id"
-                        ])
-                      );
-                      console.log(student);
-                      return (
-                        bookshelf
-                          .model("student")
-                          .forge(student)
-                          // .forge({
-                          //   user: user.id,
-                          //   Stream: stream,
-                          //   father_first_name: father_first_name,
-                          //   father_last_name: father_last_name,
-                          //   address: address,
-                          //   date_of_birth: date_of_birth,
-                          //   gender: gender,
-                          //   roll_number: roll_number,
-                          //   district: district,
-                          //   physicallyHandicapped: physicallyHandicapped
-                          //   //document field still needs to be added.
-                          // })
-                          .save(null, { transacting: t })
-                          .catch(t.rollback)
-                          .then(t.commit, data => {
-                            console.log(data.toJSON());
-                          })
-                      );
-                    });
-                });
+          .where({
+            contact_number: contact_number,
+            otp: otp,
+            is_verified: null
+          })
+          .fetch({ lock: "forUpdate", transacting: t, require: false })
+          .then(otpModel => {
+            if (!otpModel) {
+              return Promise.reject({ column: "Please request new OTP" });
             }
+            const otpData = otpModel.toJSON();
+            const createdAt = new Date(otpData.created_at);
+            const currentDate = new Date();
+            const diff = (currentDate.getTime() - createdAt.getTime()) / 60000;
+            if (diff > 60.0) {
+              return Promise.reject({ column: "OTP is invalid or expired" });
+            }
+
+            otpModel.save(
+              { is_verified: true },
+              { patch: true, transacting: t }
+            );
           });
-      })
-      .then(response => {
-        console.log("success");
-      })
-      .catch(err => {
-        console.log(err);
-      });*/
-    try {
-      await knex.transaction(async trx => {
-        const queries = [];
-        const otp1 = await knex("otps")
-          .where({ otp: otp, contact_number: contact_number })
-          .update({ isVerified: true })
-          .transacting(trx);
-        // queries.push(query);
 
-        const user1 = await knex("users-permissions_user")
-          .insert(user)
-          .transacting(trx);
-        //queries.push(query);
+        const _user = await bookshelf
+          .model("user")
+          .forge(userRequestBody)
+          .save(null, { transacting: t })
+          .then(userModel => userModel.toJSON());
 
-        console.log(user1);
-
-        const usr = await knex("users-permissions_user")
-          .where({ contact_number: contact_number })
-          .select("id")
-          .transacting(trx);
-        console.log(usr);
-
-        const student = Object.assign(
-          { user: usr[0].id },
+        const studentRequestData = Object.assign(
+          { user: _user.id },
           _.omit(ctx.request.body, [
             "username",
             "email",
@@ -231,20 +171,69 @@ module.exports = {
             "college_id"
           ])
         );
-        console.log(student);
-
-        const stud = await knex("students")
-          .insert(student)
-          .transacting(trx);
-
-        // Promise.all(queries)
-        //   .then(trx.co)
-        //   .catch(trx.rollback);
-        ctx.body = { status: "ok" };
+        return await bookshelf
+          .model("student")
+          .forge(studentRequestData)
+          .save(null, { transacting: t });
+      })
+      .then(success => {
+        console.log(success);
+        return ctx.send(utils.getResponse(success));
+      })
+      .catch(error => {
+        console.log(error);
+        return ctx.response.badRequest(`Invalid ${error.column}`);
       });
-    } catch (err) {
-      console.log(err);
-      ctx.body = err;
-    }
+
+    // try {
+    //   await knex.transaction(async trx => {
+    //     const queries = [];
+    //     const otp1 = await knex("otps")
+    //       .where({ otp: otp, contact_number: contact_number })
+    //       .update({ is_verified: true })
+    //       .transacting(trx);
+    //     // queries.push(query);
+
+    //     const user1 = await knex("users-permissions_user")
+    //       .insert(user)
+    //       .transacting(trx);
+    //     //queries.push(query);
+
+    //     console.log(user1);
+
+    //     const usr = await knex("users-permissions_user")
+    //       .where({ contact_number: contact_number })
+    //       .select("id")
+    //       .transacting(trx);
+    //     console.log(usr);
+
+    //     const student = Object.assign(
+    //       { user: usr[0].id },
+    //       _.omit(ctx.request.body, [
+    //         "username",
+    //         "email",
+    //         "password",
+    //         "first_name",
+    //         "last_name",
+    //         "contact_number",
+    //         "otp",
+    //         "college_id"
+    //       ])
+    //     );
+    //     console.log(student);
+
+    //     const stud = await knex("students")
+    //       .insert(student)
+    //       .transacting(trx);
+
+    //     // Promise.all(queries)
+    //     //   .then(trx.co)
+    //     //   .catch(trx.rollback);
+    //     ctx.body = { status: "ok" };
+    //   });
+    // } catch (err) {
+    //   console.log(err);
+    //   ctx.body = err;
+    // }
   }
 };
