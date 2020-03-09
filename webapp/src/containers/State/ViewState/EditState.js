@@ -12,7 +12,7 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
 import * as genericConstants from "../../../constants/GenericConstants";
 import StateSchema from "../StateSchema";
-import { GreenButton } from "../../../components";
+import { YellowButton } from "../../../components";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_SCEHMA_NAME = "state";
@@ -170,14 +170,14 @@ const EditState = props => {
                   />
                 </Grid>
                 <Grid item xs className={classes.btn_alignment}>
-                  <GreenButton
+                  <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
                     {genericConstants.SAVE_BUTTON_TEXT}
-                  </GreenButton>
+                  </YellowButton>
                 </Grid>
               </Grid>
             </Grid>

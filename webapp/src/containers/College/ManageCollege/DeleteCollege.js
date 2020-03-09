@@ -9,7 +9,7 @@ import Fade from "@material-ui/core/Fade";
 import useStyles from "./DeleteCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { GreenButton } from "../../../components";
+import { YellowButton } from "../../../components";
 
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
@@ -96,14 +96,14 @@ const DeleteZone = props => {
                   Do yo want to delete this field?
                 </Grid>
                 <Grid item xs>
-                  <GreenButton
+                  <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
                     {genericConstants.DELETE_TEXT}
-                  </GreenButton>
+                  </YellowButton>
                 </Grid>
               </Grid>
             </Grid>

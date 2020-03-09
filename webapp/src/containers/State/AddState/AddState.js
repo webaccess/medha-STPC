@@ -8,7 +8,7 @@ import StateSchema from "../StateSchema";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, GreenButton, GrayButton } from "../../../components";
+import { Alert, YellowButton, GrayButton } from "../../../components";
 
 import {
   Card,
@@ -161,9 +161,9 @@ const AddState = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <GreenButton type="submit" color="primary" variant="contained">
+              <YellowButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </GreenButton>
+              </YellowButton>
               <GrayButton
                 type="submit"
                 color="primary"

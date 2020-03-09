@@ -9,7 +9,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { GreenButton, GrayButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
 import DynamicBar from "../../../components/DynamicBar/DynamicBar";
@@ -1140,20 +1140,20 @@ const AddEditCollege = props => {
                     );
                   })}
                   <Divider />
-                  <GreenButton
+                  <YellowButton
                     color="primary"
                     variant="contained"
                     className={classes.add_more_btn}
                     onClick={addNewRow}
                   >
                     {genericConstants.ADD_MORE_TEXT}
-                  </GreenButton>
+                  </YellowButton>
                 </Card>
               </Grid>
             </Grid>
           </CardContent>
           <CardActions className={classes.btnspace}>
-            <GreenButton
+            <YellowButton
               type="submit"
               color="primary"
               variant="contained"
@@ -1161,7 +1161,7 @@ const AddEditCollege = props => {
               className={classes.submitbtn}
             >
               {genericConstants.SAVE_BUTTON_TEXT}
-            </GreenButton>
+            </YellowButton>
             <GrayButton
               color="primary"
               variant="contained"

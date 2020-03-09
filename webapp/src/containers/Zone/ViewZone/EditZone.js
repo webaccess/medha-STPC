@@ -15,7 +15,7 @@ import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
 import * as genericConstants from "../../../constants/GenericConstants";
 import ZoneSchema from "../ZoneSchema";
 import { get } from "lodash";
-import { GreenButton } from "../../../components";
+import { YellowButton } from "../../../components";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const ZONE_SCHEMA_NAME = "zoneName";
@@ -240,14 +240,14 @@ const EditZone = props => {
                   />
                 </Grid>
                 <Grid item xs className={classes.btn_alignment}>
-                  <GreenButton
+                  <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
                     {genericConstants.SAVE_BUTTON_TEXT}
-                  </GreenButton>
+                  </YellowButton>
                 </Grid>
               </Grid>
             </Grid>
