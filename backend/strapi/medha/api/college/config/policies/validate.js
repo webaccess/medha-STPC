@@ -53,25 +53,28 @@ module.exports = async (ctx, next) => {
   if (ctx.request.method === "PUT") {
     const { rpc, streams, principal } = ctx.request.body;
 
+    let rpcData, streamData;
     if (rpc) {
-      const data = await bookshelf
+      const rpcData = await bookshelf
         .model("rpc")
         .where({ id: rpc })
         .fetch();
-      if (data) {
-        await next();
-      } else ctx.response.notFound("rpc doesn't exist");
+      if (!rpcData) {
+        ctx.response.notFound("rpc doesn't exist");
+      }
     }
     if (streams) {
       const data = await bookshelf
         .model("stream")
         .where("id", "in", streams)
         .fetchAll();
-      const result = data.toJSON();
 
-      if (result[0]) {
-        await next();
-      } else ctx.response.notFound("streams doesn't exist");
+      streamData = data.toJSON();
+      console.log(streamData);
+      if (!streamData.length) {
+        ctx.response.notFound("streams doesn't exist");
+      }
     }
+    if (streamData.length || rpcData) await next();
   }
 };
