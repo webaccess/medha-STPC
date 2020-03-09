@@ -71,7 +71,11 @@ const ManageCollege = props => {
     showModalDelete: false,
     filterDataParameters: {
       COLLEGE_FILTER: ""
-    }
+    },
+    pageSize: 10,
+    totalRows: "",
+    page: "",
+    pageCount: ""
   });
 
   useEffect(() => {
@@ -150,11 +154,15 @@ const ManageCollege = props => {
 
   const getDataForEdit = async (id, isView = false) => {
     /** Get college data for edit */
+    let paramsForCollege = {
+      id: id
+    };
     await serviceProviders
-      .serviceProviderForGetOneRequest(COLLEGE_URL, id)
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
       .then(res => {
         /** This we will use as final data for edit we send to modal */
-        let editData = res.data;
+        let editData = res.data.result[0];
+        console.log("editData", editData);
         /** Check if zone is present in college data under rpc */
         if (
           editData.hasOwnProperty("rpc") &&
@@ -162,10 +170,13 @@ const ManageCollege = props => {
           editData["rpc"]["zone"] != null
         ) {
           /** If present get state id using that zone */
+          let paramsForZones = {
+            id: editData["rpc"]["zone"]
+          };
           serviceProviders
-            .serviceProviderForGetOneRequest(ZONES_URL, editData["rpc"]["zone"])
+            .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
             .then(res => {
-              editData["state"] = res.data["state"]["id"];
+              editData["state"] = res.data.result[0]["state"]["id"];
               history.push({
                 pathname: routeConstants.EDIT_COLLEGE,
                 editCollege: true,
@@ -175,6 +186,8 @@ const ManageCollege = props => {
             .catch(error => {
               console.log("error while getting data for edit > ", error);
             });
+        } else {
+          console.log("Rpc or zones for the college not present!");
         }
       })
       .catch(error => {
@@ -456,6 +469,9 @@ const ManageCollege = props => {
                 column={column}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
+                // totalRows={totalRows}
+                // handlePerRowsChange={handlePerRowsChange}
+                // handlePageChange={handlePageChange}
               />
             ) : (
               <Spinner />

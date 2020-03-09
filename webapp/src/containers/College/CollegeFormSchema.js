@@ -4,7 +4,7 @@ const CollegeFormSchema = {
     id: "name",
     autoComplete: "name",
     required: true,
-    placeholder: "College Name",
+    placeholder: "Choose College Name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -34,7 +34,7 @@ const CollegeFormSchema = {
     id: "address",
     autoComplete: "address",
     required: true,
-    placeholder: "Address",
+    placeholder: "College Address",
     autoFocus: true,
     type: "text",
     validations: {
@@ -49,7 +49,7 @@ const CollegeFormSchema = {
     id: "state",
     autoComplete: "state",
     required: false,
-    placeholder: "state",
+    placeholder: "Choose State",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -59,7 +59,7 @@ const CollegeFormSchema = {
     id: "zone",
     autoComplete: "zone",
     required: false,
-    placeholder: "zone",
+    placeholder: "Choose Zone",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -69,9 +69,29 @@ const CollegeFormSchema = {
     id: "rpc",
     autoComplete: "rpc",
     required: false,
-    placeholder: "rpc",
+    placeholder: "Choose rpc",
     autoFocus: true,
     type: "text",
+    validations: {}
+  },
+  district: {
+    label: "District",
+    id: "district",
+    autoComplete: "district",
+    required: false,
+    placeholder: "Choose district",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  block: {
+    label: "Block",
+    id: "block",
+    autoComplete: "block",
+    required: false,
+    placeholder: "block",
+    autoFocus: true,
+    type: "checkbox",
     validations: {}
   },
   contactNumber: {
@@ -79,7 +99,7 @@ const CollegeFormSchema = {
     id: "contact_number",
     autoComplete: "contact_number",
     required: true,
-    placeholder: "contact_number",
+    placeholder: "College Contact Number",
     autoFocus: true,
     type: "text",
     validations: {
@@ -94,7 +114,7 @@ const CollegeFormSchema = {
     id: "college_email",
     autoComplete: "college_email",
     required: true,
-    placeholder: "college_email",
+    placeholder: "College Email of the format abc@abc.com",
     autoFocus: true,
     type: "text",
     validations: {
@@ -113,7 +133,7 @@ const CollegeFormSchema = {
     id: "principal",
     autoComplete: "principal",
     required: false,
-    placeholder: "principal",
+    placeholder: "Choose Principal",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -123,17 +143,27 @@ const CollegeFormSchema = {
     id: "admins",
     autoComplete: "admins",
     required: false,
-    placeholder: "admins",
+    placeholder: "Choose Admins",
     autoFocus: true,
     type: "text",
     validations: {}
   },
   streams: {
-    label: "Streams",
+    label: "Stream",
     id: "streams",
     autoComplete: "streams",
     required: false,
-    placeholder: "streams",
+    placeholder: "Choose Stream",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  strength: {
+    label: "Strength",
+    id: "streams",
+    autoComplete: "strength",
+    required: false,
+    placeholder: "Stream Strength",
     autoFocus: true,
     type: "text",
     validations: {}
