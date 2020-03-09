@@ -8,7 +8,13 @@ import {
   Typography
 } from "@material-ui/core";
 import useStyles from "./ViewRpcStyles";
-import { Table, Spinner, GreenButton, GrayButton } from "../../../components";
+import {
+  Table,
+  Spinner,
+  GreenButton,
+  GrayButton,
+  YellowButton
+} from "../../../components";
 import axios from "axios";
 import DeleteRpc from "./DeleteRpc";
 import EditRpc from "./EditRpc";
@@ -18,8 +24,6 @@ import { CustomRouterLink } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-
-import { YellowRouteButton } from "../../../components";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
@@ -248,7 +252,7 @@ const ViewRpc = props => {
           RPC
         </Typography>
 
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           disableElevation
@@ -257,7 +261,7 @@ const ViewRpc = props => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           Add RPC
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card>
@@ -281,7 +285,7 @@ const ViewRpc = props => {
                 />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -289,7 +293,7 @@ const ViewRpc = props => {
                   to="#"
                 >
                   Search
-                </GreenButton>
+                </YellowButton>
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <GrayButton

@@ -7,7 +7,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { GreenButton } from "../../../components";
+import { YellowButton } from "../../../components";
 import useStyles from "./DeleteUserStyles";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
@@ -112,14 +112,14 @@ const DeleteUser = props => {
                   Do yo want to delete this field?
                 </Grid>
                 <Grid item xs>
-                  <GreenButton
+                  <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
                     {genericConstants.DELETE_TEXT}
-                  </GreenButton>
+                  </YellowButton>
                 </Grid>
               </Grid>
             </Grid>

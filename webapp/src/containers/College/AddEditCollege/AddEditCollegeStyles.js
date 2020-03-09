@@ -13,6 +13,9 @@ const useStyles = makeStyles(theme => ({
   divider: {
     marginTop: "15px",
     marginBottom: "15px"
+  },
+  add_more_btn: {
+    float: "right"
   }
 }));
 export default useStyles;

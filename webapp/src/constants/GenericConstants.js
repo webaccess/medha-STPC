@@ -8,6 +8,7 @@ export const DELETE_TEXT = "Delete";
 export const SEARCH_BUTTON_TEXT = "Search";
 export const RESET_BUTTON_TEXT = "Reset";
 export const NO_DATA_TO_SHOW_TEXT = "No data to show";
+export const ADD_MORE_TEXT = "Add More";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";
@@ -21,3 +22,4 @@ export const MANAGE_COLLEGE_TEXT = "Manage College";
 export const ADD_COLLEGE_BUTTON = "Add College";
 export const EDIT_COLLEGE_TEXT = "Edit College";
 export const VIEW_COLLEGE_TEXT = "View College";
+export const STREAMS_OFFERED_TEXT = "Streams Offered";

@@ -16,11 +16,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./ManageCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import {
-  GrayButton,
-  GreenButton,
-  YellowRouteButton
-} from "../../../components";
+import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import DeleteCollege from "./DeleteCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -71,7 +67,11 @@ const ManageCollege = props => {
     showModalDelete: false,
     filterDataParameters: {
       COLLEGE_FILTER: ""
-    }
+    },
+    pageSize: 10,
+    totalRows: "",
+    page: "",
+    pageCount: ""
   });
 
   useEffect(() => {
@@ -150,11 +150,15 @@ const ManageCollege = props => {
 
   const getDataForEdit = async (id, isView = false) => {
     /** Get college data for edit */
+    let paramsForCollege = {
+      id: id
+    };
     await serviceProviders
-      .serviceProviderForGetOneRequest(COLLEGE_URL, id)
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
       .then(res => {
         /** This we will use as final data for edit we send to modal */
-        let editData = res.data;
+        let editData = res.data.result[0];
+        console.log("editData", editData);
         /** Check if zone is present in college data under rpc */
         if (
           editData.hasOwnProperty("rpc") &&
@@ -162,10 +166,13 @@ const ManageCollege = props => {
           editData["rpc"]["zone"] != null
         ) {
           /** If present get state id using that zone */
+          let paramsForZones = {
+            id: editData["rpc"]["zone"]
+          };
           serviceProviders
-            .serviceProviderForGetOneRequest(ZONES_URL, editData["rpc"]["zone"])
+            .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
             .then(res => {
-              editData["state"] = res.data["state"]["id"];
+              editData["state"] = res.data.result[0]["state"]["id"];
               history.push({
                 pathname: routeConstants.EDIT_COLLEGE,
                 editCollege: true,
@@ -175,6 +182,8 @@ const ManageCollege = props => {
             .catch(error => {
               console.log("error while getting data for edit > ", error);
             });
+        } else {
+          console.log("Rpc or zones for the college not present!");
         }
       })
       .catch(error => {
@@ -302,7 +311,7 @@ const ManageCollege = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_COLLEGE_TEXT}
         </Typography>
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           onClick={clearFilter}
@@ -311,7 +320,7 @@ const ManageCollege = props => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           {genericConstants.ADD_COLLEGE_BUTTON}
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for edit */}
@@ -426,14 +435,14 @@ const ManageCollege = props => {
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
-                </GreenButton>
+                </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
@@ -456,6 +465,9 @@ const ManageCollege = props => {
                 column={column}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
+                // totalRows={totalRows}
+                // handlePerRowsChange={handlePerRowsChange}
+                // handlePageChange={handlePageChange}
               />
             ) : (
               <Spinner />

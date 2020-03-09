@@ -17,7 +17,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, GrayButton, GreenButton } from "../../../components";
+import { Alert, GrayButton, YellowButton } from "../../../components";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
@@ -335,9 +335,9 @@ const AddRpc = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <GreenButton type="submit" color="primary" variant="contained">
+              <YellowButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </GreenButton>
+              </YellowButton>
               <GrayButton
                 type="submit"
                 color="primary"

@@ -16,11 +16,7 @@ import useStyles from "./ViewZoneStyles";
 import * as serviceProviders from "../../../api/Axios";
 import EditZone from "./EditZone";
 import DeleteZone from "./DeleteZone";
-import {
-  YellowRouteButton,
-  GreenButton,
-  GrayButton
-} from "../../../components";
+import { GreenButton, YellowButton, GrayButton } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 
@@ -264,7 +260,7 @@ const ViewZone = props => {
           Zone
         </Typography>
 
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           onClick={clearFilter}
@@ -273,7 +269,7 @@ const ViewZone = props => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           Add Zone
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
@@ -300,14 +296,14 @@ const ViewZone = props => {
                 />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
                 >
                   Search
-                </GreenButton>
+                </YellowButton>
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <GrayButton
