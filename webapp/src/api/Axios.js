@@ -155,3 +155,30 @@ export const serviceProviderForAllDeleteRequest = async (
       throw error;
     });
 };
+
+export const serviceProviderForAllBlockRequest = async (
+  url,
+  arrayId,
+  body,
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
+) => {
+  let temp = [];
+  for (let i in arrayId) {
+    temp.push(serviceProviderForPutRequest(url, arrayId[i] ,body));
+  }
+  const URL = temp;
+  // const URL1 = url1;
+  return await axios
+    .all(URL, {
+      headers: headers
+    })
+    .then(response => {
+      return response;
+    })
+    .catch(error => {
+      throw error;
+    });
+};
