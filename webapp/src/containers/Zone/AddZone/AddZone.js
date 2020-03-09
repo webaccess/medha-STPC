@@ -6,7 +6,7 @@ import AddZoneForm from "../ZoneSchema";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Alert, GrayButton, GreenButton } from "../../../components";
+import { Alert, GrayButton, YellowButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -229,9 +229,9 @@ const AddZone = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <GreenButton type="submit" color="primary" variant="contained">
+              <YellowButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </GreenButton>
+              </YellowButton>
               <GrayButton
                 type="submit"
                 color="primary"

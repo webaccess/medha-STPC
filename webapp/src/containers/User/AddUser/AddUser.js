@@ -6,7 +6,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "../UserStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import { Alert, GreenButton, GrayButton } from "../../../components";
+import { Alert, YellowButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProvider from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
@@ -547,9 +547,9 @@ const Adduser = props => {
               <Divider className={classes.divider} />
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <GreenButton type="submit" color="primary" variant="contained">
+              <YellowButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </GreenButton>
+              </YellowButton>
               <GrayButton
                 type="submit"
                 color="primary"

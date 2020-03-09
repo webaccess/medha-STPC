@@ -13,11 +13,7 @@ import {
 import { Table, Spinner } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
-import {
-  GrayButton,
-  GreenButton,
-  YellowRouteButton
-} from "../../../components";
+import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
 import useStyles from "./ViewUserStyles";
 import DeleteUser from "./DeleteUser";
@@ -327,7 +323,7 @@ const ViewUsers = () => {
           Delete
         </Button>
 
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           //onClick={clearFilter}
@@ -336,7 +332,7 @@ const ViewUsers = () => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           Add User
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card>
@@ -443,14 +439,22 @@ const ViewUsers = () => {
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
                 >
                   Search
-                </GreenButton>
+                </YellowButton>
+                {/* <GreenButton
+                  variant="contained"
+                  color="primary"
+                  disableElevation
+                  onClick={searchFilter}
+                >
+                  Search
+                </GreenButton> */}
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton

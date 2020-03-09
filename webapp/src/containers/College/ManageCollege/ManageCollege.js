@@ -16,11 +16,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./ManageCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import {
-  GrayButton,
-  GreenButton,
-  YellowRouteButton
-} from "../../../components";
+import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import DeleteCollege from "./DeleteCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -315,7 +311,7 @@ const ManageCollege = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_COLLEGE_TEXT}
         </Typography>
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           onClick={clearFilter}
@@ -324,7 +320,7 @@ const ManageCollege = props => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           {genericConstants.ADD_COLLEGE_BUTTON}
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for edit */}
@@ -439,14 +435,14 @@ const ManageCollege = props => {
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
-                </GreenButton>
+                </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton

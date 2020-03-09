@@ -16,8 +16,8 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import {
   Table,
   Spinner,
-  YellowRouteButton,
   GreenButton,
+  YellowButton,
   GrayButton
 } from "../../../components";
 import EditState from "./EditState";
@@ -221,7 +221,7 @@ const ViewStates = () => {
           State
         </Typography>
 
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           onClick={clearFilter}
@@ -230,7 +230,7 @@ const ViewStates = () => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           Add State
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={styles.filterButton}>
@@ -256,14 +256,14 @@ const ViewStates = () => {
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
                 >
                   Search
-                </GreenButton>
+                </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
