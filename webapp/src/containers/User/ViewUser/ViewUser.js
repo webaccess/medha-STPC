@@ -17,6 +17,7 @@ import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
 import useStyles from "./ViewUserStyles";
 import DeleteUser from "./DeleteUser";
+import BlockUser from "./BlockUser"
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
@@ -35,6 +36,7 @@ const ViewUsers = () => {
   const [selectedRows, setSelectedRows] = useState([]);
 
   const [formState, setFormState] = useState({
+
     dataToShow: [],
     tempData: [],
     users: [],
@@ -56,7 +58,16 @@ const ViewUsers = () => {
     showEditModal: false,
     showModalDelete: false,
     isMultiDelete: false,
-    MultiDeleteID: []
+    MultiDeleteID: [],
+    isBlocked: false,
+    isUnBlocked: false,
+    isDelete: false,
+    dataToBlock: {},
+    showModalBlock: false,
+    isUserBlocked: false,
+    isMulBlocked: false,
+    isMulUnBlocked: false,
+    MultiBlockUser: {}
   });
 
   useEffect(() => {
@@ -68,7 +79,7 @@ const ViewUsers = () => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          zones: res.data
+          zones: res.data.result
         }));
       })
       .catch(error => {
@@ -80,7 +91,7 @@ const ViewUsers = () => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          rpcs: res.data
+          rpcs: res.data.result
         }));
       })
       .catch(error => {
@@ -92,7 +103,7 @@ const ViewUsers = () => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          ipcs: res.data
+          ipcs: res.data.result
         }));
       })
       .catch(error => {
@@ -150,6 +161,7 @@ const ViewUsers = () => {
         var temp = {};
         temp["id"] = data[i]["id"];
         temp["username"] = data[i]["username"];
+        temp["blocked"] = data[i]["blocked"];
         temp["role"] = data[i]["role"]["name"];
         temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
         temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
@@ -235,7 +247,12 @@ const ViewUsers = () => {
         ) !== -1 &&
         dataObj.role.indexOf(formState.filterDataParameters[ROLE_FILTER]) !==
           -1 &&
-        dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !== -1
+        dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !==
+          -1 &&
+        dataObj.rpc.indexOf(formState.filterDataParameters[RPC_FILTER]) !==
+          -1 &&
+        dataObj.college.indexOf(formState.filterDataParameters[IPC_FILTER]) !==
+          -1
     );
 
     setFormState(formState => ({
@@ -243,6 +260,85 @@ const ViewUsers = () => {
       dataToShow: filteredData
     }));
   };
+
+  const blockedCell = event => {
+    for (var k = 0; k < formState.dataToShow.length; k++) {
+      if (
+        parseInt(event.target.id) === parseInt(formState.dataToShow[k]["id"])
+      ) {
+        if (formState.dataToShow[k]["blocked"] === true) {
+          blockedCellData(event.target.id, false);
+        } else {
+          blockedCellData(event.target.id, true);
+        }
+      }
+    }
+  };
+
+  const blockedCellData = (id, isBlocked = false) => {
+
+    if (isBlocked === true) {
+      setFormState(formState => ({
+        ...formState,
+        dataToBlock: id,
+        isBlocked: true,
+        isUnBlocked: false,
+        showModalBlock: true
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        dataToBlock: id,
+        isBlocked: false,
+        isUnBlocked: true,
+        showModalBlock: true
+      }));
+    }
+  };
+
+  const isUserBlockCompleted = status => {
+    formState.isUserBlocked = status;
+  };
+
+  const handleCloseBlockModal = () => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false
+    }));
+    if (formState.isUserBlocked) {
+      getUserData();
+    }
+  };
+
+  const blockMulUserById = () => {
+    let arrayId = [];
+
+    for (var k = 0; k < selectedRows.length; k++) {
+
+      if (selectedRows[k]["blocked"] === true) {
+        arrayId.push(selectedRows[k]["id"]);
+        setFormState(formState => ({
+          ...formState,
+          isMulBlocked: false,
+          isMulUnBlocked: true,
+          showModalBlock: true,
+          MultiBlockUser: arrayId
+        }));
+      } else {
+        arrayId.push(selectedRows[k]["id"]);
+        setFormState(formState => ({
+          ...formState,
+          isMulBlocked: true,
+          isMulUnBlocked: false,
+          showModalBlock: true,
+          MultiBlockUser: arrayId
+        }));
+      }
+    }
+  };
+
 
   /** Table Data */
   const column = [
@@ -258,7 +354,7 @@ const ViewUsers = () => {
           className="material-icons"
           id={cell.id}
           value={cell.name}
-          //onClick={blockedCell}
+          onClick={blockedCell}
         >
           block
         </i>
@@ -268,13 +364,13 @@ const ViewUsers = () => {
         {
           when: row => row.blocked === true,
           style: {
-            backgroundColor: "red"
+            color: "red"
           }
         },
         {
           when: row => row.blocked === false,
           style: {
-            backgroundColor: "green"
+            color: "green"
           }
         }
       ]
@@ -295,7 +391,12 @@ const ViewUsers = () => {
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
+        <i
+          className="material-icons"
+          id={cell.id}
+          onClick={deleteCell}
+          style={{ color: "red" }}
+        >
           delete_outline
         </i>
       ),
@@ -311,7 +412,11 @@ const ViewUsers = () => {
           User
         </Typography>
 
-        <Button variant="contained" color="secondary">
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => blockMulUserById()}
+        >
           Block
         </Button>
 
@@ -447,14 +552,6 @@ const ViewUsers = () => {
                 >
                   Search
                 </YellowButton>
-                {/* <GreenButton
-                  variant="contained"
-                  color="primary"
-                  disableElevation
-                  onClick={searchFilter}
-                >
-                  Search
-                </GreenButton> */}
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
@@ -479,7 +576,6 @@ const ViewUsers = () => {
                 onSelectedRowsChange={handleRowSelected}
                 //contextActions={contextActions}
                 //editEvent={editCell}
-
                 deleteEvent={deleteCell}
               />
             ) : (
@@ -509,6 +605,25 @@ const ViewUsers = () => {
               closeModal={handleCloseDeleteModal}
               id={formState.dataToDelete["id"]}
               deleteEvent={isDeleteCellCompleted}
+            />
+          )}
+          {formState.isMulBlocked || formState.isMulUnBlocked ? (
+            <BlockUser
+              id={formState.MultiBlockUser}
+              isMulBlocked={formState.isMulBlocked}
+              isUnMulBlocked={formState.isMulUnBlocked}
+              getModel={formState.showModalBlock}
+              closeBlockModal={handleCloseBlockModal}
+              blockEvent={isUserBlockCompleted}
+            />
+          ) : (
+            <BlockUser
+              id={formState.dataToBlock}
+              getModel={formState.showModalBlock}
+              closeBlockModal={handleCloseBlockModal}
+              blockEvent={isUserBlockCompleted}
+              isBlocked={formState.isBlocked}
+              isUnBlocked={formState.isUnBlocked}
             />
           )}
         </Card>
