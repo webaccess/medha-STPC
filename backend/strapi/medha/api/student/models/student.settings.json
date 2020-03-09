@@ -14,7 +14,7 @@
       "plugin": "users-permissions",
       "model": "user"
     },
-    "Stream": {
+    "stream": {
       "model": "stream"
     },
     "documents": {

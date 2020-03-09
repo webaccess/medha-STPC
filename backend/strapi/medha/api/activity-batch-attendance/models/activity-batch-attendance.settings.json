@@ -1,4 +1,6 @@
 {
+  "connection": "default",
+  "collectionName": "activity_batch_attendances",
   "info": {
     "name": "Activity Batch Attendance"
   },
@@ -13,13 +15,11 @@
     "student": {
       "model": "student"
     },
-    "markedByStudent": {
+    "marked_by_student": {
       "type": "boolean"
     },
-    "verifiedByCollege": {
+    "verified_by_college": {
       "type": "boolean"
     }
-  },
-  "connection": "default",
-  "collectionName": "activity_batch_attendances"
+  }
 }

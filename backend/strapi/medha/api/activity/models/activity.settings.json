@@ -28,11 +28,11 @@
     "college": {
       "model": "college"
     },
-    "start_datetime": {
+    "start_date_time": {
       "type": "datetime",
       "required": true
     },
-    "end_datetime": {
+    "end_date_time": {
       "type": "datetime",
       "required": true
     },

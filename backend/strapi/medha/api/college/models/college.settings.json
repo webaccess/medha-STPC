@@ -34,9 +34,6 @@
       "unique": true,
       "required": true
     },
-    "streams": {
-      "collection": "stream"
-    },
     "principal": {
       "plugin": "users-permissions",
       "model": "user"
@@ -44,12 +41,14 @@
     "district": {
       "model": "district"
     },
-    "strength": {
-      "type": "integer"
-    },
     "blocked": {
       "type": "boolean",
       "default": false
+    },
+    "stream_strength": {
+      "type": "component",
+      "repeatable": true,
+      "component": "college-stream-strength.streams-strength"
     }
   }
 }
