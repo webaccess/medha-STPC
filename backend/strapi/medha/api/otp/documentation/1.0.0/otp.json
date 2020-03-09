@@ -811,7 +811,7 @@
           "contact_number": {
             "type": "string"
           },
-          "isVerified": {
+          "is_verified": {
             "type": "boolean"
           },
           "otp": {
@@ -828,7 +828,7 @@
           "contact_number": {
             "type": "string"
           },
-          "isVerified": {
+          "is_verified": {
             "type": "boolean"
           },
           "otp": {

@@ -531,8 +531,8 @@
         "required": [
           "id",
           "name",
-          "startDate",
-          "endDate"
+          "start_date",
+          "end_date"
         ],
         "properties": {
           "id": {
@@ -541,10 +541,10 @@
           "name": {
             "type": "string"
           },
-          "startDate": {
+          "start_date": {
             "type": "string"
           },
-          "endDate": {
+          "end_date": {
             "type": "string"
           }
         }
@@ -552,17 +552,17 @@
       "NewAcademic-year": {
         "required": [
           "name",
-          "startDate",
-          "endDate"
+          "start_date",
+          "end_date"
         ],
         "properties": {
           "name": {
             "type": "string"
           },
-          "startDate": {
+          "start_date": {
             "type": "string"
           },
-          "endDate": {
+          "end_date": {
             "type": "string"
           }
         }

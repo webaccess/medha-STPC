@@ -716,7 +716,7 @@
               }
             }
           },
-          "Stream": {
+          "stream": {
             "required": [
               "id",
               "name"
@@ -871,7 +871,7 @@
           "user": {
             "type": "string"
           },
-          "Stream": {
+          "stream": {
             "type": "string"
           },
           "verifiedByCollege": {

@@ -540,8 +540,8 @@
               "id",
               "title",
               "activity_type",
-              "start_datetime",
-              "end_datetime",
+              "start_date_time",
+              "end_date_time",
               "address",
               "description",
               "age"
@@ -562,10 +562,10 @@
               "college": {
                 "type": "string"
               },
-              "start_datetime": {
+              "start_date_time": {
                 "type": "datetime"
               },
-              "end_datetime": {
+              "end_date_time": {
                 "type": "datetime"
               },
               "education_year": {
@@ -597,10 +597,10 @@
           "name": {
             "type": "string"
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           }
         }
@@ -613,10 +613,10 @@
           "name": {
             "type": "string"
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           }
         }

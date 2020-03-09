@@ -549,10 +549,10 @@
               "name": {
                 "type": "string"
               },
-              "start_datetime": {
+              "start_date_time": {
                 "type": "datetime"
               },
-              "end_datetime": {
+              "end_date_time": {
                 "type": "datetime"
               }
             }
@@ -574,7 +574,7 @@
               "user": {
                 "type": "string"
               },
-              "Stream": {
+              "stream": {
                 "type": "string"
               },
               "documents": {
@@ -618,10 +618,10 @@
               }
             }
           },
-          "markedByStudent": {
+          "marked_by_student": {
             "type": "boolean"
           },
-          "verifiedByCollege": {
+          "verified_by_college": {
             "type": "boolean"
           }
         }
@@ -634,10 +634,10 @@
           "student": {
             "type": "string"
           },
-          "markedByStudent": {
+          "marked_by_student": {
             "type": "boolean"
           },
-          "verifiedByCollege": {
+          "verified_by_college": {
             "type": "boolean"
           }
         }

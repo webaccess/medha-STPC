@@ -519,8 +519,8 @@
           "id",
           "title",
           "activity_type",
-          "start_datetime",
-          "end_datetime",
+          "start_date_time",
+          "end_date_time",
           "address",
           "description",
           "age"
@@ -544,8 +544,8 @@
             "required": [
               "id",
               "name",
-              "startDate",
-              "endDate"
+              "start_date",
+              "end_date"
             ],
             "properties": {
               "id": {
@@ -554,10 +554,10 @@
               "name": {
                 "type": "string"
               },
-              "startDate": {
+              "start_date": {
                 "type": "string"
               },
-              "endDate": {
+              "end_date": {
                 "type": "string"
               }
             }
@@ -592,27 +592,24 @@
               "college_email": {
                 "type": "string"
               },
-              "streams": {
-                "type": "string"
-              },
               "principal": {
                 "type": "string"
               },
               "district": {
                 "type": "string"
               },
-              "strength": {
-                "type": "integer"
-              },
               "blocked": {
                 "type": "boolean"
+              },
+              "stream_strength": {
+                "type": "component"
               }
             }
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           },
           "education_year": {
@@ -734,8 +731,8 @@
         "required": [
           "title",
           "activity_type",
-          "start_datetime",
-          "end_datetime",
+          "start_date_time",
+          "end_date_time",
           "address",
           "description",
           "age"
@@ -758,10 +755,10 @@
           "college": {
             "type": "string"
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           },
           "education_year": {

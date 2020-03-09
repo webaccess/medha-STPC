@@ -1338,20 +1338,17 @@
               "college_email": {
                 "type": "string"
               },
-              "streams": {
-                "type": "string"
-              },
               "principal": {
                 "type": "string"
               },
               "district": {
                 "type": "string"
               },
-              "strength": {
-                "type": "integer"
-              },
               "blocked": {
                 "type": "boolean"
+              },
+              "stream_strength": {
+                "type": "component"
               }
             }
           }

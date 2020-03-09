@@ -555,7 +555,7 @@
               "user": {
                 "type": "string"
               },
-              "Stream": {
+              "stream": {
                 "type": "string"
               },
               "documents": {

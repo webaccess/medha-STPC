@@ -629,20 +629,6 @@
           "college_email": {
             "type": "string"
           },
-          "streams": {
-            "required": [
-              "id",
-              "name"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            }
-          },
           "principal": {
             "required": [
               "id",
@@ -720,12 +706,40 @@
               }
             }
           },
-          "strength": {
-            "type": "integer"
-          },
           "blocked": {
             "type": "boolean",
             "default": false
+          },
+          "stream_strength": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "stream": {
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "strength": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       },
@@ -755,21 +769,46 @@
           "college_email": {
             "type": "string"
           },
-          "streams": {
-            "type": "string"
-          },
           "principal": {
             "type": "string"
           },
           "district": {
             "type": "string"
           },
-          "strength": {
-            "type": "integer"
-          },
           "blocked": {
             "type": "boolean",
             "default": false
+          },
+          "stream_strength": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "stream": {
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "strength": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       }
