@@ -1,21 +1,23 @@
 import axios from "axios";
 import { Auth as auth } from "../components";
 
-const TOKEN = JSON.parse(localStorage.getItem("jwtToken"));
 const HEADERS = {
   "content-type": "application/json",
-  Authorization: `Bearer ${TOKEN}`
+  Authorization: `Bearer ${JSON.parse(localStorage.getItem("jwtToken"))}`
 };
 
 export const serviceProviderForGetRequest = async (
   url,
   payload = {},
-  headers = HEADERS
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
 ) => {
   const URL = url;
   return await axios(URL, {
     method: "GET",
-    headers: HEADERS,
+    headers: headers,
     params: payload
   })
     .then(response => response)
@@ -27,12 +29,15 @@ export const serviceProviderForGetRequest = async (
 export const serviceProviderForGetOneRequest = async (
   url,
   id,
-  headers = HEADERS
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
 ) => {
   const URL = url + "/" + id;
   return await axios(URL, {
     method: "GET",
-    headers: HEADERS
+    headers: headers
   })
     .then(response => response)
     .catch(error => {
@@ -44,12 +49,15 @@ export const serviceProviderForPutRequest = async (
   url,
   id,
   body,
-  headers = HEADERS
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
 ) => {
   const URL = url;
   return await axios(URL + "/" + id, {
-    method: "Put",
-    headers: HEADERS,
+    method: "PUT",
+    headers: headers,
     data: body
   })
     .then(response => response)
@@ -61,12 +69,15 @@ export const serviceProviderForPutRequest = async (
 export const serviceProviderForDeleteRequest = async (
   url,
   id,
-  headers = HEADERS
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
 ) => {
   const URL = url;
   return await axios(URL + "/" + id, {
     method: "Delete",
-    headers: HEADERS
+    headers: headers
   })
     .then(response => response)
     .catch(error => {
@@ -77,12 +88,15 @@ export const serviceProviderForDeleteRequest = async (
 export const serviceProviderForPostRequest = async (
   url,
   payload = {},
-  headers = HEADERS
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
 ) => {
   const URL = url;
   return await axios(URL, {
     method: "POST",
-    headers: HEADERS,
+    headers: headers,
     data: payload
   })
     .then(response => response)
@@ -93,7 +107,10 @@ export const serviceProviderForPostRequest = async (
 
 export const serviceProviderForAllGetRequest = async (
   url,
-  headers = HEADERS
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
 ) => {
   let temp = [];
   for (let i in url) {
@@ -103,7 +120,33 @@ export const serviceProviderForAllGetRequest = async (
   // const URL1 = url1;
   return await axios
     .all(URL, {
-      headers: HEADERS
+      headers: headers
+    })
+    .then(response => {
+      return response;
+    })
+    .catch(error => {
+      throw error;
+    });
+};
+
+export const serviceProviderForAllDeleteRequest = async (
+  url,
+  arrayId,
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
+) => {
+  let temp = [];
+  for (let i in arrayId) {
+    temp.push(serviceProviderForDeleteRequest(url, arrayId[i]));
+  }
+  const URL = temp;
+  // const URL1 = url1;
+  return await axios
+    .all(URL, {
+      headers: headers
     })
     .then(response => {
       return response;

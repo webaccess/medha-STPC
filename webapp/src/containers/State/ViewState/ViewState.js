@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
-  Button,
   Card,
   CardContent,
   Grid,
@@ -15,7 +14,6 @@ import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import {
-  CustomRouterLink,
   Table,
   Spinner,
   YellowRouteButton,
@@ -45,7 +43,11 @@ const ViewStates = () => {
     dataToEdit: {},
     dataToDelete: {},
     showEditModal: false,
-    showModalDelete: false
+    showModalDelete: false,
+    page: "",
+    pageSize: "",
+    rowCount: "",
+    pageCount: ""
   });
 
   useEffect(() => {
@@ -59,11 +61,16 @@ const ViewStates = () => {
       .then(res => {
         formState.dataToShow = [];
         formState.tempData = [];
+        console.log(res.data.result);
         setFormState(formState => ({
           ...formState,
-          states: res.data,
-          dataToShow: res.data,
-          tempData: res.data
+          states: res.data.result,
+          dataToShow: res.data.result,
+          tempData: res.data.result,
+          page: 1,
+          pageSize: 10,
+          rowCount: 15,
+          pageCount: 2
         }));
       })
       .catch(error => {
@@ -180,8 +187,7 @@ const ViewStates = () => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Id", sortable: true, selector: "id" },
-    { name: "States", sortable: true, selector: "name" },
+    { name: "Name", sortable: true, selector: "name" },
     /** Columns for edit and delete */
     {
       cell: cell => (

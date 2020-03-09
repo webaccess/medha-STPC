@@ -1,6 +1,6 @@
 const AddRpcSchema = {
   rpcName: {
-    label: "Rpc Name",
+    label: "RPC Name",
     id: "rpcname",
     autoComplete: "rpcname",
     required: true,
@@ -15,22 +15,22 @@ const AddRpcSchema = {
     }
   },
   stateName: {
-    label: "State Name",
+    label: "State",
     id: "statename",
     autoComplete: "statename",
     required: true,
-    placeholder: "State Name",
+    placeholder: "State",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
-        message: "State Name is required"
+        message: "State is required"
       }
     }
   },
   zoneName: {
-    label: "Zone Name",
+    label: "Zone",
     id: "zonename",
     autoComplete: "zonename",
     required: true,
@@ -40,12 +40,12 @@ const AddRpcSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Zone Name is required"
+        message: "Zone is required"
       }
     }
   },
   collegeName: {
-    label: "College Name",
+    label: "College",
     id: "collegename",
     autoComplete: "collegename",
     required: false,

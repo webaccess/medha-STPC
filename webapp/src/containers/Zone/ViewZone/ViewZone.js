@@ -46,10 +46,6 @@ const ViewZone = props => {
     showModalDelete: false
   });
 
-  useEffect(() => {
-    console.log("dataToEdit ", formState.dataToEdit);
-  }, [formState.dataToEdit]);
-
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
   useEffect(() => {
     /** Seperate function to get zone data */
@@ -59,7 +55,7 @@ const ViewZone = props => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          states: res.data
+          states: res.data.result
         }));
       })
       .catch(error => {
@@ -78,11 +74,10 @@ const ViewZone = props => {
         /** As zones data is in nested form we first convert it into
          * a float structure and store it in data
          */
-        console.log("Zone Data > ", res.data);
-        temp = convertZoneData(res.data);
+        temp = convertZoneData(res.data.result);
         setFormState(formState => ({
           ...formState,
-          zones: res.data,
+          zones: res.data.result,
           dataToShow: temp,
           tempData: temp
         }));
@@ -126,10 +121,9 @@ const ViewZone = props => {
         }));
       })
       .catch(error => {
-        console.log("error");
+        console.log("error", error);
       });
   };
-
   const editCell = event => {
     getDataForEdit(event.target.id);
   };
@@ -225,9 +219,8 @@ const ViewZone = props => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Id", sortable: true, selector: "id" },
-    { name: "Zone", sortable: true, selector: "name" },
-    { name: "States", sortable: true, selector: "state" },
+    { name: "Name", sortable: true, selector: "name" },
+    { name: "State", sortable: true, selector: "state" },
     /** Columns for edit and delete */
     {
       cell: cell => (
@@ -245,7 +238,11 @@ const ViewZone = props => {
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
+        <i
+          className="material-icons tableicons"
+          id={cell.id}
+          onClick={deleteCell}
+        >
           delete_outline
         </i>
       ),
@@ -275,7 +272,7 @@ const ViewZone = props => {
           to={routeConstants.ADD_ZONES}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Add State
+          Add Zone
         </YellowRouteButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>

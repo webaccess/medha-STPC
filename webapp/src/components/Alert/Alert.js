@@ -7,6 +7,7 @@ export default function Alert(props) {
       elevation={6}
       severity={props.severity}
       variant="filled"
+      action={props.action}
       {...props}
     />
   );

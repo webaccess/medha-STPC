@@ -227,22 +227,25 @@ const LogIn = props => {
       <div className={classes.masterlogin1}>
         <div className={classes.masterlogin}>
           <Paper className={isDesktop ? classes.rootDesktop : classes.root}>
-            <div className={classes.loginlock}>
-              <CardIcon color="warning">
-                <Icon>lock</Icon>
-              </CardIcon>
-            </div>
             <CardContent>
               {console.log("inContainer", formState.showPassword)}
               <CssBaseline />
               <div className={classes.paper}>
-                <Typography
-                  component="h1"
-                  variant="h5"
-                  style={{ marginBottom: "2.5rem", fontWeight: "700" }}
-                >
-                  {authPageConstants.SIGN_IN_HEADER}
-                </Typography>
+                <div className={classes.signin_header}>
+                  <div className={classes.loginlock}>
+                    <CardIcon>
+                      <Icon>lock</Icon>
+                    </CardIcon>
+                  </div>
+                  <Typography
+                    className={classes.signin}
+                    component="h1"
+                    variant="h5"
+                    style={{ fontWeight: "700" }}
+                  >
+                    {authPageConstants.SIGN_IN_HEADER}
+                  </Typography>
+                </div>
                 <form
                   className={classes.form}
                   noValidate
@@ -343,6 +346,14 @@ const LogIn = props => {
                           })
                         : null}
                     </FormHelperText>
+                    <Link
+                      className={classes.forgotpass}
+                      href={routeConstants.FORGOT_PASSWORD_URL}
+                      variant="body2"
+                      className={classes.linkColor}
+                    >
+                      {authPageConstants.FORGOT_PASSWORD_ROUTE_TEXT}
+                    </Link>
                   </FormControl>
                   <Button
                     color="primary"
@@ -355,16 +366,8 @@ const LogIn = props => {
                     {authPageConstants.SIGN_IN_BUTTON}
                   </Button>
                   <Grid container>
-                    <Grid item xs={6} style={{ textAlign: "center" }}>
-                      <Link
-                        href={routeConstants.FORGOT_PASSWORD_URL}
-                        variant="body2"
-                        className={classes.linkColor}
-                      >
-                        {authPageConstants.FORGOT_PASSWORD_ROUTE_TEXT}
-                      </Link>
-                    </Grid>
-                    <Grid item xs={6} style={{ textAlign: "center" }}>
+                    <Grid item xs={12} style={{ textAlign: "center" }}>
+                      Don't have an account? |{" "}
                       <Link
                         href={routeConstants.REQUEST_OTP}
                         variant="body2"

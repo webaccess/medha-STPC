@@ -19,22 +19,31 @@ const useStyles = makeStyles(theme => ({
     alignSelf: "center",
     marginLeft: "10px"
   },
-   modal: {
+  modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
   },
+  edit_dialog: {
+    padding: "25px 15px"
+  },
+  deletemessage: {
+    flex: "1 auto"
+  },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "primary",
-    boxShadow: theme.shadows[5]
+    border: "primary"
     // padding: theme.spacing(2, 0, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
   },
   textMargin: {
-    margin: "10px"
+    margin: "0px",
+    backgroundColor: "#000",
+    color: "#fff",
+    fontSize: "18px",
+    paddingLeft: "8px"
   },
   autoCompleteField: {
     width: 200
@@ -51,7 +60,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   Cardtheming: {
-    paddingBottom:"16px !important"
+    paddingBottom: "16px !important"
   }
 }));
 

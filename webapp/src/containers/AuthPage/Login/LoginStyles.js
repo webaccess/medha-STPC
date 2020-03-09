@@ -6,16 +6,18 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     marginTop: "0px",
-    padding: "48px 16px 0px",
+    padding: "16px 16px 0px",
     height: "100%",
     alignContent: "center",
     justifyContent: "center"
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-    backgroundColor: "#666",
+    backgroundColor: "#f6c80a !important",
+    color:"#010101 !important",
+    fontWeight:"700 !important",
     "&:hover": {
-      background: "#666"
+      backgroundColor: "#f6c80a"
     }
   },
   margin: {
@@ -56,15 +58,21 @@ const useStyles = makeStyles(theme => ({
   },
 
   loginlock: {
-    top: "-18px",
-    left: "24px",
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    backgroundColor: "#ccc !important",
+    display: "flex",
+    justifyContent: "center",
     color: "#fff",
-    width: "64px",
-    height: "64px",
-    padding: "8px",
-    position: "absolute",
-    fontSize: "32px",
-    borderradius: "4px"
+    alignItems: "center",
+    marginRight: "15px"
+  },
+  signin_header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "left",
+    marginBottom: "25px"
   },
 
   details: {
@@ -114,7 +122,8 @@ const useStyles = makeStyles(theme => ({
   },
   linkColor: {
     color: "#21abdc",
-    fontSize: "0.8rem"
+    fontSize: "0.8rem",
+    textAlign: "right"
   }
 }));
 

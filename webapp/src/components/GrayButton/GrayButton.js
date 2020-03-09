@@ -5,7 +5,7 @@ import { CustomRouterLink } from "../../components";
 
 const GrayButton = props => {
   const classes = useStyles();
-  return props.to != undefined ? (
+  return props.to !== undefined ? (
     <Button
       type={props.type ? props.type : "submit"}
       color={props.color ? props.color : "primary"}

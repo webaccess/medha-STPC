@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Grid, Typography } from "@material-ui/core";
 
-import { TextField, Button, Grid, Typography } from "@material-ui/core";
-
+import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "./DeleteRpcStyles";
-import * as serviceProviders from "../../../api/Axios";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
-
-import * as genericConstants from "../../../constants/GenericConstants";
-// import ZoneSchema from "../ZoneSchema";
-import { get } from "lodash";
 import { GreenButton } from "../../../components";
-const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
-// const ZONE_ID = "stateName";
+import useStyles from "./DeleteUserStyles";
 
-const DeleteRpc = props => {
-  const classes = useStyles();
+const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_ID = "UserName";
+
+const DeleteUser = props => {
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
@@ -28,11 +21,11 @@ const DeleteRpc = props => {
     values: {}
   });
 
-  // if (props.showModal && !formState.stateCounter) {
-  //   formState.stateCounter = 0;
-  //   formState.values[ZONE_ID] = props.id;
-  //   formState.isDeleteData = false;
-  // }
+  if (props.showModal && !formState.stateCounter) {
+    formState.stateCounter = 0;
+    formState.values[USER_ID] = props.id;
+    formState.isDeleteData = false;
+  }
 
   const handleCloseModal = () => {
     setFormState(formState => ({
@@ -58,24 +51,42 @@ const DeleteRpc = props => {
   };
 
   const deleteData = () => {
-    serviceProviders
-      .serviceProviderForDeleteRequest(RPC_URL, props.id)
-      .then(res => {
-        console.log("deletedata", res.data);
-        setFormState(formState => ({
-          ...formState,
-          isValid: true
-        }));
-        formState.isDeleteData = true;
-        handleCloseModal();
-      })
-      .catch(error => {
-        console.log("error");
-        formState.isDeleteData = false;
-        handleCloseModal();
-      });
+    if (props.isMultiDelete) {
+      serviceProviders
+        .serviceProviderForAllDeleteRequest(USER_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          console.log("error", error);
+          formState.isDeleteData = false;
+          handleCloseModal();
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForDeleteRequest(USER_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal();
+        });
+    }
   };
 
+  const classes = useStyles();
   return (
     <Modal
       aria-labelledby="transition-modal-title"
@@ -119,4 +130,4 @@ const DeleteRpc = props => {
   );
 };
 
-export default DeleteRpc;
+export default DeleteUser;

@@ -47,7 +47,7 @@ const AddZone = props => {
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
-        setStates(res.data);
+        setStates(res.data.result);
       })
       .catch(error => {
         console.log("error > ", error);
@@ -139,7 +139,6 @@ const AddZone = props => {
     serviceProviders
       .serviceProviderForPostRequest(ZONE_URL, postData)
       .then(res => {
-        console.log(res);
         setIsFailed(false);
         setIsSuccess(true);
       })

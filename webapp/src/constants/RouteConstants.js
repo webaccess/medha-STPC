@@ -11,9 +11,19 @@ export const VIEW_RPC = "/view-rpc";
 export const ADD_STATES = "/add-states";
 export const ADD_ZONES = "/add-zones";
 export const ADD_RPC = "/add-rpc";
+/** College */
 export const ADD_COLLEGE = "/add-college";
 export const VIEW_COLLEGE = "/view-college";
-export const VIEW_USER = "/view-user";
+export const EDIT_COLLEGE = "/edit-college";
 
+<<<<<<< HEAD
 export const REQUEST_OTP = "/requestotp";
 export const VERIFY_OTP = "/verifyotp";
+=======
+/** user */
+export const VIEW_USER = "/view-user";
+export const MANAGE_TRAINING = "/manage-training";
+export const VALIDATE_STUDENT = "/validate-student";
+export const EVENTS = "/events";
+export const PROFILE = "/profile";
+>>>>>>> 871bef00d9c06f5e5e90a7e7f953c719c3532975
