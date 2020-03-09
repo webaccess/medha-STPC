@@ -86,12 +86,24 @@ module.exports = {
    */
   async rpcs(ctx) {
     const { id } = ctx.params;
+    const { query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
     return bookshelf
-      .model("zone")
+      .model("rpc")
+      .query(
+        buildQuery({
+          model: strapi.models.rpc,
+          filters
+        })
+      )
       .where({
-        id: id
+        zone: id
       })
-      .fetch({ withRelated: ["rpcs"] });
+      .fetchAll({ withRelated: ["zone"] })
+      .then(res => {
+        return utils.getResponse(res);
+      });
   },
 
   /**
@@ -100,21 +112,54 @@ module.exports = {
    */
   async colleges(ctx) {
     const { id } = ctx.params;
+    const { query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    // return bookshelf
+    //   .model("zone")
+    //   .where({
+    //     id: id
+    //   })
+    //   .fetch({ withRelated: ["rpcs.colleges", "rpcs.colleges.rpc"] })
+    //   .then(res => {
+    //     const data = res.toJSON();
+    //     let colleges = data.rpcs.reduce((acc, rpc) => {
+    //       acc.push(...rpc.colleges);
+    //       return acc;
+    //     }, []);
+    //     delete data.rpcs;
+    //     data.colleges = colleges;
+    //     return data;
+    //   });
+
     return bookshelf
-      .model("zone")
-      .where({
-        id: id
+      .model("college")
+      .query(
+        buildQuery({
+          model: strapi.models.college,
+          filters
+        })
+      )
+      .fetchAll({
+        withRelated: [
+          "rpc.zone",
+          {
+            rpc: qb => {
+              qb.where({ zone: id });
+            }
+          }
+        ]
       })
-      .fetch({ withRelated: ["rpcs.colleges", "rpcs.colleges.rpc"] })
       .then(res => {
-        const data = res.toJSON();
-        let colleges = data.rpcs.reduce((acc, rpc) => {
-          acc.push(...rpc.colleges);
-          return acc;
-        }, []);
-        delete data.rpcs;
-        data.colleges = colleges;
-        return data;
+        const response = utils.getResponse(res);
+        response.result = response.result
+          .map(college => {
+            if (Object.keys(college.rpc).length) {
+              return college;
+            }
+          })
+          .filter(a => a);
+        return response;
       });
   },
 

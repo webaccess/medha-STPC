@@ -49,25 +49,35 @@ bookshelf.model("stream", {
   tableName: "streams"
 });
 
-bookshelf.model("collegeStreams", {
-  tableName: "colleges__streams",
-  college() {
-    return this.belongsTo("college", "college_id", "id");
-  },
+// bookshelf.model("collegeStreams", {
+//   tableName: "colleges__streams",
+//   college() {
+//     return this.belongsTo("college", "college_id", "id");
+//   },
+//   stream() {
+//     return this.belongsTo("stream", "stream_id", "id");
+//   }
+// });
+
+bookshelf.model("colleges_component", {
+  tableName: "colleges_components",
+  streams() {
+    return this.belongsTo("college_stream_strength", "component_id", "id");
+  }
+});
+
+bookshelf.model("college_stream_strength", {
+  tableName: "college_stream_strengths",
   stream() {
-    return this.belongsTo("stream", "stream_id", "id");
+    return this.belongsTo("stream", "stream", "id");
   }
 });
 
 bookshelf.model("college", {
   requireFetch: false,
   tableName: "colleges",
-  streams() {
-    return this.belongsToMany("stream").through(
-      "collegeStreams",
-      "college_id",
-      "stream_id"
-    );
+  streamAndStrength() {
+    return this.hasMany("colleges_component", "college_id", "id");
   },
   rpc() {
     return this.belongsTo("rpc", "rpc", "id");
@@ -126,7 +136,7 @@ bookshelf.model("student", {
     return this.belongsTo("user", "user", "id");
   },
   stream() {
-    return this.belongsTo("stream", "Stream", "id");
+    return this.belongsTo("stream", "stream", "id");
   },
   educations() {
     return this.hasMany("education", "student", "id");

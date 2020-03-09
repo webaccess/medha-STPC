@@ -112,23 +112,23 @@ module.exports = {
    */
   async colleges(ctx) {
     const { id } = ctx.params;
+    const { query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
     return bookshelf
-      .model("rpc")
-      .where({ id: id })
-      .fetch({ withRelated: ["zone", "colleges"] });
-    // return bookshelf
-    //   .model("rpc")
-    //   .where({ id: id })
-    //   .fetch({
-    //     withRelated: [
-    //       "zone",
-    //       "colleges",
-    //       {
-    //         colleges: query => {
-    //           query.where({ id: 1 });
-    //         }
-    //       }
-    //     ]
-    //   })
+      .model("college")
+      .query(
+        buildQuery({
+          model: strapi.models.college,
+          filters
+        })
+      )
+      .where({ rpc: id })
+      .fetchAll({
+        withRelated: ["rpc"]
+      })
+      .then(model => {
+        return utils.getResponse(model);
+      });
   }
 };

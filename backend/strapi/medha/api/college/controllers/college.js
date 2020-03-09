@@ -18,6 +18,7 @@ const sanitizeUser = user =>
     model: strapi.query("user", "users-permissions").model
   });
 
+const _ = require("lodash");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
@@ -62,7 +63,12 @@ module.exports = {
         .fetchPage({
           page: page,
           pageSize: pageSize,
-          withRelated: ["streams", "principal", "admins.role", "rpc"]
+          withRelated: [
+            "streamAndStrength.streams.stream",
+            "principal",
+            "admins.role",
+            "rpc"
+          ]
         })
         .then(res => {
           const data = utils.getPaginatedResponse(res);
@@ -219,15 +225,19 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("college")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("college").findOne({ id });
+    return {
+      result: response
+    };
+    // return await bookshelf
+    //   .model("college")
+    //   .where({ id: id })
+    //   .fetch({
+    //     require: false
+    //   })
+    //   .then(res => {
+    //     return utils.getResponse(res);
+    //   });
   },
 
   async showStudents(ctx) {
@@ -259,14 +269,14 @@ module.exports = {
       })
       .then(res => {
         const data = utils.getPaginatedResponse(res);
-        // const response = data.result.reduce((acc, obj) => {
-        //   if (Object.keys(obj.user).length) {
-        //     obj.user = sanitizeUser(obj.user);
-        //     acc.push(obj);
-        //   }
-        //   return acc;
-        // }, []);
-        // data.result = response;
+        const response = data.result.reduce((acc, obj) => {
+          if (Object.keys(obj.user).length) {
+            obj.user = sanitizeUser(obj.user);
+            acc.push(obj);
+          }
+          return acc;
+        }, []);
+        data.result = response;
         return data;
       });
   }

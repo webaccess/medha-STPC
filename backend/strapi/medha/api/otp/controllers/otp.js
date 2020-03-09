@@ -6,29 +6,31 @@
  */
 var crypto = require("crypto");
 const bookshelf = require("../../../config/config.js");
+const utils = require("../../../config/utils.js");
+
 module.exports = {
-  async requestOTP(ctx, next) {
+  async requestOTP(ctx) {
     const num = ctx.request.body.contact_number;
     const buffer = crypto.randomBytes(2);
     const OTP = parseInt(buffer.toString("hex"), 16);
-    try {
-      const result = await bookshelf
-        .model("otp")
-        .forge({ contact_number: num, otp: OTP })
-        .save();
-      if (result) ctx.body = { status: "OK" };
-    } catch (err) {
-      console.log(err);
-    }
+    return bookshelf
+      .model("otp")
+      .forge({ contact_number: num, otp: OTP })
+      .save()
+      .then(model => {
+        const response = utils.getResponse(model);
+        response.result = { status: "Ok" };
+        return response;
+      });
   },
-  async validateOTP(ctx, next) {
+  async validateOTP(ctx) {
     const { otp, contact_number } = ctx.request.body;
     let today = new Date();
 
     try {
       const data = await bookshelf
         .model("otp")
-        .where({ contact_number: contact_number, otp: otp, isVerified: null })
+        .where({ contact_number: contact_number, otp: otp, is_verified: null })
         .fetch();
 
       const result = data.toJSON();
@@ -36,9 +38,9 @@ module.exports = {
 
       const diff = (today.getTime() - createdAt.getTime()) / 60000;
       if (diff > 60.0) {
-        ctx.response.requestTimeout("OTP has expired");
+        ctx.response.badRequest("OTP has expired");
       } else {
-        data.save({ isVerified: true }, { patch: true });
+        data.save({ is_verified: true }, { patch: true });
 
         const resetPasswordToken = crypto.randomBytes(64).toString("hex");
 
@@ -53,14 +55,16 @@ module.exports = {
             );
           });
 
-        ctx.body = { resetPasswordToken };
+        const response = utils.getResponse(null);
+        response.result = { resetPasswordToken };
+        ctx.body = response;
       }
     } catch (err) {
       console.log(err);
       ctx.body = err;
     }
   },
-  async requestOTPForStudent(ctx, next) {
+  async requestOTPForStudent(ctx) {
     const { contact_number } = ctx.request.body;
     let OTP, buffer;
     try {
@@ -77,23 +81,25 @@ module.exports = {
           .model("otp")
           .forge({ contact_number: contact_number, otp: OTP })
           .save();
-        ctx.body = { status: "ok" };
+        const response = utils.getResponse(null);
+        response.result = { status: "Ok " };
+        ctx.body = response;
       }
     } catch (err) {
       console.log(err);
     }
   },
   async checkOtp(ctx) {
-    const { contactNumber, otp } = ctx.request.body;
+    const { contact_number, otp } = ctx.request.body;
 
     try {
-      const data = await bookshelf
+      await bookshelf
         .model("otp")
-        .where({ contact_number: contact_number, otp: otp, isVerified: null })
+        .where({ contact_number: contact_number, otp: otp, is_verified: null })
         .fetch();
-
-      const result = data.toJSON();
-      ctx.body = { status: "ok" };
+      const response = utils.getResponse(null);
+      response.result = { status: "Ok" };
+      ctx.body = response;
     } catch (err) {
       console.log(err);
       ctx.body = err;

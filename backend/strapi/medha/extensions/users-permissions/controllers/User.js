@@ -21,6 +21,8 @@ const formatError = error => [
 const { validate } = require("../validate.js");
 const bookshelf = require("../../../config/config.js");
 const utils = require("../../../config/utils.js");
+const { convertRestQueryParams, buildQuery } = require("strapi-utils");
+
 module.exports = {
   /**
    * Retrieve authenticated user.
@@ -142,5 +144,52 @@ module.exports = {
     } catch (err) {
       ctx.response.badRequest("Something went wrong...");
     }
+  },
+
+  /**
+   * Get all users
+   */
+
+  async find(ctx) {
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+    return await bookshelf
+      .model("user")
+      .query(
+        buildQuery({
+          model: strapi.query("user", "users-permissions").model,
+          filters
+        })
+      )
+      .fetchPage({
+        page: page,
+        pageSize: pageSize
+      })
+      .then(u => {
+        const response = utils.getPaginatedResponse(u);
+        const data = response.result.map(sanitizeUser);
+        response.result = data;
+        return response;
+      });
+  },
+
+  /**
+   * Get specific user
+   */
+
+  async findOne(ctx) {
+    const { id } = ctx.params;
+    return await bookshelf
+      .model("user")
+      .where({ id: id })
+      .fetch({
+        require: false
+      })
+      .then(u => {
+        const response = utils.getResponse(u);
+        const data = sanitizeUser(response.result);
+        response.result = data;
+        return response;
+      });
   }
 };
