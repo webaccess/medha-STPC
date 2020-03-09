@@ -276,7 +276,6 @@ const ViewUsers = () => {
   };
 
   const blockedCellData = (id, isBlocked = false) => {
-    console.log(id, isBlocked);
 
     if (isBlocked === true) {
       setFormState(formState => ({
@@ -298,7 +297,6 @@ const ViewUsers = () => {
   };
 
   const isUserBlockCompleted = status => {
-    console.log("status", status);
     formState.isUserBlocked = status;
   };
 
@@ -318,12 +316,9 @@ const ViewUsers = () => {
     let arrayId = [];
 
     for (var k = 0; k < selectedRows.length; k++) {
-      console.log("forlopo", selectedRows[k]["blocked"]);
 
       if (selectedRows[k]["blocked"] === true) {
         arrayId.push(selectedRows[k]["id"]);
-        console.log("unblock", arrayId);
-
         setFormState(formState => ({
           ...formState,
           isMulBlocked: false,
@@ -333,8 +328,6 @@ const ViewUsers = () => {
         }));
       } else {
         arrayId.push(selectedRows[k]["id"]);
-        console.log("block", arrayId);
-
         setFormState(formState => ({
           ...formState,
           isMulBlocked: true,
@@ -614,7 +607,6 @@ const ViewUsers = () => {
               deleteEvent={isDeleteCellCompleted}
             />
           )}
-          {console.log("view", formState.isMulUnBlocked)}
           {formState.isMulBlocked || formState.isMulUnBlocked ? (
             <BlockUser
               id={formState.MultiBlockUser}

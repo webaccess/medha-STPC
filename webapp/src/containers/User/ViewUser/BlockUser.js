@@ -49,7 +49,6 @@ const BlockUser = props => {
       };
     }
     if (props.isBlocked || props.isMulBlocked) {
-      //console.log("if called");
       body = {
         blocked: true
       };
