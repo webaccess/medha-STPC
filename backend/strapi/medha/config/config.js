@@ -76,7 +76,7 @@ bookshelf.model("college_stream_strength", {
 bookshelf.model("college", {
   requireFetch: false,
   tableName: "colleges",
-  streamAndStrength() {
+  stream_strength() {
     return this.hasMany("colleges_component", "college_id", "id");
   },
   rpc() {
@@ -90,6 +90,9 @@ bookshelf.model("college", {
   },
   rpc() {
     return this.belongsTo("rpc", "rpc", "id");
+  },
+  district() {
+    return this.belongsTo("district", "district", "id");
   }
 });
 

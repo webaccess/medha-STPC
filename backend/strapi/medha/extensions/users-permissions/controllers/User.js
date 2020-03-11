@@ -163,7 +163,8 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
+        withRelated: ["role", "state", "zone", "rpc", "college"]
       })
       .then(u => {
         const response = utils.getPaginatedResponse(u);
@@ -179,17 +180,24 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("user")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(u => {
-        const response = utils.getResponse(u);
-        const data = sanitizeUser(response.result);
-        response.result = data;
-        return response;
-      });
+    // return await bookshelf
+    //   .model("user")
+    //   .where({ id: id })
+    //   .fetch({
+    //     require: false,
+    //     withRelated: ["role", "state", "zone", "rpc", "college"]
+    //   })
+    //   .then(u => {
+    //     const response = utils.getResponse(u);
+    //     const data = sanitizeUser(response.result);
+    //     response.result = data;
+    //     return response;
+    //   });
+    const response = await strapi
+      .query("user", "users-permissions")
+      .findOne({ id });
+    return {
+      result: sanitizeUser(response)
+    };
   }
 };

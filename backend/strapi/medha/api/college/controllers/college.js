@@ -64,7 +64,8 @@ module.exports = {
           page: page,
           pageSize: pageSize,
           withRelated: [
-            "streamAndStrength.streams.stream",
+            "stream_strength.streams.stream",
+            "district",
             "principal",
             "admins.role",
             "rpc"
@@ -86,6 +87,12 @@ module.exports = {
               })
               .filter(a => a);
             college.admins = collegeAdmins;
+
+            const streams = college.stream_strength.map(
+              stream => stream.streams
+            );
+            college.stream_strength = streams;
+
             acc.push(college);
             return acc;
           }, []);
@@ -108,7 +115,8 @@ module.exports = {
           page: page,
           pageSize: pageSize,
           withRelated: [
-            "streams",
+            "stream_strength.streams.stream",
+            "district",
             "principal",
             "admins.role",
             "rpc",
@@ -145,6 +153,9 @@ module.exports = {
                 })
                 .filter(a => a);
               obj.admins = collegeAdmins;
+
+              const streams = obj.stream_strength.map(stream => stream.streams);
+              obj.stream_strength = streams;
               accumulator.push(obj);
             }
             return accumulator;
@@ -167,7 +178,13 @@ module.exports = {
         .fetchPage({
           page: page,
           pageSize: pageSize,
-          withRelated: ["streams", "principal", "admins.role"]
+          withRelated: [
+            "stream_strength.streams.stream",
+            "district",
+            "principal",
+            "admins.role",
+            "rpc"
+          ]
         })
         .then(res => {
           const data = utils.getPaginatedResponse(res);
@@ -180,6 +197,12 @@ module.exports = {
               })
               .filter(a => a);
             college.admins = collegeAdmins;
+
+            const streams = college.stream_strength.map(
+              stream => stream.streams
+            );
+            college.stream_strength = streams;
+
             acc.push(college);
             return acc;
           }, []);
@@ -201,7 +224,13 @@ module.exports = {
         .fetchPage({
           page: page,
           pageSize: pageSize,
-          withRelated: ["streams", "principal", "admins"]
+          withRelated: [
+            "stream_strength.streams.stream",
+            "district",
+            "principal",
+            "admins.role",
+            "rpc"
+          ]
         })
         .then(res => {
           const data = utils.getPaginatedResponse(res);
@@ -214,6 +243,12 @@ module.exports = {
               })
               .filter(a => a);
             college.admins = collegeAdmins;
+
+            const streams = college.stream_strength.map(
+              stream => stream.streams
+            );
+            college.stream_strength = streams;
+
             acc.push(college);
             return acc;
           }, []);
@@ -226,18 +261,7 @@ module.exports = {
   async findOne(ctx) {
     const { id } = ctx.params;
     const response = await strapi.query("college").findOne({ id });
-    return {
-      result: response
-    };
-    // return await bookshelf
-    //   .model("college")
-    //   .where({ id: id })
-    //   .fetch({
-    //     require: false
-    //   })
-    //   .then(res => {
-    //     return utils.getResponse(res);
-    //   });
+    return utils.getFindOneResponse(response);
   },
 
   async showStudents(ctx) {
