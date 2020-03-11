@@ -7,7 +7,8 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -63,7 +64,6 @@ const ManageCollege = props => {
     isDataDeleted: false,
     dataToDelete: {},
     isView: false,
-    showEditModal: false,
     showModalDelete: false,
     filterDataParameters: {
       COLLEGE_FILTER: ""
@@ -208,7 +208,6 @@ const ManageCollege = props => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showEditModal: false,
       showModalDelete: true
     }));
   };
@@ -253,7 +252,6 @@ const ManageCollege = props => {
     //restoreData();
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
       isDataDeleted: false,
       showModalDelete: false
     }));
@@ -272,32 +270,49 @@ const ManageCollege = props => {
 
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={viewCell}>
-          view_list
-        </i>
+        <Tooltip title="View" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            //onClick={viewCell}
+            style={{ color: "green" }}
+          >
+            view_list
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
@@ -341,7 +356,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
@@ -362,7 +377,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
@@ -385,7 +400,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
@@ -406,7 +421,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}

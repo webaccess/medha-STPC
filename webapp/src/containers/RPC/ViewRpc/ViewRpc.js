@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
   TextField,
-  Button,
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Tooltip,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
 import useStyles from "./ViewRpcStyles";
 import {
@@ -13,27 +15,31 @@ import {
   Spinner,
   GreenButton,
   GrayButton,
-  YellowButton
+  YellowButton,
+  Alert
 } from "../../../components";
 import axios from "axios";
 import DeleteRpc from "./DeleteRpc";
-import EditRpc from "./EditRpc";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import { CustomRouterLink } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import { useHistory } from "react-router-dom";
+import CloseIcon from "@material-ui/icons/Close";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const ARRAY_URL = [RPC_URL, STATES_URL];
+
 const ViewRpc = props => {
   const classes = useStyles();
-
-  // const [states, setStates] = useState([]);
+  const [open, setOpen] = React.useState(true);
+  const history = useHistory();
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -44,11 +50,30 @@ const ViewRpc = props => {
     filterDataParameters: {
       ZONE_FILTER: ""
     },
-    isDataEdited: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromEditRpc"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromEditRpc"]
+      ? props["location"]["editedData"]
+      : {},
+    fromEditRpc: props["location"]["fromEditRpc"]
+      ? props["location"]["fromEditRpc"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddRpc"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddRpc"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddRpc: props["location"]["fromAddRpc"]
+      ? props["location"]["fromAddRpc"]
+      : false,
+    /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
-    showEditModal: false,
     showModalDelete: false
   });
   useEffect(() => {
@@ -96,7 +121,6 @@ const ViewRpc = props => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showEditModal: false,
       showModalDelete: true
     }));
   };
@@ -107,7 +131,6 @@ const ViewRpc = props => {
     //restoreData();
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
       isDataDeleted: false,
       showModalDelete: false
     }));
@@ -137,82 +160,34 @@ const ViewRpc = props => {
     }
   };
 
-  /** This is used to handle the close modal event */
-  const handleCloseModal = () => {
-    /** This restores all the data when we close the modal */
+  /** This restores all the data when we clear the filters
+   */
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      dataToShow: formState.tempData
+    }));
+    /**Need to confirm this thing for resetting the data */
     //restoreData();
-    if (formState.isDataEdited) {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false,
-        dataToShow: formState.tempData
-      }));
-      getRpcStateData();
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false
-      }));
-    }
   };
 
   const getDataForEdit = async id => {
+    let paramsForRpcs = {
+      id: id
+    };
     await serviceProviders
-      .serviceProviderForGetOneRequest(RPC_URL, id)
+      .serviceProviderForGetRequest(RPC_URL, paramsForRpcs)
       .then(res => {
-        var url =
-          strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_ZONES +
-          "/" +
-          id +
-          "/" +
-          strapiConstants.STRAPI_RPCS;
-        serviceProviders
-          .serviceProviderForGetRequest(url)
-          .then(res => {
-            var zoneStatesurl =
-              strapiConstants.STRAPI_DB_URL +
-              strapiConstants.STRAPI_STATES +
-              "/" +
-              id +
-              "/" +
-              strapiConstants.STRAPI_ZONES;
-            serviceProviders
-              .serviceProviderForGetRequest(zoneStatesurl)
-              .then(res => {})
-              .catch(error => {
-                console.log("stateerror", error);
-              });
-
-            setFormState(formState => ({
-              ...formState,
-              zones: res.data,
-              showEditModal: true,
-              showModalDelete: false
-            }));
-          })
-          .catch(error => {
-            console.log("error", error);
-          });
-
-        setFormState(formState => ({
-          ...formState,
-          dataToEdit: res.data,
-          showEditModal: true,
-          showModalDelete: false
-        }));
+        let editData = res.data.result[0];
+        history.push({
+          pathname: routeConstants.EDIT_RPC,
+          editRpc: true,
+          dataForEdit: editData
+        });
       })
       .catch(error => {
-        console.log("error");
+        console.log("error", error);
       });
-  };
-
-  const isEditCellCompleted = status => {
-    formState.isDataEdited = status;
   };
 
   const column = [
@@ -222,23 +197,33 @@ const ViewRpc = props => {
     /** Columns for edit and delete */
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          // onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
@@ -249,7 +234,7 @@ const ViewRpc = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          RPC
+          {genericConstants.VIEW_RPC_TEXT}
         </Typography>
 
         <GreenButton
@@ -260,10 +245,99 @@ const ViewRpc = props => {
           to={routeConstants.ADD_RPC}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Add RPC
+          {genericConstants.ADD_RPC_TEXT}
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Delete rpc data */}
+
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromEditRpc && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromEditRpc && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddRpc && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddRpc && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Card>
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -292,18 +366,18 @@ const ViewRpc = props => {
                   //onClick={searchFilter}
                   to="#"
                 >
-                  Search
+                  {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <GrayButton
                   variant="contained"
                   color="primary"
-                  //onClick={clearFilter}
+                  onClick={clearFilter}
                   disableElevation
                   to="#"
                 >
-                  Reset
+                  {genericConstants.RESET_BUTTON_TEXT}
                 </GrayButton>
               </Grid>
             </Grid>
@@ -324,15 +398,6 @@ const ViewRpc = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}
-          {/* <EditRpc
-          zones={formState.zones}
-          states={formState.states}
-          showModal={formState.showEditModal}
-          closeModal={handleCloseModal}
-          dataToEdit={formState.dataToEdit}
-          id={formState.dataToEdit["id"]}
-          editEvent={isEditCellCompleted}
-        /> */}
           <DeleteRpc
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}

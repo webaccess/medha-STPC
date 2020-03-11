@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddRpcSchema from "../AddRpcSchema";
-import useStyles from "./AddRpcStyles";
+import useStyles from "./AddEditRpcStyles";
 import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
@@ -18,6 +18,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";
 import * as serviceProviders from "../../../api/Axios";
 import { Alert, GrayButton, YellowButton } from "../../../components";
+import { useHistory } from "react-router-dom";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
@@ -30,7 +31,8 @@ const COLLEGE_URL =
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
-const AddRpc = props => {
+const AddEditRpc = props => {
+  const history = useHistory();
   const classes = useStyles();
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
@@ -42,8 +44,39 @@ const AddRpc = props => {
     values: {},
     touched: {},
     errors: {},
-    isSuccess: false
+    isSuccess: false,
+    isEditRpc: props["editRpc"] ? props["editRpc"] : false,
+    dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
+    counter: 0
   });
+
+  /** Part for editing college */
+  if (formState.isEditRpc && !formState.counter) {
+    if (props["dataForEdit"]) {
+      if (props["dataForEdit"]["name"]) {
+        formState.values[rpcName] = props["dataForEdit"]["name"];
+      }
+      if (
+        props["dataForEdit"]["zone"] &&
+        props["dataForEdit"]["zone"]["state"]
+      ) {
+        formState.values[stateName] = props["dataForEdit"]["zone"]["state"];
+      }
+      if (props["dataForEdit"]["zone"] && props["dataForEdit"]["zone"]["id"]) {
+        formState.values[zoneName] = props["dataForEdit"]["zone"]["id"];
+      }
+      if (
+        props["dataForEdit"]["main_college"] &&
+        props["dataForEdit"]["main_college"]["id"]
+      ) {
+        formState.values[collegeName] =
+          props["dataForEdit"]["main_college"]["id"];
+      }
+
+      formState.counter += 1;
+    }
+    console.log(formState);
+  }
 
   useEffect(() => {
     /* TO GET STATES AND COLLEGE IN AUTOCOMPLETE */
@@ -54,8 +87,6 @@ const AddRpc = props => {
       setGetColleges(res.data.result);
     });
   }, []);
-
-  useEffect(() => {}, [zones]);
 
   useEffect(() => {
     /** TO GET ZONE IN AUTOCOMPLETE ON THE CHANGE OF STATES */
@@ -68,7 +99,7 @@ const AddRpc = props => {
     serviceProviders
       .serviceProviderForGetRequest(url)
       .then(res => {
-        setZones(res.data.zones);
+        setZones(res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -171,30 +202,57 @@ const AddRpc = props => {
   const postRpcData = async () => {
     let postData = databaseUtilities.addRpc(
       formState.values[rpcName],
-      formState.values[zoneName]
-        ? databaseUtilities.setZone(formState.values[zoneName])
-        : null,
-      formState.values[collegeName]
-        ? databaseUtilities.setMainCollege(formState.values[collegeName])
-        : null
+      formState.values[zoneName] ? formState.values[zoneName] : null,
+      formState.values[collegeName] ? formState.values[collegeName] : null
     );
-    serviceProviders
-      .serviceProviderForPostRequest(RPCS_URL, postData)
-      .then(res => {
-        setIsFailed(false);
-        setIsSuccess(true);
-      })
-      .catch(error => {
-        console.log(error);
-        setIsSuccess(false);
-        setIsFailed(true);
-      });
-
-    /** Set state to reload form */
-    setFormState(formState => ({
-      ...formState,
-      isValid: true
-    }));
+    if (formState.isEditRpc) {
+      serviceProviders
+        .serviceProviderForPutRequest(
+          RPCS_URL,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_RPC,
+            fromEditRpc: true,
+            isDataEdited: true,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          history.push({
+            pathname: routeConstants.VIEW_RPC,
+            fromEditRpc: true,
+            isDataEdited: false,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForPostRequest(RPCS_URL, postData)
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_RPC,
+            fromAddRpc: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        })
+        .catch(error => {
+          history.push({
+            pathname: routeConstants.VIEW_RPC,
+            fromAddRpc: true,
+            isDataAdded: false,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        });
+    }
   };
 
   return (
@@ -251,6 +309,13 @@ const AddRpc = props => {
                       handleChangeAutoComplete(stateName, event, value);
                     }}
                     name={stateName}
+                    value={
+                      states[
+                        states.findIndex(function(item, i) {
+                          return item.id === formState.values[stateName];
+                        })
+                      ] || null /** Please give a default " " blank value */
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -281,6 +346,13 @@ const AddRpc = props => {
                       handleChangeAutoComplete(zoneName, event, value);
                     }}
                     name={zoneName}
+                    value={
+                      zones[
+                        zones.findIndex(function(item, i) {
+                          return item.id === formState.values[zoneName];
+                        })
+                      ] || null /** Please give a default " " blank value */
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -311,6 +383,13 @@ const AddRpc = props => {
                       handleChangeAutoComplete(collegeName, event, value);
                     }}
                     name={collegeName}
+                    value={
+                      getColleges[
+                        getColleges.findIndex(function(item, i) {
+                          return item.id === formState.values[collegeName];
+                        })
+                      ] || null /** Please give a default " " blank value */
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -353,4 +432,4 @@ const AddRpc = props => {
     </Grid>
   );
 };
-export default AddRpc;
+export default AddEditRpc;

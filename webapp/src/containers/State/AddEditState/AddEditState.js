@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { get } from "lodash";
-import useStyles from "./AddStateStyles";
+import useStyles from "./AddEditStateStyles";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
@@ -9,7 +9,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProviders from "../../../api/Axios";
 import { Alert, YellowButton, GrayButton } from "../../../components";
-
+import { useHistory } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -19,11 +19,10 @@ import {
   Typography
 } from "@material-ui/core";
 
-const AddState = props => {
+const AddEditState = props => {
+  const history = useHistory();
   const state = "state";
   const content = "content";
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
@@ -31,8 +30,21 @@ const AddState = props => {
     values: {},
     touched: {},
     errors: {},
-    isSuccess: false
+    isSuccess: false,
+    isEditState: props["editState"] ? props["editState"] : false,
+    dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
+    counter: 0
   });
+
+  /** Part for editing college */
+  if (formState.isEditState && !formState.counter) {
+    if (props["dataForEdit"]) {
+      if (props["dataForEdit"]["name"]) {
+        formState.values[state] = props["dataForEdit"]["name"];
+      }
+    }
+    formState.counter += 1;
+  }
 
   const handleChange = e => {
     e.persist();
@@ -89,28 +101,70 @@ const AddState = props => {
 
   const postStateData = async () => {
     let postData = databaseUtilities.addState(formState.values[state]);
-
-    serviceProviders
-      .serviceProviderForPostRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
-        postData
-      )
-      .then(res => {
-        console.log(res);
-        setIsFailed(false);
-        setIsSuccess(true);
-      })
-      .catch(error => {
-        console.log(error);
-        setIsSuccess(false);
-        setIsFailed(true);
-      });
-
-    /** Set state to reload form */
-    setFormState(formState => ({
-      ...formState,
-      isValid: true
-    }));
+    if (formState.isEditState) {
+      serviceProviders
+        .serviceProviderForPutRequest(
+          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          console.log(res);
+          history.push({
+            pathname: routeConstants.VIEW_STATES,
+            fromEditState: true,
+            isDataEdited: true,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          history.push({
+            pathname: routeConstants.VIEW_STATES,
+            fromEditState: true,
+            isDataEdited: false,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        });
+      /** Set state to reload form */
+      setFormState(formState => ({
+        ...formState,
+        isValid: true
+      }));
+    } else {
+      serviceProviders
+        .serviceProviderForPostRequest(
+          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
+          postData
+        )
+        .then(res => {
+          console.log(res);
+          history.push({
+            pathname: routeConstants.VIEW_STATES,
+            fromAddState: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          history.push({
+            pathname: routeConstants.VIEW_STATES,
+            fromAddState: true,
+            isDataAdded: false,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        });
+      /** Set state to reload form */
+      setFormState(formState => ({
+        ...formState,
+        isValid: true
+      }));
+    }
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
@@ -118,20 +172,15 @@ const AddState = props => {
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {get(StateSchema[content], "title")}
-        </Typography>
-
-        {isSuccess ? (
-          <Alert severity="success" className={classes.message}>
-            {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
-        {isFailed ? (
-          <Alert severity="error">
-            {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
+        {formState.isEditState ? (
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.EDIT_STATE_TEXT}
+          </Typography>
+        ) : (
+          <Typography variant="h4" gutterBottom>
+            {get(StateSchema[content], "title")}
+          </Typography>
+        )}
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
@@ -179,4 +228,4 @@ const AddState = props => {
     </Grid>
   );
 };
-export default AddState;
+export default AddEditState;
