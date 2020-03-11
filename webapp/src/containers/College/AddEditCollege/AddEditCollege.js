@@ -1001,8 +1001,8 @@ const AddEditCollege = props => {
                   />
                 </FormGroup>
               </Grid>
-              <Grid item md={12} xs={12}>
-                <Card>
+              <Grid item md={12} xs={12} className={classes.streamcard}>
+                <Card className={classes.streamoffer}>
                   <InputLabel htmlFor="outlined-stream-card" fullWidth>
                     {genericConstants.STREAMS_OFFERED_TEXT}
                   </InputLabel>
@@ -1011,7 +1011,11 @@ const AddEditCollege = props => {
                     let streamId = `stream-${idx}`,
                       strengthId = `strength-${idx}`;
                     return (
-                      <Card id="outlined-stream-card" fullWidth>
+                      <Card
+                        id="outlined-stream-card"
+                        fullWidth
+                        className={classes.streamcardcontent}
+                      >
                         <CardContent>
                           <Grid container spacing={3}>
                             <Grid item md xs>
@@ -1129,6 +1133,7 @@ const AddEditCollege = props => {
                               {idx > 0 ? (
                                 <DeleteForeverOutlinedIcon
                                   onClick={e => clickOnDelete(val, idx)}
+                                  style={{ color: "red", fontSize: "24px" }}
                                 />
                               ) : (
                                 ""
@@ -1139,15 +1144,16 @@ const AddEditCollege = props => {
                       </Card>
                     );
                   })}
-                  <Divider />
-                  <YellowButton
-                    color="primary"
-                    variant="contained"
-                    className={classes.add_more_btn}
-                    onClick={addNewRow}
-                  >
-                    {genericConstants.ADD_MORE_TEXT}
-                  </YellowButton>
+                  <div className={classes.btnspaceadd}>
+                    <YellowButton
+                      color="primary"
+                      variant="contained"
+                      className={classes.add_more_btn}
+                      onClick={addNewRow}
+                    >
+                      {genericConstants.ADD_MORE_TEXT}
+                    </YellowButton>
+                  </div>
                 </Card>
               </Grid>
             </Grid>

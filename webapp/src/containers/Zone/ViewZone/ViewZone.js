@@ -226,7 +226,7 @@ const ViewZone = props => {
             id={cell.id}
             value={cell.name}
             onClick={editCell}
-            style={{ color: "green" }}
+            style={{ color: "green", fontSize: "19px" }}
           >
             edit
           </i>
