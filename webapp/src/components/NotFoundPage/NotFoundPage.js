@@ -20,7 +20,7 @@ const NotFoundPage = () => {
                 Whichever it is, try using the navigation
               </Typography>
               <img
-                alt="Under development"
+                alt="Not Found"
                 className={classes.image}
                 src="/images/notFound.svg"
               />

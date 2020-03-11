@@ -5,32 +5,40 @@ import {
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Tooltip,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 
 import styles from "../State.module.css";
 import useStyles from "./ViewStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
+
 import {
   Table,
   Spinner,
   GreenButton,
   YellowButton,
-  GrayButton
+  GrayButton,
+  Alert
 } from "../../../components";
-import EditState from "./EditState";
 import DeleteState from "./DeleteState";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import { useHistory } from "react-router-dom";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_FILTER = "stateFilter";
 
-const ViewStates = () => {
+const ViewStates = props => {
+  const [open, setOpen] = React.useState(true);
   const classes = useStyles();
-
+  const history = useHistory();
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
@@ -38,11 +46,30 @@ const ViewStates = () => {
     filterDataParameters: {
       STATE_FILTER: ""
     },
-    isDataEdited: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromEditState"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromEditState"]
+      ? props["location"]["editedData"]
+      : {},
+    fromEditState: props["location"]["fromEditState"]
+      ? props["location"]["fromEditState"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddState"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddState"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddState: props["location"]["fromAddState"]
+      ? props["location"]["fromAddState"]
+      : false,
+    /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
-    showEditModal: false,
     showModalDelete: false,
     page: "",
     pageSize: "",
@@ -79,15 +106,19 @@ const ViewStates = () => {
   };
 
   const getDataForEdit = async id => {
+    let paramsForStates = {
+      id: id
+    };
     await serviceProviders
-      .serviceProviderForGetOneRequest(STATES_URL, id)
+      .serviceProviderForGetRequest(STATES_URL, paramsForStates)
       .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          dataToEdit: res.data,
-          showEditModal: true,
-          showModalDelete: false
-        }));
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_STATE,
+          editState: true,
+          dataForEdit: editData
+        });
       })
       .catch(error => {
         console.log("error");
@@ -98,10 +129,6 @@ const ViewStates = () => {
     getDataForEdit(event.target.id);
   };
 
-  const isEditCellCompleted = status => {
-    formState.isDataEdited = status;
-  };
-
   const isDeleteCellCompleted = status => {
     formState.isDataDeleted = status;
   };
@@ -110,7 +137,6 @@ const ViewStates = () => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showEditModal: false,
       showModalDelete: true
     }));
   };
@@ -138,29 +164,6 @@ const ViewStates = () => {
     }));
   };
 
-  /** This is used to handle the close modal event */
-  const handleCloseModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    if (formState.isDataEdited) {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false,
-        dataToShow: formState.tempData
-      }));
-      getStateData();
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false
-      }));
-    }
-  };
-
   const clearFilter = () => {
     setFormState(formState => ({
       ...formState,
@@ -176,7 +179,6 @@ const ViewStates = () => {
     //restoreData();
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
       isDataDeleted: false,
       showModalDelete: false
     }));
@@ -191,23 +193,33 @@ const ViewStates = () => {
     /** Columns for edit and delete */
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
@@ -218,7 +230,7 @@ const ViewStates = () => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          State
+          {genericConstants.VIEW_STATE_TEXT}
         </Typography>
 
         <GreenButton
@@ -229,10 +241,99 @@ const ViewStates = () => {
           to={routeConstants.ADD_STATES}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Add State
+          {genericConstants.ADD_STATE_TEXT}
         </GreenButton>
       </Grid>
+
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromEditState && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromEditState && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddState && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddState && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -262,7 +363,7 @@ const ViewStates = () => {
                   disableElevation
                   onClick={searchFilter}
                 >
-                  Search
+                  {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
@@ -272,7 +373,7 @@ const ViewStates = () => {
                   onClick={clearFilter}
                   disableElevation
                 >
-                  Reset
+                  {genericConstants.RESET_BUTTON_TEXT}
                 </GrayButton>
               </Grid>
             </Grid>
@@ -285,7 +386,7 @@ const ViewStates = () => {
               data={formState.dataToShow}
               column={column}
               editEvent={editCell}
-              //deleteEvent={deleteCell}
+              deleteEvent={deleteCell}
             />
           ) : (
             <Spinner />
@@ -293,13 +394,6 @@ const ViewStates = () => {
         ) : (
           <div className={classes.noDataMargin}>No data to show</div>
         )}
-        <EditState
-          showModal={formState.showEditModal}
-          closeModal={handleCloseModal}
-          dataToEdit={formState.dataToEdit}
-          id={formState.dataToEdit["id"]}
-          editEvent={isEditCellCompleted}
-        />
         <DeleteState
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}

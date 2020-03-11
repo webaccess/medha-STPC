@@ -46,17 +46,8 @@ const district = "district";
 const block = "block";
 
 /** Dynamic Bar */
-const streamStrength = "streamsStrength";
 const streams = "streams";
 const strength = "strength";
-const streamDynmaicBarSchema = {
-  [streams]: {
-    required: false
-  },
-  [strength]: {
-    required: false
-  }
-};
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -99,8 +90,6 @@ const AddEditCollege = props => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-  console.log(formState);
-
   /** Part for editing college */
   if (formState.isEditCollege && !formState.counter) {
     if (props["dataForEdit"]) {
@@ -142,19 +131,25 @@ const AddEditCollege = props => {
         formState.values[principal] = props["dataForEdit"]["principal"]["id"];
       }
       if (
-        props["dataForEdit"]["streams"] &&
-        props["dataForEdit"]["streams"].length
+        props["dataForEdit"]["streamAndStrength"] &&
+        props["dataForEdit"]["streamAndStrength"].length
       ) {
         let dynamicBar = [];
-        for (let i in props["dataForEdit"]["streams"]) {
+        for (let i in props["dataForEdit"]["streamAndStrength"]) {
           let tempDynamicBarrValue = {};
           tempDynamicBarrValue["index"] = Math.random();
           tempDynamicBarrValue[streams] =
-            props["dataForEdit"]["streams"][i]["id"];
+            props["dataForEdit"]["streamAndStrength"][i]["streams"]["stream"][
+              "id"
+            ];
+          tempDynamicBarrValue[strength] = props["dataForEdit"][
+            "streamAndStrength"
+          ][i]["streams"]["strength"].toString();
           dynamicBar.push(tempDynamicBarrValue);
         }
         formState.dynamicBar = dynamicBar;
       }
+      console.log(formState);
       formState.counter += 1;
     }
   }
@@ -164,7 +159,7 @@ const AddEditCollege = props => {
     serviceProviders
       .serviceProviderForGetRequest(USERS_URL)
       .then(res => {
-        setUser(res.data);
+        setUser(res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -209,9 +204,9 @@ const AddEditCollege = props => {
         .serviceProviderForGetRequest(url)
         .then(res => {
           if (Array.isArray(res.data)) {
-            setZones(res.data[0].zones);
+            setZones(res.data[0].result);
           } else {
-            setZones(res.data.zones);
+            setZones(res.data.result);
           }
         })
         .catch(error => {
@@ -236,9 +231,9 @@ const AddEditCollege = props => {
         .serviceProviderForGetRequest(url)
         .then(res => {
           if (Array.isArray(res.data)) {
-            setRpcs(res.data[0].rpcs);
+            setRpcs(res.data[0].result);
           } else {
-            setRpcs(res.data.rpcs);
+            setRpcs(res.data.result);
           }
         })
         .catch(error => {
@@ -471,9 +466,14 @@ const AddEditCollege = props => {
 
   const getDynamicBarData = () => {
     let streamStrengthArrayValues = [];
+    let id = 0;
     formState.dynamicBar.map(field => {
+      let streamStrengthValue = {};
       if (field.hasOwnProperty(streams) && field.hasOwnProperty(strength)) {
-        streamStrengthArrayValues.push(field[streams]);
+        streamStrengthValue["id"] = id;
+        streamStrengthValue["stream"] = field[streams];
+        streamStrengthValue["strength"] = parseInt(field[strength]);
+        streamStrengthArrayValues.push(streamStrengthValue);
       }
     });
     return streamStrengthArrayValues;
