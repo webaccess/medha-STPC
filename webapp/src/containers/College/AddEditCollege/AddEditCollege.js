@@ -131,25 +131,22 @@ const AddEditCollege = props => {
         formState.values[principal] = props["dataForEdit"]["principal"]["id"];
       }
       if (
-        props["dataForEdit"]["streamAndStrength"] &&
-        props["dataForEdit"]["streamAndStrength"].length
+        props["dataForEdit"]["stream_strength"] &&
+        props["dataForEdit"]["stream_strength"].length
       ) {
         let dynamicBar = [];
-        for (let i in props["dataForEdit"]["streamAndStrength"]) {
+        for (let i in props["dataForEdit"]["stream_strength"]) {
           let tempDynamicBarrValue = {};
           tempDynamicBarrValue["index"] = Math.random();
           tempDynamicBarrValue[streams] =
-            props["dataForEdit"]["streamAndStrength"][i]["streams"]["stream"][
-              "id"
-            ];
+            props["dataForEdit"]["stream_strength"][i]["stream"]["id"];
           tempDynamicBarrValue[strength] = props["dataForEdit"][
-            "streamAndStrength"
-          ][i]["streams"]["strength"].toString();
+            "stream_strength"
+          ][i]["strength"].toString();
           dynamicBar.push(tempDynamicBarrValue);
         }
         formState.dynamicBar = dynamicBar;
       }
-      console.log(formState);
       formState.counter += 1;
     }
   }
@@ -470,7 +467,6 @@ const AddEditCollege = props => {
     formState.dynamicBar.map(field => {
       let streamStrengthValue = {};
       if (field.hasOwnProperty(streams) && field.hasOwnProperty(strength)) {
-        streamStrengthValue["id"] = id;
         streamStrengthValue["stream"] = field[streams];
         streamStrengthValue["strength"] = parseInt(field[strength]);
         streamStrengthArrayValues.push(streamStrengthValue);
