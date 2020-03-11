@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import CloseIcon from "@material-ui/icons/Close";
 import {
   TextField,
   Button,
@@ -9,14 +10,17 @@ import {
   CardContent,
   Tooltip,
   Grid,
+  Collapse,
+  IconButton,
   Typography
 } from "@material-ui/core";
 
-import { Table, Spinner } from "../../../components";
+import { Table, Spinner, Alert } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
+import * as genericConstants from "../../../constants/GenericConstants";
 import useStyles from "./ViewUserStyles";
 import DeleteUser from "./DeleteUser";
 import BlockUser from "./BlockUser";
@@ -33,7 +37,8 @@ const IPC_FILTER = "ipcFilter";
 const USER_FILTER = "userFilter";
 const ROLE_FILTER = "roleFilter";
 
-const ViewUsers = () => {
+const ViewUsers = (props) => {
+  const [open, setOpen] = useState(true);
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
@@ -46,9 +51,6 @@ const ViewUsers = () => {
     rpcs: [],
     roles: [],
     ipcs: [],
-    // isEditState: props["editState"] ? props["editState"] : false,
-    // dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    // counter: 0,
     filterDataParameters: {
       zoneFilter: "",
       rpcFilter: "",
@@ -56,7 +58,26 @@ const ViewUsers = () => {
       userFilter: "",
       roleFilter: ""
     },
-    isDataEdited: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditUser"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromeditUser"]
+      ? props["location"]["editedData"]
+      : {},
+    fromeditUser: props["location"]["fromeditUser"]
+      ? props["location"]["fromeditUser"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddUser"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddUser"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddUser: props["location"]["fromAddUser"]
+      ? props["location"]["fromAddUser"]
+      : false,
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
@@ -281,7 +302,6 @@ const ViewUsers = () => {
   };
 
   const blockedCellData = (id, isBlocked = false) => {
-    console.log(id, isBlocked);
 
     if (isBlocked === true) {
       setFormState(formState => ({
@@ -303,7 +323,6 @@ const ViewUsers = () => {
   };
 
   const isUserBlockCompleted = status => {
-    console.log("status", status);
     formState.isUserBlocked = status;
   };
 
@@ -323,12 +342,10 @@ const ViewUsers = () => {
     let arrayId = [];
 
     for (var k = 0; k < selectedRows.length; k++) {
-      console.log("forlopo", selectedRows[k]["blocked"]);
 
       if (selectedRows[k]["blocked"] === true) {
-        arrayId.push(selectedRows[k]["id"]);
-        console.log("unblock", arrayId);
 
+        arrayId.push(selectedRows[k]["id"]);
         setFormState(formState => ({
           ...formState,
           isMulBlocked: false,
@@ -337,9 +354,8 @@ const ViewUsers = () => {
           MultiBlockUser: arrayId
         }));
       } else {
-        arrayId.push(selectedRows[k]["id"]);
-        console.log("block", arrayId);
 
+        arrayId.push(selectedRows[k]["id"]);
         setFormState(formState => ({
           ...formState,
           isMulBlocked: true,
@@ -359,11 +375,10 @@ const ViewUsers = () => {
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
       .then(res => {
         let editData = res.data.result[0];
-        console.log(editData);
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_USER,
-          editState: true,
+          editUser: true,
           dataForEdit: editData
         });
       })
@@ -483,6 +498,93 @@ const ViewUsers = () => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+               {/** Error/Success messages to be shown for edit */}
+          {formState.fromeditUser && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromeditUser && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddUser && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddUser && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -627,13 +729,7 @@ const ViewUsers = () => {
           ) : (
             <Spinner />
           )}
-          {/* <EditState
-          showModal={formState.showEditModal}
-          //closeModal={handleCloseModal}
-          dataToEdit={formState.dataToEdit}
-          id={formState.dataToEdit["id"]}
-         // editEvent={isEditCellCompleted}
-        /> */}
+
           {formState.isMultiDelete ? (
             <DeleteUser
               showModal={formState.showModalDelete}
