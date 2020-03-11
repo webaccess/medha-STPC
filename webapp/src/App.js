@@ -30,6 +30,7 @@ import EditCollegeRoute from "./authroute/EditCollegeRoute";
 import EditStateRoute from "./authroute/EditStateRoute";
 import EditZoneRoute from "./authroute/EditZoneRoute";
 import EditRpcRoute from "./authroute/EditRpcRoute";
+import EditUserRoute from "./authroute/EditUserRoute"
 
 class App extends Component {
   render() {
@@ -65,17 +66,27 @@ class App extends Component {
                 component={NotFoundPage}
                 exact
               />
+              {/** User */}
+              {/** Add User **/}
               <RouteWithLayout
                 component={AddUser}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_USER}
               />
+              {/** View User */}
               <RouteWithLayout
                 component={ViewUsers}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_USER}
+              />
+              {/** Edit User Route*/}
+              <RouteWithLayout
+                component={EditUserRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_USER}
               />
               {/** State */}
               {/** Add Edit State */}

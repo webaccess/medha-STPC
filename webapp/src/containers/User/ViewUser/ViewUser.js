@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import { useHistory } from "react-router-dom";
 import {
   TextField,
   Button,
   Card,
   CardContent,
+  Tooltip,
   Grid,
   Typography
 } from "@material-ui/core";
@@ -17,7 +19,7 @@ import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
 import useStyles from "./ViewUserStyles";
 import DeleteUser from "./DeleteUser";
-import BlockUser from "./BlockUser"
+import BlockUser from "./BlockUser";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
@@ -33,10 +35,10 @@ const ROLE_FILTER = "roleFilter";
 
 const ViewUsers = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
 
   const [formState, setFormState] = useState({
-
     dataToShow: [],
     tempData: [],
     users: [],
@@ -44,6 +46,9 @@ const ViewUsers = () => {
     rpcs: [],
     roles: [],
     ipcs: [],
+    // isEditState: props["editState"] ? props["editState"] : false,
+    // dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
+    // counter: 0,
     filterDataParameters: {
       zoneFilter: "",
       rpcFilter: "",
@@ -141,10 +146,10 @@ const ViewUsers = () => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
-        temp = convertUserData(res.data);
+        temp = convertUserData(res.data.result);
         setFormState(formState => ({
           ...formState,
-          users: res.data,
+          users: res.data.result,
           dataToShow: temp,
           tempData: temp
         }));
@@ -276,6 +281,7 @@ const ViewUsers = () => {
   };
 
   const blockedCellData = (id, isBlocked = false) => {
+    console.log(id, isBlocked);
 
     if (isBlocked === true) {
       setFormState(formState => ({
@@ -297,6 +303,7 @@ const ViewUsers = () => {
   };
 
   const isUserBlockCompleted = status => {
+    console.log("status", status);
     formState.isUserBlocked = status;
   };
 
@@ -316,9 +323,12 @@ const ViewUsers = () => {
     let arrayId = [];
 
     for (var k = 0; k < selectedRows.length; k++) {
+      console.log("forlopo", selectedRows[k]["blocked"]);
 
       if (selectedRows[k]["blocked"] === true) {
         arrayId.push(selectedRows[k]["id"]);
+        console.log("unblock", arrayId);
+
         setFormState(formState => ({
           ...formState,
           isMulBlocked: false,
@@ -328,6 +338,8 @@ const ViewUsers = () => {
         }));
       } else {
         arrayId.push(selectedRows[k]["id"]);
+        console.log("block", arrayId);
+
         setFormState(formState => ({
           ...formState,
           isMulBlocked: true,
@@ -339,6 +351,30 @@ const ViewUsers = () => {
     }
   };
 
+  const getDataForEdit = async id => {
+    let paramsForUsers = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
+      .then(res => {
+        let editData = res.data.result[0];
+        console.log(editData);
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_USER,
+          editState: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  const editCell = event => {
+    getDataForEdit(event.target.id);
+  };
 
   /** Table Data */
   const column = [
@@ -350,14 +386,16 @@ const ViewUsers = () => {
     /** Columns for edit and delete */
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          onClick={blockedCell}
-        >
-          block
-        </i>
+        <Tooltip title="Block" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={blockedCell}
+          >
+            block
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: [
@@ -377,28 +415,33 @@ const ViewUsers = () => {
     },
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          //onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          onClick={deleteCell}
-          style={{ color: "red" }}
-        >
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []

@@ -12,6 +12,7 @@ export const VIEW_COLLEGE = "/view-college";
 export const EDIT_COLLEGE = "/edit-college";
 
 /** user */
+export const EDIT_USER = "/edit-user";
 export const VIEW_USER = "/view-user";
 export const MANAGE_TRAINING = "/manage-training";
 export const VALIDATE_STUDENT = "/validate-student";
