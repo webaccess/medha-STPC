@@ -36,7 +36,7 @@ const AddEditState = props => {
     counter: 0
   });
 
-  /** Part for editing college */
+  /** Part for editing state */
   if (formState.isEditState && !formState.counter) {
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["name"]) {
