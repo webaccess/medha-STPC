@@ -275,7 +275,7 @@ const ManageCollege = props => {
             className="material-icons"
             id={cell.id}
             //onClick={viewCell}
-            style={{ color: "green" }}
+            style={{ color: "green", fontSize:"19px" }}
           >
             view_list
           </i>
@@ -292,7 +292,7 @@ const ManageCollege = props => {
             id={cell.id}
             value={cell.name}
             onClick={editCell}
-            style={{ color: "green" }}
+            style={{ color: "green", fontSize:"19px" }}
           >
             edit
           </i>
