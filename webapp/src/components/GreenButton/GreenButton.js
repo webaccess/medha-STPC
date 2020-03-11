@@ -11,7 +11,7 @@ const GreenButton = props => {
       color={props.color ? props.color : "primary"}
       className={classes.routebtn}
       startIcon={props.startIcon}
-      component={CustomRouterLink}
+      // component={CustomRouterLink}
       to={props.to}
       onClick={props.onClick}
     >

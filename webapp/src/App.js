@@ -30,6 +30,7 @@ import Registration from "./containers/Registration/Registration";
 import RequestOtp from "./containers/OTP/Requestotp";
 import VerifyOtp from "./containers/OTP/Verifyotp";
 import EditCollegeRoute from "./authroute/EditCollegeRoute";
+import Registered from "../src/containers/Registration/Registered.js";
 
 class App extends Component {
   render() {
@@ -54,11 +55,28 @@ class App extends Component {
                 component={Logout}
                 exact
               />
-              <Registration path={routeConstants.NEW_REGISTRATION_URL} exact />
+              <Registered
+                path={routeConstants.REGISTERED}
+                layout={Layout}
+                exact
+              />
+              <Registration
+                path={routeConstants.NEW_REGISTRATION_URL}
+                layout={Layout}
+                exact
+              />
 
-              <RequestOtp path={routeConstants.REQUEST_OTP} exact />
+              <RequestOtp
+                path={routeConstants.REQUEST_OTP}
+                layout={Layout}
+                exact
+              />
 
-              <VerifyOtp path={routeConstants.VERIFY_OTP} exact />
+              <VerifyOtp
+                path={routeConstants.VERIFY_OTP}
+                layout={Layout}
+                exact
+              />
 
               <ForgotPasswordRoute
                 path={routeConstants.FORGOT_PASSWORD_URL}

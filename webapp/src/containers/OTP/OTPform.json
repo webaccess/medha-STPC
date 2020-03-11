@@ -12,7 +12,7 @@
       },
       "validateMobileNumber": {
         "value": "true",
-        "message": "Not an Contact Number"
+        "message": "Invalid Contact Number"
       }
     }
   },
@@ -30,7 +30,7 @@
       },
       "validateOtp": {
         "value": "5",
-        "message": "Not an OTP "
+        "message": "Invalid OTP "
       }
     }
   }
