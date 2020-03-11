@@ -24,21 +24,34 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
+        withRelated: [
+          "academic_year",
+          "college.stream_strength.streams.stream",
+          "streams",
+          "question_set"
+        ]
       })
       .then(res => {
-        return utils.getPaginatedResponse(res);
+        const response = utils.getPaginatedResponse(res);
+        const data = response.result.reduce((result, activity) => {
+          if (activity.college) {
+            const streams = activity.college.stream_strength.map(
+              s => s.streams
+            );
+            activity.college.stream_strength = streams;
+          }
+          result.push(activity);
+          return result;
+        }, []);
+        response.result = data;
+        return response;
       });
   },
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("activity")
-      .where({ id: id })
-      .fetch()
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("activity").findOne({ id });
+    return utils.getFindOneResponse(response);
   }
 };

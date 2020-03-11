@@ -269,7 +269,7 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return await bookshelf
+    return bookshelf
       .model("student")
       .query(
         buildQuery({
@@ -281,9 +281,15 @@ module.exports = {
         page: page,
         pageSize: pageSize,
         withRelated: [
-          "user.college",
+          "user.college.stream_strength.streams.stream",
+          "user.college.rpc",
+          "user.college.district",
           "stream",
           "educations",
+          "user.role",
+          "user.state",
+          "user.rpc",
+          "user.zone",
           {
             user: query => {
               query.where({ college: id });
@@ -296,6 +302,14 @@ module.exports = {
         const response = data.result.reduce((acc, obj) => {
           if (Object.keys(obj.user).length) {
             obj.user = sanitizeUser(obj.user);
+
+            if (obj.user.college) {
+              const streams = obj.user.college.stream_strength.map(
+                s => s.streams
+              );
+              obj.user.college.stream_strength = streams;
+            }
+
             acc.push(obj);
           }
           return acc;
@@ -303,5 +317,21 @@ module.exports = {
         data.result = response;
         return data;
       });
+    // return strapi
+    //   .query("user", "users-permissions")
+    //   .model.query(
+    //     buildQuery({
+    //       model: strapi.models.student,
+    //       filters
+    //     })
+    //   )
+    //   .where({ college: id })
+    //   .fetchPage({
+    //     page: page,
+    //     pageSize: pageSize
+    //   })
+    //   .then(res => {
+    //     return utils.getPaginatedResponse(res);
+    //   });
   }
 };

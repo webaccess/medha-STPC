@@ -55,7 +55,7 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
+    return bookshelf
       .model("state")
       .where({ id: id })
       .fetch({

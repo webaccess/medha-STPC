@@ -24,7 +24,8 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
+        withRelated: ["activity"]
       })
       .then(res => {
         return utils.getPaginatedResponse(res);
@@ -33,14 +34,7 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("activity_batch")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("activity-batch").findOne({ id });
+    return utils.getFindOneResponse(response);
   }
 };

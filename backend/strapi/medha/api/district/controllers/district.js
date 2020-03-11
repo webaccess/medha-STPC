@@ -14,7 +14,7 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return await bookshelf
+    return bookshelf
       .model("district")
       .query(
         buildQuery({
@@ -24,7 +24,8 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
+        withRelated: ["state"]
       })
       .then(res => {
         return utils.getPaginatedResponse(res);
@@ -33,14 +34,7 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("district")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("district").findOne({ id });
+    return utils.getFindOneResponse(response);
   }
 };

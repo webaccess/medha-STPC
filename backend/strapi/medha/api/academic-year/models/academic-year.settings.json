@@ -14,11 +14,11 @@
       "required": true
     },
     "start_date": {
-      "type": "date",
+      "type": "datetime",
       "required": true
     },
     "end_date": {
-      "type": "date",
+      "type": "datetime",
       "required": true
     }
   }
