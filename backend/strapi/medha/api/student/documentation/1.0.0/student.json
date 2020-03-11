@@ -795,7 +795,7 @@
             "type": "string"
           },
           "date_of_birth": {
-            "type": "string"
+            "type": "datetime"
           },
           "gender": {
             "type": "string",
@@ -890,7 +890,7 @@
             "type": "string"
           },
           "date_of_birth": {
-            "type": "string"
+            "type": "datetime"
           },
           "gender": {
             "type": "string",

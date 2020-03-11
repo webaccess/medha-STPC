@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "03/09/2020 4:39:12 PM"
+    "x-generation-date": "03/11/2020 4:02:40 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -13302,7 +13302,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -13336,10 +13336,10 @@
                 "type": "string"
               },
               "start_date": {
-                "type": "string"
+                "type": "datetime"
               },
               "end_date": {
-                "type": "string"
+                "type": "datetime"
               }
             }
           },
@@ -13388,10 +13388,10 @@
             "type": "string"
           },
           "start_date": {
-            "type": "string"
+            "type": "datetime"
           },
           "end_date": {
-            "type": "string"
+            "type": "datetime"
           }
         }
       },
@@ -13406,10 +13406,10 @@
             "type": "string"
           },
           "start_date": {
-            "type": "string"
+            "type": "datetime"
           },
           "end_date": {
-            "type": "string"
+            "type": "datetime"
           }
         }
       },
@@ -13485,7 +13485,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -13663,10 +13663,10 @@
                 "type": "string"
               },
               "start_date": {
-                "type": "string"
+                "type": "datetime"
               },
               "end_date": {
-                "type": "string"
+                "type": "datetime"
               }
             }
           },
@@ -14235,7 +14235,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -14380,7 +14380,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -15543,7 +15543,7 @@
             "type": "string"
           },
           "date_of_birth": {
-            "type": "string"
+            "type": "datetime"
           },
           "gender": {
             "type": "string",
@@ -15638,7 +15638,7 @@
             "type": "string"
           },
           "date_of_birth": {
-            "type": "string"
+            "type": "datetime"
           },
           "gender": {
             "type": "string",
