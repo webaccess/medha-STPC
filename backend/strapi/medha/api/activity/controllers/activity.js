@@ -14,9 +14,9 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return await bookshelf
-      .model("activity")
-      .query(
+    return strapi
+      .query("activity")
+      .model.query(
         buildQuery({
           model: strapi.models["activity"],
           filters
@@ -24,28 +24,10 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize,
-        withRelated: [
-          "academic_year",
-          "college.stream_strength.streams.stream",
-          "streams",
-          "question_set"
-        ]
+        pageSize: pageSize
       })
       .then(res => {
-        const response = utils.getPaginatedResponse(res);
-        const data = response.result.reduce((result, activity) => {
-          if (activity.college) {
-            const streams = activity.college.stream_strength.map(
-              s => s.streams
-            );
-            activity.college.stream_strength = streams;
-          }
-          result.push(activity);
-          return result;
-        }, []);
-        response.result = data;
-        return response;
+        return utils.getPaginatedResponse(res);
       });
   },
 

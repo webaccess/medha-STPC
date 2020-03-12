@@ -5,7 +5,6 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 const { sanitizeEntity } = require("strapi-utils");
@@ -19,31 +18,6 @@ module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
-
-    // return bookshelf
-    //   .model("feedback")
-    //   .query(
-    //     buildQuery({
-    //       model: strapi.models["feedback"],
-    //       filters
-    //     })
-    //   )
-    //   .fetchPage({
-    //     page: page,
-    //     pageSize: pageSize,
-    //     withRelated: ["activity", "event", "user", "question_set"]
-    //   })
-    //   .then(res => {
-    //     const data = utils.getPaginatedResponse(res);
-    //     if (data.result) {
-    //       data.result = data.result.reduce((result, feedback) => {
-    //         feedback.user = sanitizeUser(feedback.user);
-    //         result.push(feedback);
-    //         return result;
-    //       }, []);
-    //     }
-    //     return data;
-    //   });
 
     return strapi
       .query("feedback")

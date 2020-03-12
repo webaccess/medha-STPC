@@ -5,7 +5,6 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 
@@ -14,9 +13,9 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return bookshelf
-      .model("activity_batch_attendance")
-      .query(
+    return strapi
+      .query("activity-batch-attendance")
+      .model.query(
         buildQuery({
           model: strapi.models["activity-batch-attendance"],
           filters
@@ -24,8 +23,7 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize,
-        withRelated: ["student", "activity_batch"]
+        pageSize: pageSize
       })
       .then(res => {
         return utils.getPaginatedResponse(res);

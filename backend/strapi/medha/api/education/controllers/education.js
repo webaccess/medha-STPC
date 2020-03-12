@@ -5,7 +5,6 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 
@@ -14,9 +13,9 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return bookshelf
-      .model("education")
-      .query(
+    return strapi
+      .query("education")
+      .model.query(
         buildQuery({
           model: strapi.models["education"],
           filters
@@ -24,8 +23,7 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize,
-        withRelated: ["student"]
+        pageSize: pageSize
       })
       .then(res => {
         return utils.getPaginatedResponse(res);

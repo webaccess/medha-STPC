@@ -5,7 +5,6 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 module.exports = {
@@ -24,9 +23,9 @@ module.exports = {
      * Public route
      */
     if (!ctx.state.user) {
-      return await bookshelf
-        .model("rpc")
-        .query(
+      return strapi
+        .query("rpc")
+        .model.query(
           buildQuery({
             model: strapi.models.rpc,
             filters
@@ -46,47 +45,47 @@ module.exports = {
      */
     const { role, rpc, zone } = ctx.state.user;
     if (role.name === "Medha Admin" || role.name === "Admin") {
-      return await bookshelf
-        .model("rpc")
-        .query(
+      return strapi
+        .query("rpc")
+        .model.query(
           buildQuery({
             model: strapi.models.rpc,
             filters
           })
         )
-        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["zone"] })
+        .fetchPage({ page: page, pageSize: pageSize })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
     }
 
     if (role.name === "Zonal Admin") {
-      return await bookshelf
-        .model("rpc")
-        .query(
+      return strapi
+        .query("rpc")
+        .model.query(
           buildQuery({
             model: strapi.models.rpc,
             filters
           })
         )
         .where({ zone: zone })
-        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["zone"] })
+        .fetchPage({ page: page, pageSize: pageSize })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
     }
 
     if (role.name === "RPC Admin") {
-      return await bookshelf
-        .model("rpc")
-        .query(
+      return strapi
+        .query("rpc")
+        .model.query(
           buildQuery({
             model: strapi.models.rpc,
             filters
           })
         )
         .where({ id: rpc })
-        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["zone"] })
+        .fetchPage({ page: page, pageSize: pageSize })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
@@ -95,15 +94,8 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("rpc")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("rpc").findOne({ id });
+    return utils.getFindOneResponse(response);
   },
 
   /**
@@ -115,18 +107,16 @@ module.exports = {
     const { query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return bookshelf
-      .model("college")
-      .query(
+    return strapi
+      .query("college")
+      .model.query(
         buildQuery({
           model: strapi.models.college,
           filters
         })
       )
       .where({ rpc: id })
-      .fetchAll({
-        withRelated: ["rpc"]
-      })
+      .fetchAll()
       .then(model => {
         return utils.getResponse(model);
       });
