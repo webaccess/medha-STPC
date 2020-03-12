@@ -32,7 +32,6 @@ import EditZoneRoute from "./authroute/EditZoneRoute";
 import EditRpcRoute from "./authroute/EditRpcRoute";
 import EditUserRoute from "./authroute/EditUserRoute";
 import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCollegeDetails";
-import manageCollege from "../src/containers/College/ManageCollege/ManageCollege";
 class App extends Component {
   render() {
     return (
@@ -155,7 +154,6 @@ class App extends Component {
               <RouteWithLayout
                 component={DisplayCollegeDetails}
                 exact
-                manageCollege={manageCollege}
                 layout={Layout}
                 path={routeConstants.DETAIL_COLLEGE}
               />
