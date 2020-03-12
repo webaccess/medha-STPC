@@ -14,11 +14,11 @@
       "required": true,
       "unique": true
     },
-    "zone": {
-      "model": "zone"
-    },
     "main_college": {
       "model": "college"
+    },
+    "state": {
+      "model": "state"
     }
   }
 }
