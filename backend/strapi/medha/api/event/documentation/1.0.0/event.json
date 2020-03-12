@@ -540,10 +540,10 @@
               "name": {
                 "type": "string"
               },
-              "zone": {
+              "main_college": {
                 "type": "string"
               },
-              "main_college": {
+              "state": {
                 "type": "string"
               }
             }
@@ -589,6 +589,9 @@
               },
               "stream_strength": {
                 "type": "component"
+              },
+              "zone": {
+                "type": "string"
               }
             }
           },

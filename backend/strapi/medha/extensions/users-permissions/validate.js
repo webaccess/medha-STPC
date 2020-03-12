@@ -1,30 +1,28 @@
-const bookshelf = require("../../config/config.js");
-
 const validateZonalAdminParams = params => {
-  if (!params.state || !params.zone) {
+  if (!params.zone) {
     return {
       isError: true,
-      error: "State and Zone is compulsory, when user is Zonal Admin"
+      error: "Zone is compulsory, when user is Zonal Admin"
     };
   }
   return { isError: false, error: "" };
 };
 
 const validateRPCAdminParams = params => {
-  if (!params.state || !params.zone || !params.rpc) {
+  if (!params.rpc) {
     return {
       isError: true,
-      error: "State, Zone and RPC is compulsory, when user is RPC Admin"
+      error: "RPC is compulsory, when user is RPC Admin"
     };
   }
   return { isError: false, error: "" };
 };
 
 const validateCollegeAdminParams = params => {
-  if (!params.state || !params.zone || !params.rpc || !params.college) {
+  if (!params.college) {
     return {
       isError: true,
-      error: "State, Zone, RPC and College is compulsory for College admin"
+      error: "College is compulsory for College admin"
     };
   }
   return { isError: false, error: "" };
@@ -45,120 +43,112 @@ async function validate(params) {
     return { isError: true, error: "Role is compulsory" };
   }
 
-  const role = await bookshelf
-    .model("role")
-    .where({ id: params.role })
-    .fetch();
+  const role = await strapi
+    .query("role", "users-permissions")
+    .findOne({ id: params.role });
 
   if (!role) {
     return { isError: true, error: "Role is invalid" };
   }
 
-  const data = role.toJSON();
   /**
    * Zonal Admin
-   * Compulsory fields: role, state, zone
+   * Compulsory fields: role, zone
    */
-  if (data.name === "Zonal Admin") {
+  if (role.name === "Zonal Admin") {
     const { isError, error } = validateZonalAdminParams(params);
     if (isError) {
       return { isError, error };
     }
 
-    const response = await bookshelf
-      .model("zone")
-      .where({ id: params.zone })
-      .fetch();
-    if (!response) {
+    const zone = await strapi.query("zone").findOne({ id: params.zone });
+    if (!zone) {
       return { isError: true, error: "Invalid zone" };
     }
-    const zone = response.toJSON();
-    if (zone.state !== params.state) {
+    if (params.state && params.state !== zone.state.id) {
       return { isError: true, error: "Zone and state does not match" };
     }
   }
 
   /**
    * RPC Admin
-   * Compulsory fields: role, state, zone, rpc
+   * Compulsory fields: role, rpc
    */
-  if (data.name === "RPC Admin") {
+  if (role.name === "RPC Admin") {
     const { isError, error } = validateRPCAdminParams(params);
     if (isError) {
       return { isError, error };
     }
 
-    const rpcResponse = await bookshelf
-      .model("rpc")
-      .where({ id: params.rpc })
-      .fetch();
-    const zoneResponse = await bookshelf
-      .model("zone")
-      .where({ id: params.zone })
-      .fetch();
-    if (!rpcResponse || !zoneResponse) {
+    const rpc = await strapi.query("rpc").findOne({ id: params.rpc });
+
+    let zone;
+    if (params.zone) {
+      zone = await strapi.query("zone").findOne({ id: params.zone });
+    }
+
+    if (params.zone && !zone) {
       return {
         isError: true,
-        error: !rpcResponse ? "Invalid RPC" : "Invalid Zone"
+        error: "Invalid Zone"
       };
     }
 
-    const rpc = rpcResponse.toJSON();
-    const zone = zoneResponse.toJSON();
-    if (zone.state !== params.state) {
-      return { isError: true, error: "Zone associated state does not match" };
+    if (!rpc) {
+      return {
+        isError: true,
+        error: "Invalid RPC"
+      };
     }
 
-    if (rpc.zone !== params.zone) {
-      return { isError: true, error: "RPC associated zone does not match" };
+    if (params.zone && params.state && params.state !== zone.state) {
+      return { isError: true, error: "Zone associated state does not match" };
     }
   }
 
   /**
    * College Admin
-   * Compulsory fields: role, state, zone, rpc, college
+   * Compulsory fields: role, college
    */
-  if (data.name === "College Admin") {
+  if (role.name === "College Admin") {
     const { isError, error } = validateCollegeAdminParams(params);
     if (isError) {
       return { isError, error };
     }
 
-    const rpcResponse = await bookshelf
-      .model("rpc")
-      .where({ id: params.rpc })
-      .fetch();
-    const zoneResponse = await bookshelf
-      .model("zone")
-      .where({ id: params.zone })
-      .fetch();
-    const collegeResponse = await bookshelf
-      .model("college")
-      .where({ id: params.college })
-      .fetch();
+    let zone, rpc, college, state;
+    rpc = await strapi.query("rpc").findOne({ id: params.rpc });
+    zone = await strapi.query("zone").findOne({ id: params.zone });
+    state = await strapi.query("state").findOne({ id: params.state });
+    college = await strapi.query("college").findOne({ id: params.college });
 
-    if (!rpcResponse) {
-      return { isError: true, error: "Invalid RPC" };
+    if (params.state && !state) {
+      return { isError: true, error: "Invalid State" };
     }
-    if (!zoneResponse) {
+
+    if (params.zone && !zone) {
       return { isError: true, error: "Invalid Zone" };
     }
-    if (!collegeResponse) {
+
+    if (params.rpc && !rpc) {
+      return { isError: true, error: "Invalid RPCzone" };
+    }
+
+    if (!college) {
       return { isError: true, error: "Invalid College" };
     }
-    const rpc = rpcResponse.toJSON();
-    const zone = zoneResponse.toJSON();
-    const college = collegeResponse.toJSON();
 
-    if (zone.state !== params.state) {
+    if (
+      params.zone &&
+      params.state &&
+      state &&
+      zone &&
+      state.id !== zone.state.id
+    ) {
       return { isError: true, error: "Zone associated state does not match" };
     }
 
-    if (rpc.zone !== params.zone) {
-      return { isError: true, error: "RPC associated zone does not match" };
-    }
-
-    if (college.rpc !== params.rpc) {
+    if (params.rpc && params.rpc !== college.rpc.id) {
       return {
         isError: true,
         error: "College associated with rpc does not match"
@@ -166,51 +156,42 @@ async function validate(params) {
     }
   }
 
+  // TODO add new role Student
   /**
    * Student role
    * Compulsory fields: role, state, zone, rpc, college
    */
-  if (data.name === "Authenticated") {
+  if (role.name === "Authenticated") {
     const { isError, error } = validateStudentParams(params);
     if (isError) {
       return { isError, error };
     }
 
-    const rpcResponse = await bookshelf
-      .model("rpc")
-      .where({ id: params.rpc })
-      .fetch();
-    const zoneResponse = await bookshelf
-      .model("zone")
-      .where({ id: params.zone })
-      .fetch();
-    const collegeResponse = await bookshelf
-      .model("college")
-      .where({ id: params.college })
-      .fetch();
+    const rpc = await strapi.query("rpc").findOne({ id: params.rpc });
+    const zone = await strapi.query("zone").findOne({ id: params.zone });
+    const college = await strapi
+      .query("college")
+      .findOne({ id: params.college });
+    const state = await strapi.query("state").findOne({ id: params.state });
 
-    if (!rpcResponse) {
-      return { isError: true, error: "Invalid RPC" };
+    if (!state) {
+      return { isError: true, error: "Invalid State" };
     }
-    if (!zoneResponse) {
+    if (!zone) {
       return { isError: true, error: "Invalid Zone" };
     }
-    if (!collegeResponse) {
+    if (!rpc) {
+      return { isError: true, error: "Invalid RPC" };
+    }
+    if (!college) {
       return { isError: true, error: "Invalid College" };
     }
-    const rpc = rpcResponse.toJSON();
-    const zone = zoneResponse.toJSON();
-    const college = collegeResponse.toJSON();
 
-    if (zone.state !== params.state) {
+    if (zone.state !== state.id) {
       return { isError: true, error: "Zone associated state does not match" };
     }
 
-    if (rpc.zone !== params.zone) {
-      return { isError: true, error: "RPC associated zone does not match" };
-    }
-
-    if (college.rpc !== params.rpc) {
+    if (college.rpc !== rpc.id) {
       return {
         isError: true,
         error: "College associated with rpc does not match"

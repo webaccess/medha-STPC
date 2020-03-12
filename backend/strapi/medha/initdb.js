@@ -156,21 +156,13 @@ if (!(_skip && skip.test("roles"))) {
 if (!(_skip && skip.test("states"))) {
   const states = _data.states;
   const _stateRequestData = Object.keys(states).map(state => {
-    const { zones, districts } = states[state];
-    // Create Zone request data
-    const _zoneRequestData = Object.keys(zones).map(zone => {
-      const { rpcs } = zones[zone];
-      return {
-        name: zone,
-        rpcs: rpcs.map(rpc => {
-          return { name: rpc };
-        })
-      };
-    });
+    const { zones, districts, rpcs } = states[state];
+
     return {
       name: state,
       districts: districts,
-      zones: _zoneRequestData
+      zones: zones,
+      rpcs: rpcs
     };
   });
   /**
@@ -205,6 +197,7 @@ if (!(_skip && skip.test("states"))) {
     var _allZones = await allZones();
     var _allRPCs = await allRPCs();
     var _allDistricts = await allDistricts();
+
     _stateRequestData.forEach(state => {
       const isStateNew = _allState.find(
         d => d.name.toLowerCase() === state.name.toLowerCase()
@@ -223,27 +216,29 @@ if (!(_skip && skip.test("states"))) {
         console.log(`Skipping state ${state.name}...`);
       }
     });
+
     _stateRequestData.forEach(state => {
       const { zones } = state;
       zones.forEach(zone => {
         const isZoneNew = _allZones.find(
-          z => z.name.toLowerCase() === zone.name.toLowerCase()
+          z => z.name.toLowerCase() === zone.toLowerCase()
         );
         if (!isZoneNew) {
           bookshelf
             .model("zone")
             .forge({
-              name: zone.name
+              name: zone
             })
             .save()
             .then(() => {
-              console.log(`Added zone ${zone.name}`);
+              console.log(`Added zone ${zone}`);
             });
         } else {
-          console.log(`Skipping zone ${zone.name}...`);
+          console.log(`Skipping zone ${zone}...`);
         }
       });
     });
+
     _stateRequestData.forEach(state => {
       const { districts } = state;
       districts.forEach(district => {
@@ -265,30 +260,29 @@ if (!(_skip && skip.test("states"))) {
         }
       });
     });
+
     _stateRequestData.forEach(state => {
-      const { zones } = state;
-      zones.forEach(zone => {
-        const { rpcs } = zone;
-        rpcs.forEach(rpc => {
-          const isRPCnew = _allRPCs.find(
-            z => z.name.toLowerCase() === rpc.name.toLowerCase()
-          );
-          if (!isRPCnew) {
-            bookshelf
-              .model("rpc")
-              .forge({
-                name: rpc.name
-              })
-              .save()
-              .then(() => {
-                console.log(`Added RPC ${rpc.name}`);
-              });
-          } else {
-            console.log(`Skipping RPC ${rpc.name}...`);
-          }
-        });
+      const { rpcs } = state;
+      rpcs.forEach(rpc => {
+        const isRPCNew = _allRPCs.find(
+          r => r.name.toLowerCase() === rpc.toLowerCase()
+        );
+        if (!isRPCNew) {
+          bookshelf
+            .model("rpc")
+            .forge({
+              name: rpc
+            })
+            .save()
+            .then(() => {
+              console.log(`Added RPC ${rpc}`);
+            });
+        } else {
+          console.log(`Skipping RPC ${rpc}...`);
+        }
       });
     });
+
     _allState = await allStates();
     _allZones = await allZones();
     _allRPCs = await allRPCs();
@@ -297,13 +291,16 @@ if (!(_skip && skip.test("states"))) {
      * Mapping zone to state and rpc to zone
      */
     _stateRequestData.forEach(state => {
-      const { zones, districts } = state;
+      const { zones, districts, rpcs } = state;
       const _state = _allState.find(
         s => s.name.toLowerCase() === state.name.toLowerCase()
       );
+      /**
+       * Mapping zones to state
+       */
       zones.forEach(zone => {
         const _zone = _allZones.find(
-          z => z.name.toLowerCase() === zone.name.toLowerCase()
+          z => z.name.toLowerCase() === zone.toLowerCase()
         );
         bookshelf
           .model("zone")
@@ -317,31 +314,12 @@ if (!(_skip && skip.test("states"))) {
             { patch: true }
           )
           .then(() => {
-            console.log(`Mapped ${zone.name} to ${state.name}`);
-            const { rpcs } = zone;
-            rpcs.forEach(rpc => {
-              const _rpc = _allRPCs.find(
-                r => r.name.toLowerCase() === rpc.name.toLowerCase()
-              );
-              bookshelf
-                .model("rpc")
-                .where({
-                  id: _rpc.id
-                })
-                .save(
-                  {
-                    zone: _zone.id
-                  },
-                  {
-                    patch: true
-                  }
-                )
-                .then(() => {
-                  console.log(`Mapped ${rpc.name} to ${zone.name}`);
-                });
-            });
+            console.log(`Mapped Zone ${zone} to ${state.name}`);
           });
       });
+      /**
+       * Mapping district to state
+       */
       districts.forEach(district => {
         const _district = _allDistricts.find(
           d => d.name.toLowerCase() === district.toLowerCase()
@@ -359,6 +337,29 @@ if (!(_skip && skip.test("states"))) {
           )
           .then(() => {
             console.log(`Mapped district ${district} to ${state.name}`);
+          });
+      });
+
+      /**
+       * Mapping rpc to state
+       */
+      rpcs.forEach(rpc => {
+        const _rpc = _allRPCs.find(
+          r => r.name.toLowerCase() === rpc.toLowerCase()
+        );
+        bookshelf
+          .model("rpc")
+          .where({
+            id: _rpc.id
+          })
+          .save(
+            {
+              state: _state.id
+            },
+            { patch: true }
+          )
+          .then(() => {
+            console.log(`Mapped RPC ${rpc} to ${state.name}`);
           });
       });
     });

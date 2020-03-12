@@ -59,7 +59,7 @@ const roles = {
       },
       {
         name: "state",
-        action: ["find", "findone", "zones"]
+        action: ["find", "findone", "zones", "rpcs"]
       },
       {
         name: "stream",
@@ -75,7 +75,7 @@ const roles = {
       },
       {
         name: "zone",
-        action: ["find", "findone", "rpcs", "colleges"]
+        action: ["find", "findone", "colleges"]
       },
       {
         name: "district",
@@ -160,7 +160,7 @@ const roles = {
       },
       {
         name: "zone",
-        action: ["find", "findone", "rpcs", "colleges"]
+        action: ["find", "findone", "colleges"]
       },
       {
         name: "district",
@@ -517,17 +517,7 @@ const roles = {
  */
 const states = {
   "Uttar Pradesh": {
-    zones: {
-      "West-UP": {
-        rpcs: ["Noida"]
-      },
-      "East-UP": {
-        rpcs: ["Varanasi"]
-      },
-      "Central-UP": {
-        rpcs: ["Kanpur", "Prayagrai"]
-      }
-    },
+    zones: ["West-UP", "East-UP", "Central-UP"],
     districts: [
       "Agra",
       "Firozabad",
@@ -536,7 +526,8 @@ const states = {
       "Varanasi",
       "Jaunpur",
       "Ghazipur"
-    ]
+    ],
+    rpcs: ["Noida", "Varanasi", "Prayagrai", "Kanpur"]
   }
 };
 

@@ -55,6 +55,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/rpcs",
+      "handler": "state.rpcs",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

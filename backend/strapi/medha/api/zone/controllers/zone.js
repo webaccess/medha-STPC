@@ -4,7 +4,6 @@
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/controllers.html#core-controllers)
  * to customize this controller
  */
-const bookshelf = require("../../../config/config.js");
 const utils = require("../../../config/utils.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 module.exports = {
@@ -81,69 +80,26 @@ module.exports = {
   },
 
   /**
-   * Retrieve all rpcs under zone
+   * Retrieve all colleges under zone
    * @return {Object}
    */
-  async rpcs(ctx) {
+  async colleges(ctx) {
     const { id } = ctx.params;
     const { query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
     return strapi
-      .query("rpc")
+      .query("college")
       .model.query(
-        buildQuery({
-          model: strapi.models.rpc,
-          filters
-        })
-      )
-      .where({
-        zone: id
-      })
-      .fetchAll()
-      .then(res => {
-        return utils.getResponse(res);
-      });
-  },
-
-  /**
-   * Retrieve all colleges under zone
-   * @return {Object}
-   */
-  async colleges(ctx) {
-    // TODO remove bookshelf
-    const { id } = ctx.params;
-    const { query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
-
-    return bookshelf
-      .model("college")
-      .query(
         buildQuery({
           model: strapi.models.college,
           filters
         })
       )
-      .fetchAll({
-        withRelated: [
-          "rpc.zone",
-          {
-            rpc: qb => {
-              qb.where({ zone: id });
-            }
-          }
-        ]
-      })
+      .where({ zone: id })
+      .fetchAll()
       .then(res => {
-        const response = utils.getResponse(res);
-        response.result = response.result
-          .map(college => {
-            if (Object.keys(college.rpc).length) {
-              return college;
-            }
-          })
-          .filter(a => a);
-        return response;
+        return utils.getResponse(res);
       });
   },
 

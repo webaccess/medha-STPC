@@ -50,14 +50,6 @@
     },
     {
       "method": "GET",
-      "path": "/zones/:id/rpcs",
-      "handler": "zone.rpcs",
-      "config": {
-        "policies": ["isAllowed"]
-      }
-    },
-    {
-      "method": "GET",
       "path": "/zones/:id/colleges",
       "handler": "zone.colleges",
       "config": {

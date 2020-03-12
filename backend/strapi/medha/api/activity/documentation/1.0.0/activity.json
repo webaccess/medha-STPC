@@ -582,6 +582,9 @@
               },
               "stream_strength": {
                 "type": "component"
+              },
+              "zone": {
+                "type": "string"
               }
             }
           },
