@@ -94,7 +94,6 @@ module.exports = {
     }
 
     if (role.name === "Zonal Admin") {
-      // TODO add zone to where clause
       return strapi
         .query("college")
         .model.query(
@@ -103,6 +102,7 @@ module.exports = {
             filters
           })
         )
+        .where({ zone: zone })
         .fetchPage({
           page: page,
           pageSize: pageSize

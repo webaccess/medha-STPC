@@ -79,5 +79,28 @@ module.exports = {
       .then(res => {
         return utils.getResponse(res);
       });
+  },
+
+  /**
+   * @return {Object}
+   */
+  async rpcs(ctx) {
+    const { id } = ctx.params;
+    const { query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    return strapi
+      .query("rpc")
+      .model.query(
+        buildQuery({
+          model: strapi.models.rpc,
+          filters
+        })
+      )
+      .where({ state: id })
+      .fetchAll()
+      .then(res => {
+        return utils.getResponse(res);
+      });
   }
 };

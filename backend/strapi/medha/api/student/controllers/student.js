@@ -1,14 +1,4 @@
 "use strict";
-// const knex = require("knex")({
-//   client: "pg",
-//   connection: {
-//     host: "localhost",
-//     port: "5432",
-//     user: "medha",
-//     password: "medha",
-//     database: "medha"
-//   }
-// });
 /**
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/controllers.html#core-controllers)
  * to customize this controller
@@ -166,56 +156,5 @@ module.exports = {
         console.log(error);
         return ctx.response.badRequest(`Invalid ${error.column}`);
       });
-
-    // try {
-    //   await knex.transaction(async trx => {
-    //     const queries = [];
-    //     const otp1 = await knex("otps")
-    //       .where({ otp: otp, contact_number: contact_number })
-    //       .update({ is_verified: true })
-    //       .transacting(trx);
-    //     // queries.push(query);
-
-    //     const user1 = await knex("users-permissions_user")
-    //       .insert(user)
-    //       .transacting(trx);
-    //     //queries.push(query);
-
-    //     console.log(user1);
-
-    //     const usr = await knex("users-permissions_user")
-    //       .where({ contact_number: contact_number })
-    //       .select("id")
-    //       .transacting(trx);
-    //     console.log(usr);
-
-    //     const student = Object.assign(
-    //       { user: usr[0].id },
-    //       _.omit(ctx.request.body, [
-    //         "username",
-    //         "email",
-    //         "password",
-    //         "first_name",
-    //         "last_name",
-    //         "contact_number",
-    //         "otp",
-    //         "college_id"
-    //       ])
-    //     );
-    //     console.log(student);
-
-    //     const stud = await knex("students")
-    //       .insert(student)
-    //       .transacting(trx);
-
-    //     // Promise.all(queries)
-    //     //   .then(trx.co)
-    //     //   .catch(trx.rollback);
-    //     ctx.body = { status: "ok" };
-    //   });
-    // } catch (err) {
-    //   console.log(err);
-    //   ctx.body = err;
-    // }
   }
 };
