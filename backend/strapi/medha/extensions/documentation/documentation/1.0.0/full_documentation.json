@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "03/09/2020 4:39:12 PM"
+    "x-generation-date": "03/12/2020 10:52:06 AM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -9647,61 +9647,6 @@
         }
       }
     },
-    "/students/me": {
-      "get": {
-        "deprecated": false,
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "foo": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "summary": "",
-        "tags": ["Student"],
-        "parameters": []
-      }
-    },
     "/students": {
       "get": {
         "deprecated": false,
@@ -12984,7 +12929,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -13013,10 +12958,10 @@
                 "type": "string"
               },
               "start_date": {
-                "type": "string"
+                "type": "datetime"
               },
               "end_date": {
-                "type": "string"
+                "type": "datetime"
               }
             }
           },
@@ -13050,10 +12995,10 @@
             "type": "string"
           },
           "start_date": {
-            "type": "string"
+            "type": "datetime"
           },
           "end_date": {
-            "type": "string"
+            "type": "datetime"
           }
         }
       },
@@ -13064,10 +13009,10 @@
             "type": "string"
           },
           "start_date": {
-            "type": "string"
+            "type": "datetime"
           },
           "end_date": {
-            "type": "string"
+            "type": "datetime"
           }
         }
       },
@@ -13139,7 +13084,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -13306,10 +13251,10 @@
                 "type": "string"
               },
               "start_date": {
-                "type": "string"
+                "type": "datetime"
               },
               "end_date": {
-                "type": "string"
+                "type": "datetime"
               }
             }
           },
@@ -13823,7 +13768,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -13961,7 +13906,7 @@
                 "type": "string"
               },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
@@ -15053,7 +14998,7 @@
             "type": "string"
           },
           "date_of_birth": {
-            "type": "string"
+            "type": "datetime"
           },
           "gender": {
             "type": "string",
@@ -15142,7 +15087,7 @@
             "type": "string"
           },
           "date_of_birth": {
-            "type": "string"
+            "type": "datetime"
           },
           "gender": {
             "type": "string",

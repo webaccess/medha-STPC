@@ -534,10 +534,10 @@
                 "type": "string"
               },
               "start_date": {
-                "type": "string"
+                "type": "datetime"
               },
               "end_date": {
-                "type": "string"
+                "type": "datetime"
               }
             }
           },

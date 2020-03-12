@@ -5,18 +5,23 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
+const { sanitizeEntity } = require("strapi-utils");
+
+const sanitizeUser = user =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model
+  });
 
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return await bookshelf
-      .model("feedback")
-      .query(
+    return strapi
+      .query("feedback")
+      .model.query(
         buildQuery({
           model: strapi.models["feedback"],
           filters
@@ -27,20 +32,24 @@ module.exports = {
         pageSize: pageSize
       })
       .then(res => {
-        return utils.getPaginatedResponse(res);
+        const data = utils.getPaginatedResponse(res);
+        if (data.result) {
+          data.result = data.result.reduce((result, feedback) => {
+            feedback.user = sanitizeUser(feedback.user);
+            result.push(feedback);
+            return result;
+          }, []);
+        }
+        return data;
       });
   },
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("feedback")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("feedback").findOne({ id });
+    if (response) {
+      response.user = sanitizeUser(response.user);
+    }
+    return utils.getFindOneResponse(response);
   }
 };

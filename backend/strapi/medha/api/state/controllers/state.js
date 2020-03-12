@@ -5,7 +5,6 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 module.exports = {
@@ -16,9 +15,9 @@ module.exports = {
      * Public route
      */
     if (!ctx.state.user) {
-      return await bookshelf
-        .model("state")
-        .query(
+      return strapi
+        .query("state")
+        .model.query(
           buildQuery({
             model: strapi.models.state,
             filters
@@ -38,15 +37,15 @@ module.exports = {
      */
     const { role } = ctx.state.user;
     if (role.name === "Medha Admin" || role.name === "Admin") {
-      return await bookshelf
-        .model("state")
-        .query(
+      return strapi
+        .query("state")
+        .model.query(
           buildQuery({
             model: strapi.models.state,
             filters
           })
         )
-        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["zones"] })
+        .fetchPage({ page: page, pageSize: pageSize })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
@@ -55,15 +54,8 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("state")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("state").findOne({ id });
+    return utils.getFindOneResponse(response);
   },
 
   /**
@@ -74,16 +66,16 @@ module.exports = {
     const { query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return await bookshelf
-      .model("zone")
-      .query(
+    return strapi
+      .query("zone")
+      .model.query(
         buildQuery({
           model: strapi.models.zone,
           filters
         })
       )
       .where({ state: id })
-      .fetchAll({ withRelated: ["state"] })
+      .fetchAll()
       .then(res => {
         return utils.getResponse(res);
       });

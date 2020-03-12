@@ -14,9 +14,9 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return await bookshelf
-      .model("response")
-      .query(
+    return strapi
+      .query("response")
+      .model.query(
         buildQuery({
           model: strapi.models["response"],
           filters
@@ -33,14 +33,7 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("response")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("response").findOne({ id });
+    return utils.getFindOneResponse(response);
   }
 };

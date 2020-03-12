@@ -1,14 +1,14 @@
 "use strict";
-const knex = require("knex")({
-  client: "pg",
-  connection: {
-    host: "localhost",
-    port: "5432",
-    user: "medha",
-    password: "medha",
-    database: "medha"
-  }
-});
+// const knex = require("knex")({
+//   client: "pg",
+//   connection: {
+//     host: "localhost",
+//     port: "5432",
+//     user: "medha",
+//     password: "medha",
+//     database: "medha"
+//   }
+// });
 /**
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/controllers.html#core-controllers)
  * to customize this controller
@@ -16,6 +16,10 @@ const knex = require("knex")({
 
 const bookshelf = require("../../../config/config.js");
 const { sanitizeEntity } = require("strapi-utils");
+const sanitizeUser = user =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model
+  });
 const utils = require("../../../config/utils.js");
 const _ = require("lodash");
 
@@ -24,29 +28,7 @@ module.exports = {
    * Retrieve authenticated student.
    * @return {Object}
    */
-  async me(ctx) {
-    const user = ctx.state.user;
-    return await bookshelf
-      .model("student")
-      .where({ user: user.id })
-      .fetch({
-        withRelated: [
-          "user.state",
-          "user.zone",
-          "user.rpc",
-          "user.college",
-          "stream",
-          "educations"
-        ]
-      })
-      .then(u => {
-        const response = utils.getResponse(u);
-        const data = sanitizeUser(response.result);
-        response.result = data;
-        return response;
-      });
-  },
-
+  // TODO replace with strapi
   async register(ctx) {
     const { otp, contact_number } = ctx.request.body;
     if (!otp) {

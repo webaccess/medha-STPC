@@ -42,7 +42,7 @@
       "required": true
     },
     "date_of_birth": {
-      "type": "date",
+      "type": "datetime",
       "required": true
     },
     "gender": {

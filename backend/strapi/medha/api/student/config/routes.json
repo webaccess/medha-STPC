@@ -10,14 +10,6 @@
     },
     {
       "method": "GET",
-      "path": "/students/me",
-      "handler": "student.me",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
       "path": "/students",
       "handler": "student.find",
       "config": {

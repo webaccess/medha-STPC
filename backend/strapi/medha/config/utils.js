@@ -20,8 +20,14 @@ function getResponse(response) {
   };
 }
 
+function getFindOneResponse(response) {
+  return {
+    result: response
+  };
+}
 module.exports = {
   getRequestParams,
   getPaginatedResponse,
-  getResponse
+  getResponse,
+  getFindOneResponse
 };

@@ -5,7 +5,6 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 
@@ -14,9 +13,9 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return await bookshelf
-      .model("stream")
-      .query(
+    return strapi
+      .query("stream")
+      .model.query(
         buildQuery({
           model: strapi.models["stream"],
           filters
@@ -33,14 +32,7 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("stream")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("stream").findOne({ id });
+    return utils.getFindOneResponse(response);
   }
 };

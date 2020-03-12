@@ -23,9 +23,9 @@ module.exports = {
      * Public role for zones
      */
     if (!ctx.state.user) {
-      return await bookshelf
-        .model("zone")
-        .query(
+      return strapi
+        .query("zone")
+        .model.query(
           buildQuery({
             model: strapi.models.zone,
             filters
@@ -47,24 +47,24 @@ module.exports = {
 
     const { role, zone } = ctx.state.user;
     if (role.name === "Medha Admin" || role.name === "Admin") {
-      return await bookshelf
-        .model("zone")
-        .query(
+      return strapi
+        .query("zone")
+        .model.query(
           buildQuery({
             model: strapi.models.zone,
             filters
           })
         )
-        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["state"] })
+        .fetchPage({ page: page, pageSize: pageSize })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
     }
 
     if (role.name === "Zonal Admin") {
-      return await bookshelf
-        .model("zone")
-        .query(
+      return strapi
+        .query("zone")
+        .model.query(
           buildQuery({
             model: strapi.models.zone,
             filters
@@ -73,7 +73,7 @@ module.exports = {
         .where({
           id: zone
         })
-        .fetchPage({ page: page, pageSize: pageSize, withRelated: ["state"] })
+        .fetchPage({ page: page, pageSize: pageSize })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
@@ -89,9 +89,9 @@ module.exports = {
     const { query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return bookshelf
-      .model("rpc")
-      .query(
+    return strapi
+      .query("rpc")
+      .model.query(
         buildQuery({
           model: strapi.models.rpc,
           filters
@@ -100,7 +100,7 @@ module.exports = {
       .where({
         zone: id
       })
-      .fetchAll({ withRelated: ["zone"] })
+      .fetchAll()
       .then(res => {
         return utils.getResponse(res);
       });
@@ -111,26 +111,10 @@ module.exports = {
    * @return {Object}
    */
   async colleges(ctx) {
+    // TODO remove bookshelf
     const { id } = ctx.params;
     const { query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
-
-    // return bookshelf
-    //   .model("zone")
-    //   .where({
-    //     id: id
-    //   })
-    //   .fetch({ withRelated: ["rpcs.colleges", "rpcs.colleges.rpc"] })
-    //   .then(res => {
-    //     const data = res.toJSON();
-    //     let colleges = data.rpcs.reduce((acc, rpc) => {
-    //       acc.push(...rpc.colleges);
-    //       return acc;
-    //     }, []);
-    //     delete data.rpcs;
-    //     data.colleges = colleges;
-    //     return data;
-    //   });
 
     return bookshelf
       .model("college")
@@ -165,14 +149,7 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    return await bookshelf
-      .model("zone")
-      .where({ id: id })
-      .fetch({
-        require: false
-      })
-      .then(res => {
-        return utils.getResponse(res);
-      });
+    const response = await strapi.query("zone").findOne({ id });
+    return utils.getFindOneResponse(response);
   }
 };
