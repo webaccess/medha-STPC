@@ -50,9 +50,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": [
           {
             "name": "_limit",
@@ -238,9 +236,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -305,9 +301,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": []
       }
     },
@@ -358,9 +352,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": [
           {
             "name": "id",
@@ -420,9 +412,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -494,9 +484,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": [
           {
             "name": "id",
@@ -544,10 +532,7 @@
             "type": "string"
           },
           "rpc": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -608,10 +593,7 @@
             }
           },
           "streams": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -671,10 +653,7 @@
             }
           },
           "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"

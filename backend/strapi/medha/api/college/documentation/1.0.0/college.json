@@ -50,9 +50,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "_limit",
@@ -238,9 +236,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -305,9 +301,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -373,9 +367,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": []
       }
     },
@@ -426,9 +418,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -488,9 +478,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -562,9 +550,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -583,13 +569,7 @@
   "components": {
     "schemas": {
       "College": {
-        "required": [
-          "id",
-          "name",
-          "college_code",
-          "address",
-          "college_email"
-        ],
+        "required": ["id", "name", "college_code", "address", "college_email"],
         "properties": {
           "id": {
             "type": "string"
@@ -598,10 +578,7 @@
             "type": "string"
           },
           "rpc": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -690,10 +667,7 @@
             }
           },
           "district": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -714,18 +688,13 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "id"
-              ],
+              "required": ["id"],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": [
-                    "id",
-                    "name"
-                  ],
+                  "required": ["id", "name"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -744,12 +713,7 @@
         }
       },
       "NewCollege": {
-        "required": [
-          "name",
-          "college_code",
-          "address",
-          "college_email"
-        ],
+        "required": ["name", "college_code", "address", "college_email"],
         "properties": {
           "name": {
             "type": "string"
@@ -783,18 +747,13 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "id"
-              ],
+              "required": ["id"],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": [
-                    "id",
-                    "name"
-                  ],
+                  "required": ["id", "name"],
                   "properties": {
                     "id": {
                       "type": "string"

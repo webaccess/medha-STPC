@@ -102,7 +102,7 @@ module.exports = {
       ctx.body = response;
     } catch (err) {
       console.log(err);
-      ctx.body = err;
+      ctx.response.badRequest(err.message);
     }
   }
 };

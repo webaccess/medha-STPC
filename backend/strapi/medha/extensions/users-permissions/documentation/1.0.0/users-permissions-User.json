@@ -50,9 +50,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -254,9 +252,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": []
       }
     },
@@ -311,9 +307,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -378,9 +372,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -445,9 +437,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "provider",
@@ -513,9 +503,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -584,9 +572,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -655,9 +641,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": []
       }
     },
@@ -712,9 +696,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -782,9 +764,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "_limit",
@@ -972,9 +952,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": []
       }
     },
@@ -1025,9 +1003,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -1087,9 +1063,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -1164,9 +1138,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -1217,10 +1189,7 @@
             "default": false
           },
           "role": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -1258,10 +1227,7 @@
             "type": "string"
           },
           "state": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -1272,10 +1238,7 @@
             }
           },
           "zone": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -1289,10 +1252,7 @@
             }
           },
           "rpc": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"

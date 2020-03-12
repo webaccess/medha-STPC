@@ -50,9 +50,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": [
           {
             "name": "_limit",
@@ -238,9 +236,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -305,9 +301,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": []
       }
     },
@@ -358,9 +352,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": [
           {
             "name": "id",
@@ -420,9 +412,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -494,9 +484,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": [
           {
             "name": "id",
@@ -534,19 +522,10 @@
           },
           "activity_type": {
             "type": "string",
-            "enum": [
-              "workshop",
-              "industrialVisit",
-              "training"
-            ]
+            "enum": ["workshop", "industrialVisit", "training"]
           },
           "academic_year": {
-            "required": [
-              "id",
-              "name",
-              "start_date",
-              "end_date"
-            ],
+            "required": ["id", "name", "start_date", "end_date"],
             "properties": {
               "id": {
                 "type": "string"
@@ -614,18 +593,10 @@
           },
           "education_year": {
             "type": "string",
-            "enum": [
-              "First",
-              "Second",
-              "Third",
-              "Fourth"
-            ]
+            "enum": ["First", "Second", "Third", "Fourth"]
           },
           "streams": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -694,10 +665,7 @@
             "type": "string"
           },
           "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -743,11 +711,7 @@
           },
           "activity_type": {
             "type": "string",
-            "enum": [
-              "workshop",
-              "industrialVisit",
-              "training"
-            ]
+            "enum": ["workshop", "industrialVisit", "training"]
           },
           "academic_year": {
             "type": "string"
@@ -763,12 +727,7 @@
           },
           "education_year": {
             "type": "string",
-            "enum": [
-              "First",
-              "Second",
-              "Third",
-              "Fourth"
-            ]
+            "enum": ["First", "Second", "Third", "Fourth"]
           },
           "streams": {
             "type": "string"

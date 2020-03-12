@@ -463,7 +463,7 @@ const publicRoutes = {
   controllers: [
     {
       name: "otp",
-      action: ["requestotp", "validateotp", "requestotpforstudent"]
+      action: ["requestotp", "validateotp", "requestotpforstudent", "checkotp"]
     },
     {
       name: "state",
