@@ -594,23 +594,6 @@
           "name": {
             "type": "string"
           },
-          "zone": {
-            "required": [
-              "id",
-              "name"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "state": {
-                "type": "string"
-              }
-            }
-          },
           "main_college": {
             "required": [
               "id",
@@ -652,6 +635,23 @@
               },
               "stream_strength": {
                 "type": "component"
+              },
+              "zone": {
+                "type": "string"
+              }
+            }
+          },
+          "state": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
               }
             }
           }
@@ -665,10 +665,10 @@
           "name": {
             "type": "string"
           },
-          "zone": {
+          "main_college": {
             "type": "string"
           },
-          "main_college": {
+          "state": {
             "type": "string"
           }
         }
