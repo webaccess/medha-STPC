@@ -109,7 +109,6 @@ const AddEditState = props => {
           postData
         )
         .then(res => {
-          console.log(res);
           history.push({
             pathname: routeConstants.VIEW_STATES,
             fromEditState: true,
@@ -119,7 +118,6 @@ const AddEditState = props => {
           });
         })
         .catch(error => {
-          console.log(error);
           history.push({
             pathname: routeConstants.VIEW_STATES,
             fromEditState: true,
@@ -140,7 +138,6 @@ const AddEditState = props => {
           postData
         )
         .then(res => {
-          console.log(res);
           history.push({
             pathname: routeConstants.VIEW_STATES,
             fromAddState: true,
@@ -150,7 +147,6 @@ const AddEditState = props => {
           });
         })
         .catch(error => {
-          console.log(error);
           history.push({
             pathname: routeConstants.VIEW_STATES,
             fromAddState: true,

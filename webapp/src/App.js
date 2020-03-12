@@ -14,7 +14,7 @@ import {
 import Dashboard from "./containers/Dashboard/Dashboard";
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
 import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
-import AddUser from "./containers/User/AddUser/AddUser";
+import AddUser from "./containers/User/AddEditUser/AddEditUser";
 import ViewUsers from "./containers/User/ViewUser/ViewUser";
 import AddEditRpc from "./containers/RPC/AddEditRpc/AddEditRpc";
 import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";

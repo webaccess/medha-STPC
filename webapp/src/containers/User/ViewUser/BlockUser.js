@@ -95,7 +95,7 @@ const BlockUser = props => {
         timeout: 500
       }}
     >
-      <Fade in={props.showModal}>
+      <Fade in={props.getModel}>
         <div className={classes.paper}>
           <Typography variant={"h2"} className={classes.textMargin}>
             Block

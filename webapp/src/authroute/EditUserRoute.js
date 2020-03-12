@@ -4,15 +4,15 @@ import LogIn from "../containers/AuthPage/Login/Login";
 import Layout from "../hoc/Layout/Layout";
 import { Redirect } from "react-router-dom";
 import * as routeConstants from "../constants/RouteConstants";
-import AddUser from "../containers/User/AddUser/AddUser"
+import AddUser from "../containers/User/AddEditUser/AddEditUser";
 
 const EditUserRoute = props => {
   if (auth.getToken() !== null) {
     if (props["location"] && props["location"]["dataForEdit"]) {
       return (
-        <AddUser  
+        <AddUser
           dataForEdit={props["location"]["dataForEdit"]}
-          editState={props["location"]["editState"]}
+          editUser={props["location"]["editUser"]}
         />
       );
     } else {
