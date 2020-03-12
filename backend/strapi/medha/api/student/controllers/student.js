@@ -76,12 +76,16 @@ module.exports = {
       return ctx.response.notFound("Zone does not exist");
     }
 
-    const studentRole = await bookshelf
-      .model("role")
-      .where({ name: "Authenticated" })
-      .fetch({ require: false })
-      .then(model => (model ? model.toJSON() : null));
+    // const studentRole = await bookshelf
+    //   .model("role")
+    //   .where({ name: "Student" })
+    //   .fetch({ require: false })
+    //   .then(model => (model ? model.toJSON() : null));
 
+    const studentRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Student" });
+    console.log(studentRole);
     const requestBody = ctx.request.body;
     const userRequestBody = Object.assign(
       {

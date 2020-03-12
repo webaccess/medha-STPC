@@ -117,8 +117,6 @@ module.exports = {
         console.log(err);
         ctx.response.badRequest("Invalid OTP");
       }
-      //console.log(err);
-      // ctx.response.badRequest(err.message);
     }
   }
 };
