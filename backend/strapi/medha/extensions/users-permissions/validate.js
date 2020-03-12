@@ -101,7 +101,7 @@ async function validate(params) {
       };
     }
 
-    if (params.zone && params.state && params.state !== zone.state) {
+    if (params.zone && params.state && params.state !== zone.state.id) {
       return { isError: true, error: "Zone associated state does not match" };
     }
   }
@@ -138,6 +138,8 @@ async function validate(params) {
       return { isError: true, error: "Invalid College" };
     }
 
+    console.log(state);
+    console.log(zone);
     if (
       params.zone &&
       params.state &&
@@ -145,7 +147,7 @@ async function validate(params) {
       zone &&
       state.id !== zone.state.id
     ) {
-      return { isError: true, error: "Zone associated state does not match" };
+      return { isError: true, error: "Zone associated state does not match.." };
     }
 
     if (params.rpc && params.rpc !== college.rpc.id) {
@@ -187,11 +189,11 @@ async function validate(params) {
       return { isError: true, error: "Invalid College" };
     }
 
-    if (zone.state !== state.id) {
+    if (zone.state.id !== state.id) {
       return { isError: true, error: "Zone associated state does not match" };
     }
 
-    if (college.rpc !== rpc.id) {
+    if (college.rpc.id !== rpc.id) {
       return {
         isError: true,
         error: "College associated with rpc does not match"
