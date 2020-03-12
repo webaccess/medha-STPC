@@ -23,9 +23,14 @@ import DeleteCollege from "./DeleteCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const COLLEGE_FILTER = "collegeName";
+const COLLEGE_FILTER = "name";
+//const STATE_FILTER = "stateName";
+const ZONE_FILTER = "rpc.zone";
+const RPC_FILTER = "rpc.id";
+const SORT_FIELD_KEY = "_sort";
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 
@@ -65,34 +70,65 @@ const ManageCollege = props => {
     dataToDelete: {},
     isView: false,
     showModalDelete: false,
-    filterDataParameters: {
-      COLLEGE_FILTER: ""
-    },
+    filterDataParameters: {},
+
+    /** Pagination and sortinig data */
+    isDataLoading: false,
     pageSize: 10,
     totalRows: "",
-    page: "",
-    pageCount: ""
+    page: 1,
+    pageCount: "",
+    defaultSort: true
   });
 
   useEffect(() => {
     /** Seperate function to get zone data */
-    getCollegeData();
+    getCollegeData(10, 1);
   }, []);
 
   /** This seperate function is used to get the college data*/
-  const getCollegeData = async () => {
+  const getCollegeData = async (pageSize, page, paramsForCollege = null) => {
+    if (
+      paramsForCollege !== null &&
+      !formUtilities.checkEmpty(paramsForCollege)
+    ) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+      Object.keys(paramsForCollege).map(key => {
+        defaultParams[key] = paramsForCollege[key];
+      });
+      paramsForCollege = defaultParams;
+    } else {
+      paramsForCollege = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
     await serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL)
-      .then(res => {
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
+      .then(async res => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
         let college_data = res.data.result;
-
+        let currentPage = res.data.page;
+        let totalRows = res.data.rowCount;
+        let currentPageSize = res.data.pageSize;
+        let pageCount = res.data.pageCount;
         /** As college data is in nested form we first convert it into
          * a float structure and store it in data
          */
-        serviceProviders
+
+        await serviceProviders
           .serviceProviderForGetRequest(ZONES_URL)
           .then(res => {
             formState.zones = res.data.result;
@@ -101,7 +137,12 @@ const ManageCollege = props => {
               ...formState,
               colleges: college_data,
               dataToShow: temp,
-              tempData: temp
+              tempData: temp,
+              pageSize: currentPageSize,
+              totalRows: totalRows,
+              page: currentPage,
+              pageCount: pageCount,
+              isDataLoading: false
             }));
           })
           .catch(error => {
@@ -137,6 +178,57 @@ const ManageCollege = props => {
     }
   };
 
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getCollegeData(perPage, page);
+    } else {
+      await searchFilter(perPage, page);
+    }
+  };
+
+  const handlePageChange = async page => {
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getCollegeData(formState.pageSize, page);
+    } else {
+      await searchFilter(formState.pageSize, page);
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      setFormState(formState => ({
+        ...formState,
+        isDataLoading: true
+      }));
+      await getCollegeData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  /** This restores all the data when we clear the filters*/
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
   /** Restoring the data basically resets all te data i.e it gets all the data in view zones
    * i.e the nested zones data and also resets the data to []
   
@@ -145,7 +237,7 @@ const ManageCollege = props => {
   };
   */
   const restoreData = () => {
-    getCollegeData();
+    getCollegeData(formState.pageSize, 1);
   };
 
   const getDataForEdit = async (id, isView = false) => {
@@ -158,7 +250,6 @@ const ManageCollege = props => {
       .then(res => {
         /** This we will use as final data for edit we send to modal */
         let editData = res.data.result[0];
-        console.log("editData", editData);
         /** Check if zone is present in college data under rpc */
         if (
           editData.hasOwnProperty("rpc") &&
@@ -220,32 +311,6 @@ const ManageCollege = props => {
     }
   };
 
-  /** Search filter is called when we select filters and click on search button */
-  const searchFilter = () => {
-    let filteredData = formState.tempData.filter(function(row) {
-      if (row["name"] === formState.filterDataParameters[COLLEGE_FILTER]) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: filteredData
-    }));
-  };
-
-  /** This restores all the data when we clear the filters
-   */
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: formState.tempData
-    }));
-    /**Need to confirm this thing for resetting the data */
-    restoreData();
-  };
-
   /** This is used to handle the close modal event for delete*/
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
@@ -275,7 +340,7 @@ const ManageCollege = props => {
             className="material-icons"
             id={cell.id}
             //onClick={viewCell}
-            style={{ color: "green", fontSize:"19px" }}
+            style={{ color: "green", fontSize: "19px" }}
           >
             view_list
           </i>
@@ -292,7 +357,7 @@ const ManageCollege = props => {
             id={cell.id}
             value={cell.name}
             onClick={editCell}
-            style={{ color: "green", fontSize:"19px" }}
+            style={{ color: "green", fontSize: "19px" }}
           >
             edit
           </i>
@@ -478,11 +543,15 @@ const ManageCollege = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.defaultSort}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
-                // totalRows={totalRows}
-                // handlePerRowsChange={handlePerRowsChange}
-                // handlePageChange={handlePageChange}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />
