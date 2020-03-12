@@ -95,14 +95,30 @@ module.exports = {
     try {
       await bookshelf
         .model("otp")
-        .where({ contact_number: contact_number, otp: otp, is_verified: null })
-        .fetch();
-      const response = utils.getResponse(null);
-      response.result = { status: "Ok" };
-      ctx.body = response;
+        .where({ contact_number: contact_number, otp: otp, is_verified: true })
+        .fetch()
+        .then(data => {
+          ctx.response.badRequest("User already registered.");
+        });
     } catch (err) {
-      console.log(err);
-      ctx.response.badRequest(err.message);
+      try {
+        await bookshelf
+          .model("otp")
+          .where({
+            contact_number: contact_number,
+            otp: otp,
+            is_verified: null
+          })
+          .fetch();
+        const response = utils.getResponse(null);
+        response.result = { status: "Ok" };
+        ctx.body = response;
+      } catch (err) {
+        console.log(err);
+        ctx.response.badRequest("Invalid OTP");
+      }
+      //console.log(err);
+      // ctx.response.badRequest(err.message);
     }
   }
 };
