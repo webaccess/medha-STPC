@@ -42,6 +42,7 @@ const ManageCollege = props => {
     tempData: [],
     colleges: [],
     zones: [],
+    dataForView: [],
     zonesForEdit: [],
     rpcsForEdit: [],
     states: [],
@@ -282,12 +283,56 @@ const ManageCollege = props => {
       });
   };
 
+  const getDataForView = async id => {
+    /** Get college data for edit */
+    let paramsForCollege = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
+      .then(res => {
+        console.log("collegeresult", res.data.result[0]);
+        let viewData = res.data.result[0];
+        if (
+          viewData.hasOwnProperty("rpc") &&
+          viewData["rpc"].hasOwnProperty("zone") &&
+          viewData["rpc"]["zone"] !== null
+        ) {
+          let paramsForZones = {
+            id: viewData["rpc"]["zone"]
+          };
+          serviceProviders
+            .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
+            .then(res => {
+              console.log("zone_result", res.data.result[0]);
+              viewData["zone"] = res.data.result[0];
+              viewData["state"] = res.data.result[0].state;
+              console.log("viewdata", viewData);
+              history.push({
+                pathname: routeConstants.DETAIL_COLLEGE,
+                editCollege: true,
+                dataForEdit: viewData
+              });
+            })
+            .catch(error => {
+              console.log("zoneerror", error);
+            });
+        }
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
   const editCell = event => {
     getDataForEdit(event.target.id);
   };
 
   const viewCell = event => {
-    getDataForEdit(event.target.id, true);
+    history.push({
+      pathname: routeConstants.DETAIL_COLLEGE,
+      dataForEdit: event.target.id
+    });
   };
 
   const isDeleteCellCompleted = status => {
@@ -339,7 +384,7 @@ const ManageCollege = props => {
           <i
             className="material-icons"
             id={cell.id}
-            //onClick={viewCell}
+            onClick={viewCell}
             style={{ color: "green", fontSize: "19px" }}
           >
             view_list

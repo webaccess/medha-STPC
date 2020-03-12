@@ -10,6 +10,7 @@ export const ADD_USER = "/add-user";
 export const ADD_COLLEGE = "/add-college";
 export const VIEW_COLLEGE = "/view-college";
 export const EDIT_COLLEGE = "/edit-college";
+export const DETAIL_COLLEGE = "/detail-college";
 
 /** user */
 export const EDIT_USER = "/edit-user";
