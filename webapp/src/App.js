@@ -31,6 +31,8 @@ import RequestOtp from "./containers/OTP/Requestotp";
 import VerifyOtp from "./containers/OTP/Verifyotp";
 import EditCollegeRoute from "./authroute/EditCollegeRoute";
 import Registered from "../src/containers/Registration/Registered.js";
+import RegistrationRoute from "./containers/Registration/RegistrationRoute";
+import RequiredConformation from "./components/RequiredConformation/RequiredConformation.js";
 
 class App extends Component {
   render() {
@@ -50,6 +52,10 @@ class App extends Component {
                 type={"login"}
                 layout={Layout}
               />
+              <RequiredConformation
+                path={routeConstants.REQUIRED_CONFORMATION}
+                exact
+              />
               <Route
                 path={routeConstants.LOGOUT_URL}
                 component={Logout}
@@ -60,7 +66,7 @@ class App extends Component {
                 layout={Layout}
                 exact
               />
-              <Registration
+              <RegistrationRoute
                 path={routeConstants.NEW_REGISTRATION_URL}
                 layout={Layout}
                 exact

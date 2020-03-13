@@ -16,6 +16,8 @@ import {
   InputAdornment,
   OutlinedInput
 } from "@material-ui/core";
+import * as routeConstants from "../../constants/RouteConstants";
+import { Redirect } from "../../../node_modules/react-router-dom";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
@@ -58,7 +60,7 @@ const Registration = props => {
     district: null,
     state: null,
     email: "",
-    contactNumber: props.location.state.contactNumber,
+    contactNumber: props.prop.location.state.contactNumber,
     userName: "",
     password: "",
     gender: "",
@@ -67,12 +69,12 @@ const Registration = props => {
     stream: null,
     currentAcademicYear: null,
     collegeRollNumber: null,
-    otp: props.location.state.otp
+    otp: props.prop.location.state.otp
   });
 
   const [formState, setFormState] = useState({
     isValid: false,
-    values: { contact: props.location.state.contactNumber },
+    values: { contact: props.prop.location.state.contactNumber },
     touched: {},
     errors: {},
     isSuccess: false,
@@ -81,8 +83,7 @@ const Registration = props => {
   const [selectedDate, setSelectedDate] = React.useState(
     new Date("2000-01-01T21:11:54")
   );
-  const { layout: Layout } = props;
-
+  const { layout: Layout } = props.prop;
   const [labelWidth, setLabelWidth] = React.useState(0);
   const inputLabel = React.useRef(null);
   const classes = useStyles();
@@ -97,6 +98,7 @@ const Registration = props => {
     getDistrict();
     getColleges();
     getStreams();
+
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
@@ -108,6 +110,7 @@ const Registration = props => {
       formState.values,
       registrationSchema
     );
+    console.log(checkAllFieldsValid);
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(
@@ -132,6 +135,7 @@ const Registration = props => {
     console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
+      console.log("postcall");
       postStudentData();
 
       /** Call axios from here */
@@ -154,6 +158,7 @@ const Registration = props => {
       formState.values["fatherFirstName"],
       formState.values["fatherLastName"],
       formState.values["address"],
+      formState.values["state"],
       formState.values["email"],
       formState.values["contact"],
       formState.values["username"],
@@ -179,7 +184,6 @@ const Registration = props => {
       )
       .then(response => {
         console.log(response);
-        alert("Registered Successfully");
         history.push("/registered");
       })
       .catch(err => {
@@ -294,6 +298,7 @@ const Registration = props => {
   return (
     <Layout>
       <Card>
+        {console.log(props)}
         {console.log(formState)}
         {console.log(districtlist)}
         {console.log(statelist)}

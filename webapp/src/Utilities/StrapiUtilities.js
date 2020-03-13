@@ -182,7 +182,7 @@ export const addStudent = (
   fatherfirstname,
   fatherlastname,
   address,
-
+  state,
   email,
   contactNumber,
   userName,
@@ -192,7 +192,6 @@ export const addStudent = (
   physicallyHandicapped,
   college,
   stream = null,
-
   rollNumber = null,
   otp
 ) => {
@@ -208,6 +207,7 @@ export const addStudent = (
     father_first_name: fatherfirstname,
     father_last_name: fatherlastname,
     address: address,
+    state: state,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,

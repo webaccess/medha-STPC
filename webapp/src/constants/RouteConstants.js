@@ -12,6 +12,7 @@ export const ADD_STATES = "/add-states";
 export const ADD_ZONES = "/add-zones";
 export const ADD_RPC = "/add-rpc";
 export const REGISTERED = "/registered";
+export const REQUIRED_CONFORMATION = "/requiredconformation";
 /** College */
 export const ADD_COLLEGE = "/add-college";
 export const VIEW_COLLEGE = "/view-college";

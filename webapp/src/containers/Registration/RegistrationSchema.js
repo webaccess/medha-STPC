@@ -178,16 +178,16 @@ const RegistrationSchema = {
     type: "text",
     validations: {}
   },
-  currentacademicyear: {
-    label: "Current Academic Year",
-    id: "currentacademicyear",
-    autoComplete: "currentacademicyear",
-    required: true,
-    placeholder: "currentacademicyear",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
+  // currentacademicyear: {
+  //   label: "Current Academic Year",
+  //   id: "currentacademicyear",
+  //   autoComplete: "currentacademicyear",
+  //   required: true,
+  //   placeholder: "currentacademicyear",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {}
+  // },
   rollnumber: {
     label: "Roll Number",
     id: "rollnumber",
@@ -251,25 +251,25 @@ const RegistrationSchema = {
         message: "Invalid Password"
       }
     }
-  },
-  confirmpassword: {
-    label: "Confirm Password",
-    id: "cpassword",
-    autoComplete: "cpassword",
-    required: true,
-    placeholder: "confirmpassword",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Confirm Password is required"
-      },
-      validatePasswordRegex: {
-        value: "true",
-        message: "Invalid Password"
-      }
-    }
   }
+  // confirmpassword: {
+  //   label: "Confirm Password",
+  //   id: "cpassword",
+  //   autoComplete: "cpassword",
+  //   required: true,
+  //   placeholder: "confirmpassword",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "Confirm Password is required"
+  //     },
+  //     validatePasswordRegex: {
+  //       value: "true",
+  //       message: "Invalid Password"
+  //     }
+  //   }
+  // }
 };
 export default RegistrationSchema;
