@@ -2,50 +2,83 @@ import React, { useState, useEffect } from "react";
 
 import {
   TextField,
-  Button,
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Collapse,
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Table, Spinner } from "../../../components";
+import { Table, Spinner, Alert } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./ViewZoneStyles";
 import * as serviceProviders from "../../../api/Axios";
-import EditZone from "./EditZone";
 import DeleteZone from "./DeleteZone";
 import { GreenButton, YellowButton, GrayButton } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import { useHistory } from "react-router-dom";
+import CloseIcon from "@material-ui/icons/Close";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const ZONE_FILTER = "zoneFilter";
+const ZONE_FILTER = "id";
+const SORT_FIELD_KEY = "_sort";
 
 const ViewZone = props => {
+  const [open, setOpen] = React.useState(true);
+  const history = useHistory();
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
     zones: [],
     states: [],
-    filterDataParameters: {
-      ZONE_FILTER: ""
-    },
-    isDataEdited: false,
+    filterDataParameters: {},
+    isFilterSearch: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromEditZone"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromEditZone"]
+      ? props["location"]["editedData"]
+      : {},
+    fromEditZone: props["location"]["fromEditZone"]
+      ? props["location"]["fromEditZone"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddZone"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddZone"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddZone: props["location"]["fromAddZone"]
+      ? props["location"]["fromAddZone"]
+      : false,
+    /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
-    showEditModal: false,
-    showModalDelete: false
+    showModalDelete: false,
+    /** Pagination and sortinig data */
+    isDataLoading: false,
+    pageSize: "",
+    totalRows: "",
+    page: "",
+    pageCount: "",
+    sortAscending: true
   });
 
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
   useEffect(() => {
     /** Seperate function to get zone data */
-    getZoneData();
+    getZoneData(10, 1);
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
@@ -60,9 +93,31 @@ const ViewZone = props => {
   }, []);
 
   /** This seperate function is used to get the zone data*/
-  const getZoneData = async () => {
+  const getZoneData = async (pageSize, page, paramsForZones = null) => {
+    if (paramsForZones !== null && !formUtilities.checkEmpty(paramsForZones)) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+      Object.keys(paramsForZones).map(key => {
+        defaultParams[key] = paramsForZones[key];
+      });
+      paramsForZones = defaultParams;
+    } else {
+      paramsForZones = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
     await serviceProviders
-      .serviceProviderForGetRequest(ZONES_URL)
+      .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
       .then(res => {
         formState.dataToShow = [];
         formState.tempData = [];
@@ -75,7 +130,12 @@ const ViewZone = props => {
           ...formState,
           zones: res.data.result,
           dataToShow: temp,
-          tempData: temp
+          tempData: temp,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
         }));
       })
       .catch(error => {
@@ -90,11 +150,62 @@ const ViewZone = props => {
         var temp = {};
         temp["id"] = data[i]["id"];
         temp["name"] = data[i]["name"];
-        temp["state"] = data[i]["state"]["name"];
+        temp["state"] = data[i]["state"] ? data[i]["state"]["name"] : "";
         x.push(temp);
       }
       return x;
     }
+  };
+
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getZoneData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getZoneData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getZoneData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getZoneData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getZoneData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  const restoreData = () => {
+    getZoneData(formState.pageSize, 1);
   };
 
   /** Restoring the data basically resets all te data i.e it gets all the data in view zones
@@ -106,15 +217,18 @@ const ViewZone = props => {
   */
 
   const getDataForEdit = async id => {
+    let paramsForZones = {
+      id: id
+    };
     await serviceProviders
-      .serviceProviderForGetOneRequest(ZONES_URL, id)
+      .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
       .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          dataToEdit: res.data,
-          showEditModal: true,
-          showModalDelete: false
-        }));
+        let editData = res.data.result[0];
+        history.push({
+          pathname: routeConstants.EDIT_ZONES,
+          editZone: true,
+          dataForEdit: editData
+        });
       })
       .catch(error => {
         console.log("error", error);
@@ -122,10 +236,6 @@ const ViewZone = props => {
   };
   const editCell = event => {
     getDataForEdit(event.target.id);
-  };
-
-  const isEditCellCompleted = status => {
-    formState.isDataEdited = status;
   };
 
   const isDeleteCellCompleted = status => {
@@ -143,58 +253,10 @@ const ViewZone = props => {
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
+      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] = value["name"];
-    }
-  };
-
-  /** Search filter is called when we select filters and click on search button */
-  const searchFilter = () => {
-    let filteredData = formState.tempData.filter(function(row) {
-      if (row["name"] === formState.filterDataParameters[ZONE_FILTER]) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: filteredData
-    }));
-  };
-
-  /** This restores all the data when we clear the filters
-   */
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: formState.tempData
-    }));
-    /**Need to confirm this thing for resetting the data */
-    //restoreData();
-  };
-
-  /** This is used to handle the close modal event */
-  const handleCloseModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    if (formState.isDataEdited) {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false,
-        dataToShow: formState.tempData
-      }));
-      getZoneData();
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false
-      }));
+      formState.filterDataParameters[filterName] = value["id"];
     }
   };
 
@@ -204,12 +266,11 @@ const ViewZone = props => {
     //restoreData();
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
       isDataDeleted: false,
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getZoneData();
+      getZoneData(formState.pageSize, formState.page);
     }
   };
 
@@ -220,27 +281,33 @@ const ViewZone = props => {
     /** Columns for edit and delete */
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green", fontSize: "19px" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i
-          className="material-icons tableicons"
-          id={cell.id}
-          onClick={deleteCell}
-        >
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons tableicons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
@@ -257,21 +324,107 @@ const ViewZone = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Zone
+          {genericConstants.VIEW_ZONE_TEXT}
         </Typography>
 
         <GreenButton
           variant="contained"
           color="primary"
-          onClick={clearFilter}
           disableElevation
           to={routeConstants.ADD_ZONES}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Add Zone
+          {genericConstants.ADD_ZONE_TEXT}
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromEditZone && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromEditZone && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddZone && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddZone && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Card className={classes.root} variant="outlined">
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -300,9 +453,12 @@ const ViewZone = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={searchFilter}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
-                  Search
+                  {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
@@ -312,7 +468,7 @@ const ViewZone = props => {
                   onClick={clearFilter}
                   disableElevation
                 >
-                  Reset
+                  {genericConstants.RESET_BUTTON_TEXT}
                 </GrayButton>
               </Grid>
             </Grid>
@@ -324,8 +480,15 @@ const ViewZone = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />
@@ -333,14 +496,6 @@ const ViewZone = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}
-          <EditZone
-            states={formState.states}
-            showModal={formState.showEditModal}
-            closeModal={handleCloseModal}
-            dataToEdit={formState.dataToEdit}
-            id={formState.dataToEdit["id"]}
-            editEvent={isEditCellCompleted}
-          />
           <DeleteZone
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}

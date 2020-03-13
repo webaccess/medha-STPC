@@ -118,7 +118,7 @@ export const addCollege = (
   principal = null,
   rpc = null,
   district = null,
-  streams = []
+  stream_strength = []
 ) => {
   return {
     name: name,
@@ -130,7 +130,7 @@ export const addCollege = (
     principal: principal,
     rpc: rpc,
     district: district,
-    streams: streams
+    stream_strength: stream_strength
   };
 };
 

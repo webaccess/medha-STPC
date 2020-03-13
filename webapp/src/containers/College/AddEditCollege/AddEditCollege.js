@@ -46,17 +46,8 @@ const district = "district";
 const block = "block";
 
 /** Dynamic Bar */
-const streamStrength = "streamsStrength";
 const streams = "streams";
 const strength = "strength";
-const streamDynmaicBarSchema = {
-  [streams]: {
-    required: false
-  },
-  [strength]: {
-    required: false
-  }
-};
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -99,8 +90,6 @@ const AddEditCollege = props => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-  console.log(formState);
-
   /** Part for editing college */
   if (formState.isEditCollege && !formState.counter) {
     if (props["dataForEdit"]) {
@@ -142,15 +131,18 @@ const AddEditCollege = props => {
         formState.values[principal] = props["dataForEdit"]["principal"]["id"];
       }
       if (
-        props["dataForEdit"]["streams"] &&
-        props["dataForEdit"]["streams"].length
+        props["dataForEdit"]["stream_strength"] &&
+        props["dataForEdit"]["stream_strength"].length
       ) {
         let dynamicBar = [];
-        for (let i in props["dataForEdit"]["streams"]) {
+        for (let i in props["dataForEdit"]["stream_strength"]) {
           let tempDynamicBarrValue = {};
           tempDynamicBarrValue["index"] = Math.random();
           tempDynamicBarrValue[streams] =
-            props["dataForEdit"]["streams"][i]["id"];
+            props["dataForEdit"]["stream_strength"][i]["stream"]["id"];
+          tempDynamicBarrValue[strength] = props["dataForEdit"][
+            "stream_strength"
+          ][i]["strength"].toString();
           dynamicBar.push(tempDynamicBarrValue);
         }
         formState.dynamicBar = dynamicBar;
@@ -164,7 +156,7 @@ const AddEditCollege = props => {
     serviceProviders
       .serviceProviderForGetRequest(USERS_URL)
       .then(res => {
-        setUser(res.data);
+        setUser(res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -209,9 +201,9 @@ const AddEditCollege = props => {
         .serviceProviderForGetRequest(url)
         .then(res => {
           if (Array.isArray(res.data)) {
-            setZones(res.data[0].zones);
+            setZones(res.data[0].result);
           } else {
-            setZones(res.data.zones);
+            setZones(res.data.result);
           }
         })
         .catch(error => {
@@ -236,9 +228,9 @@ const AddEditCollege = props => {
         .serviceProviderForGetRequest(url)
         .then(res => {
           if (Array.isArray(res.data)) {
-            setRpcs(res.data[0].rpcs);
+            setRpcs(res.data[0].result);
           } else {
-            setRpcs(res.data.rpcs);
+            setRpcs(res.data.result);
           }
         })
         .catch(error => {
@@ -471,9 +463,13 @@ const AddEditCollege = props => {
 
   const getDynamicBarData = () => {
     let streamStrengthArrayValues = [];
+    let id = 0;
     formState.dynamicBar.map(field => {
+      let streamStrengthValue = {};
       if (field.hasOwnProperty(streams) && field.hasOwnProperty(strength)) {
-        streamStrengthArrayValues.push(field[streams]);
+        streamStrengthValue["stream"] = field[streams];
+        streamStrengthValue["strength"] = parseInt(field[strength]);
+        streamStrengthArrayValues.push(streamStrengthValue);
       }
     });
     return streamStrengthArrayValues;
@@ -1001,8 +997,8 @@ const AddEditCollege = props => {
                   />
                 </FormGroup>
               </Grid>
-              <Grid item md={12} xs={12}>
-                <Card>
+              <Grid item md={12} xs={12} className={classes.streamcard}>
+                <Card className={classes.streamoffer}>
                   <InputLabel htmlFor="outlined-stream-card" fullWidth>
                     {genericConstants.STREAMS_OFFERED_TEXT}
                   </InputLabel>
@@ -1011,7 +1007,11 @@ const AddEditCollege = props => {
                     let streamId = `stream-${idx}`,
                       strengthId = `strength-${idx}`;
                     return (
-                      <Card id="outlined-stream-card" fullWidth>
+                      <Card
+                        id="outlined-stream-card"
+                        fullWidth
+                        className={classes.streamcardcontent}
+                      >
                         <CardContent>
                           <Grid container spacing={3}>
                             <Grid item md xs>
@@ -1129,6 +1129,7 @@ const AddEditCollege = props => {
                               {idx > 0 ? (
                                 <DeleteForeverOutlinedIcon
                                   onClick={e => clickOnDelete(val, idx)}
+                                  style={{ color: "red", fontSize: "24px" }}
                                 />
                               ) : (
                                 ""
@@ -1139,15 +1140,16 @@ const AddEditCollege = props => {
                       </Card>
                     );
                   })}
-                  <Divider />
-                  <YellowButton
-                    color="primary"
-                    variant="contained"
-                    className={classes.add_more_btn}
-                    onClick={addNewRow}
-                  >
-                    {genericConstants.ADD_MORE_TEXT}
-                  </YellowButton>
+                  <div className={classes.btnspaceadd}>
+                    <YellowButton
+                      color="primary"
+                      variant="contained"
+                      className={classes.add_more_btn}
+                      onClick={addNewRow}
+                    >
+                      {genericConstants.ADD_MORE_TEXT}
+                    </YellowButton>
+                  </div>
                 </Card>
               </Grid>
             </Grid>

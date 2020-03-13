@@ -5,72 +5,121 @@ import {
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Tooltip,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 
 import styles from "../State.module.css";
 import useStyles from "./ViewStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 import {
   Table,
   Spinner,
   GreenButton,
   YellowButton,
-  GrayButton
+  GrayButton,
+  Alert
 } from "../../../components";
-import EditState from "./EditState";
 import DeleteState from "./DeleteState";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import { useHistory } from "react-router-dom";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const STATE_FILTER = "stateFilter";
+const STATE_FILTER = "id";
+const SORT_FIELD_KEY = "_sort";
 
-const ViewStates = () => {
+const ViewStates = props => {
+  const [open, setOpen] = React.useState(true);
   const classes = useStyles();
-
+  const history = useHistory();
   const [formState, setFormState] = useState({
     dataToShow: [],
-    tempData: [],
     states: [],
-    filterDataParameters: {
-      STATE_FILTER: ""
-    },
-    isDataEdited: false,
+    filterDataParameters: {},
+    isFilterSearch: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromEditState"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromEditState"]
+      ? props["location"]["editedData"]
+      : {},
+    fromEditState: props["location"]["fromEditState"]
+      ? props["location"]["fromEditState"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddState"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddState"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddState: props["location"]["fromAddState"]
+      ? props["location"]["fromAddState"]
+      : false,
+    /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
-    showEditModal: false,
     showModalDelete: false,
-    page: "",
+    /** Pagination and sortinig data */
+    isDataLoading: false,
     pageSize: "",
-    rowCount: "",
-    pageCount: ""
+    totalRows: "",
+    page: "",
+    pageCount: "",
+    sortAscending: true
   });
 
   useEffect(() => {
-    getStateData();
+    getStateData(10, 1);
   }, []);
 
   /** This seperate function is used to get the zone data*/
-  const getStateData = async () => {
+  const getStateData = async (pageSize, page, paramsForState = null) => {
+    if (paramsForState !== null && !formUtilities.checkEmpty(paramsForState)) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+      Object.keys(paramsForState).map(key => {
+        defaultParams[key] = paramsForState[key];
+      });
+      paramsForState = defaultParams;
+    } else {
+      paramsForState = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
     await serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
+      .serviceProviderForGetRequest(STATES_URL, paramsForState)
       .then(res => {
         formState.dataToShow = [];
-        formState.tempData = [];
-        console.log(res.data.result);
         setFormState(formState => ({
           ...formState,
           states: res.data.result,
           dataToShow: res.data.result,
-          tempData: res.data.result,
-          page: 1,
-          pageSize: 10,
-          rowCount: 15,
-          pageCount: 2
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
         }));
       })
       .catch(error => {
@@ -78,16 +127,71 @@ const ViewStates = () => {
       });
   };
 
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStateData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getStateData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStateData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getStateData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getStateData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  const restoreData = () => {
+    getStateData(formState.pageSize, 1);
+  };
+
   const getDataForEdit = async id => {
+    let paramsForStates = {
+      id: id
+    };
     await serviceProviders
-      .serviceProviderForGetOneRequest(STATES_URL, id)
+      .serviceProviderForGetRequest(STATES_URL, paramsForStates)
       .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          dataToEdit: res.data,
-          showEditModal: true,
-          showModalDelete: false
-        }));
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_STATE,
+          editState: true,
+          dataForEdit: editData
+        });
       })
       .catch(error => {
         console.log("error");
@@ -98,10 +202,6 @@ const ViewStates = () => {
     getDataForEdit(event.target.id);
   };
 
-  const isEditCellCompleted = status => {
-    formState.isDataEdited = status;
-  };
-
   const isDeleteCellCompleted = status => {
     formState.isDataDeleted = status;
   };
@@ -110,64 +210,17 @@ const ViewStates = () => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showEditModal: false,
       showModalDelete: true
     }));
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
+      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] = value["name"];
+      formState.filterDataParameters[filterName] = value["id"];
     }
-  };
-
-  /** Search filter is called when we select filters and click on search button */
-  const searchFilter = () => {
-    let filteredData = formState.tempData.filter(function(row) {
-      if (row["name"] === formState.filterDataParameters[STATE_FILTER]) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: filteredData
-    }));
-  };
-
-  /** This is used to handle the close modal event */
-  const handleCloseModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    if (formState.isDataEdited) {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false,
-        dataToShow: formState.tempData
-      }));
-      getStateData();
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        showEditModal: false,
-        isDataEdited: false,
-        showModalDelete: false
-      }));
-    }
-  };
-
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: formState.tempData
-    }));
-    /**Need to confirm this thing for resetting the data */
-    //restoreData();
   };
 
   /** This is used to handle the close modal event */
@@ -176,12 +229,11 @@ const ViewStates = () => {
     //restoreData();
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
       isDataDeleted: false,
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getStateData();
+      getStateData(formState.pageSize, formState.page);
     }
   };
 
@@ -191,23 +243,33 @@ const ViewStates = () => {
     /** Columns for edit and delete */
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green", fontSize: "19px" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
@@ -218,7 +280,7 @@ const ViewStates = () => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          State
+          {genericConstants.VIEW_STATE_TEXT}
         </Typography>
 
         <GreenButton
@@ -229,10 +291,99 @@ const ViewStates = () => {
           to={routeConstants.ADD_STATES}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Add State
+          {genericConstants.ADD_STATE_TEXT}
         </GreenButton>
       </Grid>
+
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromEditState && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromEditState && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddState && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddState && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -260,9 +411,12 @@ const ViewStates = () => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={searchFilter}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
-                  Search
+                  {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
@@ -272,20 +426,26 @@ const ViewStates = () => {
                   onClick={clearFilter}
                   disableElevation
                 >
-                  Reset
+                  {genericConstants.RESET_BUTTON_TEXT}
                 </GrayButton>
               </Grid>
             </Grid>
           </CardContent>
         </Card>
-
         {formState.dataToShow ? (
           formState.dataToShow.length ? (
             <Table
               data={formState.dataToShow}
               column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
               editEvent={editCell}
-              //deleteEvent={deleteCell}
+              deleteEvent={deleteCell}
+              progressPending={formState.isDataLoading}
+              paginationTotalRows={formState.totalRows}
+              paginationRowsPerPageOptions={[10, 20, 50]}
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
             />
           ) : (
             <Spinner />
@@ -293,13 +453,6 @@ const ViewStates = () => {
         ) : (
           <div className={classes.noDataMargin}>No data to show</div>
         )}
-        <EditState
-          showModal={formState.showEditModal}
-          closeModal={handleCloseModal}
-          dataToEdit={formState.dataToEdit}
-          id={formState.dataToEdit["id"]}
-          editEvent={isEditCellCompleted}
-        />
         <DeleteState
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}

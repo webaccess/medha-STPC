@@ -2,6 +2,12 @@
 export const SAVE_BUTTON_TEXT = "SAVE";
 export const CANCEL_BUTTON_TEXT = "CANCEL";
 export const ALERT_SUCCESS_BUTTON_MESSAGE = "Success";
+
+export const ALERT_SUCCESS_DATA_ADDED_MESSAGE = "Successfully added";
+export const ALERT_SUCCESS_DATA_EDITED_MESSAGE = "Successfully edited";
+export const ALERT_ERROR_DATA_ADDED_MESSAGE = "Error adding";
+export const ALERT_ERROR_DATA_EDITED_MESSAGE = "Error editing";
+
 export const ALERT_ERROR_BUTTON_MESSAGE = "Server failed try after few minutes";
 export const EDIT_TEXT = "Edit";
 export const DELETE_TEXT = "Delete";
@@ -23,3 +29,18 @@ export const ADD_COLLEGE_BUTTON = "Add College";
 export const EDIT_COLLEGE_TEXT = "Edit College";
 export const VIEW_COLLEGE_TEXT = "View College";
 export const STREAMS_OFFERED_TEXT = "Streams Offered";
+
+/**State */
+export const EDIT_STATE_TEXT = "Edit State";
+export const VIEW_STATE_TEXT = "States";
+export const ADD_STATE_TEXT = "Add State";
+
+/**Zone */
+export const EDIT_ZONE_TEXT = "Edit Zone";
+export const VIEW_ZONE_TEXT = "Zones";
+export const ADD_ZONE_TEXT = "Add Zone";
+
+/** Rpc */
+export const EDIT_RPC_TEXT = "Edit Rpc";
+export const VIEW_RPC_TEXT = "RPC";
+export const ADD_RPC_TEXT = "Add Rpc";
