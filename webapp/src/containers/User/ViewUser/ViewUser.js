@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import BlockIcon from '@material-ui/icons/Block';
-import DeleteIcon from '@material-ui/icons/Delete';
+import BlockIcon from "@material-ui/icons/Block";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import {
@@ -25,6 +25,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import useStyles from "./ViewUserStyles";
 import DeleteUser from "./DeleteUser";
 import BlockUser from "./BlockUser";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
@@ -32,11 +33,13 @@ const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
 
-const ZONE_FILTER = "zoneFilter";
-const RPC_FILTER = "rpcFilter";
-const IPC_FILTER = "ipcFilter";
-const USER_FILTER = "userFilter";
-const ROLE_FILTER = "roleFilter";
+const ZONE_FILTER = "zone.id";
+const RPC_FILTER = "rpc.id";
+const IPC_FILTER = "college.id";
+const USER_FILTER = "id";
+const ROLE_FILTER = "role.id";
+
+const SORT_FIELD_KEY = "_sort";
 
 const ViewUsers = props => {
   const [open, setOpen] = useState(true);
@@ -52,13 +55,8 @@ const ViewUsers = props => {
     rpcs: [],
     roles: [],
     ipcs: [],
-    filterDataParameters: {
-      zoneFilter: "",
-      rpcFilter: "",
-      ipcFilter: "",
-      userFilter: "",
-      roleFilter: ""
-    },
+    filterDataParameters: {},
+    isFilterSearch: false,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromeditUser"]
       ? props["location"]["isDataEdited"]
@@ -96,12 +94,21 @@ const ViewUsers = props => {
     isMulUnBlocked: false,
     MultiBlockUser: {},
     bottonBlockUnblock: "Block",
-    greenButtonChecker: true
+    greenButtonChecker: true,
+    /** Pagination and sortinig data */
+    isDataLoading: false,
+    pageSize: "",
+    totalRows: "",
+    page: "",
+    pageCount: "",
+    sortAscending: true
   });
+
+  console.log("datatoshow", formState.dataToShow);
 
   useEffect(() => {
     /** Seperate function to get user data */
-    getUserData();
+    getUserData(10, 1);
 
     serviceProviders
       .serviceProviderForGetRequest(ZONE_URL)
@@ -163,9 +170,31 @@ const ViewUsers = props => {
       });
   }, []);
 
-  const getUserData = async () => {
+  const getUserData = async (pageSize, page, paramsForUsers = null) => {
+    if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "username:asc"
+      };
+      Object.keys(paramsForUsers).map(key => {
+        defaultParams[key] = paramsForUsers[key];
+      });
+      paramsForUsers = defaultParams;
+    } else {
+      paramsForUsers = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "username:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
     await serviceProviders
-      .serviceProviderForGetRequest(USER_URL)
+      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
       .then(res => {
         formState.dataToShow = [];
         formState.tempData = [];
@@ -174,8 +203,13 @@ const ViewUsers = props => {
         setFormState(formState => ({
           ...formState,
           users: res.data.result,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
           dataToShow: temp,
-          tempData: temp
+          tempData: temp,
+          isDataLoading: false
         }));
       })
       .catch(error => {
@@ -200,6 +234,63 @@ const ViewUsers = props => {
       }
       return x;
     }
+  };
+
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getUserData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getUserData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getUserData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getUserData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getUserData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  /** This restores all the data when we clear the filters*/
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
+   * i.e the nested zones data and also resets the data to []
+   */
+
+  const restoreData = () => {
+    getUserData(formState.pageSize, 1);
   };
 
   const isDeleteCellCompleted = status => {
@@ -246,11 +337,10 @@ const ViewUsers = props => {
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
-      formState.filterDataParameters[filterName] = "";
+      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] =
-        value["name"] || value["username"];
+      formState.filterDataParameters[filterName] = value["id"];
     }
   };
 
@@ -272,27 +362,27 @@ const ViewUsers = props => {
   };
 
   /** Search filter is called when we select filters and click on search button */
-  const searchFilter = () => {
-    const filteredData = formState.tempData.filter(
-      dataObj =>
-        dataObj.username.indexOf(
-          formState.filterDataParameters[USER_FILTER]
-        ) !== -1 &&
-        dataObj.role.indexOf(formState.filterDataParameters[ROLE_FILTER]) !==
-          -1 &&
-        dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !==
-          -1 &&
-        dataObj.rpc.indexOf(formState.filterDataParameters[RPC_FILTER]) !==
-          -1 &&
-        dataObj.college.indexOf(formState.filterDataParameters[IPC_FILTER]) !==
-          -1
-    );
+  // const searchFilter = () => {
+  //   const filteredData = formState.tempData.filter(
+  //     dataObj =>
+  //       dataObj.username.indexOf(
+  //         formState.filterDataParameters[USER_FILTER]
+  //       ) !== -1 &&
+  //       dataObj.role.indexOf(formState.filterDataParameters[ROLE_FILTER]) !==
+  //         -1 &&
+  //       dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !==
+  //         -1 &&
+  //       dataObj.rpc.indexOf(formState.filterDataParameters[RPC_FILTER]) !==
+  //         -1 &&
+  //       dataObj.college.indexOf(formState.filterDataParameters[IPC_FILTER]) !==
+  //         -1
+  //   );
 
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: filteredData
-    }));
-  };
+  //   setFormState(formState => ({
+  //     ...formState,
+  //     dataToShow: filteredData
+  //   }));
+  // };
 
   const blockedCell = event => {
     for (var k = 0; k < formState.dataToShow.length; k++) {
@@ -416,6 +506,14 @@ const ViewUsers = props => {
     getDataForEdit(event.target.id);
   };
 
+  const viewCell = event => {
+    console.log(event.target.id);
+    history.push({
+      pathname: routeConstants.DETAIL_USER,
+      dataForEdit: event.target.id
+    });
+  };
+
   /** Table Data */
   const column = [
     { name: "Users", sortable: true, selector: "username" },
@@ -424,6 +522,23 @@ const ViewUsers = props => {
     { name: "RPC", sortable: true, selector: "rpc" },
     { name: "IPC", sortable: true, selector: "college" },
     /** Columns for edit and delete */
+
+    {
+      cell: cell => (
+        <Tooltip title="View" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={viewCell}
+            style={{ color: "green", fontSize: "19px" }}
+          >
+            view_list
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    },
     {
       cell: cell => (
         <Tooltip title="Block" placement="top">
@@ -505,7 +620,7 @@ const ViewUsers = props => {
           {formState.bottonBlockUnblock}
         </GreenButton>
 
-        <GreenButton  
+        <GreenButton
           variant="contained"
           color="secondary"
           onClick={() => deleteMulUserById()}
@@ -518,7 +633,7 @@ const ViewUsers = props => {
         <GreenButton
           variant="contained"
           color="primary"
-          //onClick={clearFilter}
+          onClick={clearFilter}
           disableElevation
           to={routeConstants.ADD_USER}
           startIcon={<AddCircleOutlineOutlinedIcon />}
@@ -722,7 +837,10 @@ const ViewUsers = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={searchFilter}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   Search
                 </YellowButton>
@@ -740,7 +858,6 @@ const ViewUsers = props => {
             </Grid>
           </CardContent>
         </Card>
-
         <Card className={classes.tabledata} variant="outlined">
           {formState.dataToShow ? (
             formState.dataToShow.length ? (
@@ -749,6 +866,13 @@ const ViewUsers = props => {
                 column={column}
                 onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
+                defaultSortField="username"
+                defaultSortAsc={formState.sortAscending}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <div className={classes.noDataMargin}>No data to show</div>

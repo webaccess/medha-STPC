@@ -33,6 +33,7 @@ import EditRpcRoute from "./authroute/EditRpcRoute";
 import EditUserRoute from "./authroute/EditUserRoute";
 import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCollegeDetails";
 import SetIndexContext from "./context/SetIndexContext";
+import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails"
 
 function App() {
   const [index, setIndex] = useState(0);
@@ -91,6 +92,13 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_USER}
+              />
+              {/** View User Data*/}
+              <RouteWithLayout
+                component={DisplayUserDetails}
+                exact
+                layout={Layout}
+                path={routeConstants.DETAIL_USER}
               />
               {/** State */}
               {/** Add Edit State */}
