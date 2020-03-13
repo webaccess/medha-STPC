@@ -100,10 +100,10 @@ export const setCollege = id => {
 };
 
 /**  Adders */
-export const addRpc = (name, zone = null, main_college = null) => {
+export const addRpc = (name, state = null, main_college = null) => {
   return {
     name: name,
-    zone: zone,
+    state: state,
     main_college: main_college
   };
 };

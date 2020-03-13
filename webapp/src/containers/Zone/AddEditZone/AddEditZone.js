@@ -60,7 +60,6 @@ const AddEditZone = props => {
       }
       formState.counter += 1;
     }
-    console.log(formState);
   }
 
   useEffect(() => {
@@ -153,7 +152,6 @@ const AddEditZone = props => {
       formState.values[zone],
       formState.values[state] ? formState.values[state] : null
     );
-
     if (formState.isEditZone) {
       serviceProviders
         .serviceProviderForPutRequest(

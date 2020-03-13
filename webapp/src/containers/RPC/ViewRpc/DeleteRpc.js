@@ -61,7 +61,6 @@ const DeleteRpc = props => {
     serviceProviders
       .serviceProviderForDeleteRequest(RPC_URL, props.id)
       .then(res => {
-        console.log("deletedata", res.data);
         setFormState(formState => ({
           ...formState,
           isValid: true
