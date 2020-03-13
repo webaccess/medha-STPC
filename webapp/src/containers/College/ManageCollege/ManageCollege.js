@@ -7,7 +7,10 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Tooltip,
+  FormControl,
+  InputLabel
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -16,30 +19,37 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "./ManageCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import {
-  GrayButton,
-  GreenButton,
-  YellowRouteButton
-} from "../../../components";
+import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import DeleteCollege from "./DeleteCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 
-const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const COLLEGE_FILTER = "collegeName";
+const COLLEGE_FILTER = "id";
+//const STATE_FILTER = "stateName";
+const ZONE_FILTER = "rpc.zone";
+const RPC_FILTER = "rpc.id";
+const SORT_FIELD_KEY = "_sort";
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
+
+const STATES_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
+const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
+const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 
 const ManageCollege = props => {
   const history = useHistory();
   const [open, setOpen] = React.useState(true);
+  const [rpcs, setRpcs] = React.useState([]);
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
     colleges: [],
     zones: [],
+    dataForView: [],
     zonesForEdit: [],
     rpcsForEdit: [],
     states: [],
@@ -67,32 +77,78 @@ const ManageCollege = props => {
     isDataDeleted: false,
     dataToDelete: {},
     isView: false,
-    showEditModal: false,
     showModalDelete: false,
-    filterDataParameters: {
-      COLLEGE_FILTER: ""
-    }
+    filterDataParameters: {},
+    isFilterSearch: false,
+    /** Pagination and sortinig data */
+    isDataLoading: false,
+    pageSize: "",
+    totalRows: "",
+    page: "",
+    pageCount: "",
+    sortAscending: true
   });
+
+  const getFilterData = () => {
+    serviceProviders
+      .serviceProviderForGetRequest(RPCS_URL)
+      .then(res => {
+        setRpcs(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   useEffect(() => {
     /** Seperate function to get zone data */
-    getCollegeData();
+    getCollegeData(10, 1);
+    getFilterData();
   }, []);
 
   /** This seperate function is used to get the college data*/
-  const getCollegeData = async () => {
+  const getCollegeData = async (pageSize, page, paramsForCollege = null) => {
+    if (
+      paramsForCollege !== null &&
+      !formUtilities.checkEmpty(paramsForCollege)
+    ) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+      Object.keys(paramsForCollege).map(key => {
+        defaultParams[key] = paramsForCollege[key];
+      });
+      paramsForCollege = defaultParams;
+    } else {
+      paramsForCollege = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
     await serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL)
-      .then(res => {
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
+      .then(async res => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
         let college_data = res.data.result;
-
+        let currentPage = res.data.page;
+        let totalRows = res.data.rowCount;
+        let currentPageSize = res.data.pageSize;
+        let pageCount = res.data.pageCount;
         /** As college data is in nested form we first convert it into
          * a float structure and store it in data
          */
-        serviceProviders
+
+        await serviceProviders
           .serviceProviderForGetRequest(ZONES_URL)
           .then(res => {
             formState.zones = res.data.result;
@@ -101,7 +157,12 @@ const ManageCollege = props => {
               ...formState,
               colleges: college_data,
               dataToShow: temp,
-              tempData: temp
+              tempData: temp,
+              pageSize: currentPageSize,
+              totalRows: totalRows,
+              page: currentPage,
+              pageCount: pageCount,
+              isDataLoading: false
             }));
           })
           .catch(error => {
@@ -137,24 +198,73 @@ const ManageCollege = props => {
     }
   };
 
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getCollegeData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getCollegeData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getCollegeData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getCollegeData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getCollegeData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  /** This restores all the data when we clear the filters*/
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
   /** Restoring the data basically resets all te data i.e it gets all the data in view zones
    * i.e the nested zones data and also resets the data to []
-  
+   */
+
   const restoreData = () => {
-    getZoneData();
-  };
-  */
-  const restoreData = () => {
-    getCollegeData();
+    getCollegeData(formState.pageSize, 1);
   };
 
   const getDataForEdit = async (id, isView = false) => {
     /** Get college data for edit */
+    let paramsForCollege = {
+      id: id
+    };
     await serviceProviders
-      .serviceProviderForGetOneRequest(COLLEGE_URL, id)
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
       .then(res => {
         /** This we will use as final data for edit we send to modal */
-        let editData = res.data;
+        let editData = res.data.result[0];
         /** Check if zone is present in college data under rpc */
         if (
           editData.hasOwnProperty("rpc") &&
@@ -162,10 +272,13 @@ const ManageCollege = props => {
           editData["rpc"]["zone"] != null
         ) {
           /** If present get state id using that zone */
+          let paramsForZones = {
+            id: editData["rpc"]["zone"]
+          };
           serviceProviders
-            .serviceProviderForGetOneRequest(ZONES_URL, editData["rpc"]["zone"])
+            .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
             .then(res => {
-              editData["state"] = res.data["state"]["id"];
+              editData["state"] = res.data.result[0]["state"]["id"];
               history.push({
                 pathname: routeConstants.EDIT_COLLEGE,
                 editCollege: true,
@@ -175,6 +288,8 @@ const ManageCollege = props => {
             .catch(error => {
               console.log("error while getting data for edit > ", error);
             });
+        } else {
+          console.log("Rpc or zones for the college not present!");
         }
       })
       .catch(error => {
@@ -187,7 +302,10 @@ const ManageCollege = props => {
   };
 
   const viewCell = event => {
-    getDataForEdit(event.target.id, true);
+    history.push({
+      pathname: routeConstants.DETAIL_COLLEGE,
+      dataForEdit: event.target.id
+    });
   };
 
   const isDeleteCellCompleted = status => {
@@ -199,43 +317,17 @@ const ManageCollege = props => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showEditModal: false,
       showModalDelete: true
     }));
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
+      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] = value["name"];
+      formState.filterDataParameters[filterName] = value["id"];
     }
-  };
-
-  /** Search filter is called when we select filters and click on search button */
-  const searchFilter = () => {
-    let filteredData = formState.tempData.filter(function(row) {
-      if (row["name"] === formState.filterDataParameters[COLLEGE_FILTER]) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: filteredData
-    }));
-  };
-
-  /** This restores all the data when we clear the filters
-   */
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: formState.tempData
-    }));
-    /**Need to confirm this thing for resetting the data */
-    restoreData();
   };
 
   /** This is used to handle the close modal event for delete*/
@@ -244,12 +336,11 @@ const ManageCollege = props => {
     //restoreData();
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
       isDataDeleted: false,
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getCollegeData();
+      getCollegeData(formState.pageSize, formState.page);
     }
   };
 
@@ -263,32 +354,49 @@ const ManageCollege = props => {
 
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={viewCell}>
-          view_list
-        </i>
+        <Tooltip title="View" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={viewCell}
+            style={{ color: "green", fontSize: "19px" }}
+          >
+            view_list
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green", fontSize: "19px" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
@@ -302,7 +410,7 @@ const ManageCollege = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_COLLEGE_TEXT}
         </Typography>
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           onClick={clearFilter}
@@ -311,7 +419,7 @@ const ManageCollege = props => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           {genericConstants.ADD_COLLEGE_BUTTON}
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for edit */}
@@ -332,7 +440,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
@@ -353,7 +461,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
@@ -376,7 +484,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
@@ -397,7 +505,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
@@ -407,7 +515,7 @@ const ManageCollege = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="collegeName_filter_college"
                   name={COLLEGE_FILTER}
                   options={formState.colleges}
                   className={classes.autoCompleteField}
@@ -418,7 +526,27 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="College Name"
+                      label="College Filter"
+                      placeholder="College Filter"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item>
+                <Autocomplete
+                  id="rpcs_filter_college"
+                  options={rpcs}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) => {
+                    handleChangeAutoComplete(RPC_FILTER, event, value);
+                  }}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Rpc Filter"
+                      placeholder="College Filter"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -426,14 +554,17 @@ const ManageCollege = props => {
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={searchFilter}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
-                </GreenButton>
+                </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
@@ -454,8 +585,15 @@ const ManageCollege = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />

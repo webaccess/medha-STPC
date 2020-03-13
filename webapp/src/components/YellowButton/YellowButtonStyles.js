@@ -1,17 +1,16 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
-  routebtn: {
-    backgroundColor: "#43a047",
-    color: "#fff",
+  submitbtn: {
+    backgroundColor: "#f6c80a",
+    color: "#353535",
     borderRadius: "3px",
     padding: "0px 12px",
-    textTransform: "capitalize",
+    textTransform: "Capitalize",
     fontSize: "13px",
     fontWeight: "700",
     "&:hover": {
-      background: "#000",
-      color: "#fff"
+      background: "#f6c80a"
     }
   }
 }));

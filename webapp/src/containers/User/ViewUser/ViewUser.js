@@ -1,26 +1,30 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import BlockIcon from '@material-ui/icons/Block';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { useHistory } from "react-router-dom";
+import CloseIcon from "@material-ui/icons/Close";
 import {
   TextField,
-  Button,
   Card,
   CardContent,
+  Tooltip,
   Grid,
+  Collapse,
+  IconButton,
   Typography
 } from "@material-ui/core";
 
-import { Table, Spinner } from "../../../components";
+import { Table, Spinner, Alert } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
-import {
-  GrayButton,
-  GreenButton,
-  YellowRouteButton
-} from "../../../components";
+import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
+import * as genericConstants from "../../../constants/GenericConstants";
 import useStyles from "./ViewUserStyles";
 import DeleteUser from "./DeleteUser";
+import BlockUser from "./BlockUser";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
@@ -34,8 +38,10 @@ const IPC_FILTER = "ipcFilter";
 const USER_FILTER = "userFilter";
 const ROLE_FILTER = "roleFilter";
 
-const ViewUsers = () => {
+const ViewUsers = props => {
+  const [open, setOpen] = useState(true);
   const classes = useStyles();
+  const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
 
   const [formState, setFormState] = useState({
@@ -53,14 +59,44 @@ const ViewUsers = () => {
       userFilter: "",
       roleFilter: ""
     },
-    isDataEdited: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditUser"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromeditUser"]
+      ? props["location"]["editedData"]
+      : {},
+    fromeditUser: props["location"]["fromeditUser"]
+      ? props["location"]["fromeditUser"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddUser"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddUser"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddUser: props["location"]["fromAddUser"]
+      ? props["location"]["fromAddUser"]
+      : false,
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
     showEditModal: false,
     showModalDelete: false,
     isMultiDelete: false,
-    MultiDeleteID: []
+    MultiDeleteID: [],
+    isBlocked: false,
+    isUnBlocked: false,
+    isDelete: false,
+    dataToBlock: {},
+    showModalBlock: false,
+    isUserBlocked: false,
+    isMulBlocked: false,
+    isMulUnBlocked: false,
+    MultiBlockUser: {},
+    bottonBlockUnblock: "Block",
+    greenButtonChecker: true
   });
 
   useEffect(() => {
@@ -72,7 +108,7 @@ const ViewUsers = () => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          zones: res.data
+          zones: res.data.result
         }));
       })
       .catch(error => {
@@ -84,7 +120,7 @@ const ViewUsers = () => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          rpcs: res.data
+          rpcs: res.data.result
         }));
       })
       .catch(error => {
@@ -96,7 +132,7 @@ const ViewUsers = () => {
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          ipcs: res.data
+          ipcs: res.data.result
         }));
       })
       .catch(error => {
@@ -134,10 +170,10 @@ const ViewUsers = () => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
-        temp = convertUserData(res.data);
+        temp = convertUserData(res.data.result);
         setFormState(formState => ({
           ...formState,
-          users: res.data,
+          users: res.data.result,
           dataToShow: temp,
           tempData: temp
         }));
@@ -154,6 +190,7 @@ const ViewUsers = () => {
         var temp = {};
         temp["id"] = data[i]["id"];
         temp["username"] = data[i]["username"];
+        temp["blocked"] = data[i]["blocked"];
         temp["role"] = data[i]["role"]["name"];
         temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
         temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
@@ -194,6 +231,14 @@ const ViewUsers = () => {
     }
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false,
+      showModalDelete: false
+    }));
+  };
+
   /** To reset search filter */
   const refreshPage = () => {
     window.location.reload(false);
@@ -208,10 +253,6 @@ const ViewUsers = () => {
         value["name"] || value["username"];
     }
   };
-
-  const handleRowSelected = useCallback(state => {
-    setSelectedRows(state.selectedRows);
-  }, []);
 
   /** Get multiple user id for delete */
   const deleteMulUserById = () => {
@@ -239,13 +280,140 @@ const ViewUsers = () => {
         ) !== -1 &&
         dataObj.role.indexOf(formState.filterDataParameters[ROLE_FILTER]) !==
           -1 &&
-        dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !== -1
+        dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !==
+          -1 &&
+        dataObj.rpc.indexOf(formState.filterDataParameters[RPC_FILTER]) !==
+          -1 &&
+        dataObj.college.indexOf(formState.filterDataParameters[IPC_FILTER]) !==
+          -1
     );
 
     setFormState(formState => ({
       ...formState,
       dataToShow: filteredData
     }));
+  };
+
+  const blockedCell = event => {
+    for (var k = 0; k < formState.dataToShow.length; k++) {
+      if (
+        parseInt(event.target.id) === parseInt(formState.dataToShow[k]["id"])
+      ) {
+        if (formState.dataToShow[k]["blocked"] === true) {
+          blockedCellData(event.target.id, false);
+        } else {
+          blockedCellData(event.target.id, true);
+        }
+      }
+    }
+  };
+
+  const blockedCellData = (id, isBlocked = false) => {
+    if (isBlocked === true) {
+      setFormState(formState => ({
+        ...formState,
+        dataToBlock: id,
+        isBlocked: true,
+        isUnBlocked: false,
+        showModalBlock: true
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        dataToBlock: id,
+        isBlocked: false,
+        isUnBlocked: true,
+        showModalBlock: true
+      }));
+    }
+  };
+
+  const isUserBlockCompleted = status => {
+    formState.isUserBlocked = status;
+  };
+
+  const handleCloseBlockModal = () => {
+    /** This restores all the data when we close the modal */
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false
+    }));
+    if (formState.isUserBlocked) {
+      //getUserData();
+      window.location.reload(false);
+    }
+  };
+
+  const handleRowSelected = useCallback(state => {
+    let blockData = [];
+    let unblockData = [];
+    state.selectedRows.forEach(data => {
+      if (data.blocked === false) {
+        blockData.push(data);
+      } else {
+        unblockData.push(data);
+      }
+      if (blockData.length > 0) {
+        setFormState(formState => ({
+          ...formState,
+          bottonBlockUnblock: "Block"
+        }));
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          bottonBlockUnblock: "Un Block"
+        }));
+      }
+    });
+    setSelectedRows(state.selectedRows);
+  }, []);
+
+  const blockMulUserById = () => {
+    let arrayId = [];
+    for (var k = 0; k < selectedRows.length; k++) {
+      arrayId.push(selectedRows[k]["id"]);
+    }
+    if (formState.bottonBlockUnblock === "Block") {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: true,
+        isMulUnBlocked: false,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: false,
+        isMulUnBlocked: true,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
+    }
+  };
+
+  const getDataForEdit = async id => {
+    let paramsForUsers = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
+      .then(res => {
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_USER,
+          editUser: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  const editCell = event => {
+    getDataForEdit(event.target.id);
   };
 
   /** Table Data */
@@ -258,50 +426,62 @@ const ViewUsers = () => {
     /** Columns for edit and delete */
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          //onClick={blockedCell}
-        >
-          block
-        </i>
+        <Tooltip title="Block" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={blockedCell}
+          >
+            block
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: [
         {
           when: row => row.blocked === true,
           style: {
-            backgroundColor: "red"
+            color: "red"
           }
         },
         {
           when: row => row.blocked === false,
           style: {
-            backgroundColor: "green"
+            color: "green"
           }
         }
       ]
     },
     {
       cell: cell => (
-        <i
-          className="material-icons"
-          id={cell.id}
-          value={cell.name}
-          //onClick={editCell}
-        >
-          edit
-        </i>
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green" }}
+          >
+            edit
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
     },
     {
       cell: cell => (
-        <i className="material-icons" id={cell.id} onClick={deleteCell}>
-          delete_outline
-        </i>
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
       ),
       button: true,
       conditionalCellStyles: []
@@ -312,22 +492,30 @@ const ViewUsers = () => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          User
+          Users
         </Typography>
 
-        <Button variant="contained" color="secondary">
-          Block
-        </Button>
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => blockMulUserById()}
+          startIcon={<BlockIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+        >
+          {formState.bottonBlockUnblock}
+        </GreenButton>
 
-        <Button
+        <GreenButton  
           variant="contained"
           color="secondary"
           onClick={() => deleteMulUserById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
         >
           Delete
-        </Button>
+        </GreenButton>
 
-        <YellowRouteButton
+        <GreenButton
           variant="contained"
           color="primary"
           //onClick={clearFilter}
@@ -336,9 +524,96 @@ const ViewUsers = () => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           Add User
-        </YellowRouteButton>
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromeditUser && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromeditUser && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddUser && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddUser && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -443,14 +718,14 @@ const ViewUsers = () => {
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
-                <GreenButton
+                <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
                   onClick={searchFilter}
                 >
                   Search
-                </GreenButton>
+                </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
@@ -473,9 +748,6 @@ const ViewUsers = () => {
                 data={formState.dataToShow}
                 column={column}
                 onSelectedRowsChange={handleRowSelected}
-                //contextActions={contextActions}
-                //editEvent={editCell}
-
                 deleteEvent={deleteCell}
               />
             ) : (
@@ -484,13 +756,7 @@ const ViewUsers = () => {
           ) : (
             <Spinner />
           )}
-          {/* <EditState
-          showModal={formState.showEditModal}
-          //closeModal={handleCloseModal}
-          dataToEdit={formState.dataToEdit}
-          id={formState.dataToEdit["id"]}
-         // editEvent={isEditCellCompleted}
-        /> */}
+
           {formState.isMultiDelete ? (
             <DeleteUser
               showModal={formState.showModalDelete}
@@ -498,6 +764,7 @@ const ViewUsers = () => {
               deleteEvent={isDeleteCellCompleted}
               id={formState.MultiDeleteID}
               isMultiDelete={formState.isMultiDelete}
+              modalClose={modalClose}
             />
           ) : (
             <DeleteUser
@@ -505,6 +772,28 @@ const ViewUsers = () => {
               closeModal={handleCloseDeleteModal}
               id={formState.dataToDelete["id"]}
               deleteEvent={isDeleteCellCompleted}
+              modalClose={modalClose}
+            />
+          )}
+          {formState.isMulBlocked || formState.isMulUnBlocked ? (
+            <BlockUser
+              id={formState.MultiBlockUser}
+              isMulBlocked={formState.isMulBlocked}
+              isUnMulBlocked={formState.isMulUnBlocked}
+              getModel={formState.showModalBlock}
+              closeBlockModal={handleCloseBlockModal}
+              blockEvent={isUserBlockCompleted}
+              modalClose={modalClose}
+            />
+          ) : (
+            <BlockUser
+              id={formState.dataToBlock}
+              getModel={formState.showModalBlock}
+              closeBlockModal={handleCloseBlockModal}
+              blockEvent={isUserBlockCompleted}
+              isBlocked={formState.isBlocked}
+              isUnBlocked={formState.isUnBlocked}
+              modalClose={modalClose}
             />
           )}
         </Card>

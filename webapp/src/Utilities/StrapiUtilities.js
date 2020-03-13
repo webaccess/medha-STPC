@@ -114,9 +114,11 @@ export const addCollege = (
   address,
   contact_number,
   college_email,
+  blocked = false,
   principal = null,
-  rpc = null
-  // streams = []
+  rpc = null,
+  district = null,
+  stream_strength = []
 ) => {
   return {
     name: name,
@@ -124,9 +126,11 @@ export const addCollege = (
     address: address,
     contact_number: contact_number,
     college_email: college_email,
+    blocked: blocked,
     principal: principal,
-    rpc: rpc
-    //. streams: streams
+    rpc: rpc,
+    district: district,
+    stream_strength: stream_strength
   };
 };
 

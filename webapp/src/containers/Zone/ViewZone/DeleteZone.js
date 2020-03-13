@@ -16,7 +16,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import ZoneSchema from "../ZoneSchema";
 import { get } from "lodash";
 import { green } from "@material-ui/core/colors";
-import { GreenButton } from "../../../components";
+import { YellowButton } from "../../../components";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const ZONE_ID = "stateName";
@@ -102,14 +102,14 @@ const DeleteZone = props => {
                   Do yo want to delete this field?
                 </Grid>
                 <Grid item xs>
-                  <GreenButton
+                  <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
                     {genericConstants.DELETE_TEXT}
-                  </GreenButton>
+                  </YellowButton>
                 </Grid>
               </Grid>
             </Grid>

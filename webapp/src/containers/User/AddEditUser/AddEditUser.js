@@ -6,11 +6,21 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "../UserStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import { Alert, GreenButton, GrayButton } from "../../../components";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { Alert, YellowButton, GrayButton } from "../../../components";
+import {
+  InputAdornment,
+  IconButton,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  FormHelperText
+} from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProvider from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
-
+import { useHistory } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -39,6 +49,7 @@ const active = "active";
 
 const Adduser = props => {
   const classes = useStyles();
+  const history = useHistory();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [formState, setFormState] = useState({
@@ -46,7 +57,11 @@ const Adduser = props => {
     values: {},
     touched: {},
     errors: {},
-    isSuccess: false
+    isSuccess: false,
+    showPassword: false,
+    isEditUser: props["editUser"] ? props["editUser"] : false,
+    dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
+    counter: 0
   });
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
@@ -54,13 +69,62 @@ const Adduser = props => {
   const [colleges, setColleges] = useState([]);
   const [roles, setRoles] = useState([]);
 
+  const USERS_URL =
+    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS;
+
+  /** Part for editing state */
+  if (formState.isEditUser && !formState.counter) {
+    if (props["dataForEdit"]) {
+      if (props["dataForEdit"]["first_name"]) {
+        formState.values[firstname] = props["dataForEdit"]["first_name"];
+      }
+      if (props["dataForEdit"]["last_name"]) {
+        formState.values[lastname] = props["dataForEdit"]["last_name"];
+      }
+      if (props["dataForEdit"]["email"]) {
+        formState.values[email] = props["dataForEdit"]["email"];
+      }
+      if (props["dataForEdit"]["contact_number"]) {
+        formState.values[contact] = props["dataForEdit"]["contact_number"];
+      }
+      if (props["dataForEdit"]["username"]) {
+        formState.values[username] = props["dataForEdit"]["username"];
+      }
+      if (props["dataForEdit"]["confirmed"]) {
+        formState.values[active] = props["dataForEdit"]["confirmed"];
+      }
+      if (props["dataForEdit"]["role"] && props["dataForEdit"]["role"]["id"]) {
+        formState.values[role] = props["dataForEdit"]["role"]["id"];
+      }
+      if (
+        props["dataForEdit"]["state"] &&
+        props["dataForEdit"]["state"]["id"]
+      ) {
+        formState.values[state] = props["dataForEdit"]["state"]["id"];
+      }
+      if (props["dataForEdit"]["zone"] && props["dataForEdit"]["zone"]["id"]) {
+        formState.values[zone] = props["dataForEdit"]["zone"]["id"];
+      }
+      if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
+        formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
+      }
+      if (
+        props["dataForEdit"]["college"] &&
+        props["dataForEdit"]["college"]["id"]
+      ) {
+        formState.values[college] = props["dataForEdit"]["college"]["id"];
+      }
+    }
+    formState.counter += 1;
+  }
+
   useEffect(() => {
     serviceProvider
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
       )
       .then(res => {
-        setStates(res.data);
+        setStates(res.data.result);
       })
       .catch(error => {
         console.log(error);
@@ -71,7 +135,7 @@ const Adduser = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
       )
       .then(res => {
-        setZones(res.data);
+        setZones(res.data.result);
       })
       .catch(error => {
         console.log(error);
@@ -82,7 +146,7 @@ const Adduser = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS
       )
       .then(res => {
-        setRpcs(res.data);
+        setRpcs(res.data.result);
       })
       .catch(error => {
         console.log(error);
@@ -93,7 +157,7 @@ const Adduser = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
-        setColleges(res.data);
+        setColleges(res.data.result);
       })
       .catch(error => {
         console.log(error);
@@ -218,29 +282,61 @@ const Adduser = props => {
       formState.values[college] ? formState.values[college] : null,
       formState.values[role] ? formState.values[role] : null
     );
+    if (formState.isEditUser) {
+      serviceProvider
+        .serviceProviderForPutRequest(
+          USERS_URL,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_USER,
+            fromeditUser: true,
+            isDataEdited: true,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        })
+        .catch(error => {
+          history.push({
+            pathname: routeConstants.VIEW_USER,
+            fromeditUser: true,
+            isDataEdited: false,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        });
+    } else {
+      serviceProvider
+        .serviceProviderForPostRequest(USERS_URL, postData)
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_USER,
+            fromAddUser: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        })
+        .catch(error => {
+          history.push({
+            pathname: routeConstants.VIEW_USER,
+            fromAddUser: true,
+            isDataAdded: false,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        });
+    }
+  };
 
-    serviceProvider
-      .serviceProviderForPostRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
-        postData
-      )
-      .then(res => {
-        console.log(res);
-        setStates(res.data);
-        setIsFailed(false);
-        setIsSuccess(true);
-      })
-      .catch(error => {
-        console.log(error);
-        setIsSuccess(false);
-        setIsFailed(true);
-      });
+  const handleClickShowPassword = () => {
+    setFormState({ ...formState, showPassword: !formState.showPassword });
+  };
 
-    /** Set state to reload form */
-    setFormState(formState => ({
-      ...formState,
-      isValid: true
-    }));
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
@@ -366,23 +462,45 @@ const Adduser = props => {
                   />
                 </Grid>
                 <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(UserSchema[password], "label")}
-                    name={password}
-                    value={formState.values[password] || ""}
-                    error={hasError(password)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(password)
+                  <FormControl variant="outlined">
+                    <InputLabel htmlFor="outlined-adornment-password">
+                      {get(UserSchema[password], "label")}
+                    </InputLabel>
+                    <OutlinedInput
+                      id={get(UserSchema[password], "id")}
+                      name={password}
+                      required
+                      fullWidth
+                      error={hasError(password)}
+                      type={formState.showPassword ? "text" : "password"}
+                      value={formState.values[password] || ""}
+                      onChange={handleChange}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {formState.showPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      labelWidth={70}
+                    />
+                    <FormHelperText error={hasError(password)}>
+                      {hasError(password)
                         ? formState.errors[password].map(error => {
                             return error + " ";
                           })
-                        : null
-                    }
-                  />
+                        : null}
+                    </FormHelperText>
+                  </FormControl>
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />
@@ -396,6 +514,13 @@ const Adduser = props => {
                     onChange={(event, value) => {
                       handleChangeAutoComplete(role, event, value);
                     }}
+                    value={
+                      roles[
+                        roles.findIndex(function(item, i) {
+                          return item.id === formState.values[role];
+                        })
+                      ] || null
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -423,6 +548,13 @@ const Adduser = props => {
                     onChange={(event, value) => {
                       handleChangeAutoComplete(state, event, value);
                     }}
+                    value={
+                      states[
+                        states.findIndex(function(item, i) {
+                          return item.id === formState.values[state];
+                        })
+                      ] || null
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -474,6 +606,13 @@ const Adduser = props => {
                     onChange={(event, value) => {
                       handleChangeAutoComplete(zone, event, value);
                     }}
+                    value={
+                      zones[
+                        zones.findIndex(function(item, i) {
+                          return item.id === formState.values[zone];
+                        })
+                      ] || null
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -500,6 +639,13 @@ const Adduser = props => {
                     onChange={(event, value) => {
                       handleChangeAutoComplete(rpc, event, value);
                     }}
+                    value={
+                      rpcs[
+                        rpcs.findIndex(function(item, i) {
+                          return item.id === formState.values[rpc];
+                        })
+                      ] || null
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -526,6 +672,13 @@ const Adduser = props => {
                     onChange={(event, value) => {
                       handleChangeAutoComplete(college, event, value);
                     }}
+                    value={
+                      colleges[
+                        colleges.findIndex(function(item, i) {
+                          return item.id === formState.values[college];
+                        })
+                      ] || null
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -547,9 +700,9 @@ const Adduser = props => {
               <Divider className={classes.divider} />
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <GreenButton type="submit" color="primary" variant="contained">
+              <YellowButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </GreenButton>
+              </YellowButton>
               <GrayButton
                 type="submit"
                 color="primary"

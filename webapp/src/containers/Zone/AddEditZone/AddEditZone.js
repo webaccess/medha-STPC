@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { get } from "lodash";
-import useStyles from "./AddZoneStyles";
+import useStyles from "./AddEditZoneStyles";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import AddZoneForm from "../ZoneSchema";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Alert, GrayButton, GreenButton } from "../../../components";
+import { Alert, GrayButton, YellowButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -19,29 +19,49 @@ import {
   Typography
 } from "@material-ui/core";
 import * as serviceProviders from "../../../api/Axios";
+import { useHistory } from "react-router-dom";
 
 const ZONE_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
 
-const AddZone = props => {
+const AddEditZone = props => {
+  const history = useHistory();
   const zone = "zoneName";
   const state = "stateName";
   const content = "content";
   const classes = useStyles();
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
 
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
     touched: {},
     errors: {},
-    isSuccess: false
+    isSuccess: false,
+    isEditZone: props["editZone"] ? props["editZone"] : false,
+    dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
+    counter: 0
   });
 
   const [states, setStates] = useState([]);
+
+  /** Part for editing college */
+  if (formState.isEditZone && !formState.counter) {
+    if (props["dataForEdit"]) {
+      if (props["dataForEdit"]["name"]) {
+        formState.values[zone] = props["dataForEdit"]["name"];
+      }
+      if (
+        props["dataForEdit"]["state"] &&
+        props["dataForEdit"]["state"]["id"]
+      ) {
+        formState.values[state] = props["dataForEdit"]["state"]["id"];
+      }
+      formState.counter += 1;
+    }
+    console.log(formState);
+  }
 
   useEffect(() => {
     serviceProviders
@@ -131,28 +151,70 @@ const AddZone = props => {
   const postZoneData = async () => {
     let postData = databaseUtilities.addZone(
       formState.values[zone],
-      formState.values[state]
-        ? databaseUtilities.setState(formState.values[state])
-        : null
+      formState.values[state] ? formState.values[state] : null
     );
 
-    serviceProviders
-      .serviceProviderForPostRequest(ZONE_URL, postData)
-      .then(res => {
-        setIsFailed(false);
-        setIsSuccess(true);
-      })
-      .catch(error => {
-        console.log(error);
-        setIsSuccess(false);
-        setIsFailed(true);
-      });
+    if (formState.isEditZone) {
+      serviceProviders
+        .serviceProviderForPutRequest(
+          ZONE_URL,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_ZONES,
+            fromEditZone: true,
+            isDataEdited: true,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          history.push({
+            pathname: routeConstants.VIEW_ZONES,
+            fromEditZone: true,
+            isDataEdited: false,
+            editResponseMessage: "",
+            editedData: {}
+          });
+        });
 
-    /** Set state to reload form */
-    setFormState(formState => ({
-      ...formState,
-      isValid: true
-    }));
+      /** Set state to reload form */
+      setFormState(formState => ({
+        ...formState,
+        isValid: true
+      }));
+    } else {
+      serviceProviders
+        .serviceProviderForPostRequest(ZONE_URL, postData)
+        .then(res => {
+          history.push({
+            pathname: routeConstants.VIEW_ZONES,
+            fromAddZone: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          history.push({
+            pathname: routeConstants.VIEW_ZONES,
+            fromAddZone: true,
+            isDataAdded: false,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        });
+
+      /** Set state to reload form */
+      setFormState(formState => ({
+        ...formState,
+        isValid: true
+      }));
+    }
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
@@ -160,19 +222,15 @@ const AddZone = props => {
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {get(AddZoneForm[content], "title")}
-        </Typography>
-        {isSuccess ? (
-          <Alert severity="success" className={classes.message}>
-            {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
-        {isFailed ? (
-          <Alert severity="error">
-            {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
+        {formState.isEditState ? (
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.EDIT_ZONE_TEXT}
+          </Typography>
+        ) : (
+          <Typography variant="h4" gutterBottom>
+            {get(AddZoneForm[content], "title")}
+          </Typography>
+        )}
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
@@ -208,6 +266,13 @@ const AddZone = props => {
                     onChange={(event, value) => {
                       handleChangeAutoComplete(state, event, value);
                     }}
+                    value={
+                      states[
+                        states.findIndex(function(item, i) {
+                          return item.id === formState.values[state];
+                        })
+                      ] || null /** Please give a default " " blank value */
+                    }
                     renderInput={params => (
                       <TextField
                         {...params}
@@ -229,9 +294,9 @@ const AddZone = props => {
               </Grid>
             </CardContent>
             <CardActions className={classes.btnspace}>
-              <GreenButton type="submit" color="primary" variant="contained">
+              <YellowButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-              </GreenButton>
+              </YellowButton>
               <GrayButton
                 type="submit"
                 color="primary"
@@ -247,4 +312,4 @@ const AddZone = props => {
     </Grid>
   );
 };
-export default AddZone;
+export default AddEditZone;

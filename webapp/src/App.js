@@ -14,13 +14,13 @@ import {
 import Dashboard from "./containers/Dashboard/Dashboard";
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
 import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
-import AddUser from "./containers/User/AddUser/AddUser";
+import AddUser from "./containers/User/AddEditUser/AddEditUser";
 import ViewUsers from "./containers/User/ViewUser/ViewUser";
-import AddRpc from "./containers/RPC/AddRpc/AddRpc";
+import AddEditRpc from "./containers/RPC/AddEditRpc/AddEditRpc";
 import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";
-import AddStates from "./containers/State/AddState/AddState";
+import AddEditState from "./containers/State/AddEditState/AddEditState";
 import ViewStates from "./containers/State/ViewState/ViewState";
-import AddZone from "./containers/Zone/AddZone/AddZone";
+import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
 import ViewZone from "./containers/Zone/ViewZone/ViewZone";
 import Layout from "./hoc/Layout/Layout";
 
@@ -30,7 +30,11 @@ import Registration from "./containers/Registration/Registration";
 import RequestOtp from "./containers/OTP/Requestotp";
 import VerifyOtp from "./containers/OTP/Verifyotp";
 import EditCollegeRoute from "./authroute/EditCollegeRoute";
-
+import EditStateRoute from "./authroute/EditStateRoute";
+import EditZoneRoute from "./authroute/EditZoneRoute";
+import EditRpcRoute from "./authroute/EditRpcRoute";
+import EditUserRoute from "./authroute/EditUserRoute";
+import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCollegeDetails";
 class App extends Component {
   render() {
     return (
@@ -71,11 +75,42 @@ class App extends Component {
                 component={NotFoundPage}
                 exact
               />
+              {/** User */}
+              {/** Add User **/}
               <RouteWithLayout
                 component={AddUser}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_USER}
+              />
+              {/** View User */}
+              <RouteWithLayout
+                component={ViewUsers}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_USER}
+              />
+              {/** Edit User Route*/}
+              <RouteWithLayout
+                component={EditUserRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_USER}
+              />
+              {/** State */}
+              {/** Add Edit State */}
+              <RouteWithLayout
+                component={AddEditState}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_STATES}
+              />
+              {/** Edit State Route */}
+              <RouteWithLayout
+                component={EditStateRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_STATE}
               />
               <RouteWithLayout
                 component={ViewStates}
@@ -83,11 +118,12 @@ class App extends Component {
                 layout={Layout}
                 path={routeConstants.VIEW_STATES}
               />
+              {/** Rpc */}
               <RouteWithLayout
-                component={ViewZone}
+                component={AddEditRpc}
                 exact
                 layout={Layout}
-                path={routeConstants.VIEW_ZONES}
+                path={routeConstants.ADD_RPC}
               />
               <RouteWithLayout
                 component={ViewRpc}
@@ -96,49 +132,59 @@ class App extends Component {
                 path={routeConstants.VIEW_RPC}
               />
               <RouteWithLayout
-                component={AddStates}
+                component={EditRpcRoute}
                 exact
                 layout={Layout}
-                path={routeConstants.ADD_STATES}
+                path={routeConstants.EDIT_RPC}
               />
-              <RouteWithLayout
-                component={AddRpc}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_RPC}
-              />
+
+              {/** Zone */}
               <RouteWithLayout
                 component={AddZone}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ZONES}
               />
+              <RouteWithLayout
+                component={ViewZone}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_ZONES}
+              />
+              <RouteWithLayout
+                component={EditZoneRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_ZONES}
+              />
+
               {/** College */}
               {/** Add College */}
+              <RouteWithLayout
+                component={DisplayCollegeDetails}
+                exact
+                layout={Layout}
+                path={routeConstants.DETAIL_COLLEGE}
+              />
               <RouteWithLayout
                 component={AddEditCollege}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_COLLEGE}
               />
-              {/** Edit College */}
+              {/** Edit College Route */}
               <RouteWithLayout
                 component={EditCollegeRoute}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_COLLEGE}
               />
+              {/** View College */}
               <RouteWithLayout
                 component={ViewCollege}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_COLLEGE}
-              />
-              <RouteWithLayout
-                component={ViewUsers}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_USER}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>
