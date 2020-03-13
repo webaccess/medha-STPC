@@ -56,7 +56,7 @@ module.exports = {
 
     const zone = await bookshelf
       .model("zone")
-      .where({ id: rpc.zone })
+      .where({ id: college.zone })
       .fetch({ require: false })
       .then(data => {
         return data ? data.toJSON() : null;
@@ -75,7 +75,6 @@ module.exports = {
     const studentRole = await strapi
       .query("role", "users-permissions")
       .findOne({ name: "Student" });
-    console.log(studentRole);
     const requestBody = ctx.request.body;
     const userRequestBody = Object.assign(
       {

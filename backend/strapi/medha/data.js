@@ -339,7 +339,7 @@ const roles = {
     ],
     grantAllPermissions: false
   },
-  " Student": {
+  Student: {
     controllers: [
       {
         name: "academic-history",
