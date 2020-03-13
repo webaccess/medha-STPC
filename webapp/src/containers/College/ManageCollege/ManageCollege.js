@@ -8,7 +8,9 @@ import {
   Typography,
   Collapse,
   IconButton,
-  Tooltip
+  Tooltip,
+  FormControl,
+  InputLabel
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -25,8 +27,7 @@ import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 
-const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const COLLEGE_FILTER = "name";
+const COLLEGE_FILTER = "id";
 //const STATE_FILTER = "stateName";
 const ZONE_FILTER = "rpc.zone";
 const RPC_FILTER = "rpc.id";
@@ -34,9 +35,15 @@ const SORT_FIELD_KEY = "_sort";
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 
+const STATES_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
+const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
+const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+
 const ManageCollege = props => {
   const history = useHistory();
   const [open, setOpen] = React.useState(true);
+  const [rpcs, setRpcs] = React.useState([]);
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
@@ -72,19 +79,31 @@ const ManageCollege = props => {
     isView: false,
     showModalDelete: false,
     filterDataParameters: {},
-
+    isFilterSearch: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
-    pageSize: 10,
+    pageSize: "",
     totalRows: "",
-    page: 1,
+    page: "",
     pageCount: "",
-    defaultSort: true
+    sortAscending: true
   });
+
+  const getFilterData = () => {
+    serviceProviders
+      .serviceProviderForGetRequest(RPCS_URL)
+      .then(res => {
+        setRpcs(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   useEffect(() => {
     /** Seperate function to get zone data */
     getCollegeData(10, 1);
+    getFilterData();
   }, []);
 
   /** This seperate function is used to get the college data*/
@@ -181,37 +200,34 @@ const ManageCollege = props => {
 
   /** Pagination */
   const handlePerRowsChange = async (perPage, page) => {
-    setFormState(formState => ({
-      ...formState,
-      isDataLoading: true
-    }));
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getCollegeData(perPage, page);
     } else {
-      await searchFilter(perPage, page);
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getCollegeData(perPage, page);
+      }
     }
   };
 
   const handlePageChange = async page => {
-    setFormState(formState => ({
-      ...formState,
-      isDataLoading: true
-    }));
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getCollegeData(formState.pageSize, page);
     } else {
-      await searchFilter(formState.pageSize, page);
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getCollegeData(formState.pageSize, page);
+      }
     }
   };
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
-      setFormState(formState => ({
-        ...formState,
-        isDataLoading: true
-      }));
+      formState.isFilterSearch = true;
       await getCollegeData(perPage, page, formState.filterDataParameters);
     }
   };
@@ -221,6 +237,7 @@ const ManageCollege = props => {
   const clearFilter = () => {
     setFormState(formState => ({
       ...formState,
+      isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
@@ -232,11 +249,8 @@ const ManageCollege = props => {
 
   /** Restoring the data basically resets all te data i.e it gets all the data in view zones
    * i.e the nested zones data and also resets the data to []
-  
-  const restoreData = () => {
-    getZoneData();
-  };
-  */
+   */
+
   const restoreData = () => {
     getCollegeData(formState.pageSize, 1);
   };
@@ -283,47 +297,6 @@ const ManageCollege = props => {
       });
   };
 
-  const getDataForView = async id => {
-    /** Get college data for edit */
-    let paramsForCollege = {
-      id: id
-    };
-    await serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
-      .then(res => {
-        console.log("collegeresult", res.data.result[0]);
-        let viewData = res.data.result[0];
-        if (
-          viewData.hasOwnProperty("rpc") &&
-          viewData["rpc"].hasOwnProperty("zone") &&
-          viewData["rpc"]["zone"] !== null
-        ) {
-          let paramsForZones = {
-            id: viewData["rpc"]["zone"]
-          };
-          serviceProviders
-            .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
-            .then(res => {
-              console.log("zone_result", res.data.result[0]);
-              viewData["zone"] = res.data.result[0];
-              viewData["state"] = res.data.result[0].state;
-              console.log("viewdata", viewData);
-              history.push({
-                pathname: routeConstants.DETAIL_COLLEGE,
-                editCollege: true,
-                dataForEdit: viewData
-              });
-            })
-            .catch(error => {
-              console.log("zoneerror", error);
-            });
-        }
-      })
-      .catch(error => {
-        console.log("error");
-      });
-  };
-
   const editCell = event => {
     getDataForEdit(event.target.id);
   };
@@ -350,9 +323,10 @@ const ManageCollege = props => {
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
+      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] = value["name"];
+      formState.filterDataParameters[filterName] = value["id"];
     }
   };
 
@@ -366,7 +340,7 @@ const ManageCollege = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getCollegeData();
+      getCollegeData(formState.pageSize, formState.page);
     }
   };
 
@@ -541,7 +515,7 @@ const ManageCollege = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="collegeName_filter_college"
                   name={COLLEGE_FILTER}
                   options={formState.colleges}
                   className={classes.autoCompleteField}
@@ -552,7 +526,27 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="College Name"
+                      label="College Filter"
+                      placeholder="College Filter"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item>
+                <Autocomplete
+                  id="rpcs_filter_college"
+                  options={rpcs}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) => {
+                    handleChangeAutoComplete(RPC_FILTER, event, value);
+                  }}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Rpc Filter"
+                      placeholder="College Filter"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -564,7 +558,10 @@ const ManageCollege = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={searchFilter}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
@@ -589,7 +586,7 @@ const ManageCollege = props => {
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"
-                defaultSortAsc={formState.defaultSort}
+                defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}

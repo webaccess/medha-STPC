@@ -23,11 +23,13 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const ZONE_FILTER = "zoneFilter";
+const ZONE_FILTER = "id";
+const SORT_FIELD_KEY = "_sort";
 
 const ViewZone = props => {
   const [open, setOpen] = React.useState(true);
@@ -37,9 +39,8 @@ const ViewZone = props => {
     tempData: [],
     zones: [],
     states: [],
-    filterDataParameters: {
-      ZONE_FILTER: ""
-    },
+    filterDataParameters: {},
+    isFilterSearch: false,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromEditZone"]
       ? props["location"]["isDataEdited"]
@@ -64,13 +65,20 @@ const ViewZone = props => {
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
-    showModalDelete: false
+    showModalDelete: false,
+    /** Pagination and sortinig data */
+    isDataLoading: false,
+    pageSize: "",
+    totalRows: "",
+    page: "",
+    pageCount: "",
+    sortAscending: true
   });
 
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
   useEffect(() => {
     /** Seperate function to get zone data */
-    getZoneData();
+    getZoneData(10, 1);
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
@@ -85,9 +93,31 @@ const ViewZone = props => {
   }, []);
 
   /** This seperate function is used to get the zone data*/
-  const getZoneData = async () => {
+  const getZoneData = async (pageSize, page, paramsForZones = null) => {
+    if (paramsForZones !== null && !formUtilities.checkEmpty(paramsForZones)) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+      Object.keys(paramsForZones).map(key => {
+        defaultParams[key] = paramsForZones[key];
+      });
+      paramsForZones = defaultParams;
+    } else {
+      paramsForZones = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
     await serviceProviders
-      .serviceProviderForGetRequest(ZONES_URL)
+      .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
       .then(res => {
         formState.dataToShow = [];
         formState.tempData = [];
@@ -100,7 +130,12 @@ const ViewZone = props => {
           ...formState,
           zones: res.data.result,
           dataToShow: temp,
-          tempData: temp
+          tempData: temp,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
         }));
       })
       .catch(error => {
@@ -115,11 +150,62 @@ const ViewZone = props => {
         var temp = {};
         temp["id"] = data[i]["id"];
         temp["name"] = data[i]["name"];
-        temp["state"] = data[i]["state"]["name"];
+        temp["state"] = data[i]["state"] ? data[i]["state"]["name"] : "";
         x.push(temp);
       }
       return x;
     }
+  };
+
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getZoneData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getZoneData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getZoneData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getZoneData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getZoneData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  const restoreData = () => {
+    getZoneData(formState.pageSize, 1);
   };
 
   /** Restoring the data basically resets all te data i.e it gets all the data in view zones
@@ -167,36 +253,11 @@ const ViewZone = props => {
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
+      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] = value["name"];
+      formState.filterDataParameters[filterName] = value["id"];
     }
-  };
-
-  /** Search filter is called when we select filters and click on search button */
-  const searchFilter = () => {
-    let filteredData = formState.tempData.filter(function(row) {
-      if (row["name"] === formState.filterDataParameters[ZONE_FILTER]) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: filteredData
-    }));
-  };
-
-  /** This restores all the data when we clear the filters
-   */
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: formState.tempData
-    }));
-    /**Need to confirm this thing for resetting the data */
-    //restoreData();
   };
 
   /** This is used to handle the close modal event */
@@ -209,7 +270,7 @@ const ViewZone = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getZoneData();
+      getZoneData(formState.pageSize, formState.page);
     }
   };
 
@@ -392,7 +453,10 @@ const ViewZone = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={searchFilter}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
@@ -416,8 +480,15 @@ const ViewZone = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />
