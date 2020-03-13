@@ -37,16 +37,10 @@ module.exports = {
       ]);
     }
 
-    return await bookshelf
-      .model("user")
-      .where({ id: user.id })
-      .fetch({ withRelated: ["state", "zone", "rpc", "college"] })
-      .then(u => {
-        const response = utils.getResponse(u);
-        const data = sanitizeUser(response.result);
-        response.result = data;
-        return response;
-      });
+    const response = await strapi
+      .query("user", "users-permissions")
+      .findOne({ id: user.id });
+    return utils.getFindOneResponse(sanitizeUser(response));
   },
 
   /**
@@ -153,9 +147,9 @@ module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
-    return await bookshelf
-      .model("user")
-      .query(
+    return strapi
+      .query("user", "users-permissions")
+      .model.query(
         buildQuery({
           model: strapi.query("user", "users-permissions").model,
           filters
@@ -163,8 +157,7 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize,
-        withRelated: ["role", "state", "zone", "rpc", "college"]
+        pageSize: pageSize
       })
       .then(u => {
         const response = utils.getPaginatedResponse(u);
@@ -180,25 +173,10 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    // return await bookshelf
-    //   .model("user")
-    //   .where({ id: id })
-    //   .fetch({
-    //     require: false,
-    //     withRelated: ["role", "state", "zone", "rpc", "college"]
-    //   })
-    //   .then(u => {
-    //     const response = utils.getResponse(u);
-    //     const data = sanitizeUser(response.result);
-    //     response.result = data;
-    //     return response;
-    //   });
     const response = await strapi
       .query("user", "users-permissions")
       .findOne({ id });
-    return {
-      result: sanitizeUser(response)
-    };
+    return utils.getFindOneResponse(sanitizeUser(response));
   },
 
   /**

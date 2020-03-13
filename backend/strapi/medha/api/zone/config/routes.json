@@ -29,7 +29,7 @@
       "path": "/zones",
       "handler": "zone.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -37,7 +37,7 @@
       "path": "/zones/:id",
       "handler": "zone.update",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {

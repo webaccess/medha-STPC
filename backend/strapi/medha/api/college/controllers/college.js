@@ -23,6 +23,7 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
+    // TODO add college admins to list
     /**
      * public route for colleges
      */
@@ -48,10 +49,11 @@ module.exports = {
     /**
      * Authenticated user routes
      */
+    const states = await strapi.query("state").find();
 
     const { role, rpc, zone, college } = ctx.state.user;
     if (role.name === "Medha Admin" || role.name === "Admin") {
-      return strapi
+      const response = await strapi
         .query("college")
         .model.query(
           buildQuery({
@@ -65,36 +67,22 @@ module.exports = {
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
-          /**
-           * Here college.admins return all users associated with that college
-           * We need only admins not all users
-           * So we are filtering only those users whose role is `College Admin`
-           */
-          // const response = data.result.reduce((acc, college) => {
-          //   const collegeAdmins = college.admins
-          //     .map(admin => {
-          //       if (admin.role.name === "College Admin") {
-          //         return sanitizeUser(admin);
-          //       }
-          //     })
-          //     .filter(a => a);
-          //   college.admins = collegeAdmins;
-
-          //   const streams = college.stream_strength.map(
-          //     stream => stream.streams
-          //   );
-          //   college.stream_strength = streams;
-
-          //   acc.push(college);
-          //   return acc;
-          // }, []);
-          // data.result = response;
-          // return data;
         });
+
+      response.result = response.result.map(college => {
+        const { rpc, zone } = college;
+        const stateId = rpc.state || zone.state;
+        const state = states.find(s => s.id === stateId);
+        return {
+          ...college,
+          state
+        };
+      });
+      return response;
     }
 
     if (role.name === "Zonal Admin") {
-      return strapi
+      const response = await strapi
         .query("college")
         .model.query(
           buildQuery({
@@ -109,42 +97,22 @@ module.exports = {
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
-          // const response = data.result.reduce((accumulator, obj) => {
-          //   /**
-          //    * Here we need to find all colleges under zonal admin
-          //    * But we don't have direct relation between zone and college
-          //    * So by using rpc we are getting zone and then filtering those colleges whose
-          //    * zone is zonal admin's zone
-          //    *
-          //    */
-          //   if (Object.keys(obj.rpc).length) {
-          //     /**
-          //      * Here college.admins return all users associated with that college
-          //      * We need only admins not all users
-          //      * So we are filtering only those users whose role is `College Admin`
-          //      */
-          //     const collegeAdmins = obj.admins
-          //       .map(admin => {
-          //         if (admin.role.name === "College Admin") {
-          //           return sanitizeUser(admin);
-          //         }
-          //       })
-          //       .filter(a => a);
-          //     obj.admins = collegeAdmins;
-
-          //     const streams = obj.stream_strength.map(stream => stream.streams);
-          //     obj.stream_strength = streams;
-          //     accumulator.push(obj);
-          //   }
-          //   return accumulator;
-          // }, []);
-          // data.result = response;
-          // return data;
         });
+
+      response.result = response.result.map(college => {
+        const { rpc, zone } = college;
+        const stateId = rpc.state || zone.state;
+        const state = states.find(s => s.id === stateId);
+        return {
+          ...college,
+          state
+        };
+      });
+      return response;
     }
 
     if (role.name === "RPC Admin") {
-      return strapi
+      const response = await strapi
         .query("college")
         .model.query(
           buildQuery({
@@ -159,31 +127,22 @@ module.exports = {
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
-          // const response = data.result.reduce((acc, college) => {
-          //   const collegeAdmins = college.admins
-          //     .map(admin => {
-          //       if (admin.role.name === "College Admin") {
-          //         return sanitizeUser(admin);
-          //       }
-          //     })
-          //     .filter(a => a);
-          //   college.admins = collegeAdmins;
-
-          //   const streams = college.stream_strength.map(
-          //     stream => stream.streams
-          //   );
-          //   college.stream_strength = streams;
-
-          //   acc.push(college);
-          //   return acc;
-          // }, []);
-          // data.result = response;
-          // return data;
         });
+
+      response.result = response.result.map(college => {
+        const { rpc, zone } = college;
+        const stateId = rpc.state || zone.state;
+        const state = states.find(s => s.id === stateId);
+        return {
+          ...college,
+          state
+        };
+      });
+      return response;
     }
 
     if (role.name === "College Admin") {
-      return strapi
+      const response = await strapi
         .query("college")
         .model.query(
           buildQuery({
@@ -198,33 +157,27 @@ module.exports = {
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
-          // const response = data.result.reduce((acc, college) => {
-          //   const collegeAdmins = college.admins
-          //     .map(admin => {
-          //       if (admin.role.name === "College Admin") {
-          //         return sanitizeUser(admin);
-          //       }
-          //     })
-          //     .filter(a => a);
-          //   college.admins = collegeAdmins;
-
-          //   const streams = college.stream_strength.map(
-          //     stream => stream.streams
-          //   );
-          //   college.stream_strength = streams;
-
-          //   acc.push(college);
-          //   return acc;
-          // }, []);
-          // data.result = response;
-          // return data;
         });
+
+      response.result = response.result.map(college => {
+        const { rpc, zone } = college;
+        const stateId = rpc.state || zone.state;
+        const state = states.find(s => s.id === stateId);
+        return {
+          ...college,
+          state
+        };
+      });
+      return response;
     }
   },
 
   async findOne(ctx) {
     const { id } = ctx.params;
+    const states = await strapi.query("state").find();
     const response = await strapi.query("college").findOne({ id });
+    const stateId = response.rpc.state || response.zone.state;
+    response.state = states.find(s => s.id === stateId);
     return utils.getFindOneResponse(response);
   },
 
@@ -233,61 +186,11 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    // return bookshelf
-    //   .model("student")
-    //   .query(
-    //     buildQuery({
-    //       model: strapi.models.student,
-    //       filters
-    //     })
-    //   )
-    //   .fetchPage({
-    //     page: page,
-    //     pageSize: pageSize,
-    //     withRelated: [
-    //       "user.college.stream_strength.streams.stream",
-    //       "user.college.rpc",
-    //       "user.college.district",
-    //       "stream",
-    //       "educations",
-    //       "user.role",
-    //       "user.state",
-    //       "user.rpc",
-    //       "user.zone",
-    //       {
-    //         user: query => {
-    //           query.where({ college: id });
-    //         }
-    //       }
-    //     ]
-    //   })
-    //   .then(res => {
-    //     const data = utils.getPaginatedResponse(res);
-    //     const response = data.result.reduce((acc, obj) => {
-    //       if (Object.keys(obj.user).length) {
-    //         obj.user = sanitizeUser(obj.user);
-
-    //         if (obj.user.college) {
-    //           const streams = obj.user.college.stream_strength.map(
-    //             s => s.streams
-    //           );
-    //           obj.user.college.stream_strength = streams;
-    //         }
-
-    //         acc.push(obj);
-    //       }
-    //       return acc;
-    //     }, []);
-    //     data.result = response;
-    //     return data;
-    //   });
-
-    // TODO add student objects to it
     const studentRole = await strapi
       .query("role", "users-permissions")
       .findOne({ name: "Authenticated" });
 
-    return strapi
+    const response = await strapi
       .query("user", "users-permissions")
       .model.query(
         buildQuery({
@@ -305,5 +208,20 @@ module.exports = {
         data.result = data.result.map(sanitizeUser);
         return data;
       });
+
+    const userIds = response.result.map(user => user.id);
+    const students = await strapi
+      .query("student")
+      .find({ user_in: userIds }, []);
+
+    response.result = response.result.map(user => {
+      const { id } = user;
+      const student = students.find(s => s.user === id);
+      return {
+        ...user,
+        studentInfo: student
+      };
+    });
+    return response;
   }
 };
