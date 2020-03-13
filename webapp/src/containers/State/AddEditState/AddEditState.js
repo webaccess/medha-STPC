@@ -8,7 +8,7 @@ import StateSchema from "../StateSchema";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, YellowButton, GrayButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 import { useHistory } from "react-router-dom";
 import {
   Card,

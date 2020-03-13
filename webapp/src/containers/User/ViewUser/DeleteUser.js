@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -102,9 +104,18 @@ const DeleteUser = props => {
     >
       <Fade in={props.showModal}>
         <div className={classes.paper}>
-          <Typography variant={"h2"} className={classes.textMargin}>
-            {genericConstants.DELETE_TEXT}
-          </Typography>
+            <MuiDialogTitle>
+              <Typography variant={"h2"} className={classes.textMargin}>
+                {genericConstants.DELETE_TEXT}
+              </Typography>
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={props.modalClose}
+              >
+                <CloseIcon />
+              </IconButton>
+            </MuiDialogTitle>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">

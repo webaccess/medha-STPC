@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import BlockIcon from '@material-ui/icons/Block';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import {
   TextField,
-  Button,
   Card,
   CardContent,
   Tooltip,
@@ -37,7 +38,7 @@ const IPC_FILTER = "ipcFilter";
 const USER_FILTER = "userFilter";
 const ROLE_FILTER = "roleFilter";
 
-const ViewUsers = (props) => {
+const ViewUsers = props => {
   const [open, setOpen] = useState(true);
   const classes = useStyles();
   const history = useHistory();
@@ -93,7 +94,9 @@ const ViewUsers = (props) => {
     isUserBlocked: false,
     isMulBlocked: false,
     isMulUnBlocked: false,
-    MultiBlockUser: {}
+    MultiBlockUser: {},
+    bottonBlockUnblock: "Block",
+    greenButtonChecker: true
   });
 
   useEffect(() => {
@@ -228,6 +231,14 @@ const ViewUsers = (props) => {
     }
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false,
+      showModalDelete: false
+    }));
+  };
+
   /** To reset search filter */
   const refreshPage = () => {
     window.location.reload(false);
@@ -242,10 +253,6 @@ const ViewUsers = (props) => {
         value["name"] || value["username"];
     }
   };
-
-  const handleRowSelected = useCallback(state => {
-    setSelectedRows(state.selectedRows);
-  }, []);
 
   /** Get multiple user id for delete */
   const deleteMulUserById = () => {
@@ -302,7 +309,6 @@ const ViewUsers = (props) => {
   };
 
   const blockedCellData = (id, isBlocked = false) => {
-
     if (isBlocked === true) {
       setFormState(formState => ({
         ...formState,
@@ -328,42 +334,61 @@ const ViewUsers = (props) => {
 
   const handleCloseBlockModal = () => {
     /** This restores all the data when we close the modal */
-    //restoreData();
     setFormState(formState => ({
       ...formState,
       showModalBlock: false
     }));
     if (formState.isUserBlocked) {
-      getUserData();
+      //getUserData();
+      window.location.reload(false);
     }
   };
 
-  const blockMulUserById = () => {
-    let arrayId = [];
-
-    for (var k = 0; k < selectedRows.length; k++) {
-
-      if (selectedRows[k]["blocked"] === true) {
-
-        arrayId.push(selectedRows[k]["id"]);
+  const handleRowSelected = useCallback(state => {
+    let blockData = [];
+    let unblockData = [];
+    state.selectedRows.forEach(data => {
+      if (data.blocked === false) {
+        blockData.push(data);
+      } else {
+        unblockData.push(data);
+      }
+      if (blockData.length > 0) {
         setFormState(formState => ({
           ...formState,
-          isMulBlocked: false,
-          isMulUnBlocked: true,
-          showModalBlock: true,
-          MultiBlockUser: arrayId
+          bottonBlockUnblock: "Block"
         }));
       } else {
-
-        arrayId.push(selectedRows[k]["id"]);
         setFormState(formState => ({
           ...formState,
-          isMulBlocked: true,
-          isMulUnBlocked: false,
-          showModalBlock: true,
-          MultiBlockUser: arrayId
+          bottonBlockUnblock: "Un Block"
         }));
       }
+    });
+    setSelectedRows(state.selectedRows);
+  }, []);
+
+  const blockMulUserById = () => {
+    let arrayId = [];
+    for (var k = 0; k < selectedRows.length; k++) {
+      arrayId.push(selectedRows[k]["id"]);
+    }
+    if (formState.bottonBlockUnblock === "Block") {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: true,
+        isMulUnBlocked: false,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: false,
+        isMulUnBlocked: true,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
     }
   };
 
@@ -467,24 +492,28 @@ const ViewUsers = (props) => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          User
+          Users
         </Typography>
 
-        <Button
+        <GreenButton
           variant="contained"
           color="secondary"
           onClick={() => blockMulUserById()}
+          startIcon={<BlockIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
         >
-          Block
-        </Button>
+          {formState.bottonBlockUnblock}
+        </GreenButton>
 
-        <Button
+        <GreenButton  
           variant="contained"
           color="secondary"
           onClick={() => deleteMulUserById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
         >
           Delete
-        </Button>
+        </GreenButton>
 
         <GreenButton
           variant="contained"
@@ -498,8 +527,8 @@ const ViewUsers = (props) => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-               {/** Error/Success messages to be shown for edit */}
-          {formState.fromeditUser && formState.isDataEdited ? (
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromeditUser && formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -719,8 +748,6 @@ const ViewUsers = (props) => {
                 data={formState.dataToShow}
                 column={column}
                 onSelectedRowsChange={handleRowSelected}
-                //contextActions={contextActions}
-                //editEvent={editCell}
                 deleteEvent={deleteCell}
               />
             ) : (
@@ -737,6 +764,7 @@ const ViewUsers = (props) => {
               deleteEvent={isDeleteCellCompleted}
               id={formState.MultiDeleteID}
               isMultiDelete={formState.isMultiDelete}
+              modalClose={modalClose}
             />
           ) : (
             <DeleteUser
@@ -744,6 +772,7 @@ const ViewUsers = (props) => {
               closeModal={handleCloseDeleteModal}
               id={formState.dataToDelete["id"]}
               deleteEvent={isDeleteCellCompleted}
+              modalClose={modalClose}
             />
           )}
           {formState.isMulBlocked || formState.isMulUnBlocked ? (
@@ -754,6 +783,7 @@ const ViewUsers = (props) => {
               getModel={formState.showModalBlock}
               closeBlockModal={handleCloseBlockModal}
               blockEvent={isUserBlockCompleted}
+              modalClose={modalClose}
             />
           ) : (
             <BlockUser
@@ -763,6 +793,7 @@ const ViewUsers = (props) => {
               blockEvent={isUserBlockCompleted}
               isBlocked={formState.isBlocked}
               isUnBlocked={formState.isUnBlocked}
+              modalClose={modalClose}
             />
           )}
         </Card>
