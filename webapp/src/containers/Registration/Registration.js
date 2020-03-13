@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Container,
   Card,
   CardHeader,
   CardContent,
@@ -8,10 +7,6 @@ import {
   TextField,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
-  Divider,
-  Box,
   IconButton,
   InputAdornment,
   OutlinedInput
@@ -25,14 +20,11 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
-  KeyboardTimePicker,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-import Logo from "../../components/Logo/Logo.js";
 import Button from "../../components/GreenButton/GreenButton.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import { makeStyles } from "@material-ui/core/styles";
-import * as serviceProvider from "../../api/Axios.js";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
@@ -84,8 +76,6 @@ const Registration = props => {
     new Date("2000-01-01T21:11:54")
   );
   const { layout: Layout } = props.prop;
-  const [labelWidth, setLabelWidth] = React.useState(0);
-  const inputLabel = React.useRef(null);
   const classes = useStyles();
 
   const [statelist, setstatelist] = useState([]);
@@ -184,7 +174,7 @@ const Registration = props => {
       )
       .then(response => {
         console.log(response);
-        history.push("/registered");
+        history.push(routeConstants.REGISTERED);
       })
       .catch(err => {
         console.log(err);
