@@ -90,7 +90,8 @@ module.exports = {
         .where({ contact_number: contact_number })
         .fetch()
         .then(data => {
-          ctx.response.forbidden("User already registered.");
+          if (data) ctx.response.forbidden("User already registered.");
+          else throw "not a user";
         });
     } catch (err) {
       try {

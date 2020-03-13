@@ -76,13 +76,17 @@ module.exports = {
       .query("role", "users-permissions")
       .findOne({ name: "Student" });
     const requestBody = ctx.request.body;
+    console.log(ctx.request.body);
     const userRequestBody = Object.assign(
       {
         state: requestBody.state,
         zone: zone.id,
         rpc: rpc.id,
         college: college.id,
-        role: studentRole.id
+        role: studentRole.id,
+        provider: "local",
+        confirmed: false,
+        blocked: false
       },
       _.omit(requestBody, [
         "stream",
@@ -98,6 +102,10 @@ module.exports = {
         "college_id"
       ])
     );
+
+    userRequestBody.password = await strapi.plugins[
+      "users-permissions"
+    ].services.user.hashPassword(userRequestBody);
 
     await bookshelf
       .transaction(async t => {
@@ -143,7 +151,8 @@ module.exports = {
             "last_name",
             "contact_number",
             "otp",
-            "college_id"
+            "college_id",
+            "state"
           ])
         );
         return await bookshelf
