@@ -1,12 +1,16 @@
 import React, { useState } from "react";
-import { Grid, Typography } from "@material-ui/core";
-import * as serviceProviders from "../../../api/Axios";
-import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import { Grid, Typography, IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
+
+import * as serviceProviders from "../../../api/Axios";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { YellowButton } from "../../../components";
 import useStyles from "./DeleteUserStyles";
+
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
@@ -97,9 +101,19 @@ const BlockUser = props => {
     >
       <Fade in={props.getModel}>
         <div className={classes.paper}>
-          <Typography variant={"h2"} className={classes.textMargin}>
-            Block
-          </Typography>
+          <MuiDialogTitle>
+            <Typography className={classes.textMargin}>
+              {props.isUnBlocked || props.isUnMulBlocked ? "UN-Block" : null}
+              {props.isBlocked || props.isMulBlocked ? "Block" : null}
+            </Typography>
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={props.modalClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </MuiDialogTitle>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">

@@ -21,7 +21,7 @@ const UserSchema = {
     required: true,
     placeholder: "password",
     autoFocus: true,
-    type: "text",
+    type: "password",
     validations: {
       required: {
         value: "true",

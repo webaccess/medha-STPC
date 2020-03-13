@@ -6,12 +6,21 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "../UserStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert, YellowButton, GrayButton } from "../../../components";
+import {
+  InputAdornment,
+  IconButton,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  FormHelperText
+} from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProvider from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import { useHistory } from "react-router-dom";
-
 import {
   Card,
   CardContent,
@@ -49,6 +58,7 @@ const Adduser = props => {
     touched: {},
     errors: {},
     isSuccess: false,
+    showPassword: false,
     isEditUser: props["editUser"] ? props["editUser"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0
@@ -321,6 +331,14 @@ const Adduser = props => {
     }
   };
 
+  const handleClickShowPassword = () => {
+    setFormState({ ...formState, showPassword: !formState.showPassword });
+  };
+
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
+
   const hasError = field => (formState.errors[field] ? true : false);
 
   return (
@@ -444,23 +462,45 @@ const Adduser = props => {
                   />
                 </Grid>
                 <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(UserSchema[password], "label")}
-                    name={password}
-                    value={formState.values[password] || ""}
-                    error={hasError(password)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(password)
+                  <FormControl variant="outlined">
+                    <InputLabel htmlFor="outlined-adornment-password">
+                      {get(UserSchema[password], "label")}
+                    </InputLabel>
+                    <OutlinedInput
+                      id={get(UserSchema[password], "id")}
+                      name={password}
+                      required
+                      fullWidth
+                      error={hasError(password)}
+                      type={formState.showPassword ? "text" : "password"}
+                      value={formState.values[password] || ""}
+                      onChange={handleChange}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {formState.showPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      labelWidth={70}
+                    />
+                    <FormHelperText error={hasError(password)}>
+                      {hasError(password)
                         ? formState.errors[password].map(error => {
                             return error + " ";
                           })
-                        : null
-                    }
-                  />
+                        : null}
+                    </FormHelperText>
+                  </FormControl>
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />
