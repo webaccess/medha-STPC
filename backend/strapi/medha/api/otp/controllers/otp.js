@@ -68,23 +68,15 @@ module.exports = {
     const { contact_number } = ctx.request.body;
     let OTP, buffer;
     try {
-      const data = await bookshelf
-        .model("user")
-        .where({ contact_number: contact_number })
-        .fetch();
-      if (!!data) {
-        ctx.response.forbidden("Student already exist...");
-      } else {
-        buffer = crypto.randomBytes(2);
-        OTP = parseInt(buffer.toString("hex"), 16);
-        await bookshelf
-          .model("otp")
-          .forge({ contact_number: contact_number, otp: OTP })
-          .save();
-        const response = utils.getResponse(null);
-        response.result = { status: "Ok " };
-        ctx.body = response;
-      }
+      buffer = crypto.randomBytes(2);
+      OTP = parseInt(buffer.toString("hex"), 16);
+      await bookshelf
+        .model("otp")
+        .forge({ contact_number: contact_number, otp: OTP })
+        .save();
+      const response = utils.getResponse(null);
+      response.result = { status: "Ok " };
+      ctx.body = response;
     } catch (err) {
       console.log(err);
     }
@@ -94,15 +86,29 @@ module.exports = {
 
     try {
       await bookshelf
-        .model("otp")
-        .where({ contact_number: contact_number, otp: otp, is_verified: null })
-        .fetch();
-      const response = utils.getResponse(null);
-      response.result = { status: "Ok" };
-      ctx.body = response;
+        .model("user")
+        .where({ contact_number: contact_number })
+        .fetch()
+        .then(data => {
+          ctx.response.forbidden("User already registered.");
+        });
     } catch (err) {
-      console.log(err);
-      ctx.body = err;
+      try {
+        await bookshelf
+          .model("otp")
+          .where({
+            contact_number: contact_number,
+            otp: otp,
+            is_verified: null
+          })
+          .fetch();
+        const response = utils.getResponse(null);
+        response.result = { status: "Ok" };
+        ctx.body = response;
+      } catch (err) {
+        console.log(err);
+        ctx.response.badRequest("Invalid OTP");
+      }
     }
   }
 };

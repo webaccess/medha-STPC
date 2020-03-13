@@ -50,9 +50,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "_limit",
@@ -238,9 +236,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -305,9 +301,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": []
       }
     },
@@ -358,9 +352,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "id",
@@ -420,9 +412,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -494,9 +484,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "id",
@@ -562,9 +550,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "id",
@@ -583,10 +569,7 @@
   "components": {
     "schemas": {
       "Rpc": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -642,10 +625,7 @@
             }
           },
           "state": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -658,9 +638,7 @@
         }
       },
       "NewRpc": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"

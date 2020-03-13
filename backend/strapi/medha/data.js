@@ -339,6 +339,91 @@ const roles = {
     ],
     grantAllPermissions: false
   },
+  Student: {
+    controllers: [
+      {
+        name: "academic-history",
+        action: []
+      },
+      {
+        name: "academic-year",
+        action: []
+      },
+      {
+        name: "activity",
+        action: []
+      },
+      {
+        name: "activity-batch",
+        action: []
+      },
+      {
+        name: "activity-batch-attendance",
+        action: []
+      },
+      {
+        name: "college",
+        action: []
+      },
+      {
+        name: "education",
+        action: []
+      },
+      {
+        name: "event",
+        action: []
+      },
+      {
+        name: "event-registration",
+        action: []
+      },
+      {
+        name: "feedback",
+        action: []
+      },
+      {
+        name: "question",
+        action: []
+      },
+      {
+        name: "question-set",
+        action: []
+      },
+      {
+        name: "response",
+        action: []
+      },
+      {
+        name: "rpc",
+        action: []
+      },
+      {
+        name: "state",
+        action: []
+      },
+      {
+        name: "stream",
+        action: []
+      },
+      {
+        name: "student",
+        action: ["findone", "update"]
+      },
+      {
+        name: "user",
+        action: ["me"]
+      },
+      {
+        name: "zone",
+        action: []
+      },
+      {
+        name: "district",
+        action: []
+      }
+    ],
+    grantAllPermissions: false
+  },
   "Medha Admin": {
     controllers: [
       {
@@ -454,7 +539,7 @@ const publicRoutes = {
   controllers: [
     {
       name: "otp",
-      action: ["requestotp", "validateotp", "requestotpforstudent"]
+      action: ["requestotp", "validateotp", "requestotpforstudent", "checkotp"]
     },
     {
       name: "state",

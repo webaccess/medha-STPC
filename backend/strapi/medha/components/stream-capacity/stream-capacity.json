@@ -1,0 +1,18 @@
+{
+  "info": {
+    "name": "stream_capacity",
+    "icon": "archive"
+  },
+  "options": {},
+  "attributes": {
+    "stream": {
+      "model": "stream"
+    },
+    "strength": {
+      "type": "integer",
+      "required": true
+    }
+  },
+  "connection": "default",
+  "collectionName": "components_stream_capacity_stream_capacities"
+}

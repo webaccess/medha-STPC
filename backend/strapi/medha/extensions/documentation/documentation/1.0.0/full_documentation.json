@@ -95,9 +95,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-history"
-        ],
+        "tags": ["Academic-history"],
         "parameters": [
           {
             "name": "_limit",
@@ -287,9 +285,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-history"
-        ],
+        "tags": ["Academic-history"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -354,9 +350,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-history"
-        ],
+        "tags": ["Academic-history"],
         "parameters": []
       }
     },
@@ -411,9 +405,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-history"
-        ],
+        "tags": ["Academic-history"],
         "parameters": [
           {
             "name": "id",
@@ -477,9 +469,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-history"
-        ],
+        "tags": ["Academic-history"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -551,9 +541,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-history"
-        ],
+        "tags": ["Academic-history"],
         "parameters": [
           {
             "name": "id",
@@ -619,9 +607,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-year"
-        ],
+        "tags": ["Academic-year"],
         "parameters": [
           {
             "name": "_limit",
@@ -811,9 +797,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-year"
-        ],
+        "tags": ["Academic-year"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -878,9 +862,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-year"
-        ],
+        "tags": ["Academic-year"],
         "parameters": []
       }
     },
@@ -935,9 +917,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-year"
-        ],
+        "tags": ["Academic-year"],
         "parameters": [
           {
             "name": "id",
@@ -1001,9 +981,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-year"
-        ],
+        "tags": ["Academic-year"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -1075,9 +1053,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Academic-year"
-        ],
+        "tags": ["Academic-year"],
         "parameters": [
           {
             "name": "id",
@@ -1143,9 +1119,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch-attendance"
-        ],
+        "tags": ["Activity-batch-attendance"],
         "parameters": [
           {
             "name": "_limit",
@@ -1335,9 +1309,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch-attendance"
-        ],
+        "tags": ["Activity-batch-attendance"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -1402,9 +1374,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch-attendance"
-        ],
+        "tags": ["Activity-batch-attendance"],
         "parameters": []
       }
     },
@@ -1459,9 +1429,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch-attendance"
-        ],
+        "tags": ["Activity-batch-attendance"],
         "parameters": [
           {
             "name": "id",
@@ -1525,9 +1493,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch-attendance"
-        ],
+        "tags": ["Activity-batch-attendance"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -1599,9 +1565,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch-attendance"
-        ],
+        "tags": ["Activity-batch-attendance"],
         "parameters": [
           {
             "name": "id",
@@ -1667,9 +1631,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch"
-        ],
+        "tags": ["Activity-batch"],
         "parameters": [
           {
             "name": "_limit",
@@ -1859,9 +1821,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch"
-        ],
+        "tags": ["Activity-batch"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -1926,9 +1886,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch"
-        ],
+        "tags": ["Activity-batch"],
         "parameters": []
       }
     },
@@ -1983,9 +1941,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch"
-        ],
+        "tags": ["Activity-batch"],
         "parameters": [
           {
             "name": "id",
@@ -2049,9 +2005,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch"
-        ],
+        "tags": ["Activity-batch"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -2123,9 +2077,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity-batch"
-        ],
+        "tags": ["Activity-batch"],
         "parameters": [
           {
             "name": "id",
@@ -2190,9 +2142,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": [
           {
             "name": "_limit",
@@ -2378,9 +2328,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -2445,9 +2393,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": []
       }
     },
@@ -2498,9 +2444,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": [
           {
             "name": "id",
@@ -2560,9 +2504,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -2634,9 +2576,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Activity"
-        ],
+        "tags": ["Activity"],
         "parameters": [
           {
             "name": "id",
@@ -2701,9 +2641,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "_limit",
@@ -2889,9 +2827,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -2956,9 +2892,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -3024,9 +2958,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": []
       }
     },
@@ -3077,9 +3009,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -3139,9 +3069,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -3213,9 +3141,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -3280,9 +3206,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "District"
-        ],
+        "tags": ["District"],
         "parameters": [
           {
             "name": "_limit",
@@ -3468,9 +3392,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "District"
-        ],
+        "tags": ["District"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -3535,9 +3457,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "District"
-        ],
+        "tags": ["District"],
         "parameters": []
       }
     },
@@ -3588,9 +3508,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "District"
-        ],
+        "tags": ["District"],
         "parameters": [
           {
             "name": "id",
@@ -3650,9 +3568,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "District"
-        ],
+        "tags": ["District"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -3724,9 +3640,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "District"
-        ],
+        "tags": ["District"],
         "parameters": [
           {
             "name": "id",
@@ -3791,9 +3705,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "parameters": [
           {
             "name": "_limit",
@@ -3979,9 +3891,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -4046,9 +3956,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "parameters": []
       }
     },
@@ -4099,9 +4007,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "parameters": [
           {
             "name": "id",
@@ -4161,9 +4067,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -4235,9 +4139,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "parameters": [
           {
             "name": "id",
@@ -4303,9 +4205,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event-registration"
-        ],
+        "tags": ["Event-registration"],
         "parameters": [
           {
             "name": "_limit",
@@ -4495,9 +4395,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event-registration"
-        ],
+        "tags": ["Event-registration"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -4562,9 +4460,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event-registration"
-        ],
+        "tags": ["Event-registration"],
         "parameters": []
       }
     },
@@ -4619,9 +4515,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event-registration"
-        ],
+        "tags": ["Event-registration"],
         "parameters": [
           {
             "name": "id",
@@ -4685,9 +4579,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event-registration"
-        ],
+        "tags": ["Event-registration"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -4759,9 +4651,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event-registration"
-        ],
+        "tags": ["Event-registration"],
         "parameters": [
           {
             "name": "id",
@@ -4826,9 +4716,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": [
           {
             "name": "_limit",
@@ -5014,9 +4902,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -5081,9 +4967,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": []
       }
     },
@@ -5134,9 +5018,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": [
           {
             "name": "id",
@@ -5196,9 +5078,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -5270,9 +5150,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Event"
-        ],
+        "tags": ["Event"],
         "parameters": [
           {
             "name": "id",
@@ -5337,9 +5215,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": [
           {
             "name": "_limit",
@@ -5525,9 +5401,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -5592,9 +5466,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": []
       }
     },
@@ -5645,9 +5517,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": [
           {
             "name": "id",
@@ -5707,9 +5577,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -5781,9 +5649,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": [
           {
             "name": "id",
@@ -5849,9 +5715,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -5920,9 +5784,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -5991,9 +5853,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -6062,9 +5922,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -6132,9 +5990,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "_limit",
@@ -6320,9 +6176,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -6387,9 +6241,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": []
       }
     },
@@ -6440,9 +6292,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "id",
@@ -6502,9 +6352,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -6576,9 +6424,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Otp"
-        ],
+        "tags": ["Otp"],
         "parameters": [
           {
             "name": "id",
@@ -6644,9 +6490,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": [
           {
             "name": "_limit",
@@ -6836,9 +6680,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -6903,9 +6745,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": []
       }
     },
@@ -6960,9 +6800,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": [
           {
             "name": "id",
@@ -7026,9 +6864,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -7100,9 +6936,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": [
           {
             "name": "id",
@@ -7167,9 +7001,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question"
-        ],
+        "tags": ["Question"],
         "parameters": [
           {
             "name": "_limit",
@@ -7355,9 +7187,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question"
-        ],
+        "tags": ["Question"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -7422,9 +7252,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question"
-        ],
+        "tags": ["Question"],
         "parameters": []
       }
     },
@@ -7475,9 +7303,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question"
-        ],
+        "tags": ["Question"],
         "parameters": [
           {
             "name": "id",
@@ -7537,9 +7363,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question"
-        ],
+        "tags": ["Question"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -7611,9 +7435,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question"
-        ],
+        "tags": ["Question"],
         "parameters": [
           {
             "name": "id",
@@ -7678,9 +7500,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Response"
-        ],
+        "tags": ["Response"],
         "parameters": [
           {
             "name": "_limit",
@@ -7866,9 +7686,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Response"
-        ],
+        "tags": ["Response"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -7933,9 +7751,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Response"
-        ],
+        "tags": ["Response"],
         "parameters": []
       }
     },
@@ -7986,9 +7802,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Response"
-        ],
+        "tags": ["Response"],
         "parameters": [
           {
             "name": "id",
@@ -8048,9 +7862,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Response"
-        ],
+        "tags": ["Response"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -8122,9 +7934,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Response"
-        ],
+        "tags": ["Response"],
         "parameters": [
           {
             "name": "id",
@@ -8189,9 +7999,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "_limit",
@@ -8377,9 +8185,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -8444,9 +8250,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": []
       }
     },
@@ -8497,9 +8301,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "id",
@@ -8559,9 +8361,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -8633,9 +8433,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "id",
@@ -8701,9 +8499,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Rpc"
-        ],
+        "tags": ["Rpc"],
         "parameters": [
           {
             "name": "id",
@@ -8768,9 +8564,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "parameters": [
           {
             "name": "_limit",
@@ -8956,9 +8750,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -9023,9 +8815,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "parameters": []
       }
     },
@@ -9076,9 +8866,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "parameters": [
           {
             "name": "id",
@@ -9138,9 +8926,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -9212,9 +8998,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "parameters": [
           {
             "name": "id",
@@ -9280,9 +9064,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "parameters": [
           {
             "name": "id",
@@ -9348,9 +9130,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "State"
-        ],
+        "tags": ["State"],
         "parameters": [
           {
             "name": "id",
@@ -9415,9 +9195,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Stream"
-        ],
+        "tags": ["Stream"],
         "parameters": [
           {
             "name": "_limit",
@@ -9603,9 +9381,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Stream"
-        ],
+        "tags": ["Stream"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -9670,9 +9446,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Stream"
-        ],
+        "tags": ["Stream"],
         "parameters": []
       }
     },
@@ -9723,9 +9497,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Stream"
-        ],
+        "tags": ["Stream"],
         "parameters": [
           {
             "name": "id",
@@ -9785,9 +9557,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Stream"
-        ],
+        "tags": ["Stream"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -9859,9 +9629,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Stream"
-        ],
+        "tags": ["Stream"],
         "parameters": [
           {
             "name": "id",
@@ -9927,9 +9695,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Student"
-        ],
+        "tags": ["Student"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -9997,9 +9763,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Student"
-        ],
+        "tags": ["Student"],
         "parameters": [
           {
             "name": "_limit",
@@ -10185,9 +9949,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Student"
-        ],
+        "tags": ["Student"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -10252,9 +10014,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Student"
-        ],
+        "tags": ["Student"],
         "parameters": []
       }
     },
@@ -10305,9 +10065,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Student"
-        ],
+        "tags": ["Student"],
         "parameters": [
           {
             "name": "id",
@@ -10367,9 +10125,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Student"
-        ],
+        "tags": ["Student"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -10441,9 +10197,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Student"
-        ],
+        "tags": ["Student"],
         "parameters": [
           {
             "name": "id",
@@ -10508,9 +10262,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Zone"
-        ],
+        "tags": ["Zone"],
         "parameters": [
           {
             "name": "_limit",
@@ -10696,9 +10448,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Zone"
-        ],
+        "tags": ["Zone"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -10763,9 +10513,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Zone"
-        ],
+        "tags": ["Zone"],
         "parameters": []
       }
     },
@@ -10816,9 +10564,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Zone"
-        ],
+        "tags": ["Zone"],
         "parameters": [
           {
             "name": "id",
@@ -10878,9 +10624,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Zone"
-        ],
+        "tags": ["Zone"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -10952,9 +10696,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Zone"
-        ],
+        "tags": ["Zone"],
         "parameters": [
           {
             "name": "id",
@@ -11020,9 +10762,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Zone"
-        ],
+        "tags": ["Zone"],
         "parameters": [
           {
             "name": "id",
@@ -11088,9 +10828,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Email - Email"
-        ],
+        "tags": ["Email - Email"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -11159,9 +10897,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Upload - File"
-        ],
+        "tags": ["Upload - File"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -11230,9 +10966,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Upload - File"
-        ],
+        "tags": ["Upload - File"],
         "parameters": []
       }
     },
@@ -11287,9 +11021,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Upload - File"
-        ],
+        "tags": ["Upload - File"],
         "parameters": []
       }
     },
@@ -11344,9 +11076,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Upload - File"
-        ],
+        "tags": ["Upload - File"],
         "parameters": [
           {
             "name": "id",
@@ -11410,9 +11140,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Upload - File"
-        ],
+        "tags": ["Upload - File"],
         "parameters": [
           {
             "name": "id",
@@ -11478,9 +11206,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Upload - File"
-        ],
+        "tags": ["Upload - File"],
         "parameters": [
           {
             "name": "id",
@@ -11546,9 +11272,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - Role"
-        ],
+        "tags": ["Users-Permissions - Role"],
         "parameters": []
       }
     },
@@ -11599,9 +11323,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - Role"
-        ],
+        "tags": ["Users-Permissions - Role"],
         "parameters": [
           {
             "name": "id",
@@ -11666,9 +11388,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - Role"
-        ],
+        "tags": ["Users-Permissions - Role"],
         "parameters": [
           {
             "name": "_limit",
@@ -11854,9 +11574,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - Role"
-        ],
+        "tags": ["Users-Permissions - Role"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -11917,9 +11635,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - Role"
-        ],
+        "tags": ["Users-Permissions - Role"],
         "parameters": [
           {
             "name": "role",
@@ -11994,9 +11710,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - Role"
-        ],
+        "tags": ["Users-Permissions - Role"],
         "parameters": [
           {
             "name": "role",
@@ -12061,9 +11775,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -12265,9 +11977,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": []
       }
     },
@@ -12322,9 +12032,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -12389,9 +12097,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -12456,9 +12162,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "provider",
@@ -12524,9 +12228,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -12595,9 +12297,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -12666,9 +12366,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": []
       }
     },
@@ -12723,9 +12421,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -12793,9 +12489,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "_limit",
@@ -12983,9 +12677,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": []
       }
     },
@@ -13036,9 +12728,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -13098,9 +12788,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -13175,9 +12863,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Users-Permissions - User"
-        ],
+        "tags": ["Users-Permissions - User"],
         "parameters": [
           {
             "name": "id",
@@ -13196,9 +12882,7 @@
   "components": {
     "schemas": {
       "Academic-history": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -13265,12 +12949,7 @@
             }
           },
           "academic_year": {
-            "required": [
-              "id",
-              "name",
-              "start_date",
-              "end_date"
-            ],
+            "required": ["id", "name", "start_date", "end_date"],
             "properties": {
               "id": {
                 "type": "string"
@@ -13288,12 +12967,7 @@
           },
           "education_year": {
             "type": "string",
-            "enum": [
-              "First",
-              "Second",
-              "Third",
-              "Fourth"
-            ]
+            "enum": ["First", "Second", "Third", "Fourth"]
           }
         }
       },
@@ -13307,22 +12981,12 @@
           },
           "education_year": {
             "type": "string",
-            "enum": [
-              "First",
-              "Second",
-              "Third",
-              "Fourth"
-            ]
+            "enum": ["First", "Second", "Third", "Fourth"]
           }
         }
       },
       "Academic-year": {
-        "required": [
-          "id",
-          "name",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["id", "name", "start_date", "end_date"],
         "properties": {
           "id": {
             "type": "string"
@@ -13339,11 +13003,7 @@
         }
       },
       "NewAcademic-year": {
-        "required": [
-          "name",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["name", "start_date", "end_date"],
         "properties": {
           "name": {
             "type": "string"
@@ -13357,17 +13017,13 @@
         }
       },
       "Activity-batch-attendance": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
           },
           "activity_batch": {
-            "required": [
-              "id"
-            ],
+            "required": ["id"],
             "properties": {
               "id": {
                 "type": "string"
@@ -13472,9 +13128,7 @@
         }
       },
       "Activity-batch": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -13585,19 +13239,10 @@
           },
           "activity_type": {
             "type": "string",
-            "enum": [
-              "workshop",
-              "industrialVisit",
-              "training"
-            ]
+            "enum": ["workshop", "industrialVisit", "training"]
           },
           "academic_year": {
-            "required": [
-              "id",
-              "name",
-              "start_date",
-              "end_date"
-            ],
+            "required": ["id", "name", "start_date", "end_date"],
             "properties": {
               "id": {
                 "type": "string"
@@ -13668,18 +13313,10 @@
           },
           "education_year": {
             "type": "string",
-            "enum": [
-              "First",
-              "Second",
-              "Third",
-              "Fourth"
-            ]
+            "enum": ["First", "Second", "Third", "Fourth"]
           },
           "streams": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -13748,10 +13385,7 @@
             "type": "string"
           },
           "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -13797,11 +13431,7 @@
           },
           "activity_type": {
             "type": "string",
-            "enum": [
-              "workshop",
-              "industrialVisit",
-              "training"
-            ]
+            "enum": ["workshop", "industrialVisit", "training"]
           },
           "academic_year": {
             "type": "string"
@@ -13817,12 +13447,7 @@
           },
           "education_year": {
             "type": "string",
-            "enum": [
-              "First",
-              "Second",
-              "Third",
-              "Fourth"
-            ]
+            "enum": ["First", "Second", "Third", "Fourth"]
           },
           "streams": {
             "type": "string"
@@ -13845,13 +13470,7 @@
         }
       },
       "College": {
-        "required": [
-          "id",
-          "name",
-          "college_code",
-          "address",
-          "college_email"
-        ],
+        "required": ["id", "name", "college_code", "address", "college_email"],
         "properties": {
           "id": {
             "type": "string"
@@ -13860,10 +13479,7 @@
             "type": "string"
           },
           "rpc": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -13952,10 +13568,7 @@
             }
           },
           "district": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -13976,18 +13589,13 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "id"
-              ],
+              "required": ["id"],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": [
-                    "id",
-                    "name"
-                  ],
+                  "required": ["id", "name"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -14004,10 +13612,7 @@
             }
           },
           "zone": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -14023,12 +13628,7 @@
         }
       },
       "NewCollege": {
-        "required": [
-          "name",
-          "college_code",
-          "address",
-          "college_email"
-        ],
+        "required": ["name", "college_code", "address", "college_email"],
         "properties": {
           "name": {
             "type": "string"
@@ -14062,18 +13662,13 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "id"
-              ],
+              "required": ["id"],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": [
-                    "id",
-                    "name"
-                  ],
+                  "required": ["id", "name"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -14095,10 +13690,7 @@
         }
       },
       "District": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -14107,10 +13699,7 @@
             "type": "string"
           },
           "state": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -14123,9 +13712,7 @@
         }
       },
       "NewDistrict": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -14223,12 +13810,7 @@
         }
       },
       "NewEducation": {
-        "required": [
-          "qualification",
-          "board",
-          "year_of_passing",
-          "marks"
-        ],
+        "required": ["qualification", "board", "year_of_passing", "marks"],
         "properties": {
           "qualification": {
             "type": "string"
@@ -14248,9 +13830,7 @@
         }
       },
       "Event-registration": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -14425,10 +14005,7 @@
             "type": "string"
           },
           "rpc": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -14492,10 +14069,7 @@
             }
           },
           "streams": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -14555,10 +14129,7 @@
             }
           },
           "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -14631,9 +14202,7 @@
         }
       },
       "Feedback": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -14807,10 +14376,7 @@
             }
           },
           "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -14857,11 +14423,7 @@
         }
       },
       "Otp": {
-        "required": [
-          "id",
-          "contact_number",
-          "otp"
-        ],
+        "required": ["id", "contact_number", "otp"],
         "properties": {
           "id": {
             "type": "string"
@@ -14878,10 +14440,7 @@
         }
       },
       "NewOtp": {
-        "required": [
-          "contact_number",
-          "otp"
-        ],
+        "required": ["contact_number", "otp"],
         "properties": {
           "contact_number": {
             "type": "string"
@@ -14895,10 +14454,7 @@
         }
       },
       "Question-set": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -14909,10 +14465,7 @@
           "questions": {
             "type": "array",
             "items": {
-              "required": [
-                "id",
-                "title"
-              ],
+              "required": ["id", "title"],
               "properties": {
                 "id": {
                   "type": "string"
@@ -15046,9 +14599,7 @@
         }
       },
       "NewQuestion-set": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -15074,10 +14625,7 @@
         }
       },
       "Question": {
-        "required": [
-          "id",
-          "title"
-        ],
+        "required": ["id", "title"],
         "properties": {
           "id": {
             "type": "string"
@@ -15086,10 +14634,7 @@
             "type": "string"
           },
           "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15119,17 +14664,12 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "Rating",
-              "Comment"
-            ]
+            "enum": ["Rating", "Comment"]
           }
         }
       },
       "NewQuestion": {
-        "required": [
-          "title"
-        ],
+        "required": ["title"],
         "properties": {
           "title": {
             "type": "string"
@@ -15139,25 +14679,18 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "Rating",
-              "Comment"
-            ]
+            "enum": ["Rating", "Comment"]
           }
         }
       },
       "Response": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
           },
           "feedback": {
-            "required": [
-              "id"
-            ],
+            "required": ["id"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15177,10 +14710,7 @@
             }
           },
           "question": {
-            "required": [
-              "id",
-              "title"
-            ],
+            "required": ["id", "title"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15221,10 +14751,7 @@
         }
       },
       "Rpc": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -15280,10 +14807,7 @@
             }
           },
           "state": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15296,9 +14820,7 @@
         }
       },
       "NewRpc": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -15312,10 +14834,7 @@
         }
       },
       "State": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -15326,9 +14845,7 @@
         }
       },
       "NewState": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -15336,10 +14853,7 @@
         }
       },
       "Stream": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -15350,9 +14864,7 @@
         }
       },
       "NewStream": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -15434,10 +14946,7 @@
             }
           },
           "stream": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15516,10 +15025,7 @@
           },
           "gender": {
             "type": "string",
-            "enum": [
-              "male",
-              "female"
-            ]
+            "enum": ["male", "female"]
           },
           "roll_number": {
             "type": "integer"
@@ -15557,10 +15063,7 @@
             }
           },
           "district": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15611,10 +15114,7 @@
           },
           "gender": {
             "type": "string",
-            "enum": [
-              "male",
-              "female"
-            ]
+            "enum": ["male", "female"]
           },
           "roll_number": {
             "type": "integer"
@@ -15631,10 +15131,7 @@
         }
       },
       "Zone": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -15643,10 +15140,7 @@
             "type": "string"
           },
           "state": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15659,9 +15153,7 @@
         }
       },
       "NewZone": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -15672,10 +15164,7 @@
         }
       },
       "Users-PermissionsRole": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -15693,13 +15182,7 @@
           "permissions": {
             "type": "array",
             "items": {
-              "required": [
-                "id",
-                "type",
-                "controller",
-                "action",
-                "enabled"
-              ],
+              "required": ["id", "type", "controller", "action", "enabled"],
               "properties": {
                 "id": {
                   "type": "string"
@@ -15791,9 +15274,7 @@
         }
       },
       "NewUsers-PermissionsRole": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string",
@@ -15852,10 +15333,7 @@
             "default": false
           },
           "role": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15893,10 +15371,7 @@
             "type": "string"
           },
           "state": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15907,10 +15382,7 @@
             }
           },
           "zone": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -15924,10 +15396,7 @@
             }
           },
           "rpc": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -16054,10 +15523,7 @@
         }
       },
       "Error": {
-        "required": [
-          "code",
-          "message"
-        ],
+        "required": ["code", "message"],
         "properties": {
           "code": {
             "type": "integer",
