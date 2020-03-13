@@ -1,7 +1,6 @@
-import React, { forwardRef } from "react";
+import React, { useState, useContext } from "react";
 import { get } from "lodash";
 import clsx from "clsx";
-import { NavLink as RouterLink } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import {
   IconButton,
@@ -9,7 +8,6 @@ import {
   AppBar,
   Toolbar,
   List,
-  Divider,
   Drawer,
   Hidden,
   ListItem,
@@ -26,8 +24,8 @@ import * as routeConstants from "../../constants/RouteConstants";
 import Logo from "../Logo/Logo";
 import MenuItems from "./Component/MenuItems";
 import { Auth as auth, CustomRouterLink } from "../../components";
-import { fontSize } from "@material-ui/system";
 import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
+import SetIndexContext from "../../context/SetIndexContext";
 
 const useDrawerStyles = makeStyles(theme => ({
   drawer: {
@@ -62,7 +60,6 @@ const useTopBarStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   signOutButton: {
-    // marginLeft: theme.spacing(1)
     fontSize: "13px"
   },
   loginButtonFlex: {
@@ -98,7 +95,6 @@ const useListStyles = makeStyles(theme => ({
     color: colors.blueGrey[800],
     padding: "8px 0px 8px 10px",
     justifyContent: "flex-start",
-    textTransform: "none",
     letterSpacing: 0,
     width: "100%",
     fontWeight: theme.typography.fontWeightBold,
@@ -113,13 +109,10 @@ const useListStyles = makeStyles(theme => ({
       borderLeft: "4px solid #f6c80a"
     }
   },
-
-  "@global": {
-    "li > button:nth-of-type(1)": {
-      backgroundColor: "#666",
-      color: "#f6c80a",
-      borderLeft: "4px solid #f6c80a"
-    }
+  activeItem: {
+    backgroundColor: "#666",
+    color: "#f6c80a",
+    borderLeft: "4px solid #f6c80a"
   },
   icon: {
     color: theme.palette.icon,
@@ -134,10 +127,6 @@ const useListStyles = makeStyles(theme => ({
     color: "#010101",
     backgroundColor: "#f1f1f1",
     fontWeight: theme.typography.fontWeightBold
-    // borderLeft: "4px solid #f6c80a",
-    // "& $icon": {
-    //   color: "#010101"
-    // }
   },
   nested: {
     paddingLeft: theme.spacing(0),
@@ -170,8 +159,11 @@ function SideAndTopNavBar(props) {
   const listClasses = useListStyles();
 
   const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [subListState, setSubListState] = React.useState({});
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [subListState, setSubListState] = useState({});
+
+  const { index, setIndex } = useContext(SetIndexContext);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -181,35 +173,38 @@ function SideAndTopNavBar(props) {
     setSubListState({ ...subListState, [name]: !get(subListState, name) });
   };
 
-  const inputs = get(MenuItems(), ["Medha_Admin"], []);
+  const inputs = get(
+    MenuItems(),
+    auth.getUserInfo() ? auth.getUserInfo()["role"]["name"] : "",
+    []
+  );
 
   const drawer = (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.toolbar} />
 
-      {inputs.map(list => {
+      {inputs.map((list, id) => {
         return (
           <div key={list.name}>
             {list.items != null ? (
               <List {...rest} className={clsx(listClasses.root, className)}>
                 <ListItem
-                  className={listClasses.item}
+                  className={listClasses.button}
                   disableGutters
                   key={list.name}
                   onClick={e => handleClick(list.name)}
+                  selected={index === id}
+                  classes={{
+                    selected: listClasses.activeItem
+                  }}
                 >
-                  <Button
-                    activeclassname={listClasses.active}
-                    className={listClasses.button}
-                  >
-                    <div className={listClasses.icon}>{list.Icon}</div>
-                    {list.name}
-                    {get(subListState, list.name) ? (
-                      <ExpandLess />
-                    ) : (
-                      <ExpandMore />
-                    )}
-                  </Button>
+                  <div className={listClasses.icon}>{list.Icon}</div>
+                  {list.name}
+                  {get(subListState, list.name) ? (
+                    <ExpandLess />
+                  ) : (
+                    <ExpandMore />
+                  )}
                 </ListItem>
                 <Collapse
                   in={get(subListState, list.name)}
@@ -225,10 +220,11 @@ function SideAndTopNavBar(props) {
                           key={subList.name}
                         >
                           <Button
-                            activeclassname={listClasses.active}
+                            activeClassName={listClasses.active}
                             className={listClasses.button}
                             component={CustomRouterLink}
                             to={subList.link}
+                            onClick={() => setIndex(id)}
                           >
                             {subList.name}
                           </Button>
@@ -241,19 +237,19 @@ function SideAndTopNavBar(props) {
             ) : (
               <List {...rest} className={clsx(listClasses.root, className)}>
                 <ListItem
-                  className={listClasses.item}
+                  className={listClasses.button}
                   disableGutters
                   key={list.name}
+                  selected={index === id}
+                  classes={{
+                    selected: listClasses.activeItem
+                  }}
+                  component={CustomRouterLink}
+                  to={list.link}
+                  onClick={() => setIndex(id)}
                 >
-                  <Button
-                    activeclassname={listClasses.active}
-                    className={listClasses.button}
-                    component={CustomRouterLink}
-                    to={list.link}
-                  >
-                    <div className={listClasses.icon}>{list.Icon}</div>
-                    {list.name}
-                  </Button>
+                  <div className={listClasses.icon}>{list.Icon}</div>
+                  {list.name}
                 </ListItem>
               </List>
             )}
@@ -272,14 +268,6 @@ function SideAndTopNavBar(props) {
             <div className={topBarClasses.loginButtonFlex}>
               <div className={topBarClasses.flexGrow} />
               <Hidden mdDown>
-                {/* <IconButton
-                  className={topBarClasses.signOutButton}
-                  color="inherit"
-                  component={CustomRouterLink}
-                  to={routeConstants.LOGOUT_URL}
-                >
-                  <InputIcon />
-                </IconButton> */}
                 <div className={topBarClasses.Iconroot}>
                   <AccountCircleOutlinedIcon />
                 </div>
