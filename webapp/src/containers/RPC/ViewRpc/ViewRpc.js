@@ -18,10 +18,9 @@ import {
   YellowButton,
   Alert
 } from "../../../components";
-import axios from "axios";
 import DeleteRpc from "./DeleteRpc";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-
+import * as formUtilities from "../../../Utilities/FormUtilities";
 import { CustomRouterLink } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
@@ -34,7 +33,8 @@ import CloseIcon from "@material-ui/icons/Close";
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const ARRAY_URL = [RPC_URL, STATES_URL];
+const RPC_FILTER = "id";
+const SORT_FIELD_KEY = "_sort";
 
 const ViewRpc = props => {
   const classes = useStyles();
@@ -47,9 +47,8 @@ const ViewRpc = props => {
     zones: [],
     rpcs: [],
     states: [],
-    filterDataParameters: {
-      ZONE_FILTER: ""
-    },
+    isFilterSearch: false,
+    filterDataParameters: {},
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromEditRpc"]
       ? props["location"]["isDataEdited"]
@@ -74,39 +73,127 @@ const ViewRpc = props => {
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
-    showModalDelete: false
+    showModalDelete: false,
+    /** Pagination and sortinig data */
+    isDataLoading: false,
+    pageSize: "",
+    totalRows: "",
+    page: "",
+    pageCount: "",
+    sortAscending: true
   });
   useEffect(() => {
-    getRpcStateData();
+    getRpcStateData(10, 1);
   }, []);
 
-  const getRpcStateData = async id => {
-    await serviceProviders
-      .serviceProviderForAllGetRequest(ARRAY_URL)
-      .then(
-        axios.spread((user1, user2) => {
-          setFormState(formState => ({
-            ...formState,
-            states: user2.data.result
-          }));
-          formState.dataToShow = [];
-          formState.tempData = [];
-          let temp = [];
-          /** As rpcs data is in nested form we first convert it into
-           * a float structure and store it in data
-           */
-          temp = convertRpcData(user1.data.result, user2.data.result);
-          setFormState(formState => ({
-            ...formState,
-            rpcs: user1.data.result,
-            dataToShow: temp,
-            tempData: temp
-          }));
-        })
-      )
-      .catch(error => {
-        console.log("error", error);
+  const getRpcStateData = async (pageSize, page, paramsForRpc = null) => {
+    if (paramsForRpc !== null && !formUtilities.checkEmpty(paramsForRpc)) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+      Object.keys(paramsForRpc).map(key => {
+        defaultParams[key] = paramsForRpc[key];
       });
+      paramsForRpc = defaultParams;
+    } else {
+      paramsForRpc = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
+    await serviceProviders
+      .serviceProviderForGetRequest(STATES_URL)
+      .then(async res => {
+        let states = [];
+        states = res.data.result;
+        let currentPage = res.data.page;
+        let totalRows = res.data.rowCount;
+        let currentPageSize = res.data.pageSize;
+        let pageCount = res.data.pageCount;
+        await serviceProviders
+          .serviceProviderForGetRequest(RPC_URL, paramsForRpc)
+          .then(res => {
+            formState.dataToShow = [];
+            formState.tempData = [];
+            let temp = [];
+            /** As rpcs data is in nested form we first convert it into
+             * a float structure and store it in data
+             */
+            temp = convertRpcData(res.data.result, states);
+            setFormState(formState => ({
+              ...formState,
+              rpcs: res.data.result,
+              dataToShow: temp,
+              tempData: temp,
+              pageSize: currentPageSize,
+              totalRows: totalRows,
+              page: currentPage,
+              pageCount: pageCount,
+              isDataLoading: false
+            }));
+          })
+          .catch(error => {});
+      })
+      .catch(error => {});
+  };
+
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getRpcStateData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getRpcStateData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getRpcStateData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getRpcStateData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getRpcStateData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  const restoreData = () => {
+    getRpcStateData(formState.pageSize, 1);
   };
 
   const editCell = event => {
@@ -125,6 +212,16 @@ const ViewRpc = props => {
     }));
   };
 
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      formState.isFilterSearch = false;
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+    }
+  };
+
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
@@ -135,7 +232,7 @@ const ViewRpc = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getRpcStateData();
+      getRpcStateData(formState.pageSize, formState.page);
     }
   };
 
@@ -158,17 +255,6 @@ const ViewRpc = props => {
       }
       return x;
     }
-  };
-
-  /** This restores all the data when we clear the filters
-   */
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: formState.tempData
-    }));
-    /**Need to confirm this thing for resetting the data */
-    //restoreData();
   };
 
   const getDataForEdit = async id => {
@@ -203,7 +289,7 @@ const ViewRpc = props => {
             id={cell.id}
             value={cell.name}
             onClick={editCell}
-            style={{ color: "green", fontSize:"19px" }}
+            style={{ color: "green", fontSize: "19px" }}
           >
             edit
           </i>
@@ -250,7 +336,6 @@ const ViewRpc = props => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/** Delete rpc data */}
-
         {/** Error/Success messages to be shown for edit */}
         {formState.fromEditRpc && formState.isDataEdited ? (
           <Collapse in={open}>
@@ -345,9 +430,12 @@ const ViewRpc = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   //name={ZONE_FILTER}
-                  options={formState.zones}
+                  options={formState.rpcs}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(RPC_FILTER, event, value)
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -363,8 +451,10 @@ const ViewRpc = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  //onClick={searchFilter}
-                  to="#"
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
@@ -375,7 +465,6 @@ const ViewRpc = props => {
                   color="primary"
                   onClick={clearFilter}
                   disableElevation
-                  to="#"
                 >
                   {genericConstants.RESET_BUTTON_TEXT}
                 </GrayButton>
@@ -389,8 +478,15 @@ const ViewRpc = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />

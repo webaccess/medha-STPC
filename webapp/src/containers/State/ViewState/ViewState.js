@@ -18,7 +18,7 @@ import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
-
+import * as formUtilities from "../../../Utilities/FormUtilities";
 import {
   Table,
   Spinner,
@@ -33,7 +33,8 @@ import { useHistory } from "react-router-dom";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const STATE_FILTER = "stateFilter";
+const STATE_FILTER = "id";
+const SORT_FIELD_KEY = "_sort";
 
 const ViewStates = props => {
   const [open, setOpen] = React.useState(true);
@@ -41,11 +42,9 @@ const ViewStates = props => {
   const history = useHistory();
   const [formState, setFormState] = useState({
     dataToShow: [],
-    tempData: [],
     states: [],
-    filterDataParameters: {
-      STATE_FILTER: ""
-    },
+    filterDataParameters: {},
+    isFilterSearch: false,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromEditState"]
       ? props["location"]["isDataEdited"]
@@ -71,38 +70,112 @@ const ViewStates = props => {
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
-    page: "",
+    /** Pagination and sortinig data */
+    isDataLoading: false,
     pageSize: "",
-    rowCount: "",
-    pageCount: ""
+    totalRows: "",
+    page: "",
+    pageCount: "",
+    sortAscending: true
   });
 
   useEffect(() => {
-    getStateData();
+    getStateData(10, 1);
   }, []);
 
   /** This seperate function is used to get the zone data*/
-  const getStateData = async () => {
+  const getStateData = async (pageSize, page, paramsForState = null) => {
+    if (paramsForState !== null && !formUtilities.checkEmpty(paramsForState)) {
+      let defaultParams = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+      Object.keys(paramsForState).map(key => {
+        defaultParams[key] = paramsForState[key];
+      });
+      paramsForState = defaultParams;
+    } else {
+      paramsForState = {
+        page: page,
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "name:asc"
+      };
+    }
+    setFormState(formState => ({
+      ...formState,
+      isDataLoading: true
+    }));
+
     await serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
+      .serviceProviderForGetRequest(STATES_URL, paramsForState)
       .then(res => {
         formState.dataToShow = [];
-        formState.tempData = [];
-        console.log(res.data.result);
         setFormState(formState => ({
           ...formState,
           states: res.data.result,
           dataToShow: res.data.result,
-          tempData: res.data.result,
-          page: 1,
-          pageSize: 10,
-          rowCount: 15,
-          pageCount: 2
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
         }));
       })
       .catch(error => {
         console.log("error", error);
       });
+  };
+
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStateData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getStateData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStateData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getStateData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getStateData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  const restoreData = () => {
+    getStateData(formState.pageSize, 1);
   };
 
   const getDataForEdit = async id => {
@@ -143,34 +216,11 @@ const ViewStates = props => {
 
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
+      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] = value["name"];
+      formState.filterDataParameters[filterName] = value["id"];
     }
-  };
-
-  /** Search filter is called when we select filters and click on search button */
-  const searchFilter = () => {
-    let filteredData = formState.tempData.filter(function(row) {
-      if (row["name"] === formState.filterDataParameters[STATE_FILTER]) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: filteredData
-    }));
-  };
-
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      dataToShow: formState.tempData
-    }));
-    /**Need to confirm this thing for resetting the data */
-    //restoreData();
   };
 
   /** This is used to handle the close modal event */
@@ -183,7 +233,7 @@ const ViewStates = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getStateData();
+      getStateData(formState.pageSize, formState.page);
     }
   };
 
@@ -361,7 +411,10 @@ const ViewStates = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={searchFilter}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
@@ -379,14 +432,20 @@ const ViewStates = props => {
             </Grid>
           </CardContent>
         </Card>
-
         {formState.dataToShow ? (
           formState.dataToShow.length ? (
             <Table
               data={formState.dataToShow}
               column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
               editEvent={editCell}
               deleteEvent={deleteCell}
+              progressPending={formState.isDataLoading}
+              paginationTotalRows={formState.totalRows}
+              paginationRowsPerPageOptions={[10, 20, 50]}
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
             />
           ) : (
             <Spinner />
