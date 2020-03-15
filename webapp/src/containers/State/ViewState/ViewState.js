@@ -43,6 +43,7 @@ const ViewStates = props => {
   const [formState, setFormState] = useState({
     dataToShow: [],
     states: [],
+    statesFilter: [],
     filterDataParameters: {},
     isFilterSearch: false,
     /** This is when we return from edit page */
@@ -80,6 +81,18 @@ const ViewStates = props => {
   });
 
   useEffect(() => {
+    serviceProviders
+      .serviceProviderForGetRequest(STATES_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          statesFilter: res.data.result
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
     getStateData(10, 1);
   }, []);
 
@@ -390,7 +403,7 @@ const ViewStates = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  options={formState.states}
+                  options={formState.statesFilter}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>

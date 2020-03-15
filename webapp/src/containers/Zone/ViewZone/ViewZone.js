@@ -38,6 +38,7 @@ const ViewZone = props => {
     dataToShow: [],
     tempData: [],
     zones: [],
+    zonesFilter: [],
     states: [],
     filterDataParameters: {},
     isFilterSearch: false,
@@ -78,6 +79,21 @@ const ViewZone = props => {
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
   useEffect(() => {
     /** Seperate function to get zone data */
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
+    serviceProviders
+      .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          zonesFilter: res.data.result
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
     getZoneData(10, 1);
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL)
@@ -432,7 +448,7 @@ const ViewZone = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   name={ZONE_FILTER}
-                  options={formState.zones}
+                  options={formState.zonesFilter}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>

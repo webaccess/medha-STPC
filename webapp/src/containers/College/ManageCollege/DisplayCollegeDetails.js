@@ -7,7 +7,21 @@ import useStyles from "./DisplayCollegeDetailsStyle";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import { YellowButton, GrayButton } from "../../../components";
+import * as genericConstants from "../../../constants/GenericConstants";
 
+const CollegeName = "College name";
+const CollegeCode = "College code";
+const CollegeAddress = "College address";
+const District = "District";
+const State = "State";
+const RPCName = "RPC Name";
+const Zone = "Zone Name";
+const ContactNumber = "Contact Number";
+const Email = "Email-Id";
+const Principal = "Principal";
+const Streams = "Stream";
+const Strength = "Strength";
+const StreamNotPresent = "Stream and data not present";
 const DisplayCollegeDetails = props => {
   const history = useHistory();
   const classes = useStyles();
@@ -105,12 +119,12 @@ const DisplayCollegeDetails = props => {
                         >
                           <Grid md={6}>
                             <Typography>
-                              College name:{formState.collegeDetails.name}
+                              {CollegeName}:{formState.collegeDetails.name}
                             </Typography>
                           </Grid>
                           <Grid md={6}>
                             <Typography className={classes.right}>
-                              College code:
+                              {CollegeCode}:
                               {formState.collegeDetails.college_code}
                             </Typography>
                           </Grid>
@@ -119,30 +133,30 @@ const DisplayCollegeDetails = props => {
                       <CardContent>
                         <Grid md={12}>
                           <Typography>
-                            College address:{formState.collegeDetails.address}
+                            {CollegeAddress}:{formState.collegeDetails.address}
                           </Typography>
                         </Grid>
                       </CardContent>
                       <CardContent>
                         <Typography>
-                          District:
+                          {District}:
                           {formState.collegeDetails.district &&
                             formState.collegeDetails.district.name}
                         </Typography>
                         <Typography>
-                          State:
+                          {State}:
                           {formState.collegeDetails.state &&
                             formState.collegeDetails.state.name}
                         </Typography>
                       </CardContent>
                       <CardContent>
                         <Typography>
-                          RPC Name:
+                          {RPCName}:
                           {formState.collegeDetails.rpc &&
                             formState.collegeDetails.rpc.name}
                         </Typography>
                         <Typography>
-                          Zone Name:
+                          {Zone}:
                           {formState.collegeDetails.zone &&
                             formState.collegeDetails.zone.name}
                         </Typography>
@@ -150,16 +164,16 @@ const DisplayCollegeDetails = props => {
 
                       <CardContent>
                         <Typography>
-                          Contact number:
+                          {ContactNumber}:
                           {formState.collegeDetails.contact_number}
                         </Typography>
                         <Typography>
-                          Email-Id:{formState.collegeDetails.college_email}
+                          {Email}:{formState.collegeDetails.college_email}
                         </Typography>
                       </CardContent>
                       <CardContent>
                         <Typography>
-                          Principal:
+                          {Principal}:
                           {formState.collegeDetails.principal &&
                             formState.collegeDetails.principal.username}
                         </Typography>
@@ -170,15 +184,15 @@ const DisplayCollegeDetails = props => {
                             value => (
                               <CardContent>
                                 <Typography key={value.id}>
-                                  Stream : {value.stream.name}
-                                  Strength {value.strength}
+                                  {Streams} : {value.stream.name}
+                                  {Strength} {value.strength}
                                 </Typography>
                               </CardContent>
                             )
                           )}
                         </CardContent>
                       ) : (
-                        <p>Stream and data not present</p>
+                        <p>{StreamNotPresent}</p>
                       )}
                       <CardActions className={classes.btnspace}>
                         <YellowButton
@@ -188,7 +202,7 @@ const DisplayCollegeDetails = props => {
                           onClick={editData}
                           className={classes.submitbtn}
                         >
-                          Edit
+                          {genericConstants.EDIT_TEXT}
                         </YellowButton>
                         <GrayButton
                           color="primary"
@@ -196,7 +210,7 @@ const DisplayCollegeDetails = props => {
                           to={routeConstants.VIEW_COLLEGE}
                           className={classes.resetbtn}
                         >
-                          Cancel
+                          {genericConstants.CANCEL_BUTTON_TEXT}
                         </GrayButton>
                       </CardActions>
                     </Card>
