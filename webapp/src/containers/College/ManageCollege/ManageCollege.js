@@ -463,7 +463,7 @@ const ManageCollege = props => {
           <i
             className="material-icons"
             id={cell.id}
-            //onClick={blockCell}
+            onClick={blockCell}
             style={
               cell.blocked
                 ? { color: "red", fontSize: "19px" }
