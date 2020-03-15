@@ -52,31 +52,10 @@ const DisplayCollegeDetails = props => {
         .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
         .then(res => {
           let viewData = res.data.result[0];
-          if (
-            viewData.hasOwnProperty("rpc") &&
-            viewData["rpc"].hasOwnProperty("zone") &&
-            viewData["rpc"]["zone"] !== null
-          ) {
-            let paramsForZones = {
-              id: viewData["rpc"]["zone"]
-            };
-            serviceProviders
-              .serviceProviderForGetRequest(ZONE_URL, paramsForZones)
-              .then(res => {
-                viewData["zone"] = res.data.result[0];
-                viewData["state"] = res.data.result[0].state;
-                setFormState(formState => ({
-                  ...formState,
-                  collegeDetails: viewData
-                }));
-                for (var i in viewData.stream_strength) {
-                  formState.streams.push(viewData.stream_strength[i]);
-                }
-              })
-              .catch(error => {
-                console.log("zoneerror", error);
-              });
-          }
+          setFormState(formState => ({
+            ...formState,
+            collegeDetails: viewData
+          }));
         })
         .catch(error => {
           console.log("error", error);

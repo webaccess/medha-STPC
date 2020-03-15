@@ -24,7 +24,6 @@ import {
   Grid,
   TextField,
   Typography,
-  Button,
   CircularProgress,
   FormGroup,
   FormControlLabel,
@@ -54,7 +53,6 @@ const STATES_URL =
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
-const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const COLLEGES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const DISTRICTS_URL =
@@ -74,7 +72,8 @@ const AddEditCollege = props => {
     dynamicBarError: [],
     isEditCollege: props["editCollege"] ? props["editCollege"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0
+    counter: 0,
+    isStateClearFilter: false
   });
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
@@ -110,18 +109,18 @@ const AddEditCollege = props => {
         formState.values[collegeEmail] = props["dataForEdit"]["college_email"];
       }
       if (props["dataForEdit"]["state"]) {
-        formState.values[state] = props["dataForEdit"]["state"];
+        formState.values[state] = props["dataForEdit"]["state"]["id"];
       }
       if (props["dataForEdit"]["district"]) {
-        formState.values[district] = props["dataForEdit"]["district"];
+        formState.values[district] = props["dataForEdit"]["district"]["id"];
       }
       if (props["dataForEdit"]["blocked"]) {
         formState.values[block] = props["dataForEdit"]["blocked"];
       }
-      if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["zone"]) {
-        formState.values[zone] = props["dataForEdit"]["rpc"]["zone"];
+      if (props["dataForEdit"]["zone"]) {
+        formState.values[zone] = props["dataForEdit"]["zone"]["id"];
       }
-      if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
+      if (props["dataForEdit"]["rpc"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
       if (
@@ -151,7 +150,7 @@ const AddEditCollege = props => {
     }
   }
 
-  /** Here we initialize our data */
+  /** Here we initialize our data and bring users, states and streams*/
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(USERS_URL)
@@ -178,70 +177,68 @@ const AddEditCollege = props => {
       .catch(error => {
         console.log("error", error);
       });
-    serviceProviders
-      .serviceProviderForGetRequest(DISTRICTS_URL)
+  }, []);
+
+  /** This gets data into zones, rpcs and districts when we change the state */
+  useEffect(() => {
+    if (formState.values[state]) {
+      fetchZoneRpcDistrictData();
+    }
+    return () => {};
+  }, [formState.values[state]]);
+
+  /** Common function to get zones, rpcs, districts after changing state */
+  async function fetchZoneRpcDistrictData() {
+    let zones_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiConstants.STRAPI_ZONES;
+
+    await serviceProviders
+      .serviceProviderForGetRequest(zones_url)
+      .then(res => {
+        setZones(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let rpcs_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiConstants.STRAPI_RPCS;
+
+    await serviceProviders
+      .serviceProviderForGetRequest(rpcs_url)
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setRpcs(res.data[0].result);
+        } else {
+          setRpcs(res.data.result);
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let params = {
+      pageSize: 10000000,
+      "state.id": formState.values[state]
+    };
+
+    await serviceProviders
+      .serviceProviderForGetRequest(DISTRICTS_URL, params)
       .then(res => {
         setDistricts(res.data.result);
       })
       .catch(error => {
         console.log("error", error);
       });
-  }, []);
-
-  /** This gets data into zones when we change the state */
-  useEffect(() => {
-    async function fetchData() {
-      let url =
-        STATES_URL +
-        "/" +
-        formState.values[state] +
-        "/" +
-        strapiConstants.STRAPI_ZONES;
-      await serviceProviders
-        .serviceProviderForGetRequest(url)
-        .then(res => {
-          if (Array.isArray(res.data)) {
-            setZones(res.data[0].result);
-          } else {
-            setZones(res.data.result);
-          }
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    }
-    if (formState.values[state]) {
-      fetchData();
-    }
-    return () => {};
-  }, [formState.values[state]]);
-
-  useEffect(() => {
-    async function fetchData() {
-      let url =
-        ZONES_URL +
-        "/" +
-        formState.values[zone] +
-        "/" +
-        strapiConstants.STRAPI_RPCS;
-      await serviceProviders
-        .serviceProviderForGetRequest(url)
-        .then(res => {
-          if (Array.isArray(res.data)) {
-            setRpcs(res.data[0].result);
-          } else {
-            setRpcs(res.data.result);
-          }
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    }
-    if (formState.values[zone]) {
-      fetchData();
-    }
-    return () => {};
-  }, [formState.values[zone]]);
+  }
 
   /** Handle change for text fields */
   const handleChange = e => {
@@ -276,14 +273,39 @@ const AddEditCollege = props => {
         touched: {
           ...formState.touched,
           [eventName]: true
-        }
+        },
+        isStateClearFilter: false
       }));
-
+      if (eventName === state) {
+        fetchZoneRpcDistrictData();
+      }
       /** This is used to remove any existing errors if present in auto complete */
       if (formState.errors.hasOwnProperty(eventName)) {
         delete formState.errors[eventName];
       }
     } else {
+      let setStateFilterValue = false;
+      /** If we click cross for state the zone and rpc should clear off! */
+      if (eventName === state) {
+        /** 
+        This flag is used to determine that state is cleared which clears 
+        off zone and rpc by setting their value to null 
+        */
+        setStateFilterValue = true;
+        /** 
+        When state is cleared then clear rpc and zone 
+        */
+        setRpcs([]);
+        setZones([]);
+        setDistricts([]);
+        delete formState.values[zone];
+        delete formState.values[rpc];
+        delete formState.values[district];
+      }
+      setFormState(formState => ({
+        ...formState,
+        isStateClearFilter: setStateFilterValue
+      }));
       /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
@@ -463,7 +485,6 @@ const AddEditCollege = props => {
 
   const getDynamicBarData = () => {
     let streamStrengthArrayValues = [];
-    let id = 0;
     formState.dynamicBar.map(field => {
       let streamStrengthValue = {};
       if (field.hasOwnProperty(streams) && field.hasOwnProperty(strength)) {
@@ -487,10 +508,10 @@ const AddEditCollege = props => {
       formState.values[block] ? formState.values[block] : false,
       formState.values[principal] ? formState.values[principal] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
+      formState.values[zone] ? formState.values[zone] : null,
       formState.values[district] ? formState.values[district] : null,
       streamStrengthArray
     );
-
     if (formState.isEditCollege) {
       serviceProviders
         .serviceProviderForPutRequest(
@@ -698,11 +719,13 @@ const AddEditCollege = props => {
                     }}
                     /** This is used to set the default value to the auto complete */
                     value={
-                      zones[
-                        zones.findIndex(function(item, i) {
-                          return item.id === formState.values[zone];
-                        })
-                      ] || null /** Please give a default " " blank value */
+                      formState.isStateClearFilter
+                        ? null
+                        : zones[
+                            zones.findIndex(function(item, i) {
+                              return item.id === formState.values[zone];
+                            })
+                          ] || null /** Please give a default " " blank value */
                     }
                     name={zone}
                     renderInput={params => (
@@ -750,11 +773,13 @@ const AddEditCollege = props => {
                     name={rpc}
                     /** This is used to set the default value to the auto complete */
                     value={
-                      rpcs[
-                        rpcs.findIndex(function(item, i) {
-                          return item.id === formState.values[rpc];
-                        })
-                      ] || null /** Please give a default " " blank value */
+                      formState.isStateClearFilter
+                        ? null
+                        : rpcs[
+                            rpcs.findIndex(function(item, i) {
+                              return item.id === formState.values[rpc];
+                            })
+                          ] || null /** Please give a default " " blank value */
                     }
                     renderInput={params => (
                       <TextField
@@ -795,14 +820,16 @@ const AddEditCollege = props => {
                     onChange={(event, value) => {
                       handleChangeAutoComplete(district, event, value);
                     }}
-                    name={rpc}
+                    name={district}
                     /** This is used to set the default value to the auto complete */
                     value={
-                      districts[
-                        districts.findIndex(function(item, i) {
-                          return item.id === formState.values[district];
-                        })
-                      ] || null /** Please give a default " " blank value */
+                      formState.isStateClearFilter
+                        ? null
+                        : districts[
+                            districts.findIndex(function(item, i) {
+                              return item.id === formState.values[district];
+                            })
+                          ] || null /** Please give a default " " blank value */
                     }
                     renderInput={params => (
                       <TextField
