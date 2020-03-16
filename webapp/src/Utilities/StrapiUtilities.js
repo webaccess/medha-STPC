@@ -100,10 +100,10 @@ export const setCollege = id => {
 };
 
 /**  Adders */
-export const addRpc = (name, zone = null, main_college = null) => {
+export const addRpc = (name, state = null, main_college = null) => {
   return {
     name: name,
-    zone: zone,
+    state: state,
     main_college: main_college
   };
 };
@@ -117,6 +117,7 @@ export const addCollege = (
   blocked = false,
   principal = null,
   rpc = null,
+  zone = null,
   district = null,
   stream_strength = []
 ) => {
@@ -129,6 +130,7 @@ export const addCollege = (
     blocked: blocked,
     principal: principal,
     rpc: rpc,
+    zone: zone,
     district: district,
     stream_strength: stream_strength
   };

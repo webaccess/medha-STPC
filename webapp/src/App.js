@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { NotFoundPage, Logout } from "./components";
@@ -35,9 +35,14 @@ import EditZoneRoute from "./authroute/EditZoneRoute";
 import EditRpcRoute from "./authroute/EditRpcRoute";
 import EditUserRoute from "./authroute/EditUserRoute";
 import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCollegeDetails";
-class App extends Component {
-  render() {
-    return (
+import SetIndexContext from "./context/SetIndexContext";
+import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails"
+
+function App() {
+  const [index, setIndex] = useState(0);
+
+  return (
+    <SetIndexContext.Provider value={{ index, setIndex }}>
       <ThemeProvider theme={theme}>
         <Router>
           <div>
@@ -96,6 +101,13 @@ class App extends Component {
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_USER}
+              />
+              {/** View User Data*/}
+              <RouteWithLayout
+                component={DisplayUserDetails}
+                exact
+                layout={Layout}
+                path={routeConstants.DETAIL_USER}
               />
               {/** State */}
               {/** Add Edit State */}
@@ -191,7 +203,7 @@ class App extends Component {
           </div>
         </Router>
       </ThemeProvider>
-    );
-  }
+    </SetIndexContext.Provider>
+  );
 }
 export default App;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import {
   TextField,
@@ -8,9 +8,7 @@ import {
   Typography,
   Collapse,
   IconButton,
-  Tooltip,
-  FormControl,
-  InputLabel
+  Tooltip
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -26,30 +24,36 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
+import BlockUnblockCollege from "./BlockUnblockCollege";
 
+/** Contsants for filters */
 const COLLEGE_FILTER = "id";
-//const STATE_FILTER = "stateName";
-const ZONE_FILTER = "rpc.zone";
+const STATE_FILTER = "rpc.state";
+const ZONE_FILTER = "zone.id";
 const RPC_FILTER = "rpc.id";
 const SORT_FIELD_KEY = "_sort";
-const COLLEGE_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 
+/** Url's */
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+const COLLEGE_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 
 const ManageCollege = props => {
   const history = useHistory();
   const [open, setOpen] = React.useState(true);
+  /** Data we get for filtering */
+  const [collegesFilter, setCollegesFilter] = React.useState([]);
   const [rpcs, setRpcs] = React.useState([]);
+  const [zones, setZones] = React.useState([]);
+  const [states, setStates] = React.useState([]);
+  /**------------------------------------ */
+  /** Our actual form data  */
   const [formState, setFormState] = useState({
     dataToShow: [],
-    tempData: [],
     colleges: [],
-    zones: [],
-    dataForView: [],
     zonesForEdit: [],
     rpcsForEdit: [],
     states: [],
@@ -76,10 +80,18 @@ const ManageCollege = props => {
     /** This is for delete */
     isDataDeleted: false,
     dataToDelete: {},
-    isView: false,
     showModalDelete: false,
+    /** View  */
+    isView: false,
+    /** Filters */
     filterDataParameters: {},
     isFilterSearch: false,
+    isClearResetFilter: false,
+    isStateClearFilter: false,
+    /** For Block */
+    isDataBlockUnblock: false,
+    dataToBlockUnblock: {},
+    showModalBlock: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -89,11 +101,23 @@ const ManageCollege = props => {
     sortAscending: true
   });
 
+  /** Get filter data parameters i.e intially get only state and college */
   const getFilterData = () => {
+    let params = {
+      pageSize: 10000000
+    };
     serviceProviders
-      .serviceProviderForGetRequest(RPCS_URL)
+      .serviceProviderForGetRequest(COLLEGE_URL, params)
       .then(res => {
-        setRpcs(res.data.result);
+        setCollegesFilter(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+    serviceProviders
+      .serviceProviderForGetRequest(STATES_URL, params)
+      .then(res => {
+        setStates(res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -101,10 +125,41 @@ const ManageCollege = props => {
   };
 
   useEffect(() => {
-    /** Seperate function to get zone data */
+    /** Seperate function to get college paginated data */
     getCollegeData(10, 1);
+    /** Seperate function to get state and college data */
     getFilterData();
   }, []);
+
+  /** Get rpcs and zones from state */
+  const getZonesAndRpcsOnState = () => {
+    setRpcs([]);
+    setZones([]);
+    delete formState.filterDataParameters[ZONE_FILTER];
+    delete formState.filterDataParameters[RPC_FILTER];
+
+    let params = {
+      pageSize: 10000000,
+      "state.id": formState.filterDataParameters[STATE_FILTER]
+    };
+    console.log(params, formState.filterDataParameters);
+    serviceProviders
+      .serviceProviderForGetRequest(RPCS_URL, params)
+      .then(res => {
+        setRpcs(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+    serviceProviders
+      .serviceProviderForGetRequest(ZONES_URL, params)
+      .then(res => {
+        setZones(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   /** This seperate function is used to get the college data*/
   const getCollegeData = async (pageSize, page, paramsForCollege = null) => {
@@ -137,37 +192,23 @@ const ManageCollege = props => {
       .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
       .then(async res => {
         formState.dataToShow = [];
-        formState.tempData = [];
-        let temp = [];
+        let tempCollegeData = [];
         let college_data = res.data.result;
-        let currentPage = res.data.page;
-        let totalRows = res.data.rowCount;
-        let currentPageSize = res.data.pageSize;
-        let pageCount = res.data.pageCount;
+
         /** As college data is in nested form we first convert it into
          * a float structure and store it in data
          */
-
-        await serviceProviders
-          .serviceProviderForGetRequest(ZONES_URL)
-          .then(res => {
-            formState.zones = res.data.result;
-            temp = convertCollegeData(college_data);
-            setFormState(formState => ({
-              ...formState,
-              colleges: college_data,
-              dataToShow: temp,
-              tempData: temp,
-              pageSize: currentPageSize,
-              totalRows: totalRows,
-              page: currentPage,
-              pageCount: pageCount,
-              isDataLoading: false
-            }));
-          })
-          .catch(error => {
-            console.log("error", error);
-          });
+        tempCollegeData = convertCollegeData(college_data);
+        setFormState(formState => ({
+          ...formState,
+          colleges: college_data,
+          dataToShow: tempCollegeData,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
+        }));
       })
       .catch(error => {
         console.log("error", error);
@@ -181,17 +222,14 @@ const ManageCollege = props => {
       for (let i in data) {
         var tempIndividualCollegeData = {};
         tempIndividualCollegeData["id"] = data[i]["id"];
+        tempIndividualCollegeData["blocked"] = data[i]["blocked"];
         tempIndividualCollegeData["name"] = data[i]["name"];
-        tempIndividualCollegeData["college_code"] = data[i]["college_code"];
-        tempIndividualCollegeData["address"] = data[i]["address"];
-        tempIndividualCollegeData["rpc"] = data[i]["rpc"]["name"];
-        tempIndividualCollegeData["contact_number"] = data[i]["contact_number"];
-        tempIndividualCollegeData["college_email"] = data[i]["college_email"];
-        for (let j in formState.zones) {
-          if (formState.zones[j]["id"] === data[i]["rpc"]["zone"]) {
-            tempIndividualCollegeData["zone_name"] = formState.zones[j]["name"];
-          }
-        }
+        tempIndividualCollegeData["rpc"] = data[i]["rpc"]
+          ? data[i]["rpc"]["name"]
+          : "";
+        tempIndividualCollegeData["zone_name"] = data[i]["zone"]
+          ? data[i]["zone"]["name"]
+          : "";
         collegeDataArray.push(tempIndividualCollegeData);
       }
       return collegeDataArray;
@@ -229,6 +267,8 @@ const ManageCollege = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getCollegeData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getCollegeData(perPage, page);
     }
   };
 
@@ -238,11 +278,15 @@ const ManageCollege = props => {
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
+      isClearResetFilter: true,
+      isStateClearFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
       isDataLoading: true
     }));
+    setRpcs([]);
+    setZones([]);
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
@@ -255,6 +299,7 @@ const ManageCollege = props => {
     getCollegeData(formState.pageSize, 1);
   };
 
+  /** Edit cell */
   const getDataForEdit = async (id, isView = false) => {
     /** Get college data for edit */
     let paramsForCollege = {
@@ -265,32 +310,11 @@ const ManageCollege = props => {
       .then(res => {
         /** This we will use as final data for edit we send to modal */
         let editData = res.data.result[0];
-        /** Check if zone is present in college data under rpc */
-        if (
-          editData.hasOwnProperty("rpc") &&
-          editData["rpc"].hasOwnProperty("zone") &&
-          editData["rpc"]["zone"] != null
-        ) {
-          /** If present get state id using that zone */
-          let paramsForZones = {
-            id: editData["rpc"]["zone"]
-          };
-          serviceProviders
-            .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
-            .then(res => {
-              editData["state"] = res.data.result[0]["state"]["id"];
-              history.push({
-                pathname: routeConstants.EDIT_COLLEGE,
-                editCollege: true,
-                dataForEdit: editData
-              });
-            })
-            .catch(error => {
-              console.log("error while getting data for edit > ", error);
-            });
-        } else {
-          console.log("Rpc or zones for the college not present!");
-        }
+        history.push({
+          pathname: routeConstants.EDIT_COLLEGE,
+          editCollege: true,
+          dataForEdit: editData
+        });
       })
       .catch(error => {
         console.log("error");
@@ -301,13 +325,8 @@ const ManageCollege = props => {
     getDataForEdit(event.target.id);
   };
 
-  const viewCell = event => {
-    history.push({
-      pathname: routeConstants.DETAIL_COLLEGE,
-      dataForEdit: event.target.id
-    });
-  };
-
+  /**----------------------------------------------------- */
+  /** Delete cell */
   const isDeleteCellCompleted = status => {
     formState.isDataDeleted = status;
   };
@@ -319,15 +338,6 @@ const ManageCollege = props => {
       dataToDelete: { id: event.target.id },
       showModalDelete: true
     }));
-  };
-
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
   };
 
   /** This is used to handle the close modal event for delete*/
@@ -343,6 +353,102 @@ const ManageCollege = props => {
       getCollegeData(formState.pageSize, formState.page);
     }
   };
+  /**---------------------------------------------------------- */
+  /** View Cell */
+  const viewCell = event => {
+    history.push({
+      pathname: routeConstants.DETAIL_COLLEGE,
+      dataForEdit: event.target.id
+    });
+  };
+
+  /** ---------------------------------------------------------- */
+  /** For Block */
+  /** This is called when block event is called */
+  const blockCell = event => {
+    event.persist();
+    getDataForBlockUnblock(event.target.id);
+  };
+
+  const isBlockUnblockCellCompleted = status => {
+    formState.isDataBlockUnblock = status;
+  };
+
+  const getDataForBlockUnblock = async id => {
+    /** Get college data for edit */
+    let paramsForCollege = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
+      .then(res => {
+        /** This we will use as final data for edit we send to modal */
+        let editData = res.data.result[0];
+        setFormState(formState => ({
+          ...formState,
+          dataToBlockUnblock: editData,
+          showModalBlock: true
+        }));
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  /** This handles close unblock block modal */
+  const handleCloseBlockUnblockModal = () => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setFormState(formState => ({
+      ...formState,
+      isDataBlockUnblock: false,
+      showModalBlock: false
+    }));
+    if (formState.isDataBlockUnblock) {
+      getCollegeData(formState.pageSize, formState.page);
+    }
+  };
+
+  /** ------------------------------------------------------------------ */
+  /** Handles change in auto complete for filters */
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    /** When we click cross for auto complete */
+    if (value === null) {
+      let setStateFilterValue = false;
+      /** If we click cross for state the zone and rpc should clear off! */
+      if (filterName === STATE_FILTER) {
+        /** 
+        This flag is used to determine that state is cleared which clears 
+        off zone and rpc by setting their value to null 
+        */
+        setStateFilterValue = true;
+        /** 
+        When state is cleared then clear rpc and zone 
+        */
+        setRpcs([]);
+        setZones([]);
+        delete formState.filterDataParameters[ZONE_FILTER];
+        delete formState.filterDataParameters[RPC_FILTER];
+      }
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false,
+        isStateClearFilter: setStateFilterValue
+      }));
+      delete formState.filterDataParameters[filterName];
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+      if (filterName === STATE_FILTER) {
+        getZonesAndRpcsOnState();
+      }
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false,
+        isStateClearFilter: false
+      }));
+    }
+  };
 
   /** Columns to show in table */
   const column = [
@@ -350,8 +456,27 @@ const ManageCollege = props => {
     { name: "Zone", sortable: true, selector: "zone_name" },
     { name: "RPC", sortable: true, selector: "rpc" },
 
-    /** Columns for edit and delete */
-
+    /** Columns for block, view, edit and delete */
+    {
+      cell: cell => (
+        <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={blockCell}
+            style={
+              cell.blocked
+                ? { color: "red", fontSize: "19px" }
+                : { color: "green", fontSize: "19px" }
+            }
+          >
+            block
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    },
     {
       cell: cell => (
         <Tooltip title="View" placement="top">
@@ -509,25 +634,100 @@ const ManageCollege = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
+                {collegesFilter ? (
+                  <Autocomplete
+                    id="collegeName_filter_college"
+                    name={COLLEGE_FILTER}
+                    options={collegesFilter}
+                    className={classes.autoCompleteField}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) =>
+                      handleChangeAutoComplete(COLLEGE_FILTER, event, value)
+                    }
+                    value={
+                      formState.isClearResetFilter
+                        ? null
+                        : collegesFilter[
+                            collegesFilter.findIndex(function(item, i) {
+                              return (
+                                item.id ===
+                                formState.filterDataParameters[COLLEGE_FILTER]
+                              );
+                            })
+                          ] || null
+                    }
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label="College Filter"
+                        placeholder="College Filter"
+                        className={classes.autoCompleteField}
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                ) : null}
+              </Grid>
+              <Grid item>
                 <Autocomplete
-                  id="collegeName_filter_college"
-                  name={COLLEGE_FILTER}
-                  options={formState.colleges}
-                  className={classes.autoCompleteField}
+                  id="states_filter_college"
+                  options={states}
                   getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(COLLEGE_FILTER, event, value)
+                  onChange={(event, value) => {
+                    handleChangeAutoComplete(STATE_FILTER, event, value);
+                  }}
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : states[
+                          states.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STATE_FILTER]
+                            );
+                          })
+                        ] || null
                   }
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="College Filter"
-                      placeholder="College Filter"
+                      label="State Filter"
+                      placeholder="State Filter"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item>
+                <Autocomplete
+                  id="zones_filter_college"
+                  options={zones}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) => {
+                    handleChangeAutoComplete(ZONE_FILTER, event, value);
+                  }}
+                  value={
+                    formState.isClearResetFilter || formState.isStateClearFilter
+                      ? null
+                      : zones[
+                          zones.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[ZONE_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Zone Filter"
+                      placeholder="Zone Filter"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -542,6 +742,18 @@ const ManageCollege = props => {
                   onChange={(event, value) => {
                     handleChangeAutoComplete(RPC_FILTER, event, value);
                   }}
+                  value={
+                    formState.isClearResetFilter || formState.isStateClearFilter
+                      ? null
+                      : rpcs[
+                          rpcs.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[RPC_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -608,6 +820,12 @@ const ManageCollege = props => {
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
             deleteEvent={isDeleteCellCompleted}
+          />
+          <BlockUnblockCollege
+            showModal={formState.showModalBlock}
+            closeModal={handleCloseBlockUnblockModal}
+            dataToBlockUnblock={formState.dataToBlockUnblock}
+            blockUnblockEvent={isBlockUnblockCellCompleted}
           />
         </Card>
       </Grid>

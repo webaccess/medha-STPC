@@ -22,7 +22,7 @@ import { useHistory } from "react-router-dom";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
-const zoneName = "zoneName";
+// const zoneName = "zoneName";
 const collegeName = "collegeName";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -57,13 +57,10 @@ const AddEditRpc = props => {
         formState.values[rpcName] = props["dataForEdit"]["name"];
       }
       if (
-        props["dataForEdit"]["zone"] &&
-        props["dataForEdit"]["zone"]["state"]
+        props["dataForEdit"]["state"] &&
+        props["dataForEdit"]["state"]["id"]
       ) {
-        formState.values[stateName] = props["dataForEdit"]["zone"]["state"];
-      }
-      if (props["dataForEdit"]["zone"] && props["dataForEdit"]["zone"]["id"]) {
-        formState.values[zoneName] = props["dataForEdit"]["zone"]["id"];
+        formState.values[stateName] = props["dataForEdit"]["state"]["id"];
       }
       if (
         props["dataForEdit"]["main_college"] &&
@@ -75,36 +72,26 @@ const AddEditRpc = props => {
 
       formState.counter += 1;
     }
-    console.log(formState);
   }
 
   useEffect(() => {
     /* TO GET STATES AND COLLEGE IN AUTOCOMPLETE */
-    serviceProviders.serviceProviderForGetRequest(STATE_URL).then(res => {
-      setStates(res.data.result);
-    });
-    serviceProviders.serviceProviderForGetRequest(COLLEGE_URL).then(res => {
-      setGetColleges(res.data.result);
-    });
-  }, []);
 
-  useEffect(() => {
-    /** TO GET ZONE IN AUTOCOMPLETE ON THE CHANGE OF STATES */
-    let url =
-      STATE_URL +
-      "/" +
-      formState.values[stateName] +
-      "/" +
-      strapiConstants.STRAPI_ZONES;
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
+
     serviceProviders
-      .serviceProviderForGetRequest(url)
+      .serviceProviderForGetRequest(STATE_URL, paramsForPageSize)
       .then(res => {
-        setZones(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
+        setStates(res.data.result);
       });
-  }, [formState.values[stateName]]);
+    serviceProviders
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForPageSize)
+      .then(res => {
+        setGetColleges(res.data.result);
+      });
+  }, []);
 
   /** This handle change is used to handle changes to text field */
   const handleChange = event => {
@@ -202,7 +189,7 @@ const AddEditRpc = props => {
   const postRpcData = async () => {
     let postData = databaseUtilities.addRpc(
       formState.values[rpcName],
-      formState.values[zoneName] ? formState.values[zoneName] : null,
+      formState.values[stateName] ? formState.values[stateName] : null,
       formState.values[collegeName] ? formState.values[collegeName] : null
     );
     if (formState.isEditRpc) {
@@ -331,43 +318,6 @@ const AddEditRpc = props => {
                         name={stateName}
                         key={option => option.id}
                         label={get(AddRpcSchema[stateName], "label")}
-                        variant="outlined"
-                      />
-                    )}
-                    className={classes.elementroot}
-                  />
-                </Grid>
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    options={zones}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(zoneName, event, value);
-                    }}
-                    name={zoneName}
-                    value={
-                      zones[
-                        zones.findIndex(function(item, i) {
-                          return item.id === formState.values[zoneName];
-                        })
-                      ] || null /** Please give a default " " blank value */
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(zoneName)}
-                        helperText={
-                          hasError(zoneName)
-                            ? formState.errors[zoneName].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        value={option => option.id}
-                        name={zoneName}
-                        key={option => option.id}
-                        label={get(AddRpcSchema[zoneName], "label")}
                         variant="outlined"
                       />
                     )}

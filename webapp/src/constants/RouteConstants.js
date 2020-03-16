@@ -21,6 +21,7 @@ export const MANAGE_TRAINING = "/manage-training";
 export const VALIDATE_STUDENT = "/validate-student";
 export const EVENTS = "/events";
 export const PROFILE = "/profile";
+export const DETAIL_USER = "/detail-user";
 
 /** State */
 export const EDIT_STATE = "/edit-state";
