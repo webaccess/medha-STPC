@@ -440,14 +440,13 @@ const ViewUsers = props => {
       } else {
         setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Un Block Selected User"
+          bottonBlockUnblock: "Unblock Selected User"
         }));
       }
     });
     setSelectedRows(state.selectedRows);
   }, []);
 
-  
   const blockMulUserById = () => {
     let arrayId = [];
     for (var k = 0; k < selectedRows.length; k++) {
@@ -598,7 +597,6 @@ const ViewUsers = props => {
         <Typography variant="h4" gutterBottom>
           Users
         </Typography>
-
         <GreenButton
           variant="contained"
           color="secondary"
