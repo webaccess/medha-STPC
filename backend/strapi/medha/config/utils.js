@@ -25,9 +25,15 @@ function getFindOneResponse(response) {
     result: response
   };
 }
+
+function getTotalRecords(model) {
+  return strapi.query(model).count();
+}
+
 module.exports = {
   getRequestParams,
   getPaginatedResponse,
   getResponse,
-  getFindOneResponse
+  getFindOneResponse,
+  getTotalRecords
 };

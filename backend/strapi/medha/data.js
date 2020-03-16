@@ -278,7 +278,15 @@ const roles = {
       },
       {
         name: "college",
-        action: ["find", "findone", "showStudents", "count", "create", "delete"]
+        action: [
+          "find",
+          "findone",
+          "showStudents",
+          "count",
+          "create",
+          "delete",
+          "update"
+        ]
       },
       {
         name: "education",
@@ -310,19 +318,19 @@ const roles = {
       },
       {
         name: "rpc",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "state",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "stream",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "student",
-        action: []
+        action: ["find", "findone", "update", "count", "create", "delete"]
       },
       {
         name: "user",
@@ -330,7 +338,7 @@ const roles = {
       },
       {
         name: "zone",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "district",
