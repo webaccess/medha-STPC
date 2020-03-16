@@ -30,6 +30,10 @@ import Registration from "./containers/Registration/Registration";
 import RequestOtp from "./containers/OTP/Requestotp";
 import VerifyOtp from "./containers/OTP/Verifyotp";
 import EditCollegeRoute from "./authroute/EditCollegeRoute";
+import Registered from "../src/containers/Registration/Registered.js";
+import RegistrationRoute from "./containers/Registration/RegistrationRoute";
+import RequiredConformation from "./components/RequiredConformation/RequiredConformation.js";
+
 import EditStateRoute from "./authroute/EditStateRoute";
 import EditZoneRoute from "./authroute/EditZoneRoute";
 import EditRpcRoute from "./authroute/EditRpcRoute";
@@ -58,16 +62,37 @@ function App() {
                 type={"login"}
                 layout={Layout}
               />
+              <RequiredConformation
+                path={routeConstants.REQUIRED_CONFORMATION}
+                exact
+              />
               <Route
                 path={routeConstants.LOGOUT_URL}
                 component={Logout}
                 exact
               />
-              <Registration path={routeConstants.NEW_REGISTRATION_URL} exact />
+              <Registered
+                path={routeConstants.REGISTERED}
+                layout={Layout}
+                exact
+              />
+              <RegistrationRoute
+                path={routeConstants.NEW_REGISTRATION_URL}
+                layout={Layout}
+                exact
+              />
 
-              <RequestOtp path={routeConstants.REQUEST_OTP} exact />
+              <RequestOtp
+                path={routeConstants.REQUEST_OTP}
+                layout={Layout}
+                exact
+              />
 
-              <VerifyOtp path={routeConstants.VERIFY_OTP} exact />
+              <VerifyOtp
+                path={routeConstants.VERIFY_OTP}
+                layout={Layout}
+                exact
+              />
 
               <ForgotPasswordRoute
                 path={routeConstants.FORGOT_PASSWORD_URL}

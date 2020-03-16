@@ -5,6 +5,8 @@ export const LOGOUT_URL = "/logout";
 export const NOT_FOUND_URL = "/404";
 export const DASHBOARD_URL = "/";
 export const ADD_USER = "/add-user";
+export const REGISTERED = "/registered";
+export const REQUIRED_CONFORMATION = "/requiredconformation";
 
 /** College */
 export const ADD_COLLEGE = "/add-college";

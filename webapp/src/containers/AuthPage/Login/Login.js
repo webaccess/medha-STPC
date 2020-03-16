@@ -40,6 +40,7 @@ import { useTheme } from "@material-ui/core/styles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import image from "../../../assets/images/login-img.png";
 import CardIcon from "../../../components/Card/CardIcon.js";
+import { useHistory } from "react-router-dom";
 
 const identifier = "identifier";
 const password = "password";
@@ -47,6 +48,7 @@ const password = "password";
 const LogIn = props => {
   const classes = useStyles();
   const theme = useTheme();
+  const history = useHistory();
   const [ifSuccess, setIfSuccess] = React.useState(false);
   const [ifFailure, setIfFailure] = React.useState(false);
 
@@ -200,14 +202,22 @@ const LogIn = props => {
         }
       )
       .then(response => {
-        auth.setToken(response.data.jwt, true);
-        auth.setUserInfo(response.data.user, true);
-        setIfSuccess(true);
-        // Handle success.
+        console.log(response);
+        if (
+          response.data.user.role.name === "Student" &&
+          !response.data.user.confirmed
+        )
+          history.push(routeConstants.REQUIRED_CONFORMATION);
+        else {
+          auth.setToken(response.data.jwt, true);
+          auth.setUserInfo(response.data.user, true);
+          setIfSuccess(true);
+          // Handle success.
+        }
       })
       .catch(error => {
         setIfFailure(true);
-        console.log("An error occurred:", error);
+        console.log("An error occurred:", JSON.stringify(error));
       });
   };
 

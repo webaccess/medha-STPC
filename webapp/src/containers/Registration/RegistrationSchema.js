@@ -40,7 +40,7 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "First Name is required"
+        message: "Father's First Name is required"
       }
     }
   },
@@ -55,7 +55,7 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Last Name is required"
+        message: " Father's Last Name is required"
       }
     }
   },
@@ -113,21 +113,21 @@ const RegistrationSchema = {
       }
     }
   },
-  dateofbirth: {
-    label: "Date Of Birth",
-    id: "dateofbirth",
-    autoComplete: "dateofbirth",
-    required: true,
-    placeholder: "Date of Birth",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Date of Birth is required"
-      }
-    }
-  },
+  // dateofbirth: {
+  //   label: "Date Of Birth",
+  //   id: "dateofbirth",
+  //   autoComplete: "dateofbirth",
+  //   required: true,
+  //   placeholder: "Date of Birth",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "Date of Birth is required"
+  //     }
+  //   }
+  // },
   gender: {
     label: "Gender",
     id: "gender",
@@ -143,12 +143,12 @@ const RegistrationSchema = {
       }
     }
   },
-  physicallychallenged: {
-    label: "Physically Challenged",
-    id: "physicallychallanged",
-    autoComplete: "physicallychallanged",
+  physicallyHandicapped: {
+    label: "Physically Handicapped",
+    id: "physicallyHandicapped",
+    autoComplete: "physicallyHandicapped",
     required: false,
-    placeholder: "physicallychallenged",
+    placeholder: "physicallyHandicapped",
     autoFocus: true,
     type: "checkbox",
     validations: {}
@@ -157,11 +157,16 @@ const RegistrationSchema = {
     label: "College",
     id: "college",
     autoComplete: "college",
-    required: false,
+    required: true,
     placeholder: "college",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "College is required"
+      }
+    }
   },
   stream: {
     label: "Stream",
@@ -173,21 +178,21 @@ const RegistrationSchema = {
     type: "text",
     validations: {}
   },
-  currentacademicyear: {
-    label: "Current Academic Year",
-    id: "currentacademicyear",
-    autoComplete: "currentacademicyear",
-    required: true,
-    placeholder: "currentacademicyear",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
+  // currentacademicyear: {
+  //   label: "Current Academic Year",
+  //   id: "currentacademicyear",
+  //   autoComplete: "currentacademicyear",
+  //   required: true,
+  //   placeholder: "currentacademicyear",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {}
+  // },
   rollnumber: {
     label: "Roll Number",
     id: "rollnumber",
     autoComplete: "rollnumber",
-    required: false,
+    required: true,
     placeholder: "rollnumber",
     autoFocus: true,
     type: "integer",
@@ -208,7 +213,7 @@ const RegistrationSchema = {
       },
       validateEmailRegex: {
         value: "true",
-        message: "Not an Email"
+        message: "Invalid Email"
       }
     }
   },
@@ -240,23 +245,31 @@ const RegistrationSchema = {
       required: {
         value: "true",
         message: "Password is required"
-      }
-    }
-  },
-  confirmpassword: {
-    label: "Confirm Password",
-    id: "cpassword",
-    autoComplete: "cpassword",
-    required: true,
-    placeholder: "confirmpassword",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
+      },
+      validatePasswordRegex: {
         value: "true",
-        message: "Password is required"
+        message: "Invalid Password"
       }
     }
   }
+  // confirmpassword: {
+  //   label: "Confirm Password",
+  //   id: "cpassword",
+  //   autoComplete: "cpassword",
+  //   required: true,
+  //   placeholder: "confirmpassword",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "Confirm Password is required"
+  //     },
+  //     validatePasswordRegex: {
+  //       value: "true",
+  //       message: "Invalid Password"
+  //     }
+  //   }
+  // }
 };
 export default RegistrationSchema;

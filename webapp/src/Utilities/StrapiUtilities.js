@@ -178,3 +178,42 @@ export const addUser = (
     role: role
   };
 };
+export const addStudent = (
+  firstname,
+  lastname,
+  fatherfirstname,
+  fatherlastname,
+  address,
+  state,
+  email,
+  contactNumber,
+  userName,
+  password,
+  gender,
+  dateofbirth,
+  physicallyHandicapped,
+  college,
+  stream = null,
+  rollNumber = null,
+  otp
+) => {
+  return {
+    contact_number: contactNumber,
+    otp: otp,
+    username: userName,
+    password: password,
+    email: email,
+    college_id: college,
+    first_name: firstname,
+    last_name: lastname,
+    father_first_name: fatherfirstname,
+    father_last_name: fatherlastname,
+    address: address,
+    state: state,
+    date_of_birth: dateofbirth,
+    stream: stream,
+    gender: gender,
+    roll_number: rollNumber,
+    physicallyHandicapped: physicallyHandicapped
+  };
+};

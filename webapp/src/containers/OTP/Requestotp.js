@@ -8,12 +8,19 @@ import {
   Typography,
   Grid,
   TextField,
-  Card
+  Card,
+  CardContent,
+  Hidden,
+  CardMedia
 } from "@material-ui/core";
 import Logo from "../../components/Logo/Logo.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import Button from "../../components/GreenButton/GreenButton.js";
 import form from "./OTPform.json";
+import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
+import * as serviceProvider from "../../api/Axios.js";
+import axios from "axios";
+import image from "../../assets/images/login-img.png";
 
 const RequestOtp = props => {
   let history = useHistory();
@@ -21,7 +28,7 @@ const RequestOtp = props => {
   const [contactNumber, setContactNumber] = useState("");
   const [error, setError] = useState("");
   const classes = useStyles();
-
+  const { layout: Layout } = props;
   const validate = () => {
     const error = validateInput(
       contactNumber,
@@ -29,55 +36,95 @@ const RequestOtp = props => {
     );
     console.log(error);
     if (error[0]) setError(error);
-    else history.push("/verifyotp");
+    else {
+      postCall();
+    }
+  };
+
+  const postCall = () => {
+    console.log(
+      strapiApiConstants.STRAPI_DB_URL +
+        strapiApiConstants.STRAPI_REQUEST_STUDENT_OTP
+    );
+    axios
+      .post(
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_REQUEST_STUDENT_OTP,
+        { contact_number: contactNumber }
+      )
+      .then(res => {
+        history.push("/verifyotp", { contactNumber: contactNumber });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   return (
-    <Container>
+    <Layout>
       <div className={classes.paper}>
-        <Box mt={1} style={{ backgroundColor: "black" }}>
-          <center>
-            <Logo />
-          </center>
-        </Box>
-        <Typography component="h1" variant="h5" style={{ marginTop: ".9rem" }}>
-          {authPageConstants.REGISTER}
-        </Typography>
-        <div className={classes.form}>
-          <Grid container spacing={3}>
-            <Grid item>
-              <TextField
-                label="Contact Number"
-                name="contactnumber"
-                value={contactNumber}
-                variant="outlined"
-                fullWidth
-                error={error[0] ? true : false}
-                required
-                helperText={error ? error : null}
-                onChange={event => {
-                  if (contactNumber.length === 9) setError("");
-                  setContactNumber(event.target.value);
-                }}
-              />
-            </Grid>
-            <Grid item>
-              <Button
-                color="primary"
-                mfullWidth
-                variant="contained"
-                size="large"
-                onClick={() => {
-                  validate();
-                }}
-              >
-                {authPageConstants.SEND_OTP_BUTTON}
-              </Button>
-            </Grid>
-          </Grid>
-        </div>
+        <Card className={classes.paper}>
+          <CardContent style={{ padding: "50px", marginLeft: "20px" }}>
+            <Typography
+              component="h1"
+              variant="h5"
+              style={{ marginTop: ".9rem" }}
+            >
+              {authPageConstants.REGISTER}
+            </Typography>
+
+            <div className={classes.form}>
+              <Grid container spacing={3}>
+                <Grid item>
+                  <TextField
+                    label="Contact Number"
+                    name="contactnumber"
+                    value={contactNumber}
+                    variant="outlined"
+                    fullWidth
+                    error={error[0] ? true : false}
+                    required
+                    helperText={error ? error : null}
+                    onChange={event => {
+                      if (contactNumber.length === 9) setError("");
+                      setContactNumber(event.target.value);
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3}>
+                <Grid item style={{ padding: "14px" }}>
+                  <Button
+                    color="primary"
+                    mfullWidth
+                    variant="contained"
+                    size="large"
+                    onClick={() => {
+                      validate();
+                    }}
+                  >
+                    <span style={{ margin: "10px" }}>
+                      {authPageConstants.SEND_OTP_BUTTON}
+                    </span>
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+          </CardContent>
+          <CardMedia
+            style={{
+              width: "500px",
+              height: "300px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end"
+            }}
+            image={image}
+            title="Live from space album cover"
+          />
+        </Card>
       </div>
-    </Container>
+    </Layout>
   );
 };
 export default RequestOtp;
