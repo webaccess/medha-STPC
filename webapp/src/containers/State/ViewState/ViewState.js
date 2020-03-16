@@ -82,8 +82,11 @@ const ViewStates = props => {
   });
 
   useEffect(() => {
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
     serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
+      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -91,7 +94,7 @@ const ViewStates = props => {
         }));
       })
       .catch(error => {
-        console.log("error", error);
+        console.log("error > ", error);
       });
 
     getStateData(10, 1);
