@@ -71,6 +71,7 @@ const ViewStates = props => {
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
+    isClearResetFilter: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -171,6 +172,8 @@ const ViewStates = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getStateData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getStateData(perPage, page);
     }
   };
 
@@ -178,6 +181,7 @@ const ViewStates = props => {
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
+      isClearResetFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
@@ -234,6 +238,10 @@ const ViewStates = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
     }
+    setFormState(formState => ({
+      ...formState,
+      isClearResetFilter: false
+    }));
   };
 
   /** This is used to handle the close modal event */
@@ -408,6 +416,18 @@ const ViewStates = props => {
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(STATE_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : formState.statesFilter[
+                          formState.statesFilter.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STATE_FILTER]
+                            );
+                          })
+                        ] || null
                   }
                   renderInput={params => (
                     <TextField

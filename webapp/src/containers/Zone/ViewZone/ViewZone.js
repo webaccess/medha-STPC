@@ -67,6 +67,7 @@ const ViewZone = props => {
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
+    isClearResetFilter: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -204,6 +205,8 @@ const ViewZone = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getZoneData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getZoneData(perPage, page);
     }
   };
 
@@ -211,6 +214,7 @@ const ViewZone = props => {
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
+      isClearResetFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
@@ -274,6 +278,10 @@ const ViewZone = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
     }
+    setFormState(formState => ({
+      ...formState,
+      isClearResetFilter: false
+    }));
   };
 
   /** This is used to handle the close modal event */
@@ -453,6 +461,18 @@ const ViewZone = props => {
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ZONE_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : formState.zonesFilter[
+                          formState.zonesFilter.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[ZONE_FILTER]
+                            );
+                          })
+                        ] || null
                   }
                   renderInput={params => (
                     <TextField

@@ -75,6 +75,7 @@ const ViewRpc = props => {
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
+    isClearResetFilter: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -182,6 +183,8 @@ const ViewRpc = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getRpcStateData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getRpcStateData(perPage, page);
     }
   };
 
@@ -189,6 +192,7 @@ const ViewRpc = props => {
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
+      isClearResetFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
@@ -226,6 +230,10 @@ const ViewRpc = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
     }
+    setFormState(formState => ({
+      ...formState,
+      isClearResetFilter: false
+    }));
   };
 
   /** This is used to handle the close modal event */
@@ -433,6 +441,18 @@ const ViewRpc = props => {
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(RPC_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : formState.rpcFilter[
+                          formState.rpcFilter.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[RPC_FILTER]
+                            );
+                          })
+                        ] || null
                   }
                   renderInput={params => (
                     <TextField
