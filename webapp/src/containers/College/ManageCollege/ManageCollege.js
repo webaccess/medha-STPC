@@ -695,8 +695,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="State Filter"
-                      placeholder="State Filter"
+                      label="State Name"
+                      placeholder="State Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -726,8 +726,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Zone Filter"
-                      placeholder="Zone Filter"
+                      label="Zone Name"
+                      placeholder="Zone Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -757,8 +757,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Rpc Filter"
-                      placeholder="College Filter"
+                      label="Rpc Name"
+                      placeholder="College Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
