@@ -26,8 +26,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const STATES_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const ZONE_FILTER = "id";
 const SORT_FIELD_KEY = "_sort";
 
@@ -96,17 +94,6 @@ const ViewZone = props => {
       });
 
     getZoneData(10, 1);
-    serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          states: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error");
-      });
   }, []);
 
   /** This seperate function is used to get the zone data*/
