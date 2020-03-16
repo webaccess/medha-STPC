@@ -118,37 +118,26 @@ const StudentProfile = props => {
   }, [user]);
   const handleSetDetails = () => {
     let details = auth.getUserInfo();
-    serviceProvider
-      .serviceProviderForGetOneRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-        2
-      )
-      .then(response => {
-        details = response.data;
-        console.log(details);
-        setUser({
-          ...user,
-          firstname: details.user.first_name,
-          lastname: details.user.last_name,
-          username: details.user.username,
-          email: details.user.email,
-          state: details.user.state,
-          college: details.user.college,
-          contact: details.user.contact_number,
-          fatherFirstName: details.father_first_name,
-          fatherLastName: details.father_last_name,
-          address: details.address,
-          rollnumber: details.roll_number.toString(),
-          gender: details.gender,
-          district: details.district.id,
-          stream: details.stream.id,
-          physicallyHandicapped: details.physicallyHandicapped
-        });
-        setSelectedDate(details.date_of_birth);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    console.log(details);
+    setUser({
+      ...user,
+      firstname: details.first_name,
+      lastname: details.last_name,
+      username: details.username,
+      email: details.email,
+      state: details.state.id,
+      college: details.college.id,
+      contact: details.contact_number,
+      fatherFirstName: details.studentInfo.father_first_name,
+      fatherLastName: details.studentInfo.father_last_name,
+      address: details.studentInfo.address,
+      rollnumber: details.studentInfo.roll_number.toString(),
+      gender: details.studentInfo.gender,
+      district: details.studentInfo.district.id,
+      stream: details.studentInfo.stream.id,
+      physicallyHandicapped: details.studentInfo.physicallyHandicapped
+    });
+    setSelectedDate(details.date_of_birth);
   };
 
   const handleSubmit = event => {

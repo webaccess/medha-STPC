@@ -205,7 +205,7 @@ const LogIn = props => {
         console.log(response);
         if (
           response.data.user.role.name === "Student" &&
-          !response.data.user.confirmed
+          !response.data.user.studentInfo.verifiedByCollege
         )
           history.push(routeConstants.REQUIRED_CONFORMATION);
         else {

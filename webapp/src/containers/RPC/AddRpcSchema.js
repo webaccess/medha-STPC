@@ -29,21 +29,6 @@ const AddRpcSchema = {
       }
     }
   },
-  zoneName: {
-    label: "Zone",
-    id: "zonename",
-    autoComplete: "zonename",
-    required: true,
-    placeholder: "Zone Name",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Zone is required"
-      }
-    }
-  },
   collegeName: {
     label: "College",
     id: "collegename",

@@ -8,7 +8,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 
 const MenuItems = props => {
   const menuItems = {
-    Medha_Admin: [
+    "Medha Admin": [
       {
         name: "Training",
         Icon: <AssignmentOutlinedIcon />,
@@ -61,7 +61,7 @@ const MenuItems = props => {
         ]
       }
     ],
-    CollegeAdmin: [
+    "College Admin": [
       {
         name: "College",
         link: "",

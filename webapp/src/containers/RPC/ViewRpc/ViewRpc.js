@@ -46,6 +46,7 @@ const ViewRpc = props => {
     tempData: [],
     zones: [],
     rpcs: [],
+    rpcFilter: [],
     states: [],
     isFilterSearch: false,
     filterDataParameters: {},
@@ -83,6 +84,19 @@ const ViewRpc = props => {
     sortAscending: true
   });
   useEffect(() => {
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
+    serviceProviders
+      .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          rpcFilter: res.data.result
+        }));
+      })
+      .catch(error => [console.log("error", error)]);
+
     getRpcStateData(10, 1);
   }, []);
 
@@ -110,39 +124,31 @@ const ViewRpc = props => {
     }));
 
     await serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
-      .then(async res => {
-        let states = [];
-        states = res.data.result;
+      .serviceProviderForGetRequest(RPC_URL, paramsForRpc)
+      .then(res => {
         let currentPage = res.data.page;
         let totalRows = res.data.rowCount;
         let currentPageSize = res.data.pageSize;
         let pageCount = res.data.pageCount;
-        await serviceProviders
-          .serviceProviderForGetRequest(RPC_URL, paramsForRpc)
-          .then(res => {
-            formState.dataToShow = [];
-            formState.tempData = [];
-            let temp = [];
-            /** As rpcs data is in nested form we first convert it into
-             * a float structure and store it in data
-             */
-            temp = convertRpcData(res.data.result, states);
-            setFormState(formState => ({
-              ...formState,
-              rpcs: res.data.result,
-              dataToShow: temp,
-              tempData: temp,
-              pageSize: currentPageSize,
-              totalRows: totalRows,
-              page: currentPage,
-              pageCount: pageCount,
-              isDataLoading: false
-            }));
-          })
-          .catch(error => {});
+        formState.dataToShow = [];
+        formState.tempData = [];
+        let temp = [];
+        temp = convertRpcData(res.data.result);
+        setFormState(formState => ({
+          ...formState,
+          rpcs: res.data.result,
+          dataToShow: temp,
+          tempData: temp,
+          pageSize: currentPageSize,
+          totalRows: totalRows,
+          page: currentPage,
+          pageCount: pageCount,
+          isDataLoading: false
+        }));
       })
-      .catch(error => {});
+      .catch(error => {
+        console.log("rpcerror", error);
+      });
   };
 
   /** Pagination */
@@ -236,21 +242,14 @@ const ViewRpc = props => {
     }
   };
 
-  const convertRpcData = (data, statedata) => {
+  const convertRpcData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
         var temp = {};
         temp["id"] = data[i]["id"];
         temp["name"] = data[i]["name"];
-        temp["zone"] = data[i]["zone"]["name"];
-        if (data[i]["zone"]["state"]) {
-          for (let j in statedata) {
-            if (data[i]["zone"]["state"] === statedata[j].id) {
-              temp["state"] = statedata[j]["name"];
-            }
-          }
-        }
+        temp["state"] = data[i]["state"]["name"];
         x.push(temp);
       }
       return x;
@@ -278,7 +277,7 @@ const ViewRpc = props => {
 
   const column = [
     { name: "Name", sortable: true, selector: "name" },
-    { name: "Zone", sortable: true, selector: "zone" },
+    // { name: "Zone", sortable: true, selector: "zone" },
     { name: "State", sortable: true, selector: "state" },
     /** Columns for edit and delete */
     {
@@ -315,7 +314,6 @@ const ViewRpc = props => {
       conditionalCellStyles: []
     }
   ];
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -430,7 +428,7 @@ const ViewRpc = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   //name={ZONE_FILTER}
-                  options={formState.rpcs}
+                  options={formState.rpcFilter}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
