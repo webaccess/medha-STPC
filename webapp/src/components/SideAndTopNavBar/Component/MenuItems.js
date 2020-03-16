@@ -103,15 +103,31 @@ const MenuItems = props => {
     Student: [
       {
         name: "Training",
-        link: ""
+        link: "",
+        Icon: <AssignmentOutlinedIcon />
       },
       {
         name: "Events",
-        link: ""
+        link: "",
+        Icon: <EmojiFlagsOutlinedIcon />
       },
       {
         name: "Profile",
-        link: ""
+        Icon: <PersonOutlineOutlinedIcon />,
+        items: [
+          {
+            name: "Personal Details",
+            link: routeConstants.VIEW_PROFILE
+          },
+          {
+            name: "Education",
+            link: routeConstants.VIEW_EDUCATION
+          },
+          {
+            name: "Documents",
+            link: routeConstants.VIEW_DOCUMENTS
+          }
+        ]
       }
     ]
   };

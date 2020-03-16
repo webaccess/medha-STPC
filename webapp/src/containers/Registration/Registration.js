@@ -150,6 +150,7 @@ const Registration = props => {
       formState.values["fatherLastName"],
       formState.values["address"],
       formState.values["state"],
+      formState.values["district"],
       formState.values["email"],
       formState.values["contact"],
       formState.values["username"],

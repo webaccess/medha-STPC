@@ -39,6 +39,9 @@ import EditZoneRoute from "./authroute/EditZoneRoute";
 import EditRpcRoute from "./authroute/EditRpcRoute";
 import EditUserRoute from "./authroute/EditUserRoute";
 import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCollegeDetails";
+import StudentProfile from "./containers/Student/StudentProfile";
+import Education from "./containers/Student/Education";
+import Documents from "./containers/Student/Documents";
 class App extends Component {
   render() {
     return (
@@ -100,6 +103,28 @@ class App extends Component {
                 component={NotFoundPage}
                 exact
               />
+
+              <RouteWithLayout
+                component={StudentProfile}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_PROFILE}
+              />
+
+              <RouteWithLayout
+                component={Education}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_EDUCATION}
+              />
+
+              <RouteWithLayout
+                component={Documents}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_DOCUMENTS}
+              />
+
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout
