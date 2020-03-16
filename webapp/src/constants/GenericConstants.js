@@ -15,6 +15,8 @@ export const SEARCH_BUTTON_TEXT = "Search";
 export const RESET_BUTTON_TEXT = "Reset";
 export const NO_DATA_TO_SHOW_TEXT = "No data to show";
 export const ADD_MORE_TEXT = "Add More";
+export const BLOCK_BUTTON_TEXT = "Block";
+export const UNBLOCK_BUTTON_TEXT = "Unblock";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";

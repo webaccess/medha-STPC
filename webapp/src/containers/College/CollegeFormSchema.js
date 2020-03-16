@@ -48,31 +48,46 @@ const CollegeFormSchema = {
     label: "State",
     id: "state",
     autoComplete: "state",
-    required: false,
+    required: true,
     placeholder: "Choose State",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "State is required"
+      }
+    }
   },
   zone: {
     label: "Zone",
     id: "zone",
     autoComplete: "zone",
-    required: false,
+    required: true,
     placeholder: "Choose Zone",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "Zone is required"
+      }
+    }
   },
   rpc: {
     label: "RPC",
     id: "rpc",
     autoComplete: "rpc",
-    required: false,
+    required: true,
     placeholder: "Choose rpc",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "RPC is required"
+      }
+    }
   },
   district: {
     label: "District",
