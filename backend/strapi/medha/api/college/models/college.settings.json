@@ -52,6 +52,10 @@
     },
     "zone": {
       "model": "zone"
+    },
+    "tpos": {
+      "plugin": "users-permissions",
+      "collection": "user"
     }
   }
 }
