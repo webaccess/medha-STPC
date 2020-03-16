@@ -11,7 +11,6 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { YellowButton } from "../../../components";
 import useStyles from "./DeleteUserStyles";
 
-
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
 const BlockUser = props => {
@@ -101,25 +100,26 @@ const BlockUser = props => {
     >
       <Fade in={props.getModel}>
         <div className={classes.paper}>
-          <MuiDialogTitle>
-            <Typography className={classes.textMargin}>
-              {props.isUnBlocked || props.isUnMulBlocked ? "UN-Block" : null}
+          <div className={classes.blockpanel}>
+            <Typography variant={"h2"} className={classes.textMargin}>
+              {props.isUnBlocked || props.isUnMulBlocked ? "Unblock" : null}
               {props.isBlocked || props.isMulBlocked ? "Block" : null}
             </Typography>
+            <div className={classes.crossbtn}> 
             <IconButton
-              aria-label="close"
               className={classes.closeButton}
+              aria-label="close"
               onClick={props.modalClose}
             >
               <CloseIcon />
-            </IconButton>
-          </MuiDialogTitle>
+            </IconButton></div>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isUnBlocked || props.isUnMulBlocked
-                    ? "Do you want to UN-Block this user"
+                    ? "Do you want to Unblock this user"
                     : null}
                   {props.isBlocked || props.isMulBlocked
                     ? "Do you want to Block this user"
@@ -133,7 +133,7 @@ const BlockUser = props => {
                     onClick={handleSubmit}
                   >
                     {props.isUnBlocked || props.isUnMulBlocked
-                      ? "UN-Block"
+                      ? "Unblock"
                       : null}
                     {props.isBlocked || props.isMulBlocked ? "Block" : null}
                   </YellowButton>

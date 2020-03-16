@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
     alignSelf: "center",
     marginLeft: "10px"
   },
+
   modal: {
     display: "flex",
     alignItems: "center",
@@ -28,7 +29,20 @@ const useStyles = makeStyles(theme => ({
     padding: "25px 15px"
   },
   deletemessage: {
-    flex: "1 auto"
+    flex: "inherit"
+  },
+  blockpanel: {
+    display: "flex",
+    position: "relative",
+    "& h2": {
+      flexGrow: "1"
+    }
+  },
+  crossbtn: {
+    position: "absolute",
+    top: "-7px",
+    right: "-7px",
+    padding: "0px"
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -43,7 +57,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#000",
     color: "#fff",
     fontSize: "18px",
-    paddingLeft: "8px"
+    paddingLeft: "8px",
+    width: "100%"
   },
   autoCompleteField: {
     width: 200
