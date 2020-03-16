@@ -23,7 +23,10 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize:
+          pageSize < 0
+            ? await utils.getTotalRecords("activity-batch-attendance")
+            : pageSize
       })
       .then(res => {
         return utils.getPaginatedResponse(res);

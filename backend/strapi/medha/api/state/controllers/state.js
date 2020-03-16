@@ -25,7 +25,8 @@ module.exports = {
         )
         .fetchPage({
           page: page,
-          pageSize: pageSize,
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("state") : pageSize,
           columns: ["id", "name"]
         })
         .then(res => {
@@ -45,7 +46,11 @@ module.exports = {
             filters
           })
         )
-        .fetchPage({ page: page, pageSize: pageSize })
+        .fetchPage({
+          page: page,
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("state") : pageSize
+        })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });

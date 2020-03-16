@@ -157,7 +157,10 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize:
+          pageSize < 0
+            ? await strapi.query("user", "users-permissions").count()
+            : pageSize
       })
       .then(u => {
         const response = utils.getPaginatedResponse(u);

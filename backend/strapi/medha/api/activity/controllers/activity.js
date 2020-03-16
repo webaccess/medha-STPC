@@ -24,7 +24,8 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize
       })
       .then(res => {
         return utils.getPaginatedResponse(res);

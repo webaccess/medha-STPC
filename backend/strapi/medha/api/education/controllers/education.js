@@ -23,7 +23,8 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
       })
       .then(res => {
         return utils.getPaginatedResponse(res);
