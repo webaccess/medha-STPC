@@ -50,7 +50,9 @@
           }
         },
         "summary": "",
-        "tags": ["College"],
+        "tags": [
+          "College"
+        ],
         "parameters": [
           {
             "name": "_limit",
@@ -236,7 +238,9 @@
           }
         },
         "summary": "",
-        "tags": ["College"],
+        "tags": [
+          "College"
+        ],
         "requestBody": {
           "description": "",
           "required": true,
@@ -301,7 +305,9 @@
           }
         },
         "summary": "",
-        "tags": ["College"],
+        "tags": [
+          "College"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -367,7 +373,9 @@
           }
         },
         "summary": "",
-        "tags": ["College"],
+        "tags": [
+          "College"
+        ],
         "parameters": []
       }
     },
@@ -418,7 +426,9 @@
           }
         },
         "summary": "",
-        "tags": ["College"],
+        "tags": [
+          "College"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -478,7 +488,9 @@
           }
         },
         "summary": "",
-        "tags": ["College"],
+        "tags": [
+          "College"
+        ],
         "requestBody": {
           "description": "",
           "required": true,
@@ -550,7 +562,9 @@
           }
         },
         "summary": "",
-        "tags": ["College"],
+        "tags": [
+          "College"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -569,7 +583,13 @@
   "components": {
     "schemas": {
       "College": {
-        "required": ["id", "name", "college_code", "address", "college_email"],
+        "required": [
+          "id",
+          "name",
+          "college_code",
+          "address",
+          "college_email"
+        ],
         "properties": {
           "id": {
             "type": "string"
@@ -578,7 +598,10 @@
             "type": "string"
           },
           "rpc": {
-            "required": ["id", "name"],
+            "required": [
+              "id",
+              "name"
+            ],
             "properties": {
               "id": {
                 "type": "string"
@@ -667,7 +690,10 @@
             }
           },
           "district": {
-            "required": ["id", "name"],
+            "required": [
+              "id",
+              "name"
+            ],
             "properties": {
               "id": {
                 "type": "string"
@@ -688,13 +714,18 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["id"],
+              "required": [
+                "id"
+              ],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": ["id", "name"],
+                  "required": [
+                    "id",
+                    "name"
+                  ],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -726,11 +757,76 @@
                 "type": "string"
               }
             }
+          },
+          "tpos": {
+            "required": [
+              "id",
+              "username",
+              "email",
+              "first_name",
+              "last_name",
+              "contact_number"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              },
+              "resetPasswordToken": {
+                "type": "string"
+              },
+              "confirmed": {
+                "type": "boolean"
+              },
+              "blocked": {
+                "type": "boolean"
+              },
+              "role": {
+                "type": "string"
+              },
+              "first_name": {
+                "type": "string"
+              },
+              "last_name": {
+                "type": "string"
+              },
+              "contact_number": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "zone": {
+                "type": "string"
+              },
+              "rpc": {
+                "type": "string"
+              },
+              "college": {
+                "type": "string"
+              }
+            }
           }
         }
       },
       "NewCollege": {
-        "required": ["name", "college_code", "address", "college_email"],
+        "required": [
+          "name",
+          "college_code",
+          "address",
+          "college_email"
+        ],
         "properties": {
           "name": {
             "type": "string"
@@ -764,13 +860,18 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["id"],
+              "required": [
+                "id"
+              ],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": ["id", "name"],
+                  "required": [
+                    "id",
+                    "name"
+                  ],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -787,6 +888,9 @@
             }
           },
           "zone": {
+            "type": "string"
+          },
+          "tpos": {
             "type": "string"
           }
         }
