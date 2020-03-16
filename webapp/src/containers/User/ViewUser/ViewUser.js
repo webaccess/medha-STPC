@@ -93,7 +93,7 @@ const ViewUsers = props => {
     isMulBlocked: false,
     isMulUnBlocked: false,
     MultiBlockUser: {},
-    bottonBlockUnblock: "Block",
+    bottonBlockUnblock: "Block Selected User",
     greenButtonChecker: true,
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -101,10 +101,9 @@ const ViewUsers = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    selectedRowFilter: true
   });
-
-  console.log("datatoshow", formState.dataToShow);
 
   useEffect(() => {
     /** Seperate function to get user data */
@@ -361,29 +360,6 @@ const ViewUsers = props => {
     }));
   };
 
-  /** Search filter is called when we select filters and click on search button */
-  // const searchFilter = () => {
-  //   const filteredData = formState.tempData.filter(
-  //     dataObj =>
-  //       dataObj.username.indexOf(
-  //         formState.filterDataParameters[USER_FILTER]
-  //       ) !== -1 &&
-  //       dataObj.role.indexOf(formState.filterDataParameters[ROLE_FILTER]) !==
-  //         -1 &&
-  //       dataObj.zone.indexOf(formState.filterDataParameters[ZONE_FILTER]) !==
-  //         -1 &&
-  //       dataObj.rpc.indexOf(formState.filterDataParameters[RPC_FILTER]) !==
-  //         -1 &&
-  //       dataObj.college.indexOf(formState.filterDataParameters[IPC_FILTER]) !==
-  //         -1
-  //   );
-
-  //   setFormState(formState => ({
-  //     ...formState,
-  //     dataToShow: filteredData
-  //   }));
-  // };
-
   const blockedCell = event => {
     for (var k = 0; k < formState.dataToShow.length; k++) {
       if (
@@ -437,6 +413,19 @@ const ViewUsers = props => {
   const handleRowSelected = useCallback(state => {
     let blockData = [];
     let unblockData = [];
+
+    if (state.selectedCount >= 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+
     state.selectedRows.forEach(data => {
       if (data.blocked === false) {
         blockData.push(data);
@@ -446,24 +435,25 @@ const ViewUsers = props => {
       if (blockData.length > 0) {
         setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Block"
+          bottonBlockUnblock: "Block Selected User"
         }));
       } else {
         setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Un Block"
+          bottonBlockUnblock: "Un Block Selected User"
         }));
       }
     });
     setSelectedRows(state.selectedRows);
   }, []);
 
+  
   const blockMulUserById = () => {
     let arrayId = [];
     for (var k = 0; k < selectedRows.length; k++) {
       arrayId.push(selectedRows[k]["id"]);
     }
-    if (formState.bottonBlockUnblock === "Block") {
+    if (formState.bottonBlockUnblock === "Block Selected User") {
       setFormState(formState => ({
         ...formState,
         isMulBlocked: true,
@@ -507,7 +497,6 @@ const ViewUsers = props => {
   };
 
   const viewCell = event => {
-    console.log(event.target.id);
     history.push({
       pathname: routeConstants.DETAIL_USER,
       dataForEdit: event.target.id
@@ -616,6 +605,7 @@ const ViewUsers = props => {
           onClick={() => blockMulUserById()}
           startIcon={<BlockIcon />}
           greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
         >
           {formState.bottonBlockUnblock}
         </GreenButton>
@@ -626,8 +616,9 @@ const ViewUsers = props => {
           onClick={() => deleteMulUserById()}
           startIcon={<DeleteIcon />}
           greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
         >
-          Delete
+          Delete Selected User
         </GreenButton>
 
         <GreenButton
@@ -637,6 +628,7 @@ const ViewUsers = props => {
           disableElevation
           to={routeConstants.ADD_USER}
           startIcon={<AddCircleOutlineOutlinedIcon />}
+          buttonDisabled={formState.selectedRowFilter}
         >
           Add User
         </GreenButton>
