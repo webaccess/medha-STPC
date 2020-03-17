@@ -43,6 +43,9 @@ const useDrawerStyles = makeStyles(theme => ({
     boxShadow: "none",
     marginTop: "30px"
   },
+  navigationpanel: {
+    margin: theme.spacing(0)
+  },
   divider: {
     margin: theme.spacing(2, 0)
   },
@@ -186,7 +189,7 @@ function SideAndTopNavBar(props) {
 
       {inputs.map((list, id) => {
         return (
-          <div key={list.name}>
+          <div key={list.name} className={listClasses.navigationpanel}>
             {list.items != null ? (
               <List {...rest} className={clsx(listClasses.root, className)}>
                 <ListItem

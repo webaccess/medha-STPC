@@ -59,6 +59,13 @@ const useStyles = makeStyles(theme => ({
       fontWeight: "700"
     }
   },
+  crossbtn: {
+    position: "absolute",
+    top: "-7px",
+    right: "-7px",
+    padding: "0px",
+    color: "#fff"
+  },
   Cardtheming: {
     paddingBottom: "16px !important"
   }
