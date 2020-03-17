@@ -46,3 +46,8 @@ export const ADD_ZONE_TEXT = "Add Zone";
 export const EDIT_RPC_TEXT = "Edit Rpc";
 export const VIEW_RPC_TEXT = "RPC";
 export const ADD_RPC_TEXT = "Add Rpc";
+
+/** Education */
+export const ADD_EDUCATION_TEXT = "Add Education";
+export const EDIT_EDUCATION_TEXT = "Edit Education";
+export const VIEW_EDUCATION_TEXT = "Education";

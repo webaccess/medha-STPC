@@ -239,17 +239,6 @@ export const editStudent = (
   rollNumber = null
 ) => {
   return {
-    // first_name:firstname,
-    // last_name:lastname,
-    // father_first_name:fatherfirstname,
-    // father_last_name:fatherlastname,
-    // address:address,
-    // state:state,
-    // district:district,
-    // email:email,
-    // contact_number:contactNumber,
-    // username:userName,
-
     contact_number: contactNumber,
     username: userName,
     email: email,
@@ -266,5 +255,13 @@ export const editStudent = (
     gender: gender,
     roll_number: rollNumber,
     physicallyHandicapped: physicallyHandicapped
+  };
+};
+export const addEducation = (qualification, board, yearOfPassing, marks) => {
+  return {
+    qualification,
+    board,
+    year_of_passing: parseInt(yearOfPassing),
+    marks: parseFloat(marks)
   };
 };
