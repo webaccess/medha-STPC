@@ -168,5 +168,112 @@ module.exports = {
         console.log(error);
         return ctx.response.badRequest(`Invalid ${error.column}`);
       });
+  },
+  async edit(ctx) {
+    const requestBody = ctx.request.body;
+    console.log(requestBody);
+    console.log(ctx.params);
+    console.log(ctx.state.user.id);
+    const userRequestBody = Object.assign(
+      {},
+      _.omit(requestBody, [
+        "stream",
+        "father_first_name",
+        "father_last_name",
+        "date_of_birth",
+        "gender",
+        "roll_number",
+        "district",
+        "physicallyHandicapped",
+        "address",
+        "college",
+        "verifiedByCollege",
+        "documents",
+        "educations"
+      ])
+    );
+    const studentRequestData = Object.assign(
+      { user: userRequestBody.id },
+      _.omit(ctx.request.body, [
+        "username",
+        "email",
+        "password",
+        "first_name",
+        "last_name",
+        "contact_number",
+        "otp",
+        "college_id",
+        "state",
+        "id",
+        "provider",
+        "confirmed",
+        "blocked",
+        "role"
+      ])
+    );
+    console.log(studentRequestData);
+    //console.log(userRequestBody);
+    await bookshelf
+      .transaction(async t => {
+        const userModel = await bookshelf
+          .model("user")
+          .where({ id: ctx.state.user.id })
+          .fetch({ lock: "forUpdate", transacting: t, require: false });
+        userModel
+          .save(
+            {
+              username: userRequestBody.username,
+              email: userRequestBody.email,
+              role: userRequestBody.role,
+              first_name: userRequestBody.first_name,
+              last_name: userRequestBody.last_name,
+              contact_number: userRequestBody.contact_number,
+              state: userRequestBody.state,
+              zone: userRequestBody.zone,
+              rpc: userRequestBody.rpc,
+
+              confirmed: userRequestBody.confirmed,
+              blocked: userRequestBody.blocked
+            },
+            { patch: true, transacting: t }
+          )
+          .catch(err => {
+            return Promise.reject({ Error: err });
+          });
+
+        const studentModel = await bookshelf
+          .model("student")
+          .where({ id: ctx.params.id })
+          .fetch({ lock: "forUpdate", transacting: t, require: false });
+
+        return studentModel
+          .save(
+            {
+              stream: studentRequestData.stream,
+              verifiedByCollege: studentRequestData.verifiedByCollege,
+              physicallyHandicapped: studentRequestData.physicallyHandicapped,
+              father_first_name: studentRequestData.father_first_name,
+              father_last_name: studentRequestData.father_last_name,
+              address: studentRequestData.address,
+              date_of_birth: studentRequestData.date_of_birth,
+              gender: studentRequestData.gender,
+              roll_number: studentRequestData.roll_number,
+              district: studentRequestData.district
+            },
+            { patch: true, transacting: t }
+          )
+          .catch(err => {
+            return Promise.reject({ Error: err });
+          });
+      })
+      .then(success => {
+        console.log("In then");
+        console.log(success);
+        return ctx.send(utils.getResponse(success));
+      })
+      .catch(error => {
+        console.log(error);
+        return ctx.response.badRequest(`Invalid ${error.column}`);
+      });
   }
 };

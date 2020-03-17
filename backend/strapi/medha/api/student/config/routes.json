@@ -43,7 +43,7 @@
     {
       "method": "PUT",
       "path": "/students/:id",
-      "handler": "student.update",
+      "handler": "student.edit",
       "config": {
         "policies": []
       }
