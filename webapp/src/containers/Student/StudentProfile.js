@@ -17,6 +17,7 @@ import { Redirect } from "../../../node_modules/react-router-dom";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
+import * as genericConstants from "../../constants/GenericConstants.js";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import DateFnsUtils from "@date-io/date-fns";
 import {
@@ -26,13 +27,14 @@ import {
 
 import * as serviceProvider from "../../api/Axios.js";
 
-import Button from "../../components/GreenButton/GreenButton.js";
+import YellowButton from "../../components/YellowButton/YellowButton.js";
+import GrayButton from "../../components/GrayButton/GrayButton.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import { makeStyles } from "@material-ui/core/styles";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
-import registrationSchema from "../Registration/RegistrationSchema.js";
+import StudentProfileSchema from "../Student/StudentProfileSchema.js";
 import { useHistory } from "react-router-dom";
 import {
   Alert,
@@ -47,6 +49,9 @@ const useStyles = makeStyles(theme => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(2)
+  },
+  btnspace: {
+    paddingLeft: " 18px"
   }
 }));
 
@@ -63,12 +68,10 @@ const StudentProfile = props => {
     email: "",
     contact: "",
     username: "",
-    password: "",
     gender: "",
     physicallyHandicapped: null,
     college: null,
     stream: null,
-    currentAcademicYear: null,
     rollnumber: null
   });
 
@@ -78,6 +81,7 @@ const StudentProfile = props => {
     touched: {},
     errors: {},
     isSuccess: false,
+    editable: false,
     showPassword: false
   });
   const [selectedDate, setSelectedDate] = React.useState(
@@ -85,6 +89,8 @@ const StudentProfile = props => {
   );
   const classes = useStyles();
 
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isFailed, setIsFailed] = useState(false);
   const genderlist = [
     { name: "Male", id: "male" },
     { name: "Female", id: "female" }
@@ -106,6 +112,7 @@ const StudentProfile = props => {
     getColleges();
     getStreams();
     handleSetDetails();
+
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
@@ -125,7 +132,7 @@ const StudentProfile = props => {
       lastname: details.last_name,
       username: details.username,
       email: details.email,
-      state: details.state.id,
+      state: details.state ? details.state.id : "",
       college: details.college.id,
       contact: details.contact_number,
       fatherFirstName: details.studentInfo.father_first_name,
@@ -133,11 +140,13 @@ const StudentProfile = props => {
       address: details.studentInfo.address,
       rollnumber: details.studentInfo.roll_number.toString(),
       gender: details.studentInfo.gender,
-      district: details.studentInfo.district.id,
+      district: details.studentInfo.district
+        ? details.studentInfo.district.id
+        : "",
       stream: details.studentInfo.stream.id,
       physicallyHandicapped: details.studentInfo.physicallyHandicapped
     });
-    setSelectedDate(details.date_of_birth);
+    setSelectedDate(new Date(details.studentInfo.date_of_birth));
   };
 
   const handleSubmit = event => {
@@ -146,14 +155,14 @@ const StudentProfile = props => {
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
-      registrationSchema
+      StudentProfileSchema
     );
     console.log(checkAllFieldsValid);
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(
         formState.values,
-        registrationSchema
+        StudentProfileSchema
       );
 
       if (formUtilities.checkEmpty(formState.errors)) {
@@ -163,18 +172,18 @@ const StudentProfile = props => {
       /** This is used to find out which all required fields are not filled */
       formState.values = formUtilities.getListOfKeysNotPresent(
         formState.values,
-        registrationSchema
+        StudentProfileSchema
       );
       formState.errors = formUtilities.setErrors(
         formState.values,
-        registrationSchema
+        StudentProfileSchema
       );
     }
     console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
       console.log("postcall");
-      //  postStudentData();
+      postStudentData();
 
       /** Call axios from here */
       setFormState(formState => ({
@@ -190,17 +199,17 @@ const StudentProfile = props => {
   };
 
   const postStudentData = () => {
-    let postData = databaseUtilities.addStudent(
+    let postData = databaseUtilities.editStudent(
       formState.values["firstname"],
       formState.values["lastname"],
       formState.values["fatherFirstName"],
       formState.values["fatherLastName"],
       formState.values["address"],
       formState.values["state"],
+      formState.values["district"],
       formState.values["email"],
       formState.values["contact"],
       formState.values["username"],
-      formState.values["password"],
       formState.values["gender"],
       selectedDate.getFullYear() +
         "-" +
@@ -210,23 +219,41 @@ const StudentProfile = props => {
       formState.values["physicallyHandicapped"],
       formState.values["college"],
       formState.values["stream"],
-      parseInt(formState.values["rollnumber"]),
-      user.otp
+      parseInt(formState.values["rollnumber"])
     );
     console.log(postData);
-    axios
-      .post(
-        strapiApiConstants.STRAPI_DB_URL +
-          strapiApiConstants.STRAPI_REGISTER_STUDENT,
+    const student = auth.getUserInfo();
+    console.log(student.studentInfo);
+    serviceProvider
+      .serviceProviderForPutRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
+        student.studentInfo.id,
         postData
       )
       .then(response => {
         console.log(response);
-        history.push(routeConstants.REGISTERED);
+        console.log("Success");
+        setIsSuccess(true);
+        setFormState({ ...formState, editable: false, isSuccess: true });
       })
       .catch(err => {
         console.log(err);
+        setIsFailed(true);
       });
+
+    // axios
+    //   .post(
+    //     strapiApiConstants.STRAPI_DB_URL +
+    //       strapiApiConstants.STRAPI_STUDENT +
+    //       postData
+    //   )
+    //   .then(response => {
+    //     console.log(response);
+    //     history.push(routeConstants.REGISTERED);
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
   };
 
   const getStreams = () => {
@@ -335,19 +362,34 @@ const StudentProfile = props => {
 
   const hasError = field => (formState.errors[field] ? true : false);
 
+  const handleeditable = () => {
+    const edit = formState.editable;
+    setIsSuccess(false);
+    setIsFailed(false);
+    setFormState({ ...formState, editable: !edit });
+  };
+
   return (
     <Card>
+      {isSuccess ? (
+        <Alert severity="success">
+          {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+        </Alert>
+      ) : null}
+      {isFailed ? (
+        <Alert severity="error">
+          {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+        </Alert>
+      ) : null}
       {console.log(auth.getUserInfo())}
-      {console.log(props)}
+
       {console.log(formState)}
-      {console.log(collegelist)}
-      {console.log(user)}
       <form autoComplete="off">
         <CardHeader title="Edit Profile" />
         <Divider />
         <CardContent>
           <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="First Name"
                 name="firstname"
@@ -356,6 +398,7 @@ const StudentProfile = props => {
                 error={hasError("firstname")}
                 required
                 fullWidth
+                disabled={formState.editable ? false : true}
                 onChange={e => {
                   handleChange(e);
                   setUser({ ...user, firstname: e.target.value });
@@ -369,7 +412,7 @@ const StudentProfile = props => {
                 }
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="Last Name"
                 name="lastname"
@@ -377,6 +420,7 @@ const StudentProfile = props => {
                 variant="outlined"
                 required
                 fullWidth
+                disabled={formState.editable ? false : true}
                 error={hasError("lastname")}
                 onChange={e => {
                   handleChange(e);
@@ -391,7 +435,7 @@ const StudentProfile = props => {
                 }
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="Father's First Name"
                 name="fatherFirstName"
@@ -399,6 +443,7 @@ const StudentProfile = props => {
                 variant="outlined"
                 required
                 fullWidth
+                disabled={formState.editable ? false : true}
                 onChange={handleChange}
                 error={hasError("fatherFirstName")}
                 helperText={
@@ -410,7 +455,7 @@ const StudentProfile = props => {
                 }
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="Father's Last Name"
                 name="fatherLastName"
@@ -418,6 +463,7 @@ const StudentProfile = props => {
                 variant="outlined"
                 required
                 fullWidth
+                disabled={formState.editable ? false : true}
                 onChange={handleChange}
                 error={hasError("fatherLastName")}
                 helperText={
@@ -437,6 +483,7 @@ const StudentProfile = props => {
                 variant="outlined"
                 required
                 fullWidth
+                disabled={formState.editable ? false : true}
                 onChange={handleChange}
                 error={hasError("address")}
                 helperText={
@@ -448,10 +495,11 @@ const StudentProfile = props => {
                 }
               />
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={3} xs={12}>
               <Autocomplete
                 id="combo-box-demo"
                 className={classes.root}
+                disabled={formState.editable ? false : true}
                 options={statelist}
                 getOptionLabel={option => option.name}
                 onChange={(event, value) => {
@@ -482,10 +530,11 @@ const StudentProfile = props => {
                 )}
               />
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={3} xs={12}>
               <Autocomplete
                 id="combo-box-demo"
                 className={classes.root}
+                disabled={formState.editable ? false : true}
                 options={districtlist}
                 getOptionLabel={option => option.name}
                 onChange={(event, value) => {
@@ -517,7 +566,7 @@ const StudentProfile = props => {
               />
             </Grid>
 
-            <Grid item md={4} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="Contact Number"
                 name="contact"
@@ -526,6 +575,7 @@ const StudentProfile = props => {
                 required
                 fullWidth
                 readOnly
+                disabled
                 error={hasError("contact")}
                 helperText={
                   hasError("contact")
@@ -536,7 +586,7 @@ const StudentProfile = props => {
                 }
               />
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={3} xs={12}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   variant="inline"
@@ -544,6 +594,7 @@ const StudentProfile = props => {
                   margin="normal"
                   id="date-picker-inline"
                   label="Date of Birth"
+                  disabled={formState.editable ? false : true}
                   value={selectedDate}
                   onChange={date => setSelectedDate(date)}
                   error={hasError("dateofbirth")}
@@ -560,10 +611,11 @@ const StudentProfile = props => {
                 />
               </MuiPickersUtilsProvider>
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={3} xs={12}>
               <Autocomplete
                 id="combo-box-demo"
                 className={classes.root}
+                disabled={formState.editable ? false : true}
                 options={genderlist}
                 getOptionLabel={option => option.name}
                 onChange={(event, value) => {
@@ -595,17 +647,19 @@ const StudentProfile = props => {
                 )}
               />
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="Email-Id"
                 name="email"
                 value={formState.values["email"] || ""}
                 variant="outlined"
                 required
+                disabled={formState.editable ? false : true}
                 fullWidth
-                readOnly
-                // onChange={e=>{handleChange(e);
-                // setUser({...user,email:e.target.value})}}
+                onChange={e => {
+                  handleChange(e);
+                  setUser({ ...user, email: e.target.value });
+                }}
                 error={hasError("email")}
                 helperText={
                   hasError("email")
@@ -616,10 +670,11 @@ const StudentProfile = props => {
                 }
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <Autocomplete
                 id="combo-box-demo"
                 className={classes.root}
+                disabled
                 options={collegelist}
                 getOptionLabel={option => option.name}
                 onChange={(event, value) => {
@@ -652,10 +707,11 @@ const StudentProfile = props => {
                 )}
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <Autocomplete
                 id="combo-box-demo"
                 className={classes.root}
+                disabled
                 options={streamlist}
                 getOptionLabel={option => option.name}
                 onChange={(event, value) => {
@@ -687,13 +743,14 @@ const StudentProfile = props => {
               />
             </Grid>
 
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="College Roll Number "
                 name="rollnumber"
                 value={formState.values["rollnumber"] || ""}
                 variant="outlined"
                 fullWidth
+                disabled={formState.editable ? false : true}
                 onChange={handleChange}
                 error={hasError("rollnumber")}
                 helperText={
@@ -705,7 +762,7 @@ const StudentProfile = props => {
                 }
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <TextField
                 label="Username"
                 name="username"
@@ -714,6 +771,7 @@ const StudentProfile = props => {
                 required
                 fullWidth
                 readOnly
+                disabled
                 // onChange={e=>{handleChange(e);
                 // setUser({...user,username:e.target.value})}}
                 error={hasError("username")}
@@ -727,10 +785,11 @@ const StudentProfile = props => {
               />
             </Grid>
 
-            <Grid item md={6} xs={12}>
+            <Grid item md={3} xs={12}>
               <Autocomplete
                 id="combo-box-demo"
                 className={classes.root}
+                disabled={formState.editable ? false : true}
                 options={physicallyHandicappedlist}
                 getOptionLabel={option => option.name}
                 onChange={(event, value) => {
@@ -767,19 +826,40 @@ const StudentProfile = props => {
                 )}
               />
             </Grid>
-            <Grid item md={12} xs={12} style={{ textAlign: "end" }}>
-              <Button
-                color="primary"
-                type="submit"
-                mfullWidth
-                variant="contained"
-                onClick={handleSubmit}
-              >
-                <span style={{ margin: "10px" }}>
-                  {authPageConstants.REGISTER}
-                </span>
-              </Button>
-            </Grid>
+            {formState.editable ? (
+              <Grid item md={12} xs={12} className={classes.btnspace}>
+                <YellowButton
+                  color="primary"
+                  type="submit"
+                  mfullWidth
+                  variant="contained"
+                  onClick={handleSubmit}
+                >
+                  <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
+                </YellowButton>
+                <GrayButton
+                  color="primary"
+                  type="submit"
+                  mfullWidth
+                  variant="contained"
+                  onClick={handleeditable}
+                >
+                  <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                </GrayButton>
+              </Grid>
+            ) : (
+              <Grid item md={12} xs={12}>
+                <GrayButton
+                  color="primary"
+                  type="submit"
+                  mfullWidth
+                  variant="contained"
+                  onClick={handleeditable}
+                >
+                  <span>{genericConstants.EDIT_TEXT}</span>
+                </GrayButton>
+              </Grid>
+            )}
           </Grid>
         </CardContent>
       </form>

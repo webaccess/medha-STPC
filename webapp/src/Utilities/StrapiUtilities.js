@@ -219,3 +219,52 @@ export const addStudent = (
     physicallyHandicapped: physicallyHandicapped
   };
 };
+
+export const editStudent = (
+  firstname,
+  lastname,
+  fatherfirstname,
+  fatherlastname,
+  address,
+  state,
+  district,
+  email,
+  contactNumber,
+  userName,
+  gender,
+  dateofbirth,
+  physicallyHandicapped,
+  college,
+  stream = null,
+  rollNumber = null
+) => {
+  return {
+    // first_name:firstname,
+    // last_name:lastname,
+    // father_first_name:fatherfirstname,
+    // father_last_name:fatherlastname,
+    // address:address,
+    // state:state,
+    // district:district,
+    // email:email,
+    // contact_number:contactNumber,
+    // username:userName,
+
+    contact_number: contactNumber,
+    username: userName,
+    email: email,
+    college: college,
+    first_name: firstname,
+    last_name: lastname,
+    father_first_name: fatherfirstname,
+    father_last_name: fatherlastname,
+    address: address,
+    state: state,
+    district: district,
+    date_of_birth: dateofbirth,
+    stream: stream,
+    gender: gender,
+    roll_number: rollNumber,
+    physicallyHandicapped: physicallyHandicapped
+  };
+};

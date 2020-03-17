@@ -12,3 +12,4 @@ export const STRAPI_REQUEST_STUDENT_OTP = "otps/requestotpforstudent";
 export const STRAPI_CHECK_OTP = "otps/checkotp";
 export const STRAPI_REGISTER_STUDENT = "students/register";
 export const STRAPI_STUDENT = "students";
+export const STRAPI_UPDATE = "update";
