@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import Modal from "@material-ui/core/Modal";
@@ -185,6 +185,15 @@ const BlockUnblockCollege = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.DELETE_TEXT}
           </Typography>
+          <div className={classes.crossbtn}> 
+            <IconButton
+              className={classes.closeButton}
+              aria-label="close"
+              onClick={props.modalClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">

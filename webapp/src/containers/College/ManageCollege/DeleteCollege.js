@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-
-import { Button, Grid, Typography } from "@material-ui/core";
-
-import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import Modal from "@material-ui/core/Modal";
+import React, { useState } from "react";
+import { Grid, Typography, IconButton } from "@material-ui/core";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
+import Modal from "@material-ui/core/Modal";
+import CloseIcon from "@material-ui/icons/Close";
+
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./DeleteCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
@@ -89,6 +89,15 @@ const DeleteZone = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.DELETE_TEXT}
           </Typography>
+          <div className={classes.crossbtn}> 
+            <IconButton
+              className={classes.closeButton}
+              aria-label="close"
+              onClick={props.modalClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">

@@ -22,7 +22,7 @@ const DisplayUserDetails = props => {
     getUserData();
   }, []);
 
-  console.log("fetched",props["location"]["dataForEdit"]);
+  console.log("fetched", props["location"]["dataForEdit"]);
   const getUserData = async () => {
     let paramsForUser;
 
@@ -79,14 +79,20 @@ const DisplayUserDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={6}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>First Name:</Typography>
+                          </Grid>
+                          <Grid md={3}>
                             <Typography>
-                              First Name:{formState.userDetails.first_name}
+                              {formState.userDetails.first_name}
                             </Typography>
                           </Grid>
-                          <Grid md={6}>
-                            <Typography className={classes.right}>
-                              Last Name:{formState.userDetails.last_name}
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>Last Name:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.userDetails.last_name}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -97,14 +103,20 @@ const DisplayUserDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={6}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>User Name:</Typography>
+                          </Grid>
+                          <Grid md={3}>
                             <Typography>
-                              Email:{formState.userDetails.email}
+                              {formState.userDetails.username}
                             </Typography>
                           </Grid>
-                          <Grid md={6}>
-                            <Typography className={classes.right}>
-                              Contact:{formState.userDetails.contact_number}
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>Email:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.userDetails.email}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -115,36 +127,51 @@ const DisplayUserDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={6}>
-                            <Typography>
-                              User Name:{formState.userDetails.username}
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography className={classes.right}>
+                              Contact
                             </Typography>
                           </Grid>
-                          <Grid md={6}>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.userDetails.contact_number}
+                            </Typography>
+                          </Grid>
+
+                          <Grid md={1} className={classes.labelside}>
                             <Typography className={classes.right}>
                               Role:
+                            </Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography className={classes.right}>
                               {formState.userDetails.role &&
                                 formState.userDetails.role.name}
                             </Typography>
                           </Grid>
                         </Grid>
                       </CardContent>
+
                       <CardContent className={classes.Cardtheming}>
                         <Grid
                           className={classes.filterOptions}
                           container
                           spacing={1}
                         >
-                          <Grid md={6}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>State:</Typography>
+                          </Grid>
+                          <Grid md={3}>
                             <Typography>
-                              State:
                               {formState.userDetails.state &&
                                 formState.userDetails.state.name}
                             </Typography>
                           </Grid>
-                          <Grid md={6}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>Zone:</Typography>
+                          </Grid>
+                          <Grid md={3}>
                             <Typography className={classes.right}>
-                              Zone:
                               {formState.userDetails.zone &&
                                 formState.userDetails.zone.name}
                             </Typography>
@@ -157,16 +184,20 @@ const DisplayUserDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={6}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>RPC:</Typography>
+                          </Grid>
+                          <Grid md={3}>
                             <Typography>
-                              RPC:
                               {formState.userDetails.rpc &&
                                 formState.userDetails.rpc.name}
                             </Typography>
                           </Grid>
-                          <Grid md={6}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>College:</Typography>
+                          </Grid>
+                          <Grid md={3}>
                             <Typography className={classes.right}>
-                              College:
                               {formState.userDetails.college &&
                                 formState.userDetails.college.name}
                             </Typography>
@@ -174,7 +205,7 @@ const DisplayUserDetails = props => {
                         </Grid>
                       </CardContent>
                       <CardActions className={classes.btnspace}>
-                        {/* <YellowButton
+                        <YellowButton
                           type="submit"
                           color="primary"
                           variant="contained"
@@ -182,7 +213,7 @@ const DisplayUserDetails = props => {
                           className={classes.submitbtn}
                         >
                           Edit
-                        </YellowButton> */}
+                        </YellowButton>
                         <GrayButton
                           color="primary"
                           variant="contained"

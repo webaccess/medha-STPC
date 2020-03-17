@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
-
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Card,
@@ -450,6 +449,14 @@ const ManageCollege = props => {
     }
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false,
+      showModalDelete: false
+    }));
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Name", sortable: true, selector: "name" },
@@ -695,8 +702,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="State Filter"
-                      placeholder="State Filter"
+                      label="State Name"
+                      placeholder="State Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -726,8 +733,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Zone Filter"
-                      placeholder="Zone Filter"
+                      label="Zone Name"
+                      placeholder="Zone Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -757,8 +764,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Rpc Filter"
-                      placeholder="College Filter"
+                      label="Rpc Name"
+                      placeholder="College Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -820,12 +827,14 @@ const ManageCollege = props => {
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
             deleteEvent={isDeleteCellCompleted}
+            modalClose={modalClose}
           />
           <BlockUnblockCollege
             showModal={formState.showModalBlock}
             closeModal={handleCloseBlockUnblockModal}
             dataToBlockUnblock={formState.dataToBlockUnblock}
             blockUnblockEvent={isBlockUnblockCellCompleted}
+            modalClose={modalClose}
           />
         </Card>
       </Grid>

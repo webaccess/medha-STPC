@@ -48,7 +48,7 @@ const block = "block";
 const streams = "streams";
 const strength = "strength";
 
-const STATES_URL =
+const STATES_URL = 
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
@@ -152,8 +152,11 @@ const AddEditCollege = props => {
 
   /** Here we initialize our data and bring users, states and streams*/
   useEffect(() => {
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
     serviceProviders
-      .serviceProviderForGetRequest(USERS_URL)
+      .serviceProviderForGetRequest(USERS_URL, paramsForPageSize)
       .then(res => {
         setUser(res.data.result);
       })
@@ -161,7 +164,7 @@ const AddEditCollege = props => {
         console.log("error", error);
       });
     serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
+      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
         formState.states = res.data.result;
         setStates(res.data.result);
@@ -170,7 +173,7 @@ const AddEditCollege = props => {
         console.log("error", error);
       });
     serviceProviders
-      .serviceProviderForGetRequest(STREAMS_URL)
+      .serviceProviderForGetRequest(STREAMS_URL, paramsForPageSize)
       .then(res => {
         setStreamsData(res.data.result);
       })

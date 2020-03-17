@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Button, Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
@@ -87,6 +88,15 @@ const DeleteState = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.DELETE_TEXT}
           </Typography>
+          <div className={classes.crossbtn}> 
+          <IconButton
+              className={classes.closeButton}
+              aria-label="close"
+              onClick={props.modalClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">

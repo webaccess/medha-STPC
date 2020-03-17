@@ -104,10 +104,11 @@ const DeleteUser = props => {
     >
       <Fade in={props.showModal}>
         <div className={classes.paper}>
-            <MuiDialogTitle>
-              <Typography variant={"h2"} className={classes.textMargin}>
-                {genericConstants.DELETE_TEXT}
-              </Typography>
+          <div className={classes.blockpanel}>
+            <Typography variant={"h2"} className={classes.textMargin}>
+              {genericConstants.DELETE_TEXT}
+            </Typography>
+            <div className={classes.crossbtn}>
               <IconButton
                 aria-label="close"
                 className={classes.closeButton}
@@ -115,14 +116,17 @@ const DeleteUser = props => {
               >
                 <CloseIcon />
               </IconButton>
-            </MuiDialogTitle>
+            </div>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                {props.isMultiDelete ? (
+                  {props.isMultiDelete ? (
                     <p>Do you want to delete multiple user field?</p>
-                  ):( <p>Do you want to delete this field?</p>)}
+                  ) : (
+                    <p>Do you want to delete this field?</p>
+                  )}
                 </Grid>
                 <Grid item xs>
                   <YellowButton
