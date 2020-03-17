@@ -96,7 +96,7 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography>{CollegeName}</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -104,7 +104,7 @@ const DisplayCollegeDetails = props => {
                               {formState.collegeDetails.name}
                             </Typography>
                           </Grid>
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography>{CollegeCode}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -122,20 +122,15 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>
-                              {" "}
-                              {CollegeAddress}:
-                              {formState.collegeDetails.address}
-                            </Typography>
+                          <Grid md={2} className={classes.labelside}>
+                            <Typography> {CollegeAddress}:</Typography>
                           </Grid>
                           <Grid md={3}>
                             <Typography>
-                              {CollegeAddress}:
                               {formState.collegeDetails.address}
                             </Typography>
                           </Grid>
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography>{District}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -153,7 +148,7 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography>{State}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -162,7 +157,7 @@ const DisplayCollegeDetails = props => {
                                 formState.collegeDetails.state.name}
                             </Typography>
                           </Grid>
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography> {RPCName}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -180,7 +175,7 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography> {Zone}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -189,7 +184,7 @@ const DisplayCollegeDetails = props => {
                                 formState.collegeDetails.zone.name}
                             </Typography>
                           </Grid>
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography> {ContactNumber}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -206,7 +201,7 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography> {Email}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -214,7 +209,7 @@ const DisplayCollegeDetails = props => {
                               {formState.collegeDetails.college_email}
                             </Typography>
                           </Grid>
-                          <Grid md={1} className={classes.labelside}>
+                          <Grid md={2} className={classes.labelside}>
                             <Typography> {Principal}:</Typography>
                           </Grid>
                           <Grid md={3}>
@@ -239,13 +234,10 @@ const DisplayCollegeDetails = props => {
                           </Grid>
                           {formState.collegeDetails.stream_strength.map(
                             value => (
-                              /** Print stream and strength */
-
                               <CardContent className={classes.Cardtheming}>
                                 <Grid
                                   className={classes.filterOptions}
                                   container
-                                  spacing={1}
                                 >
                                   <Grid md={1} className={classes.labelside}>
                                     <Typography> {Streams}:</Typography>
@@ -277,14 +269,14 @@ const DisplayCollegeDetails = props => {
                         >
                           {genericConstants.EDIT_TEXT}
                         </YellowButton>
-                        <GrayButton
+                        {/* <GrayButton
                           color="primary"
                           variant="contained"
                           to={routeConstants.VIEW_COLLEGE}
                           className={classes.resetbtn}
                         >
                           {genericConstants.CANCEL_BUTTON_TEXT}
-                        </GrayButton>
+                        </GrayButton> */}
                       </CardActions>
                     </Card>
                   </form>
