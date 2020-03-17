@@ -46,6 +46,7 @@ import editEducation from "./authroute/EditEducationRoute";
 import Documents from "./containers/Student/Documents";
 import SetIndexContext from "./context/SetIndexContext";
 import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
+import ManageStudents from "./containers/Student/ManageStudents";
 
 function App() {
   const [index, setIndex] = useState(0);
@@ -263,6 +264,13 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_COLLEGE}
+              />
+              {/** Manage Student */}
+              <RouteWithLayout
+                component={ManageStudents}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_STUDENT}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>
