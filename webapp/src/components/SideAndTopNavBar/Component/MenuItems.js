@@ -97,7 +97,8 @@ const MenuItems = props => {
       },
       {
         name: "Events",
-        Icon: ""
+        Icon: "",
+        link: ""
       }
     ],
     Student: [

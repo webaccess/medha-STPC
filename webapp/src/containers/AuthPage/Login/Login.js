@@ -58,7 +58,9 @@ const LogIn = props => {
     touched: {},
     errors: {},
     isSuccess: false,
-    showPassword: false
+    showPassword: false,
+    fromPasswordChangedPage: props.from.fromPasswordChangedPage ? true : false,
+    dataToShow: props.from.fromPasswordChangedPage ? props.from.dataToShow : ""
   });
 
   function checkAllKeysPresent(obj) {
@@ -167,6 +169,7 @@ const LogIn = props => {
   const handleChange = e => {
     e.persist();
     setIfFailure(false);
+
     setFormState(formState => ({
       ...formState,
       values: {
@@ -202,7 +205,6 @@ const LogIn = props => {
         }
       )
       .then(response => {
-        console.log(response);
         if (
           response.data.user.role.name === "Student" &&
           !response.data.user.studentInfo.verifiedByCollege
@@ -238,7 +240,6 @@ const LogIn = props => {
         <div className={classes.masterlogin}>
           <Paper className={isDesktop ? classes.rootDesktop : classes.root}>
             <CardContent>
-              {console.log("inContainer", formState.showPassword)}
               <CssBaseline />
               <div className={classes.paper}>
                 <div className={classes.signin_header}>
@@ -391,6 +392,8 @@ const LogIn = props => {
               </div>
               {ifFailure ? (
                 <Alert severity="error">{authPageConstants.INVALID_USER}</Alert>
+              ) : formState.fromPasswordChangedPage ? (
+                <Alert severity="success">{formState.dataToShow}</Alert>
               ) : null}
             </CardContent>
             <Hidden mdDown>

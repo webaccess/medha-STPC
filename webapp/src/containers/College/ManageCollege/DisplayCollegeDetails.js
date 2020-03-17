@@ -105,75 +105,161 @@ const DisplayCollegeDetails = props => {
                             </Typography>
                           </Grid>
                           <Grid md={1} className={classes.labelside}>
-                            <Typography >
-                              {CollegeCode}:
-                            </Typography>
+                            <Typography>{CollegeCode}:</Typography>
                           </Grid>
                           <Grid md={3}>
-                          <Typography >
+                            <Typography>
                               {CollegeCode}:
                               {formState.collegeDetails.college_code}
                             </Typography>
                           </Grid>
                         </Grid>
                       </CardContent>
-                      <CardContent>
-                        <Grid md={12}>
-                          <Typography>
-                            {CollegeAddress}:{formState.collegeDetails.address}
-                          </Typography>
+
+                      <CardContent className={classes.Cardtheming}>
+                        <Grid
+                          className={classes.filterOptions}
+                          container
+                          spacing={1}
+                        >
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>
+                              {" "}
+                              {CollegeAddress}:
+                              {formState.collegeDetails.address}
+                            </Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {CollegeAddress}:
+                              {formState.collegeDetails.address}
+                            </Typography>
+                          </Grid>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>{District}:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.collegeDetails.district &&
+                                formState.collegeDetails.district.name}
+                            </Typography>
+                          </Grid>
                         </Grid>
                       </CardContent>
-                      <CardContent>
-                        <Typography>
-                          {District}:
-                          {formState.collegeDetails.district &&
-                            formState.collegeDetails.district.name}
-                        </Typography>
-                        <Typography>
-                          {State}:
-                          {formState.collegeDetails.state &&
-                            formState.collegeDetails.state.name}
-                        </Typography>
-                      </CardContent>
-                      <CardContent>
-                        <Typography>
-                          {RPCName}:
-                          {formState.collegeDetails.rpc &&
-                            formState.collegeDetails.rpc.name}
-                        </Typography>
-                        <Typography>
-                          {Zone}:
-                          {formState.collegeDetails.zone &&
-                            formState.collegeDetails.zone.name}
-                        </Typography>
+
+                      <CardContent className={classes.Cardtheming}>
+                        <Grid
+                          className={classes.filterOptions}
+                          container
+                          spacing={1}
+                        >
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>{State}:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.collegeDetails.state &&
+                                formState.collegeDetails.state.name}
+                            </Typography>
+                          </Grid>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography> {RPCName}:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.collegeDetails.rpc &&
+                                formState.collegeDetails.rpc.name}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </CardContent>
 
-                      <CardContent>
-                        <Typography>
-                          {ContactNumber}:
-                          {formState.collegeDetails.contact_number}
-                        </Typography>
-                        <Typography>
-                          {Email}:{formState.collegeDetails.college_email}
-                        </Typography>
+                      <CardContent className={classes.Cardtheming}>
+                        <Grid
+                          className={classes.filterOptions}
+                          container
+                          spacing={1}
+                        >
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography> {Zone}:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.collegeDetails.zone &&
+                                formState.collegeDetails.zone.name}
+                            </Typography>
+                          </Grid>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography> {ContactNumber}:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.collegeDetails.contact_number}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </CardContent>
-                      <CardContent>
-                        <Typography>
-                          {Principal}:
-                          {formState.collegeDetails.principal &&
-                            formState.collegeDetails.principal.username}
-                        </Typography>
+
+                      <CardContent className={classes.Cardtheming}>
+                        <Grid
+                          className={classes.filterOptions}
+                          container
+                          spacing={1}
+                        >
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography> {Email}:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.collegeDetails.college_email}
+                            </Typography>
+                          </Grid>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography> {Principal}:</Typography>
+                          </Grid>
+                          <Grid md={3}>
+                            <Typography>
+                              {formState.collegeDetails.principal &&
+                                formState.collegeDetails.principal.username}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </CardContent>
+
                       {formState.collegeDetails.stream_strength ? (
-                        <CardContent>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={12} className={classes.labelside}>
+                              <Typography> Stream And Strength : </Typography>
+                            </Grid>
+                          </Grid>
                           {formState.collegeDetails.stream_strength.map(
                             value => (
-                              <CardContent>
-                                <Typography key={value.id}>
-                                  {Streams} : {value.stream.name}
-                                  {Strength} {value.strength}
-                                </Typography>
+                              /** Print stream and strength */
+
+                              <CardContent className={classes.Cardtheming}>
+                                <Grid
+                                  className={classes.filterOptions}
+                                  container
+                                  spacing={1}
+                                >
+                                  <Grid md={1} className={classes.labelside}>
+                                    <Typography> {Streams}:</Typography>
+                                  </Grid>
+                                  <Grid md={3}>
+                                    <Typography>{value.stream.name}</Typography>
+                                  </Grid>
+                                  <Grid md={1} className={classes.labelside}>
+                                    <Typography> {Strength}:</Typography>
+                                  </Grid>
+                                  <Grid md={3}>
+                                    <Typography>{value.strength}</Typography>
+                                  </Grid>
+                                </Grid>
                               </CardContent>
                             )
                           )}

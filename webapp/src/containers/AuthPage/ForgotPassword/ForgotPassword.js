@@ -9,21 +9,49 @@ import {
   Grid,
   Box,
   Typography,
-  Container
+  Container,
+  Hidden,
+  CardMedia,
+  Paper,
+  Icon,
+  CardContent,
+  useMediaQuery,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText
 } from "@material-ui/core";
-
+import clsx from "clsx";
 import useStyles from "./ForgotPasswordStyles";
 import form from "./forgotPassword.json";
-
+import { useHistory } from "react-router-dom";
+import image from "../../../assets/images/login-img.png";
+import * as serviceProvider from "../../../api/Axios";
 import * as authPageConstants from "../../../constants/AuthPageConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as StrapiApiConstants from "../../../constants/StrapiApiConstants";
+import * as formUtilities from "../../../Utilities/FormUtilities";
+import CardIcon from "../../../components/Card/CardIcon";
+import { useTheme } from "@material-ui/core/styles";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 const newPassword = "newPassword";
 const confirmNewPassword = "confirmNewPassword";
 const mobileNumber = "mobileNumber";
-const otp = "otp";
+const otp = "OTP";
+
+const REQUEST_OTP_URL =
+  StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_REQUEST_OTP;
+const VALIDATE_OTP_URL =
+  StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_VALIDATE_OTP;
+const CHANGE_PASSWORD_URL =
+  StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_CHANGE_PASS_URL;
 
 const ForgotPassword = props => {
+  const theme = useTheme();
+  const history = useHistory();
   const classes = useStyles();
   const [isOtpVerificationFailed, setIsOtpVerificationFailed] = React.useState(
     false
@@ -34,27 +62,69 @@ const ForgotPassword = props => {
     values: {},
     touched: {},
     errors: {},
-    otp: "",
     otpResent: false,
     otpSent: false,
     otpVerify: false,
     passChangeSuccess: false,
     passChangeFailure: false,
+    resetPasswordToken: "",
+    errorsToShow: "",
+    isChangePassFailed: false,
+    showPassword: false,
     formType: authPageConstants.FORM_TYPE_ENTER_MOBILE
   });
 
-  const handleSubmit = evt => {
+  const handleClickShowPassword = () => {
+    setFormState({
+      ...formState,
+      showPassword: !formState.showPassword
+    });
+  };
+
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
+
+  const handleSubmit = async evt => {
+    evt.preventDefault();
+    evt.persist();
     if (formState.otpSent === false) {
       sendOtp();
     } else if (
       (formState.otpSent === true || formState.otpResent === true) &&
       formState.otpVerify === false
     ) {
-      verifyOtp();
+      await verifyOtp();
     } else if (formState.otpVerify === true) {
-      console.log("change password");
+      await changePassword();
     }
-    evt.preventDefault();
+  };
+
+  const changePassword = async () => {
+    let postData = {
+      code: formState.resetPasswordToken,
+      password: formState.values[newPassword],
+      passwordConfirmation: formState.values[newPassword]
+    };
+    let headers = {
+      "Content-Type": "application/json"
+    };
+    await serviceProvider
+      .serviceProviderForPostRequest(CHANGE_PASSWORD_URL, postData, headers)
+      .then(res => {
+        history.push({
+          pathname: routeConstants.SIGN_IN_URL,
+          fromPasswordChangedPage: true,
+          dataToShow: "Password Changed Successfully"
+        });
+      })
+      .catch(error => {
+        setFormState(formState => ({
+          ...formState,
+          isChangePassFailed: true,
+          errorsToShow: "Error Changing Password"
+        }));
+      });
   };
 
   function checkAllKeysPresent(obj) {
@@ -124,10 +194,6 @@ const ForgotPassword = props => {
     });
   }, [formState.values]);
 
-  useEffect(() => {
-    console.log("otp set ", formState.otp);
-  }, [formState.otp]);
-
   const handleChange = e => {
     e.persist();
     setIsOtpVerificationFailed(false);
@@ -140,239 +206,410 @@ const ForgotPassword = props => {
       touched: {
         ...formState.touched,
         [e.target.name]: true
-      }
+      },
+      isChangePassFailed: false
     }));
   };
 
-  const sendOtp = () => {
-    let otp = generateOtp();
-    setFormState(formState => ({
-      ...formState,
-      otp: otp.toString(),
-      otpSent: true,
-      isValid: false,
-      formType: authPageConstants.FORM_TYPE_VERIFY_OTP
-    }));
+  const sendOtp = async () => {
+    await generateOtp(true, false);
   };
 
-  const resendOtp = () => {
-    let otp = generateOtp();
-    setFormState(formState => ({
-      ...formState,
-      otp: otp.toString(),
-      otpResent: true,
-      isValid: false
-    }));
+  const resendOtp = async () => {
+    await generateOtp(false, true);
+    return false;
   };
 
-  const generateOtp = () => {
-    return Math.floor(1000000 + Math.random() * 9000000);
+  /** Function used to generate otp */
+  const generateOtp = async (sendOtp, resendOtp) => {
+    let postData = { contact_number: formState.values[mobileNumber] };
+    let headers = {
+      "Content-Type": "application/json"
+    };
+    await serviceProvider
+      .serviceProviderForPostRequest(REQUEST_OTP_URL, postData, headers)
+      .then(res => {
+        if (res.data.result.status === "Ok") {
+          if (sendOtp) {
+            setFormState(formState => ({
+              ...formState,
+              otpSent: true,
+              isValid: false,
+              errorsToShow: "",
+              formType: authPageConstants.FORM_TYPE_VERIFY_OTP
+            }));
+          } else if (resendOtp) {
+            setFormState(formState => ({
+              ...formState,
+              otpResent: true,
+              isValid: false,
+              errorsToShow: "OTP sent successfully"
+            }));
+          }
+        }
+      })
+      .catch(error => {
+        setFormState(formState => ({
+          ...formState,
+          errorsToShow: "Error Generating OTP"
+        }));
+      });
   };
 
-  const verifyOtp = () => {
-    if (formState.otp === formState.values[otp]) {
-      setFormState(formState => ({
-        ...formState,
-        otpVerify: true,
-        isValid: false,
-        formType: authPageConstants.FORM_TYPE_CHANGE_PASS
-      }));
-    } else {
-      setIsOtpVerificationFailed(true);
-    }
+  const verifyOtp = async () => {
+    let postData = {
+      contact_number: formState.values[mobileNumber],
+      otp: formState.values[otp]
+    };
+    let headers = {
+      "Content-Type": "application/json"
+    };
+    await serviceProvider
+      .serviceProviderForPostRequest(VALIDATE_OTP_URL, postData, headers)
+      .then(res => {
+        if (
+          res.data.statusCode === 400 &&
+          res.data.message === "OTP has expired"
+        ) {
+          setIsOtpVerificationFailed(true);
+          setFormState(formState => ({
+            ...formState,
+            errorsToShow: "OTP has expired"
+          }));
+        } else if (res.data.message === "EmptyResponse") {
+          setIsOtpVerificationFailed(true);
+          setFormState(formState => ({
+            ...formState,
+            errorsToShow: "Invalid OTP"
+          }));
+        } else if (formUtilities.checkEmpty(res.data)) {
+          setIsOtpVerificationFailed(true);
+          setFormState(formState => ({
+            ...formState,
+            errorsToShow: "Invalid OTP"
+          }));
+        } else if (res.data.result && res.data.result.resetPasswordToken) {
+          formState.resetPasswordToken = res.data.result.resetPasswordToken;
+          setFormState(formState => ({
+            ...formState,
+            otpVerify: true,
+            isValid: false,
+            resetPasswordToken: res.data.result.resetPasswordToken,
+            errorsToShow: "",
+            formType: authPageConstants.FORM_TYPE_CHANGE_PASS
+          }));
+        }
+      })
+      .catch(error => {
+        console.log("error verifying otp ", error);
+        setIsOtpVerificationFailed(true);
+        setFormState(formState => ({
+          ...formState,
+          errorsToShow: "Error verifying OTP"
+        }));
+      });
   };
 
   const hasError = field =>
     formState.touched[field] && formState.errors[field] ? true : false;
 
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"), {
+    defaultMatches: true
+  });
+
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Box mt={1}>
-          <center>
-            <Logo />
-          </center>
-        </Box>
-        <Typography component="h1" variant="h5" style={{ marginTop: ".9rem" }}>
-          {authPageConstants.FORGOT_PASSWORD_HEADER}
-        </Typography>
-        <form className={classes.form} onSubmit={handleSubmit}>
-          {formState.otpVerify === true ? (
-            <Box component="div">
-              <Typography
-                component="h5"
-                variant="subtitle2"
-                style={{ marginTop: ".9rem" }}
-              >
-                {authPageConstants.CONFIRM_NEW_PASS_ALERT}
-              </Typography>
-              <Box component="div" display="inline">
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  type={get(form[newPassword], "type")}
-                  id={get(form[newPassword], "id")}
-                  label={get(form[newPassword], "label")}
-                  name={newPassword}
-                  autoFocus
-                  value={formState.values[newPassword] || ""}
-                  onChange={handleChange}
-                  error={hasError(newPassword)}
-                  helperText={
-                    hasError(newPassword)
-                      ? formState.errors[newPassword].map(error => {
-                          return "\n" + error;
-                        })
-                      : null
-                  }
-                />
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  type={get(form[confirmNewPassword], "type")}
-                  fullWidth
-                  id={get(form[confirmNewPassword], "id")}
-                  label={get(form[confirmNewPassword], "label")}
-                  name={confirmNewPassword}
-                  value={formState.values[confirmNewPassword] || ""}
-                  onChange={handleChange}
-                  error={hasError(confirmNewPassword)}
-                  helperText={
-                    hasError(confirmNewPassword)
-                      ? formState.errors[confirmNewPassword].map(error => {
-                          return "\n" + error;
-                        })
-                      : null
-                  }
-                />
-              </Box>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                className={classes.submit}
-                disabled={!formState.isValid}
-              >
-                {authPageConstants.PASS_SAVE_BUTTON}
-              </Button>
-            </Box>
-          ) : formState.otpSent === true ? (
-            <Box component="div">
-              <Typography
-                component="h5"
-                variant="subtitle2"
-                style={{ marginTop: ".9rem" }}
-              >
-                {authPageConstants.OTP_ALERT} {formState.values.mobilenumber}
-              </Typography>
-              <Box component="div">
-                <Box component="div" display="inline">
-                  <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    id={get(form[otp], "id")}
-                    label={get(form[otp], "label")}
-                    name={otp}
-                    type={get(form[otp], "type")}
-                    autoFocus
-                    value={formState.values[otp] || ""}
-                    onChange={handleChange}
-                    error={hasError(otp)}
-                    helperText={
-                      hasError(otp)
-                        ? formState.errors[otp].map(error => {
-                            return "\n" + error;
-                          })
-                        : null
-                    }
-                  />
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={classes.resendOtp}
-                    onClick={resendOtp}
+    <div className={classes.masterlogin2}>
+      <div className={classes.masterlogin1}>
+        <div className={classes.masterlogin}>
+          <Paper className={isDesktop ? classes.rootDesktop : classes.root}>
+            <CardContent>
+              <CssBaseline />
+              <div className={classes.paper}>
+                <div className={classes.signin_header}>
+                  <div className={classes.loginlock}>
+                    <CardIcon>
+                      <Icon>lock</Icon>
+                    </CardIcon>
+                  </div>
+                  <Typography
+                    className={classes.signin}
+                    component="h1"
+                    variant="h5"
+                    style={{ fontWeight: "700" }}
                   >
-                    {authPageConstants.RESEND_OTP_BUTTON}
-                  </Button>
-                </Box>
-              </Box>
-              <Box component="div">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  color="primary"
-                  className={classes.submit}
-                  disabled={!formState.isValid}
+                    {authPageConstants.FORGOT_PASSWORD_HEADER}
+                  </Typography>
+                </div>
+
+                <form
+                  className={classes.form}
+                  noValidate
+                  onSubmit={handleSubmit}
                 >
-                  {authPageConstants.VERIFY_OTP_BUTTON}
-                </Button>
-              </Box>
-            </Box>
-          ) : (
-            <Box component="div">
-              <Typography
-                component="h5"
-                variant="subtitle2"
-                style={{ marginTop: ".9rem" }}
-              >
-                {authPageConstants.MOBILE_NUMBER_ALERT}
-              </Typography>
-              <Box component="div" display="inline">
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  type={get(form[mobileNumber], "type")}
-                  id={get(form[mobileNumber], "id")}
-                  label={get(form[mobileNumber], "label")}
-                  name={mobileNumber}
-                  error={hasError(mobileNumber)}
-                  helperText={
-                    hasError(mobileNumber)
-                      ? formState.errors[mobileNumber].map(error => {
-                          return "\n" + error;
-                        })
-                      : null
-                  }
-                  autoFocus
-                  value={formState.values[mobileNumber] || ""}
-                  onChange={handleChange}
-                />
-              </Box>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                className={classes.submit}
-                disabled={!formState.isValid}
-              >
-                {authPageConstants.SEND_OTP_BUTTON}
-              </Button>
-            </Box>
-          )}
-          <Grid container>
-            <Grid item xs={12} style={{ textAlign: "center" }}>
-              <Link href={routeConstants.SIGN_IN_URL} variant="body2">
-                {authPageConstants.BACK_TO_LOGIN_TEXT}
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
+                  {formState.otpVerify === true ? (
+                    <React.Fragment>
+                      <Typography
+                        component="h5"
+                        variant="subtitle2"
+                        style={{ marginTop: ".9rem" }}
+                      >
+                        {authPageConstants.CONFIRM_NEW_PASS_ALERT}
+                      </Typography>
+                      <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        type={get(form[newPassword], "type")}
+                        id={get(form[newPassword], "id")}
+                        label={get(form[newPassword], "label")}
+                        name={newPassword}
+                        autoFocus
+                        value={formState.values[newPassword] || ""}
+                        onChange={handleChange}
+                        error={hasError(newPassword)}
+                        helperText={
+                          hasError(newPassword)
+                            ? formState.errors[newPassword].map(error => {
+                                return "\n" + error;
+                              })
+                            : null
+                        }
+                        InputLabelProps={{
+                          classes: {
+                            root: classes.cssLabel,
+                            focused: classes.cssFocused
+                          }
+                        }}
+                        InputProps={{
+                          classes: {
+                            root: classes.cssOutlinedInput,
+                            focused: classes.cssFocused,
+                            notchedOutline: classes.notchedOutline
+                          }
+                        }}
+                      />
+                      <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        type={get(form[confirmNewPassword], "type")}
+                        fullWidth
+                        id={get(form[confirmNewPassword], "id")}
+                        label={get(form[confirmNewPassword], "label")}
+                        name={confirmNewPassword}
+                        value={formState.values[confirmNewPassword] || ""}
+                        onChange={handleChange}
+                        error={hasError(confirmNewPassword)}
+                        helperText={
+                          hasError(confirmNewPassword)
+                            ? formState.errors[confirmNewPassword].map(
+                                error => {
+                                  return "\n" + error;
+                                }
+                              )
+                            : null
+                        }
+                        InputLabelProps={{
+                          classes: {
+                            root: classes.cssLabel,
+                            focused: classes.cssFocused
+                          }
+                        }}
+                        InputProps={{
+                          classes: {
+                            root: classes.cssOutlinedInput,
+                            focused: classes.cssFocused,
+                            notchedOutline: classes.notchedOutline
+                          }
+                        }}
+                      />
+                      <Button
+                        color="primary"
+                        disabled={!formState.isValid}
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        className={classes.submit}
+                      >
+                        {authPageConstants.RESET_PASS_BUTTON}
+                      </Button>
+                    </React.Fragment>
+                  ) : formState.otpSent === true ? (
+                    <React.Fragment>
+                      <Typography
+                        component="h5"
+                        variant="subtitle2"
+                        style={{ marginTop: ".9rem" }}
+                      >
+                        {authPageConstants.OTP_ALERT}{" "}
+                        {formState.values.mobileNumber}
+                      </Typography>
+                      <FormControl
+                        fullWidth
+                        className={clsx(classes.margin, classes.textField)}
+                        variant="outlined"
+                      >
+                        <InputLabel
+                          htmlFor="outlined-adornment-password"
+                          fullWidth
+                          error={hasError(otp)}
+                        >
+                          OTP
+                        </InputLabel>
+                        <OutlinedInput
+                          id={get(form[otp], "id")}
+                          name={otp}
+                          type={formState.showPassword ? "text" : "password"}
+                          value={formState.values[otp] || ""}
+                          onChange={handleChange}
+                          fullWidth
+                          error={hasError(otp)}
+                          endAdornment={
+                            <InputAdornment
+                              position="end"
+                              error={hasError(otp)}
+                            >
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                              >
+                                {formState.showPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                          labelWidth={70}
+                          InputLabelProps={{
+                            classes: {
+                              root: classes.cssLabel,
+                              focused: classes.cssFocused
+                            }
+                          }}
+                          InputProps={{
+                            classes: {
+                              root: classes.cssOutlinedInput,
+                              focused: classes.cssFocused,
+                              notchedOutline: classes.notchedOutline
+                            }
+                          }}
+                        ></OutlinedInput>
+                        <FormHelperText error={hasError(otp)}>
+                          {hasError(otp)
+                            ? formState.errors[otp].map(error => {
+                                return "\n" + error;
+                              })
+                            : null}
+                        </FormHelperText>
+                        <Button
+                          color="primary"
+                          variant="contained"
+                          className={classes.submit}
+                          onClick={resendOtp}
+                        >
+                          {authPageConstants.RESEND_OTP_BUTTON}
+                        </Button>
+                      </FormControl>
+                      <Button
+                        color="primary"
+                        disabled={!formState.isValid}
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        className={classes.submit}
+                      >
+                        {authPageConstants.VERIFY_OTP_BUTTON}
+                      </Button>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <Typography
+                        component="h5"
+                        variant="subtitle2"
+                        style={{ marginTop: ".9rem" }}
+                      >
+                        {authPageConstants.MOBILE_NUMBER_ALERT}
+                      </Typography>
+                      <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        type={get(form[mobileNumber], "type")}
+                        id={get(form[mobileNumber], "id")}
+                        label={get(form[mobileNumber], "label")}
+                        name={mobileNumber}
+                        error={hasError(mobileNumber)}
+                        helperText={
+                          hasError(mobileNumber)
+                            ? formState.errors[mobileNumber].map(error => {
+                                return "\n" + error;
+                              })
+                            : null
+                        }
+                        autoFocus
+                        value={formState.values[mobileNumber] || ""}
+                        onChange={handleChange}
+                        InputLabelProps={{
+                          classes: {
+                            root: classes.cssLabel,
+                            focused: classes.cssFocused
+                          }
+                        }}
+                        InputProps={{
+                          classes: {
+                            root: classes.cssOutlinedInput,
+                            focused: classes.cssFocused,
+                            notchedOutline: classes.notchedOutline
+                          }
+                        }}
+                      />
+
+                      <Button
+                        color="primary"
+                        disabled={!formState.isValid}
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        className={classes.submit}
+                      >
+                        {authPageConstants.SEND_OTP_BUTTON}
+                      </Button>
+                    </React.Fragment>
+                  )}
+                  <Grid container>
+                    <Grid item xs={12} style={{ textAlign: "center" }}>
+                      <Link href={routeConstants.SIGN_IN_URL} variant="body2">
+                        {authPageConstants.BACK_TO_LOGIN_TEXT}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </form>
+              </div>
+              {isOtpVerificationFailed || formState.isChangePassFailed ? (
+                <Alert severity="error">{formState.errorsToShow}</Alert>
+              ) : formState.otpResent &&
+                formState.errorsToShow === "OTP sent successfully" ? (
+                <Alert severity="success">{formState.errorsToShow}</Alert>
+              ) : null}
+            </CardContent>
+
+            <Hidden mdDown>
+              <CardMedia
+                className={classes.cover}
+                image={image}
+                title="Live from space album cover"
+              />
+            </Hidden>
+          </Paper>
+        </div>
       </div>
-      {isOtpVerificationFailed ? (
-        <Alert severity="error">{authPageConstants.INVALID_OTP}</Alert>
-      ) : null}
-    </Container>
+    </div>
   );
 };
 

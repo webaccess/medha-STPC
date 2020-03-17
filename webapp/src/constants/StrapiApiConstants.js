@@ -14,3 +14,6 @@ export const STRAPI_REGISTER_STUDENT = "students/register";
 export const STRAPI_STUDENT = "students";
 export const STRAPI_UPDATE = "update";
 export const STRAPI_EDUCATIONS = "educations";
+export const STRAPI_REQUEST_OTP = "otps/requestotp";
+export const STRAPI_VALIDATE_OTP = "otps/validateotp";
+export const STRAPI_CHANGE_PASS_URL = "auth/reset-password";
