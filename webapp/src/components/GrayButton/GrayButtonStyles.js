@@ -9,6 +9,7 @@ const useStyles = makeStyles(theme => ({
     textTransform: "capitalize",
     fontSize: "13px",
     fontWeight: "700",
+    marginRight: "15px",
     letterSpacing: "0px",
     "&:hover": {
       background: "#666"

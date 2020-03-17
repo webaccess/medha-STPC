@@ -71,6 +71,7 @@ const ViewStates = props => {
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
+    isClearResetFilter: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -81,8 +82,11 @@ const ViewStates = props => {
   });
 
   useEffect(() => {
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
     serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
+      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -90,7 +94,7 @@ const ViewStates = props => {
         }));
       })
       .catch(error => {
-        console.log("error", error);
+        console.log("error > ", error);
       });
 
     getStateData(10, 1);
@@ -171,6 +175,8 @@ const ViewStates = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getStateData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getStateData(perPage, page);
     }
   };
 
@@ -178,6 +184,7 @@ const ViewStates = props => {
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
+      isClearResetFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
@@ -227,6 +234,13 @@ const ViewStates = props => {
     }));
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalDelete: false
+    }));
+  };
+
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
       delete formState.filterDataParameters[filterName];
@@ -234,6 +248,10 @@ const ViewStates = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
     }
+    setFormState(formState => ({
+      ...formState,
+      isClearResetFilter: false
+    }));
   };
 
   /** This is used to handle the close modal event */
@@ -409,6 +427,18 @@ const ViewStates = props => {
                   onChange={(event, value) =>
                     handleChangeAutoComplete(STATE_FILTER, event, value)
                   }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : formState.statesFilter[
+                          formState.statesFilter.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STATE_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -471,6 +501,7 @@ const ViewStates = props => {
           closeModal={handleCloseDeleteModal}
           id={formState.dataToDelete["id"]}
           deleteEvent={isDeleteCellCompleted}
+          modalClose={modalClose}
         />
       </Grid>
     </Grid>

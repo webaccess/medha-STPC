@@ -63,8 +63,11 @@ const AddEditZone = props => {
   }
 
   useEffect(() => {
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
     serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
+      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
         setStates(res.data.result);
       })

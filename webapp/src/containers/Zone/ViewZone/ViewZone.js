@@ -26,8 +26,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const STATES_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const ZONE_FILTER = "id";
 const SORT_FIELD_KEY = "_sort";
 
@@ -67,6 +65,7 @@ const ViewZone = props => {
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
+    isClearResetFilter: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -95,17 +94,6 @@ const ViewZone = props => {
       });
 
     getZoneData(10, 1);
-    serviceProviders
-      .serviceProviderForGetRequest(STATES_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          states: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error");
-      });
   }, []);
 
   /** This seperate function is used to get the zone data*/
@@ -204,6 +192,8 @@ const ViewZone = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getZoneData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getZoneData(perPage, page);
     }
   };
 
@@ -211,6 +201,7 @@ const ViewZone = props => {
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
+      isClearResetFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
@@ -274,6 +265,10 @@ const ViewZone = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
     }
+    setFormState(formState => ({
+      ...formState,
+      isClearResetFilter: false
+    }));
   };
 
   /** This is used to handle the close modal event */
@@ -288,6 +283,13 @@ const ViewZone = props => {
     if (formState.isDataDeleted) {
       getZoneData(formState.pageSize, formState.page);
     }
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalDelete: false
+    }));
   };
 
   /** Columns to show in table */
@@ -454,6 +456,18 @@ const ViewZone = props => {
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ZONE_FILTER, event, value)
                   }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : formState.zonesFilter[
+                          formState.zonesFilter.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[ZONE_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -517,6 +531,7 @@ const ViewZone = props => {
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
             deleteEvent={isDeleteCellCompleted}
+            modalClose={modalClose}
           />
         </Card>
       </Grid>

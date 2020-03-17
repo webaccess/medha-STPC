@@ -101,6 +101,7 @@ const useListStyles = makeStyles(theme => ({
     borderRadius: "0px",
     backgroundColor: "#fff",
     borderLeft: "4px solid #fff",
+    fontSize: "12px",
     color: "#010101",
     textTransform: "Uppercase",
     "&:hover": {

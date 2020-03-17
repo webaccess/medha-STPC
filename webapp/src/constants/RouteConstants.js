@@ -18,9 +18,9 @@ export const VIEW_DOCUMENTS = "/view-documents";
 
 /** College */
 export const ADD_COLLEGE = "/add-college";
-export const VIEW_COLLEGE = "/view-college";
+export const VIEW_COLLEGE = "/manage-college";
 export const EDIT_COLLEGE = "/edit-college";
-export const DETAIL_COLLEGE = "/detail-college";
+export const DETAIL_COLLEGE = "/view-college";
 
 /**OTP */
 export const REQUEST_OTP = "/requestotp";

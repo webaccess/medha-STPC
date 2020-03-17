@@ -96,13 +96,21 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={6}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography>{CollegeName}</Typography>
+                          </Grid>
+                          <Grid md={3}>
                             <Typography>
-                              {CollegeName}:{formState.collegeDetails.name}
+                              {formState.collegeDetails.name}
                             </Typography>
                           </Grid>
-                          <Grid md={6}>
-                            <Typography className={classes.right}>
+                          <Grid md={1} className={classes.labelside}>
+                            <Typography >
+                              {CollegeCode}:
+                            </Typography>
+                          </Grid>
+                          <Grid md={3}>
+                          <Typography >
                               {CollegeCode}:
                               {formState.collegeDetails.college_code}
                             </Typography>
