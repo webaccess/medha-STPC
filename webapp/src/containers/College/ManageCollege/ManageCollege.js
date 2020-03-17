@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
-
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Card,
@@ -450,6 +449,14 @@ const ManageCollege = props => {
     }
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false,
+      showModalDelete: false
+    }));
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Name", sortable: true, selector: "name" },
@@ -820,12 +827,14 @@ const ManageCollege = props => {
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
             deleteEvent={isDeleteCellCompleted}
+            modalClose={modalClose}
           />
           <BlockUnblockCollege
             showModal={formState.showModalBlock}
             closeModal={handleCloseBlockUnblockModal}
             dataToBlockUnblock={formState.dataToBlockUnblock}
             blockUnblockEvent={isBlockUnblockCellCompleted}
+            modalClose={modalClose}
           />
         </Card>
       </Grid>

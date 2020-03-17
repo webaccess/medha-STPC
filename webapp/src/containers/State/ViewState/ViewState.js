@@ -234,6 +234,13 @@ const ViewStates = props => {
     }));
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalDelete: false
+    }));
+  };
+
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
       delete formState.filterDataParameters[filterName];
@@ -494,6 +501,7 @@ const ViewStates = props => {
           closeModal={handleCloseDeleteModal}
           id={formState.dataToDelete["id"]}
           deleteEvent={isDeleteCellCompleted}
+          modalClose={modalClose}
         />
       </Grid>
     </Grid>

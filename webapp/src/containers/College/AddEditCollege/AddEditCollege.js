@@ -48,7 +48,7 @@ const block = "block";
 const streams = "streams";
 const strength = "strength";
 
-const STATES_URL =
+const STATES_URL = 
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;

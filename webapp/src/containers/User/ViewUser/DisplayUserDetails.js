@@ -205,7 +205,7 @@ const DisplayUserDetails = props => {
                         </Grid>
                       </CardContent>
                       <CardActions className={classes.btnspace}>
-                        {/* <YellowButton
+                        <YellowButton
                           type="submit"
                           color="primary"
                           variant="contained"
@@ -213,7 +213,7 @@ const DisplayUserDetails = props => {
                           className={classes.submitbtn}
                         >
                           Edit
-                        </YellowButton> */}
+                        </YellowButton>
                         <GrayButton
                           color="primary"
                           variant="contained"

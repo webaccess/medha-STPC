@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Grid, Typography, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";

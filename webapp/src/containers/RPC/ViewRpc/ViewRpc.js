@@ -283,6 +283,13 @@ const ViewRpc = props => {
       });
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalDelete: false
+    }));
+  };
+
   const column = [
     { name: "Name", sortable: true, selector: "name" },
     // { name: "Zone", sortable: true, selector: "zone" },
@@ -517,6 +524,7 @@ const ViewRpc = props => {
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
             deleteEvent={isDeleteCellCompleted}
+            modalClose={modalClose}
           />
         </Card>
       </Grid>
