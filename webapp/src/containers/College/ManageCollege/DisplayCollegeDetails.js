@@ -105,12 +105,10 @@ const DisplayCollegeDetails = props => {
                             </Typography>
                           </Grid>
                           <Grid md={1} className={classes.labelside}>
-                            <Typography >
-                              {CollegeCode}:
-                            </Typography>
+                            <Typography>{CollegeCode}:</Typography>
                           </Grid>
                           <Grid md={3}>
-                          <Typography >
+                            <Typography>
                               {CollegeCode}:
                               {formState.collegeDetails.college_code}
                             </Typography>
@@ -191,14 +189,14 @@ const DisplayCollegeDetails = props => {
                         >
                           {genericConstants.EDIT_TEXT}
                         </YellowButton>
-                        <GrayButton
+                        {/* <GrayButton
                           color="primary"
                           variant="contained"
                           to={routeConstants.VIEW_COLLEGE}
                           className={classes.resetbtn}
                         >
                           {genericConstants.CANCEL_BUTTON_TEXT}
-                        </GrayButton>
+                        </GrayButton> */}
                       </CardActions>
                     </Card>
                   </form>

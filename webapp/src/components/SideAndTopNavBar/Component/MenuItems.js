@@ -64,7 +64,7 @@ const MenuItems = props => {
     "College Admin": [
       {
         name: "College",
-        link: "",
+        link: routeConstants.DETAIL_COLLEGE,
         Icon: ""
       },
       {
@@ -73,7 +73,7 @@ const MenuItems = props => {
         items: [
           {
             name: "Manage Students",
-            link: ""
+            link: routeConstants.MANAGE_STUDENT
           },
           {
             name: "Import Students",
@@ -97,7 +97,8 @@ const MenuItems = props => {
       },
       {
         name: "Events",
-        Icon: ""
+        Icon: "",
+        link: ""
       }
     ],
     Student: [

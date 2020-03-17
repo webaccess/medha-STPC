@@ -14,6 +14,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
 import DynamicBar from "../../../components/DynamicBar/DynamicBar";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
+import { Auth as auth } from "../../../components";
 
 import { get } from "lodash";
 import {
@@ -48,7 +49,7 @@ const block = "block";
 const streams = "streams";
 const strength = "strength";
 
-const STATES_URL = 
+const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
@@ -565,6 +566,17 @@ const AddEditCollege = props => {
     }
   };
 
+  const clickedCancelButton = () => {
+    if (auth.getUserInfo().role.name === "Medha Admin") {
+      history.push({
+        pathname: routeConstants.VIEW_COLLEGE
+      });
+    } else if (auth.getUserInfo().role.name === "College Admin") {
+      history.push({
+        pathname: routeConstants.DETAIL_COLLEGE
+      });
+    }
+  };
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -1197,7 +1209,8 @@ const AddEditCollege = props => {
             <GrayButton
               color="primary"
               variant="contained"
-              to={routeConstants.VIEW_COLLEGE}
+              onClick={clickedCancelButton}
+              // to={routeConstants.VIEW_COLLEGE}
               className={classes.resetbtn}
             >
               {genericConstants.CANCEL_BUTTON_TEXT}
