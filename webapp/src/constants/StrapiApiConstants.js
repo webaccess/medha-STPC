@@ -14,3 +14,4 @@ export const STRAPI_REGISTER_STUDENT = "students/register";
 export const STRAPI_STUDENT = "students";
 export const STRAPI_UPDATE = "update";
 export const STRAPI_EDUCATIONS = "educations";
+export const STRAPI_STUDENTS = "students";

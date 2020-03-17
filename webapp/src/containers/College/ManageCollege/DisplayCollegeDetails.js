@@ -269,14 +269,14 @@ const DisplayCollegeDetails = props => {
                         >
                           {genericConstants.EDIT_TEXT}
                         </YellowButton>
-                        <GrayButton
+                        {/* <GrayButton
                           color="primary"
                           variant="contained"
                           to={routeConstants.VIEW_COLLEGE}
                           className={classes.resetbtn}
                         >
                           {genericConstants.CANCEL_BUTTON_TEXT}
-                        </GrayButton>
+                        </GrayButton> */}
                       </CardActions>
                     </Card>
                   </form>
