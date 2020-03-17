@@ -4,6 +4,7 @@ export const FORGOT_PASSWORD_ROUTE_TEXT = "Forgot password?";
 export const NEW_REG_ROUTE_TEXT = "New Registration";
 export const SIGN_IN_BUTTON = "Sign in now";
 export const INVALID_USER = "Invalid email or password";
+export const REGISTER = "Register";
 
 /* Forgot Password Constants */
 export const FORGOT_PASSWORD_HEADER = "Forgot Your Password?";

@@ -25,6 +25,8 @@ export default function LoginRoute(props) {
     } else {
       return (
         <Layout>
+          {console.log("IN login route")}
+          {console.log(props.location)}
           <LogIn from={props.location} />
         </Layout>
       );

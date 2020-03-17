@@ -9,7 +9,10 @@ import { includes, mapKeys, reject } from "lodash";
  */
 const validation = (value, inputValidations = {}, type = "text") => {
   let errors = [];
-
+  console.log("value:-");
+  console.log(value);
+  console.log(" inputvalidations:-");
+  console.log(inputValidations);
   const emailRegex = new RegExp(
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
@@ -61,7 +64,8 @@ const validation = (value, inputValidations = {}, type = "text") => {
         }
         break;
       case "validateOtp":
-        if (value.length !== 0 && value.length !== validationValue.value) {
+        //change the value and condition for length after length of otp is decided
+        if (value.length !== 0 && value.length > validationValue.value) {
           errors.push(validationValue.message);
         }
         break;
