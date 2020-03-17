@@ -42,7 +42,8 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     top: "-7px",
     right: "-7px",
-    padding: "0px"
+    padding: "0px",
+    color:"#fff"
   },
   paper: {
     backgroundColor: theme.palette.background.paper,

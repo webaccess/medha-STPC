@@ -38,6 +38,12 @@ const useStyles = makeStyles(theme => ({
     borderRadius: "0px",
     boxShadow: "none !important"
   },
+  labelside: {
+    padding: "0px 0px 15px 0px",
+    fontWeight: "600",
+    paddingBottom: "3px",
+    marginRight: "25px"
+  },
   streamcardcontent: {
     boxShadow: "none",
     borderBottom: "1px solid #ccc",
