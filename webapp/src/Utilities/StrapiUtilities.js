@@ -185,6 +185,7 @@ export const addStudent = (
   fatherlastname,
   address,
   state,
+  district,
   email,
   contactNumber,
   userName,
@@ -210,10 +211,20 @@ export const addStudent = (
     father_last_name: fatherlastname,
     address: address,
     state: state,
+    district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
     physicallyHandicapped: physicallyHandicapped
+  };
+};
+
+export const addEducation = (qualification, board, yearOfPassing, marks) => {
+  return {
+    qualification,
+    board,
+    year_of_passing: parseInt(yearOfPassing),
+    marks: parseFloat(marks)
   };
 };

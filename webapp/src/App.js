@@ -39,8 +39,13 @@ import EditZoneRoute from "./authroute/EditZoneRoute";
 import EditRpcRoute from "./authroute/EditRpcRoute";
 import EditUserRoute from "./authroute/EditUserRoute";
 import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCollegeDetails";
+import StudentProfile from "./containers/Student/StudentProfile";
+import ViewEducation from "./containers/Student/Education/ViewEducation";
+import AddEducation from "./containers/Student/Education/AddEditEducation";
+import editEducation from "./authroute/EditEducationRoute";
+import Documents from "./containers/Student/Documents";
 import SetIndexContext from "./context/SetIndexContext";
-import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails"
+import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
 
 function App() {
   const [index, setIndex] = useState(0);
@@ -105,6 +110,42 @@ function App() {
                 component={NotFoundPage}
                 exact
               />
+
+              <RouteWithLayout
+                component={StudentProfile}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_PROFILE}
+              />
+
+              <RouteWithLayout
+                component={ViewEducation}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_EDUCATION}
+              />
+
+              <RouteWithLayout
+                component={AddEducation}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_EDUCATION}
+              />
+
+              <RouteWithLayout
+                component={editEducation}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_EDUCATION}
+              />
+
+              <RouteWithLayout
+                component={Documents}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_DOCUMENTS}
+              />
+
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout
