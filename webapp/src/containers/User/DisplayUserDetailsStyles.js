@@ -1,7 +1,8 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { BorderTopOutlined } from "@material-ui/icons";
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: "100%"
+    maxWidth: "100%",
   },
   btnspace: {
     padding: "15px 18px 50px"
@@ -39,10 +40,15 @@ const useStyles = makeStyles(theme => ({
     boxShadow: "none !important"
   },
   labelside: {
-    padding: "0px 0px 15px 0px",
+    // padding: "10px",
     fontWeight: "600",
-    paddingBottom: "3px",
-    marginRight: "25px"
+    // backgroundColor: "#ccc",
+    marginRight:"15px",
+    fontWeight:"700"
+  },
+  labelcontent: {
+    // padding: "10px"
+    // borderBottom: "1px solid #ccc"
   },
   streamcardcontent: {
     boxShadow: "none",
