@@ -73,7 +73,7 @@ const Adduser = props => {
     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS;
 
   /** Part for editing state */
-  if (formState.isEditUser && !formState.counter) {
+  if (formState.dataForEdit && !formState.counter) {
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["first_name"]) {
         formState.values[firstname] = props["dataForEdit"]["first_name"];

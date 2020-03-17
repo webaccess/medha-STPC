@@ -8,9 +8,9 @@ export const ADD_USER = "/add-user";
 
 /** College */
 export const ADD_COLLEGE = "/add-college";
-export const VIEW_COLLEGE = "/view-college";
+export const VIEW_COLLEGE = "/manage-college";
 export const EDIT_COLLEGE = "/edit-college";
-export const DETAIL_COLLEGE = "/detail-college";
+export const DETAIL_COLLEGE = "/view-college";
 
 /** user */
 export const EDIT_USER = "/edit-user";

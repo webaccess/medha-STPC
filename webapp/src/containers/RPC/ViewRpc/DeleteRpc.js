@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from "react";
-
-import { TextField, Button, Grid, Typography } from "@material-ui/core";
-
-import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import React, { useState } from "react";
+import { Grid, Typography, IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./DeleteRpcStyles";
 import * as serviceProviders from "../../../api/Axios";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import * as strapiUtilities from "../../../Utilities/StrapiUtilities";
-
 import * as genericConstants from "../../../constants/GenericConstants";
-// import ZoneSchema from "../ZoneSchema";
-import { get } from "lodash";
 import { YellowButton } from "../../../components";
+
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
-// const ZONE_ID = "stateName";
 
 const DeleteRpc = props => {
   const classes = useStyles();
@@ -27,12 +21,6 @@ const DeleteRpc = props => {
     stateCounter: 0,
     values: {}
   });
-
-  // if (props.showModal && !formState.stateCounter) {
-  //   formState.stateCounter = 0;
-  //   formState.values[ZONE_ID] = props.id;
-  //   formState.isDeleteData = false;
-  // }
 
   const handleCloseModal = () => {
     setFormState(formState => ({
@@ -93,6 +81,15 @@ const DeleteRpc = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.DELETE_TEXT}
           </Typography>
+          <div className={classes.crossbtn}> 
+          <IconButton
+              className={classes.closeButton}
+              aria-label="close"
+              onClick={props.modalClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">

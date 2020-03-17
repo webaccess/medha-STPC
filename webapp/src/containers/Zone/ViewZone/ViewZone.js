@@ -285,6 +285,13 @@ const ViewZone = props => {
     }
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalDelete: false
+    }));
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Name", sortable: true, selector: "name" },
@@ -524,6 +531,7 @@ const ViewZone = props => {
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
             deleteEvent={isDeleteCellCompleted}
+            modalClose={modalClose}
           />
         </Card>
       </Grid>
