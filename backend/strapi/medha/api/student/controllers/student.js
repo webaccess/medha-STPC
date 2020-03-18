@@ -173,7 +173,6 @@ module.exports = {
     const requestBody = ctx.request.body;
     console.log(requestBody);
     console.log(ctx.params);
-    console.log(ctx.state.user.id);
     const userRequestBody = Object.assign(
       {},
       _.omit(requestBody, [
@@ -217,8 +216,8 @@ module.exports = {
       .transaction(async t => {
         const userModel = await bookshelf
           .model("user")
-          .where({ id: ctx.state.user.id })
-          .fetch({ lock: "forUpdate", transacting: t, require: false });
+          .where({ id: userRequestBody.id })
+          .fetch({ lock: "forUpdate", transacting: t, require: true });
         userModel
           .save(
             {
