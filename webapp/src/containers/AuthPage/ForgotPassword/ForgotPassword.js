@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { get } from "lodash";
-import { Alert, Logo, Validation as validateInput } from "../../../components";
+import { Alert, Validation as validateInput } from "../../../components";
 import {
   Button,
   CssBaseline,
   TextField,
   Link,
   Grid,
-  Box,
   Typography,
-  Container,
   Hidden,
   CardMedia,
   Paper,
@@ -21,7 +19,9 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-  FormHelperText
+  FormHelperText,
+  Collapse,
+  CircularProgress
 } from "@material-ui/core";
 import clsx from "clsx";
 import useStyles from "./ForgotPasswordStyles";
@@ -36,6 +36,7 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import CardIcon from "../../../components/Card/CardIcon";
 import { useTheme } from "@material-ui/core/styles";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
+import CloseIcon from "@material-ui/icons/Close";
 
 const newPassword = "newPassword";
 const confirmNewPassword = "confirmNewPassword";
@@ -50,6 +51,7 @@ const CHANGE_PASSWORD_URL =
   StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_CHANGE_PASS_URL;
 
 const ForgotPassword = props => {
+  const [open, setOpen] = React.useState(true);
   const theme = useTheme();
   const history = useHistory();
   const classes = useStyles();
@@ -71,6 +73,7 @@ const ForgotPassword = props => {
     errorsToShow: "",
     isChangePassFailed: false,
     showPassword: false,
+    otpSendingFailed: false,
     formType: authPageConstants.FORM_TYPE_ENTER_MOBILE
   });
 
@@ -101,6 +104,10 @@ const ForgotPassword = props => {
   };
 
   const changePassword = async () => {
+    setFormState(formState => ({
+      ...formState,
+      isChangePassFailed: false
+    }));
     let postData = {
       code: formState.resetPasswordToken,
       password: formState.values[newPassword],
@@ -119,6 +126,7 @@ const ForgotPassword = props => {
         });
       })
       .catch(error => {
+        setOpen(true);
         setFormState(formState => ({
           ...formState,
           isChangePassFailed: true,
@@ -222,6 +230,12 @@ const ForgotPassword = props => {
 
   /** Function used to generate otp */
   const generateOtp = async (sendOtp, resendOtp) => {
+    /** Reset error message */
+    setIsOtpVerificationFailed(false);
+    setFormState(formState => ({
+      ...formState,
+      otpSendingFailed: false
+    }));
     let postData = { contact_number: formState.values[mobileNumber] };
     let headers = {
       "Content-Type": "application/json"
@@ -235,12 +249,15 @@ const ForgotPassword = props => {
               ...formState,
               otpSent: true,
               isValid: false,
+              otpSendingFailed: false,
               errorsToShow: "",
               formType: authPageConstants.FORM_TYPE_VERIFY_OTP
             }));
           } else if (resendOtp) {
+            setOpen(true);
             setFormState(formState => ({
               ...formState,
+              otpSendingFailed: false,
               otpResent: true,
               isValid: false,
               errorsToShow: "OTP sent successfully"
@@ -249,14 +266,17 @@ const ForgotPassword = props => {
         }
       })
       .catch(error => {
+        setOpen(true);
         setFormState(formState => ({
           ...formState,
+          otpSendingFailed: true,
           errorsToShow: "Error Generating OTP"
         }));
       });
   };
 
   const verifyOtp = async () => {
+    setIsOtpVerificationFailed(false);
     let postData = {
       contact_number: formState.values[mobileNumber],
       otp: formState.values[otp]
@@ -271,18 +291,21 @@ const ForgotPassword = props => {
           res.data.statusCode === 400 &&
           res.data.message === "OTP has expired"
         ) {
+          setOpen(true);
           setIsOtpVerificationFailed(true);
           setFormState(formState => ({
             ...formState,
             errorsToShow: "OTP has expired"
           }));
         } else if (res.data.message === "EmptyResponse") {
+          setOpen(true);
           setIsOtpVerificationFailed(true);
           setFormState(formState => ({
             ...formState,
             errorsToShow: "Invalid OTP"
           }));
         } else if (formUtilities.checkEmpty(res.data)) {
+          setOpen(true);
           setIsOtpVerificationFailed(true);
           setFormState(formState => ({
             ...formState,
@@ -302,6 +325,7 @@ const ForgotPassword = props => {
       })
       .catch(error => {
         console.log("error verifying otp ", error);
+        setOpen(true);
         setIsOtpVerificationFailed(true);
         setFormState(formState => ({
           ...formState,
@@ -506,14 +530,14 @@ const ForgotPassword = props => {
                               })
                             : null}
                         </FormHelperText>
-                        <Button
-                          color="primary"
-                          variant="contained"
-                          className={classes.submit}
+                        <Link
+                          href="javascript:void(0);"
+                          variant="body2"
+                          className={classes.linkColor}
                           onClick={resendOtp}
                         >
                           {authPageConstants.RESEND_OTP_BUTTON}
-                        </Button>
+                        </Link>
                       </FormControl>
                       <Button
                         color="primary"
@@ -569,7 +593,6 @@ const ForgotPassword = props => {
                           }
                         }}
                       />
-
                       <Button
                         color="primary"
                         disabled={!formState.isValid}
@@ -591,11 +614,49 @@ const ForgotPassword = props => {
                   </Grid>
                 </form>
               </div>
-              {isOtpVerificationFailed || formState.isChangePassFailed ? (
-                <Alert severity="error">{formState.errorsToShow}</Alert>
+              {isOtpVerificationFailed ||
+              formState.isChangePassFailed ||
+              formState.otpSendingFailed ? (
+                <Collapse in={open}>
+                  <Alert
+                    severity="error"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    {formState.errorsToShow}
+                  </Alert>
+                </Collapse>
               ) : formState.otpResent &&
                 formState.errorsToShow === "OTP sent successfully" ? (
-                <Alert severity="success">{formState.errorsToShow}</Alert>
+                <Collapse in={open}>
+                  <Alert
+                    severity="success"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    {formState.errorsToShow}
+                  </Alert>
+                </Collapse>
               ) : null}
             </CardContent>
 

@@ -22,7 +22,8 @@ import {
   Icon,
   Paper,
   Hidden,
-  useMediaQuery
+  useMediaQuery,
+  Collapse
 } from "@material-ui/core";
 import useStyles from "./LoginStyles";
 import form from "./loginform.json";
@@ -41,11 +42,13 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import image from "../../../assets/images/login-img.png";
 import CardIcon from "../../../components/Card/CardIcon.js";
 import { useHistory } from "react-router-dom";
+import CloseIcon from "@material-ui/icons/Close";
 
 const identifier = "identifier";
 const password = "password";
 
 const LogIn = props => {
+  const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
@@ -218,6 +221,7 @@ const LogIn = props => {
         }
       })
       .catch(error => {
+        setOpen(true);
         setIfFailure(true);
         console.log("An error occurred:", JSON.stringify(error));
       });
@@ -391,9 +395,45 @@ const LogIn = props => {
                 </form>
               </div>
               {ifFailure ? (
-                <Alert severity="error">{authPageConstants.INVALID_USER}</Alert>
+                <Collapse in={open}>
+                  <Alert
+                    severity="error"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    {authPageConstants.INVALID_USER}
+                  </Alert>
+                </Collapse>
               ) : formState.fromPasswordChangedPage ? (
-                <Alert severity="success">{formState.dataToShow}</Alert>
+                <Collapse in={open}>
+                  <Alert
+                    severity="success"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    {formState.dataToShow}
+                  </Alert>
+                </Collapse>
               ) : null}
             </CardContent>
             <Hidden mdDown>
