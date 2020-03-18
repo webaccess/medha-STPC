@@ -86,8 +86,7 @@ const UserSchema = {
     placeholder: "contact",
     autoFocus: true,
     type: "integer",
-    validations: {
-    }
+    validations: {}
   },
   active: {
     label: "Active",
@@ -97,8 +96,7 @@ const UserSchema = {
     placeholder: "active",
     autoFocus: true,
     type: "checkbox",
-    validations: {
-    }
+    validations: {}
   },
   state: {
     label: "State",
@@ -108,8 +106,7 @@ const UserSchema = {
     placeholder: "state",
     autoFocus: true,
     type: "text",
-    validations: {
-    }
+    validations: {}
   },
   zone: {
     label: "Zone",
@@ -119,8 +116,7 @@ const UserSchema = {
     placeholder: "zone",
     autoFocus: true,
     type: "text",
-    validations: {
-    }
+    validations: {}
   },
   rpc: {
     label: "RPC",
@@ -130,8 +126,7 @@ const UserSchema = {
     placeholder: "rpc",
     autoFocus: true,
     type: "text",
-    validations: {
-    }
+    validations: {}
   },
   college: {
     label: "College",
@@ -141,21 +136,23 @@ const UserSchema = {
     placeholder: "college",
     autoFocus: true,
     type: "text",
-    validations: {
-    }
+    validations: {}
   },
   role: {
     label: "Role",
     id: "role",
     autoComplete: "role",
-    required: false,
+    required: true,
     placeholder: "role",
     autoFocus: true,
     type: "text",
     validations: {
-      
+      required: {
+        value: "true",
+        message: "Role is required"
+      }
     }
-  },
+  }
 };
 
 export default UserSchema;

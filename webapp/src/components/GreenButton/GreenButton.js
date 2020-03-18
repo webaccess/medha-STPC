@@ -7,7 +7,6 @@ const GreenButton = props => {
   const classes = useStyles();
   const greenButtonChecker = props.greenButtonChecker;
   const buttonDisabled = props.buttonDisabled;
-
   if (greenButtonChecker) {
     return (
       <Button

@@ -62,6 +62,7 @@ const RequestOtp = props => {
 
   return (
     <Layout>
+      {console.log(props)}
       <div className={classes.paper}>
         <Card className={classes.paper}>
           <CardContent style={{ padding: "50px", marginLeft: "20px" }}>
@@ -99,6 +100,7 @@ const RequestOtp = props => {
                     mfullWidth
                     variant="contained"
                     size="large"
+                    greenButtonChecker={true}
                     onClick={() => {
                       validate();
                     }}

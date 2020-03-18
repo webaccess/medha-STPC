@@ -4,11 +4,18 @@ import EmojiFlagsOutlinedIcon from "@material-ui/icons/EmojiFlagsOutlined";
 import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined";
 import PeopleOutlineOutlinedIcon from "@material-ui/icons/PeopleOutlineOutlined";
 import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
+import DashboardIcon from "@material-ui/icons/Dashboard";
+
 import * as routeConstants from "../../../constants/RouteConstants";
 
 const MenuItems = props => {
   const menuItems = {
     "Medha Admin": [
+      {
+        name: "Dashboard",
+        link: routeConstants.DASHBOARD_URL,
+        Icon: <DashboardIcon />
+      },
       {
         name: "Training",
         Icon: <AssignmentOutlinedIcon />,
@@ -62,6 +69,11 @@ const MenuItems = props => {
       }
     ],
     "College Admin": [
+      {
+        name: "Dashboard",
+        link: routeConstants.DASHBOARD_URL,
+        Icon: <DashboardIcon />
+      },
       {
         name: "College",
         link: routeConstants.DETAIL_COLLEGE,
