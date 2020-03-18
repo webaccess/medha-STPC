@@ -38,7 +38,8 @@ module.exports = {
         )
         .fetchPage({
           page: page,
-          pageSize: pageSize,
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
           columns: ["id", "name"]
         })
         .then(res => {
@@ -63,7 +64,8 @@ module.exports = {
         )
         .fetchPage({
           page: page,
-          pageSize: pageSize
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
@@ -93,7 +95,8 @@ module.exports = {
         .where({ zone: zone })
         .fetchPage({
           page: page,
-          pageSize: pageSize
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
@@ -123,7 +126,8 @@ module.exports = {
         .where({ rpc: rpc })
         .fetchPage({
           page: page,
-          pageSize: pageSize
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
@@ -153,7 +157,8 @@ module.exports = {
         .where({ id: college })
         .fetchPage({
           page: page,
-          pageSize: pageSize
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
         .then(res => {
           return utils.getPaginatedResponse(res);
@@ -188,7 +193,7 @@ module.exports = {
 
     const studentRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "Authenticated" });
+      .findOne({ name: "Student" });
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -201,7 +206,10 @@ module.exports = {
       .where({ college: id, role: studentRole.id })
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize:
+          pageSize < 0
+            ? await strapi.query("user", "users-permissions").count()
+            : pageSize
       })
       .then(res => {
         const data = utils.getPaginatedResponse(res);

@@ -25,6 +25,8 @@ module.exports = async (ctx, next) => {
   if (!college_code) return ctx.response.badRequest("College code is missing");
 
   if (!address) return ctx.response.badRequest("Address field is missing");
+  if (!zone) return ctx.response.badRequest("Zone field is missing");
+  if (!rpc) return ctx.response.badRequest("RPC field is missing");
 
   if (!college_email)
     return ctx.response.badRequest("College Email field is missing");

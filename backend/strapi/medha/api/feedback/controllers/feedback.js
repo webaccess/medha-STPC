@@ -29,7 +29,8 @@ module.exports = {
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("feedback") : pageSize
       })
       .then(res => {
         const data = utils.getPaginatedResponse(res);

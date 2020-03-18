@@ -32,7 +32,8 @@ module.exports = {
         )
         .fetchPage({
           page: page,
-          pageSize: pageSize,
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("zone") : pageSize,
           columns: ["id", "name"]
         })
         .then(res => {
@@ -54,7 +55,11 @@ module.exports = {
             filters
           })
         )
-        .fetchPage({ page: page, pageSize: pageSize })
+        .fetchPage({
+          page: page,
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("zone") : pageSize
+        })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
@@ -72,7 +77,11 @@ module.exports = {
         .where({
           id: zone
         })
-        .fetchPage({ page: page, pageSize: pageSize })
+        .fetchPage({
+          page: page,
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("zone") : pageSize
+        })
         .then(res => {
           return utils.getPaginatedResponse(res);
         });
