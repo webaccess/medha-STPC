@@ -504,7 +504,7 @@ const ViewUsers = props => {
 
   /** Table Data */
   const column = [
-    { name: "Users", sortable: true, selector: "username" },
+    { name: "User Name", sortable: true, selector: "username" },
     { name: "Zone", sortable: true, selector: "zone" },
     { name: "Role", sortable: true, selector: "role" },
     { name: "RPC", sortable: true, selector: "rpc" },
@@ -521,6 +521,23 @@ const ViewUsers = props => {
             style={{ color: "green", fontSize: "19px" }}
           >
             view_list
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    },
+    {
+      cell: cell => (
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            onClick={editCell}
+            style={{ color: "green" }}
+          >
+            edit
           </i>
         </Tooltip>
       ),
@@ -555,23 +572,6 @@ const ViewUsers = props => {
           }
         }
       ]
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Edit" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={editCell}
-            style={{ color: "green" }}
-          >
-            edit
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
     },
     {
       cell: cell => (
@@ -736,7 +736,7 @@ const ViewUsers = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Name"
+                      label="User Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />

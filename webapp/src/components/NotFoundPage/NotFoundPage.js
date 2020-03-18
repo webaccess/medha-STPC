@@ -19,11 +19,11 @@ const NotFoundPage = () => {
                 You either tried some shady route or you came here by mistake.
                 Whichever it is, try using the navigation
               </Typography>
-              <img
+              {/* <img
                 alt="Not Found"
                 className={classes.image}
                 src="/images/notFound.svg"
-              />
+              /> */}
             </div>
           </Grid>
         </Grid>

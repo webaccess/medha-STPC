@@ -83,20 +83,21 @@ const ApprovedStudents = props => {
     >
       <Fade in={props.getModel}>
         <div className={classes.paper}>
-          <MuiDialogTitle>
-            <Typography className={classes.textMargin}>
-              {/* {props.isUnBlocked || props.isUnMulBlocked ? "UN-Block" : null}
-              {props.isBlocked || props.isMulBlocked ? "Block" : null} */}
-              {props.Data ? "UN-Approved" : "Approved"}
+          <div className={classes.deletepanel}>
+            <Typography variant={"h2"} className={classes.textMargin}>
+              {props.Data ? "Unapprove" : "Approve"}
             </Typography>
-            <IconButton
-              aria-label="close"
-              className={classes.closeButton}
-              onClick={props.modalClose}
-            >
-              <CloseIcon />
-            </IconButton>
-          </MuiDialogTitle>
+
+            <div className={classes.crossbtn}>
+              <IconButton
+                className={classes.closeButton}
+                aria-label="close"
+                onClick={props.modalClose}
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
@@ -108,8 +109,8 @@ const ApprovedStudents = props => {
                     ? "Do you want to Block this user"
                     : null} */}
                   {props.Data
-                    ? "Do you want to UN-Approved this student"
-                    : "Do you want to Approved this student"}
+                    ? "Do you want to Unpprove this student"
+                    : "Do you want to Approve this student"}
                 </Grid>
                 <Grid item xs>
                   <YellowButton
@@ -122,7 +123,7 @@ const ApprovedStudents = props => {
                       ? "UN-Block"
                       : null}
                     {props.isBlocked || props.isMulBlocked ? "Block" : null} */}
-                    {props.Data ? "UN-Approved" : "Approved"}
+                    {props.Data ? "Unapprove" : "Approve"}
                   </YellowButton>
                 </Grid>
               </Grid>

@@ -193,7 +193,6 @@ const Adduser = props => {
       });
   }, []);
 
-
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
     if (formState.values[state]) {
@@ -201,7 +200,6 @@ const Adduser = props => {
     }
     return () => {};
   }, [formState.values[state]]);
-
 
   /** Common function to get zones, rpcs, districts after changing state */
   async function fetchZoneRpcDistrictData() {
@@ -245,7 +243,6 @@ const Adduser = props => {
       pageSize: 10000000,
       "state.id": formState.values[state]
     };
-
   }
 
   const handleChange = e => {
@@ -663,7 +660,7 @@ const Adduser = props => {
                   />
                 </Grid>
                 <Grid item md={4} xs={12}>
-                  <FormGroup row>
+                  {/* <FormGroup row>
                     <FormControlLabel
                       control={
                         <Switch
@@ -683,7 +680,7 @@ const Adduser = props => {
                       }
                       label={get(UserSchema[active], "label")}
                     />
-                  </FormGroup>
+                  </FormGroup> */}
                 </Grid>
               </Grid>
               <Grid container spacing={3}>

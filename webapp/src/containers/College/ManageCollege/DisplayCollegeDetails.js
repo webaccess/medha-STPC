@@ -269,14 +269,16 @@ const DisplayCollegeDetails = props => {
                         >
                           {genericConstants.EDIT_TEXT}
                         </YellowButton>
-                        {/* <GrayButton
-                          color="primary"
-                          variant="contained"
-                          to={routeConstants.VIEW_COLLEGE}
-                          className={classes.resetbtn}
-                        >
-                          {genericConstants.CANCEL_BUTTON_TEXT}
-                        </GrayButton> */}
+                        {auth.getUserInfo().role.name !== "College Admin" ? (
+                          <GrayButton
+                            color="primary"
+                            variant="contained"
+                            to={routeConstants.VIEW_COLLEGE}
+                            className={classes.resetbtn}
+                          >
+                            {genericConstants.CANCEL_BUTTON_TEXT}
+                          </GrayButton>
+                        ) : null}
                       </CardActions>
                     </Card>
                   </form>
