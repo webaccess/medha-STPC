@@ -46,6 +46,7 @@ const VerifyOtp = props => {
           { otp: otp, contact_number: props.location.state.contactNumber }
         )
         .then(res => {
+          console.log("IN then");
           history.push(routeConstants.NEW_REGISTRATION_URL, {
             otp: otp,
             contactNumber: props.location.state.contactNumber
@@ -140,6 +141,7 @@ const VerifyOtp = props => {
                       mfullWidth
                       variant="contained"
                       size="large"
+                      greenButtonChecker={true}
                       onClick={() => {
                         validate();
                       }}

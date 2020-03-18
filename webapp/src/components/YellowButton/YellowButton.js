@@ -3,7 +3,6 @@ import { Button } from "@material-ui/core";
 import useStyles from "./YellowButtonStyles";
 
 const YellowButton = props => {
-  console.log(props);
   const classes = useStyles();
   return (
     <Button

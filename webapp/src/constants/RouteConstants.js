@@ -1,5 +1,4 @@
 export const FORGOT_PASSWORD_URL = "/forgot-password";
-export const NEW_REGISTRATION_URL = "#";
 export const SIGN_IN_URL = "/login";
 export const LOGOUT_URL = "/logout";
 export const NOT_FOUND_URL = "/404";
@@ -7,7 +6,7 @@ export const DASHBOARD_URL = "/";
 export const ADD_USER = "/add-user";
 
 /**Student */
-// export const NEW_REGISTRATION_URL = "/registration";
+export const NEW_REGISTRATION_URL = "/registration";
 export const REGISTERED = "/registered";
 export const REQUIRED_CONFORMATION = "/requiredconformation";
 export const VIEW_PROFILE = "/view-profile";
