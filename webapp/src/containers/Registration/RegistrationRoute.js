@@ -10,6 +10,7 @@ import * as routeConstants from "../../constants/RouteConstants";
 import Registration from "./Registration.js";
 /** For login */
 export default function RegistrationRoute(props) {
+  console.log(props);
   if (!props.location.state) {
     console.log("In Registration route");
     return (

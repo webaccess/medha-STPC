@@ -725,6 +725,7 @@ const Registration = props => {
                   type="submit"
                   mfullWidth
                   variant="contained"
+                  greenButtonChecker={true}
                   onClick={handleSubmit}
                 >
                   <span style={{ margin: "10px" }}>
