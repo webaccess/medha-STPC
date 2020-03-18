@@ -162,8 +162,17 @@ module.exports = {
             ? await strapi.query("user", "users-permissions").count()
             : pageSize
       })
-      .then(u => {
+      .then(async u => {
         const response = utils.getPaginatedResponse(u);
+        await utils.asyncForEach(response.result, async (user, index) => {
+          const { id } = user;
+          response.result[index].studentInfo = await strapi
+            .query("student")
+            .findOne({ user: id });
+          if (response.result[index].studentInfo) {
+            delete response.result[index].studentInfo.user;
+          }
+        });
         const data = response.result.map(sanitizeUser);
         response.result = data;
         return response;
@@ -179,6 +188,18 @@ module.exports = {
     const response = await strapi
       .query("user", "users-permissions")
       .findOne({ id });
+
+    /**
+     * If role is student add student object to user info
+     */
+    const studentInfo = await strapi.query("student").findOne({ user: id });
+
+    // Removing users details from student object
+    if (studentInfo) {
+      delete studentInfo.user;
+    }
+
+    response.studentInfo = studentInfo;
     return utils.getFindOneResponse(sanitizeUser(response));
   },
 

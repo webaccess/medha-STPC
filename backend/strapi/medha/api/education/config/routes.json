@@ -29,7 +29,7 @@
       "path": "/educations",
       "handler": "education.create",
       "config": {
-        "policies": []
+        "policies": ["isOwner"]
       }
     },
     {
@@ -37,7 +37,7 @@
       "path": "/educations/:id",
       "handler": "education.update",
       "config": {
-        "policies": []
+        "policies": ["isOwner"]
       }
     },
     {
@@ -45,7 +45,7 @@
       "path": "/educations/:id",
       "handler": "education.delete",
       "config": {
-        "policies": []
+        "policies": ["isOwner"]
       }
     }
   ]

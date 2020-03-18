@@ -10,8 +10,9 @@ const sanitizeUser = user =>
   sanitizeEntity(user, {
     model: strapi.query("user", "users-permissions").model
   });
-const utils = require("../../../config/utils.js");
 const _ = require("lodash");
+const { convertRestQueryParams, buildQuery } = require("strapi-utils");
+const utils = require("../../../config/utils.js");
 
 module.exports = {
   /**
@@ -169,6 +170,7 @@ module.exports = {
         return ctx.response.badRequest(`Invalid ${error.column}`);
       });
   },
+
   async edit(ctx) {
     const requestBody = ctx.request.body;
     console.log(requestBody);
@@ -273,6 +275,34 @@ module.exports = {
       .catch(error => {
         console.log(error);
         return ctx.response.badRequest(`Invalid ${error.column}`);
+      });
+  },
+
+  /**
+   * Get student educations
+   * @return {Object}
+   */
+  async education(ctx) {
+    const { id } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    return strapi
+      .query("education")
+      .model.query(
+        buildQuery({
+          model: strapi.models["education"],
+          filters
+        })
+      )
+      .where({ student: id })
+      .fetchPage({
+        page: page,
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
+      })
+      .then(res => {
+        return utils.getPaginatedResponse(res);
       });
   }
 };
