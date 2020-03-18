@@ -3,7 +3,7 @@ export const NEW_REGISTRATION_URL = "#";
 export const SIGN_IN_URL = "/login";
 export const LOGOUT_URL = "/logout";
 export const NOT_FOUND_URL = "/404";
-export const DASHBOARD_URL = "/";
+export const DASHBOARD_URL = "/dashboard";
 export const ADD_USER = "/add-user";
 
 /**Student */
@@ -27,12 +27,12 @@ export const REQUEST_OTP = "/requestotp";
 export const VERIFY_OTP = "/verifyotp";
 /** user */
 export const EDIT_USER = "/edit-user";
-export const VIEW_USER = "/view-user";
+export const VIEW_USER = "/manage-user";
 export const MANAGE_TRAINING = "/manage-training";
 export const VALIDATE_STUDENT = "/validate-student";
 export const EVENTS = "/events";
 export const PROFILE = "/profile";
-export const DETAIL_USER = "/detail-user";
+export const DETAIL_USER = "/view-user";
 
 /** State */
 export const EDIT_STATE = "/edit-state";

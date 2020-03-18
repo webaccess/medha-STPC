@@ -595,7 +595,7 @@ const ViewUsers = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Users
+          Manage User
         </Typography>
         <GreenButton
           variant="contained"
