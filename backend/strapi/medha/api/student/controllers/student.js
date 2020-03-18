@@ -217,7 +217,7 @@ module.exports = {
         const userModel = await bookshelf
           .model("user")
           .where({ id: userRequestBody.id })
-          .fetch({ lock: "forUpdate", transacting: t, require: true });
+          .fetch({ lock: "forUpdate", transacting: t, require: false });
         userModel
           .save(
             {
