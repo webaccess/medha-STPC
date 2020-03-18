@@ -375,7 +375,7 @@ const roles = {
       },
       {
         name: "education",
-        action: ["find", "findone", "create", "update", "delete"]
+        action: ["create", "update", "delete"]
       },
       {
         name: "event",
@@ -415,7 +415,7 @@ const roles = {
       },
       {
         name: "student",
-        action: ["findone", "update"]
+        action: ["findone", "update", "education", "create", "edit"]
       },
       {
         name: "user",

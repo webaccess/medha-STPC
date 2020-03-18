@@ -55,6 +55,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/education",
+      "handler": "student.education",
+      "config": {
+        "policies": ["isOwner"]
+      }
     }
   ]
 }
