@@ -199,6 +199,7 @@ const StudentProfile = props => {
   };
 
   const postStudentData = () => {
+    const user_1 = auth.getUserInfo();
     let postData = databaseUtilities.editStudent(
       formState.values["firstname"],
       formState.values["lastname"],
@@ -219,15 +220,15 @@ const StudentProfile = props => {
       formState.values["physicallyHandicapped"],
       formState.values["college"],
       formState.values["stream"],
-      parseInt(formState.values["rollnumber"])
+      parseInt(formState.values["rollnumber"]),
+      user_1.id
     );
     console.log(postData);
-    const student = auth.getUserInfo();
-    console.log(student.studentInfo);
+    console.log(user_1.studentInfo);
     serviceProvider
       .serviceProviderForPutRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-        student.studentInfo.id,
+        user_1.studentInfo.id,
         postData
       )
       .then(response => {
@@ -833,6 +834,7 @@ const StudentProfile = props => {
                   type="submit"
                   mfullWidth
                   variant="contained"
+                  style={{ marginRight: "18px" }}
                   onClick={handleSubmit}
                 >
                   <span>{genericConstants.SAVE_BUTTON_TEXT}</span>

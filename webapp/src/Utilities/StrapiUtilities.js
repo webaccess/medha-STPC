@@ -236,7 +236,8 @@ export const editStudent = (
   physicallyHandicapped,
   college,
   stream = null,
-  rollNumber = null
+  rollNumber = null,
+  id
 ) => {
   return {
     contact_number: contactNumber,
@@ -254,7 +255,8 @@ export const editStudent = (
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
-    physicallyHandicapped: physicallyHandicapped
+    physicallyHandicapped: physicallyHandicapped,
+    id: id
   };
 };
 export const addEducation = (qualification, board, yearOfPassing, marks) => {
