@@ -72,6 +72,21 @@ const Adduser = props => {
   const USERS_URL =
     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS;
 
+  const STATES_URL =
+    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
+
+  const ZONES_URL =
+    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
+
+  const RPCS_URL =
+    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
+
+  const COLLEGES_URL =
+    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
+
+  const ROLES_URL =
+    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES;
+
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
     if (props["dataForEdit"]) {
@@ -119,10 +134,11 @@ const Adduser = props => {
   }
 
   useEffect(() => {
+    let paramsForPageSize = {
+      pageSize: 100000
+    };
     serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
-      )
+      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
         setStates(res.data.result);
       })
@@ -130,32 +146,26 @@ const Adduser = props => {
         console.log(error);
       });
 
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
-      )
-      .then(res => {
-        setZones(res.data.result);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    // serviceProvider
+    //   .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
+    //   .then(res => {
+    //     setZones(res.data.result);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+
+    // serviceProvider
+    //   .serviceProviderForGetRequest(RPCS_URL, paramsForPageSize)
+    //   .then(res => {
+    //     setRpcs(res.data.result);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
 
     serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS
-      )
-      .then(res => {
-        setRpcs(res.data.result);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
-      )
+      .serviceProviderForGetRequest(COLLEGES_URL, paramsForPageSize)
       .then(res => {
         setColleges(res.data.result);
       })
@@ -164,9 +174,7 @@ const Adduser = props => {
       });
 
     serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES
-      )
+      .serviceProviderForGetRequest(ROLES_URL, paramsForPageSize)
       .then(res => {
         let roles = [];
         for (let i in res.data.roles) {
@@ -184,6 +192,61 @@ const Adduser = props => {
         console.log(error);
       });
   }, []);
+
+
+  /** This gets data into zones, rpcs and districts when we change the state */
+  useEffect(() => {
+    if (formState.values[state]) {
+      fetchZoneRpcDistrictData();
+    }
+    return () => {};
+  }, [formState.values[state]]);
+
+
+  /** Common function to get zones, rpcs, districts after changing state */
+  async function fetchZoneRpcDistrictData() {
+    let zones_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiApiConstants.STRAPI_ZONES;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(zones_url)
+      .then(res => {
+        setZones(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let rpcs_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiApiConstants.STRAPI_RPCS;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(rpcs_url)
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setRpcs(res.data[0].result);
+        } else {
+          setRpcs(res.data.result);
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let params = {
+      pageSize: 10000000,
+      "state.id": formState.values[state]
+    };
+
+  }
 
   const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
@@ -206,6 +269,7 @@ const Adduser = props => {
     }
   };
 
+  /** Handle change for autocomplete fields */
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (value !== null) {
@@ -218,12 +282,38 @@ const Adduser = props => {
         touched: {
           ...formState.touched,
           [eventName]: true
-        }
+        },
+        isStateClearFilter: false
       }));
+      if (eventName === state) {
+        fetchZoneRpcDistrictData();
+      }
+      /** This is used to remove any existing errors if present in auto complete */
       if (formState.errors.hasOwnProperty(eventName)) {
         delete formState.errors[eventName];
       }
     } else {
+      let setStateFilterValue = false;
+      /** If we click cross for state the zone and rpc should clear off! */
+      if (eventName === state) {
+        /** 
+        This flag is used to determine that state is cleared which clears 
+        off zone and rpc by setting their value to null 
+        */
+        setStateFilterValue = true;
+        /** 
+        When state is cleared then clear rpc and zone 
+        */
+        setRpcs([]);
+        setZones([]);
+        delete formState.values[zone];
+        delete formState.values[rpc];
+      }
+      setFormState(formState => ({
+        ...formState,
+        isStateClearFilter: setStateFilterValue
+      }));
+      /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
   };
@@ -343,7 +433,6 @@ const Adduser = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {genericConstants.ADD_USER_TITLE}
@@ -531,7 +620,7 @@ const Adduser = props => {
                         name="tester"
                         helperText={
                           hasError(role)
-                            ? formState.errors[state].map(error => {
+                            ? formState.errors[role].map(error => {
                                 return error + " ";
                               })
                             : null
