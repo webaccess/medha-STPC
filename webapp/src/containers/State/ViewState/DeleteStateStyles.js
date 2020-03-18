@@ -59,6 +59,13 @@ const useStyles = makeStyles(theme => ({
       fontWeight: "700"
     }
   },
+  blockpanel: {
+    display: "flex",
+    position: "relative",
+    "& h2": {
+      flexGrow: "1"
+    }
+  },
   crossbtn: {
     position: "absolute",
     top: "-7px",
