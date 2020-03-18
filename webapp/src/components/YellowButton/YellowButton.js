@@ -13,6 +13,7 @@ const YellowButton = props => {
       className={classes.submitbtn}
       onClick={props.onClick}
       disabled={props.disabled}
+      style={props.style}
     >
       {props.children}
     </Button>
