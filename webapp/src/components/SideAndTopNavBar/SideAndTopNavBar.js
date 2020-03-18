@@ -186,7 +186,6 @@ function SideAndTopNavBar(props) {
   const drawer = (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.toolbar} />
-
       {inputs.map((list, id) => {
         return (
           <div key={list.name} className={listClasses.navigationpanel}>
