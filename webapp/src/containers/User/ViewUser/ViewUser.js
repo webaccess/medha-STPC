@@ -593,7 +593,6 @@ const ViewUsers = props => {
 
   return (
     <Grid>
-      {console.log(props)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           Manage User

@@ -51,3 +51,8 @@ export const ADD_RPC_TEXT = "Add Rpc";
 export const ADD_EDUCATION_TEXT = "Add Education";
 export const EDIT_EDUCATION_TEXT = "Edit Education";
 export const VIEW_EDUCATION_TEXT = "Education";
+
+/**Manage Students */
+export const MANAGE_STUDENTS = "Manage Student";
+export const DELETE_SELECTED_STUDENT = "Delete Selected user";
+export const ADD_STUDENT_BUTTON_TEXT = "Add Student";

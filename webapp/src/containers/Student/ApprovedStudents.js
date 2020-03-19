@@ -46,25 +46,41 @@ const ApprovedStudents = props => {
 
   const ApprovedStudent = () => {
     var body;
-    if (props.Data === true) {
+    if (props.Data === true || props.isUnMulBlocked === true) {
       body = {
         verifiedByCollege: false
       };
-    } else if (props.Data !== true) {
+    } else if (props.Data === false || props.isMulBlocked === true) {
       body = {
         verifiedByCollege: true
       };
     }
 
-    serviceProviders
-      .serviceProviderForPutRequest(STUDENTS_URL, props.id, body)
-      .then(res => {
-        formState.isDataBlock = true;
-        handleCloseModal();
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    if (props.isMulBlocked || props.isUnMulBlocked) {
+      serviceProviders
+        .serviceProviderForAllBlockRequest(STUDENTS_URL, props.id, body)
+        .then(res => {
+          formState.isDataBlock = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          console.log("error---", error);
+          formState.isDataBlock = false;
+          handleCloseModal();
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForPutRequest(STUDENTS_URL, props.id, body)
+        .then(res => {
+          formState.isDataBlock = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          console.log("error", error);
+          formState.isDataBlock = false;
+          handleCloseModal();
+        });
+    }
   };
 
   const classes = useStyles();
@@ -102,15 +118,12 @@ const ApprovedStudents = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {/* {props.isUnBlocked || props.isUnMulBlocked
-                    ? "Do you want to UN-Block this user"
+                  {props.Data === false || props.isMulBlocked === true
+                    ? "Do you want to approved selected student"
                     : null}
-                  {props.isBlocked || props.isMulBlocked
-                    ? "Do you want to Block this user"
-                    : null} */}
-                  {props.Data
-                    ? "Do you want to Unpprove this student"
-                    : "Do you want to Approve this student"}
+                  {props.Data === true || props.isUnMulBlocked === true
+                    ? "Do you want to Unapprove selected student"
+                    : null}
                 </Grid>
                 <Grid item xs>
                   <YellowButton
@@ -119,11 +132,12 @@ const ApprovedStudents = props => {
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {/* {props.isUnBlocked || props.isUnMulBlocked
-                      ? "UN-Block"
+                    {props.Data === true || props.isUnMulBlocked === true
+                      ? "Unapprove"
                       : null}
-                    {props.isBlocked || props.isMulBlocked ? "Block" : null} */}
-                    {props.Data ? "Unapprove" : "Approve"}
+                    {props.Data === false || props.isMulBlocked === true
+                      ? "Approve"
+                      : null}
                   </YellowButton>
                 </Grid>
               </Grid>
