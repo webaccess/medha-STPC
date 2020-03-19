@@ -83,6 +83,7 @@ const AddEditCollege = props => {
   const [rpcs, setRpcs] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [streamsData, setStreamsData] = useState([]);
+  const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
 
@@ -176,7 +177,28 @@ const AddEditCollege = props => {
     serviceProviders
       .serviceProviderForGetRequest(STREAMS_URL, paramsForPageSize)
       .then(res => {
-        setStreamsData(res.data.result);
+        setStreamsDataBackup(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+    serviceProviders
+      .serviceProviderForGetRequest(STREAMS_URL, paramsForPageSize)
+      .then(res => {
+        let dataForEditing = res.data.result;
+        if (formState.isEditCollege) {
+          let tempStreamData = dataForEditing;
+          let streamStrengthArray = props["dataForEdit"]["stream_strength"];
+          for (let i in streamStrengthArray) {
+            let id = streamStrengthArray[i]["stream"]["id"];
+            for (let j in tempStreamData) {
+              if (tempStreamData[j]["id"] === id) tempStreamData.splice(j, 1);
+            }
+          }
+          setStreamsData(tempStreamData);
+        } else {
+          setStreamsData(dataForEditing);
+        }
       })
       .catch(error => {
         console.log("error", error);
@@ -328,6 +350,16 @@ const AddEditCollege = props => {
       ...formState,
       dynamicBar: formState.dynamicBar.filter(r => r !== record)
     }));
+    if (record[streams]) {
+      let streamsTempArray = [];
+      streamsTempArray = streamsData;
+      streamsDataBackup.map(streams => {
+        if (record["streams"] === streams["id"]) {
+          streamsTempArray.push(streams);
+        }
+      });
+      setStreamsData(streamsTempArray);
+    }
   };
 
   /** Handling multi select values for dynamic bar */
@@ -347,6 +379,13 @@ const AddEditCollege = props => {
           ...formState,
           dynamicBar: formState.dynamicBar.map(r => {
             if (r["index"] === dynamicGridValue["index"]) {
+              let streamsTempArray = [];
+              streamsData.map(streams => {
+                if (streams["id"] !== selectedValueForAutoComplete["id"]) {
+                  streamsTempArray.push(streams);
+                }
+              });
+              setStreamsData(streamsTempArray);
               r[eventName] = selectedValueForAutoComplete["id"];
               return r;
             } else {
@@ -360,6 +399,14 @@ const AddEditCollege = props => {
           ...formState,
           dynamicBar: formState.dynamicBar.map(r => {
             if (r["index"] === dynamicGridValue["index"]) {
+              let streamsTempArray = [];
+              streamsTempArray = streamsData;
+              streamsDataBackup.map(streams => {
+                if (r[eventName] === streams["id"]) {
+                  streamsTempArray.push(streams);
+                }
+              });
+              setStreamsData(streamsTempArray);
               delete r[eventName];
               return r;
             } else {
@@ -1085,8 +1132,11 @@ const AddEditCollege = props => {
                                   data-id={idx}
                                   name={streamId}
                                   value={
-                                    streamsData[
-                                      streamsData.findIndex(function(item, i) {
+                                    streamsDataBackup[
+                                      streamsDataBackup.findIndex(function(
+                                        item,
+                                        i
+                                      ) {
                                         return (
                                           item.id ===
                                           formState.dynamicBar[idx][streams]
@@ -1184,6 +1234,7 @@ const AddEditCollege = props => {
                   })}
                   <div className={classes.btnspaceadd}>
                     <YellowButton
+                      disabled={streamsData.length ? false : true}
                       color="primary"
                       variant="contained"
                       className={classes.add_more_btn}
