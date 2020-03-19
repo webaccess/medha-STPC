@@ -18,6 +18,11 @@ export const ADD_MORE_TEXT = "Add More";
 export const BLOCK_BUTTON_TEXT = "Block";
 export const UNBLOCK_BUTTON_TEXT = "Unblock";
 
+/**Student
+ */
+export const STUDENT_REGISTRATION = "Student Registration";
+export const EDIT_STUDENT_PROFILE = "Edit Profile";
+
 /** User */
 export const ADD_USER_TITLE = "Add User";
 

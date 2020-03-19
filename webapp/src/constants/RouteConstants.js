@@ -10,6 +10,7 @@ export const NEW_REGISTRATION_URL = "/registration";
 export const REGISTERED = "/registered";
 export const REQUIRED_CONFORMATION = "/requiredconformation";
 export const VIEW_PROFILE = "/view-profile";
+export const EDIT_PROFILE = "/edit-profile";
 export const VIEW_EDUCATION = "/view-education";
 export const ADD_EDUCATION = "/add-education";
 export const EDIT_EDUCATION = "/edit-education";

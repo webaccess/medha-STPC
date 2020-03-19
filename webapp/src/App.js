@@ -26,7 +26,6 @@ import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "./theme";
-import Registration from "./containers/Registration/Registration";
 import RequestOtp from "./containers/OTP/Requestotp";
 import VerifyOtp from "./containers/OTP/Verifyotp";
 import EditCollegeRoute from "./authroute/EditCollegeRoute";
@@ -84,6 +83,12 @@ function App() {
               />
               <RegistrationRoute
                 path={routeConstants.NEW_REGISTRATION_URL}
+                layout={Layout}
+                exact
+              />
+
+              <RegistrationRoute
+                path={routeConstants.EDIT_PROFILE}
                 layout={Layout}
                 exact
               />
