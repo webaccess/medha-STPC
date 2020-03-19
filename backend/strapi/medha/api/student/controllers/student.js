@@ -304,5 +304,57 @@ module.exports = {
       .then(res => {
         return utils.getPaginatedResponse(res);
       });
+  },
+
+  /**
+   * Get student documents
+   * @return {Object}
+   */
+  async document(ctx) {
+    const { id } = ctx.params;
+
+    const response = await strapi.query("student").findOne({ id });
+    return utils.getFindOneResponse(response.documents);
+  },
+
+  /**
+   * Delete Document
+   */
+
+  async deleteDocument(ctx) {
+    const { fileId } = ctx.params;
+    if (!fileId) {
+      return ctx.response.badRequest("File Id is absent");
+    }
+
+    const config = await strapi
+      .store({
+        environment: strapi.config.environment,
+        type: "plugin",
+        name: "upload"
+      })
+      .get({ key: "provider" });
+
+    const file = await strapi.plugins["upload"].services.upload.fetch({
+      id: fileId
+    });
+
+    if (!file) {
+      return ctx.notFound("file.notFound");
+    }
+
+    const related = await bookshelf
+      .model("uploadMorph")
+      .where({ upload_file_id: fileId })
+      .fetch();
+
+    if (related) {
+      console.log("1");
+      await related.destroy();
+    }
+
+    await strapi.plugins["upload"].services.upload.remove(file, config);
+
+    ctx.send(file);
   }
 };

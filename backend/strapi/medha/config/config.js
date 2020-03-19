@@ -14,6 +14,12 @@ const bookshelf = require("bookshelf")(knex);
 /**
  * Registering models for bookshelf
  */
+
+bookshelf.model("uploadMorph", {
+  requireFetch: false,
+  tableName: "upload_file_morph"
+});
+
 bookshelf.model("state", {
   requireFetch: false,
   tableName: "states",

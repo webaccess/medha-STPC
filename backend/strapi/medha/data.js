@@ -415,7 +415,15 @@ const roles = {
       },
       {
         name: "student",
-        action: ["findone", "update", "education", "create", "edit"]
+        action: [
+          "findone",
+          "update",
+          "education",
+          "create",
+          "edit",
+          "document",
+          "deletedocument"
+        ]
       },
       {
         name: "user",
@@ -580,10 +588,13 @@ const publicRoutes = {
   ]
 };
 
+const uploadPermissions = ["upload"];
+
 module.exports = Object.freeze({
   roles,
   states,
   allowedMedhaAdminRoutes,
   streams,
-  publicRoutes
+  publicRoutes,
+  uploadPermissions
 });
