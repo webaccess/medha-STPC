@@ -24,12 +24,6 @@ const DeleteStudents = props => {
     values: {}
   });
 
-  // if (props.showModal && !formState.stateCounter) {
-  //   formState.stateCounter = 0;
-  //   formState.values[USER_ID] = props.id;
-  //   formState.isDeleteData = false;
-  // }
-
   const handleCloseModal = () => {
     setFormState(formState => ({
       ...formState,

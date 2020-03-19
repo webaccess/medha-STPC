@@ -9,6 +9,7 @@ import { GrayButton, YellowButton, GreenButton } from "../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as formUtilities from "../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
+import * as genericConstants from "../../constants/GenericConstants";
 
 import {
   TextField,
@@ -39,16 +40,20 @@ const ManageStudents = props => {
     dataToDelete: {},
     filterDataParameters: {},
     isMultiDelete: false,
-    selectedRowFilter: false,
+    selectedRowFilter: true,
     greenButtonChecker: true,
+    isMulBlocked: false,
+    isMulUnBlocked: false,
+    MultiBlockUser: {},
+    isUserBlocked: false,
+    bottonBlockUnblock: "Approve Selected User",
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true,
-    selectedRowFilter: true
+    sortAscending: true
   });
 
   useEffect(() => {
@@ -75,7 +80,6 @@ const ManageStudents = props => {
     serviceProviders
       .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
       .then(res => {
-        console.log("studentres", res.data);
         let tempStudentData = [];
         let student_data = res.data;
         tempStudentData = convertStudentData(student_data);
@@ -127,16 +131,22 @@ const ManageStudents = props => {
         ...formState,
         approvedId: id,
         approvedData: true,
-        // isUnBlocked: false,
-        showModalBlock: true
+        MultiBlockUser: {},
+        isUnBlocked: false,
+        showModalBlock: true,
+        isMulBlocked: false,
+        isMulUnBlocked: false
       }));
     } else {
       setFormState(formState => ({
         ...formState,
         dataToBlock: id,
         approvedData: false,
-        // isUnBlocked: true,
-        showModalBlock: true
+        MultiBlockUser: {},
+        isUnBlocked: true,
+        showModalBlock: true,
+        isMulBlocked: false,
+        isMulUnBlocked: false
       }));
     }
   };
@@ -149,6 +159,18 @@ const ManageStudents = props => {
     }));
     if (formState.isUserBlocked) {
       //getUserData();
+      setFormState(formState => ({
+        ...formState,
+        showModalBlock: false,
+        showModalDelete: false,
+        isMultiDelete: false,
+        selectedRowFilter: true,
+        greenButtonChecker: true,
+        isMulBlocked: false,
+        isMulUnBlocked: false,
+        MultiBlockUser: {},
+        isUserBlocked: false
+      }));
       getStudentData();
       // window.location.reload(false);
     }
@@ -258,7 +280,7 @@ const ManageStudents = props => {
     }
 
     state.selectedRows.forEach(data => {
-      if (data.blocked === false) {
+      if (data.Approved === false) {
         blockData.push(data);
       } else {
         unblockData.push(data);
@@ -266,17 +288,41 @@ const ManageStudents = props => {
       if (blockData.length > 0) {
         setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Block Selected User"
+          bottonBlockUnblock: "Approve Selected User"
         }));
       } else {
         setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Unblock Selected User"
+          bottonBlockUnblock: "Unapprove Selected User"
         }));
       }
     });
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const blockMulUserById = () => {
+    let arrayId = [];
+    for (var k = 0; k < selectedRows.length; k++) {
+      arrayId.push(selectedRows[k]["id"]);
+    }
+    if (formState.bottonBlockUnblock === "Approve Selected User") {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: true,
+        isMulUnBlocked: false,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: false,
+        isMulUnBlocked: true,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
+    }
+  };
 
   /** Columns to show in table */
   const column = [
@@ -288,7 +334,7 @@ const ManageStudents = props => {
     {
       cell: cell => (
         <Tooltip
-          title={cell.Approved ? "UNApproved" : "Approved"}
+          title={cell.Approved ? "Unapprove" : "Approve"}
           placement="top"
         >
           <i
@@ -363,43 +409,44 @@ const ManageStudents = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Students
+          {genericConstants.MANAGE_STUDENTS}
         </Typography>
-      </Grid>
-      <GreenButton
-        variant="contained"
-        color="primary"
-        // onClick={clearFilter}
-        // disableElevation
-        to={"/"}
-        // startIcon={<AddCircleOutlineOutlinedIcon />}
-        buttonDisabled={formState.selectedRowFilter}
-      >
-        Add Student
-      </GreenButton>
-      {/* <GreenButton
-        variant="contained"
-        color="secondary"
-        to={"/"}
-        onClick={() => blockMulUserById()}
-        startIcon={<BlockIcon />}
-        greenButtonChecker={formState.greenButtonChecker}
-        buttonDisabled={formState.selectedRowFilter}
-      >
-        {formState.bottonBlockUnblock}
-        Approved Selected User
-      </GreenButton> */}
 
-      <GreenButton
-        variant="contained"
-        color="secondary"
-        onClick={() => deleteMulUserById()}
-        startIcon={<DeleteIcon />}
-        greenButtonChecker={formState.greenButtonChecker}
-        buttonDisabled={formState.selectedRowFilter}
-      >
-        Delete Selected User
-      </GreenButton>
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          to={"/"}
+          onClick={() => blockMulUserById()}
+          // startIcon={<BlockIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          {formState.bottonBlockUnblock}
+          {/* Approved Selected User */}
+        </GreenButton>
+
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => deleteMulUserById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          {genericConstants.DELETE_SELECTED_STUDENT}
+        </GreenButton>
+        <GreenButton
+          variant="contained"
+          color="primary"
+          // onClick={clearFilter}
+          // disableElevation
+          to={"/"}
+          // startIcon={<AddCircleOutlineOutlinedIcon />}
+          // buttonDisabled={formState.selectedRowFilter}
+        >
+          {genericConstants.ADD_STUDENT_BUTTON_TEXT}
+        </GreenButton>
+      </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/* //error success ManageStudents */}
       </Grid>
@@ -457,7 +504,7 @@ const ManageStudents = props => {
                   searchFilter();
                 }}
               >
-                Search
+                {genericConstants.SEARCH_BUTTON_TEXT}
               </YellowButton>
             </Grid>
             <Grid item className={classes.filterButtonsMargin}>
@@ -467,7 +514,7 @@ const ManageStudents = props => {
                 onClick={refreshPage}
                 disableElevation
               >
-                Reset
+                {genericConstants.RESET_BUTTON_TEXT}
               </GrayButton>
             </Grid>
           </Grid>
@@ -497,7 +544,7 @@ const ManageStudents = props => {
           )
         ) : (
           <div className={classes.noDataMargin}>
-            {/* {genericConstants.NO_DATA_TO_SHOW_TEXT} */}
+            {genericConstants.NO_DATA_TO_SHOW_TEXT}
           </div>
         )}{" "}
         {formState.isMultiDelete ? (
@@ -517,16 +564,28 @@ const ManageStudents = props => {
             deleteEvent={isDeleteCellCompleted}
           />
         )}
-        <ApprovedStudents
-          id={formState.approvedId}
-          Data={formState.approvedData}
-          getModel={formState.showModalBlock}
-          closeBlockModal={handleCloseBlockModal}
-          blockEvent={isUserBlockCompleted}
-          isBlocked={formState.isBlocked}
-          isUnBlocked={formState.isUnBlocked}
-          modalClose={modalClose}
-        />
+        {formState.isMulBlocked || formState.isMulUnBlocked ? (
+          <ApprovedStudents
+            id={formState.MultiBlockUser}
+            isMulBlocked={formState.isMulBlocked}
+            isUnMulBlocked={formState.isMulUnBlocked}
+            getModel={formState.showModalBlock}
+            closeBlockModal={handleCloseBlockModal}
+            blockEvent={isUserBlockCompleted}
+            modalClose={modalClose}
+          />
+        ) : (
+          <ApprovedStudents
+            id={formState.approvedId}
+            Data={formState.approvedData}
+            getModel={formState.showModalBlock}
+            closeBlockModal={handleCloseBlockModal}
+            blockEvent={isUserBlockCompleted}
+            isBlocked={formState.isBlocked}
+            isUnBlocked={formState.isUnBlocked}
+            modalClose={modalClose}
+          />
+        )}
       </Card>
     </Grid>
   );
