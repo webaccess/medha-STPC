@@ -51,3 +51,8 @@ export const ADD_RPC_TEXT = "Add Rpc";
 export const ADD_EDUCATION_TEXT = "Add Education";
 export const EDIT_EDUCATION_TEXT = "Edit Education";
 export const VIEW_EDUCATION_TEXT = "Education";
+
+/**Documents */
+export const ADD_DOCUMENT_TEXT = "Add Document";
+export const EDIT_DOCUMENT_TEXT = "Edit Document";
+export const VIEW_DOCUMENT_TEXT = "Document";
