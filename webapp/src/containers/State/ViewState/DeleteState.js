@@ -19,16 +19,24 @@ const DeleteState = props => {
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
-    values: {}
+    values: {},
+    dataToDelete: {}
   });
 
+  /** This is called when we open the modal */
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[STATE_ID] = props.id;
     formState.isDeleteData = false;
+    formState.dataToDelete = props.dataToDelete;
   }
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (message = "") => {
+    /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
+    to ensure that only string value is passed to message variable */
+    if (typeof message !== "string") {
+      message = "";
+    }
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -36,19 +44,11 @@ const DeleteState = props => {
       isValid: false,
       stateCounter: 0
     }));
-
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.closeModal(true, message);
     } else {
-      props.deleteEvent(false);
+      props.closeModal(false, message);
     }
-    props.closeModal();
-  };
-
-  const handleSubmit = event => {
-    /** CALL Put FUNCTION */
-    deleteData();
-    event.preventDefault();
   };
 
   const deleteData = () => {
@@ -60,13 +60,100 @@ const DeleteState = props => {
           isValid: true
         }));
         formState.isDeleteData = true;
-        handleCloseModal();
+        handleCloseModal(
+          "State " + formState.dataToDelete["name"] + " successfully deleted"
+        );
       })
       .catch(error => {
         console.log("error");
         formState.isDeleteData = false;
-        handleCloseModal();
+        handleCloseModal(
+          "Error deleting state " + formState.dataToDelete["name"]
+        );
       });
+  };
+
+  const handleSubmit = async event => {
+    /** CALL Put FUNCTION */
+    event.preventDefault();
+    event.persist();
+    let status = {};
+    /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
+    and returns back an opbject with status and message*/
+    status = await checkIfStateCanBeDelete();
+    if (status["status"]) {
+      deleteData();
+    } else {
+      formState.isDeleteData = false;
+      handleCloseModal(
+        status["message"]
+      ); /** returns back a message saying state cannot be deleted */
+    }
+  };
+
+  /** This checks if the state can be deleted and returns back an array with status and message*/
+  const checkIfStateCanBeDelete = async () => {
+    let stateCanBeDeletedCounter = 0;
+    let dataToReturn = {};
+    let zonesCheckUrl =
+      STATE_URL + "/" + props.id + "/" + strapiConstants.STRAPI_ZONES;
+    let rpcsCheckUrl =
+      STATE_URL + "/" + props.id + "/" + strapiConstants.STRAPI_RPCS;
+    await serviceProviders
+      .serviceProviderForGetRequest(zonesCheckUrl)
+      .then(res => {
+        if (res.data.result.length) {
+          dataToReturn = {
+            status: false,
+            message:
+              "Cannot delete State " +
+              formState.dataToDelete["name"] +
+              " as it is linked to other RPC's or Zone's"
+          };
+        } else {
+          stateCanBeDeletedCounter += 1;
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+        /** return error */
+        dataToReturn = {
+          status: false,
+          message: "Error deleting state " + formState.dataToDelete["name"]
+        };
+      });
+
+    await serviceProviders
+      .serviceProviderForGetRequest(rpcsCheckUrl)
+      .then(res => {
+        if (res.data.result.length) {
+          dataToReturn = {
+            status: false,
+            message:
+              "Cannot delete State " +
+              formState.dataToDelete["name"] +
+              " as it is linked to other RPC's or Zone's"
+          };
+        } else {
+          stateCanBeDeletedCounter += 1;
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+        /** return error */
+        dataToReturn = {
+          status: false,
+          message: "Error deleting State " + formState.dataToDelete["name"]
+        };
+      });
+
+    if (stateCanBeDeletedCounter === 2) {
+      dataToReturn = {
+        status: true,
+        message: "Success"
+      };
+    }
+    return dataToReturn;
   };
 
   const classes = useStyles();

@@ -72,7 +72,11 @@ const ViewZone = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** Message to show */
+    fromDeleteModal: false,
+    messageToShow: "",
+    isDataDeleted: false
   });
 
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
@@ -245,16 +249,43 @@ const ViewZone = props => {
     getDataForEdit(event.target.id);
   };
 
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
-  };
-
   const deleteCell = event => {
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: event.target.id },
-      showEditModal: false,
-      showModalDelete: true
+      dataToDelete: {
+        id: event.target.id,
+        name: event.target.getAttribute("value")
+      },
+      showModalDelete: true,
+      isDataDeleted: false,
+      fromDeleteModal: false,
+      messageToShow: "",
+      fromAddZone: false,
+      fromEditZone: false
+    }));
+  };
+
+  /** This is used to handle the close modal event */
+  const handleCloseDeleteModal = (status, statusToShow = "") => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setOpen(true);
+    setFormState(formState => ({
+      ...formState,
+      isDataDeleted: status,
+      showModalDelete: false,
+      fromDeleteModal: true,
+      messageToShow: statusToShow
+    }));
+    if (status) {
+      getZoneData(formState.pageSize, 1);
+    }
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalDelete: false
     }));
   };
 
@@ -268,27 +299,6 @@ const ViewZone = props => {
     setFormState(formState => ({
       ...formState,
       isClearResetFilter: false
-    }));
-  };
-
-  /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    setFormState(formState => ({
-      ...formState,
-      isDataDeleted: false,
-      showModalDelete: false
-    }));
-    if (formState.isDataDeleted) {
-      getZoneData(formState.pageSize, formState.page);
-    }
-  };
-
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showModalDelete: false
     }));
   };
 
@@ -321,6 +331,7 @@ const ViewZone = props => {
             className="material-icons tableicons"
             id={cell.id}
             onClick={deleteCell}
+            value={cell.name}
             style={{ color: "red" }}
           >
             delete_outline
@@ -443,6 +454,55 @@ const ViewZone = props => {
             </Alert>
           </Collapse>
         ) : null}
+
+        {formState.fromDeleteModal &&
+        formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        !formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card className={classes.root} variant="outlined">
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -530,8 +590,8 @@ const ViewZone = props => {
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
-            deleteEvent={isDeleteCellCompleted}
             modalClose={modalClose}
+            dataToDelete={formState.dataToDelete}
           />
         </Card>
       </Grid>
