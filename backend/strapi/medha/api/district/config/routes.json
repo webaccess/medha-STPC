@@ -29,7 +29,7 @@
       "path": "/districts",
       "handler": "district.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -37,7 +37,7 @@
       "path": "/districts/:id",
       "handler": "district.update",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -45,7 +45,7 @@
       "path": "/districts/:id",
       "handler": "district.delete",
       "config": {
-        "policies": []
+        "policies": ["isDeleteAllowed"]
       }
     }
   ]
