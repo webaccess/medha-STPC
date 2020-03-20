@@ -286,7 +286,8 @@ const ViewStates = props => {
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
+      isMultiDelete: false
     }));
     if (status) {
       getStateData(formState.pageSize, 1);

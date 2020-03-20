@@ -109,7 +109,6 @@ const DeleteState = props => {
     if (props.isMultiDelete) {
       status = await checkIfMultiStateCanBeDelete();
     } else {
-      console.log("here", props.id);
       status = await checkIfStateCanBeDelete(props.id);
     }
     setOpen(false);
@@ -128,7 +127,6 @@ const DeleteState = props => {
     let isErrorCounter = 0;
     for (let i in props.id) {
       let status = await checkIfStateCanBeDelete(props.id[i]);
-      console.log(status, props.id[i]);
       if (!status["status"]) {
         isErrorCounter += 1;
         break;
@@ -244,9 +242,10 @@ const DeleteState = props => {
                     {props.isMultiDelete
                       ? "Are you sure you want to remove " +
                         props.id.length +
-                        " States"
+                        " States?"
                       : "Are you sure you want to remove State " +
-                        formState.dataToDelete["name"]}
+                        formState.dataToDelete["name"] +
+                        "?"}
                   </Grid>
                   <Grid item xs>
                     <YellowButton
