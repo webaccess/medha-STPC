@@ -789,6 +789,7 @@ const AddEditStudent = props => {
                   variant="outlined"
                   required
                   fullWidth
+                  disabled={formState.editStudent ? true : false}
                   onChange={handleChange}
                   error={hasError("email")}
                   helperText={
@@ -805,6 +806,7 @@ const AddEditStudent = props => {
                   id="combo-box-demo"
                   className={classes.root}
                   options={collegelist}
+                  disabled={formState.editStudent ? true : false}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) => {
                     handleChangeAutoComplete("college", event, value);
@@ -840,6 +842,7 @@ const AddEditStudent = props => {
                   id="combo-box-demo"
                   className={classes.root}
                   options={streamlist}
+                  disabled={formState.editStudent ? true : false}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) => {
                     handleChangeAutoComplete("stream", event, value);
@@ -897,6 +900,7 @@ const AddEditStudent = props => {
                   variant="outlined"
                   required
                   fullWidth
+                  disabled={formState.editStudent ? true : false}
                   onChange={handleChange}
                   error={hasError("username")}
                   helperText={
