@@ -48,14 +48,6 @@
     "streams": {
       "collection": "stream"
     },
-    "address": {
-      "type": "richtext",
-      "required": true
-    },
-    "description": {
-      "type": "richtext",
-      "required": true
-    },
     "upload_logo": {
       "model": "file",
       "via": "related",
@@ -72,6 +64,13 @@
     "question_set": {
       "model": "question-set",
       "via": "activities"
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "description": {
+      "type": "text"
     }
   }
 }

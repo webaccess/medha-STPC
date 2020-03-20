@@ -63,6 +63,22 @@
       "config": {
         "policies": ["isOwner"]
       }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/document",
+      "handler": "student.document",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/students/:id/file/:fileId",
+      "handler": "student.deleteDocument",
+      "config": {
+        "policies": ["isOwner"]
+      }
     }
   ]
 }

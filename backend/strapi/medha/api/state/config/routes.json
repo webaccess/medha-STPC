@@ -45,7 +45,7 @@
       "path": "/states/:id",
       "handler": "state.delete",
       "config": {
-        "policies": []
+        "policies": ["isDeleteAllowed"]
       }
     },
     {

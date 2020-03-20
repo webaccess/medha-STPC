@@ -657,6 +657,149 @@
           }
         ]
       }
+    },
+    "/students/{id}/document": {
+      "get": {
+        "deprecated": false,
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Student"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/students/{id}/file/{fileId}": {
+      "delete": {
+        "deprecated": false,
+        "description": "Delete a record",
+        "responses": {
+          "200": {
+            "description": "deletes a single record based on the ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Student"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileId",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -666,10 +809,10 @@
           "id",
           "father_first_name",
           "father_last_name",
-          "address",
           "date_of_birth",
           "gender",
-          "roll_number"
+          "roll_number",
+          "address"
         ],
         "properties": {
           "id": {
@@ -810,9 +953,6 @@
           "father_last_name": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
           "date_of_birth": {
             "type": "datetime"
           },
@@ -874,6 +1014,9 @@
                 "type": "string"
               }
             }
+          },
+          "address": {
+            "type": "string"
           }
         }
       },
@@ -881,10 +1024,10 @@
         "required": [
           "father_first_name",
           "father_last_name",
-          "address",
           "date_of_birth",
           "gender",
-          "roll_number"
+          "roll_number",
+          "address"
         ],
         "properties": {
           "user": {
@@ -903,9 +1046,6 @@
             "type": "string"
           },
           "father_last_name": {
-            "type": "string"
-          },
-          "address": {
             "type": "string"
           },
           "date_of_birth": {
@@ -928,6 +1068,9 @@
             }
           },
           "district": {
+            "type": "string"
+          },
+          "address": {
             "type": "string"
           }
         }

@@ -45,7 +45,7 @@
       "path": "/zones/:id",
       "handler": "zone.delete",
       "config": {
-        "policies": []
+        "policies": ["isDeleteAllowed"]
       }
     },
     {

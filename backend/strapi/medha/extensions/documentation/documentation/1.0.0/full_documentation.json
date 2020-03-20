@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "03/18/2020 11:06:09 AM"
+    "x-generation-date": "03/20/2020 11:45:26 AM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -10534,6 +10534,149 @@
         ]
       }
     },
+    "/students/{id}/document": {
+      "get": {
+        "deprecated": false,
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Student"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/students/{id}/file/{fileId}": {
+      "delete": {
+        "deprecated": false,
+        "description": "Delete a record",
+        "responses": {
+          "200": {
+            "description": "deletes a single record based on the ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Student"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileId",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/zones": {
       "get": {
         "deprecated": false,
@@ -13284,10 +13427,10 @@
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "roll_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -13317,9 +13460,6 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
                 "type": "datetime"
               },
@@ -13336,6 +13476,9 @@
                 }
               },
               "district": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -13467,10 +13610,10 @@
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "roll_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -13500,9 +13643,6 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
                 "type": "datetime"
               },
@@ -13519,6 +13659,9 @@
                 }
               },
               "district": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -13562,9 +13705,8 @@
               "activity_type",
               "start_date_time",
               "end_date_time",
-              "address",
-              "description",
-              "age"
+              "age",
+              "address"
             ],
             "properties": {
               "id": {
@@ -13594,12 +13736,6 @@
               "streams": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
               "upload_logo": {
                 "type": "string"
               },
@@ -13610,6 +13746,12 @@
                 "type": "string"
               },
               "question_set": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
                 "type": "string"
               }
             }
@@ -13648,9 +13790,8 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "address",
-          "description",
-          "age"
+          "age",
+          "address"
         ],
         "properties": {
           "id": {
@@ -13694,8 +13835,8 @@
               "id",
               "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
@@ -13708,9 +13849,6 @@
                 "type": "string"
               },
               "college_code": {
-                "type": "string"
-              },
-              "address": {
                 "type": "string"
               },
               "contact_number": {
@@ -13735,6 +13873,9 @@
                 "type": "string"
               },
               "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -13767,12 +13908,6 @@
                 "type": "string"
               }
             }
-          },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
           },
           "upload_logo": {
             "required": [
@@ -13857,6 +13992,12 @@
                 }
               }
             }
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         }
       },
@@ -13866,9 +14007,8 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "address",
-          "description",
-          "age"
+          "age",
+          "address"
         ],
         "properties": {
           "title": {
@@ -13906,12 +14046,6 @@
           "streams": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
           "age": {
             "type": "integer"
           },
@@ -13919,6 +14053,12 @@
             "type": "string"
           },
           "question_set": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }
@@ -13928,8 +14068,8 @@
           "id",
           "name",
           "college_code",
-          "address",
-          "college_email"
+          "college_email",
+          "address"
         ],
         "properties": {
           "id": {
@@ -13961,9 +14101,6 @@
           "college_code": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
           "contact_number": {
             "type": "string"
           },
@@ -14158,6 +14295,9 @@
                 "type": "string"
               }
             }
+          },
+          "address": {
+            "type": "string"
           }
         }
       },
@@ -14165,8 +14305,8 @@
         "required": [
           "name",
           "college_code",
-          "address",
-          "college_email"
+          "college_email",
+          "address"
         ],
         "properties": {
           "name": {
@@ -14178,9 +14318,6 @@
           "college_code": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
           "contact_number": {
             "type": "string"
           },
@@ -14232,6 +14369,9 @@
             "type": "string"
           },
           "tpos": {
+            "type": "string"
+          },
+          "address": {
             "type": "string"
           }
         }
@@ -14306,10 +14446,10 @@
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "roll_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -14339,9 +14479,6 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
                 "type": "datetime"
               },
@@ -14358,6 +14495,9 @@
                 }
               },
               "district": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -14400,21 +14540,18 @@
           "event": {
             "required": [
               "id",
-              "Title",
-              "description",
+              "title",
               "start_date_time",
               "end_date_time",
+              "age",
               "address",
-              "age"
+              "description"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "Title": {
-                "type": "string"
-              },
-              "description": {
+              "title": {
                 "type": "string"
               },
               "start_date_time": {
@@ -14422,9 +14559,6 @@
               },
               "end_date_time": {
                 "type": "datetime"
-              },
-              "address": {
-                "type": "string"
               },
               "rpc": {
                 "type": "string"
@@ -14443,6 +14577,12 @@
               },
               "question_set": {
                 "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
               }
             }
           },
@@ -14451,10 +14591,10 @@
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "roll_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -14484,9 +14624,6 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
                 "type": "datetime"
               },
@@ -14503,6 +14640,9 @@
                 }
               },
               "district": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -14540,21 +14680,18 @@
       "Event": {
         "required": [
           "id",
-          "Title",
-          "description",
+          "title",
           "start_date_time",
           "end_date_time",
+          "age",
           "address",
-          "age"
+          "description"
         ],
         "properties": {
           "id": {
             "type": "string"
           },
-          "Title": {
-            "type": "string"
-          },
-          "description": {
+          "title": {
             "type": "string"
           },
           "start_date_time": {
@@ -14562,9 +14699,6 @@
           },
           "end_date_time": {
             "type": "datetime"
-          },
-          "address": {
-            "type": "string"
           },
           "rpc": {
             "required": [
@@ -14591,8 +14725,8 @@
               "id",
               "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
@@ -14605,9 +14739,6 @@
                 "type": "string"
               },
               "college_code": {
-                "type": "string"
-              },
-              "address": {
                 "type": "string"
               },
               "contact_number": {
@@ -14632,6 +14763,9 @@
                 "type": "string"
               },
               "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -14730,23 +14864,26 @@
                 }
               }
             }
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         }
       },
       "NewEvent": {
         "required": [
-          "Title",
-          "description",
+          "title",
           "start_date_time",
           "end_date_time",
+          "age",
           "address",
-          "age"
+          "description"
         ],
         "properties": {
-          "Title": {
-            "type": "string"
-          },
-          "description": {
+          "title": {
             "type": "string"
           },
           "start_date_time": {
@@ -14754,9 +14891,6 @@
           },
           "end_date_time": {
             "type": "datetime"
-          },
-          "address": {
-            "type": "string"
           },
           "rpc": {
             "type": "string"
@@ -14771,6 +14905,12 @@
             "type": "integer"
           },
           "question_set": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }
@@ -14790,9 +14930,8 @@
               "activity_type",
               "start_date_time",
               "end_date_time",
-              "address",
-              "description",
-              "age"
+              "age",
+              "address"
             ],
             "properties": {
               "id": {
@@ -14822,12 +14961,6 @@
               "streams": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
               "upload_logo": {
                 "type": "string"
               },
@@ -14839,27 +14972,30 @@
               },
               "question_set": {
                 "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
               }
             }
           },
           "event": {
             "required": [
               "id",
-              "Title",
-              "description",
+              "title",
               "start_date_time",
               "end_date_time",
+              "age",
               "address",
-              "age"
+              "description"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "Title": {
-                "type": "string"
-              },
-              "description": {
+              "title": {
                 "type": "string"
               },
               "start_date_time": {
@@ -14867,9 +15003,6 @@
               },
               "end_date_time": {
                 "type": "datetime"
-              },
-              "address": {
-                "type": "string"
               },
               "rpc": {
                 "type": "string"
@@ -14887,6 +15020,12 @@
                 "type": "string"
               },
               "question_set": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
                 "type": "string"
               }
             }
@@ -15083,9 +15222,8 @@
                 "activity_type",
                 "start_date_time",
                 "end_date_time",
-                "address",
-                "description",
-                "age"
+                "age",
+                "address"
               ],
               "properties": {
                 "id": {
@@ -15115,12 +15253,6 @@
                 "streams": {
                   "type": "string"
                 },
-                "address": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                },
                 "upload_logo": {
                   "type": "string"
                 },
@@ -15132,6 +15264,12 @@
                 },
                 "question_set": {
                   "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
                 }
               }
             }
@@ -15141,21 +15279,18 @@
             "items": {
               "required": [
                 "id",
-                "Title",
-                "description",
+                "title",
                 "start_date_time",
                 "end_date_time",
+                "age",
                 "address",
-                "age"
+                "description"
               ],
               "properties": {
                 "id": {
                   "type": "string"
                 },
-                "Title": {
-                  "type": "string"
-                },
-                "description": {
+                "title": {
                   "type": "string"
                 },
                 "start_date_time": {
@@ -15163,9 +15298,6 @@
                 },
                 "end_date_time": {
                   "type": "datetime"
-                },
-                "address": {
-                  "type": "string"
                 },
                 "rpc": {
                   "type": "string"
@@ -15183,6 +15315,12 @@
                   "type": "string"
                 },
                 "question_set": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "description": {
                   "type": "string"
                 }
               }
@@ -15382,8 +15520,8 @@
               "id",
               "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
@@ -15396,9 +15534,6 @@
                 "type": "string"
               },
               "college_code": {
-                "type": "string"
-              },
-              "address": {
                 "type": "string"
               },
               "contact_number": {
@@ -15423,6 +15558,9 @@
                 "type": "string"
               },
               "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -15512,10 +15650,10 @@
           "id",
           "father_first_name",
           "father_last_name",
-          "address",
           "date_of_birth",
           "gender",
-          "roll_number"
+          "roll_number",
+          "address"
         ],
         "properties": {
           "id": {
@@ -15656,9 +15794,6 @@
           "father_last_name": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
           "date_of_birth": {
             "type": "datetime"
           },
@@ -15720,6 +15855,9 @@
                 "type": "string"
               }
             }
+          },
+          "address": {
+            "type": "string"
           }
         }
       },
@@ -15727,10 +15865,10 @@
         "required": [
           "father_first_name",
           "father_last_name",
-          "address",
           "date_of_birth",
           "gender",
-          "roll_number"
+          "roll_number",
+          "address"
         ],
         "properties": {
           "user": {
@@ -15749,9 +15887,6 @@
             "type": "string"
           },
           "father_last_name": {
-            "type": "string"
-          },
-          "address": {
             "type": "string"
           },
           "date_of_birth": {
@@ -15774,6 +15909,9 @@
             }
           },
           "district": {
+            "type": "string"
+          },
+          "address": {
             "type": "string"
           }
         }
@@ -16096,8 +16234,8 @@
               "id",
               "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
@@ -16110,9 +16248,6 @@
                 "type": "string"
               },
               "college_code": {
-                "type": "string"
-              },
-              "address": {
                 "type": "string"
               },
               "contact_number": {
@@ -16137,6 +16272,9 @@
                 "type": "string"
               },
               "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }

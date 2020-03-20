@@ -37,10 +37,6 @@
       "type": "string",
       "required": true
     },
-    "address": {
-      "type": "richtext",
-      "required": true
-    },
     "date_of_birth": {
       "type": "datetime",
       "required": true
@@ -63,6 +59,10 @@
     },
     "district": {
       "model": "district"
+    },
+    "address": {
+      "type": "text",
+      "required": true
     }
   }
 }

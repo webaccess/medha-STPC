@@ -529,9 +529,8 @@
               "activity_type",
               "start_date_time",
               "end_date_time",
-              "address",
-              "description",
-              "age"
+              "age",
+              "address"
             ],
             "properties": {
               "id": {
@@ -561,12 +560,6 @@
               "streams": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
               "upload_logo": {
                 "type": "string"
               },
@@ -578,27 +571,30 @@
               },
               "question_set": {
                 "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
               }
             }
           },
           "event": {
             "required": [
               "id",
-              "Title",
-              "description",
+              "title",
               "start_date_time",
               "end_date_time",
+              "age",
               "address",
-              "age"
+              "description"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "Title": {
-                "type": "string"
-              },
-              "description": {
+              "title": {
                 "type": "string"
               },
               "start_date_time": {
@@ -606,9 +602,6 @@
               },
               "end_date_time": {
                 "type": "datetime"
-              },
-              "address": {
-                "type": "string"
               },
               "rpc": {
                 "type": "string"
@@ -626,6 +619,12 @@
                 "type": "string"
               },
               "question_set": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
                 "type": "string"
               }
             }

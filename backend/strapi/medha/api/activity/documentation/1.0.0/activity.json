@@ -521,9 +521,8 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "address",
-          "description",
-          "age"
+          "age",
+          "address"
         ],
         "properties": {
           "id": {
@@ -567,8 +566,8 @@
               "id",
               "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
@@ -581,9 +580,6 @@
                 "type": "string"
               },
               "college_code": {
-                "type": "string"
-              },
-              "address": {
                 "type": "string"
               },
               "contact_number": {
@@ -608,6 +604,9 @@
                 "type": "string"
               },
               "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -640,12 +639,6 @@
                 "type": "string"
               }
             }
-          },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
           },
           "upload_logo": {
             "required": [
@@ -730,6 +723,12 @@
                 }
               }
             }
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         }
       },
@@ -739,9 +738,8 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "address",
-          "description",
-          "age"
+          "age",
+          "address"
         ],
         "properties": {
           "title": {
@@ -779,12 +777,6 @@
           "streams": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
           "age": {
             "type": "integer"
           },
@@ -792,6 +784,12 @@
             "type": "string"
           },
           "question_set": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }

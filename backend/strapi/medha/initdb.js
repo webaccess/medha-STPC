@@ -1,5 +1,6 @@
 const fs = require("fs");
 const bookshelf = require("./config/config.js");
+const utils = require("./config/utils.js");
 const apiFolder = "./api/";
 const _data = require("./data.js");
 const minimist = require("minimist");
@@ -500,6 +501,52 @@ async function deleteAllPublicRoute(role) {
         .then(() => {
           console.log(`Added ${act} to controller ${name}`);
         });
+    });
+  });
+})();
+
+/**
+ * Upload route for all user defined roles
+ */
+(async () => {
+  const userDefinedRoles = Object.keys(_data.roles);
+  const roles = await bookshelf
+    .model("role")
+    .where("name", "in", userDefinedRoles)
+    .fetchAll()
+    .then(res => res.toJSON());
+
+  await utils.asyncForEach(_data.uploadPermissions, async action => {
+    await utils.asyncForEach(roles, async role => {
+      const permission = await bookshelf
+        .model("permission")
+        .where({
+          type: "upload",
+          controller: "upload",
+          action: action,
+          role: role.id
+        })
+        .fetch({
+          require: false
+        });
+
+      if (!permission) {
+        await bookshelf
+          .model("permission")
+          .forge({
+            type: "upload",
+            controller: "upload",
+            action: action,
+            enabled: true,
+            role: role.id
+          })
+          .save()
+          .then(() => {
+            console.log(`${action} added for role ${role.name}`);
+          });
+      } else {
+        console.log(`Skipping ${action} for role ${role.name}`);
+      }
     });
   });
 })();

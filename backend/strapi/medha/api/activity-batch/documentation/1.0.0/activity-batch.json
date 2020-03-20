@@ -542,9 +542,8 @@
               "activity_type",
               "start_date_time",
               "end_date_time",
-              "address",
-              "description",
-              "age"
+              "age",
+              "address"
             ],
             "properties": {
               "id": {
@@ -574,12 +573,6 @@
               "streams": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
               "upload_logo": {
                 "type": "string"
               },
@@ -590,6 +583,12 @@
                 "type": "string"
               },
               "question_set": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
                 "type": "string"
               }
             }
