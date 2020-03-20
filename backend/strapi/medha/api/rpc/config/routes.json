@@ -53,7 +53,7 @@
       "path": "/rpcs/:id",
       "handler": "rpc.delete",
       "config": {
-        "policies": []
+        "policies": ["allowDelete"]
       }
     }
   ]

@@ -167,7 +167,7 @@ module.exports = {
       })
       .catch(error => {
         console.log(error);
-        return ctx.response.badRequest(`Invalid ${error.column}`);
+        return ctx.response.badRequest(`Invalid ${error.detail}`);
       });
   },
 
@@ -219,7 +219,7 @@ module.exports = {
         const userModel = await bookshelf
           .model("user")
           .where({ id: userRequestBody.id })
-          .fetch({ lock: "forUpdate", transacting: t, require: true });
+          .fetch({ lock: "forUpdate", transacting: t, require: false });
         userModel
           .save(
             {

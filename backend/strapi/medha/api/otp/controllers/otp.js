@@ -12,7 +12,10 @@ module.exports = {
   async requestOTP(ctx) {
     const num = ctx.request.body.contact_number;
     const buffer = crypto.randomBytes(2);
-    const OTP = parseInt(buffer.toString("hex"), 16);
+    const OTP = parseInt(buffer.toString("hex"), 16)
+      .toString()
+      .substr(0, 6);
+    console.log(OTP);
     return bookshelf
       .model("otp")
       .forge({ contact_number: num, otp: OTP })
@@ -68,8 +71,11 @@ module.exports = {
     const { contact_number } = ctx.request.body;
     let OTP, buffer;
     try {
-      buffer = crypto.randomBytes(2);
-      OTP = parseInt(buffer.toString("hex"), 16);
+      buffer = crypto.randomBytes(3);
+      OTP = parseInt(buffer.toString("hex"), 16)
+        .toString()
+        .substr(0, 6);
+      console.log(OTP);
       await bookshelf
         .model("otp")
         .forge({ contact_number: contact_number, otp: OTP })
