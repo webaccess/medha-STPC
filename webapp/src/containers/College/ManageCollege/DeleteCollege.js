@@ -86,17 +86,19 @@ const DeleteZone = props => {
     >
       <Fade in={props.showModal}>
         <div className={classes.paper}>
-          <Typography variant={"h2"} className={classes.textMargin}>
-            {genericConstants.DELETE_TEXT}
-          </Typography>
-          <div className={classes.crossbtn}> 
-            <IconButton
-              className={classes.closeButton}
-              aria-label="close"
-              onClick={props.modalClose}
-            >
-              <CloseIcon />
-            </IconButton>
+          <div className={classes.blockpanel}>
+            <Typography variant={"h2"} className={classes.textMargin}>
+              {genericConstants.DELETE_TEXT}
+            </Typography>
+            <div className={classes.crossbtn}>
+              <IconButton
+                className={classes.closeButton}
+                aria-label="close"
+                onClick={props.modalClose}
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
           </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>

@@ -182,6 +182,7 @@ const BlockUnblockCollege = props => {
     >
       <Fade in={props.showModal}>
         <div className={classes.paper}>
+        <div className={classes.blockpanel}>
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.DELETE_TEXT}
           </Typography>
@@ -193,7 +194,7 @@ const BlockUnblockCollege = props => {
             >
               <CloseIcon />
             </IconButton>
-          </div>
+          </div></div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">

@@ -14,20 +14,6 @@ const useStyles = makeStyles(theme => ({
   filterMargin: {
     // margin: theme.spacing(3)
   },
-  blockpanel: {
-    display: "flex",
-    position: "relative",
-    "& h2": {
-      flexGrow: "1"
-    }
-  },
-  crossbtn: {
-    position: "absolute",
-    top: "-7px",
-    right: "-7px",
-    padding: "0px",
-    color: "#fff"
-  },
   filterButtonsMargin: {
     // margin: theme.spacing(0.5)
     alignSelf: "center",

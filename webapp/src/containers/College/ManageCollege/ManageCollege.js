@@ -464,26 +464,7 @@ const ManageCollege = props => {
     { name: "RPC", sortable: true, selector: "rpc" },
 
     /** Columns for block, view, edit and delete */
-    {
-      cell: cell => (
-        <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            onClick={blockCell}
-            style={
-              cell.blocked
-                ? { color: "red", fontSize: "19px" }
-                : { color: "green", fontSize: "19px" }
-            }
-          >
-            block
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
-    },
+
     {
       cell: cell => (
         <Tooltip title="View" placement="top">
@@ -511,6 +492,26 @@ const ManageCollege = props => {
             style={{ color: "green", fontSize: "19px" }}
           >
             edit
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    },
+    {
+      cell: cell => (
+        <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            onClick={blockCell}
+            style={
+              cell.blocked
+                ? { color: "red", fontSize: "19px" }
+                : { color: "green", fontSize: "19px" }
+            }
+          >
+            block
           </i>
         </Tooltip>
       ),
@@ -670,8 +671,8 @@ const ManageCollege = props => {
                     renderInput={params => (
                       <TextField
                         {...params}
-                        label="College Filter"
-                        placeholder="College Filter"
+                        label="College"
+                        placeholder="College"
                         className={classes.autoCompleteField}
                         variant="outlined"
                       />
@@ -702,8 +703,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="State Name"
-                      placeholder="State Name"
+                      label="State"
+                      placeholder="State"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -733,8 +734,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Zone Name"
-                      placeholder="Zone Name"
+                      label="Zone"
+                      placeholder="Zone"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -764,8 +765,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Rpc Name"
-                      placeholder="College Name"
+                      label="Rpc"
+                      placeholder="College"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />

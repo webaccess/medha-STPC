@@ -34,7 +34,7 @@ export const ADD_COLLEGE_TEXT = "Add College";
 export const MANAGE_COLLEGE_TEXT = "Manage College";
 export const ADD_COLLEGE_BUTTON = "Add College";
 export const EDIT_COLLEGE_TEXT = "Edit College";
-export const VIEW_COLLEGE_TEXT = "View College";
+export const VIEW_COLLEGE_TEXT = "Manage College";
 export const STREAMS_OFFERED_TEXT = "Streams Offered";
 
 /**State */
@@ -56,3 +56,8 @@ export const ADD_RPC_TEXT = "Add Rpc";
 export const ADD_EDUCATION_TEXT = "Add Education";
 export const EDIT_EDUCATION_TEXT = "Edit Education";
 export const VIEW_EDUCATION_TEXT = "Education";
+
+/**Documents */
+export const ADD_DOCUMENT_TEXT = "Add Document";
+export const EDIT_DOCUMENT_TEXT = "Edit Document";
+export const VIEW_DOCUMENT_TEXT = "Document";

@@ -134,6 +134,17 @@ const useStyles = makeStyles(theme => ({
     color: "#21abdc",
     fontSize: "0.8rem",
     textAlign: "right"
+  },
+  buttonProgress: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12
+  },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: "relative"
   }
 }));
 

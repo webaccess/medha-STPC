@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    // padding: theme.spacing(1),
+    // padding: theme.spacing(4)
     maxWidth: "100%"
   },
   content: {
@@ -14,20 +14,6 @@ const useStyles = makeStyles(theme => ({
   filterMargin: {
     // margin: theme.spacing(3)
   },
-  blockpanel: {
-    display: "flex",
-    position: "relative",
-    "& h2": {
-      flexGrow: "1"
-    }
-  },
-  crossbtn: {
-    position: "absolute",
-    top: "-7px",
-    right: "-7px",
-    padding: "0px",
-    color: "#fff"
-  },
   filterButtonsMargin: {
     // margin: theme.spacing(0.5)
     alignSelf: "center",
@@ -38,26 +24,18 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center"
   },
-  edit_dialog: {
-    padding: "25px 15px"
-  },
-  deletemessage: {
-    flex: "1 auto"
-  },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "primary"
-    // padding: theme.spacing(2, 0, 3)
+    border: "primary",
+    boxShadow: theme.shadows[5],
+    marginBottom: theme.spacing(3)
+    // padding: theme.spacing(2, 4, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
   },
   textMargin: {
-    margin: "0px",
-    backgroundColor: "#000",
-    color: "#fff",
-    fontSize: "18px",
-    paddingLeft: "8px"
+    margin: "10px"
   },
   autoCompleteField: {
     width: 200

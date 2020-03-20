@@ -35,7 +35,11 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(3)
   },
   textMargin: {
-    margin: "10px"
+    margin: "0px",
+    backgroundColor: "#000",
+    color: "#fff",
+    fontSize: "18px",
+    paddingLeft: "8px"
   },
   autoCompleteField: {
     width: 200
@@ -53,6 +57,23 @@ const useStyles = makeStyles(theme => ({
   },
   Cardtheming: {
     paddingBottom: "16px !important"
+  },
+  crossbtn: {
+    position: "absolute",
+    top: "-7px",
+    right: "-7px",
+    padding: "0px",
+    color: "#fff"
+  },
+  deletepanel: {
+    display: "flex",
+    position: "relative",
+    "& h2": {
+      flexGrow: "1"
+    }
+  },
+  edit_dialog: {
+    padding: "25px 15px"
   }
 }));
 
