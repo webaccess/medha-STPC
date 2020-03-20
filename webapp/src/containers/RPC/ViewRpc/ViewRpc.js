@@ -71,7 +71,6 @@ const ViewRpc = props => {
       ? props["location"]["fromAddRpc"]
       : false,
     /** This is for delete */
-    isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
@@ -82,7 +81,11 @@ const ViewRpc = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** Message to show */
+    fromDeleteModal: false,
+    messageToShow: "",
+    isDataDeleted: false
   });
   useEffect(() => {
     let paramsForPageSize = {
@@ -152,6 +155,20 @@ const ViewRpc = props => {
       });
   };
 
+  const convertRpcData = data => {
+    let x = [];
+    if (data.length > 0) {
+      for (let i in data) {
+        var temp = {};
+        temp["id"] = data[i]["id"];
+        temp["name"] = data[i]["name"];
+        temp["state"] = data[i]["state"]["name"];
+        x.push(temp);
+      }
+      return x;
+    }
+  };
+
   /** Pagination */
   const handlePerRowsChange = async (perPage, page) => {
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
@@ -188,6 +205,7 @@ const ViewRpc = props => {
     }
   };
 
+  /**---------------------------clear filter------------------------ */
   const clearFilter = () => {
     setFormState(formState => ({
       ...formState,
@@ -206,62 +224,9 @@ const ViewRpc = props => {
     getRpcStateData(formState.pageSize, 1);
   };
 
+  /**-----------edit ----------- */
   const editCell = event => {
     getDataForEdit(event.target.id);
-  };
-
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
-  };
-
-  const deleteCell = event => {
-    setFormState(formState => ({
-      ...formState,
-      dataToDelete: { id: event.target.id },
-      showModalDelete: true
-    }));
-  };
-
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      formState.isFilterSearch = false;
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
-    setFormState(formState => ({
-      ...formState,
-      isClearResetFilter: false
-    }));
-  };
-
-  /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    setFormState(formState => ({
-      ...formState,
-      isDataDeleted: false,
-      showModalDelete: false
-    }));
-    if (formState.isDataDeleted) {
-      getRpcStateData(formState.pageSize, formState.page);
-    }
-  };
-
-  const convertRpcData = data => {
-    let x = [];
-    if (data.length > 0) {
-      for (let i in data) {
-        var temp = {};
-        temp["id"] = data[i]["id"];
-        temp["name"] = data[i]["name"];
-        temp["state"] = data[i]["state"]["name"];
-        x.push(temp);
-      }
-      return x;
-    }
   };
 
   const getDataForEdit = async id => {
@@ -281,6 +246,55 @@ const ViewRpc = props => {
       .catch(error => {
         console.log("error", error);
       });
+  };
+
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      formState.isFilterSearch = false;
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+    }
+    setFormState(formState => ({
+      ...formState,
+      isClearResetFilter: false
+    }));
+  };
+
+  /** ---------Delete -------- */
+
+  const deleteCell = event => {
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: {
+        id: event.target.id,
+        name: event.target.getAttribute("value")
+      },
+      showModalDelete: true,
+      isDataDeleted: false,
+      fromDeleteModal: false,
+      messageToShow: "",
+      fromAddRpc: false,
+      fromEditRpc: false
+    }));
+  };
+
+  /** This is used to handle the close modal event */
+  const handleCloseDeleteModal = (status, statusToShow = "") => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setOpen(true);
+    setFormState(formState => ({
+      ...formState,
+      isDataDeleted: status,
+      showModalDelete: false,
+      fromDeleteModal: true,
+      messageToShow: statusToShow
+    }));
+    if (status) {
+      getRpcStateData(formState.pageSize, 1);
+    }
   };
 
   const modalClose = () => {
@@ -319,6 +333,7 @@ const ViewRpc = props => {
             className="material-icons"
             id={cell.id}
             onClick={deleteCell}
+            value={cell.name}
             style={{ color: "red" }}
           >
             delete_outline
@@ -436,6 +451,54 @@ const ViewRpc = props => {
             </Alert>
           </Collapse>
         ) : null}
+        {formState.fromDeleteModal &&
+        formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        !formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card>
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -523,8 +586,8 @@ const ViewRpc = props => {
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
-            deleteEvent={isDeleteCellCompleted}
             modalClose={modalClose}
+            dataToDelete={formState.dataToDelete}
           />
         </Card>
       </Grid>
