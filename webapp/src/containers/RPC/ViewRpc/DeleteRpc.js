@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./DeleteRpcStyles";
 import * as serviceProviders from "../../../api/Axios";
@@ -14,6 +18,7 @@ import { YellowButton } from "../../../components";
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
 const DeleteRpc = props => {
+  const [open, setOpen] = React.useState(false);
   const classes = useStyles();
   const [formState, setFormState] = useState({
     isDeleteData: false,
@@ -52,12 +57,18 @@ const DeleteRpc = props => {
 
   const handleSubmit = async event => {
     /** CALL Put FUNCTION */
+    setOpen(true);
     event.preventDefault();
     event.persist();
     let status = {};
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
      and returns back an opbject with status and message*/
-    status = await checkIfRPCCanBeDelete();
+    if (props.isMultiDelete) {
+      status = await checkIfMultiRPCCanBeDelete();
+    } else {
+      status = await checkIfRPCCanBeDelete(props.id);
+    }
+    setOpen(false);
     if (status["status"]) {
       deleteData();
     } else {
@@ -68,33 +79,70 @@ const DeleteRpc = props => {
     }
   };
 
+  const checkIfMultiRPCCanBeDelete = async () => {
+    let dataToSent = {};
+    let isErrorCounter = 0;
+    for (let i in props.id) {
+      let status = await checkIfRPCCanBeDelete(props.id[i]);
+      if (!status["status"]) {
+        isErrorCounter += 1;
+        break;
+      }
+    }
+    if (isErrorCounter > 0) {
+      dataToSent = { status: false, message: "Error removing selected RPC's" };
+    } else {
+      dataToSent = { status: true, message: "Success" };
+    }
+    return dataToSent;
+  };
+
   const deleteData = () => {
-    serviceProviders
-      .serviceProviderForDeleteRequest(RPC_URL, props.id)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          isValid: true
-        }));
-        formState.isDeleteData = true;
-        handleCloseModal(
-          "RPC " + formState.dataToDelete["name"] + " successfully deleted"
-        );
-      })
-      .catch(error => {
-        console.log("error");
-        formState.isDeleteData = false;
-        handleCloseModal(
-          "Error deleting RPC " + formState.dataToDelete["name"]
-        );
-      });
+    if (props.isMultiDelete) {
+      serviceProviders
+        .serviceProviderForAllDeleteRequest(RPC_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          console.log(res);
+          formState.isDeleteData = true;
+          handleCloseModal("RPC's successfully removed");
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal("Error removing selected RPC's");
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForDeleteRequest(RPC_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal(
+            "RPC " + formState.dataToDelete["name"] + " successfully removed"
+          );
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal(
+            "Error removing RPC " + formState.dataToDelete["name"]
+          );
+        });
+    }
   };
 
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfRPCCanBeDelete = async () => {
+  const checkIfRPCCanBeDelete = async id => {
     let dataToReturn = {};
     let collegesCheckUrl =
-      RPC_URL + "/" + props.id + "/" + strapiConstants.STRAPI_COLLEGES;
+      RPC_URL + "/" + id + "/" + strapiConstants.STRAPI_COLLEGES;
     await serviceProviders
       .serviceProviderForGetRequest(collegesCheckUrl)
       .then(res => {
@@ -102,7 +150,7 @@ const DeleteRpc = props => {
           dataToReturn = {
             status: false,
             message:
-              "Cannot delete RPC " +
+              "Cannot remove RPC " +
               formState.dataToDelete["name"] +
               " as it is linked to other College's"
           };
@@ -118,7 +166,7 @@ const DeleteRpc = props => {
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting RPC " + formState.dataToDelete["name"]
+          message: "Error rmeove RPC " + formState.dataToDelete["name"]
         };
       });
     return dataToReturn;
@@ -157,7 +205,13 @@ const DeleteRpc = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Do yo want to delete this field?
+                  {props.isMultiDelete
+                    ? "Are you sure you want to remove " +
+                      props.id.length +
+                      " RPC's?"
+                    : "Are you sure you want to remove RPC " +
+                      formState.dataToDelete["name"] +
+                      "?"}
                 </Grid>
                 <Grid item xs>
                   <YellowButton
@@ -172,6 +226,9 @@ const DeleteRpc = props => {
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>
