@@ -153,6 +153,10 @@ const useListStyles = makeStyles(theme => ({
         borderLeft: "4px solid #f1f1f1"
       }
     }
+  },
+  padding: {
+    paddingTop: "0px",
+    paddingBottom: "0px"
   }
 }));
 
@@ -190,7 +194,14 @@ function SideAndTopNavBar(props) {
         return (
           <div key={list.name} className={listClasses.navigationpanel}>
             {list.items != null ? (
-              <List {...rest} className={clsx(listClasses.root, className)}>
+              <List
+                {...rest}
+                className={clsx(
+                  listClasses.root,
+                  className,
+                  listClasses.padding
+                )}
+              >
                 <ListItem
                   className={listClasses.button}
                   disableGutters
@@ -238,7 +249,14 @@ function SideAndTopNavBar(props) {
                 </Collapse>
               </List>
             ) : (
-              <List {...rest} className={clsx(listClasses.root, className)}>
+              <List
+                {...rest}
+                className={clsx(
+                  listClasses.root,
+                  className,
+                  listClasses.padding
+                )}
+              >
                 <ListItem
                   className={listClasses.button}
                   disableGutters
