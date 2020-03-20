@@ -517,21 +517,18 @@
       "Event": {
         "required": [
           "id",
-          "Title",
-          "description",
+          "title",
           "start_date_time",
           "end_date_time",
+          "age",
           "address",
-          "age"
+          "description"
         ],
         "properties": {
           "id": {
             "type": "string"
           },
-          "Title": {
-            "type": "string"
-          },
-          "description": {
+          "title": {
             "type": "string"
           },
           "start_date_time": {
@@ -539,9 +536,6 @@
           },
           "end_date_time": {
             "type": "datetime"
-          },
-          "address": {
-            "type": "string"
           },
           "rpc": {
             "required": [
@@ -568,8 +562,8 @@
               "id",
               "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
@@ -582,9 +576,6 @@
                 "type": "string"
               },
               "college_code": {
-                "type": "string"
-              },
-              "address": {
                 "type": "string"
               },
               "contact_number": {
@@ -609,6 +600,9 @@
                 "type": "string"
               },
               "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -707,23 +701,26 @@
                 }
               }
             }
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         }
       },
       "NewEvent": {
         "required": [
-          "Title",
-          "description",
+          "title",
           "start_date_time",
           "end_date_time",
+          "age",
           "address",
-          "age"
+          "description"
         ],
         "properties": {
-          "Title": {
-            "type": "string"
-          },
-          "description": {
+          "title": {
             "type": "string"
           },
           "start_date_time": {
@@ -731,9 +728,6 @@
           },
           "end_date_time": {
             "type": "datetime"
-          },
-          "address": {
-            "type": "string"
           },
           "rpc": {
             "type": "string"
@@ -748,6 +742,12 @@
             "type": "integer"
           },
           "question_set": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }

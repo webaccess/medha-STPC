@@ -587,8 +587,8 @@
           "id",
           "name",
           "college_code",
-          "address",
-          "college_email"
+          "college_email",
+          "address"
         ],
         "properties": {
           "id": {
@@ -620,9 +620,6 @@
           "college_code": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
           "contact_number": {
             "type": "string"
           },
@@ -817,6 +814,9 @@
                 "type": "string"
               }
             }
+          },
+          "address": {
+            "type": "string"
           }
         }
       },
@@ -824,8 +824,8 @@
         "required": [
           "name",
           "college_code",
-          "address",
-          "college_email"
+          "college_email",
+          "address"
         ],
         "properties": {
           "name": {
@@ -837,9 +837,6 @@
           "college_code": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
           "contact_number": {
             "type": "string"
           },
@@ -891,6 +888,9 @@
             "type": "string"
           },
           "tpos": {
+            "type": "string"
+          },
+          "address": {
             "type": "string"
           }
         }

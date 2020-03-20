@@ -599,8 +599,8 @@
               "id",
               "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
@@ -613,9 +613,6 @@
                 "type": "string"
               },
               "college_code": {
-                "type": "string"
-              },
-              "address": {
                 "type": "string"
               },
               "contact_number": {
@@ -640,6 +637,9 @@
                 "type": "string"
               },
               "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }

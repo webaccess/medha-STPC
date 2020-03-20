@@ -809,10 +809,10 @@
           "id",
           "father_first_name",
           "father_last_name",
-          "address",
           "date_of_birth",
           "gender",
-          "roll_number"
+          "roll_number",
+          "address"
         ],
         "properties": {
           "id": {
@@ -953,9 +953,6 @@
           "father_last_name": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
           "date_of_birth": {
             "type": "datetime"
           },
@@ -1017,6 +1014,9 @@
                 "type": "string"
               }
             }
+          },
+          "address": {
+            "type": "string"
           }
         }
       },
@@ -1024,10 +1024,10 @@
         "required": [
           "father_first_name",
           "father_last_name",
-          "address",
           "date_of_birth",
           "gender",
-          "roll_number"
+          "roll_number",
+          "address"
         ],
         "properties": {
           "user": {
@@ -1046,9 +1046,6 @@
             "type": "string"
           },
           "father_last_name": {
-            "type": "string"
-          },
-          "address": {
             "type": "string"
           },
           "date_of_birth": {
@@ -1071,6 +1068,9 @@
             }
           },
           "district": {
+            "type": "string"
+          },
+          "address": {
             "type": "string"
           }
         }
