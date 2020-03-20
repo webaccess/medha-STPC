@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import Modal from "@material-ui/core/Modal";
@@ -16,20 +21,28 @@ const COLLEGE_URL =
 const COLLEGE_ID = "id";
 
 const DeleteZone = props => {
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
-    values: {}
+    values: {},
+    dataToDelete: {}
   });
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[COLLEGE_ID] = props.id;
     formState.isDeleteData = false;
+    formState.dataToDelete = props.dataToDelete;
   }
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (message = "") => {
+    /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
+    to ensure that only string value is passed to message variable */
+    if (typeof message !== "string") {
+      message = "";
+    }
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -37,37 +50,133 @@ const DeleteZone = props => {
       isValid: false,
       stateCounter: 0
     }));
-
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.closeModal(true, message);
     } else {
-      props.deleteEvent(false);
+      props.closeModal(false, message);
     }
-    props.closeModal();
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     /** CALL Put FUNCTION */
-    deleteData();
+    setOpen(true);
     event.preventDefault();
+    event.persist();
+    let status = {};
+    /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
+     and returns back an opbject with status and message*/
+    if (props.isMultiDelete) {
+      status = await checkIfMultiCollegeCanBeDelete();
+    } else {
+      status = await checkIfCollegeCanBeDelete(props.id);
+    }
+    setOpen(false);
+    if (status["status"]) {
+      deleteData();
+    } else {
+      formState.isDeleteData = false;
+      handleCloseModal(
+        status["message"]
+      ); /** returns back a message saying state cannot be deleted */
+    }
+  };
+
+  const checkIfMultiCollegeCanBeDelete = async () => {
+    let dataToSent = {};
+    let isErrorCounter = 0;
+    for (let i in props.id) {
+      let status = await checkIfCollegeCanBeDelete(props.id[i]);
+      if (!status["status"]) {
+        isErrorCounter += 1;
+        break;
+      }
+    }
+    if (isErrorCounter > 0) {
+      dataToSent = {
+        status: false,
+        message: "Error removing selected Colleges"
+      };
+    } else {
+      dataToSent = { status: true, message: "Success" };
+    }
+    return dataToSent;
+  };
+
+  /** This checks if the state can be deleted and returns back an array with status and message*/
+  const checkIfCollegeCanBeDelete = async id => {
+    let dataToReturn = {};
+    let studentsCheckUrl =
+      COLLEGE_URL + "/" + id + "/" + strapiConstants.STRAPI_STUDENT;
+    await serviceProviders
+      .serviceProviderForGetRequest(studentsCheckUrl)
+      .then(res => {
+        if (res.data.result.length) {
+          dataToReturn = {
+            status: false,
+            message:
+              "Cannot remove College " +
+              formState.dataToDelete["name"] +
+              " as it is linked to other Students"
+          };
+        } else {
+          dataToReturn = {
+            status: true,
+            message: "Success"
+          };
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+        /** return error */
+        dataToReturn = {
+          status: false,
+          message: "Error removing College " + formState.dataToDelete["name"]
+        };
+      });
+    return dataToReturn;
   };
 
   const deleteData = () => {
-    serviceProviders
-      .serviceProviderForDeleteRequest(COLLEGE_URL, props.id)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          isValid: true
-        }));
-        formState.isDeleteData = true;
-        handleCloseModal();
-      })
-      .catch(error => {
-        console.log("error");
-        formState.isDeleteData = false;
-        handleCloseModal();
-      });
+    if (props.isMultiDelete) {
+      serviceProviders
+        .serviceProviderForAllDeleteRequest(COLLEGE_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          console.log(res);
+          formState.isDeleteData = true;
+          handleCloseModal("Colleges successfully removed");
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal("Error removing selected Colleges");
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForDeleteRequest(COLLEGE_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal(
+            "College " +
+              formState.dataToDelete["name"] +
+              " successfully removed"
+          );
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal(
+            "Error removing College " + formState.dataToDelete["name"]
+          );
+        });
+    }
   };
 
   const classes = useStyles();
@@ -104,7 +213,13 @@ const DeleteZone = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Do yo want to delete this field?
+                  {props.isMultiDelete
+                    ? "Are you sure you want to remove " +
+                      props.id.length +
+                      " Colleges?"
+                    : "Are you sure you want to remove College " +
+                      formState.dataToDelete["name"] +
+                      "?"}
                 </Grid>
                 <Grid item xs>
                   <YellowButton
@@ -119,6 +234,9 @@ const DeleteZone = props => {
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>
