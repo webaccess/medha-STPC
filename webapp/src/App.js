@@ -27,6 +27,7 @@ import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "./theme";
+import Registration from "./containers/Registration/Registration";
 import RequestOtp from "./containers/OTP/Requestotp";
 import VerifyOtp from "./containers/OTP/Verifyotp";
 import EditCollegeRoute from "./authroute/EditCollegeRoute";
@@ -42,9 +43,8 @@ import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCol
 import StudentProfile from "./containers/Student/StudentProfile";
 import ViewEducation from "./containers/Student/Education/ViewEducation";
 import AddEducation from "./containers/Student/Education/AddEditEducation";
-import EditEducation from "./authroute/EditEducationRoute";
-import ViewDocument from "./containers/Student/Document/ViewDocument";
-import AddDocument from "./containers/Student/Document/AddEditDocument";
+import editEducation from "./authroute/EditEducationRoute";
+import Documents from "./containers/Student/Documents";
 import SetIndexContext from "./context/SetIndexContext";
 import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
 import ManageStudents from "./containers/Student/ManageStudents";
@@ -94,12 +94,6 @@ function App() {
                 exact
               />
 
-              <RegistrationRoute
-                path={routeConstants.EDIT_PROFILE}
-                layout={Layout}
-                exact
-              />
-
               <RequestOtp
                 path={routeConstants.REQUEST_OTP}
                 layout={Layout}
@@ -130,7 +124,7 @@ function App() {
                 layout={Layout}
                 path={routeConstants.VIEW_PROFILE}
               />
-              {/**Education */}
+
               <RouteWithLayout
                 component={ViewEducation}
                 exact
@@ -146,24 +140,17 @@ function App() {
               />
 
               <RouteWithLayout
-                component={EditEducation}
+                component={editEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_EDUCATION}
               />
-              {/**Student document */}
+
               <RouteWithLayout
-                component={ViewDocument}
+                component={Documents}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_DOCUMENTS}
-              />
-
-              <RouteWithLayout
-                component={AddDocument}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_DOCUMENTS}
               />
 
               {/** User */}

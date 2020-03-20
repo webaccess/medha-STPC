@@ -267,12 +267,3 @@ export const addEducation = (qualification, board, yearOfPassing, marks) => {
     marks: parseFloat(marks)
   };
 };
-
-export const uploadDocument = (files, ref, refId, field) => {
-  const formData = new FormData();
-  formData.append("files", files);
-  formData.append("ref", ref);
-  formData.append("refId", refId);
-  formData.append("field", field);
-  return formData;
-};
