@@ -102,7 +102,8 @@ const ViewUsers = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
-    selectedRowFilter: true
+    selectedRowFilter: true,
+    userNameDelete:""
   });
 
   useEffect(() => {
@@ -298,12 +299,27 @@ const ViewUsers = props => {
 
   const deleteCell = event => {
     let dataId = event.target.id;
+    
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: dataId },
       showEditModal: false,
       showModalDelete: true
     }));
+    let url_user = USER_URL + "/" +  dataId;
+    serviceProviders
+    .serviceProviderForGetRequest(url_user)
+    .then(res => {
+      setFormState(formState => ({
+        ...formState,
+        userNameDelete: res.data.result.username
+
+      }));
+    })
+    .catch(error => {
+      console.log("error",error);
+    });
+
   };
 
   /** This is used to handle the close modal event */
@@ -593,7 +609,6 @@ const ViewUsers = props => {
 
   return (
     <Grid>
-      {console.log(props)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           Manage User
@@ -880,6 +895,7 @@ const ViewUsers = props => {
               id={formState.MultiDeleteID}
               isMultiDelete={formState.isMultiDelete}
               modalClose={modalClose}
+              seletedUser={selectedRows.length}
             />
           ) : (
             <DeleteUser
@@ -888,6 +904,7 @@ const ViewUsers = props => {
               id={formState.dataToDelete["id"]}
               deleteEvent={isDeleteCellCompleted}
               modalClose={modalClose}
+              userName={formState.userNameDelete}         
             />
           )}
           {formState.isMulBlocked || formState.isMulUnBlocked ? (

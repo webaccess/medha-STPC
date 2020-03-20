@@ -3,6 +3,7 @@ export const SIGN_IN_URL = "/login";
 export const LOGOUT_URL = "/logout";
 export const NOT_FOUND_URL = "/404";
 export const DASHBOARD_URL = "/dashboard";
+export const DEFAULT_URL = "/";
 export const ADD_USER = "/add-user";
 
 /**Student */
@@ -39,16 +40,16 @@ export const DETAIL_USER = "/view-user";
 
 /** State */
 export const EDIT_STATE = "/edit-state";
-export const VIEW_STATES = "/view-states";
+export const VIEW_STATES = "/manage-states";
 export const ADD_STATES = "/add-states";
 
 /** Zone */
 export const EDIT_ZONES = "/edit-zones";
-export const VIEW_ZONES = "/view-zones";
+export const VIEW_ZONES = "/manage-zones";
 export const ADD_ZONES = "/add-zones";
 
 /** RPC's */
-export const VIEW_RPC = "/view-rpc";
+export const VIEW_RPC = "/manage-rpc";
 export const ADD_RPC = "/add-rpc";
 export const EDIT_RPC = "/edit-rpc";
 

@@ -40,6 +40,7 @@ const ViewStates = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
+  /** Form state variables */
   const [formState, setFormState] = useState({
     dataToShow: [],
     states: [],
@@ -67,7 +68,6 @@ const ViewStates = props => {
       ? props["location"]["fromAddState"]
       : false,
     /** This is for delete */
-    isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
@@ -78,7 +78,11 @@ const ViewStates = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** Message to show */
+    fromDeleteModal: false,
+    messageToShow: "",
+    isDataDeleted: false
   });
 
   useEffect(() => {
@@ -106,7 +110,7 @@ const ViewStates = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
+        [SORT_FIELD_KEY]: "name:ASC"
       };
       Object.keys(paramsForState).map(key => {
         defaultParams[key] = paramsForState[key];
@@ -116,7 +120,7 @@ const ViewStates = props => {
       paramsForState = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
+        [SORT_FIELD_KEY]: "name:ASC"
       };
     }
     setFormState(formState => ({
@@ -144,7 +148,7 @@ const ViewStates = props => {
       });
   };
 
-  /** Pagination */
+  /** Pagination to handle row change*/
   const handlePerRowsChange = async (perPage, page) => {
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
@@ -158,6 +162,7 @@ const ViewStates = props => {
     }
   };
 
+  /** Pagination to handle page change */
   const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStateData(formState.pageSize, page);
@@ -170,7 +175,7 @@ const ViewStates = props => {
     }
   };
 
-  /** Search filter is called when we select filters and click on search button */
+  /** Pagination Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
@@ -180,6 +185,7 @@ const ViewStates = props => {
     }
   };
 
+  /** This is used for clearing filter */
   const clearFilter = () => {
     setFormState(formState => ({
       ...formState,
@@ -190,14 +196,15 @@ const ViewStates = props => {
       /** Turns on the spinner */
       isDataLoading: true
     }));
-    /**Need to confirm this thing for resetting the data */
     restoreData();
   };
 
+  /** function used for restoring data */
   const restoreData = () => {
     getStateData(formState.pageSize, 1);
   };
 
+  /** Edit -------------------------------------------------------*/
   const getDataForEdit = async id => {
     let paramsForStates = {
       id: id
@@ -222,25 +229,8 @@ const ViewStates = props => {
     getDataForEdit(event.target.id);
   };
 
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
-  };
-
-  const deleteCell = event => {
-    setFormState(formState => ({
-      ...formState,
-      dataToDelete: { id: event.target.id },
-      showModalDelete: true
-    }));
-  };
-
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showModalDelete: false
-    }));
-  };
-
+  /**---------------------------------------------------------------- */
+  /** Handle auto change---------- */
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
       delete formState.filterDataParameters[filterName];
@@ -253,21 +243,51 @@ const ViewStates = props => {
       isClearResetFilter: false
     }));
   };
+  /** ---------------------------- */
 
-  /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
+  /** Delete cell ------------------ */
+
+  const deleteCell = event => {
     setFormState(formState => ({
       ...formState,
+      dataToDelete: {
+        id: event.target.id,
+        name: event.target.getAttribute("value")
+      },
+      showModalDelete: true,
       isDataDeleted: false,
+      fromDeleteModal: false,
+      messageToShow: "",
+      fromAddState: false,
+      fromEditState: false
+    }));
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
       showModalDelete: false
     }));
-    if (formState.isDataDeleted) {
-      getStateData(formState.pageSize, formState.page);
+  };
+
+  /** This is used to handle the close modal event */
+  const handleCloseDeleteModal = (status, statusToShow = "") => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setOpen(true);
+    setFormState(formState => ({
+      ...formState,
+      isDataDeleted: status,
+      showModalDelete: false,
+      fromDeleteModal: true,
+      messageToShow: statusToShow
+    }));
+    if (status) {
+      getStateData(formState.pageSize, 1);
     }
   };
 
+  /** --------------------------------------------------- */
   /** Columns to show in table */
   const column = [
     { name: "Name", sortable: true, selector: "name" },
@@ -295,6 +315,7 @@ const ViewStates = props => {
           <i
             className="material-icons"
             id={cell.id}
+            value={cell.name}
             onClick={deleteCell}
             style={{ color: "red" }}
           >
@@ -414,6 +435,53 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
+        {formState.fromDeleteModal &&
+        formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        !formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
 
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
@@ -500,8 +568,8 @@ const ViewStates = props => {
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}
           id={formState.dataToDelete["id"]}
-          deleteEvent={isDeleteCellCompleted}
           modalClose={modalClose}
+          dataToDelete={formState.dataToDelete}
         />
       </Grid>
     </Grid>

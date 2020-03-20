@@ -18,16 +18,11 @@ const UserSchema = {
     label: "Password",
     id: "password",
     autoComplete: "password",
-    required: true,
+    required: false,
     placeholder: "password",
     autoFocus: true,
     type: "password",
-    validations: {
-      required: {
-        value: "true",
-        message: "Password is required"
-      }
-    }
+    validations: {}
   },
   firstname: {
     label: "First Name",

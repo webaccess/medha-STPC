@@ -8,7 +8,8 @@ import {
   LoginRoute,
   ForgotPasswordRoute,
   RouteWithLayout,
-  PrivateRoute
+  PrivateRoute,
+  DefaultRoute
 } from "./authroute";
 
 import Dashboard from "./containers/Dashboard/Dashboard";
@@ -59,6 +60,11 @@ function App() {
             <Switch>
               <PrivateRoute
                 path={routeConstants.DASHBOARD_URL}
+                component={Dashboard}
+                exact
+              />
+              <DefaultRoute
+                path={routeConstants.DEFAULT_URL}
                 component={Dashboard}
                 exact
               />
