@@ -25,20 +25,14 @@ import {
   GreenButton,
   YellowButton,
   GrayButton,
-  Alert,
-  Auth
+  Alert
 } from "../../../components";
 import DeleteEducation from "./DeleteEducation";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
-// const EDUCATION_URL =
-//   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EDUCATIONS;
-
-const STUDENT_EDUCATION_URL =
-  strapiConstants.STRAPI_DB_URL +
-  strapiConstants.STRAPI_STUDENTS +
-  `/${Auth.getUserInfo().studentInfo.id}/education`;
+const EDUCATION_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EDUCATIONS;
 const EDUCATION_FILTER = "id";
 
 const ViewEducation = props => {
@@ -87,7 +81,7 @@ const ViewEducation = props => {
 
   useEffect(() => {
     serviceProviders
-      .serviceProviderForGetRequest(STUDENT_EDUCATION_URL)
+      .serviceProviderForGetRequest(EDUCATION_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -124,7 +118,7 @@ const ViewEducation = props => {
     }));
 
     await serviceProviders
-      .serviceProviderForGetRequest(STUDENT_EDUCATION_URL, params)
+      .serviceProviderForGetRequest(EDUCATION_URL, params)
       .then(res => {
         formState.dataToShow = [];
         setFormState(formState => ({
@@ -194,34 +188,29 @@ const ViewEducation = props => {
     getEducationData(formState.pageSize, 1);
   };
 
-  // const getDataForEdit = async id => {
-  //   let paramsForeducations = {
-  //     id: idgetDataForEdit
-  //   };
-  //   await serviceProviders
-  //     .serviceProviderForGetRequest(EDUCATION_URL, paramsForeducations)
-  //     .then(res => {
-  //       let editData = res.data.result[0];
-  //       console.log({ editData });
-  //       /** move to edit page */
-  //       history.push({
-  //         pathname: routeConstants.EDIT_EDUCATION,
-  //         editEducation: true,
-  //         dataForEdit: editData
-  //       });
-  //     })
-  //     .catch(error => {
-  //       console.log("error");
-  //     });
-  // };
+  const getDataForEdit = async id => {
+    let paramsForeducations = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(EDUCATION_URL, paramsForeducations)
+      .then(res => {
+        let editData = res.data.result[0];
+        console.log({ editData });
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_EDUCATION,
+          editEducation: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
 
-  const editCell = data => {
-    // getDataForEdit(event.target.id);
-    history.push({
-      pathname: routeConstants.EDIT_EDUCATION,
-      editEducation: true,
-      dataForEdit: data
-    });
+  const editCell = event => {
+    getDataForEdit(event.target.id);
   };
 
   const isDeleteCellCompleted = status => {
@@ -273,7 +262,7 @@ const ViewEducation = props => {
             className="material-icons"
             id={cell.id}
             value={cell.name}
-            onClick={() => editCell(cell)}
+            onClick={editCell}
             style={{ color: "green", fontSize: "19px" }}
           >
             edit
@@ -307,7 +296,6 @@ const ViewEducation = props => {
     });
   };
 
-  console.log(formState.dataToShow);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -478,15 +466,12 @@ const ViewEducation = props => {
               paginationRowsPerPageOptions={[10, 20, 50]}
               onChangeRowsPerPage={handlePerRowsChange}
               onChangePage={handlePageChange}
-              noDataComponent="No education details found"
             />
           ) : (
-            <div className={classes.noDataMargin}>
-              No education details found
-            </div>
+            <Spinner />
           )
         ) : (
-          <Spinner />
+          <div className={classes.noDataMargin}>No data to show</div>
         )}
         <DeleteEducation
           showModal={formState.showModalDelete}
