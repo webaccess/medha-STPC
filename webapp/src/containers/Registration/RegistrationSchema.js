@@ -196,12 +196,7 @@ const RegistrationSchema = {
     placeholder: "rollnumber",
     autoFocus: true,
     type: "integer",
-    validations: {
-      required: {
-        value: "true",
-        message: "Email is required"
-      }
-    }
+    validations: {}
   },
   email: {
     label: "Email",
@@ -256,16 +251,25 @@ const RegistrationSchema = {
         message: "Invalid Password"
       }
     }
-  },
-  otp: {
-    label: "OTP",
-    id: "otp",
-    autoComplete: "otp",
-    required: true,
-    placeholder: "otp",
-    autoFocus: true,
-    type: "text",
-    validations: {}
   }
+  // confirmpassword: {
+  //   label: "Confirm Password",
+  //   id: "cpassword",
+  //   autoComplete: "cpassword",
+  //   required: true,
+  //   placeholder: "confirmpassword",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "Confirm Password is required"
+  //     },
+  //     validatePasswordRegex: {
+  //       value: "true",
+  //       message: "Invalid Password"
+  //     }
+  //   }
+  // }
 };
 export default RegistrationSchema;
