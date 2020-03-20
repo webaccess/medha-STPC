@@ -20,9 +20,13 @@ import {
   Avatar,
   FormControl,
   InputLabel,
-  TextField
+  TextField,
+  CardHeader
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import * as genericConstants from "../../constants/GenericConstants";
+import { GrayButton, YellowButton } from "../../components";
+
 const Dashboard = props => {
   const { container, className, ...rest } = props;
   const classes = useStyles();
@@ -114,115 +118,109 @@ const Dashboard = props => {
         <Grid container spacing={2}>
           <Grid item lg={2} sm={6} xl={3} xs={12}>
             <Card {...rest} className={clsx(classes.root, className)}>
+              <CardHeader
+                classes={{
+                  title: classes.title,
+                  root: classes.titleRoot
+                }}
+                title="Workshops"
+                color="textSecondary"
+                align="center"
+              />
               <CardContent>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography
-                      className={classes.title}
-                      color="textSecondary"
-                      gutterBottom
-                      variant="body2"
-                    >
-                      Workshops
-                    </Typography>
-                    <Typography variant="h1">25</Typography>
-                  </Grid>
-                </Grid>
+                <Typography variant="h1" align="center">
+                  25
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item lg={2} sm={6} xl={3} xs={12}>
             <Card {...rest} className={clsx(classes.root, className)}>
+              <CardHeader
+                classes={{
+                  title: classes.title,
+                  root: classes.titleRoot
+                }}
+                title="TPO Feedback"
+                color="textSecondary"
+                align="center"
+              />
               <CardContent>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography
-                      className={classes.title}
-                      color="textSecondary"
-                      gutterBottom
-                      variant="body2"
-                    >
-                      TPO Feedback
-                    </Typography>
-                    <Typography variant="h1">20</Typography>
-                  </Grid>
-                </Grid>
+                <Typography variant="h1" align="center">
+                  20
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item lg={2} sm={6} xl={3} xs={12}>
             <Card {...rest} className={clsx(classes.root, className)}>
+              <CardHeader
+                classes={{
+                  title: classes.title,
+                  root: classes.titleRoot
+                }}
+                title="Student Feedback"
+                color="textSecondary"
+                align="center"
+              />
               <CardContent>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography
-                      className={classes.title}
-                      color="textSecondary"
-                      gutterBottom
-                      variant="body2"
-                    >
-                      Student Feedback
-                    </Typography>
-                    <Typography variant="h1">22</Typography>
-                  </Grid>
-                </Grid>
+                <Typography variant="h1" align="center">
+                  22
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item lg={2} sm={6} xl={3} xs={12}>
             <Card {...rest} className={clsx(classes.root, className)}>
+              <CardHeader
+                classes={{
+                  title: classes.title,
+                  root: classes.titleRoot
+                }}
+                title="Industrial Visits"
+                color="textSecondary"
+                align="center"
+              />
               <CardContent>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography
-                      className={classes.title}
-                      color="textSecondary"
-                      gutterBottom
-                      variant="body2"
-                    >
-                      Industrial Visits
-                    </Typography>
-                    <Typography variant="h1">3</Typography>
-                  </Grid>
-                </Grid>
+                <Typography variant="h1" align="center">
+                  3
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item lg={2} sm={6} xl={3} xs={12}>
             <Card {...rest} className={clsx(classes.root, className)}>
+              <CardHeader
+                classes={{
+                  title: classes.title,
+                  root: classes.titleRoot
+                }}
+                title="Interships"
+                color="textSecondary"
+                align="center"
+              />
               <CardContent>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography
-                      className={classes.title}
-                      color="textSecondary"
-                      gutterBottom
-                      variant="body2"
-                    >
-                      Interships
-                    </Typography>
-                    <Typography variant="h1">2</Typography>
-                  </Grid>
-                </Grid>
+                <Typography variant="h1" align="center">
+                  2
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item lg={2} md={6} xl={3} xs={12}>
             <Card {...rest} className={clsx(classes.root, className)}>
+              <CardHeader
+                classes={{
+                  title: classes.title,
+                  root: classes.titleRoot
+                }}
+                title="Placement"
+                color="textSecondary"
+                align="center"
+              />
               <CardContent>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography
-                      className={classes.title}
-                      color="textSecondary"
-                      gutterBottom
-                      variant="body2"
-                    >
-                      Placement
-                    </Typography>
-                    <Typography variant="h1">5</Typography>
-                  </Grid>
-                </Grid>
+                <Typography variant="h1" align="center">
+                  5
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -370,17 +368,35 @@ const Dashboard = props => {
                       />
                     </FormControl>
                   </Grid>
+                  <Grid item className={classes.filterButtonsMargin}>
+                    <YellowButton
+                      variant="contained"
+                      color="primary"
+                      disableElevation
+                    >
+                      {genericConstants.SEARCH_BUTTON_TEXT}
+                    </YellowButton>
+                  </Grid>
+                  <Grid item className={classes.filterButtonsMargin}>
+                    <GrayButton
+                      variant="contained"
+                      color="primary"
+                      disableElevation
+                    >
+                      {genericConstants.RESET_BUTTON_TEXT}
+                    </GrayButton>
+                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
-            <Card>
+            <Card className={classes.marginCard} variant="outlined">
               <CardContent>
                 <Grid item md={4} xs={12}>
-                  <Grid item xs={12} className={classes.title}>
+                  {/* <Grid item xs={12} className={classes.title}>
                     <Typography variant="h4" gutterBottom>
-                      Result:- Zone / Region / College / Month
+                      Zone / Region / College / Month
                     </Typography>
-                  </Grid>
+                  </Grid> */}
                   <TableContainer component={Paper}>
                     <Table
                       className={classes.table}
@@ -410,15 +426,15 @@ const Dashboard = props => {
               </CardContent>
             </Card>
 
-            <Card>
+            {/* <Card className={classes.marginCard} variant="outlined">
               <CardContent>
                 <Grid item md={4} xs={12}>
-                  <Grid item xs={12} className={classes.title}>
+                  {/* <Grid item xs={12} className={classes.title}>
                     <Typography variant="h4" gutterBottom>
-                      Result:- Industrial Visit
+                      Industrial Visit
                     </Typography>
-                  </Grid>
-                  <TableContainer component={Paper}>
+                  </Grid> */}
+            {/* <TableContainer component={Paper}>
                     <Table
                       className={classes.table}
                       aria-label="customized table"
@@ -445,16 +461,16 @@ const Dashboard = props => {
                   </TableContainer>
                 </Grid>
               </CardContent>
-            </Card>
-            <Card>
+            </Card> */}
+            {/* <Card className={classes.marginCard} variant="outlined">
               <CardContent>
-                <Grid item md={4} xs={12}>
-                  <Grid item xs={12} className={classes.title}>
+                <Grid item md={4} xs={12}> */}
+            {/* <Grid item xs={12} className={classes.title}>
                     <Typography variant="h4" gutterBottom>
-                      Result:- Placement
+                      Placement
                     </Typography>
-                  </Grid>
-                  <TableContainer component={Paper}>
+                  </Grid> */}
+            {/* <TableContainer component={Paper}>
                     <Table
                       className={classes.table}
                       aria-label="customized table"
@@ -484,7 +500,7 @@ const Dashboard = props => {
                   </TableContainer>
                 </Grid>
               </CardContent>
-            </Card>
+            </Card> */}
           </Grid>
         </Grid>
       </div>
