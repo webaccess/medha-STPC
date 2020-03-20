@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
@@ -11,7 +11,7 @@ import {
   IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-
+import DeleteIcon from "@material-ui/icons/Delete";
 import styles from "../State.module.css";
 import useStyles from "./ViewStateStyles";
 import * as serviceProviders from "../../../api/Axios";
@@ -40,6 +40,7 @@ const ViewStates = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
+  const [selectedRows, setSelectedRows] = useState([]);
   /** Form state variables */
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -72,6 +73,10 @@ const ViewStates = props => {
     dataToDelete: {},
     showModalDelete: false,
     isClearResetFilter: false,
+    isMultiDelete: false,
+    MultiDeleteID: [],
+    greenButtonChecker: true,
+    selectedRowFilter: true,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -259,7 +264,8 @@ const ViewStates = props => {
       fromDeleteModal: false,
       messageToShow: "",
       fromAddState: false,
-      fromEditState: false
+      fromEditState: false,
+      isMultiDelete: false
     }));
   };
 
@@ -286,6 +292,44 @@ const ViewStates = props => {
       getStateData(formState.pageSize, 1);
     }
   };
+
+  /** Multi Delete */
+  /** Get multiple user id for delete */
+  const deleteMulUserById = () => {
+    let arrayId = [];
+
+    selectedRows.forEach(d => {
+      arrayId.push(d.id);
+    });
+
+    setFormState(formState => ({
+      ...formState,
+      showEditModal: false,
+      showModalDelete: true,
+      isDataDeleted: false,
+      fromDeleteModal: false,
+      isMultiDelete: true,
+      MultiDeleteID: arrayId,
+      fromAddState: false,
+      fromEditState: false
+    }));
+  };
+
+  /** On select multiple rows */
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount > 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
 
   /** --------------------------------------------------- */
   /** Columns to show in table */
@@ -334,6 +378,17 @@ const ViewStates = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_STATE_TEXT}
         </Typography>
+
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => deleteMulUserById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          Delete Selected States
+        </GreenButton>
 
         <GreenButton
           variant="contained"
@@ -549,6 +604,7 @@ const ViewStates = props => {
               data={formState.dataToShow}
               column={column}
               defaultSortField="name"
+              onSelectedRowsChange={handleRowSelected}
               defaultSortAsc={formState.sortAscending}
               editEvent={editCell}
               deleteEvent={deleteCell}
@@ -567,8 +623,13 @@ const ViewStates = props => {
         <DeleteState
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
+          id={
+            formState.isMultiDelete
+              ? formState.MultiDeleteID
+              : formState.dataToDelete["id"]
+          }
           modalClose={modalClose}
+          isMultiDelete={formState.isMultiDelete ? true : false}
           dataToDelete={formState.dataToDelete}
         />
       </Grid>

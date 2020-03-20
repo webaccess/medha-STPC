@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -15,6 +20,7 @@ const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_ID = "state";
 
 const DeleteState = props => {
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
@@ -52,35 +58,61 @@ const DeleteState = props => {
   };
 
   const deleteData = () => {
-    serviceProviders
-      .serviceProviderForDeleteRequest(STATE_URL, props.id)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          isValid: true
-        }));
-        formState.isDeleteData = true;
-        handleCloseModal(
-          "State " + formState.dataToDelete["name"] + " successfully deleted"
-        );
-      })
-      .catch(error => {
-        console.log("error");
-        formState.isDeleteData = false;
-        handleCloseModal(
-          "Error deleting state " + formState.dataToDelete["name"]
-        );
-      });
+    if (props.isMultiDelete) {
+      serviceProviders
+        .serviceProviderForAllDeleteRequest(STATE_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          console.log(res);
+          formState.isDeleteData = true;
+          handleCloseModal("States successfully removed");
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal("Error removing selected states");
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForDeleteRequest(STATE_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal(
+            "State " + formState.dataToDelete["name"] + " successfully deleted"
+          );
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal(
+            "Error deleting State " + formState.dataToDelete["name"]
+          );
+        });
+    }
   };
 
   const handleSubmit = async event => {
     /** CALL Put FUNCTION */
+    setOpen(true);
     event.preventDefault();
     event.persist();
     let status = {};
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
     and returns back an opbject with status and message*/
-    status = await checkIfStateCanBeDelete();
+    if (props.isMultiDelete) {
+      status = await checkIfMultiStateCanBeDelete();
+    } else {
+      console.log("here", props.id);
+      status = await checkIfStateCanBeDelete(props.id);
+    }
+    setOpen(false);
     if (status["status"]) {
       deleteData();
     } else {
@@ -91,14 +123,32 @@ const DeleteState = props => {
     }
   };
 
+  const checkIfMultiStateCanBeDelete = async () => {
+    let dataToSent = {};
+    let isErrorCounter = 0;
+    for (let i in props.id) {
+      let status = await checkIfStateCanBeDelete(props.id[i]);
+      console.log(status, props.id[i]);
+      if (!status["status"]) {
+        isErrorCounter += 1;
+        break;
+      }
+    }
+    if (isErrorCounter > 0) {
+      dataToSent = { status: false, message: "Error removing selected States" };
+    } else {
+      dataToSent = { status: true, message: "Success" };
+    }
+    return dataToSent;
+  };
+
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfStateCanBeDelete = async () => {
+  const checkIfStateCanBeDelete = async id => {
     let stateCanBeDeletedCounter = 0;
     let dataToReturn = {};
     let zonesCheckUrl =
-      STATE_URL + "/" + props.id + "/" + strapiConstants.STRAPI_ZONES;
-    let rpcsCheckUrl =
-      STATE_URL + "/" + props.id + "/" + strapiConstants.STRAPI_RPCS;
+      STATE_URL + "/" + id + "/" + strapiConstants.STRAPI_ZONES;
+    let rpcsCheckUrl = STATE_URL + "/" + id + "/" + strapiConstants.STRAPI_RPCS;
     await serviceProviders
       .serviceProviderForGetRequest(zonesCheckUrl)
       .then(res => {
@@ -158,56 +208,66 @@ const DeleteState = props => {
 
   const classes = useStyles();
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      className={classes.modal}
-      open={props.showModal}
-      onClose={handleCloseModal}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500
-      }}
-    >
-      <Fade in={props.showModal}>
-        <div className={classes.paper}>
-          <div className={classes.blockpanel}>
-            <Typography variant={"h2"} className={classes.textMargin}>
-              {genericConstants.DELETE_TEXT}
-            </Typography>
-            <div className={classes.crossbtn}>
-              <IconButton
-                className={classes.closeButton}
-                aria-label="close"
-                onClick={props.modalClose}
-              >
-                <CloseIcon />
-              </IconButton>
+    <React.Fragment>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={props.showModal}
+        onClose={handleCloseModal}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500
+        }}
+      >
+        <Fade in={props.showModal}>
+          <div className={classes.paper}>
+            <div className={classes.blockpanel}>
+              <Typography variant={"h2"} className={classes.textMargin}>
+                {genericConstants.DELETE_TEXT}
+              </Typography>
+              <div className={classes.crossbtn}>
+                <IconButton
+                  className={classes.closeButton}
+                  aria-label="close"
+                  onClick={props.modalClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
             </div>
-          </div>
-          <div className={classes.edit_dialog}>
-            <Grid item xs={12}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item lg className={classes.deletemessage}>
-                  Do yo want to delete this field?
-                </Grid>
-                <Grid item xs>
-                  <YellowButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    onClick={handleSubmit}
-                  >
-                    {genericConstants.DELETE_TEXT}
-                  </YellowButton>
+            <div className={classes.edit_dialog}>
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item lg className={classes.deletemessage}>
+                    {props.isMultiDelete
+                      ? "Are you sure you want to remove " +
+                        props.id.length +
+                        " States"
+                      : "Are you sure you want to remove State " +
+                        formState.dataToDelete["name"]}
+                  </Grid>
+                  <Grid item xs>
+                    <YellowButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      onClick={handleSubmit}
+                    >
+                      {genericConstants.DELETE_TEXT}
+                    </YellowButton>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
+            </div>
+            <Backdrop className={classes.backdrop} open={open}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </div>
-        </div>
-      </Fade>
-    </Modal>
+        </Fade>
+      </Modal>
+    </React.Fragment>
   );
 };
 
