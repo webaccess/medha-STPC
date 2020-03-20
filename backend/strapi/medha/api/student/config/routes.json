@@ -5,7 +5,7 @@
       "path": "/students/register",
       "handler": "student.register",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
