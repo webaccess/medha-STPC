@@ -9,12 +9,8 @@
     "timestamps": true
   },
   "attributes": {
-    "Title": {
+    "title": {
       "type": "string",
-      "required": true
-    },
-    "description": {
-      "type": "richtext",
       "required": true
     },
     "start_date_time": {
@@ -23,10 +19,6 @@
     },
     "end_date_time": {
       "type": "datetime",
-      "required": true
-    },
-    "address": {
-      "type": "richtext",
       "required": true
     },
     "rpc": {
@@ -51,6 +43,14 @@
     "question_set": {
       "model": "question-set",
       "via": "events"
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
     }
   }
 }
