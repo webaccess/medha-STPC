@@ -3,6 +3,7 @@ export const SIGN_IN_URL = "/login";
 export const LOGOUT_URL = "/logout";
 export const NOT_FOUND_URL = "/404";
 export const DASHBOARD_URL = "/dashboard";
+export const DEFAULT_URL = "/";
 export const ADD_USER = "/add-user";
 
 /**Student */
