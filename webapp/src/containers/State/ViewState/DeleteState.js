@@ -14,7 +14,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./DeleteStateStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { YellowButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_ID = "state";
@@ -240,22 +240,42 @@ const DeleteState = props => {
                 <Grid container spacing={2} alignItems="center">
                   <Grid item lg className={classes.deletemessage}>
                     {props.isMultiDelete
-                      ? "Are you sure you want to remove " +
+                      ? "Are you sure you want to delete " +
                         props.id.length +
                         " States?"
-                      : "Are you sure you want to remove State " +
+                      : "Are you sure you want to delete State " +
                         formState.dataToDelete["name"] +
                         "?"}
                   </Grid>
-                  <Grid item xs>
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <Grid
+                  container
+                  direction="row"
+                  justify="flex-end"
+                  alignItems="center"
+                  spacing={2}
+                >
+                  <Grid item>
                     <YellowButton
                       type="submit"
                       color="primary"
                       variant="contained"
                       onClick={handleSubmit}
                     >
-                      {genericConstants.DELETE_TEXT}
+                      OK
                     </YellowButton>
+                  </Grid>
+                  <Grid item>
+                    <GrayButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      onClick={props.modalClose}
+                    >
+                      Close
+                    </GrayButton>
                   </Grid>
                 </Grid>
               </Grid>
