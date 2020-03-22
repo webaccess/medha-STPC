@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center"
   },
   edit_dialog: {
-    padding: "25px 15px"
+    padding: "15px 15px"
   },
   deletemessage: {
     flex: "1 auto"

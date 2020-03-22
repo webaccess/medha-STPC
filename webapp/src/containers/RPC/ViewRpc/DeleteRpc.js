@@ -13,7 +13,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./DeleteRpcStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { YellowButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
@@ -90,7 +90,7 @@ const DeleteRpc = props => {
       }
     }
     if (isErrorCounter > 0) {
-      dataToSent = { status: false, message: "Error removing selected RPC's" };
+      dataToSent = { status: false, message: "Error deleting selected RPC's" };
     } else {
       dataToSent = { status: true, message: "Success" };
     }
@@ -108,12 +108,12 @@ const DeleteRpc = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("RPC's successfully removed");
+          handleCloseModal("RPC's successfully deleted");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error removing selected RPC's");
+          handleCloseModal("Error deleting selected RPC's");
         });
     } else {
       serviceProviders
@@ -125,14 +125,14 @@ const DeleteRpc = props => {
           }));
           formState.isDeleteData = true;
           handleCloseModal(
-            "RPC " + formState.dataToDelete["name"] + " successfully removed"
+            "RPC " + formState.dataToDelete["name"] + " successfully deleted"
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error removing RPC " + formState.dataToDelete["name"]
+            "Error deleting RPC " + formState.dataToDelete["name"]
           );
         });
     }
@@ -150,7 +150,7 @@ const DeleteRpc = props => {
           dataToReturn = {
             status: false,
             message:
-              "Cannot remove RPC " +
+              "Cannot delete RPC " +
               formState.dataToDelete["name"] +
               " as it is linked to other College's"
           };
@@ -166,7 +166,7 @@ const DeleteRpc = props => {
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error rmeove RPC " + formState.dataToDelete["name"]
+          message: "Error deleting RPC " + formState.dataToDelete["name"]
         };
       });
     return dataToReturn;
@@ -193,8 +193,8 @@ const DeleteRpc = props => {
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
-                className={classes.closeButton}
                 aria-label="close"
+                className={classes.closeButton}
                 onClick={props.modalClose}
               >
                 <CloseIcon />
@@ -206,22 +206,42 @@ const DeleteRpc = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiDelete
-                    ? "Are you sure you want to remove " +
+                    ? "Are you sure you want to delete " +
                       props.id.length +
                       " RPC's?"
-                    : "Are you sure you want to remove RPC " +
+                    : "Are you sure you want to delete RPC " +
                       formState.dataToDelete["name"] +
                       "?"}
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {genericConstants.DELETE_TEXT}
+                    OK
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={props.modalClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>

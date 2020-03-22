@@ -14,7 +14,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./DeleteCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { YellowButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
@@ -94,7 +94,7 @@ const DeleteZone = props => {
     if (isErrorCounter > 0) {
       dataToSent = {
         status: false,
-        message: "Error removing selected Colleges"
+        message: "Error deleting selected Colleges"
       };
     } else {
       dataToSent = { status: true, message: "Success" };
@@ -114,7 +114,7 @@ const DeleteZone = props => {
           dataToReturn = {
             status: false,
             message:
-              "Cannot remove College " +
+              "Cannot delete College " +
               formState.dataToDelete["name"] +
               " as it is linked to other Students"
           };
@@ -130,7 +130,7 @@ const DeleteZone = props => {
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error removing College " + formState.dataToDelete["name"]
+          message: "Error deleting College " + formState.dataToDelete["name"]
         };
       });
     return dataToReturn;
@@ -147,12 +147,12 @@ const DeleteZone = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("Colleges successfully removed");
+          handleCloseModal("Colleges successfully deleted");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error removing selected Colleges");
+          handleCloseModal("Error deleting selected Colleges");
         });
     } else {
       serviceProviders
@@ -166,14 +166,14 @@ const DeleteZone = props => {
           handleCloseModal(
             "College " +
               formState.dataToDelete["name"] +
-              " successfully removed"
+              " successfully deleted"
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error removing College " + formState.dataToDelete["name"]
+            "Error deleting College " + formState.dataToDelete["name"]
           );
         });
     }
@@ -201,8 +201,8 @@ const DeleteZone = props => {
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
-                className={classes.closeButton}
                 aria-label="close"
+                className={classes.closeButton}
                 onClick={props.modalClose}
               >
                 <CloseIcon />
@@ -214,22 +214,42 @@ const DeleteZone = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiDelete
-                    ? "Are you sure you want to remove " +
+                    ? "Are you sure you want to delete " +
                       props.id.length +
                       " Colleges?"
-                    : "Are you sure you want to remove College " +
+                    : "Are you sure you want to delete College " +
                       formState.dataToDelete["name"] +
                       "?"}
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {genericConstants.DELETE_TEXT}
+                    OK
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={props.modalClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>

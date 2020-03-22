@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   edit_dialog: {
-    padding: "25px 15px"
+    padding: "15px 15px"
   }
 }));
 

@@ -68,12 +68,12 @@ const DeleteState = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("States successfully removed");
+          handleCloseModal("States successfully deleted");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error removing selected states");
+          handleCloseModal("Error deleting selected states");
         });
     } else {
       serviceProviders
@@ -133,7 +133,7 @@ const DeleteState = props => {
       }
     }
     if (isErrorCounter > 0) {
-      dataToSent = { status: false, message: "Error removing selected States" };
+      dataToSent = { status: false, message: "Error deleting selected States" };
     } else {
       dataToSent = { status: true, message: "Success" };
     }
