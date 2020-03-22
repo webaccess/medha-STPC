@@ -9,7 +9,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./DeleteRpcStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { YellowButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
@@ -145,8 +145,8 @@ const DeleteRpc = props => {
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
-                className={classes.closeButton}
                 aria-label="close"
+                className={classes.closeButton}
                 onClick={props.modalClose}
               >
                 <CloseIcon />
@@ -157,17 +157,37 @@ const DeleteRpc = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Do yo want to delete this field?
+                  Are you sure you want to delete?
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {genericConstants.DELETE_TEXT}
+                    OK
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={props.modalClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>

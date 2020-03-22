@@ -124,27 +124,36 @@ const DeleteUser = props => {
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiDelete ? (
                     <p>
-                      Are you sure you want to remove "{props.seletedUser}" users ?
+                      Are you sure you want to delete "{props.seletedUser}"
+                      users?
                     </p>
                   ) : (
-                    <p>Are you sure you want to remove "{props.userName}" ?</p>
+                    <p>
+                      Are you sure you want to delete "{props.userName}" user?
+                    </p>
                   )}
                 </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {genericConstants.DELETE_TEXT}
+                    OK
                   </YellowButton>
                 </Grid>
-                <Grid item xs>
+                <Grid item>
                   <GrayButton
                     type="submit"
                     color="primary"
