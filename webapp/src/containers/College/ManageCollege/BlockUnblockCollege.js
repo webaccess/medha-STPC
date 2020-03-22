@@ -14,7 +14,7 @@ import Fade from "@material-ui/core/Fade";
 import useStyles from "./DeleteCollegeStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { YellowButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 
 const COLLEGE_URL =
@@ -228,12 +228,14 @@ const BlockUnblockCollege = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {genericConstants.DELETE_TEXT}
+              {formState.values["block"]
+                ? genericConstants.UNBLOCK_BUTTON_TEXT
+                : genericConstants.BLOCK_BUTTON_TEXT}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
-                className={classes.closeButton}
                 aria-label="close"
+                className={classes.closeButton}
                 onClick={props.modalClose}
               >
                 <CloseIcon />
@@ -246,28 +248,46 @@ const BlockUnblockCollege = props => {
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiBlock || props.isMultiUnblock
                     ? props.isMultiBlock
-                      ? "Do you want to block all the selected colleges"
-                      : "Do you want to unblock all the selected colleges"
+                      ? "Are you sure you want to block all selected colleges"
+                      : "Are you sure you want to unblock all selected colleges"
                     : null}
                   {!props.isMultiBlock && !props.isMultiUnblock
                     ? formState.values["block"]
-                      ? "Do you want to unblock college " +
+                      ? "Are you sure you want to unblock college " +
                         formState.values["collegeName"]
-                      : "Do you want to block college " +
+                      : "Are you sure you want to block college " +
                         formState.values["collegeName"]
                     : null}
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {formState.values["block"]
-                      ? genericConstants.UNBLOCK_BUTTON_TEXT
-                      : genericConstants.BLOCK_BUTTON_TEXT}
+                    OK
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={props.modalClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>
