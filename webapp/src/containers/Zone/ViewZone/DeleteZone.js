@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -14,6 +19,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 
 const DeleteZone = props => {
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
@@ -50,12 +56,18 @@ const DeleteZone = props => {
 
   const handleSubmit = async event => {
     /** CALL Put FUNCTION */
+    setOpen(true);
     event.preventDefault();
     event.persist();
     let status = {};
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
      and returns back an opbject with status and message*/
-    status = await checkIfZoneCanBeDelete();
+    if (props.isMultiDelete) {
+      status = await checkIfMultiZoneCanBeDelete();
+    } else {
+      status = await checkIfZoneCanBeDelete(props.id);
+    }
+    setOpen(false);
     if (status["status"]) {
       deleteData();
     } else {
@@ -66,11 +78,29 @@ const DeleteZone = props => {
     }
   };
 
+  const checkIfMultiZoneCanBeDelete = async () => {
+    let dataToSent = {};
+    let isErrorCounter = 0;
+    for (let i in props.id) {
+      let status = await checkIfZoneCanBeDelete(props.id[i]);
+      if (!status["status"]) {
+        isErrorCounter += 1;
+        break;
+      }
+    }
+    if (isErrorCounter > 0) {
+      dataToSent = { status: false, message: "Error deleting selected Zones" };
+    } else {
+      dataToSent = { status: true, message: "Success" };
+    }
+    return dataToSent;
+  };
+
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfZoneCanBeDelete = async () => {
+  const checkIfZoneCanBeDelete = async id => {
     let dataToReturn = {};
     let collegesCheckUrl =
-      ZONES_URL + "/" + props.id + "/" + strapiConstants.STRAPI_COLLEGES;
+      ZONES_URL + "/" + id + "/" + strapiConstants.STRAPI_COLLEGES;
     await serviceProviders
       .serviceProviderForGetRequest(collegesCheckUrl)
       .then(res => {
@@ -101,25 +131,44 @@ const DeleteZone = props => {
   };
 
   const deleteData = () => {
-    serviceProviders
-      .serviceProviderForDeleteRequest(ZONES_URL, props.id)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          isValid: true
-        }));
-        formState.isDeleteData = true;
-        handleCloseModal(
-          "Zone " + formState.dataToDelete["name"] + " successfully deleted"
-        );
-      })
-      .catch(error => {
-        console.log("error");
-        formState.isDeleteData = false;
-        handleCloseModal(
-          "Error deleting Zone " + formState.dataToDelete["name"]
-        );
-      });
+    if (props.isMultiDelete) {
+      serviceProviders
+        .serviceProviderForAllDeleteRequest(ZONES_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          console.log(res);
+          formState.isDeleteData = true;
+          handleCloseModal("Zones successfully deleted");
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal("Error deleting selected Zones");
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForDeleteRequest(ZONES_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal(
+            "Zone " + formState.dataToDelete["name"] + " successfully deleted"
+          );
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal(
+            "Error deleting Zone " + formState.dataToDelete["name"]
+          );
+        });
+    }
   };
 
   const classes = useStyles();
@@ -156,7 +205,13 @@ const DeleteZone = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Are you sure you want to delete?
+                  {props.isMultiDelete
+                    ? "Are you sure you want to delete " +
+                      props.id.length +
+                      " Zones?"
+                    : "Are you sure you want to delete Zone " +
+                      formState.dataToDelete["name"] +
+                      "?"}
                 </Grid>
               </Grid>
             </Grid>
@@ -191,6 +246,9 @@ const DeleteZone = props => {
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>

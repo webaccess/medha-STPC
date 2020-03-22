@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import {
   TextField,
@@ -24,6 +24,7 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const ZONE_FILTER = "id";
@@ -32,6 +33,7 @@ const SORT_FIELD_KEY = "_sort";
 const ViewZone = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
+  const [selectedRows, setSelectedRows] = useState([]);
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
@@ -60,12 +62,16 @@ const ViewZone = props => {
     fromAddZone: props["location"]["fromAddZone"]
       ? props["location"]["fromAddZone"]
       : false,
+    isClearResetFilter: false,
     /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
-    isClearResetFilter: false,
+    isMultiDelete: false,
+    MultiDeleteID: [],
+    selectedRowFilter: true,
+    greenButtonChecker: true,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -75,8 +81,7 @@ const ViewZone = props => {
     sortAscending: true,
     /** Message to show */
     fromDeleteModal: false,
-    messageToShow: "",
-    isDataDeleted: false
+    messageToShow: ""
   });
 
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
@@ -191,6 +196,19 @@ const ViewZone = props => {
     }
   };
 
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+    }
+    setFormState(formState => ({
+      ...formState,
+      isClearResetFilter: false
+    }));
+  };
+
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
@@ -261,7 +279,8 @@ const ViewZone = props => {
       fromDeleteModal: false,
       messageToShow: "",
       fromAddZone: false,
-      fromEditZone: false
+      fromEditZone: false,
+      isMultiDelete: false
     }));
   };
 
@@ -275,7 +294,8 @@ const ViewZone = props => {
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
+      isMultiDelete: false
     }));
     if (status) {
       getZoneData(formState.pageSize, 1);
@@ -289,18 +309,43 @@ const ViewZone = props => {
     }));
   };
 
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
+  /** Multi Delete */
+  /** Get multiple user id for delete */
+  const deleteMulUserById = () => {
+    let arrayId = [];
+
+    selectedRows.forEach(d => {
+      arrayId.push(d.id);
+    });
+
     setFormState(formState => ({
       ...formState,
-      isClearResetFilter: false
+      showEditModal: false,
+      showModalDelete: true,
+      isMultiDelete: true,
+      MultiDeleteID: arrayId,
+      isDataDeleted: false,
+      fromDeleteModal: false,
+      fromAddZone: false,
+      fromEditZone: false
     }));
   };
+
+  /** On select multiple rows */
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount > 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
 
   /** Columns to show in table */
   const column = [
@@ -355,7 +400,16 @@ const ViewZone = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_ZONE_TEXT}
         </Typography>
-
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => deleteMulUserById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          Delete Selected Zones
+        </GreenButton>
         <GreenButton
           variant="contained"
           color="primary"
@@ -571,6 +625,7 @@ const ViewZone = props => {
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"
+                onSelectedRowsChange={handleRowSelected}
                 defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
@@ -589,8 +644,13 @@ const ViewZone = props => {
           <DeleteZone
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}
-            id={formState.dataToDelete["id"]}
+            id={
+              formState.isMultiDelete
+                ? formState.MultiDeleteID
+                : formState.dataToDelete["id"]
+            }
             modalClose={modalClose}
+            isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
           />
         </Card>
