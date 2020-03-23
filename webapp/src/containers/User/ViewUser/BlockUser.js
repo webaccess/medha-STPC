@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -7,12 +12,13 @@ import Fade from "@material-ui/core/Fade";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { YellowButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "./DeleteUserStyles";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
 const BlockUser = props => {
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDataBlock: false,
     isValid: false,
@@ -21,6 +27,7 @@ const BlockUser = props => {
   });
 
   const handleCloseModal = () => {
+    setOpen(false);
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -38,6 +45,7 @@ const BlockUser = props => {
   };
 
   const handleSubmit = event => {
+    setOpen(true);
     /** CALL Put FUNCTION */
     blockUser();
     event.preventDefault();
@@ -104,42 +112,63 @@ const BlockUser = props => {
               {props.isUnBlocked || props.isUnMulBlocked ? "Unblock" : null}
               {props.isBlocked || props.isMulBlocked ? "Block" : null}
             </Typography>
-            <div className={classes.crossbtn}> 
-            <IconButton
-              className={classes.closeButton}
-              aria-label="close"
-              onClick={props.modalClose}
-            >
-              <CloseIcon />
-            </IconButton></div>
+            <div className={classes.crossbtn}>
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={props.modalClose}
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
           </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isUnBlocked || props.isUnMulBlocked
-                    ? "Do you want to Unblock this user"
+                    ? "Are you sure you want to unblock this user"
                     : null}
                   {props.isBlocked || props.isMulBlocked
-                    ? "Do you want to Block this user"
+                    ? "Are you sure you want to block this user"
                     : null}
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {props.isUnBlocked || props.isUnMulBlocked
-                      ? "Unblock"
-                      : null}
-                    {props.isBlocked || props.isMulBlocked ? "Block" : null}
+                    OK
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={props.modalClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>

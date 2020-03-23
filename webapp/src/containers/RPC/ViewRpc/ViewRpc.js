@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   TextField,
   Card,
@@ -29,10 +29,9 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
-const STATES_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const RPC_FILTER = "id";
 const SORT_FIELD_KEY = "_sort";
 
@@ -40,6 +39,7 @@ const ViewRpc = props => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -70,11 +70,15 @@ const ViewRpc = props => {
     fromAddRpc: props["location"]["fromAddRpc"]
       ? props["location"]["fromAddRpc"]
       : false,
+    isClearResetFilter: false,
     /** This is for delete */
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
-    isClearResetFilter: false,
+    isMultiDelete: false,
+    MultiDeleteID: [],
+    selectedRowFilter: true,
+    greenButtonChecker: true,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -276,7 +280,8 @@ const ViewRpc = props => {
       fromDeleteModal: false,
       messageToShow: "",
       fromAddRpc: false,
-      fromEditRpc: false
+      fromEditRpc: false,
+      isMultiDelete: false
     }));
   };
 
@@ -290,7 +295,8 @@ const ViewRpc = props => {
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
+      isMultiDelete: false
     }));
     if (status) {
       getRpcStateData(formState.pageSize, 1);
@@ -303,6 +309,44 @@ const ViewRpc = props => {
       showModalDelete: false
     }));
   };
+
+  /** Multi Delete */
+  /** Get multiple user id for delete */
+  const deleteMulUserById = () => {
+    let arrayId = [];
+
+    selectedRows.forEach(d => {
+      arrayId.push(d.id);
+    });
+
+    setFormState(formState => ({
+      ...formState,
+      showEditModal: false,
+      showModalDelete: true,
+      isMultiDelete: true,
+      MultiDeleteID: arrayId,
+      isDataDeleted: false,
+      fromDeleteModal: false,
+      fromAddRpc: false,
+      fromEditRpc: false
+    }));
+  };
+
+  /** On select multiple rows */
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount > 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
 
   const column = [
     { name: "Name", sortable: true, selector: "name" },
@@ -350,7 +394,16 @@ const ViewRpc = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_RPC_TEXT}
         </Typography>
-
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => deleteMulUserById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          Delete Selected RPC's
+        </GreenButton>
         <GreenButton
           variant="contained"
           color="primary"
@@ -567,6 +620,7 @@ const ViewRpc = props => {
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"
+                onSelectedRowsChange={handleRowSelected}
                 defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
@@ -585,8 +639,13 @@ const ViewRpc = props => {
           <DeleteRpc
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}
-            id={formState.dataToDelete["id"]}
+            id={
+              formState.isMultiDelete
+                ? formState.MultiDeleteID
+                : formState.dataToDelete["id"]
+            }
             modalClose={modalClose}
+            isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
           />
         </Card>

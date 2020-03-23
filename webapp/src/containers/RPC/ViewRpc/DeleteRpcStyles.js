@@ -2,14 +2,27 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    // padding: theme.spacing(1),
     maxWidth: "100%"
   },
   content: {
     display: "content"
   },
-  filterOptions: {
-    // marginTop: theme.spacing(3)
+  filterButtonsMargin: {
+    alignSelf: "center",
+    marginLeft: "10px"
+  },
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  edit_dialog: {
+    padding: "15px 15px"
+  },
+  deletemessage: {
+    flex: "inherit",
+    fontSize: "14px",
+    paddingBottom: "18px !important"
   },
   blockpanel: {
     display: "flex",
@@ -25,29 +38,9 @@ const useStyles = makeStyles(theme => ({
     padding: "0px",
     color: "#fff"
   },
-  filterMargin: {
-    // margin: theme.spacing(3)
-  },
-  filterButtonsMargin: {
-    // margin: theme.spacing(0.5)
-    alignSelf: "center",
-    marginLeft: "10px"
-  },
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  edit_dialog: {
-    padding: "25px 15px"
-  },
-  deletemessage: {
-    flex: "1 auto"
-  },
   paper: {
     backgroundColor: theme.palette.background.paper,
     border: "primary"
-    // padding: theme.spacing(2, 0, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
@@ -56,8 +49,9 @@ const useStyles = makeStyles(theme => ({
     margin: "0px",
     backgroundColor: "#000",
     color: "#fff",
-    fontSize: "18px",
-    paddingLeft: "8px"
+    fontSize: "16px",
+    paddingLeft: "8px",
+    width: "100%"
   },
   autoCompleteField: {
     width: 200
@@ -75,6 +69,10 @@ const useStyles = makeStyles(theme => ({
   },
   Cardtheming: {
     paddingBottom: "16px !important"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 

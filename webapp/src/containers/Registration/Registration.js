@@ -5,21 +5,15 @@ import {
   CardContent,
   Grid,
   TextField,
-  Typography,
   FormControl,
   Divider,
   InputLabel,
   IconButton,
   InputAdornment,
-  OutlinedInput,
-  Collapse
+  OutlinedInput
 } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
-import { Auth as auth } from "../../components";
 import * as routeConstants from "../../constants/RouteConstants";
-import * as _ from "lodash";
-import * as genericConstants from "../../constants/GenericConstants.js";
-import { Redirect } from "react-router-dom";
+import { Redirect } from "../../../node_modules/react-router-dom";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
@@ -29,39 +23,26 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-import Alert from "../../components/Alert/Alert.js";
-import GrayButton from "../../components/GrayButton/GrayButton.js";
-import YellowButton from "../../components/YellowButton/YellowButton.js";
+import Button from "../../components/GreenButton/GreenButton.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import { makeStyles } from "@material-ui/core/styles";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
-import registrationSchema from "./RegistrationSchema.js";
+import registrationSchema from "../Registration/RegistrationSchema.js";
 import { useHistory } from "react-router-dom";
-import * as serviceProvider from "../../api/Axios.js";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    maxWidth: "100%"
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120
   },
-  btnspace: {
-    padding: "0px 18px 50px"
-  },
-  formgrid: {
-    marginTop: theme.spacing(2),
-    alignItems: "center"
-  },
-  divider: {
-    marginTop: "15px",
-    marginBottom: "15px"
-  },
-  addcollegetextfield: {
-    padding: "25px"
+  selectEmpty: {
+    marginTop: theme.spacing(2)
   }
 }));
 
-const AddEditStudent = props => {
+const Registration = props => {
   let history = useHistory();
   const [user, setUser] = useState({
     firstName: "",
@@ -72,7 +53,7 @@ const AddEditStudent = props => {
     district: null,
     state: null,
     email: "",
-    contactNumber: "",
+    contactNumber: props.prop.location.state.contactNumber,
     userName: "",
     password: "",
     gender: "",
@@ -81,41 +62,21 @@ const AddEditStudent = props => {
     stream: null,
     currentAcademicYear: null,
     collegeRollNumber: null,
-    otp: ""
+    otp: props.prop.location.state.otp
   });
 
   const [formState, setFormState] = useState({
     isValid: false,
-    values: {},
+    values: { contact: props.prop.location.state.contactNumber },
     touched: {},
     errors: {},
     isSuccess: false,
-    showPassword: false,
-    editStudent: props.location.editStudent
-      ? props.location.editStudent
-      : false,
-    dataForEdit: props.location.dataForEdit
-      ? props.location.dataForEdit
-      : false,
-    counter: 0
+    showPassword: false
   });
   const [selectedDate, setSelectedDate] = React.useState(
     new Date("2000-01-01T21:11:54")
   );
-
-  const genderlist = [
-    { name: "Male", id: "male" },
-    { name: "Female", id: "female" }
-  ];
-
-  const physicallyHandicappedlist = [
-    { name: "Yes", id: true },
-    { name: "No", id: false }
-  ];
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
-
-  const { layout: Layout } = props;
+  const { layout: Layout } = props.prop;
   const classes = useStyles();
 
   const [statelist, setstatelist] = useState([]);
@@ -132,125 +93,21 @@ const AddEditStudent = props => {
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
-  if (formState.dataForEdit && !formState.counter) {
-    if (props.location["dataForEdit"]) {
-      if (props.location["dataForEdit"]["first_name"]) {
-        formState.values["firstname"] =
-          props.location["dataForEdit"]["first_name"];
-      }
-      if (props.location["dataForEdit"]["last_name"]) {
-        formState.values["lastname"] =
-          props.location["dataForEdit"]["last_name"];
-      }
-      if (props.location["dataForEdit"]["email"]) {
-        formState.values["email"] = props.location["dataForEdit"]["email"];
-      }
-      if (props.location["dataForEdit"]["contact_number"]) {
-        formState.values["contact"] =
-          props.location["dataForEdit"]["contact_number"];
-      }
-      if (props.location["dataForEdit"]["username"]) {
-        formState.values["username"] =
-          props.location["dataForEdit"]["username"];
-      }
-
-      if (
-        props.location["dataForEdit"]["state"] &&
-        props.location["dataForEdit"]["state"]["id"]
-      ) {
-        formState.values["state"] =
-          props.location["dataForEdit"]["state"]["id"];
-      }
-      if (
-        props.location["dataForEdit"]["studentInfo"]["stream"] &&
-        props.location["dataForEdit"]["studentInfo"]["stream"]["id"]
-      ) {
-        formState.values["stream"] =
-          props.location["dataForEdit"]["studentInfo"]["stream"]["id"];
-      }
-
-      if (
-        props.location["dataForEdit"]["studentInfo"]["district"] &&
-        props.location["dataForEdit"]["studentInfo"]["district"]["id"]
-      ) {
-        formState.values["district"] =
-          props.location["dataForEdit"]["studentInfo"]["district"]["id"];
-      }
-
-      if (props.location["dataForEdit"]["studentInfo"]["father_first_name"]) {
-        formState.values["fatherFirstName"] =
-          props.location["dataForEdit"]["studentInfo"]["father_first_name"];
-      }
-      if (props.location["dataForEdit"]["studentInfo"]["father_last_name"]) {
-        formState.values["fatherLastName"] =
-          props.location["dataForEdit"]["studentInfo"]["father_last_name"];
-      }
-      if (props.location["dataForEdit"]["studentInfo"]["address"]) {
-        formState.values["address"] =
-          props.location["dataForEdit"]["studentInfo"]["address"];
-      }
-      if (props.location["dataForEdit"]["studentInfo"]["gender"]) {
-        formState.values["gender"] =
-          props.location["dataForEdit"]["studentInfo"]["gender"];
-      }
-
-      if (props.location["dataForEdit"]["studentInfo"]["roll_number"]) {
-        formState.values["rollnumber"] =
-          props.location["dataForEdit"]["studentInfo"]["roll_number"];
-      }
-
-      if (props.location["dataForEdit"]["studentInfo"]) {
-        formState.values["physicallyHandicapped"] =
-          props.location["dataForEdit"]["studentInfo"]["physicallyHandicapped"];
-      }
-      if (
-        props.location["dataForEdit"]["college"] &&
-        props.location["dataForEdit"]["college"]["id"]
-      ) {
-        formState.values["college"] =
-          props.location["dataForEdit"]["college"]["id"];
-      }
-      if (props.location["dataForEdit"]["studentInfo"]["date_of_birth"]) {
-        setSelectedDate(
-          new Date(
-            props.location["dataForEdit"]["studentInfo"]["date_of_birth"]
-          )
-        );
-      }
-    }
-    formState.counter += 1;
-  }
-
-  if (props.location.state && !formState.counter) {
-    if (props.location.state.contactNumber && props.location.state.otp) {
-      formState.values["contact"] = props.location.state.contactNumber;
-      formState.values["otp"] = props.location.state.otp;
-    }
-    formState.counter += 1;
-  }
-
   const handleSubmit = event => {
     event.preventDefault();
 
-    let schema;
-    if (formState.editStudent) {
-      schema = Object.assign(
-        {},
-        _.omit(registrationSchema, ["password", "otp"])
-      );
-    } else {
-      schema = registrationSchema;
-    }
-    console.log(schema);
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
-      schema
+      registrationSchema
     );
     console.log(checkAllFieldsValid);
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
-      formState.errors = formUtilities.setErrors(formState.values, schema);
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        registrationSchema
+      );
 
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
@@ -259,9 +116,12 @@ const AddEditStudent = props => {
       /** This is used to find out which all required fields are not filled */
       formState.values = formUtilities.getListOfKeysNotPresent(
         formState.values,
-        schema
+        registrationSchema
       );
-      formState.errors = formUtilities.setErrors(formState.values, schema);
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        registrationSchema
+      );
     }
     console.log(isValid, formState);
     if (isValid) {
@@ -283,95 +143,44 @@ const AddEditStudent = props => {
   };
 
   const postStudentData = () => {
-    let postData;
-    if (formState.editStudent) {
-      postData = databaseUtilities.editStudent(
-        formState.values["firstname"],
-        formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
-        formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
-        formState.values["email"],
-        formState.values["contact"],
-        formState.values["username"],
-        formState.values["gender"],
-        selectedDate.getFullYear() +
-          "-" +
-          (selectedDate.getMonth() + 1) +
-          "-" +
-          selectedDate.getDate(),
-        formState.values["physicallyHandicapped"],
-        formState.values["college"],
-        formState.values["stream"],
-        parseInt(formState.values["rollnumber"]),
-        formState.dataForEdit.id
-      );
-      console.log(postData);
-      console.log(formState.dataForEdit.id);
-      serviceProvider
-        .serviceProviderForPutRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-          formState.dataForEdit.studentInfo.id,
-          postData
-        )
-        .then(response => {
-          console.log(response);
-          console.log("Success");
-          setIsSuccess(true);
-          setFormState({ ...formState, isSuccess: true });
-          history.push({
-            pathname: routeConstants.VIEW_PROFILE,
-            success: true
-          });
-        })
-        .catch(err => {
-          console.log(err);
-          console.log(err.response.data);
-          console.log(JSON.stringify(err));
-          setIsFailed(true);
-        });
-    } else {
-      postData = databaseUtilities.addStudent(
-        formState.values["firstname"],
-        formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
-        formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
-        formState.values["email"],
-        formState.values["contact"],
-        formState.values["username"],
-        formState.values["password"],
-        formState.values["gender"],
-        selectedDate.getFullYear() +
-          "-" +
-          (selectedDate.getMonth() + 1) +
-          "-" +
-          selectedDate.getDate(),
-        formState.values["physicallyHandicapped"],
-        formState.values["college"],
-        formState.values["stream"],
-        parseInt(formState.values["rollnumber"]),
-        formState.values.otp
-      );
-      console.log(postData);
-      axios
-        .post(
-          strapiApiConstants.STRAPI_DB_URL +
-            strapiApiConstants.STRAPI_REGISTER_STUDENT,
-          postData
-        )
-        .then(response => {
-          console.log(response);
-          history.push(routeConstants.REGISTERED);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
+    let postData = databaseUtilities.addStudent(
+      formState.values["firstname"],
+      formState.values["lastname"],
+      formState.values["fatherFirstName"],
+      formState.values["fatherLastName"],
+      formState.values["address"],
+      formState.values["state"],
+      formState.values["district"],
+      formState.values["email"],
+      formState.values["contact"],
+      formState.values["username"],
+      formState.values["password"],
+      formState.values["gender"],
+      selectedDate.getFullYear() +
+        "-" +
+        (selectedDate.getMonth() + 1) +
+        "-" +
+        selectedDate.getDate(),
+      formState.values["physicallyHandicapped"],
+      formState.values["college"],
+      formState.values["stream"],
+      parseInt(formState.values["rollnumber"]),
+      user.otp
+    );
+    console.log(postData);
+    axios
+      .post(
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_REGISTER_STUDENT,
+        postData
+      )
+      .then(response => {
+        console.log(response);
+        history.push(routeConstants.REGISTERED);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   const getStreams = () => {
@@ -480,56 +289,6 @@ const AddEditStudent = props => {
 
   return (
     <Layout>
-      {console.log(formState)}
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {formState.editStudent
-            ? genericConstants.EDIT_STUDENT_PROFILE
-            : genericConstants.STUDENT_REGISTRATION}
-        </Typography>
-        {isFailed && formState.editStudent ? (
-          <Collapse in={isFailed}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setIsFailed(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-        {isFailed && !formState.editStudent ? (
-          <Collapse in={isFailed}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setIsFailed(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-      </Grid>
       <Card>
         {console.log(props)}
         {console.log(formState)}
@@ -537,13 +296,15 @@ const AddEditStudent = props => {
         {console.log(statelist)}
         {console.log(user)}
         <form autoComplete="off">
+          <CardHeader title="Student Registration" />
+          <Divider />
           <CardContent>
-            <Grid container spacing={3} className={classes.formgrid}>
-              <Grid item md={3} xs={12}>
+            <Grid container spacing={3}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   label="First Name"
                   name="firstname"
-                  value={formState.values["firstname"]}
+                  value={formState.values[user.firstName]}
                   variant="outlined"
                   error={hasError("firstname")}
                   required
@@ -558,11 +319,11 @@ const AddEditStudent = props => {
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   label="Last Name"
                   name="lastname"
-                  value={formState.values["lastname"]}
+                  value={formState.values[user.lastName]}
                   variant="outlined"
                   required
                   fullWidth
@@ -577,11 +338,11 @@ const AddEditStudent = props => {
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   label="Father's First Name"
                   name="fatherFirstName"
-                  value={formState.values["fatherFirstName"] || ""}
+                  value={formState.values[user.fatherFirstName]}
                   variant="outlined"
                   required
                   fullWidth
@@ -596,11 +357,11 @@ const AddEditStudent = props => {
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   label="Father's Last Name"
                   name="fatherLastName"
-                  value={formState.values["fatherLastName"] || ""}
+                  value={formState.values[user.fatherLastName]}
                   variant="outlined"
                   required
                   fullWidth
@@ -619,7 +380,7 @@ const AddEditStudent = props => {
                 <TextField
                   label="Address"
                   name="address"
-                  value={formState.values["address"] || ""}
+                  value={formState.values[user.address]}
                   variant="outlined"
                   required
                   fullWidth
@@ -634,7 +395,7 @@ const AddEditStudent = props => {
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <Autocomplete
                   id="combo-box-demo"
                   className={classes.root}
@@ -643,13 +404,6 @@ const AddEditStudent = props => {
                   onChange={(event, value) => {
                     handleChangeAutoComplete("state", event, value);
                   }}
-                  value={
-                    statelist[
-                      statelist.findIndex(function(item, i) {
-                        return item.id === formState.values.state;
-                      })
-                    ] || null
-                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -668,7 +422,7 @@ const AddEditStudent = props => {
                   )}
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <Autocomplete
                   id="combo-box-demo"
                   className={classes.root}
@@ -677,13 +431,6 @@ const AddEditStudent = props => {
                   onChange={(event, value) => {
                     handleChangeAutoComplete("district", event, value);
                   }}
-                  value={
-                    districtlist[
-                      districtlist.findIndex(function(item, i) {
-                        return item.id === formState.values.district;
-                      })
-                    ] || null
-                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -703,11 +450,11 @@ const AddEditStudent = props => {
                 />
               </Grid>
 
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <TextField
                   label="Contact Number"
                   name="contact"
-                  value={formState.values["contact"] || ""}
+                  value={user.contactNumber}
                   variant="outlined"
                   required
                   fullWidth
@@ -722,7 +469,7 @@ const AddEditStudent = props => {
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     variant="inline"
@@ -746,22 +493,18 @@ const AddEditStudent = props => {
                   />
                 </MuiPickersUtilsProvider>
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <Autocomplete
                   id="combo-box-demo"
                   className={classes.root}
-                  options={genderlist}
+                  options={[
+                    { name: "Male", id: "male" },
+                    { name: "Female", id: "female" }
+                  ]}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) => {
                     handleChangeAutoComplete("gender", event, value);
                   }}
-                  value={
-                    genderlist[
-                      genderlist.findIndex(function(item, i) {
-                        return item.id === formState.values.gender;
-                      })
-                    ] || null
-                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -781,15 +524,14 @@ const AddEditStudent = props => {
                   )}
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <TextField
                   label="Email-Id"
                   name="email"
-                  value={formState.values["email"] || ""}
+                  value={formState.values[user.email]}
                   variant="outlined"
                   required
                   fullWidth
-                  disabled={formState.editStudent ? true : false}
                   onChange={handleChange}
                   error={hasError("email")}
                   helperText={
@@ -801,23 +543,15 @@ const AddEditStudent = props => {
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={6} xs={12}>
                 <Autocomplete
                   id="combo-box-demo"
                   className={classes.root}
                   options={collegelist}
-                  disabled={formState.editStudent ? true : false}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) => {
                     handleChangeAutoComplete("college", event, value);
                   }}
-                  value={
-                    collegelist[
-                      collegelist.findIndex(function(item, i) {
-                        return item.id === formState.values.college;
-                      })
-                    ] || null
-                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -837,23 +571,15 @@ const AddEditStudent = props => {
                   )}
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={6} xs={12}>
                 <Autocomplete
                   id="combo-box-demo"
                   className={classes.root}
                   options={streamlist}
-                  disabled={formState.editStudent ? true : false}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) => {
                     handleChangeAutoComplete("stream", event, value);
                   }}
-                  value={
-                    streamlist[
-                      streamlist.findIndex(function(item, i) {
-                        return item.id === formState.values.stream;
-                      })
-                    ] || null
-                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -873,14 +599,13 @@ const AddEditStudent = props => {
                 />
               </Grid>
 
-              <Grid item md={3} xs={12}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   label="College Roll Number "
                   name="rollnumber"
-                  value={formState.values["rollnumber"] || ""}
+                  value={formState.values[user.collegeRollNumber]}
                   variant="outlined"
                   fullWidth
-                  required
                   onChange={handleChange}
                   error={hasError("rollnumber")}
                   helperText={
@@ -892,15 +617,14 @@ const AddEditStudent = props => {
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={6} xs={12}>
                 <TextField
                   label="Username"
                   name="username"
-                  value={formState.values["username"] || ""}
+                  value={formState.values[user.userName]}
                   variant="outlined"
                   required
                   fullWidth
-                  disabled={formState.editStudent ? true : false}
                   onChange={handleChange}
                   error={hasError("username")}
                   helperText={
@@ -913,59 +637,60 @@ const AddEditStudent = props => {
                 />
               </Grid>
 
-              {formState.editStudent ? null : (
-                <Grid item md={3} xs={12}>
-                  <FormControl fullWidth variant="outlined">
-                    <InputLabel
-                      htmlFor="outlined-adornment-password"
-                      fullWidth
-                      error={hasError("password")}
-                    >
-                      Password
-                    </InputLabel>
-                    <OutlinedInput
-                      label="Password"
-                      name="password"
-                      type={formState.showPassword ? "text" : "password"}
-                      value={formState.values[user.password]}
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      error={hasError("password")}
-                      helperText={
-                        hasError("password")
-                          ? formState.errors["password"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      endAdornment={
-                        <InputAdornment
-                          position="end"
-                          error={hasError("password")}
+              <Grid item md={6} xs={12}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel
+                    htmlFor="outlined-adornment-password"
+                    fullWidth
+                    error={hasError("password")}
+                  >
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    label="Password"
+                    name="password"
+                    type={formState.showPassword ? "text" : "password"}
+                    value={formState.values[user.password]}
+                    required
+                    fullWidth
+                    onChange={handleChange}
+                    error={hasError("password")}
+                    helperText={
+                      hasError("password")
+                        ? formState.errors["password"].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    endAdornment={
+                      <InputAdornment
+                        position="end"
+                        error={hasError("password")}
+                      >
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
                         >
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            edge="end"
-                          >
-                            {formState.showPassword ? (
-                              <Visibility />
-                            ) : (
-                              <VisibilityOff />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                  </FormControl>
-                </Grid>
-              )}
-              <Grid item md={3} xs={12}>
+                          {formState.showPassword ? (
+                            <Visibility />
+                          ) : (
+                            <VisibilityOff />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={6} xs={12}>
                 <Autocomplete
                   id="combo-box-demo"
                   className={classes.root}
-                  options={physicallyHandicappedlist}
+                  options={[
+                    { name: "Yes", id: true },
+                    { name: "No", id: false }
+                  ]}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) => {
                     handleChangeAutoComplete(
@@ -974,15 +699,6 @@ const AddEditStudent = props => {
                       value
                     );
                   }}
-                  value={
-                    physicallyHandicappedlist[
-                      physicallyHandicappedlist.findIndex(function(item, i) {
-                        return (
-                          item.id === formState.values.physicallyHandicapped
-                        );
-                      })
-                    ] || null
-                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -1003,43 +719,20 @@ const AddEditStudent = props => {
                   )}
                 />
               </Grid>
-              {formState.editStudent ? (
-                <Grid item md={12} xs={12} className={classes.btnspace}>
-                  <YellowButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    style={{ marginRight: "18px" }}
-                    onClick={handleSubmit}
-                  >
-                    <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
-                  </YellowButton>
-                  <GrayButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    onClick={() => {
-                      history.push(routeConstants.VIEW_PROFILE);
-                    }}
-                  >
-                    <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
-                  </GrayButton>
-                </Grid>
-              ) : (
-                <Grid item md={12} xs={12} className={classes.btnspace}>
-                  <YellowButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    onClick={handleSubmit}
-                  >
-                    <span>{authPageConstants.REGISTER}</span>
-                  </YellowButton>
-                </Grid>
-              )}
+              <Grid item md={12} xs={12} style={{ textAlign: "end" }}>
+                <Button
+                  color="primary"
+                  type="submit"
+                  mfullWidth
+                  variant="contained"
+                  greenButtonChecker={true}
+                  onClick={handleSubmit}
+                >
+                  <span style={{ margin: "10px" }}>
+                    {authPageConstants.REGISTER}
+                  </span>
+                </Button>
+              </Grid>
             </Grid>
           </CardContent>
         </form>
@@ -1047,4 +740,4 @@ const AddEditStudent = props => {
     </Layout>
   );
 };
-export default AddEditStudent;
+export default Registration;

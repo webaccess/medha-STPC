@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   TextField,
   Card,
@@ -10,6 +10,7 @@ import {
   Tooltip
 } from "@material-ui/core";
 
+import BlockIcon from "@material-ui/icons/Block";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Table, Spinner, Alert } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -24,6 +25,7 @@ import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import BlockUnblockCollege from "./BlockUnblockCollege";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 /** Contsants for filters */
 const COLLEGE_FILTER = "id";
@@ -48,6 +50,7 @@ const ManageCollege = props => {
   const [rpcs, setRpcs] = React.useState([]);
   const [zones, setZones] = React.useState([]);
   const [states, setStates] = React.useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   /**------------------------------------ */
   /** Our actual form data  */
   const [formState, setFormState] = useState({
@@ -80,6 +83,10 @@ const ManageCollege = props => {
     isDataDeleted: false,
     dataToDelete: {},
     showModalDelete: false,
+    isMultiDelete: false,
+    MultiDeleteID: [],
+    selectedRowFilter: true,
+    greenButtonChecker: true,
     /** View  */
     isView: false,
     /** Filters */
@@ -91,6 +98,11 @@ const ManageCollege = props => {
     isDataBlockUnblock: false,
     dataToBlockUnblock: {},
     showModalBlock: false,
+    isMulBlocked: false,
+    isMulUnBlocked: false,
+    multiBlockCollegeIds: [],
+    bottonBlockUnblock: "Block Selected Colleges",
+    fromBlockModal: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -324,34 +336,6 @@ const ManageCollege = props => {
     getDataForEdit(event.target.id);
   };
 
-  /**----------------------------------------------------- */
-  /** Delete cell */
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
-  };
-
-  const deleteCell = event => {
-    event.persist();
-    setFormState(formState => ({
-      ...formState,
-      dataToDelete: { id: event.target.id },
-      showModalDelete: true
-    }));
-  };
-
-  /** This is used to handle the close modal event for delete*/
-  const handleCloseDeleteModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    setFormState(formState => ({
-      ...formState,
-      isDataDeleted: false,
-      showModalDelete: false
-    }));
-    if (formState.isDataDeleted) {
-      getCollegeData(formState.pageSize, formState.page);
-    }
-  };
   /**---------------------------------------------------------- */
   /** View Cell */
   const viewCell = event => {
@@ -386,7 +370,14 @@ const ManageCollege = props => {
         setFormState(formState => ({
           ...formState,
           dataToBlockUnblock: editData,
-          showModalBlock: true
+          isMulBlocked: false,
+          isMulUnBlocked: false,
+          showModalBlock: true,
+          multiBlockCollegeIds: [],
+          fromDeleteModal: false,
+          fromAddCollege: false,
+          fromeditCollege: false,
+          fromBlockModal: false
         }));
       })
       .catch(error => {
@@ -394,17 +385,56 @@ const ManageCollege = props => {
       });
   };
 
-  /** This handles close unblock block modal */
-  const handleCloseBlockUnblockModal = () => {
+  const blockMulCollegeById = () => {
+    let arrayId = [];
+    for (var k = 0; k < selectedRows.length; k++) {
+      arrayId.push(selectedRows[k]["id"]);
+    }
+    if (formState.bottonBlockUnblock === "Block Selected Colleges") {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: true,
+        isMulUnBlocked: false,
+        showModalBlock: true,
+        multiBlockCollegeIds: arrayId,
+        fromDeleteModal: false,
+        fromAddCollege: false,
+        fromeditCollege: false,
+        fromBlockModal: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: false,
+        isMulUnBlocked: true,
+        showModalBlock: true,
+        multiBlockCollegeIds: arrayId,
+        fromDeleteModal: false,
+        fromAddCollege: false,
+        fromeditCollege: false,
+        fromBlockModal: false
+      }));
+    }
+  };
+
+  /** This is used to handle the close modal event */
+  const handleCloseBlockUnblockModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
     //restoreData();
+    setOpen(true);
     setFormState(formState => ({
       ...formState,
-      isDataBlockUnblock: false,
-      showModalBlock: false
+      isDataBlockUnblock: status,
+      showModalBlock: false,
+      fromBlockModal: true,
+      isMulBlocked: false,
+      isMulUnBlocked: false,
+      multiBlockCollegeIds: [],
+      dataToBlockUnblock: {},
+      messageToShow: statusToShow
     }));
-    if (formState.isDataBlockUnblock) {
-      getCollegeData(formState.pageSize, formState.page);
+    if (status) {
+      getCollegeData(formState.pageSize, 1);
     }
   };
 
@@ -449,6 +479,43 @@ const ManageCollege = props => {
     }
   };
 
+  /**----------------------------------------------------- */
+
+  const deleteCell = event => {
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: {
+        id: event.target.id,
+        name: event.target.getAttribute("value")
+      },
+      showModalDelete: true,
+      isDataDeleted: false,
+      messageToShow: "",
+      fromDeleteModal: false,
+      fromAddCollege: false,
+      fromeditCollege: false,
+      fromBlockModal: false
+    }));
+  };
+
+  /** This is used to handle the close modal event */
+  const handleCloseDeleteModal = (status, statusToShow = "") => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setOpen(true);
+    setFormState(formState => ({
+      ...formState,
+      isDataDeleted: status,
+      showModalDelete: false,
+      fromDeleteModal: true,
+      isMultiDelete: false,
+      messageToShow: statusToShow
+    }));
+    if (status) {
+      getCollegeData(formState.pageSize, 1);
+    }
+  };
+
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
@@ -456,6 +523,67 @@ const ManageCollege = props => {
       showModalDelete: false
     }));
   };
+
+  /** Multi Delete */
+  /** Get multiple user id for delete */
+  const deleteMulCollegeById = () => {
+    let arrayId = [];
+
+    selectedRows.forEach(d => {
+      arrayId.push(d.id);
+    });
+
+    setFormState(formState => ({
+      ...formState,
+      showEditModal: false,
+      showModalDelete: true,
+      isMultiDelete: true,
+      MultiDeleteID: arrayId,
+      isDataDeleted: false,
+      fromDeleteModal: false,
+      fromAddCollege: false,
+      fromeditCollege: false,
+      fromBlockModal: false
+    }));
+  };
+
+  /** On select multiple rows */
+  const handleRowSelected = useCallback(state => {
+    let blockData = [];
+    let unblockData = [];
+
+    if (state.selectedCount > 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+
+    state.selectedRows.forEach(data => {
+      if (data.blocked === false) {
+        blockData.push(data);
+      } else {
+        unblockData.push(data);
+      }
+      if (blockData.length > 0) {
+        setFormState(formState => ({
+          ...formState,
+          bottonBlockUnblock: "Block Selected Colleges"
+        }));
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          bottonBlockUnblock: "Unblock Selected Colleges"
+        }));
+      }
+    });
+    setSelectedRows(state.selectedRows);
+  }, []);
 
   /** Columns to show in table */
   const column = [
@@ -504,6 +632,7 @@ const ManageCollege = props => {
           <i
             className="material-icons"
             id={cell.id}
+            value={cell.name}
             onClick={blockCell}
             style={
               cell.blocked
@@ -524,6 +653,7 @@ const ManageCollege = props => {
           <i
             className="material-icons"
             id={cell.id}
+            value={cell.name}
             onClick={deleteCell}
             style={{ color: "red" }}
           >
@@ -543,6 +673,29 @@ const ManageCollege = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_COLLEGE_TEXT}
         </Typography>
+
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => blockMulCollegeById()}
+          startIcon={<BlockIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          {formState.bottonBlockUnblock}
+        </GreenButton>
+
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => deleteMulCollegeById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          Delete Selected Colleges
+        </GreenButton>
+
         <GreenButton
           variant="contained"
           color="primary"
@@ -642,6 +795,102 @@ const ManageCollege = props => {
             </Alert>
           </Collapse>
         ) : null}
+        {formState.fromDeleteModal &&
+        formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        !formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromBlockModal &&
+        formState.isDataBlockUnblock &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromBlockModal &&
+        !formState.isDataBlockUnblock &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -806,6 +1055,7 @@ const ManageCollege = props => {
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"
+                onSelectedRowsChange={handleRowSelected}
                 defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
@@ -826,15 +1076,23 @@ const ManageCollege = props => {
           <DeleteCollege
             showModal={formState.showModalDelete}
             closeModal={handleCloseDeleteModal}
-            id={formState.dataToDelete["id"]}
-            deleteEvent={isDeleteCellCompleted}
+            id={
+              formState.isMultiDelete
+                ? formState.MultiDeleteID
+                : formState.dataToDelete["id"]
+            }
             modalClose={modalClose}
+            isMultiDelete={formState.isMultiDelete ? true : false}
+            dataToDelete={formState.dataToDelete}
           />
           <BlockUnblockCollege
             showModal={formState.showModalBlock}
             closeModal={handleCloseBlockUnblockModal}
             dataToBlockUnblock={formState.dataToBlockUnblock}
             blockUnblockEvent={isBlockUnblockCellCompleted}
+            isMultiBlock={formState.isMulBlocked ? true : false}
+            isMultiUnblock={formState.isMulUnBlocked ? true : false}
+            multiBlockCollegeIds={formState.multiBlockCollegeIds}
             modalClose={modalClose}
           />
         </Card>

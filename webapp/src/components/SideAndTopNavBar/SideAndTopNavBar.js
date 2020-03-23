@@ -13,7 +13,8 @@ import {
   ListItem,
   Collapse,
   Button,
-  InputLabel
+  InputLabel,
+  ListItemIcon
 } from "@material-ui/core";
 
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
@@ -118,15 +119,6 @@ const useListStyles = makeStyles(theme => ({
     color: "#f6c80a",
     borderLeft: "4px solid #f6c80a"
   },
-  icon: {
-    color: theme.palette.icon,
-    width: 24,
-    height: 24,
-    display: "flex",
-    alignItems: "center",
-    marginRight: theme.spacing(2),
-    color: "#010101"
-  },
   active: {
     color: "#010101",
     backgroundColor: "#f1f1f1",
@@ -153,6 +145,13 @@ const useListStyles = makeStyles(theme => ({
         borderLeft: "4px solid #f1f1f1"
       }
     }
+  },
+  padding: {
+    paddingTop: "0px",
+    paddingBottom: "0px"
+  },
+  expandPadding: {
+    paddingRight: "10px"
   }
 }));
 
@@ -190,24 +189,31 @@ function SideAndTopNavBar(props) {
         return (
           <div key={list.name} className={listClasses.navigationpanel}>
             {list.items != null ? (
-              <List {...rest} className={clsx(listClasses.root, className)}>
+              <List
+                {...rest}
+                className={clsx(
+                  listClasses.root,
+                  className,
+                  listClasses.padding
+                )}
+              >
                 <ListItem
                   className={listClasses.button}
                   disableGutters
                   key={list.name}
                   onClick={e => handleClick(list.name)}
                   selected={index === id}
-                  classes={{
-                    selected: listClasses.activeItem
-                  }}
                 >
-                  <div className={listClasses.icon}>{list.Icon}</div>
+                  <ListItemIcon>{list.Icon}</ListItemIcon>
                   {list.name}
-                  {get(subListState, list.name) ? (
-                    <ExpandLess />
-                  ) : (
-                    <ExpandMore />
-                  )}
+                  <div className={topBarClasses.flexGrow} />
+                  <div className={listClasses.expandPadding}>
+                    {get(subListState, list.name) ? (
+                      <ExpandLess />
+                    ) : (
+                      <ExpandMore />
+                    )}
+                  </div>
                 </ListItem>
                 <Collapse
                   in={get(subListState, list.name)}
@@ -238,20 +244,24 @@ function SideAndTopNavBar(props) {
                 </Collapse>
               </List>
             ) : (
-              <List {...rest} className={clsx(listClasses.root, className)}>
+              <List
+                {...rest}
+                className={clsx(
+                  listClasses.root,
+                  className,
+                  listClasses.padding
+                )}
+              >
                 <ListItem
                   className={listClasses.button}
                   disableGutters
                   key={list.name}
                   selected={index === id}
-                  classes={{
-                    selected: listClasses.activeItem
-                  }}
                   component={CustomRouterLink}
                   to={list.link}
                   onClick={() => setIndex(id)}
                 >
-                  <div className={listClasses.icon}>{list.Icon}</div>
+                  <ListItemIcon>{list.Icon}</ListItemIcon>
                   {list.name}
                 </ListItem>
               </List>
