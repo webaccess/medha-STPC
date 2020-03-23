@@ -237,7 +237,12 @@ const DeleteState = props => {
             </div>
             <div className={classes.edit_dialog}>
               <Grid item xs={12}>
-                <Grid container spacing={2} alignItems="center">
+                <Grid
+                  container
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="center"
+                >
                   <Grid item lg className={classes.deletemessage}>
                     {props.isMultiDelete
                       ? "Are you sure you want to delete " +
@@ -253,7 +258,7 @@ const DeleteState = props => {
                 <Grid
                   container
                   direction="row"
-                  justify="flex-end"
+                  justifycontent="Center"
                   alignItems="center"
                   spacing={2}
                 >
@@ -264,7 +269,7 @@ const DeleteState = props => {
                       variant="contained"
                       onClick={handleSubmit}
                     >
-                      OK
+                      Ok
                     </YellowButton>
                   </Grid>
                   <Grid item>

@@ -124,7 +124,7 @@ const BlockUser = props => {
           </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
-              <Grid container spacing={2} alignItems="center">
+              <Grid container spacing={2} alignItems="center" justifyContent="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isUnBlocked || props.isUnMulBlocked
                     ? "Are you sure you want to unblock this user"
@@ -139,7 +139,7 @@ const BlockUser = props => {
               <Grid
                 container
                 direction="row"
-                justify="flex-end"
+                justify="center"
                 alignItems="center"
                 spacing={2}
               >
