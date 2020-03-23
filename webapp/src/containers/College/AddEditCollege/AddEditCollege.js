@@ -269,14 +269,17 @@ const AddEditCollege = props => {
       "state.id": formState.values[state]
     };
 
-    await serviceProviders
-      .serviceProviderForGetRequest(DISTRICTS_URL, params)
-      .then(res => {
-        setDistricts(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    if (formState.values[state] !== undefined) {
+      await serviceProviders
+        .serviceProviderForGetRequest(DISTRICTS_URL, params)
+        .then(res => {
+          setDistricts(res.data.result);
+          console.log(res.data.result, params);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
   }
 
   /** Handle change for text fields */

@@ -552,7 +552,7 @@ const ManageCollege = props => {
     let blockData = [];
     let unblockData = [];
 
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false

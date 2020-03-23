@@ -205,7 +205,13 @@ const DeleteRpc = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Are you sure you want to delete?
+                  {props.isMultiDelete
+                    ? "Are you sure you want to delete " +
+                      props.id.length +
+                      " RPC's?"
+                    : "Are you sure you want to delete RPC " +
+                      formState.dataToDelete["name"] +
+                      "?"}
                 </Grid>
               </Grid>
             </Grid>

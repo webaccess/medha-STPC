@@ -334,7 +334,7 @@ const ViewZone = props => {
 
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false
