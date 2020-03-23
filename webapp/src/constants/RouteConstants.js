@@ -55,3 +55,6 @@ export const EDIT_RPC = "/edit-rpc";
 
 /**STUDENT's */
 export const MANAGE_STUDENT = "/manage-student";
+
+/**Event's */
+export const MANAGE_EVENT = "/manage-event";
