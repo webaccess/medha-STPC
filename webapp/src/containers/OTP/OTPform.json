@@ -29,7 +29,7 @@
         "message": "OTP is required"
       },
       "validateOtp": {
-        "value": "5",
+        "value": "6",
         "message": "Invalid OTP "
       }
     }

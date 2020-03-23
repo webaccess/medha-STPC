@@ -46,7 +46,6 @@ const AddEditEducation = props => {
   });
 
   /** Part for editing Education */
-  console.log(props);
   if (formState.isEditEducation && !formState.counter) {
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["qualification"]) {
