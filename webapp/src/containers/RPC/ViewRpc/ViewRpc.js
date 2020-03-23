@@ -599,7 +599,12 @@ const ViewRpc = props => {
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField variant="outlined" onChange={handleFilterChange} />
+                <TextField
+                  label={"RPC"}
+                  placeholder="RPC"
+                  variant="outlined"
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton

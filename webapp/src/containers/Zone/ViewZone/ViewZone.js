@@ -602,7 +602,12 @@ const ViewZone = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField variant="outlined" onChange={handleFilterChange} />
+                <TextField
+                  label={"Zone"}
+                  placeholder="Zone"
+                  variant="outlined"
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton

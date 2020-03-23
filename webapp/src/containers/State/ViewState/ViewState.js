@@ -139,10 +139,17 @@ const ViewStates = props => {
       .serviceProviderForGetRequest(STATES_URL, paramsForState)
       .then(res => {
         formState.dataToShow = [];
+        let tempCollegeData = [];
+        let college_data = res.data.result;
+
+        /** As college data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+        tempCollegeData = convertCollegeData(college_data);
         setFormState(formState => ({
           ...formState,
           states: res.data.result,
-          dataToShow: res.data.result,
+          dataToShow: tempCollegeData,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
@@ -153,6 +160,20 @@ const ViewStates = props => {
       .catch(error => {
         console.log("error", error);
       });
+  };
+
+  /** Converting college unstructured data into structred flat format for passing it into datatable */
+  const convertCollegeData = data => {
+    let collegeDataArray = [];
+    if (data.length > 0) {
+      for (let i in data) {
+        var tempIndividualCollegeData = {};
+        tempIndividualCollegeData["id"] = data[i]["id"];
+        tempIndividualCollegeData["name"] = data[i]["name"];
+        collegeDataArray.push(tempIndividualCollegeData);
+      }
+      return collegeDataArray;
+    }
   };
 
   /** Pagination to handle row change*/
@@ -353,10 +374,18 @@ const ViewStates = props => {
       .serviceProviderForGetRequest(FilterStateURL)
       .then(res => {
         formState.dataToShow = [];
+        let tempCollegeData = [];
+        let college_data = res.data.result;
+
+        /** As college data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+
+        tempCollegeData = convertCollegeData(college_data);
         setFormState(formState => ({
           ...formState,
           states: res.data.result,
-          dataToShow: res.data.result,
+          dataToShow: tempCollegeData,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
@@ -580,7 +609,12 @@ const ViewStates = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField variant="outlined" onChange={handleFilterChange} />
+                <TextField
+                  label={"State"}
+                  placeholder="State"
+                  variant="outlined"
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
@@ -626,7 +660,7 @@ const ViewStates = props => {
           )
         ) : (
           <div className={classes.noDataMargin}>No data to show</div>
-        )}
+        )}{" "}
         <DeleteState
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}

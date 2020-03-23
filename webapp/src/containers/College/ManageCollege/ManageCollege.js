@@ -28,7 +28,7 @@ import BlockUnblockCollege from "./BlockUnblockCollege";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 /** Contsants for filters */
-const COLLEGE_FILTER = "id";
+const COLLEGE_FILTER = "name_contains";
 const STATE_FILTER = "rpc.state";
 const ZONE_FILTER = "zone.id";
 const RPC_FILTER = "rpc.id";
@@ -524,6 +524,11 @@ const ManageCollege = props => {
     }));
   };
 
+  const handleFilterChange = event => {
+    console.log("handleFilterChange", event.target.name, event.target.value);
+    formState.filterDataParameters[event.target.name] = event.target.value;
+  };
+
   /** Multi Delete */
   /** Get multiple user id for delete */
   const deleteMulCollegeById = () => {
@@ -895,39 +900,13 @@ const ManageCollege = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                {collegesFilter ? (
-                  <Autocomplete
-                    id="collegeName_filter_college"
-                    name={COLLEGE_FILTER}
-                    options={collegesFilter}
-                    className={classes.autoCompleteField}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) =>
-                      handleChangeAutoComplete(COLLEGE_FILTER, event, value)
-                    }
-                    value={
-                      formState.isClearResetFilter
-                        ? null
-                        : collegesFilter[
-                            collegesFilter.findIndex(function(item, i) {
-                              return (
-                                item.id ===
-                                formState.filterDataParameters[COLLEGE_FILTER]
-                              );
-                            })
-                          ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label="College"
-                        placeholder="College"
-                        className={classes.autoCompleteField}
-                        variant="outlined"
-                      />
-                    )}
-                  />
-                ) : null}
+                <TextField
+                  label={"College Name"}
+                  placeholder="College Name"
+                  variant="outlined"
+                  name={COLLEGE_FILTER}
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid item>
                 <Autocomplete
