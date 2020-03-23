@@ -35,10 +35,14 @@ import { useHistory } from "react-router-dom";
 // const EDUCATION_URL =
 //   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EDUCATIONS;
 
+const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
+const studentId = studentInfo ? studentInfo.id : null;
+
 const STUDENT_EDUCATION_URL =
   strapiConstants.STRAPI_DB_URL +
   strapiConstants.STRAPI_STUDENTS +
-  `/${Auth.getUserInfo().studentInfo.id}/education`;
+  `/${studentId}/education`;
+
 const EDUCATION_FILTER = "id";
 
 const ViewEducation = props => {
