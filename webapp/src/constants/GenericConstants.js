@@ -56,3 +56,7 @@ export const VIEW_EDUCATION_TEXT = "Education";
 export const MANAGE_STUDENTS = "Manage Student";
 export const DELETE_SELECTED_STUDENT = "Delete Selected user";
 export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
+/**Documents */
+export const ADD_DOCUMENT_TEXT = "Add Document";
+export const EDIT_DOCUMENT_TEXT = "Edit Document";
+export const VIEW_DOCUMENT_TEXT = "Document";
