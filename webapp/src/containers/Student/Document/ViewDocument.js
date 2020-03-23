@@ -403,6 +403,8 @@ const ViewDocument = props => {
               paginationRowsPerPageOptions={[10, 20, 50]}
               onChangeRowsPerPage={handlePerRowsChange}
               onChangePage={handlePageChange}
+              pagination={false}
+              selectableRows={false}
             />
           ) : (
             <div className={classes.noDataMargin}>
