@@ -1,5 +1,5 @@
 export const STRAPI_LOGIN_PATH = "auth/local";
-export const STRAPI_DB_URL = "http://localhost:1337/";
+export const STRAPI_DB_URL = "http://104.236.28.24:1338/";
 export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "states";
 export const STRAPI_RPCS = "rpcs";
@@ -20,3 +20,4 @@ export const STRAPI_CHANGE_PASS_URL = "auth/reset-password";
 export const STRAPI_STUDENTS = "students";
 export const STRAPI_UPLOAD = "upload";
 export const STRAPI_DELETE_UPLOAD = "file";
+export const STRAPI_EVENTS = "events";
