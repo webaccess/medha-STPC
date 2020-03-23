@@ -168,7 +168,7 @@ const AddEditCollege = props => {
   /** Here we initialize our data and bring users, states and streams*/
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(USERS_URL, paramsForPageSize)
@@ -265,7 +265,7 @@ const AddEditCollege = props => {
       });
 
     let params = {
-      pageSize: 10000000,
+      pageSize: -1,
       "state.id": formState.values[state]
     };
 

@@ -94,7 +94,7 @@ const ViewStates = props => {
 
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)

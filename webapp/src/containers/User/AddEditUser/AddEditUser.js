@@ -135,7 +135,7 @@ const Adduser = props => {
 
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProvider
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
@@ -145,25 +145,6 @@ const Adduser = props => {
       .catch(error => {
         console.log(error);
       });
-
-    // serviceProvider
-    //   .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
-    //   .then(res => {
-    //     setZones(res.data.result);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
-
-    // serviceProvider
-    //   .serviceProviderForGetRequest(RPCS_URL, paramsForPageSize)
-    //   .then(res => {
-    //     setRpcs(res.data.result);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
-
     serviceProvider
       .serviceProviderForGetRequest(COLLEGES_URL, paramsForPageSize)
       .then(res => {
@@ -240,7 +221,7 @@ const Adduser = props => {
       });
 
     let params = {
-      pageSize: 10000000,
+      pageSize: -1,
       "state.id": formState.values[state]
     };
   }
