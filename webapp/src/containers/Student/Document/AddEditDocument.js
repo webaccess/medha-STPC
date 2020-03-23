@@ -27,7 +27,9 @@ const files = "files";
 const AddEditDocument = props => {
   const history = useHistory();
   const classes = useStyles();
-  const { studentInfo } = auth.getUserInfo();
+  const studentInfo = auth.getUserInfo()
+    ? auth.getUserInfo().studentInfo
+    : null;
   const DOCUMENT_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_UPLOAD;
 
@@ -113,7 +115,7 @@ const AddEditDocument = props => {
   };
 
   const postUploadData = async () => {
-    const { id } = studentInfo;
+    const id = studentInfo ? studentInfo.id : null;
     let postData = databaseUtilities.uploadDocument(
       formState.files,
       ref,

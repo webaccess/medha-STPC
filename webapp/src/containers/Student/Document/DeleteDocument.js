@@ -53,9 +53,11 @@ const DeleteDocument = props => {
   };
 
   const deleteData = () => {
-    const studentId = auth.getUserInfo()
-      ? auth.getUserInfo().studentInfo.id
+    const studentInfo = auth.getUserInfo()
+      ? auth.getUserInfo().studentInfo
       : null;
+
+    const studentId = studentInfo ? studentInfo.id : null;
 
     const API_URL = `${DELETE_DOCUMENT_URL}/${studentId}/file`;
     serviceProviders
