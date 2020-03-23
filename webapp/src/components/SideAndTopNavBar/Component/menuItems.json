@@ -1,0 +1,126 @@
+{
+  "SuperAdmin": [
+    {
+      "name": "Training",
+      "link": "",
+      "Icon": "",
+      "items": [
+        {
+          "name": "Manage Training",
+          "link": "",
+          "Icon": ""
+        },
+        {
+          "name": "Validate Student",
+          "link": "",
+          "Icon": ""
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "link": "",
+      "Icon": ""
+    },
+    {
+      "name": "Profile",
+      "link": "/",
+      "Icon": ""
+    },
+    {
+      "name": "User Management",
+      "link": "/adduser",
+      "Icon": "AccessAlarm"
+    },
+    {
+      "name": "Masters",
+      "link": "",
+      "Icon": "",
+      "items": [
+        {
+          "name": "State",
+          "link": "",
+          "Icon": ""
+        },
+        {
+          "name": "Zone",
+          "link": "",
+          "Icon": ""
+        },
+        {
+          "name": "RPC",
+          "link": "",
+          "Icon": ""
+        },
+        {
+          "name": "College",
+          "link": "",
+          "Icon": ""
+        }
+      ]
+    }
+  ],
+  "CollegeAdmin": [
+    {
+      "name": "College",
+      "link": "",
+      "Icon": ""
+    },
+    {
+      "name": "Students",
+      "link": "",
+      "Icon": "",
+      "items": [
+        {
+          "name": "Manage Students",
+          "link": "",
+          "Icon": ""
+        },
+        {
+          "name": "Import Students",
+          "link": "",
+          "Icon": ""
+        }
+      ]
+    },
+    {
+      "name": "Training",
+      "link": "",
+      "Icon": "",
+      "items": [
+        {
+          "name": "Manage Students Group",
+          "link": "",
+          "Icon": ""
+        },
+        {
+          "name": "Validate Student",
+          "link": "",
+          "Icon": ""
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "link": "",
+      "Icon": ""
+    }
+  ],
+  "Student": [
+    {
+      "name": "Training",
+      "link": "",
+      "Icon": ""
+    },
+    {
+      "name": "Events",
+      "link": "",
+      "Icon": ""
+    },
+    {
+      "name": "Profile",
+      "link": "",
+      "Icon": ""
+    }
+  ]
+}

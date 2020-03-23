@@ -1,0 +1,35 @@
+{
+  "identifier": {
+    "label": "Email Address",
+    "id": "identifier",
+    "autoComplete": "email",
+    "required": true,
+    "placeholder": "johndoe@abc.com",
+    "autoFocus": true,
+    "type": "text",
+    "validations": {
+      "required": {
+        "value": "true",
+        "message": "Email is required"
+      },
+      "validateEmailRegex": {
+        "value": "true",
+        "message": "Not an email"
+      }
+    }
+  },
+  "password": {
+    "label": "Password",
+    "id": "password",
+    "type": "password",
+    "autoComplete": "current-password",
+    "autoFocus": false,
+    "required": true,
+    "validations": {
+      "required": {
+        "value": "true",
+        "message": "Passsword is required"
+      }
+    }
+  }
+}
