@@ -28,13 +28,11 @@ import BlockUser from "./BlockUser";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
-const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
+const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
 
-const STATE_FILTER = "state.id";
 const ZONE_FILTER = "zone.id";
 const RPC_FILTER = "rpc.id";
 const IPC_FILTER = "college.id";
@@ -48,14 +46,11 @@ const ViewUsers = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [rpcs, setRpcs] = React.useState([]);
-  const [zones, setZones] = React.useState([]);
-  const [states, setStates] = React.useState([]);
+
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
     users: [],
-    states: [],
     zones: [],
     rpcs: [],
     roles: [],
@@ -116,16 +111,7 @@ const ViewUsers = props => {
     getUserData(10, 1);
 
     serviceProviders
-      .serviceProviderForGetRequest(STATE_URL)
-      .then(res => {
-        setStates(res.data.result);
-      })
-      .catch(error => {
-        console.log("error");
-      });
-
-    serviceProviders
-      .serviceProviderForGetRequest(ZONES_URL)
+      .serviceProviderForGetRequest(ZONE_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -137,7 +123,7 @@ const ViewUsers = props => {
       });
 
     serviceProviders
-      .serviceProviderForGetRequest(RPCS_URL)
+      .serviceProviderForGetRequest(RPC_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -183,35 +169,6 @@ const ViewUsers = props => {
         console.log("error");
       });
   }, []);
-
-  /** Get rpcs and zones from state */
-  const getZonesAndRpcsOnState = () => {
-    setRpcs([]);
-    setZones([]);
-    delete formState.filterDataParameters[ZONE_FILTER];
-    delete formState.filterDataParameters[RPC_FILTER];
-
-    let params = {
-      pageSize: -1,
-      "state.id": formState.filterDataParameters[STATE_FILTER]
-    };
-    serviceProviders
-      .serviceProviderForGetRequest(RPCS_URL, params)
-      .then(res => {
-        setRpcs(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-    serviceProviders
-      .serviceProviderForGetRequest(ZONES_URL, params)
-      .then(res => {
-        setZones(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-  };
 
   const getUserData = async (pageSize, page, paramsForUsers = null) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
@@ -259,6 +216,7 @@ const ViewUsers = props => {
         console.log("error", error);
       });
   };
+
   const convertUserData = data => {
     let x = [];
     if (data.length > 0) {
@@ -268,7 +226,6 @@ const ViewUsers = props => {
         temp["username"] = data[i]["username"];
         temp["blocked"] = data[i]["blocked"];
         temp["role"] = data[i]["role"]["name"];
-        temp["state"] = data[i]["state"] ? data[i]["state"]["name"] : "";
         temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
         temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
         temp["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
@@ -397,43 +354,6 @@ const ViewUsers = props => {
       //restoreData();
     } else {
       formState.filterDataParameters[filterName] = value["id"];
-    }
-
-    /** When we click cross for auto complete */
-    if (value === null) {
-      let setStateFilterValue = false;
-      /** If we click cross for state the zone and rpc should clear off! */
-      if (filterName === STATE_FILTER) {
-        /** 
-            This flag is used to determine that state is cleared which clears 
-            off zone and rpc by setting their value to null 
-            */
-        setStateFilterValue = true;
-        /** 
-            When state is cleared then clear rpc and zone 
-            */
-        setRpcs([]);
-        setZones([]);
-        delete formState.filterDataParameters[ZONE_FILTER];
-        delete formState.filterDataParameters[RPC_FILTER];
-      }
-      setFormState(formState => ({
-        ...formState,
-        isClearResetFilter: false,
-        isStateClearFilter: setStateFilterValue
-      }));
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-      if (filterName === STATE_FILTER) {
-        getZonesAndRpcsOnState();
-      }
-      setFormState(formState => ({
-        ...formState,
-        isClearResetFilter: false,
-        isStateClearFilter: false
-      }));
     }
   };
 
@@ -599,7 +519,6 @@ const ViewUsers = props => {
   /** Table Data */
   const column = [
     { name: "User Name", sortable: true, selector: "username" },
-    { name: "State", sortable: true, selector: "state" },
     { name: "Zone", sortable: true, selector: "zone" },
     { name: "Role", sortable: true, selector: "role" },
     { name: "RPC", sortable: true, selector: "rpc" },
@@ -860,40 +779,8 @@ const ViewUsers = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  name={STATE_FILTER}
-                  options={states}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(STATE_FILTER, event, value)
-                  }
-                  value={
-                    formState.isClearResetFilter
-                      ? null
-                      : states[
-                          states.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[STATE_FILTER]
-                            );
-                          })
-                        ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="State"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
                   name={ZONE_FILTER}
-                  options={zones}
+                  options={formState.zones}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
@@ -913,7 +800,7 @@ const ViewUsers = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   name={RPC_FILTER}
-                  options={rpcs}
+                  options={formState.rpcs}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
