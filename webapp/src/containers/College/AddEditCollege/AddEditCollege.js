@@ -1077,33 +1077,36 @@ const AddEditCollege = props => {
               </Grid>
               <Divider />
               <Grid item md={3} xs={12}>
-                <div style={{ display: (formState.showing ? 'block' : 'none') }}>
+                <div style={{ display: formState.showing ? "block" : "none" }}>
                   <FormGroup row>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            name={block}
-                            checked={formState.values[block]}
-                            onChange={handleChange}
-                            value={formState.values[block]}
-                            error={hasError(block)}
-                            helperText={
-                              hasError(block)
-                                ? formState.errors[block].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                          />
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          name={block}
+                          checked={formState.values[block]}
+                          onChange={handleChange}
+                          value={formState.values[block]}
+                          error={hasError(block).toString()}
+                          helpertext={
+                            hasError(block)
+                              ? formState.errors[block].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
                       }
                       label={get(CollegeFormSchema[block], "label")}
                     />
-                </FormGroup>
+                  </FormGroup>
                 </div>
               </Grid>
               <Grid item md={12} xs={12} className={classes.streamcard}>
                 <Card className={classes.streamoffer}>
-                  <InputLabel htmlFor="outlined-stream-card" fullWidth>
+                  <InputLabel
+                    htmlFor="outlined-stream-card"
+                    fullwidth={true.toString()}
+                  >
                     {genericConstants.STREAMS_OFFERED_TEXT}
                   </InputLabel>
 
@@ -1113,8 +1116,9 @@ const AddEditCollege = props => {
                     return (
                       <Card
                         id="outlined-stream-card"
-                        fullWidth
+                        fullwidth={true.toString()}
                         className={classes.streamcardcontent}
+                        key={Math.random()}
                       >
                         <CardContent>
                           <Grid container spacing={3}>
