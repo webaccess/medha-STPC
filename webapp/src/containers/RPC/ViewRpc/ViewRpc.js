@@ -42,6 +42,7 @@ const ViewRpc = props => {
   const [selectedRows, setSelectedRows] = useState([]);
 
   const [formState, setFormState] = useState({
+    filterRpc: "",
     dataToShow: [],
     tempData: [],
     zones: [],
@@ -72,6 +73,7 @@ const ViewRpc = props => {
       : false,
     isClearResetFilter: false,
     /** This is for delete */
+    isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
@@ -332,6 +334,47 @@ const ViewRpc = props => {
     }));
   };
 
+  const handleFilterChange = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterRpc: event.target.value
+    }));
+  };
+
+  const filterRpcData = () => {
+    let params = "?name_contains=" + formState.filterRpc;
+
+    let FilterRpcURL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS + params;
+
+    serviceProviders
+      .serviceProviderForGetRequest(FilterRpcURL)
+      .then(res => {
+        let currentPage = res.data.page;
+        let totalRows = res.data.rowCount;
+        let currentPageSize = res.data.pageSize;
+        let pageCount = res.data.pageCount;
+        formState.dataToShow = [];
+        formState.tempData = [];
+        let temp = [];
+        temp = convertRpcData(res.data.result);
+        setFormState(formState => ({
+          ...formState,
+          rpcs: res.data.result,
+          dataToShow: temp,
+          tempData: temp,
+          pageSize: currentPageSize,
+          totalRows: totalRows,
+          page: currentPage,
+          pageCount: pageCount,
+          isDataLoading: false
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
     if (state.selectedCount > 1) {
@@ -556,46 +599,14 @@ const ViewRpc = props => {
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  //name={ZONE_FILTER}
-                  options={formState.rpcFilter}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(RPC_FILTER, event, value)
-                  }
-                  value={
-                    formState.isClearResetFilter
-                      ? null
-                      : formState.rpcFilter[
-                          formState.rpcFilter.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[RPC_FILTER]
-                            );
-                          })
-                        ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="RPC Name"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
-                />
+                <TextField variant="outlined" onChange={handleFilterChange} />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
-                    event.persist();
-                    searchFilter();
-                  }}
+                  onClick={filterRpcData}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>

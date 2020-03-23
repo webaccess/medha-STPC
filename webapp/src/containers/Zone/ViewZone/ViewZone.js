@@ -35,6 +35,7 @@ const ViewZone = props => {
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
   const [formState, setFormState] = useState({
+    filterZone: "",
     dataToShow: [],
     tempData: [],
     zones: [],
@@ -347,6 +348,46 @@ const ViewZone = props => {
     setSelectedRows(state.selectedRows);
   }, []);
 
+  const handleFilterChange = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterZone: event.target.value
+    }));
+  };
+
+  const filterZoneData = () => {
+    let params = "?name_contains=" + formState.filterZone;
+
+    let FilterZoneURL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES + params;
+
+    serviceProviders
+      .serviceProviderForGetRequest(FilterZoneURL)
+      .then(res => {
+        formState.dataToShow = [];
+        formState.tempData = [];
+        let temp = [];
+        /** As zones data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+        temp = convertZoneData(res.data.result);
+        setFormState(formState => ({
+          ...formState,
+          zones: res.data.result,
+          dataToShow: temp,
+          tempData: temp,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Name", sortable: true, selector: "name" },
@@ -561,46 +602,14 @@ const ViewZone = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  name={ZONE_FILTER}
-                  options={formState.zonesFilter}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(ZONE_FILTER, event, value)
-                  }
-                  value={
-                    formState.isClearResetFilter
-                      ? null
-                      : formState.zonesFilter[
-                          formState.zonesFilter.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[ZONE_FILTER]
-                            );
-                          })
-                        ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Zone Name"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
-                />
+                <TextField variant="outlined" onChange={handleFilterChange} />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
-                    event.persist();
-                    searchFilter();
-                  }}
+                  onClick={filterZoneData}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
