@@ -74,7 +74,8 @@ const AddEditCollege = props => {
     isEditCollege: props["editCollege"] ? props["editCollege"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
-    isStateClearFilter: false
+    isStateClearFilter: false,
+    showing: false
   });
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
@@ -89,6 +90,18 @@ const AddEditCollege = props => {
 
   React.useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
+
+    if (auth.getUserInfo().role.name === "Medha Admin") {
+      setFormState(formState => ({
+        ...formState,
+        showing: true
+      }));
+    } else if (auth.getUserInfo().role.name === "College Admin") {
+      setFormState(formState => ({
+        ...formState,
+        showing: false
+      }));
+    }
   }, []);
 
   /** Part for editing college */
@@ -1064,27 +1077,29 @@ const AddEditCollege = props => {
               </Grid>
               <Divider />
               <Grid item md={3} xs={12}>
-                <FormGroup row>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        name={block}
-                        checked={formState.values[block]}
-                        onChange={handleChange}
-                        value={formState.values[block]}
-                        error={hasError(block)}
-                        helperText={
-                          hasError(block)
-                            ? formState.errors[block].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    }
-                    label={get(CollegeFormSchema[block], "label")}
-                  />
+                <div style={{ display: (formState.showing ? 'block' : 'none') }}>
+                  <FormGroup row>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            name={block}
+                            checked={formState.values[block]}
+                            onChange={handleChange}
+                            value={formState.values[block]}
+                            error={hasError(block)}
+                            helperText={
+                              hasError(block)
+                                ? formState.errors[block].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                          />
+                      }
+                      label={get(CollegeFormSchema[block], "label")}
+                    />
                 </FormGroup>
+                </div>
               </Grid>
               <Grid item md={12} xs={12} className={classes.streamcard}>
                 <Card className={classes.streamoffer}>

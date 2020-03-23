@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Grid, Typography, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -9,7 +8,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { YellowButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "./DeleteUserStyles";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
@@ -20,7 +19,8 @@ const DeleteUser = props => {
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
-    values: {}
+    values: {},
+    username: ""
   });
 
   if (props.showModal && !formState.stateCounter) {
@@ -123,11 +123,17 @@ const DeleteUser = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiDelete ? (
-                    <p>Do you want to delete multiple user field?</p>
+                    <p>
+                      Are you sure you want to remove "{props.seletedUser}" users ?
+                    </p>
                   ) : (
-                    <p>Do you want to delete this field?</p>
+                    <p>Are you sure you want to remove "{props.userName}" ?</p>
                   )}
                 </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container spacing={2} alignItems="center">
                 <Grid item xs>
                   <YellowButton
                     type="submit"
@@ -137,6 +143,16 @@ const DeleteUser = props => {
                   >
                     {genericConstants.DELETE_TEXT}
                   </YellowButton>
+                </Grid>
+                <Grid item xs>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={props.modalClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>
