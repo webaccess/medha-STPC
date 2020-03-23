@@ -78,7 +78,7 @@ const AddEditRpc = props => {
     /* TO GET STATES AND COLLEGE IN AUTOCOMPLETE */
 
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
 
     serviceProviders

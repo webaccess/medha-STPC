@@ -89,7 +89,7 @@ const ViewZone = props => {
   useEffect(() => {
     /** Seperate function to get zone data */
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)

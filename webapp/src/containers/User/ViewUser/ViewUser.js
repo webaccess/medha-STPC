@@ -192,7 +192,7 @@ const ViewUsers = props => {
     delete formState.filterDataParameters[RPC_FILTER];
 
     let params = {
-      pageSize: 10000000,
+      pageSize: -1,
       "state.id": formState.filterDataParameters[STATE_FILTER]
     };
     serviceProviders

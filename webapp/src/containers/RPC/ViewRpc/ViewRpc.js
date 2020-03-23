@@ -95,7 +95,7 @@ const ViewRpc = props => {
   });
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
