@@ -167,7 +167,7 @@ export const serviceProviderForAllBlockRequest = async (
 ) => {
   let temp = [];
   for (let i in arrayId) {
-    temp.push(serviceProviderForPutRequest(url, arrayId[i] ,body));
+    temp.push(serviceProviderForPutRequest(url, arrayId[i], body));
   }
   const URL = temp;
   // const URL1 = url1;

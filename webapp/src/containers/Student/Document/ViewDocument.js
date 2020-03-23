@@ -12,8 +12,8 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import styles from "./Education.module.css";
-import useStyles from "./ViewEducationStyles";
+import styles from "./Document.module.css";
+import useStyles from "./ViewDocumentStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -28,48 +28,38 @@ import {
   Alert,
   Auth
 } from "../../../components";
-import DeleteEducation from "./DeleteEducation";
+import DeleteDocument from "./DeleteDocument";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
-// const EDUCATION_URL =
-//   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EDUCATIONS;
+const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
+const studentId = studentInfo ? studentInfo.id : null;
 
-const STUDENT_EDUCATION_URL =
+const STUDENT_DOCUMENT_URL =
   strapiConstants.STRAPI_DB_URL +
   strapiConstants.STRAPI_STUDENTS +
-  `/${Auth.getUserInfo().studentInfo.id}/education`;
-const EDUCATION_FILTER = "id";
+  `/${studentId}/document`;
+const DOCUMENT_FILTER = "id";
 
-const ViewEducation = props => {
+const ViewDocument = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
   const [formState, setFormState] = useState({
     dataToShow: [],
-    educations: [],
-    educationFilter: [],
+    documents: [],
+    documentFilters: [],
     filterDataParameters: {},
     isFilterSearch: false,
-    /** This is when we return from edit page */
-    isDataEdited: props["location"]["fromEditEducation"]
-      ? props["location"]["isDataEdited"]
-      : false,
-    editedData: props["location"]["fromEditEducation"]
-      ? props["location"]["editedData"]
-      : {},
-    fromEditEducation: props["location"]["fromEditEducation"]
-      ? props["location"]["fromEditEducation"]
-      : false,
     /** This is when we return from add page */
-    isDataAdded: props["location"]["fromAddEducation"]
+    isDataAdded: props["location"]["fromAddDocument"]
       ? props["location"]["isDataAdded"]
       : false,
-    addedData: props["location"]["fromAddEducation"]
+    addedData: props["location"]["fromAddDocument"]
       ? props["location"]["addedData"]
       : {},
-    fromAddEducation: props["location"]["fromAddEducation"]
-      ? props["location"]["fromAddEducation"]
+    fromAddDocument: props["location"]["fromAddDocument"]
+      ? props["location"]["fromAddDocument"]
       : false,
     /** This is for delete */
     isDataDeleted: false,
@@ -87,22 +77,22 @@ const ViewEducation = props => {
 
   useEffect(() => {
     serviceProviders
-      .serviceProviderForGetRequest(STUDENT_EDUCATION_URL)
+      .serviceProviderForGetRequest(STUDENT_DOCUMENT_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          educationFilter: res.data.result
+          documentFilters: res.data.result
         }));
       })
       .catch(error => {
         console.log("error", error);
       });
 
-    getEducationData(10, 1);
+    getDocuments(10, 1);
   }, []);
 
-  /** This seperate function is used to get the education data*/
-  const getEducationData = async (pageSize, page, params = null) => {
+  /** This seperate function is used to get the document data*/
+  const getDocuments = async (pageSize, page, params = null) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
@@ -124,12 +114,12 @@ const ViewEducation = props => {
     }));
 
     await serviceProviders
-      .serviceProviderForGetRequest(STUDENT_EDUCATION_URL, params)
+      .serviceProviderForGetRequest(STUDENT_DOCUMENT_URL, params)
       .then(res => {
         formState.dataToShow = [];
         setFormState(formState => ({
           ...formState,
-          educations: res.data.result,
+          documents: res.data.result,
           dataToShow: res.data.result,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
@@ -147,24 +137,24 @@ const ViewEducation = props => {
   const handlePerRowsChange = async (perPage, page) => {
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getEducationData(perPage, page);
+      await getDocuments(perPage, page);
     } else {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getEducationData(perPage, page);
+        await getDocuments(perPage, page);
       }
     }
   };
 
   const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getEducationData(formState.pageSize, page);
+      await getDocuments(formState.pageSize, page);
     } else {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getEducationData(formState.pageSize, page);
+        await getDocuments(formState.pageSize, page);
       }
     }
   };
@@ -173,7 +163,7 @@ const ViewEducation = props => {
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
-      await getEducationData(perPage, page, formState.filterDataParameters);
+      await getDocuments(perPage, page, formState.filterDataParameters);
     }
   };
 
@@ -191,35 +181,13 @@ const ViewEducation = props => {
   };
 
   const restoreData = () => {
-    getEducationData(formState.pageSize, 1);
+    getDocuments(formState.pageSize, 1);
   };
 
-  // const getDataForEdit = async id => {
-  //   let paramsForeducations = {
-  //     id: idgetDataForEdit
-  //   };
-  //   await serviceProviders
-  //     .serviceProviderForGetRequest(EDUCATION_URL, paramsForeducations)
-  //     .then(res => {
-  //       let editData = res.data.result[0];
-  //       console.log({ editData });
-  //       /** move to edit page */
-  //       history.push({
-  //         pathname: routeConstants.EDIT_EDUCATION,
-  //         editEducation: true,
-  //         dataForEdit: editData
-  //       });
-  //     })
-  //     .catch(error => {
-  //       console.log("error");
-  //     });
-  // };
-
   const editCell = data => {
-    // getDataForEdit(event.target.id);
     history.push({
-      pathname: routeConstants.EDIT_EDUCATION,
-      editEducation: true,
+      pathname: routeConstants.EDIT_DOCUMENTS,
+      editDocument: true,
       dataForEdit: data
     });
   };
@@ -237,6 +205,7 @@ const ViewEducation = props => {
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
+    console.log(filterName, event, value);
     if (value === null) {
       delete formState.filterDataParameters[filterName];
       //restoreData();
@@ -255,28 +224,28 @@ const ViewEducation = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getEducationData(formState.pageSize, formState.page);
+      getDocuments(formState.pageSize, formState.page);
     }
+  };
+
+  const viewCell = item => {
+    if (item.url) window.open(`${strapiConstants.STRAPI_DB_URL}${item.url}`);
   };
 
   /** Columns to show in table */
   const column = [
-    { name: "Qualification", sortable: true, selector: "qualification" },
-    { name: "Board", sortable: true, selector: "board" },
-    { name: "Marks", sortable: true, selector: "marks" },
-    { name: "Year Of Passing", sortable: true, selector: "year_of_passing" },
-    /** Columns for edit and delete */
+    { name: "Name", sortable: true, selector: "name" },
+    { name: "Size", sortable: true, selector: "size" },
     {
       cell: cell => (
-        <Tooltip title="Edit" placement="top">
+        <Tooltip title="View" placement="top">
           <i
             className="material-icons"
             id={cell.id}
-            value={cell.name}
-            onClick={() => editCell(cell)}
+            onClick={() => viewCell(cell)}
             style={{ color: "green", fontSize: "19px" }}
           >
-            edit
+            view_list
           </i>
         </Tooltip>
       ),
@@ -301,9 +270,9 @@ const ViewEducation = props => {
     }
   ];
 
-  const handleAddEducationClick = () => {
+  const handleAddDocumentClick = () => {
     history.push({
-      pathname: routeConstants.ADD_EDUCATION
+      pathname: routeConstants.ADD_DOCUMENTS
     });
   };
 
@@ -312,68 +281,24 @@ const ViewEducation = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_EDUCATION_TEXT}
+          {genericConstants.VIEW_DOCUMENT_TEXT}
         </Typography>
 
         <GreenButton
           variant="contained"
           color="primary"
-          onClick={handleAddEducationClick}
+          onClick={handleAddDocumentClick}
           disableElevation
-          to={routeConstants.ADD_EDUCATION}
+          to={routeConstants.ADD_DOCUMENTS}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          {genericConstants.ADD_EDUCATION_TEXT}
+          {genericConstants.ADD_DOCUMENT_TEXT}
         </GreenButton>
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
-        {/** Error/Success messages to be shown for edit */}
-        {formState.fromEditEducation && formState.isDataEdited ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-        {formState.fromEditEducation && !formState.isDataEdited ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-
         {/** Error/Success messages to be shown for add */}
-        {formState.fromAddEducation && formState.isDataAdded ? (
+        {formState.fromAddDocument && formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -394,7 +319,7 @@ const ViewEducation = props => {
             </Alert>
           </Collapse>
         ) : null}
-        {formState.fromAddEducation && !formState.isDataAdded ? (
+        {formState.fromAddDocument && !formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
               severity="error"
@@ -422,16 +347,16 @@ const ViewEducation = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  options={formState.educationFilter}
+                  options={formState.documentFilters}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.qualification}
+                  getOptionLabel={option => option.name}
                   onChange={(event, value) =>
-                    handleChangeAutoComplete(EDUCATION_FILTER, event, value)
+                    handleChangeAutoComplete(DOCUMENT_FILTER, event, value)
                   }
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Qualification"
+                      label="Name"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -478,17 +403,16 @@ const ViewEducation = props => {
               paginationRowsPerPageOptions={[10, 20, 50]}
               onChangeRowsPerPage={handlePerRowsChange}
               onChangePage={handlePageChange}
-              noDataComponent="No education details found"
             />
           ) : (
             <div className={classes.noDataMargin}>
-              No education details found
+              No documents details found
             </div>
           )
         ) : (
           <Spinner />
         )}
-        <DeleteEducation
+        <DeleteDocument
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}
           id={formState.dataToDelete["id"]}
@@ -499,4 +423,4 @@ const ViewEducation = props => {
   );
 };
 
-export default ViewEducation;
+export default ViewDocument;

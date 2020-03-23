@@ -43,6 +43,7 @@ const ViewStates = props => {
   const [selectedRows, setSelectedRows] = useState([]);
   /** Form state variables */
   const [formState, setFormState] = useState({
+    filterState: "",
     dataToShow: [],
     states: [],
     statesFilter: [],
@@ -69,6 +70,7 @@ const ViewStates = props => {
       ? props["location"]["fromAddState"]
       : false,
     /** This is for delete */
+    isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
@@ -194,6 +196,8 @@ const ViewStates = props => {
   const clearFilter = () => {
     setFormState(formState => ({
       ...formState,
+      filterState: "",
+      // filterStateData: "",
       isFilterSearch: false,
       isClearResetFilter: true,
       /** Clear all filters */
@@ -331,6 +335,39 @@ const ViewStates = props => {
     }
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const handleFilterChange = event => {
+    console.log("event", event.target.value);
+    setFormState(formState => ({
+      ...formState,
+      filterState: event.target.value
+    }));
+  };
+
+  const filterStateData = () => {
+    let params = "?name_contains=" + formState.filterState;
+
+    let FilterStateURL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES + params;
+    serviceProviders
+      .serviceProviderForGetRequest(FilterStateURL)
+      .then(res => {
+        formState.dataToShow = [];
+        setFormState(formState => ({
+          ...formState,
+          states: res.data.result,
+          dataToShow: res.data.result,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   /** --------------------------------------------------- */
   /** Columns to show in table */
@@ -543,45 +580,14 @@ const ViewStates = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  options={formState.statesFilter}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(STATE_FILTER, event, value)
-                  }
-                  value={
-                    formState.isClearResetFilter
-                      ? null
-                      : formState.statesFilter[
-                          formState.statesFilter.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[STATE_FILTER]
-                            );
-                          })
-                        ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="State Name"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
-                />
+                <TextField variant="outlined" onChange={handleFilterChange} />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
-                    event.persist();
-                    searchFilter();
-                  }}
+                  onClick={filterStateData}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
