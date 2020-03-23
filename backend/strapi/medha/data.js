@@ -427,7 +427,7 @@ const roles = {
       },
       {
         name: "user",
-        action: ["me"]
+        action: ["me", "findOne"]
       },
       {
         name: "zone",
