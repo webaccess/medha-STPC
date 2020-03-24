@@ -159,6 +159,7 @@ bookshelf.model("student", {
 });
 
 bookshelf.model("academic_year", {
+  requireFetch: false,
   tableName: "academic_years"
 });
 

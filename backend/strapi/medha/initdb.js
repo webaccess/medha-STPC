@@ -550,3 +550,28 @@ async function deleteAllPublicRoute(role) {
     });
   });
 })();
+
+(async () => {
+  await utils.asyncForEach(_data.academicYears, async ay => {
+    const isAYPresent = await bookshelf
+      .model("academic_year")
+      .where({ name: ay.name })
+      .fetch();
+
+    if (isAYPresent) {
+      console.log(`Skipping Academic Year ${ay.name}...`);
+    } else {
+      await bookshelf
+        .model("academic_year")
+        .forge({
+          name: ay.name,
+          start_date: ay.start_date,
+          end_date: ay.end_date
+        })
+        .save()
+        .then(() => {
+          console.log(`Added Academic Year ${ay.name}`);
+        });
+    }
+  });
+})();
