@@ -913,31 +913,6 @@ const ManageCollege = props => {
                   label={"College Name"}
                   placeholder="College Name"
                   variant="outlined"
-                  // value={
-                  //   formState.isClearResetFilter || formState.isStateClearFilter
-                  //     ? formState.filterDataParameters[COLLEGE_FILTER]
-                  //     : null
-                  // }
-                  // value={
-                  //   formState.filterDataParameters[COLLEGE_FILTER] === undefined
-                  //     ? formState.filterDataParameters[COLLEGE_FILTER]
-                  //     : null
-                  // }
-                  // value="fnjd"
-                  // {
-                  //   formState.filterDataParameters
-                  // }
-                  // value={
-                  //   formState.filterDataParameters
-                  //     ? formState.filterDataParameters[COLLEGE_FILTER]
-                  //     : "gfh"
-                  // }
-                  // value={
-                  //   formState.filterDataParameters["name_contains"] ===
-                  //   undefined
-                  //     ? null
-                  //     : formState.filterDataParameters["name_contains"]
-                  // }
                   name={COLLEGE_FILTER}
                   onChange={handleFilterChange}
                 />

@@ -27,7 +27,7 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const ZONE_FILTER = "id";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewZone = props => {
