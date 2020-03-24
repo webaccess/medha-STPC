@@ -121,7 +121,7 @@ const ViewUsers = props => {
         setStates(res.data.result);
       })
       .catch(error => {
-        console.log("error", error);
+        console.log("error");
       });
 
     serviceProviders
@@ -235,7 +235,7 @@ const ViewUsers = props => {
       ...formState,
       isDataLoading: true
     }));
-
+    console.log("paramsForusers", paramsForUsers);
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
       .then(res => {
@@ -259,7 +259,6 @@ const ViewUsers = props => {
         console.log("error", error);
       });
   };
-
   const convertUserData = data => {
     let x = [];
     if (data.length > 0) {
@@ -439,6 +438,7 @@ const ViewUsers = props => {
   };
 
   const handleFilterChange = event => {
+    console.log("handleFilterChange", event.target.name, event.target.value);
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
