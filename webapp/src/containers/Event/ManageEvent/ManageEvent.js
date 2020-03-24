@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
-
 import {
   TextField,
   Card,
@@ -24,6 +18,7 @@ import useStyles from "./ManageEventStyles";
 import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
+import DatePickers from "../../../components/Date/Date";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -184,14 +179,15 @@ const ViewEvents = props => {
     },
     {
       cell: cell => (
-        <Tooltip title="Block" placement="top">
+        <Tooltip title="View Student List" placement="top">
           <i
             className="material-icons"
             id={cell.id}
             value={cell.name}
+            style={{ color: "blue" }}
             // onClick={blockedCell}
           >
-            block
+            group
           </i>
         </Tooltip>
       ),
@@ -313,42 +309,10 @@ const ViewEvents = props => {
                 />{" "}
               </Grid>
               <Grid item>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Grid container justify="space-around">
-                    <KeyboardDatePicker
-                      disableToolbar
-                      variant="outline"
-                      format="MM/dd/yyyy"
-                      margin="normal"
-                      id="date-picker-inline"
-                      label="Date From"
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date"
-                      }}
-                    />
-                  </Grid>
-                </MuiPickersUtilsProvider>
+                <DatePickers label="End Date" />
               </Grid>
               <Grid item>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Grid container justify="space-around">
-                    <KeyboardDatePicker
-                      disableToolbar
-                      variant="outline"
-                      format="MM/dd/yyyy"
-                      margin="normal"
-                      id="date-picker-inline"
-                      label="Date To"
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date"
-                      }}
-                    />
-                  </Grid>
-                </MuiPickersUtilsProvider>
+                <DatePickers label="End Date" />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
