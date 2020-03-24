@@ -28,7 +28,7 @@ import BlockUnblockCollege from "./BlockUnblockCollege";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 /** Contsants for filters */
-const COLLEGE_FILTER = "id";
+const COLLEGE_FILTER = "name_contains";
 const STATE_FILTER = "rpc.state";
 const ZONE_FILTER = "zone.id";
 const RPC_FILTER = "rpc.id";
@@ -286,6 +286,8 @@ const ManageCollege = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
+    formState.filterDataParameters = {};
+    // formState.filterDataParameters["name_contains"] = "";
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -298,6 +300,9 @@ const ManageCollege = props => {
     }));
     setRpcs([]);
     setZones([]);
+    formState.filterDataParameters[COLLEGE_FILTER] = "";
+    console.log("formstate--->>", formState.filterDataParameters);
+    // window.location.reload();
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
@@ -522,6 +527,11 @@ const ManageCollege = props => {
       showModalBlock: false,
       showModalDelete: false
     }));
+  };
+
+  const handleFilterChange = event => {
+    console.log("handleFilterChange", event.target.name, event.target.value);
+    formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
   /** Multi Delete */
@@ -895,39 +905,17 @@ const ManageCollege = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                {collegesFilter ? (
-                  <Autocomplete
-                    id="collegeName_filter_college"
-                    name={COLLEGE_FILTER}
-                    options={collegesFilter}
-                    className={classes.autoCompleteField}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) =>
-                      handleChangeAutoComplete(COLLEGE_FILTER, event, value)
-                    }
-                    value={
-                      formState.isClearResetFilter
-                        ? null
-                        : collegesFilter[
-                            collegesFilter.findIndex(function(item, i) {
-                              return (
-                                item.id ===
-                                formState.filterDataParameters[COLLEGE_FILTER]
-                              );
-                            })
-                          ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label="College"
-                        placeholder="College"
-                        className={classes.autoCompleteField}
-                        variant="outlined"
-                      />
-                    )}
-                  />
-                ) : null}
+                {console.log(
+                  "return",
+                  formState.filterDataParameters[COLLEGE_FILTER]
+                )}
+                <TextField
+                  label={"College Name"}
+                  placeholder="College Name"
+                  variant="outlined"
+                  name={COLLEGE_FILTER}
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid item>
                 <Autocomplete
