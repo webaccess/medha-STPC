@@ -439,7 +439,6 @@ const ViewUsers = props => {
   };
 
   const handleFilterChange = event => {
-    console.log("handleFilterChange", event.target.name, event.target.value);
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 

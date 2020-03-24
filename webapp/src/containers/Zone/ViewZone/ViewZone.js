@@ -34,6 +34,7 @@ const ViewZone = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [zonesFilter, setZonesFilter] = useState([]);
   const [formState, setFormState] = useState({
     filterZone: "",
     dataToShow: [],
@@ -221,6 +222,7 @@ const ViewZone = props => {
   };
 
   const clearFilter = () => {
+    setZonesFilter([""]);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -349,14 +351,15 @@ const ViewZone = props => {
   }, []);
 
   const handleFilterChange = event => {
-    setFormState(formState => ({
-      ...formState,
-      filterZone: event.target.value
-    }));
+    setZonesFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterZone: event.target.value
+    // }));
   };
 
   const filterZoneData = () => {
-    let params = "?name_contains=" + formState.filterZone;
+    let params = "?name_contains=" + zonesFilter;
 
     let FilterZoneURL =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES + params;
@@ -606,6 +609,7 @@ const ViewZone = props => {
                   label={"Zone"}
                   placeholder="Zone"
                   variant="outlined"
+                  value={zonesFilter}
                   onChange={handleFilterChange}
                 />
               </Grid>

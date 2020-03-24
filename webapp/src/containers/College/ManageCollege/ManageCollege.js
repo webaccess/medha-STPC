@@ -286,6 +286,8 @@ const ManageCollege = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
+    formState.filterDataParameters = {};
+    // formState.filterDataParameters["name_contains"] = "";
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -298,6 +300,9 @@ const ManageCollege = props => {
     }));
     setRpcs([]);
     setZones([]);
+    formState.filterDataParameters[COLLEGE_FILTER] = "";
+    console.log("formstate--->>", formState.filterDataParameters);
+    // window.location.reload();
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
@@ -900,10 +905,39 @@ const ManageCollege = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
+                {console.log(
+                  "return",
+                  formState.filterDataParameters[COLLEGE_FILTER]
+                )}
                 <TextField
                   label={"College Name"}
                   placeholder="College Name"
                   variant="outlined"
+                  // value={
+                  //   formState.isClearResetFilter || formState.isStateClearFilter
+                  //     ? formState.filterDataParameters[COLLEGE_FILTER]
+                  //     : null
+                  // }
+                  // value={
+                  //   formState.filterDataParameters[COLLEGE_FILTER] === undefined
+                  //     ? formState.filterDataParameters[COLLEGE_FILTER]
+                  //     : null
+                  // }
+                  // value="fnjd"
+                  // {
+                  //   formState.filterDataParameters
+                  // }
+                  // value={
+                  //   formState.filterDataParameters
+                  //     ? formState.filterDataParameters[COLLEGE_FILTER]
+                  //     : "gfh"
+                  // }
+                  // value={
+                  //   formState.filterDataParameters["name_contains"] ===
+                  //   undefined
+                  //     ? null
+                  //     : formState.filterDataParameters["name_contains"]
+                  // }
                   name={COLLEGE_FILTER}
                   onChange={handleFilterChange}
                 />

@@ -33,7 +33,7 @@ import { useHistory } from "react-router-dom";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const STATE_FILTER = "id";
+const STATE_FILTER = "name_contains";
 const SORT_FIELD_KEY = "_sort";
 
 const ViewStates = props => {
@@ -41,6 +41,7 @@ const ViewStates = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [statesFilter, setStatesFilter] = useState([]);
   /** Form state variables */
   const [formState, setFormState] = useState({
     filterState: "",
@@ -215,6 +216,7 @@ const ViewStates = props => {
 
   /** This is used for clearing filter */
   const clearFilter = () => {
+    setStatesFilter([""]);
     setFormState(formState => ({
       ...formState,
       filterState: "",
@@ -359,14 +361,15 @@ const ViewStates = props => {
 
   const handleFilterChange = event => {
     console.log("event", event.target.value);
-    setFormState(formState => ({
-      ...formState,
-      filterState: event.target.value
-    }));
+    setStatesFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterState: event.target.value
+    // }));
   };
 
   const filterStateData = () => {
-    let params = "?name_contains=" + formState.filterState;
+    let params = "?name_contains=" + statesFilter;
 
     let FilterStateURL =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES + params;
@@ -513,7 +516,6 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         {/** Error/Success messages to be shown for add */}
         {formState.fromAddState && formState.isDataAdded ? (
           <Collapse in={open}>
@@ -580,7 +582,6 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         {formState.fromDeleteModal &&
         !formState.isDataDeleted &&
         formState.messageToShow !== "" ? (
@@ -604,7 +605,6 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -612,6 +612,7 @@ const ViewStates = props => {
                 <TextField
                   label={"State"}
                   placeholder="State"
+                  value={statesFilter}
                   variant="outlined"
                   onChange={handleFilterChange}
                 />
