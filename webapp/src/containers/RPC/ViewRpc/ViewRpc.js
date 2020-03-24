@@ -32,7 +32,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
-const RPC_FILTER = "id";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewRpc = props => {

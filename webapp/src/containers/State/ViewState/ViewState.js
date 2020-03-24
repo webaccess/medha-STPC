@@ -33,7 +33,7 @@ import { useHistory } from "react-router-dom";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const STATE_FILTER = "name_contains";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewStates = props => {
@@ -360,7 +360,6 @@ const ViewStates = props => {
   }, []);
 
   const handleFilterChange = event => {
-    console.log("event", event.target.value);
     setStatesFilter(event.target.value);
     // setFormState(formState => ({
     //   ...formState,
