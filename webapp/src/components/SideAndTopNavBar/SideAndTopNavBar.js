@@ -42,7 +42,7 @@ const useDrawerStyles = makeStyles(theme => ({
     flexDirection: "column",
     height: "100%",
     boxShadow: "none",
-    marginTop: "30px"
+    marginTop: "25px"
   },
   navigationpanel: {
     margin: theme.spacing(0)

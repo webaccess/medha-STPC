@@ -95,7 +95,7 @@ const ViewRpc = props => {
   });
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
@@ -377,7 +377,7 @@ const ViewRpc = props => {
 
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false

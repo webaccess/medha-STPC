@@ -115,7 +115,7 @@ const ManageCollege = props => {
   /** Get filter data parameters i.e intially get only state and college */
   const getFilterData = () => {
     let params = {
-      pageSize: 10000000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(COLLEGE_URL, params)
@@ -150,7 +150,7 @@ const ManageCollege = props => {
     delete formState.filterDataParameters[RPC_FILTER];
 
     let params = {
-      pageSize: 10000000,
+      pageSize: -1,
       "state.id": formState.filterDataParameters[STATE_FILTER]
     };
     console.log(params, formState.filterDataParameters);
@@ -552,7 +552,7 @@ const ManageCollege = props => {
     let blockData = [];
     let unblockData = [];
 
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false

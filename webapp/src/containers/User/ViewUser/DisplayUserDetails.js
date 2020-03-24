@@ -60,176 +60,276 @@ const DisplayUserDetails = props => {
 
   return (
     <Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           View User
         </Typography>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        <Grid className={classes.root} variant="outlined">
-          <CardContent>
-            <Grid container spacing={3} className={classes.formgrid}>
-              <Grid item md={12} xs={12}>
-                {formState.userDetails ? (
-                  <form>
-                    <Card>
-                      <CardContent className={classes.Cardtheming}>
+        <CardContent className={classes.Cardtheming}>
+          <Grid container className={classes.formgrid}>
+            <Grid item md={12} xs={12}>
+              {formState.userDetails ? (
+                <form>
+                  <Card>
+                    <CardContent className={classes.Cardtheming}>
+                      <Grid className={classes.filterOptions} container>
                         <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
                         >
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>First Name:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.userDetails.first_name}
-                            </Typography>
-                          </Grid>
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>Last Name:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.userDetails.last_name}
-                            </Typography>
-                          </Grid>
+                          <Typography>First Name:</Typography>
                         </Grid>
-                      </CardContent>
-                      <CardContent className={classes.Cardtheming}>
                         <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
                         >
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>User Name:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.userDetails.username}
-                            </Typography>
-                          </Grid>
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>Email:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.userDetails.email}
-                            </Typography>
-                          </Grid>
+                          <Typography>
+                            {formState.userDetails.first_name}
+                          </Typography>
                         </Grid>
-                      </CardContent>
-                      <CardContent className={classes.Cardtheming}>
                         <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
                         >
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography className={classes.right}>
-                              Contact
-                            </Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.userDetails.contact_number}
-                            </Typography>
-                          </Grid>
+                          <Typography>Last Name:</Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
+                        >
+                          <Typography>
+                            {formState.userDetails.last_name}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                    <CardContent className={classes.Cardtheming}>
+                      <Grid
+                        className={classes.filterOptions}
+                        container
+                        spacing={1}
+                      >
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
+                        >
+                          <Typography>User Name:</Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
+                        >
+                          <Typography>
+                            {formState.userDetails.username}
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
+                        >
+                          <Typography>Email:</Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
+                        >
+                          <Typography>{formState.userDetails.email}</Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                    <CardContent className={classes.Cardtheming}>
+                      <Grid className={classes.filterOptions} container>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
+                        >
+                          <Typography className={classes.right}>
+                            Contact
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
+                        >
+                          <Typography>
+                            {formState.userDetails.contact_number}
+                          </Typography>
+                        </Grid>
 
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography className={classes.right}>
-                              Role:
-                            </Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography className={classes.right}>
-                              {formState.userDetails.role &&
-                                formState.userDetails.role.name}
-                            </Typography>
-                          </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
+                        >
+                          <Typography className={classes.right}>
+                            Role:
+                          </Typography>
                         </Grid>
-                      </CardContent>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
+                        >
+                          <Typography className={classes.right}>
+                            {formState.userDetails.role &&
+                              formState.userDetails.role.name}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
 
-                      <CardContent className={classes.Cardtheming}>
+                    <CardContent className={classes.Cardtheming}>
+                      <Grid className={classes.filterOptions} container>
                         <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
                         >
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>State:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.userDetails.state &&
-                                formState.userDetails.state.name}
-                            </Typography>
-                          </Grid>
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>Zone:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography className={classes.right}>
-                              {formState.userDetails.zone &&
-                                formState.userDetails.zone.name}
-                            </Typography>
-                          </Grid>
+                          <Typography>State:</Typography>
                         </Grid>
-                      </CardContent>
-                      <CardContent className={classes.Cardtheming}>
                         <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
                         >
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>RPC:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.userDetails.rpc &&
-                                formState.userDetails.rpc.name}
-                            </Typography>
-                          </Grid>
-                          <Grid md={1} className={classes.labelside}>
-                            <Typography>College:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography className={classes.right}>
-                              {formState.userDetails.college &&
-                                formState.userDetails.college.name}
-                            </Typography>
-                          </Grid>
+                          <Typography>
+                            {formState.userDetails.state &&
+                              formState.userDetails.state.name}
+                          </Typography>
                         </Grid>
-                      </CardContent>
-                      <CardActions className={classes.btnspace}>
-                        <YellowButton
-                          type="submit"
-                          color="primary"
-                          variant="contained"
-                          onClick={editData}
-                          className={classes.submitbtn}
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
                         >
-                          Edit
-                        </YellowButton>
-                        <GrayButton
-                          color="primary"
-                          variant="contained"
-                          to={routeConstants.VIEW_USER}
-                          className={classes.resetbtn}
+                          <Typography>Zone:</Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
                         >
-                          Cancel
-                        </GrayButton>
-                      </CardActions>
-                    </Card>
-                  </form>
-                ) : null}
-              </Grid>
+                          <Typography className={classes.right}>
+                            {formState.userDetails.zone &&
+                              formState.userDetails.zone.name}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                    <CardContent className={classes.Cardtheming}>
+                      <Grid className={classes.filterOptions} container>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
+                        >
+                          <Typography>RPC:</Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
+                        >
+                          <Typography>
+                            {formState.userDetails.rpc &&
+                              formState.userDetails.rpc.name}
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelside}
+                        >
+                          <Typography>College:</Typography>
+                        </Grid>
+                        <Grid
+                          md={2}
+                          sm={6}
+                          xl={12}
+                          xs={12}
+                          className={classes.labelcontent}
+                        >
+                          <Typography className={classes.right}>
+                            {formState.userDetails.college &&
+                              formState.userDetails.college.name}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                    <CardActions className={classes.btnspace}>
+                      <YellowButton
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        onClick={editData}
+                        className={classes.submitbtn}
+                      >
+                        Edit
+                      </YellowButton>
+                      <GrayButton
+                        color="primary"
+                        variant="contained"
+                        to={routeConstants.VIEW_USER}
+                        className={classes.resetbtn}
+                      >
+                        Cancel
+                      </GrayButton>
+                    </CardActions>
+                  </Card>
+                </form>
+              ) : null}
             </Grid>
-          </CardContent>
-        </Grid>
+          </Grid>
+        </CardContent>
       </Grid>
     </Grid>
   );

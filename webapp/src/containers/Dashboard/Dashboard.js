@@ -93,11 +93,13 @@ const Dashboard = props => {
   const StyledTableCell = withStyles((theme: Theme) =>
     createStyles({
       head: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white
-      },
+        backgroundColor: "#f6c80a",
+        color: "#353535",
+        padding:"10px"
+            },
       body: {
-        fontSize: 14
+        fontSize: "14px",
+        padding:"8px"
       }
     })
   )(TableCell);
@@ -368,6 +370,7 @@ const Dashboard = props => {
                       />
                     </FormControl>
                   </Grid>
+                  <Grid item md={2} xs={12} className={classes.dash_search_btn}>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
                       variant="contained"
@@ -385,7 +388,7 @@ const Dashboard = props => {
                     >
                       {genericConstants.RESET_BUTTON_TEXT}
                     </GrayButton>
-                  </Grid>
+                  </Grid></Grid>
                 </Grid>
               </CardContent>
             </Card>

@@ -49,6 +49,26 @@ const useStyles = makeStyles(theme => ({
     borderBottom: "1px solid #ccc",
     marginBottom: "15px",
     borderRadius: "0px"
-  }
+  },
+  labelside: {
+    paddingBottom: "10px",
+    fontWeight: "600",
+    // backgroundColor: "#ccc",
+    marginRight:"15px",
+    fontWeight:"700",
+    borderBottom:"1px solid #ccc"
+  },
+  Cardtheming: {
+    paddingBottom: "16px !important"
+  },
+  Cardthemingstream: {
+    paddingLeft:"0px"
+  },
+  labelcontent: {
+    paddingBottom: "10px",
+    borderBottom: "1px solid #f6c80a",
+    marginRight:"15px",
+    maxWidth:"100% !important"
+  },
 }));
 export default useStyles;

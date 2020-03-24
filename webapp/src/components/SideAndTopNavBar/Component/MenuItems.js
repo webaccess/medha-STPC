@@ -32,7 +32,7 @@ const MenuItems = props => {
       },
       {
         name: "Events",
-        link: routeConstants.EVENTS,
+        link: routeConstants.MANAGE_EVENT,
         Icon: <EmojiFlagsOutlinedIcon />
       },
       {

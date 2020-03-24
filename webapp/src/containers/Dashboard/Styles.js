@@ -12,15 +12,15 @@ const useStyles = makeStyles(theme => ({
     width: 560
   },
   title: {
-    fontSize: "13px",
-    fontWeight: 700,
-    //color: "#546E7A"
-    color: "#fff"
+    color: "#353535",
+    fontSize: "14px",
+    fontWeight: "700",
+    textTransform: "capitalize"
   },
   titleRoot: {
     padding: "4px",
-    borderBottom: "1.5px solid #546E7A",
-    backgroundColor: "#000"
+    borderBottom: "1.5px solid #ccc",
+    backgroundColor: "#f6c80a"
   },
   h1: {
     textAlign: "center !important",
@@ -28,9 +28,10 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 700
   },
   root: {},
-  table: {
-    minWidth: 300
+  dasboard_table: {
+    minWidth: "100%",
   },
+
   marginCard: {
     marginTop: "24px"
   },
@@ -38,6 +39,13 @@ const useStyles = makeStyles(theme => ({
     // margin: theme.spacing(0.5)
     alignSelf: "center",
     marginLeft: "8px"
+  },
+  dash_search_btn: {
+    display: "flex",
+    flexDirection: "row",
+    alignSelf: "center",
+    justifyContent: "flex-start",
+    width:"100%"
   }
 }));
 
