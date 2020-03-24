@@ -644,34 +644,26 @@ const ViewUsers = props => {
       button: true,
       conditionalCellStyles: []
     },
-    {
+        {
       cell: cell => (
-        <Tooltip title="Block" placement="top">
+        <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
           <i
             className="material-icons"
             id={cell.id}
             value={cell.name}
             onClick={blockedCell}
+            style={
+              cell.blocked
+                ? { color: "red", fontSize: "19px" }
+                : { color: "green", fontSize: "19px" }
+            }
           >
             block
           </i>
         </Tooltip>
       ),
       button: true,
-      conditionalCellStyles: [
-        {
-          when: row => row.blocked === true,
-          style: {
-            color: "red"
-          }
-        },
-        {
-          when: row => row.blocked === false,
-          style: {
-            color: "green"
-          }
-        }
-      ]
+      conditionalCellStyles: []
     },
     {
       cell: cell => (
