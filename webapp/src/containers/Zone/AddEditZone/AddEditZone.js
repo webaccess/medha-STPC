@@ -244,6 +244,7 @@ const AddEditZone = props => {
                     name={zone}
                     value={formState.values[zone] || ""}
                     error={hasError(zone)}
+                    placeholder={get(AddZoneForm[zone], "placeholder")}
                     variant="outlined"
                     required
                     fullWidth
@@ -279,6 +280,7 @@ const AddEditZone = props => {
                         {...params}
                         label={get(AddZoneForm[state], "label")}
                         variant="outlined"
+                        placeholder={get(AddZoneForm[state], "placeholder")}
                         error={hasError(state)}
                         helperText={
                           hasError(state)

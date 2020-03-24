@@ -910,8 +910,8 @@ const ManageCollege = props => {
                   formState.filterDataParameters[COLLEGE_FILTER]
                 )}
                 <TextField
-                  label={"College Name"}
-                  placeholder="College Name"
+                  label={"College"}
+                  placeholder="College"
                   variant="outlined"
                   name={COLLEGE_FILTER}
                   onChange={handleFilterChange}
@@ -1002,8 +1002,8 @@ const ManageCollege = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Rpc"
-                      placeholder="College"
+                      label="RPC"
+                      placeholder="RPC"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />

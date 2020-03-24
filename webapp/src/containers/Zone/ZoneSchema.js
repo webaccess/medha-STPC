@@ -5,11 +5,11 @@ const ZoneSchema = {
     cancel: "Cancel"
   },
   zoneName: {
-    label: "Zone Name",
+    label: "Zone",
     id: "zoneName",
-    autoComplete: "Zone Name",
+    autoComplete: "Zone",
     required: true,
-    placeholder: "Zone Name",
+    placeholder: "Zone",
     autoFocus: true,
     type: "text",
     validations: {
@@ -24,7 +24,7 @@ const ZoneSchema = {
     id: "statename",
     autoComplete: "statename",
     required: true,
-    placeholder: "State Name",
+    placeholder: "Select State",
     autoFocus: true,
     type: "text",
     validations: {
