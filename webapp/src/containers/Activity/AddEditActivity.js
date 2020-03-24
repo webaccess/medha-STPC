@@ -37,7 +37,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
-import registrationSchema from "./RegistrationSchema.js";
+//import registrationSchema from "./RegistrationSchema.js";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
 
@@ -61,28 +61,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const AddEditStudent = props => {
+const AddEditActivity = props => {
   let history = useHistory();
-  const [user, setUser] = useState({
-    firstName: "",
-    lastName: "",
-    fatherFirstName: "",
-    fatherLastName: "",
-    address: "",
-    district: null,
-    state: null,
-    email: "",
-    contactNumber: "",
-    userName: "",
-    password: "",
-    gender: "",
-    physicallyHandicapped: null,
-    college: null,
-    stream: null,
-    currentAcademicYear: null,
-    collegeRollNumber: null,
-    otp: ""
-  });
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -233,14 +213,14 @@ const AddEditStudent = props => {
     event.preventDefault();
 
     let schema;
-    if (formState.editStudent) {
-      schema = Object.assign(
-        {},
-        _.omit(registrationSchema, ["password", "otp"])
-      );
-    } else {
-      schema = registrationSchema;
-    }
+    // if (formState.editStudent) {
+    //   schema = Object.assign(
+    //     {},
+    //     _.omit(registrationSchema, ["password", "otp"])
+    //   );
+    // } else {
+    //   schema = registrationSchema;
+    // }
     console.log(schema);
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -267,7 +247,7 @@ const AddEditStudent = props => {
     if (isValid) {
       /** CALL POST FUNCTION */
       console.log("postcall");
-      postStudentData();
+      // postStudentData();
 
       /** Call axios from here */
       setFormState(formState => ({
@@ -479,13 +459,13 @@ const AddEditStudent = props => {
   const hasError = field => (formState.errors[field] ? true : false);
 
   return (
-    <Layout>
+    <Grid>
       {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editStudent
             ? genericConstants.EDIT_STUDENT_PROFILE
-            : genericConstants.STUDENT_REGISTRATION}
+            : genericConstants.ADD_ACTIVITY}
         </Typography>
         {isFailed && formState.editStudent ? (
           <Collapse in={isFailed}>
@@ -535,42 +515,43 @@ const AddEditStudent = props => {
         {console.log(formState)}
         {console.log(districtlist)}
         {console.log(statelist)}
-        {console.log(user)}
         <form autoComplete="off">
           <CardContent>
             <Grid container spacing={3} className={classes.formgrid}>
-              <Grid item md={3} xs={12}>
+              <Grid item md={12} xs={12}>
                 <TextField
-                  label="First Name"
-                  name="firstname"
-                  value={formState.values["firstname"]}
+                  label="Activity Name"
+                  name="activityname"
+                  value={formState.values["activityname"]}
                   variant="outlined"
-                  error={hasError("firstname")}
+                  error={hasError("activityname")}
                   required
                   fullWidth
                   onChange={handleChange}
                   helperText={
-                    hasError("firstname")
-                      ? formState.errors["firstname"].map(error => {
+                    hasError("activityname")
+                      ? formState.errors["activityname"].map(error => {
                           return error + " ";
                         })
                       : null
                   }
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={12} xs={12}>
                 <TextField
-                  label="Last Name"
-                  name="lastname"
-                  value={formState.values["lastname"]}
+                  label="Description"
+                  name="description"
+                  value={formState.values["description"]}
                   variant="outlined"
                   required
                   fullWidth
-                  error={hasError("lastname")}
+                  multiline
+                  rows="3"
+                  error={hasError("description")}
                   onChange={handleChange}
                   helperText={
-                    hasError("lastname")
-                      ? formState.errors["lastname"].map(error => {
+                    hasError("description")
+                      ? formState.errors["description"].map(error => {
                           return error + " ";
                         })
                       : null
@@ -928,7 +909,7 @@ const AddEditStudent = props => {
                       label="Password"
                       name="password"
                       type={formState.showPassword ? "text" : "password"}
-                      value={formState.values[user.password]}
+                      // value={formState.values[user.password]}
                       required
                       fullWidth
                       onChange={handleChange}
@@ -1045,7 +1026,7 @@ const AddEditStudent = props => {
           </CardContent>
         </form>
       </Card>
-    </Layout>
+    </Grid>
   );
 };
-export default AddEditStudent;
+export default AddEditActivity;

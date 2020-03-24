@@ -48,7 +48,8 @@ import AddDocument from "./containers/Student/Document/AddEditDocument";
 import SetIndexContext from "./context/SetIndexContext";
 import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
 import ManageStudents from "./containers/Student/ManageStudents";
-
+import ViewActivity from "./containers/Activity/ViewActivity.js";
+import AddEditActivity from "./containers/Activity/AddEditActivity";
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -165,7 +166,20 @@ function App() {
                 layout={Layout}
                 path={routeConstants.ADD_DOCUMENTS}
               />
-
+              {/**View Activity */}
+              <RouteWithLayout
+                component={ViewActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY}
+              />
+              {/**Add Edit Activity */}
+              <RouteWithLayout
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.CREATE_ACTIVITY}
+              />
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout

@@ -70,6 +70,26 @@ const useStyles = makeStyles(theme => ({
     borderBottom: "1px solid #ccc",
     marginBottom: "15px",
     borderRadius: "0px"
+  },
+  labelside: {
+    paddingBottom: "10px",
+    fontWeight: "600",
+    // backgroundColor: "#ccc",
+    marginRight: "15px",
+    fontWeight: "700",
+    borderBottom: "1px solid #ccc"
+  },
+  Cardtheming: {
+    paddingBottom: "16px !important"
+  },
+  Cardthemingstream: {
+    paddingLeft: "0px"
+  },
+  labelcontent: {
+    paddingBottom: "10px",
+    borderBottom: "1px solid #f6c80a",
+    marginRight: "15px",
+    maxWidth: "100% !important"
   }
 }));
 
@@ -128,12 +148,12 @@ const StudentProfile = props => {
     }));
   }, [user]);
   async function handleSetDetails() {
-    let details = auth.getUserInfo();
+    let details = props.data ? props.data.id : auth.getUserInfo().id;
 
     await serviceProvider
       .serviceProviderForGetOneRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
-        details.id
+        details
       )
       .then(res => {
         const data = res.data.result;
@@ -220,7 +240,7 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography>First Name:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>
                               {formState.values.firstname}
                             </Typography>
@@ -228,7 +248,7 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography>Last Name:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.lastname}</Typography>
                           </Grid>
                         </Grid>
@@ -243,7 +263,7 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Father's First Name:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>
                               {formState.values.fatherFirstName}
                             </Typography>
@@ -251,7 +271,7 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography>Father's Last Name:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>
                               {formState.values.fatherLastName}
                             </Typography>
@@ -268,13 +288,13 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography>Address:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.address}</Typography>
                           </Grid>
                           <Grid md={2} className={classes.labelside}>
                             <Typography> State:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.state}</Typography>
                           </Grid>
                         </Grid>
@@ -289,13 +309,13 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography> District:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.district}</Typography>
                           </Grid>
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Contact Number:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.contact}</Typography>
                           </Grid>
                         </Grid>
@@ -310,13 +330,13 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Email:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.email}</Typography>
                           </Grid>
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Date of Birth:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>
                               {selectedDate.getFullYear() +
                                 "-" +
@@ -336,13 +356,13 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Gender:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.gender}</Typography>
                           </Grid>
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Roll Number:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>
                               {formState.values.rollnumber}
                             </Typography>
@@ -359,13 +379,13 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography> College:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.college}</Typography>
                           </Grid>
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Stream:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.stream}</Typography>
                           </Grid>
                         </Grid>
@@ -379,13 +399,13 @@ const StudentProfile = props => {
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Username:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>{formState.values.username}</Typography>
                           </Grid>
                           <Grid md={2} className={classes.labelside}>
                             <Typography> Physically Handicapped:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid md={3} className={classes.labelcontent}>
                             <Typography>
                               {formState.values.physicallyHandicapped
                                 ? "Yes"

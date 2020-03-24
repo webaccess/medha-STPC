@@ -22,7 +22,7 @@ const MenuItems = props => {
         items: [
           {
             name: "Manage Training",
-            link: routeConstants.MANAGE_TRAINING
+            link: routeConstants.MANAGE_ACTIVITY
           },
           {
             name: "Validate Student",
