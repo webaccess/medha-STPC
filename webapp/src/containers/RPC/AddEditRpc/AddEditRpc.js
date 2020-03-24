@@ -273,6 +273,7 @@ const AddEditRpc = props => {
                     name={rpcName}
                     onChange={handleChange}
                     required
+                    placeholder={get(AddRpcSchema[rpcName], "placeholder")}
                     type={get(AddRpcSchema[rpcName], "type")}
                     value={formState.values[rpcName] || ""}
                     error={hasError(rpcName)}
@@ -307,6 +308,10 @@ const AddEditRpc = props => {
                       <TextField
                         {...params}
                         error={hasError(stateName)}
+                        placeholder={get(
+                          AddRpcSchema[stateName],
+                          "placeholder"
+                        )}
                         helperText={
                           hasError(stateName)
                             ? formState.errors[stateName].map(error => {
@@ -344,6 +349,10 @@ const AddEditRpc = props => {
                       <TextField
                         {...params}
                         error={hasError(collegeName)}
+                        placeholder={get(
+                          AddRpcSchema[collegeName],
+                          "placeholder"
+                        )}
                         helperText={
                           hasError(collegeName)
                             ? formState.errors[collegeName].map(error => {

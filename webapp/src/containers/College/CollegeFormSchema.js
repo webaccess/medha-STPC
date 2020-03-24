@@ -4,7 +4,7 @@ const CollegeFormSchema = {
     id: "name",
     autoComplete: "name",
     required: true,
-    placeholder: "Choose College Name",
+    placeholder: "College Name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -158,7 +158,7 @@ const CollegeFormSchema = {
     id: "admins",
     autoComplete: "admins",
     required: false,
-    placeholder: "Choose Admins",
+    placeholder: "Choose TPO",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -178,7 +178,7 @@ const CollegeFormSchema = {
     id: "streams",
     autoComplete: "strength",
     required: false,
-    placeholder: "Stream Strength",
+    placeholder: "Enter Strength",
     autoFocus: true,
     type: "text",
     validations: {}
