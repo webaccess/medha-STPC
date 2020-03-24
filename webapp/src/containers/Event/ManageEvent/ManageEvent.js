@@ -24,6 +24,8 @@ import useStyles from "./ManageEventStyles";
 import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
+import { useHistory } from "react-router-dom";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 // http://104.236.28.24:1338/events
@@ -32,6 +34,7 @@ const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const SORT_FIELD_KEY = "_sort";
 
 const ViewEvents = props => {
+  const history = useHistory();
   const classes = useStyles();
   const [selectedDate, setSelectedDate] = React.useState(new Date());
 
@@ -126,6 +129,16 @@ const ViewEvents = props => {
     setSelectedDate(date);
   };
 
+  /** View Event */
+  const viewCell = event => {
+    history.push({
+      pathname: routeConstants.VIEW_EVENT,
+      dataForEdit: event.target.id
+    });
+  };
+
+  /** ------ */
+
   /** Table Data */
   const column = [
     { name: "Event", sortable: true, selector: "title" },
@@ -142,7 +155,7 @@ const ViewEvents = props => {
           <i
             className="material-icons"
             id={cell.id}
-            //onClick={viewCell}
+            onClick={viewCell}
             style={{ color: "green", fontSize: "19px" }}
           >
             view_list
