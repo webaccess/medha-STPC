@@ -121,7 +121,7 @@ const ViewUsers = props => {
         setStates(res.data.result);
       })
       .catch(error => {
-        console.log("error");
+        console.log("error", error);
       });
 
     serviceProviders
