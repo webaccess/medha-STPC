@@ -40,6 +40,7 @@ const ViewRpc = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [rpcsFilter, setRpcsFilter] = useState([]);
 
   const [formState, setFormState] = useState({
     filterRpc: "",
@@ -213,6 +214,7 @@ const ViewRpc = props => {
 
   /**---------------------------clear filter------------------------ */
   const clearFilter = () => {
+    setRpcsFilter([""]);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -335,14 +337,15 @@ const ViewRpc = props => {
   };
 
   const handleFilterChange = event => {
-    setFormState(formState => ({
-      ...formState,
-      filterRpc: event.target.value
-    }));
+    setRpcsFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterRpc: event.target.value
+    // }));
   };
 
   const filterRpcData = () => {
-    let params = "?name_contains=" + formState.filterRpc;
+    let params = "?name_contains=" + rpcsFilter;
 
     let FilterRpcURL =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS + params;
@@ -599,7 +602,13 @@ const ViewRpc = props => {
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField variant="outlined" onChange={handleFilterChange} />
+                <TextField
+                  label={"RPC"}
+                  placeholder="RPC"
+                  variant="outlined"
+                  value={rpcsFilter}
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton
