@@ -15,10 +15,16 @@ export const EDIT_PROFILE = "/edit-profile";
 export const VIEW_EDUCATION = "/view-education";
 export const ADD_EDUCATION = "/add-education";
 export const EDIT_EDUCATION = "/edit-education";
+
 /**Student Documents */
 export const VIEW_DOCUMENTS = "/view-documents";
 export const EDIT_DOCUMENTS = "/edit-documents";
 export const ADD_DOCUMENTS = "/add-documents";
+
+/**Student Academic history */
+export const VIEW_ACADEMIC_HISTORY = "/view-academic-history";
+export const ADD_ACADEMIC_HISTORY = "/add-academic-history";
+export const EDIT_ACADEMIC_HISTORY = "/edit-academic-history";
 
 /** College */
 export const ADD_COLLEGE = "/add-college";

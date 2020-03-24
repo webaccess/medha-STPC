@@ -276,3 +276,10 @@ export const uploadDocument = (files, ref, refId, field) => {
   formData.append("field", field);
   return formData;
 };
+
+export const addAcademicHistory = (academicYear, educationYear) => {
+  return {
+    academic_year: academicYear,
+    education_year: educationYear
+  };
+};
