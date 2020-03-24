@@ -12,8 +12,8 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import styles from "./Education.module.css";
-import useStyles from "./ViewEducationStyles";
+import styles from "./AcademicHistory.module.css";
+import useStyles from "./ViewAcademicHistoryStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -28,48 +28,48 @@ import {
   Alert,
   Auth
 } from "../../../components";
-import DeleteEducation from "./DeleteEducation";
+import DeleteAcademicHistory from "./DeleteAcademicHistory";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
 const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
 const studentId = studentInfo ? studentInfo.id : null;
 
-const STUDENT_EDUCATION_URL =
+const STUDENT_ACADEMIC_YEAR_URL =
   strapiConstants.STRAPI_DB_URL +
   strapiConstants.STRAPI_STUDENTS +
-  `/${studentId}/education`;
-const EDUCATION_FILTER = "id";
+  `/${studentId}/academic-history`;
+const ACADEMIC_YEAR_FILTER = "id";
 
-const ViewEducation = props => {
+const ViewAcademicHistory = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
   const [formState, setFormState] = useState({
     dataToShow: [],
-    educations: [],
-    educationFilter: [],
+    academicHistory: [],
+    academicHistoryFilters: [],
     filterDataParameters: {},
     isFilterSearch: false,
     /** This is when we return from edit page */
-    isDataEdited: props["location"]["fromEditEducation"]
+    isDataEdited: props["location"]["fromEditAcademicHistory"]
       ? props["location"]["isDataEdited"]
       : false,
-    editedData: props["location"]["fromEditEducation"]
+    editedData: props["location"]["fromEditAcademicHistory"]
       ? props["location"]["editedData"]
       : {},
-    fromEditEducation: props["location"]["fromEditEducation"]
-      ? props["location"]["fromEditEducation"]
+    fromEditAcademicHistory: props["location"]["fromEditAcademicHistory"]
+      ? props["location"]["fromEditAcademicHistory"]
       : false,
     /** This is when we return from add page */
-    isDataAdded: props["location"]["fromAddEducation"]
+    isDataAdded: props["location"]["fromAddAcademicHistory"]
       ? props["location"]["isDataAdded"]
       : false,
-    addedData: props["location"]["fromAddEducation"]
+    addedData: props["location"]["fromAddAcademicHistory"]
       ? props["location"]["addedData"]
       : {},
-    fromAddEducation: props["location"]["fromAddEducation"]
-      ? props["location"]["fromAddEducation"]
+    fromAddAcademicHistory: props["location"]["fromAddAcademicHistory"]
+      ? props["location"]["fromAddAcademicHistory"]
       : false,
     /** This is for delete */
     isDataDeleted: false,
@@ -78,63 +78,40 @@ const ViewEducation = props => {
     showModalDelete: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
-    pageSize: "",
-    totalRows: "",
-    page: "",
-    pageCount: "",
     sortAscending: true
   });
 
   useEffect(() => {
     serviceProviders
-      .serviceProviderForGetRequest(STUDENT_EDUCATION_URL)
+      .serviceProviderForGetRequest(STUDENT_ACADEMIC_YEAR_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
-          educationFilter: res.data.result
+          academicHistoryFilters: res.data.result
         }));
       })
       .catch(error => {
         console.log("error", error);
       });
 
-    getEducationData(10, 1);
+    getAcademicHistory();
   }, []);
 
-  /** This seperate function is used to get the education data*/
-  const getEducationData = async (pageSize, page, params = null) => {
-    if (params !== null && !formUtilities.checkEmpty(params)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize
-      };
-      Object.keys(params).map(key => {
-        defaultParams[key] = params[key];
-      });
-      params = defaultParams;
-    } else {
-      params = {
-        page: page,
-        pageSize: pageSize
-      };
-    }
+  /** This seperate function is used to get the Academic history data*/
+  const getAcademicHistory = async (params = null) => {
     setFormState(formState => ({
       ...formState,
       isDataLoading: true
     }));
 
     await serviceProviders
-      .serviceProviderForGetRequest(STUDENT_EDUCATION_URL, params)
+      .serviceProviderForGetRequest(STUDENT_ACADEMIC_YEAR_URL, params)
       .then(res => {
         formState.dataToShow = [];
         setFormState(formState => ({
           ...formState,
-          educations: res.data.result,
+          academicHistory: res.data.result,
           dataToShow: res.data.result,
-          pageSize: res.data.pageSize,
-          totalRows: res.data.rowCount,
-          page: res.data.page,
-          pageCount: res.data.pageCount,
           isDataLoading: false
         }));
       })
@@ -143,37 +120,11 @@ const ViewEducation = props => {
       });
   };
 
-  /** Pagination */
-  const handlePerRowsChange = async (perPage, page) => {
-    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
-    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getEducationData(perPage, page);
-    } else {
-      if (formState.isFilterSearch) {
-        await searchFilter(perPage, page);
-      } else {
-        await getEducationData(perPage, page);
-      }
-    }
-  };
-
-  const handlePageChange = async page => {
-    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getEducationData(formState.pageSize, page);
-    } else {
-      if (formState.isFilterSearch) {
-        await searchFilter(formState.pageSize, page);
-      } else {
-        await getEducationData(formState.pageSize, page);
-      }
-    }
-  };
-
   /** Search filter is called when we select filters and click on search button */
-  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+  const searchFilter = async () => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
-      await getEducationData(perPage, page, formState.filterDataParameters);
+      await getAcademicHistory(formState.filterDataParameters);
     }
   };
 
@@ -191,13 +142,13 @@ const ViewEducation = props => {
   };
 
   const restoreData = () => {
-    getEducationData(formState.pageSize, 1);
+    getAcademicHistory();
   };
 
   const editCell = data => {
     history.push({
-      pathname: routeConstants.EDIT_EDUCATION,
-      editEducation: true,
+      pathname: routeConstants.EDIT_ACADEMIC_HISTORY,
+      editAcademicHistory: true,
       dataForEdit: data
     });
   };
@@ -215,6 +166,7 @@ const ViewEducation = props => {
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
+    console.log(filterName, event, value);
     if (value === null) {
       delete formState.filterDataParameters[filterName];
       //restoreData();
@@ -233,17 +185,14 @@ const ViewEducation = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getEducationData(formState.pageSize, formState.page);
+      getAcademicHistory();
     }
   };
 
   /** Columns to show in table */
   const column = [
-    { name: "Qualification", sortable: true, selector: "qualification" },
-    { name: "Board", sortable: true, selector: "board" },
-    { name: "Marks", sortable: true, selector: "marks" },
-    { name: "Year Of Passing", sortable: true, selector: "year_of_passing" },
-    /** Columns for edit and delete */
+    { name: "Academic Year", sortable: true, selector: "academic_year.name" },
+    { name: "Education Year", sortable: true, selector: "education_year" },
     {
       cell: cell => (
         <Tooltip title="Edit" placement="top">
@@ -279,35 +228,34 @@ const ViewEducation = props => {
     }
   ];
 
-  const handleAddEducationClick = () => {
+  const handleAddAcademicHistoryClick = () => {
     history.push({
-      pathname: routeConstants.ADD_EDUCATION
+      pathname: routeConstants.ADD_ACADEMIC_HISTORY
     });
   };
 
-  console.log(formState.dataToShow);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_EDUCATION_TEXT}
+          {genericConstants.VIEW_ACADEMIC_HISTORY_TEXT}
         </Typography>
 
         <GreenButton
           variant="contained"
           color="primary"
-          onClick={handleAddEducationClick}
+          onClick={handleAddAcademicHistoryClick}
           disableElevation
-          to={routeConstants.ADD_EDUCATION}
+          to={routeConstants.ADD_ACADEMIC_HISTORY}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          {genericConstants.ADD_EDUCATION_TEXT}
+          {genericConstants.ADD_ACADEMIC_HISTORY_TEXT}
         </GreenButton>
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for edit */}
-        {formState.fromEditEducation && formState.isDataEdited ? (
+        {formState.fromEditAcademicHistory && formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -328,7 +276,7 @@ const ViewEducation = props => {
             </Alert>
           </Collapse>
         ) : null}
-        {formState.fromEditEducation && !formState.isDataEdited ? (
+        {formState.fromEditAcademicHistory && !formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
               severity="error"
@@ -351,7 +299,7 @@ const ViewEducation = props => {
         ) : null}
 
         {/** Error/Success messages to be shown for add */}
-        {formState.fromAddEducation && formState.isDataAdded ? (
+        {formState.fromAddAcademicHistory && formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -372,7 +320,7 @@ const ViewEducation = props => {
             </Alert>
           </Collapse>
         ) : null}
-        {formState.fromAddEducation && !formState.isDataAdded ? (
+        {formState.fromAddAcademicHistory && !formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
               severity="error"
@@ -400,16 +348,16 @@ const ViewEducation = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  options={formState.educationFilter}
+                  options={formState.academicHistoryFilters}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.qualification}
+                  getOptionLabel={option => option.academic_year.name}
                   onChange={(event, value) =>
-                    handleChangeAutoComplete(EDUCATION_FILTER, event, value)
+                    handleChangeAutoComplete(ACADEMIC_YEAR_FILTER, event, value)
                   }
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Qualification"
+                      label="Academic Year"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -452,21 +400,18 @@ const ViewEducation = props => {
               editEvent={editCell}
               deleteEvent={deleteCell}
               progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              noDataComponent="No education details found"
+              pagination={false}
+              selectableRows={false}
             />
           ) : (
             <div className={classes.noDataMargin}>
-              No education details found
+              No academicHistory details found
             </div>
           )
         ) : (
           <Spinner />
         )}
-        <DeleteEducation
+        <DeleteAcademicHistory
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}
           id={formState.dataToDelete["id"]}
@@ -477,4 +422,4 @@ const ViewEducation = props => {
   );
 };
 
-export default ViewEducation;
+export default ViewAcademicHistory;

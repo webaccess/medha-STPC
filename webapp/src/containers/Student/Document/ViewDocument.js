@@ -68,10 +68,6 @@ const ViewDocument = props => {
     showModalDelete: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
-    pageSize: "",
-    totalRows: "",
-    page: "",
-    pageCount: "",
     sortAscending: true
   });
 
@@ -88,26 +84,11 @@ const ViewDocument = props => {
         console.log("error", error);
       });
 
-    getDocuments(10, 1);
+    getDocuments();
   }, []);
 
   /** This seperate function is used to get the document data*/
-  const getDocuments = async (pageSize, page, params = null) => {
-    if (params !== null && !formUtilities.checkEmpty(params)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize
-      };
-      Object.keys(params).map(key => {
-        defaultParams[key] = params[key];
-      });
-      params = defaultParams;
-    } else {
-      params = {
-        page: page,
-        pageSize: pageSize
-      };
-    }
+  const getDocuments = async (params = null) => {
     setFormState(formState => ({
       ...formState,
       isDataLoading: true
@@ -121,10 +102,6 @@ const ViewDocument = props => {
           ...formState,
           documents: res.data.result,
           dataToShow: res.data.result,
-          pageSize: res.data.pageSize,
-          totalRows: res.data.rowCount,
-          page: res.data.page,
-          pageCount: res.data.pageCount,
           isDataLoading: false
         }));
       })
@@ -133,37 +110,11 @@ const ViewDocument = props => {
       });
   };
 
-  /** Pagination */
-  const handlePerRowsChange = async (perPage, page) => {
-    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
-    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getDocuments(perPage, page);
-    } else {
-      if (formState.isFilterSearch) {
-        await searchFilter(perPage, page);
-      } else {
-        await getDocuments(perPage, page);
-      }
-    }
-  };
-
-  const handlePageChange = async page => {
-    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getDocuments(formState.pageSize, page);
-    } else {
-      if (formState.isFilterSearch) {
-        await searchFilter(formState.pageSize, page);
-      } else {
-        await getDocuments(formState.pageSize, page);
-      }
-    }
-  };
-
   /** Search filter is called when we select filters and click on search button */
-  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+  const searchFilter = async () => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
-      await getDocuments(perPage, page, formState.filterDataParameters);
+      await getDocuments(formState.filterDataParameters);
     }
   };
 
@@ -181,15 +132,7 @@ const ViewDocument = props => {
   };
 
   const restoreData = () => {
-    getDocuments(formState.pageSize, 1);
-  };
-
-  const editCell = data => {
-    history.push({
-      pathname: routeConstants.EDIT_DOCUMENTS,
-      editDocument: true,
-      dataForEdit: data
-    });
+    getDocuments();
   };
 
   const isDeleteCellCompleted = status => {
@@ -224,7 +167,7 @@ const ViewDocument = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getDocuments(formState.pageSize, formState.page);
+      getDocuments();
     }
   };
 
@@ -396,13 +339,10 @@ const ViewDocument = props => {
               column={column}
               defaultSortField="name"
               defaultSortAsc={formState.sortAscending}
-              editEvent={editCell}
               deleteEvent={deleteCell}
               progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
+              pagination={false}
+              selectableRows={false}
             />
           ) : (
             <div className={classes.noDataMargin}>

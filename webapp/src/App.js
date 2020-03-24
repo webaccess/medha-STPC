@@ -49,6 +49,9 @@ import AddDocument from "./containers/Student/Document/AddEditDocument";
 import SetIndexContext from "./context/SetIndexContext";
 import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
 import ManageStudents from "./containers/Student/ManageStudents";
+import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
+import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
+import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
 
 function App() {
   const [index, setIndex] = useState(0);
@@ -165,6 +168,28 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_DOCUMENTS}
+              />
+
+              {/**Student Academic history */}
+              <RouteWithLayout
+                component={ViewAcademicHistory}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_ACADEMIC_HISTORY}
+              />
+
+              <RouteWithLayout
+                component={AddEditAcademicHistory}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_ACADEMIC_HISTORY}
+              />
+
+              <RouteWithLayout
+                component={EditAcademicHistoryRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_ACADEMIC_HISTORY}
               />
 
               {/** User */}

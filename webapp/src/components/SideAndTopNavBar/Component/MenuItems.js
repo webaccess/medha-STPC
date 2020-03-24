@@ -139,6 +139,10 @@ const MenuItems = props => {
           {
             name: "Documents",
             link: routeConstants.VIEW_DOCUMENTS
+          },
+          {
+            name: "Academic History",
+            link: routeConstants.VIEW_ACADEMIC_HISTORY
           }
         ]
       }
