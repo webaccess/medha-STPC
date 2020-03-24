@@ -73,6 +73,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/students/:id/academic-history",
+      "handler": "student.academicHistory",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
       "method": "DELETE",
       "path": "/students/:id/file/:fileId",
       "handler": "student.deleteDocument",

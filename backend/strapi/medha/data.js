@@ -351,11 +351,11 @@ const roles = {
     controllers: [
       {
         name: "academic-history",
-        action: []
+        action: ["create", "update", "delete"]
       },
       {
         name: "academic-year",
-        action: []
+        action: ["find", "findOne"]
       },
       {
         name: "activity",
@@ -422,7 +422,8 @@ const roles = {
           "create",
           "edit",
           "document",
-          "deletedocument"
+          "deletedocument",
+          "academicHistory"
         ]
       },
       {

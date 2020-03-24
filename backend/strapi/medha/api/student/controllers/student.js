@@ -312,9 +312,16 @@ module.exports = {
    */
   async document(ctx) {
     const { id } = ctx.params;
+    const documentId = ctx.query ? ctx.query.id : null;
 
     const response = await strapi.query("student").findOne({ id });
-    return utils.getFindOneResponse(response.documents);
+    if (documentId && response.documents && response.documents.length > 0) {
+      response.documents = response.documents.filter(
+        doc => doc.id === parseInt(documentId)
+      );
+    }
+
+    return utils.getFindOneResponse(response ? response.documents : null);
   },
 
   /**
@@ -356,5 +363,21 @@ module.exports = {
     await strapi.plugins["upload"].services.upload.remove(file, config);
 
     ctx.send(file);
+  },
+
+  /**
+   * Academic History
+   */
+  async academicHistory(ctx) {
+    const { id } = ctx.params;
+    const academicHistoryId = ctx.query ? ctx.query.id : null;
+    let response = await strapi
+      .query("academic-history")
+      .find({ student: id }, ["academic_year"]);
+
+    if (academicHistoryId && response && response.length > 0) {
+      response = response.filter(ah => ah.id === parseInt(academicHistoryId));
+    }
+    return utils.getFindOneResponse(response);
   }
 };
