@@ -17,6 +17,7 @@ import {
   IconButton,
   Typography
 } from "@material-ui/core";
+import { Table, Spinner, Alert } from "../../../components";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./ManageEventStyles";
@@ -37,7 +38,7 @@ const ViewEvents = props => {
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
-    events: [],
+    events: "",
     greenButtonChecker: true,
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -47,8 +48,6 @@ const ViewEvents = props => {
     pageCount: "",
     sortAscending: true
   });
-
-  console.log("datatoshow--", formState.events);
 
   useEffect(() => {
     getEventData(10, 1);
@@ -79,7 +78,6 @@ const ViewEvents = props => {
       ...formState,
       isDataLoading: true
     }));
-    console.log("paramsForevents", paramsForevents);
     await serviceProviders
       .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
       .then(res => {
@@ -109,18 +107,17 @@ const ViewEvents = props => {
     if (data.length > 0) {
       for (let i in data) {
         var eventIndividualData = {};
-        console.log("tempdata", data[i]);
         eventIndividualData["title"] = data[i]["title"];
         eventIndividualData["start_date_time"] = data[i]["start_date_time"];
-        eventIndividualData["streams"] = data[i]["streams"];
-        eventIndividualData["rpc"] = data[i]["rpc"];
+        eventIndividualData["streams"] = data[i]["streams"]
+          ? data[i]["streams"]["name"]
+          : "";
+        //eventIndividualData["rpc"] = data[i]["rpc"];
         // eventIndividualData["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
         // eventIndividualData["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
         // eventIndividualData["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
-
         x.push(eventIndividualData);
       }
-      console.log("xxxxx", x);
       return x;
     }
   };
@@ -128,6 +125,96 @@ const ViewEvents = props => {
   const handleDateChange = date => {
     setSelectedDate(date);
   };
+
+  /** Table Data */
+  const column = [
+    { name: "Event", sortable: true, selector: "title" },
+    { name: "Stream", sortable: true, selector: "streams" },
+    //{ name: "Location", sortable: true, selector: "rpc" },
+    { name: "Date", sortable: true, selector: "start_date_time" },
+    // { name: "RPC", sortable: true, selector: "rpc" },
+    // { name: "IPC", sortable: true, selector: "college" },
+    /** Columns for edit and delete */
+
+    {
+      cell: cell => (
+        <Tooltip title="View" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            //onClick={viewCell}
+            style={{ color: "green", fontSize: "19px" }}
+          >
+            view_list
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    },
+    {
+      cell: cell => (
+        <Tooltip title="Edit" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            // onClick={editCell}
+            style={{ color: "green" }}
+          >
+            edit
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    },
+    {
+      cell: cell => (
+        <Tooltip title="Block" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            value={cell.name}
+            // onClick={blockedCell}
+          >
+            block
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: [
+        {
+          when: row => row.blocked === true,
+          style: {
+            color: "red"
+          }
+        },
+        {
+          when: row => row.blocked === false,
+          style: {
+            color: "green"
+          }
+        }
+      ]
+    },
+    {
+      cell: cell => (
+        <Tooltip title="Delete" placement="top">
+          <i
+            className="material-icons"
+            id={cell.id}
+            //onClick={deleteCell}
+            style={{ color: "red" }}
+          >
+            delete_outline
+          </i>
+        </Tooltip>
+      ),
+      button: true,
+      conditionalCellStyles: []
+    }
+  ];
 
   return (
     <Grid>
@@ -277,7 +364,27 @@ const ViewEvents = props => {
           </CardContent>
         </Card>
         <Card className={classes.tabledata} variant="outlined">
-          <p>Test2</p>
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                //onSelectedRowsChange={handleRowSelected}
+                // deleteEvent={deleteCell}
+                defaultSortField="title"
+                defaultSortAsc={formState.sortAscending}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                // onChangeRowsPerPage={handlePerRowsChange}
+                // onChangePage={handlePageChange}
+              />
+            ) : (
+              <Spinner />
+            )
+          ) : (
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
         </Card>
       </Grid>
     </Grid>
