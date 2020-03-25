@@ -127,12 +127,10 @@ const DeleteUser = props => {
                   {props.isMultiDelete ? (
                     <p>
                       Are you sure you want to delete "{props.seletedUser}"
-                      users?
+                      Events?
                     </p>
                   ) : (
-                    <p>
-                      Are you sure you want to delete "{props.userName}" user?
-                    </p>
+                    <p>Are you sure you want to delete Event?</p>
                   )}
                 </Grid>
               </Grid>
