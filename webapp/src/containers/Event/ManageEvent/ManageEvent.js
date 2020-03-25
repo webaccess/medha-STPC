@@ -64,8 +64,6 @@ const ViewEvents = props => {
     getEventData(10, 1);
   }, []);
 
-  console.log("formState.filterDataParameters", formState.filterDataParameters);
-
   const getEventData = async (pageSize, page, paramsForevents = null) => {
     if (
       paramsForevents !== null &&
@@ -91,7 +89,6 @@ const ViewEvents = props => {
       ...formState,
       isDataLoading: true
     }));
-    console.log("paramsForusers", paramsForevents);
 
     await serviceProviders
       .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
