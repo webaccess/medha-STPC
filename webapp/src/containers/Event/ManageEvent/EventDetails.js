@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Auth as auth, Typography } from "../../../components";
-import { Card, CardContent, CardActions, Grid } from "@material-ui/core";
+import { Auth as auth, Spinner, GreenButton } from "../../../components";
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Grid,
+  Divider,
+  Icon,
+  Typography
+} from "@material-ui/core";
 import useStyles from "./EventDetailsStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
+import Img from "react-image";
 
 const EVENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
@@ -16,7 +25,8 @@ const EventDetails = props => {
   const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
-    eventDetails: []
+    eventDetails: {},
+    greenButtonChecker: true
   });
   useEffect(() => {
     getEventDetails();
@@ -30,17 +40,10 @@ const EventDetails = props => {
       paramsForEvent = props["location"]["dataForEdit"];
     }
     if (paramsForEvent !== null && paramsForEvent !== undefined) {
-      console.log(
-        "paramsForEvent",
-        paramsForEvent,
-        typeof paramsForEvent,
-        props["location"]["dataForEdit"]
-      );
       await serviceProviders
         .serviceProviderForGetOneRequest(EVENTS_URL, paramsForEvent)
         .then(res => {
           let viewData = res.data.result;
-          console.log(viewData);
           setFormState(formState => ({
             ...formState,
             eventDetails: viewData
@@ -56,24 +59,132 @@ const EventDetails = props => {
     }
   }
 
+  const routeToManageEvent = () => {
+    history.push({
+      pathname: routeConstants.MANAGE_EVENT
+    });
+  };
+
+  const getTime = () => {
+    let startTime = new Date(formState.eventDetails["start_date_time"]);
+    if (
+      formState.eventDetails["start_date_time"] &&
+      formState.eventDetails["end_date_time"]
+    ) {
+      let endTime = new Date(formState.eventDetails["end_date_time"]);
+      return (
+        startTime.toLocaleTimeString() + " - " + endTime.toLocaleTimeString()
+      );
+    } else {
+      startTime = new Date(formState.eventDetails["start_date_time"]);
+      return startTime.toLocaleTimeString();
+    }
+  };
+
+  const getDate = () => {
+    let startDate = new Date(formState.eventDetails["start_date_time"]);
+    if (
+      formState.eventDetails["start_date_time"] &&
+      formState.eventDetails["end_date_time"]
+    ) {
+      let endDate = new Date(formState.eventDetails["end_date_time"]);
+      return startDate.toDateString() + " - " + endDate.toDateString();
+    } else {
+      startDate = new Date(formState.eventDetails["start_date_time"]);
+      return startDate.toDateString();
+    }
+  };
+
+  const getVenue = () => {
+    return formState.eventDetails["address"];
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           Event
         </Typography>
+        <GreenButton
+          variant="contained"
+          color="primary"
+          disableElevation
+          onClick={routeToManageEvent}
+          to={routeConstants.MANAGE_EVENT}
+          startIcon={<Icon>keyboard_arrow_left</Icon>}
+          greenButtonChecker={formState.greenButtonChecker}
+        >
+          Back to listing
+        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        <Grid className={classes.root} variant="outlined">
+        <Card>
           <CardContent>
             <Grid container spacing={3} className={classes.formgrid}>
               <Grid item md={12} xs={12}>
-                {formState.collegeDetails ? (
+                {formState.eventDetails !== null &&
+                formState.eventDetails !== undefined &&
+                formState.eventDetails !== {} ? (
                   <form>
-                    <Card>
-                      <CardContent
-                        className={classes.Cardtheming}
-                      ></CardContent>
+                    <Grid item md={12} xs={12} className={classes.title}>
+                      <Typography variant="h4" gutterBottom>
+                        {formState.eventDetails["title"]}
+                      </Typography>
+                    </Grid>
+                    <Divider />
+                    <Grid
+                      container
+                      spacing={2}
+                      className={classes.defaultMargin}
+                    >
+                      <Grid item md={4} xs={12}>
+                        <Grid
+                          item
+                          className={classes.defaultMargin}
+                          spacing={4}
+                        >
+                          {formState.eventDetails["upload_logo"] !== null &&
+                          formState.eventDetails["upload_logo"] !== undefined &&
+                          formState.eventDetails["upload_logo"] !== {} ? (
+                            <Img
+                              src={
+                                "http://104.236.28.24:1338" +
+                                formState.eventDetails["upload_logo"]["url"]
+                              }
+                              loader={<Spinner />}
+                              width="100%"
+                              height="100%"
+                            />
+                          ) : null}
+                        </Grid>
+                        <Grid
+                          item
+                          className={classes.defaultMargin}
+                          spacing={4}
+                        >
+                          Date :- {getDate()}
+                        </Grid>
+                        <Grid
+                          item
+                          className={classes.defaultMargin}
+                          spacing={4}
+                        >
+                          Time :- {getTime()}
+                        </Grid>
+                        <Grid
+                          item
+                          className={classes.defaultMargin}
+                          spacing={4}
+                        >
+                          Venue :- {getVenue()}
+                        </Grid>
+                        <Divider />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        {formState.eventDetails["description"]}
+                      </Grid>
+                    </Grid>
+                    {/* <Grid item md={12} xs={12}>
                       <CardActions className={classes.btnspace}>
                         <YellowButton
                           type="submit"
@@ -95,13 +206,15 @@ const EventDetails = props => {
                           </GrayButton>
                         ) : null}
                       </CardActions>
-                    </Card>
+                    </Grid> */}
                   </form>
-                ) : null}
+                ) : (
+                  <Spinner />
+                )}
               </Grid>
             </Grid>
           </CardContent>
-        </Grid>
+        </Card>
       </Grid>
     </Grid>
   );

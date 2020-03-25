@@ -69,6 +69,17 @@ const useStyles = makeStyles(theme => ({
     borderBottom: "1px solid #f6c80a",
     marginRight: "15px",
     maxWidth: "100% !important"
+  },
+  title: {
+    display: "flex",
+    marginBottom: theme.spacing(1),
+    "& h4": {
+      flex: "1",
+      fontWeight: "700"
+    }
+  },
+  defaultMargin: {
+    margin: "2%"
   }
 }));
 export default useStyles;

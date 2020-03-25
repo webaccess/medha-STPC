@@ -105,6 +105,7 @@ const ViewEvents = props => {
     if (data.length > 0) {
       for (let i in data) {
         var eventIndividualData = {};
+        eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"];
         eventIndividualData["start_date_time"] = data[i]["start_date_time"];
         eventIndividualData["streams"] = data[i]["streams"]
