@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import {
   TextField,
@@ -25,9 +24,9 @@ import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-// http://104.236.28.24:1338/events
-// page: 1, pageSize: 10, _sort: "title:asc"
-
+const EVENT_FILTER = "title_contains";
+const START_DATE_FILTER = "start_date_time_gte";
+const END_DATE_FILTER = "end_date_time_lte";
 const SORT_FIELD_KEY = "_sort";
 
 const ViewEvents = props => {
@@ -38,7 +37,7 @@ const ViewEvents = props => {
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
-    events: "",
+    events: [],
     greenButtonChecker: true,
     isDataDeleted: false,
     dataToEdit: {},
@@ -48,6 +47,10 @@ const ViewEvents = props => {
     isMultiDelete: false,
     selectedRowFilter: true,
     MultiDeleteID: [],
+    filterDataParameters: {},
+    isFilterSearch: false,
+    startDate: new Date(),
+    endDate: new Date(),
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -61,6 +64,8 @@ const ViewEvents = props => {
     getEventData(10, 1);
   }, []);
 
+  console.log("formState.filterDataParameters", formState.filterDataParameters);
+
   const getEventData = async (pageSize, page, paramsForevents = null) => {
     if (
       paramsForevents !== null &&
@@ -69,7 +74,7 @@ const ViewEvents = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "title:asc"
+        [SORT_FIELD_KEY]: "start_date_time:asc"
       };
       Object.keys(paramsForevents).map(key => {
         defaultParams[key] = paramsForevents[key];
@@ -79,13 +84,15 @@ const ViewEvents = props => {
       paramsForevents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "title:asc"
+        [SORT_FIELD_KEY]: "start_date_time:asc"
       };
     }
     setFormState(formState => ({
       ...formState,
       isDataLoading: true
     }));
+    console.log("paramsForusers", paramsForevents);
+
     await serviceProviders
       .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
       .then(res => {
@@ -118,13 +125,66 @@ const ViewEvents = props => {
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"];
         eventIndividualData["start_date_time"] = data[i]["start_date_time"];
-        eventIndividualData["streams"] = data[i]["streams"]
-          ? data[i]["streams"]["name"]
-          : "";
         x.push(eventIndividualData);
       }
       return x;
     }
+  };
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getEventData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getEventData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getEventData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getEventData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getEventData(perPage, page, formState.filterDataParameters);
+    }
+  };
+
+  /** This restores all the data when we clear the filters*/
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
+   * i.e the nested zones data and also resets the data to []
+   */
+
+  const restoreData = () => {
+    getEventData(formState.pageSize, 1);
   };
 
   const handleRowSelected = useCallback(state => {
@@ -141,6 +201,27 @@ const ViewEvents = props => {
     }
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const handleFilterChange = event => {
+    formState.filterDataParameters[event.target.name] = event.target.value;
+  };
+
+  const handleStartDateChange = date => {
+    formState.filterDataParameters[date.target.name] = date.target.value;
+    setFormState(formState => ({
+      ...formState,
+      startDate: date.target.value
+      //filterDataParameters: date.target.value
+    }));
+  };
+
+  const handleEndDateChange = date => {
+    formState.filterDataParameters[date.target.name] = date.target.value;
+    setFormState(formState => ({
+      ...formState,
+      endDate: date.target.value
+    }));
+  };
 
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
@@ -170,7 +251,6 @@ const ViewEvents = props => {
   };
 
   const deleteCell = event => {
-    console.log(event.target.id);
     let dataId = event.target.id;
     setFormState(formState => ({
       ...formState,
@@ -210,13 +290,7 @@ const ViewEvents = props => {
   /** Table Data */
   const column = [
     { name: "Event", sortable: true, selector: "title" },
-    // { name: "Stream", sortable: true, selector: "streams" },
-    //{ name: "Location", sortable: true, selector: "rpc" },
     { name: "Date", sortable: true, selector: "start_date_time" },
-    // { name: "RPC", sortable: true, selector: "rpc" },
-    // { name: "IPC", sortable: true, selector: "college" },
-    /** Columns for edit and delete */
-
     {
       cell: cell => (
         <Tooltip title="View" placement="top">
@@ -319,7 +393,7 @@ const ViewEvents = props => {
         <GreenButton
           variant="contained"
           color="primary"
-          //onClick={clearFilter}
+          onClick={clearFilter}
           disableElevation
           //to={routeConstants.ADD_USER}
           startIcon={<AddCircleOutlineOutlinedIcon />}
@@ -333,64 +407,43 @@ const ViewEvents = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  //name={USER_FILTER}
-                  options={[]}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.username}
-                  //   onChange={(event, value) =>
-                  //     handleChangeAutoComplete(USER_FILTER, event, value)
-                  //   }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Event"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                <TextField
+                  label={"Event"}
+                  placeholder="Event"
+                  variant="outlined"
+                  name={EVENT_FILTER}
+                  onChange={handleFilterChange}
                 />
-              </Grid>
-              <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  //name={USER_FILTER}
-                  options={[]}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.username}
-                  //   onChange={(event, value) =>
-                  //     handleChangeAutoComplete(USER_FILTER, event, value)
-                  //   }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Location"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
-                />{" "}
               </Grid>
               <Grid item>
                 <DatePickers
                   id="date"
                   label="Start Date"
                   placeholder="dd-mm-yyyy"
+                  value={formState.startDate}
+                  name={START_DATE_FILTER}
+                  onChange={handleStartDateChange}
                 />
               </Grid>
               <Grid item>
-                <DatePickers label="End Date" placeholder="dd-mm-yyyy" />
+                <DatePickers
+                  id="date"
+                  label="End Date"
+                  placeholder="dd-mm-yyyy"
+                  value={formState.endDate}
+                  name={END_DATE_FILTER}
+                  onChange={handleEndDateChange}
+                />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  // onClick={event => {
-                  //   event.persist();
-                  //   searchFilter();
-                  // }}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   Search
                 </YellowButton>
@@ -421,8 +474,8 @@ const ViewEvents = props => {
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
-                // onChangeRowsPerPage={handlePerRowsChange}
-                // onChangePage={handlePageChange}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />
