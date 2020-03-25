@@ -253,7 +253,7 @@ const DeleteState = props => {
                 <Grid
                   container
                   direction="row"
-                  justify="flex-end"
+                  justify="center"
                   alignItems="center"
                   spacing={2}
                 >
@@ -264,7 +264,7 @@ const DeleteState = props => {
                       variant="contained"
                       onClick={handleSubmit}
                     >
-                      OK
+                      Ok
                     </YellowButton>
                   </Grid>
                   <Grid item>

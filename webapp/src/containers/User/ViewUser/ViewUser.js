@@ -28,15 +28,17 @@ import BlockUser from "./BlockUser";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
-const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
+const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
+const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
 
+const STATE_FILTER = "state.id";
 const ZONE_FILTER = "zone.id";
 const RPC_FILTER = "rpc.id";
 const IPC_FILTER = "college.id";
-const USER_FILTER = "id";
+const USER_FILTER = "username_contains";
 const ROLE_FILTER = "role.id";
 
 const SORT_FIELD_KEY = "_sort";
@@ -46,11 +48,14 @@ const ViewUsers = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
-
+  const [rpcs, setRpcs] = React.useState([]);
+  const [zones, setZones] = React.useState([]);
+  const [states, setStates] = React.useState([]);
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
     users: [],
+    states: [],
     zones: [],
     rpcs: [],
     roles: [],
@@ -103,7 +108,7 @@ const ViewUsers = props => {
     pageCount: "",
     sortAscending: true,
     selectedRowFilter: true,
-    userNameDelete:""
+    userNameDelete: ""
   });
 
   useEffect(() => {
@@ -111,7 +116,16 @@ const ViewUsers = props => {
     getUserData(10, 1);
 
     serviceProviders
-      .serviceProviderForGetRequest(ZONE_URL)
+      .serviceProviderForGetRequest(STATE_URL)
+      .then(res => {
+        setStates(res.data.result);
+      })
+      .catch(error => {
+        console.log("error");
+      });
+
+    serviceProviders
+      .serviceProviderForGetRequest(ZONES_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -123,7 +137,7 @@ const ViewUsers = props => {
       });
 
     serviceProviders
-      .serviceProviderForGetRequest(RPC_URL)
+      .serviceProviderForGetRequest(RPCS_URL)
       .then(res => {
         setFormState(formState => ({
           ...formState,
@@ -170,6 +184,35 @@ const ViewUsers = props => {
       });
   }, []);
 
+  /** Get rpcs and zones from state */
+  const getZonesAndRpcsOnState = () => {
+    setRpcs([]);
+    setZones([]);
+    delete formState.filterDataParameters[ZONE_FILTER];
+    delete formState.filterDataParameters[RPC_FILTER];
+
+    let params = {
+      pageSize: -1,
+      "state.id": formState.filterDataParameters[STATE_FILTER]
+    };
+    serviceProviders
+      .serviceProviderForGetRequest(RPCS_URL, params)
+      .then(res => {
+        setRpcs(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+    serviceProviders
+      .serviceProviderForGetRequest(ZONES_URL, params)
+      .then(res => {
+        setZones(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
   const getUserData = async (pageSize, page, paramsForUsers = null) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
@@ -192,7 +235,7 @@ const ViewUsers = props => {
       ...formState,
       isDataLoading: true
     }));
-
+    console.log("paramsForusers", paramsForUsers);
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
       .then(res => {
@@ -216,7 +259,6 @@ const ViewUsers = props => {
         console.log("error", error);
       });
   };
-
   const convertUserData = data => {
     let x = [];
     if (data.length > 0) {
@@ -226,6 +268,7 @@ const ViewUsers = props => {
         temp["username"] = data[i]["username"];
         temp["blocked"] = data[i]["blocked"];
         temp["role"] = data[i]["role"]["name"];
+        temp["state"] = data[i]["state"] ? data[i]["state"]["name"] : "";
         temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
         temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
         temp["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
@@ -299,27 +342,25 @@ const ViewUsers = props => {
 
   const deleteCell = event => {
     let dataId = event.target.id;
-    
+
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: dataId },
       showEditModal: false,
       showModalDelete: true
     }));
-    let url_user = USER_URL + "/" +  dataId;
+    let url_user = USER_URL + "/" + dataId;
     serviceProviders
-    .serviceProviderForGetRequest(url_user)
-    .then(res => {
-      setFormState(formState => ({
-        ...formState,
-        userNameDelete: res.data.result.username
-
-      }));
-    })
-    .catch(error => {
-      console.log("error",error);
-    });
-
+      .serviceProviderForGetRequest(url_user)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          userNameDelete: res.data.result.username
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
   };
 
   /** This is used to handle the close modal event */
@@ -357,6 +398,48 @@ const ViewUsers = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
     }
+
+    /** When we click cross for auto complete */
+    if (value === null) {
+      let setStateFilterValue = false;
+      /** If we click cross for state the zone and rpc should clear off! */
+      if (filterName === STATE_FILTER) {
+        /** 
+            This flag is used to determine that state is cleared which clears 
+            off zone and rpc by setting their value to null 
+            */
+        setStateFilterValue = true;
+        /** 
+            When state is cleared then clear rpc and zone 
+            */
+        setRpcs([]);
+        setZones([]);
+        delete formState.filterDataParameters[ZONE_FILTER];
+        delete formState.filterDataParameters[RPC_FILTER];
+      }
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false,
+        isStateClearFilter: setStateFilterValue
+      }));
+      delete formState.filterDataParameters[filterName];
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+      if (filterName === STATE_FILTER) {
+        getZonesAndRpcsOnState();
+      }
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false,
+        isStateClearFilter: false
+      }));
+    }
+  };
+
+  const handleFilterChange = event => {
+    console.log("handleFilterChange", event.target.name, event.target.value);
+    formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
   /** Get multiple user id for delete */
@@ -521,6 +604,7 @@ const ViewUsers = props => {
   /** Table Data */
   const column = [
     { name: "User Name", sortable: true, selector: "username" },
+    { name: "State", sortable: true, selector: "state" },
     { name: "Zone", sortable: true, selector: "zone" },
     { name: "Role", sortable: true, selector: "role" },
     { name: "RPC", sortable: true, selector: "rpc" },
@@ -560,34 +644,26 @@ const ViewUsers = props => {
       button: true,
       conditionalCellStyles: []
     },
-    {
+        {
       cell: cell => (
-        <Tooltip title="Block" placement="top">
+        <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
           <i
             className="material-icons"
             id={cell.id}
             value={cell.name}
             onClick={blockedCell}
+            style={
+              cell.blocked
+                ? { color: "red", fontSize: "19px" }
+                : { color: "green", fontSize: "19px" }
+            }
           >
             block
           </i>
         </Tooltip>
       ),
       button: true,
-      conditionalCellStyles: [
-        {
-          when: row => row.blocked === true,
-          style: {
-            color: "red"
-          }
-        },
-        {
-          when: row => row.blocked === false,
-          style: {
-            color: "green"
-          }
-        }
-      ]
+      conditionalCellStyles: []
     },
     {
       cell: cell => (
@@ -739,7 +815,14 @@ const ViewUsers = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
+                <TextField
+                  label={"User Name"}
+                  placeholder="User Name"
+                  variant="outlined"
+                  name={USER_FILTER}
+                  onChange={handleFilterChange}
+                />
+                {/* <Autocomplete
                   id="combo-box-demo"
                   name={USER_FILTER}
                   options={formState.users}
@@ -756,7 +839,7 @@ const ViewUsers = props => {
                       variant="outlined"
                     />
                   )}
-                />
+                /> */}
               </Grid>
               <Grid item>
                 <Autocomplete
@@ -781,8 +864,40 @@ const ViewUsers = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
+                  name={STATE_FILTER}
+                  options={states}
+                  className={classes.autoCompleteField}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(STATE_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : states[
+                          states.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STATE_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="State"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item>
+                <Autocomplete
+                  id="combo-box-demo"
                   name={ZONE_FILTER}
-                  options={formState.zones}
+                  options={zones}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
@@ -802,7 +917,7 @@ const ViewUsers = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   name={RPC_FILTER}
-                  options={formState.rpcs}
+                  options={rpcs}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
@@ -881,10 +996,10 @@ const ViewUsers = props => {
                 onChangePage={handlePageChange}
               />
             ) : (
-              <div className={classes.noDataMargin}>No data to show</div>
+              <Spinner />
             )
           ) : (
-            <Spinner />
+            <div className={classes.noDataMargin}>No data to show</div>
           )}
 
           {formState.isMultiDelete ? (
@@ -904,7 +1019,7 @@ const ViewUsers = props => {
               id={formState.dataToDelete["id"]}
               deleteEvent={isDeleteCellCompleted}
               modalClose={modalClose}
-              userName={formState.userNameDelete}         
+              userName={formState.userNameDelete}
             />
           )}
           {formState.isMulBlocked || formState.isMulUnBlocked ? (

@@ -18,6 +18,11 @@ export const ADD_MORE_TEXT = "Add More";
 export const BLOCK_BUTTON_TEXT = "Block";
 export const UNBLOCK_BUTTON_TEXT = "Unblock";
 
+/**Student
+ */
+export const STUDENT_REGISTRATION = "Student Registration";
+export const EDIT_STUDENT_PROFILE = "Edit Profile";
+
 /** User */
 export const ADD_USER_TITLE = "Add User";
 
@@ -49,6 +54,16 @@ export const ADD_RPC_TEXT = "Add RPC";
 export const ADD_EDUCATION_TEXT = "Add Education";
 export const EDIT_EDUCATION_TEXT = "Edit Education";
 export const VIEW_EDUCATION_TEXT = "Education";
+
+/**Documents */
+export const ADD_DOCUMENT_TEXT = "Add Document";
+export const EDIT_DOCUMENT_TEXT = "Edit Document";
+export const VIEW_DOCUMENT_TEXT = "Document";
+
+/**Academic History */
+export const ADD_ACADEMIC_HISTORY_TEXT = "Add Academic History";
+export const EDIT_ACADEMIC_HISTORY_TEXT = "Edit Academic History";
+export const VIEW_ACADEMIC_HISTORY_TEXT = "Academic History";
 
 /**Manage Students */
 export const MANAGE_STUDENTS = "Manage Student";

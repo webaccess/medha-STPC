@@ -27,14 +27,16 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const ZONE_FILTER = "id";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewZone = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [zonesFilter, setZonesFilter] = useState([]);
   const [formState, setFormState] = useState({
+    filterZone: "",
     dataToShow: [],
     tempData: [],
     zones: [],
@@ -88,7 +90,7 @@ const ViewZone = props => {
   useEffect(() => {
     /** Seperate function to get zone data */
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
@@ -220,6 +222,7 @@ const ViewZone = props => {
   };
 
   const clearFilter = () => {
+    setZonesFilter([""]);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -333,7 +336,7 @@ const ViewZone = props => {
 
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false
@@ -346,6 +349,47 @@ const ViewZone = props => {
     }
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const handleFilterChange = event => {
+    setZonesFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterZone: event.target.value
+    // }));
+  };
+
+  const filterZoneData = () => {
+    let params = "?name_contains=" + zonesFilter;
+
+    let FilterZoneURL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES + params;
+
+    serviceProviders
+      .serviceProviderForGetRequest(FilterZoneURL)
+      .then(res => {
+        formState.dataToShow = [];
+        formState.tempData = [];
+        let temp = [];
+        /** As zones data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+        temp = convertZoneData(res.data.result);
+        setFormState(formState => ({
+          ...formState,
+          zones: res.data.result,
+          dataToShow: temp,
+          tempData: temp,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   /** Columns to show in table */
   const column = [
@@ -561,35 +605,12 @@ const ViewZone = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  name={ZONE_FILTER}
-                  options={formState.zonesFilter}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(ZONE_FILTER, event, value)
-                  }
-                  value={
-                    formState.isClearResetFilter
-                      ? null
-                      : formState.zonesFilter[
-                          formState.zonesFilter.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[ZONE_FILTER]
-                            );
-                          })
-                        ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Zone Name"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                <TextField
+                  label={"Zone"}
+                  placeholder="Zone"
+                  variant="outlined"
+                  value={zonesFilter}
+                  onChange={handleFilterChange}
                 />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
@@ -597,10 +618,7 @@ const ViewZone = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
-                    event.persist();
-                    searchFilter();
-                  }}
+                  onClick={filterZoneData}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>

@@ -96,20 +96,47 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography>{CollegeName}</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.name}
                             </Typography>
                           </Grid>
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography>{CollegeCode}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
-                              {CollegeCode}:
                               {formState.collegeDetails.college_code}
                             </Typography>
                           </Grid>
@@ -122,18 +149,46 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography> {CollegeAddress}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.address}
                             </Typography>
                           </Grid>
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography>{District}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.district &&
                                 formState.collegeDetails.district.name}
@@ -148,19 +203,47 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography>{State}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.state &&
                                 formState.collegeDetails.state.name}
                             </Typography>
                           </Grid>
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography> {RPCName}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.rpc &&
                                 formState.collegeDetails.rpc.name}
@@ -175,19 +258,47 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography> {Zone}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.zone &&
                                 formState.collegeDetails.zone.name}
                             </Typography>
                           </Grid>
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography> {ContactNumber}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.contact_number}
                             </Typography>
@@ -201,18 +312,46 @@ const DisplayCollegeDetails = props => {
                           container
                           spacing={1}
                         >
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography> {Email}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.college_email}
                             </Typography>
                           </Grid>
-                          <Grid md={2} className={classes.labelside}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelside}
+                          >
                             <Typography> {Principal}:</Typography>
                           </Grid>
-                          <Grid md={3}>
+                          <Grid
+                            item
+                            md={2}
+                            sm={6}
+                            xl={12}
+                            xs={12}
+                            className={classes.labelcontent}
+                          >
                             <Typography>
                               {formState.collegeDetails.principal &&
                                 formState.collegeDetails.principal.username}
@@ -228,27 +367,52 @@ const DisplayCollegeDetails = props => {
                             container
                             spacing={1}
                           >
-                            <Grid md={12} className={classes.labelside}>
+                            <Grid item md={9} className={classes.labelside}>
                               <Typography> Stream And Strength : </Typography>
                             </Grid>
                           </Grid>
                           {formState.collegeDetails.stream_strength.map(
                             value => (
-                              <CardContent className={classes.Cardtheming}>
+                              <CardContent
+                                key={value.id}
+                                className={classes.Cardthemingstream}
+                              >
                                 <Grid
                                   className={classes.filterOptions}
                                   container
                                 >
-                                  <Grid md={1} className={classes.labelside}>
+                                  <Grid
+                                    item
+                                    md={1}
+                                    className={classes.labelside}
+                                  >
                                     <Typography> {Streams}:</Typography>
                                   </Grid>
-                                  <Grid md={3}>
+                                  <Grid
+                                    item
+                                    md={2}
+                                    sm={6}
+                                    xl={12}
+                                    xs={12}
+                                    className={classes.labelcontent}
+                                  >
                                     <Typography>{value.stream.name}</Typography>
                                   </Grid>
-                                  <Grid md={1} className={classes.labelside}>
+                                  <Grid
+                                    item
+                                    md={1}
+                                    className={classes.labelside}
+                                  >
                                     <Typography> {Strength}:</Typography>
                                   </Grid>
-                                  <Grid md={3}>
+                                  <Grid
+                                    item
+                                    md={2}
+                                    sm={6}
+                                    xl={12}
+                                    xs={12}
+                                    className={classes.labelcontent}
+                                  >
                                     <Typography>{value.strength}</Typography>
                                   </Grid>
                                 </Grid>

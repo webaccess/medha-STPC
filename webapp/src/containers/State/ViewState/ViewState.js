@@ -33,7 +33,7 @@ import { useHistory } from "react-router-dom";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const STATE_FILTER = "id";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewStates = props => {
@@ -41,8 +41,10 @@ const ViewStates = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [statesFilter, setStatesFilter] = useState([]);
   /** Form state variables */
   const [formState, setFormState] = useState({
+    filterState: "",
     dataToShow: [],
     states: [],
     statesFilter: [],
@@ -69,6 +71,7 @@ const ViewStates = props => {
       ? props["location"]["fromAddState"]
       : false,
     /** This is for delete */
+    isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
@@ -92,7 +95,7 @@ const ViewStates = props => {
 
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
@@ -137,10 +140,17 @@ const ViewStates = props => {
       .serviceProviderForGetRequest(STATES_URL, paramsForState)
       .then(res => {
         formState.dataToShow = [];
+        let tempCollegeData = [];
+        let college_data = res.data.result;
+
+        /** As college data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+        tempCollegeData = convertCollegeData(college_data);
         setFormState(formState => ({
           ...formState,
           states: res.data.result,
-          dataToShow: res.data.result,
+          dataToShow: tempCollegeData,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
@@ -151,6 +161,20 @@ const ViewStates = props => {
       .catch(error => {
         console.log("error", error);
       });
+  };
+
+  /** Converting college unstructured data into structred flat format for passing it into datatable */
+  const convertCollegeData = data => {
+    let collegeDataArray = [];
+    if (data.length > 0) {
+      for (let i in data) {
+        var tempIndividualCollegeData = {};
+        tempIndividualCollegeData["id"] = data[i]["id"];
+        tempIndividualCollegeData["name"] = data[i]["name"];
+        collegeDataArray.push(tempIndividualCollegeData);
+      }
+      return collegeDataArray;
+    }
   };
 
   /** Pagination to handle row change*/
@@ -192,8 +216,11 @@ const ViewStates = props => {
 
   /** This is used for clearing filter */
   const clearFilter = () => {
+    setStatesFilter([""]);
     setFormState(formState => ({
       ...formState,
+      filterState: "",
+      // filterStateData: "",
       isFilterSearch: false,
       isClearResetFilter: true,
       /** Clear all filters */
@@ -318,7 +345,7 @@ const ViewStates = props => {
 
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false
@@ -331,6 +358,47 @@ const ViewStates = props => {
     }
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const handleFilterChange = event => {
+    setStatesFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterState: event.target.value
+    // }));
+  };
+
+  const filterStateData = () => {
+    let params = "?name_contains=" + statesFilter;
+
+    let FilterStateURL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES + params;
+    serviceProviders
+      .serviceProviderForGetRequest(FilterStateURL)
+      .then(res => {
+        formState.dataToShow = [];
+        let tempCollegeData = [];
+        let college_data = res.data.result;
+
+        /** As college data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+
+        tempCollegeData = convertCollegeData(college_data);
+        setFormState(formState => ({
+          ...formState,
+          states: res.data.result,
+          dataToShow: tempCollegeData,
+          pageSize: res.data.pageSize,
+          totalRows: res.data.rowCount,
+          page: res.data.page,
+          pageCount: res.data.pageCount,
+          isDataLoading: false
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   /** --------------------------------------------------- */
   /** Columns to show in table */
@@ -447,7 +515,6 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         {/** Error/Success messages to be shown for add */}
         {formState.fromAddState && formState.isDataAdded ? (
           <Collapse in={open}>
@@ -514,7 +581,6 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         {formState.fromDeleteModal &&
         !formState.isDataDeleted &&
         formState.messageToShow !== "" ? (
@@ -538,39 +604,16 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  options={formState.statesFilter}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(STATE_FILTER, event, value)
-                  }
-                  value={
-                    formState.isClearResetFilter
-                      ? null
-                      : formState.statesFilter[
-                          formState.statesFilter.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[STATE_FILTER]
-                            );
-                          })
-                        ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="State Name"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                <TextField
+                  label={"State"}
+                  placeholder="State"
+                  value={statesFilter}
+                  variant="outlined"
+                  onChange={handleFilterChange}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
@@ -578,10 +621,7 @@ const ViewStates = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
-                    event.persist();
-                    searchFilter();
-                  }}
+                  onClick={filterStateData}
                 >
                   {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
@@ -620,7 +660,7 @@ const ViewStates = props => {
           )
         ) : (
           <div className={classes.noDataMargin}>No data to show</div>
-        )}
+        )}{" "}
         <DeleteState
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}
