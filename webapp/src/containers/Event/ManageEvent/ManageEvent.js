@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import {
@@ -46,6 +46,7 @@ const ViewEvents = props => {
     showEditModal: false,
     showModalDelete: false,
     isMultiDelete: false,
+    selectedRowFilter: true,
     MultiDeleteID: [],
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -125,6 +126,21 @@ const ViewEvents = props => {
       return x;
     }
   };
+
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount >= 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
 
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
@@ -320,7 +336,7 @@ const ViewEvents = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   //name={USER_FILTER}
-                  //options={formState.users}
+                  options={[]}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.username}
                   //   onChange={(event, value) =>
@@ -340,7 +356,7 @@ const ViewEvents = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   //name={USER_FILTER}
-                  //options={formState.users}
+                  options={[]}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.username}
                   //   onChange={(event, value) =>
@@ -398,7 +414,7 @@ const ViewEvents = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                //onSelectedRowsChange={handleRowSelected}
+                onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
                 defaultSortField="title"
                 defaultSortAsc={formState.sortAscending}
@@ -422,7 +438,7 @@ const ViewEvents = props => {
               id={formState.MultiDeleteID}
               isMultiDelete={formState.isMultiDelete}
               modalClose={modalClose}
-              //seletedUser={selectedRows.length}
+              seletedUser={selectedRows.length}
             />
           ) : (
             <DeleteUser
