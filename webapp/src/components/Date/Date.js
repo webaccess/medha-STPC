@@ -12,7 +12,10 @@ export default function DatePickers(props) {
         label={props.label}
         type="date"
         variant="outlined"
+        placeholder={props.placeholder}
         className={classes.textField}
+        onChange={props.onChange}
+        value={props.value}
         InputLabelProps={{
           shrink: true
         }}
