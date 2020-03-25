@@ -12,6 +12,7 @@ import {
   Typography
 } from "@material-ui/core";
 import { Table, Spinner, Alert } from "../../../components";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./ManageEventStyles";
@@ -19,6 +20,7 @@ import { GrayButton, YellowButton, GreenButton } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DatePickers from "../../../components/Date/Date";
+import DeleteUser from "./DeleteEvent";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -31,13 +33,20 @@ const SORT_FIELD_KEY = "_sort";
 const ViewEvents = props => {
   const history = useHistory();
   const classes = useStyles();
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
     events: "",
     greenButtonChecker: true,
+    isDataDeleted: false,
+    dataToEdit: {},
+    dataToDelete: {},
+    showEditModal: false,
+    showModalDelete: false,
+    isMultiDelete: false,
+    MultiDeleteID: [],
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -111,18 +120,65 @@ const ViewEvents = props => {
         eventIndividualData["streams"] = data[i]["streams"]
           ? data[i]["streams"]["name"]
           : "";
-        //eventIndividualData["rpc"] = data[i]["rpc"];
-        // eventIndividualData["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
-        // eventIndividualData["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
-        // eventIndividualData["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
         x.push(eventIndividualData);
       }
       return x;
     }
   };
 
-  const handleDateChange = date => {
-    setSelectedDate(date);
+  /** This is used to handle the close modal event */
+  const handleCloseDeleteModal = () => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setFormState(formState => ({
+      ...formState,
+      showEditModal: false,
+      isDataDeleted: false,
+      showModalDelete: false
+    }));
+    if (formState.isDataDeleted) {
+      getEventData();
+    }
+  };
+
+  const isDeleteCellCompleted = status => {
+    formState.isDataDeleted = status;
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false,
+      showModalDelete: false
+    }));
+  };
+
+  const deleteCell = event => {
+    console.log(event.target.id);
+    let dataId = event.target.id;
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: { id: dataId },
+      showEditModal: false,
+      showModalDelete: true
+    }));
+  };
+
+  /** Get multiple user id for delete */
+  const deleteMulUserById = () => {
+    let arrayId = [];
+
+    selectedRows.forEach(d => {
+      arrayId.push(d.id);
+    });
+
+    setFormState(formState => ({
+      ...formState,
+      showEditModal: false,
+      showModalDelete: true,
+      isMultiDelete: true,
+      MultiDeleteID: arrayId
+    }));
   };
 
   /** View Event */
@@ -138,7 +194,7 @@ const ViewEvents = props => {
   /** Table Data */
   const column = [
     { name: "Event", sortable: true, selector: "title" },
-    { name: "Stream", sortable: true, selector: "streams" },
+    // { name: "Stream", sortable: true, selector: "streams" },
     //{ name: "Location", sortable: true, selector: "rpc" },
     { name: "Date", sortable: true, selector: "start_date_time" },
     // { name: "RPC", sortable: true, selector: "rpc" },
@@ -214,7 +270,7 @@ const ViewEvents = props => {
           <i
             className="material-icons"
             id={cell.id}
-            //onClick={deleteCell}
+            onClick={deleteCell}
             style={{ color: "red" }}
           >
             delete_outline
@@ -232,6 +288,17 @@ const ViewEvents = props => {
         <Typography variant="h4" gutterBottom>
           Manage Event
         </Typography>
+
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => deleteMulUserById()}
+          startIcon={<DeleteIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
+        >
+          Delete Selected User
+        </GreenButton>
 
         <GreenButton
           variant="contained"
@@ -282,26 +349,6 @@ const ViewEvents = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Stream"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  //name={USER_FILTER}
-                  //options={formState.users}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.username}
-                  //   onChange={(event, value) =>
-                  //     handleChangeAutoComplete(USER_FILTER, event, value)
-                  //   }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
                       label="Location"
                       className={classes.autoCompleteField}
                       variant="outlined"
@@ -310,10 +357,14 @@ const ViewEvents = props => {
                 />{" "}
               </Grid>
               <Grid item>
-                <DatePickers label="End Date" />
+                <DatePickers
+                  id="date"
+                  label="Start Date"
+                  placeholder="dd-mm-yyyy"
+                />
               </Grid>
               <Grid item>
-                <DatePickers label="End Date" />
+                <DatePickers label="End Date" placeholder="dd-mm-yyyy" />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
@@ -348,7 +399,7 @@ const ViewEvents = props => {
                 data={formState.dataToShow}
                 column={column}
                 //onSelectedRowsChange={handleRowSelected}
-                // deleteEvent={deleteCell}
+                deleteEvent={deleteCell}
                 defaultSortField="title"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
@@ -362,6 +413,26 @@ const ViewEvents = props => {
             )
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
+          )}
+          {formState.isMultiDelete ? (
+            <DeleteUser
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              deleteEvent={isDeleteCellCompleted}
+              id={formState.MultiDeleteID}
+              isMultiDelete={formState.isMultiDelete}
+              modalClose={modalClose}
+              //seletedUser={selectedRows.length}
+            />
+          ) : (
+            <DeleteUser
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              id={formState.dataToDelete["id"]}
+              deleteEvent={isDeleteCellCompleted}
+              modalClose={modalClose}
+              userName={formState.userNameDelete}
+            />
           )}
         </Card>
       </Grid>
