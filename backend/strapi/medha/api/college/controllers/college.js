@@ -288,8 +288,8 @@ module.exports = {
       if (filterColleges.length) {
         event.colleges = filterColleges;
         result.push(event);
-        return result;
       }
+      return result;
     }, []);
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
     return { result, ...pagination };
