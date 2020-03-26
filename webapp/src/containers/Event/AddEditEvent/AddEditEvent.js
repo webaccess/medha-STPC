@@ -69,6 +69,13 @@ const AddEditEvent = props => {
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
+    console.log("insidefiled", props["dataForEdit"]["start_date_time"]);
+    let date = new Date(props["dataForEdit"]["start_date_time"]);
+    console.log(
+      "converteddate",
+      date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
+    );
+
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
         formState.values[eventName] = props["dataForEdit"]["title"];
@@ -77,7 +84,14 @@ const AddEditEvent = props => {
         formState.values[description] = props["dataForEdit"]["description"];
       }
       if (props["dataForEdit"]["start_date_time"]) {
-        formState.values[dateFrom] = props["dataForEdit"]["start_date_time"];
+        console.log("return", true);
+        let date = new Date(props["dataForEdit"]["start_date_time"]);
+        formState.values[dateFrom] =
+          date.getDate() +
+          "-" +
+          (date.getMonth() + 1) +
+          "-" +
+          date.getFullYear();
       }
       if (props["dataForEdit"]["end_date_time"]) {
         formState.values[dateTo] = props["dataForEdit"]["end_date_time"];
@@ -90,22 +104,19 @@ const AddEditEvent = props => {
       }
       if (
         props["dataForEdit"]["colleges"] &&
-        props["dataForEdit"]["colleges"]["id"]
+        props["dataForEdit"]["colleges"][0]["id"]
       ) {
         formState.values[college] = props["dataForEdit"]["colleges"][0]["name"];
       }
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
-      // if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
-      //   formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
-      // }
-      // if (
-      //   props["dataForEdit"]["college"] &&
-      //   props["dataForEdit"]["college"]["id"]
-      // ) {
-      //   formState.values[college] = props["dataForEdit"]["college"]["id"];
-      // }
+      if (
+        props["dataForEdit"]["streams"] &&
+        props["dataForEdit"]["streams"][0]["id"]
+      ) {
+        formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+      }
     }
     formState.counter += 1;
   }
@@ -117,7 +128,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
       .then(res => {
-        console.log("Zone DATA", res.data.result);
         setZones(res.data.result);
       })
 
@@ -127,7 +137,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(RPCS_URL, paramsForPageSize)
       .then(res => {
-        console.log("rpc DATA", res.data.result);
         setRpcs(res.data.result);
       })
 
@@ -137,7 +146,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(COLLEGE_URL, paramsForPageSize)
       .then(res => {
-        console.log("College DATA", res.data.result);
         setColleges(res.data.result);
       })
 
@@ -147,7 +155,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
       .then(res => {
-        console.log("stream DATA", res.data.result);
         setStreams(res.data.result);
       })
 
@@ -174,7 +181,6 @@ const AddEditEvent = props => {
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
     }
-    console.log("handleChange", formState);
   };
 
   /** Handle change for autocomplete fields */
@@ -196,7 +202,6 @@ const AddEditEvent = props => {
     } else {
       delete formState.values[eventName];
     }
-    console.log("HANDLEAUTOCOMPLETE", formState);
   };
 
   const handleSubmit = event => {
@@ -220,7 +225,6 @@ const AddEditEvent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, EventSchema);
     }
-    console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
       console.log("ready to post");
@@ -241,7 +245,6 @@ const AddEditEvent = props => {
 
   const handleDateChange = (datefrom, event) => {
     // console.log("handleDateChange", event.target.value);
-    console.log("handleDateChange-->>>", datefrom, event.target.value);
     setFormState(formState => ({
       ...formState,
       values: {
@@ -254,7 +257,6 @@ const AddEditEvent = props => {
       },
       isStateClearFilter: false
     }));
-    console.log("datechangeformstate", formState);
   };
 
   return (
