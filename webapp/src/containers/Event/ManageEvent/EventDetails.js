@@ -17,6 +17,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
+const ReactMarkdown = require("react-markdown");
 
 const EVENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
@@ -188,7 +189,9 @@ const EventDetails = props => {
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
-                        {formState.eventDetails["description"]}
+                        <ReactMarkdown
+                          source={formState.eventDetails["description"]}
+                        />
                       </Grid>
                     </Grid>
                     {/* <Grid item md={12} xs={12}>
