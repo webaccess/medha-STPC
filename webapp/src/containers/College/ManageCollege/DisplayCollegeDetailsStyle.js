@@ -54,21 +54,52 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: "10px",
     fontWeight: "600",
     // backgroundColor: "#ccc",
-    marginRight:"15px",
-    fontWeight:"700",
-    borderBottom:"1px solid #ccc"
+    marginRight: "15px",
+    fontWeight: "700",
+    borderBottom: "1px solid #ccc"
   },
   Cardtheming: {
     paddingBottom: "16px !important"
   },
   Cardthemingstream: {
-    paddingLeft:"0px"
+    paddingLeft: "0px"
   },
   labelcontent: {
     paddingBottom: "10px",
     borderBottom: "1px solid #f6c80a",
-    marginRight:"15px",
-    maxWidth:"100% !important"
+    marginRight: "15px",
+    maxWidth: "100% !important"
   },
+  CellHeader: {
+    fontWeight: 600,
+    padding: "16px",
+    fontSize: "14px",
+    textAlign: "left",
+    lineHeight: "21px",
+    letterSpacing: "-0.05px",
+    verticalAlign: "inherit"
+  },
+  CellValue: {
+    padding: "16px",
+    fontSize: "14px",
+    textAlign: "left",
+    lineHeight: "21px",
+    letterSpacing: "-0.05px",
+    verticalAlign: "inherit"
+  },
+  AlternateRow: {
+    backgroundColor: "#F4F6F8"
+  },
+  title: {
+    display: "flex",
+    marginBottom: theme.spacing(2),
+    "& h4": {
+      flex: "1",
+      fontWeight: "700"
+    }
+  },
+  CardActionGrid: {
+    backgroundColor: "#EEEEEE"
+  }
 }));
 export default useStyles;

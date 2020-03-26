@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   Cardtheming: {
-    paddingBottom:"16px !important"
+    paddingBottom: "16px !important"
   }
 }));
 

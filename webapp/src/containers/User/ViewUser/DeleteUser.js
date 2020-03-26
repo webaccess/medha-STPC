@@ -139,7 +139,7 @@ const DeleteUser = props => {
               <Grid
                 container
                 direction="row"
-                justify="center"
+                justify="flex-end"
                 alignItems="center"
                 spacing={2}
               >

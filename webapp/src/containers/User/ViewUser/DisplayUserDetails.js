@@ -87,21 +87,6 @@ const DisplayUserDetails = props => {
         <Card>
           <Grid item xs={12} md={6} xl={3}>
             <CardContent>
-              <TextField
-                id="firstname"
-                label="First Name"
-                disabled
-                defaultValue={formState.userDetails.first_name}
-                multiline
-                margin="normal"
-                variant="outlined"
-                onChange={handleOnChange}
-                InputLabelProps={{
-                  shrink: true
-                }}
-              />
-            </CardContent>
-            <CardContent>
               <TableContainer component={Paper}>
                 <Table aria-label="simple table">
                   <TableBody>
