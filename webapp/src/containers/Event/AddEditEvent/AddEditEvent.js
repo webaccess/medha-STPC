@@ -57,8 +57,8 @@ const AddEditEvent = props => {
     errors: {},
     isSuccess: false,
     showPassword: false,
-    // isEditUser: props["editUser"] ? props["editUser"] : false,
-    // dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
+    isEditUser: props["editUser"] ? props["editUser"] : false,
+    dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0
   });
 
@@ -66,6 +66,49 @@ const AddEditEvent = props => {
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
+
+  /** Part for editing state */
+  if (formState.dataForEdit && !formState.counter) {
+    if (props["dataForEdit"]) {
+      if (props["dataForEdit"]["title"]) {
+        formState.values[eventName] = props["dataForEdit"]["title"];
+      }
+      if (props["dataForEdit"]["description"]) {
+        formState.values[description] = props["dataForEdit"]["description"];
+      }
+      if (props["dataForEdit"]["start_date_time"]) {
+        formState.values[dateFrom] = props["dataForEdit"]["start_date_time"];
+      }
+      if (props["dataForEdit"]["end_date_time"]) {
+        formState.values[dateTo] = props["dataForEdit"]["end_date_time"];
+      }
+      if (props["dataForEdit"]["address"]) {
+        formState.values[address] = props["dataForEdit"]["address"];
+      }
+      if (props["dataForEdit"]["age"]) {
+        formState.values[age] = props["dataForEdit"]["age"];
+      }
+      if (
+        props["dataForEdit"]["colleges"] &&
+        props["dataForEdit"]["colleges"]["id"]
+      ) {
+        formState.values[college] = props["dataForEdit"]["colleges"][0]["name"];
+      }
+      if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
+        formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
+      }
+      // if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
+      //   formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
+      // }
+      // if (
+      //   props["dataForEdit"]["college"] &&
+      //   props["dataForEdit"]["college"]["id"]
+      // ) {
+      //   formState.values[college] = props["dataForEdit"]["college"]["id"];
+      // }
+    }
+    formState.counter += 1;
+  }
 
   useEffect(() => {
     let paramsForPageSize = {
@@ -262,6 +305,7 @@ const AddEditEvent = props => {
                     variant="outlined"
                     required
                     fullWidth
+                    multiline
                     onChange={handleChange}
                     helperText={
                       hasError(description)
@@ -346,6 +390,7 @@ const AddEditEvent = props => {
                     error={hasError(address)}
                     variant="outlined"
                     required
+                    multiline
                     fullWidth
                     onChange={handleChange}
                     helperText={

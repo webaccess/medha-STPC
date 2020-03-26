@@ -57,7 +57,27 @@ const ViewEvents = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditUser"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromeditUser"]
+      ? props["location"]["editedData"]
+      : {},
+    fromeditUser: props["location"]["fromeditUser"]
+      ? props["location"]["fromeditUser"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddUser"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddUser"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddUser: props["location"]["fromAddUser"]
+      ? props["location"]["fromAddUser"]
+      : false
   });
 
   useEffect(() => {
@@ -96,7 +116,7 @@ const ViewEvents = props => {
         formState.dataToShow = [];
         formState.tempData = [];
         let eventData = [];
-        eventData = convertUserData(res.data.result);
+        eventData = convertEventData(res.data.result);
         setFormState(formState => ({
           ...formState,
           events: res.data.result,
@@ -114,7 +134,7 @@ const ViewEvents = props => {
       });
   };
 
-  const convertUserData = data => {
+  const convertEventData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -209,7 +229,6 @@ const ViewEvents = props => {
     setFormState(formState => ({
       ...formState,
       startDate: date.target.value
-      //filterDataParameters: date.target.value
     }));
   };
 
@@ -283,6 +302,32 @@ const ViewEvents = props => {
     });
   };
 
+  /** Edit -------------------------------------------------------*/
+  const getDataForEdit = async id => {
+    let paramsForUsers = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(EVENT_URL, paramsForUsers)
+      .then(res => {
+        console.log("editdata", res.data.result[0]);
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_EVENT,
+          editUser: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  const editCell = event => {
+    getDataForEdit(event.target.id);
+  };
+
   /** ------ */
 
   /** Table Data */
@@ -312,7 +357,7 @@ const ViewEvents = props => {
             className="material-icons"
             id={cell.id}
             value={cell.name}
-            // onClick={editCell}
+            onClick={editCell}
             style={{ color: "green" }}
           >
             edit

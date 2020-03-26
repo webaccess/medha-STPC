@@ -54,6 +54,7 @@ import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcadem
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
 import EventDetails from "./containers/Event/ManageEvent/EventDetails";
+import EditEventRoute from "./authroute/EditEventRoutes";
 
 function App() {
   const [index, setIndex] = useState(0);
@@ -337,6 +338,13 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_EVENT}
+              />
+              {/** Edit Event Route */}
+              <RouteWithLayout
+                component={EditEventRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_EVENT}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>
