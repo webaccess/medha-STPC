@@ -231,5 +231,67 @@ module.exports = {
       };
     });
     return response;
+  },
+
+  /**
+   *
+   * @param {ids} ctx
+   * This will block single or multiple colleges from array
+   */
+  async block(ctx) {
+    const { ids } = ctx.request.body;
+    let idsToBlock;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToBlock = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToBlock = ids;
+    }
+
+    if (!idsToBlock.length) {
+      return ctx.response.badRequest("College Ids are empty");
+    }
+
+    await strapi
+      .query("college")
+      .model.query(qb => {
+        qb.whereIn("id", idsToBlock);
+      })
+      .save({ blocked: true }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
+  },
+
+  /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async event(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize } = utils.getRequestParams(ctx.request.query);
+    const response = await strapi.query("event").find();
+    const filtered = response.reduce((result, event) => {
+      const { colleges } = event;
+      const filterColleges = colleges
+        .map(college => {
+          if (college.id == id) {
+            return college;
+          }
+        })
+        .filter(c => c);
+
+      if (filterColleges.length) {
+        event.colleges = filterColleges;
+        result.push(event);
+        return result;
+      }
+    }, []);
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
   }
 };
