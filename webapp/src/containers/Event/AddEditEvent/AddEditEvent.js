@@ -69,13 +69,6 @@ const AddEditEvent = props => {
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
-    console.log("insidefiled", props["dataForEdit"]["start_date_time"]);
-    let date = new Date(props["dataForEdit"]["start_date_time"]);
-    console.log(
-      "converteddate",
-      date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
-    );
-
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
         formState.values[eventName] = props["dataForEdit"]["title"];
@@ -84,7 +77,6 @@ const AddEditEvent = props => {
         formState.values[description] = props["dataForEdit"]["description"];
       }
       if (props["dataForEdit"]["start_date_time"]) {
-        console.log("return", true);
         let date = new Date(props["dataForEdit"]["start_date_time"]);
         formState.values[dateFrom] =
           date.getDate() +
@@ -227,7 +219,6 @@ const AddEditEvent = props => {
     }
     if (isValid) {
       /** CALL POST FUNCTION */
-      console.log("ready to post");
       // postUserData();
 
       /** Call axios from here */
@@ -244,7 +235,6 @@ const AddEditEvent = props => {
   };
 
   const handleDateChange = (datefrom, event) => {
-    // console.log("handleDateChange", event.target.value);
     setFormState(formState => ({
       ...formState,
       values: {
@@ -427,6 +417,7 @@ const AddEditEvent = props => {
                         {...params}
                         label={get(EventSchema[zone], "label")}
                         variant="outlined"
+                        placeholder={get(EventSchema[zone], "placeholder")}
                         error={hasError(zone)}
                         helperText={
                           hasError(zone)
@@ -444,6 +435,7 @@ const AddEditEvent = props => {
                     id="combo-box-demo"
                     className={classes.root}
                     options={rpcs}
+                    placeholder={get(EventSchema[rpcs], "placeholder")}
                     getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(rpc, event, value);
@@ -460,6 +452,7 @@ const AddEditEvent = props => {
                         {...params}
                         label={get(EventSchema[rpc], "label")}
                         variant="outlined"
+                        placeholder={get(EventSchema[rpc], "placeholder")}
                         error={hasError(rpc)}
                         helperText={
                           hasError(rpc)
@@ -493,6 +486,7 @@ const AddEditEvent = props => {
                         {...params}
                         label={get(EventSchema[college], "label")}
                         variant="outlined"
+                        placeholder={get(EventSchema[college], "placeholder")}
                         error={hasError(college)}
                         helperText={
                           hasError(college)
@@ -527,6 +521,7 @@ const AddEditEvent = props => {
                       <TextField
                         {...params}
                         label={get(EventSchema[stream], "label")}
+                        placeholder={get(EventSchema[stream], "placeholder")}
                         variant="outlined"
                         error={hasError(stream)}
                         helperText={
