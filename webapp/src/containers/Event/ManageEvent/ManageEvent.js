@@ -127,6 +127,7 @@ const ViewEvents = props => {
       return x;
     }
   };
+
   /** Pagination */
   const handlePerRowsChange = async (perPage, page) => {
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
@@ -392,9 +393,8 @@ const ViewEvents = props => {
           color="primary"
           onClick={clearFilter}
           disableElevation
-          //to={routeConstants.ADD_USER}
+          to={routeConstants.ADD_EVENT}
           startIcon={<AddCircleOutlineOutlinedIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
         >
           Add Event
         </GreenButton>
