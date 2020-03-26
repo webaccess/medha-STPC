@@ -12,15 +12,15 @@ const useStyles = makeStyles(theme => ({
     width: 560
   },
   title: {
-    color: "#353535",
+    color: "#ffffff",
     fontSize: "14px",
     fontWeight: "700",
     textTransform: "capitalize"
   },
   titleRoot: {
     padding: "4px",
-    borderBottom: "1.5px solid #ccc",
-    backgroundColor: "#f6c80a"
+    borderBottom: "1.5px solid #000",
+    backgroundColor: "#000000"
   },
   h1: {
     textAlign: "center !important",
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
   },
   root: {},
   dasboard_table: {
-    minWidth: "100%",
+    minWidth: "100%"
   },
 
   marginCard: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "row",
     alignSelf: "center",
     justifyContent: "flex-start",
-    width:"100%"
+    width: "100%"
   }
 }));
 
