@@ -65,3 +65,4 @@ export const MANAGE_STUDENT = "/manage-student";
 /**Event's */
 export const MANAGE_EVENT = "/manage-event";
 export const VIEW_EVENT = "/view-event";
+export const ADD_EVENT = "/add-event";
