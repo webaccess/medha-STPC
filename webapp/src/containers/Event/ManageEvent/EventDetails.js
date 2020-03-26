@@ -34,9 +34,7 @@ const EventDetails = props => {
 
   async function getEventDetails() {
     let paramsForEvent = null;
-    if (auth.getUserInfo().role.name === "College Admin") {
-      paramsForEvent = auth.getUserInfo().college.id;
-    } else if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (auth.getUserInfo().role.name === "Medha Admin") {
       paramsForEvent = props["location"]["dataForEdit"];
     }
     if (paramsForEvent !== null && paramsForEvent !== undefined) {
@@ -53,9 +51,15 @@ const EventDetails = props => {
           console.log("error", error);
         });
     } else {
-      history.push({
-        pathname: routeConstants.DASHBOARD_URL
-      });
+      if (auth.getUserInfo().role.name === "Medha Admin") {
+        history.push({
+          pathname: routeConstants.MANAGE_EVENT
+        });
+      } else {
+        history.push({
+          pathname: routeConstants.DASHBOARD_URL
+        });
+      }
     }
   }
 
@@ -73,7 +77,7 @@ const EventDetails = props => {
     ) {
       let endTime = new Date(formState.eventDetails["end_date_time"]);
       return (
-        startTime.toLocaleTimeString() + " - " + endTime.toLocaleTimeString()
+        startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
       );
     } else {
       startTime = new Date(formState.eventDetails["start_date_time"]);
@@ -88,7 +92,7 @@ const EventDetails = props => {
       formState.eventDetails["end_date_time"]
     ) {
       let endDate = new Date(formState.eventDetails["end_date_time"]);
-      return startDate.toDateString() + " - " + endDate.toDateString();
+      return startDate.toDateString() + " to " + endDate.toDateString();
     } else {
       startDate = new Date(formState.eventDetails["start_date_time"]);
       return startDate.toDateString();
@@ -148,7 +152,7 @@ const EventDetails = props => {
                           formState.eventDetails["upload_logo"] !== {} ? (
                             <Img
                               src={
-                                "http://104.236.28.24:1338" +
+                                strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
                                 formState.eventDetails["upload_logo"]["url"]
                               }
                               loader={<Spinner />}
@@ -157,26 +161,29 @@ const EventDetails = props => {
                             />
                           ) : null}
                         </Grid>
-                        <Grid
-                          item
-                          className={classes.defaultMargin}
-                          spacing={4}
-                        >
-                          Date :- {getDate()}
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Date :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getDate()}
+                          </Grid>
                         </Grid>
-                        <Grid
-                          item
-                          className={classes.defaultMargin}
-                          spacing={4}
-                        >
-                          Time :- {getTime()}
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Time :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getTime()}
+                          </Grid>
                         </Grid>
-                        <Grid
-                          item
-                          className={classes.defaultMargin}
-                          spacing={4}
-                        >
-                          Venue :- {getVenue()}
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Venue :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getVenue()}
+                          </Grid>
                         </Grid>
                         <Divider />
                       </Grid>
