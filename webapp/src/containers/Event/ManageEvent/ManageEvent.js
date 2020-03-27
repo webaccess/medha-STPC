@@ -13,6 +13,7 @@ import {
 import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
 
+
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./ManageEventStyles";
 import { GrayButton, YellowButton, GreenButton } from "../../../components";
@@ -20,6 +21,8 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DatePickers from "../../../components/Date/Date";
 import DeleteUser from "./DeleteEvent";
+import * as genericConstants from "../../../constants/GenericConstants";
+import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -30,6 +33,7 @@ const END_DATE_FILTER = "end_date_time_lte";
 const SORT_FIELD_KEY = "_sort";
 
 const ViewEvents = props => {
+  const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
@@ -311,9 +315,6 @@ const ViewEvents = props => {
     await serviceProviders
       .serviceProviderForGetRequest(EVENT_URL, paramsForUsers)
       .then(res => {
-        console.log("editdata", res.data.result[0]);
-        let data = res.data.result[0];
-        console.log("collegedata", data.colleges[0].name);
         let editData = res.data.result[0];
         /** move to edit page */
         history.push({
@@ -448,6 +449,49 @@ const ViewEvents = props => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+           {/** Error/Success messages to be shown for add */}
+           {formState.fromAddEvent && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddEvent && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>

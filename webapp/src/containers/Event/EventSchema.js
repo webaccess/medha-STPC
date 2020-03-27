@@ -40,7 +40,8 @@ const EventSchema = {
     validations: {
       required: {
         value: "true",
-        message: "From Date is required"
+        message: "Date From is required"
+
       }
     }
   },
@@ -55,7 +56,8 @@ const EventSchema = {
     validations: {
       required: {
         value: "true",
-        message: "To Date is required"
+        message: "Date To is required"
+
       }
     }
   },
@@ -70,7 +72,7 @@ const EventSchema = {
     validations: {
       required: {
         value: "true",
-        message: "From Time is required"
+        message: "Time From is required"
       }
     }
   },
@@ -85,7 +87,7 @@ const EventSchema = {
     validations: {
       required: {
         value: "true",
-        message: "To Time is required"
+        message: "Time To is required"
       }
     }
   },
@@ -143,12 +145,7 @@ const EventSchema = {
     placeholder: "Stream",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Stream is required"
-      }
-    }
+    validations: {}
   },
   marks: {
     label: "Marks",
@@ -177,6 +174,20 @@ const EventSchema = {
       required: {
         value: "true",
         message: "Age is required"
+      }
+    }
+  },
+  files: {
+    label: "Upload",
+    id: "files",
+    required: true,
+    placeholder: "Upload files",
+    autoFocus: true,
+    type: "file",
+    validations: {
+      required: {
+        value: "true",
+        message: "File is required"
       }
     }
   }
