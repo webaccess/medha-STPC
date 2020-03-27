@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     display: "flex",
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
     "& h4": {
       flex: "1",
       fontWeight: "700"
