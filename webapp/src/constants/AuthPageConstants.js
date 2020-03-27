@@ -5,7 +5,7 @@ export const NEW_REG_ROUTE_TEXT = "New Registration";
 export const SIGN_IN_BUTTON = "Sign in";
 export const INVALID_USER = "Invalid email or password";
 export const REGISTER = "Register";
-
+export const CREATE_ACTIVITY = "Create Activity";
 /* Forgot Password Constants */
 export const FORGOT_PASSWORD_HEADER = "Forgot Your Password?";
 export const CONFIRM_NEW_PASS_ALERT =

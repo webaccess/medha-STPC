@@ -276,3 +276,33 @@ export const uploadDocument = (files, ref, refId, field) => {
   formData.append("field", field);
   return formData;
 };
+
+export const addActivity = (
+  title,
+  activity_type,
+  academic_year,
+  college,
+  start_date_time,
+  end_date_time,
+  education_year,
+  address,
+  description,
+  trainer_name,
+  streams
+) => {
+  return {
+    title: title,
+    activity_type: activity_type,
+    academic_year: academic_year,
+    college: college,
+    start_date_time: start_date_time,
+    end_date_time: end_date_time,
+    education_year: education_year,
+    address: address,
+    description: description,
+    trainer_name: trainer_name,
+    streams: streams
+  };
+};
+
+export const editActivity = () => {};
