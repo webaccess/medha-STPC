@@ -55,6 +55,7 @@ import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEdit
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
 import EventDetails from "./containers/Event/ManageEvent/EventDetails";
 import EditEventRoute from "./authroute/EditEventRoutes";
+import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
 
 function App() {
   const [index, setIndex] = useState(0);
@@ -338,6 +339,12 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_EVENT}
+              />
+              <RouteWithLayout
+                component={EligibleEvents}
+                exact
+                layout={Layout}
+                path={routeConstants.ELIGIBLE_EVENT}
               />
               {/** Edit Event Route */}
               <RouteWithLayout
