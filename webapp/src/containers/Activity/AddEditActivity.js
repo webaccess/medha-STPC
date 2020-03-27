@@ -27,7 +27,9 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
-  KeyboardDatePicker
+  KeyboardDatePicker,
+  KeyboardTimePicker,
+  KeyboardDateTimePicker
 } from "@material-ui/pickers";
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
@@ -79,9 +81,8 @@ const AddEditActivity = props => {
       : false,
     counter: 0
   });
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2000-01-01T21:11:54")
-  );
+  const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
+  const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
 
   const genderlist = [
     { name: "Male", id: "male" },
@@ -190,13 +191,13 @@ const AddEditActivity = props => {
         formState.values["college"] =
           props.location["dataForEdit"]["college"]["id"];
       }
-      if (props.location["dataForEdit"]["studentInfo"]["date_of_birth"]) {
-        setSelectedDate(
-          new Date(
-            props.location["dataForEdit"]["studentInfo"]["date_of_birth"]
-          )
-        );
-      }
+      // if (props.location["dataForEdit"]["studentInfo"]["date_of_birth"]) {
+      //   setSelectedDate(
+      //     new Date(
+      //       props.location["dataForEdit"]["studentInfo"]["date_of_birth"]
+      //     )
+      //   );
+      // }
     }
     formState.counter += 1;
   }
@@ -277,11 +278,11 @@ const AddEditActivity = props => {
         formState.values["contact"],
         formState.values["username"],
         formState.values["gender"],
-        selectedDate.getFullYear() +
-          "-" +
-          (selectedDate.getMonth() + 1) +
-          "-" +
-          selectedDate.getDate(),
+        // selectedDate.getFullYear() +
+        //   "-" +
+        //   (selectedDate.getMonth() + 1) +
+        //   "-" +
+        //   selectedDate.getDate(),
         formState.values["physicallyHandicapped"],
         formState.values["college"],
         formState.values["stream"],
@@ -326,11 +327,11 @@ const AddEditActivity = props => {
         formState.values["username"],
         formState.values["password"],
         formState.values["gender"],
-        selectedDate.getFullYear() +
-          "-" +
-          (selectedDate.getMonth() + 1) +
-          "-" +
-          selectedDate.getDate(),
+        // selectedDate.getFullYear() +
+        //   "-" +
+        //   (selectedDate.getMonth() + 1) +
+        //   "-" +
+        //   selectedDate.getDate(),
         formState.values["physicallyHandicapped"],
         formState.values["college"],
         formState.values["stream"],
@@ -461,6 +462,8 @@ const AddEditActivity = props => {
   return (
     <Grid>
       {console.log(formState)}
+      {console.log(selectedDateFrom)}
+      {console.log(selectedDateTo)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editStudent
@@ -559,42 +562,52 @@ const AddEditActivity = props => {
                 />
               </Grid>
               <Grid item md={3} xs={12}>
-                <TextField
-                  label="Father's First Name"
-                  name="fatherFirstName"
-                  value={formState.values["fatherFirstName"] || ""}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  onChange={handleChange}
-                  error={hasError("fatherFirstName")}
-                  helperText={
-                    hasError("fatherFirstName")
-                      ? formState.errors["fatherFirstName"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDateTimePicker
+                    // variant="inline"
+                    format="dd/MM/yyyy"
+                    margin="normal"
+                    id="date-picker-inline"
+                    label="Date & Time From"
+                    value={selectedDateFrom}
+                    onChange={date => setSelectedDateFrom(date)}
+                    error={hasError("datefrom")}
+                    helperText={
+                      hasError("datefrom")
+                        ? formState.errors["datefrom"].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    KeyboardButtonProps={{
+                      "aria-label": "change date"
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
               <Grid item md={3} xs={12}>
-                <TextField
-                  label="Father's Last Name"
-                  name="fatherLastName"
-                  value={formState.values["fatherLastName"] || ""}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  onChange={handleChange}
-                  error={hasError("fatherLastName")}
-                  helperText={
-                    hasError("fatherLastName")
-                      ? formState.errors["fatherLastName"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    // variant="inline"
+                    format="dd/MM/yyyy"
+                    margin="normal"
+                    id="date-picker-inline"
+                    label="Date & Time To"
+                    value={selectedDateTo}
+                    onChange={date => setSelectedDateTo(date)}
+                    error={hasError("dateto")}
+                    helperText={
+                      hasError("dateto")
+                        ? formState.errors["dateto"].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    KeyboardButtonProps={{
+                      "aria-label": "change date"
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
               <Grid item md={12} xs={12}>
                 <TextField
@@ -712,8 +725,8 @@ const AddEditActivity = props => {
                     margin="normal"
                     id="date-picker-inline"
                     label="Date of Birth"
-                    value={selectedDate}
-                    onChange={date => setSelectedDate(date)}
+                    // value={selectedDate}
+                    // onChange={date => setSelectedDate(date)}
                     error={hasError("dateofbirth")}
                     helperText={
                       hasError("dateofbirth")

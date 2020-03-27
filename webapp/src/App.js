@@ -89,12 +89,13 @@ function App() {
                 layout={Layout}
                 exact
               />
+              {/**Student Registration route */}
               <RegistrationRoute
                 path={routeConstants.NEW_REGISTRATION_URL}
                 layout={Layout}
                 exact
               />
-
+              {/**Edit Student Profile */}
               <RegistrationRoute
                 path={routeConstants.EDIT_PROFILE}
                 layout={Layout}
@@ -124,7 +125,7 @@ function App() {
                 component={NotFoundPage}
                 exact
               />
-
+              {/**View Student Profile  */}
               <RouteWithLayout
                 component={StudentProfile}
                 exact
