@@ -120,8 +120,7 @@ const AddEditEvent = props => {
         props["dataForEdit"]["streams"][0]["id"]
       ) {
         formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
-        props["dataForEdit"]["streams"]["id"]
-      ) 
+      }
     }
     formState.counter += 1;
   }
@@ -681,7 +680,6 @@ const AddEditEvent = props => {
             <CardActions className={classes.btnspace}>
               <YellowButton type="submit" color="primary" variant="contained">
                 {genericConstants.SAVE_BUTTON_TEXT}
-               
               </YellowButton>
               <GrayButton
                 type="submit"
