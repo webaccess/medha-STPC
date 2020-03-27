@@ -28,7 +28,6 @@ const marks = "marks";
 const AddEditEducation = props => {
   const history = useHistory();
   const classes = useStyles();
-
   const studentInfo = auth.getUserInfo()
     ? auth.getUserInfo().studentInfo
     : null;

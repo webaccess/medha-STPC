@@ -42,7 +42,6 @@ const STUDENT_EDUCATION_URL =
   strapiConstants.STRAPI_DB_URL +
   strapiConstants.STRAPI_STUDENTS +
   `/${studentId}/education`;
-
 const EDUCATION_FILTER = "id";
 
 const ViewEducation = props => {
