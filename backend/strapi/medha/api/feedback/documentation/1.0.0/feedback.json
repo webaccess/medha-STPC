@@ -530,7 +530,8 @@
               "start_date_time",
               "end_date_time",
               "age",
-              "address"
+              "address",
+              "description"
             ],
             "properties": {
               "id": {

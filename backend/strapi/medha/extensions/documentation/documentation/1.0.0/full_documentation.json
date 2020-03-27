@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "03/26/2020 12:36:42 PM"
+    "x-generation-date": "03/27/2020 10:44:30 AM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -3302,6 +3302,74 @@
       }
     },
     "/colleges/{id}/event": {
+      "get": {
+        "deprecated": false,
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "College"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/colleges/{id}/activity": {
       "get": {
         "deprecated": false,
         "description": "",
@@ -13913,7 +13981,8 @@
               "start_date_time",
               "end_date_time",
               "age",
-              "address"
+              "address",
+              "description"
             ],
             "properties": {
               "id": {
@@ -13998,7 +14067,8 @@
           "start_date_time",
           "end_date_time",
           "age",
-          "address"
+          "address",
+          "description"
         ],
         "properties": {
           "id": {
@@ -14215,7 +14285,8 @@
           "start_date_time",
           "end_date_time",
           "age",
-          "address"
+          "address",
+          "description"
         ],
         "properties": {
           "title": {
@@ -15138,7 +15209,8 @@
               "start_date_time",
               "end_date_time",
               "age",
-              "address"
+              "address",
+              "description"
             ],
             "properties": {
               "id": {
@@ -15430,7 +15502,8 @@
                 "start_date_time",
                 "end_date_time",
                 "age",
-                "address"
+                "address",
+                "description"
               ],
               "properties": {
                 "id": {
