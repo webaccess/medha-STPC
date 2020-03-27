@@ -21,6 +21,9 @@ import DatePickers from "../../../components/Date/Date";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import { useHistory } from "react-router-dom";
+import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as routeConstants from "../../../constants/RouteConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
 
 const eventName = "eventName";
 const description = "description";
@@ -36,6 +39,10 @@ const stream = "stream";
 const marks = "marks";
 const age = "age";
 
+const field = "upload_logo";
+const ref = "event";
+const files = "files";
+
 const ZONES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
 const RPCS_URL =
@@ -44,6 +51,10 @@ const COLLEGE_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
 const STREAM_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS;
+const EVENTS_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_EVENTS;
+const DOCUMENT_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD;
 
 const AddEditEvent = props => {
   const classes = useStyles();
@@ -59,7 +70,8 @@ const AddEditEvent = props => {
     showPassword: false,
     isEditUser: props["editUser"] ? props["editUser"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0
+    counter: 0,
+    files: {}
   });
 
   const [zones, setZones] = useState([]);
@@ -77,7 +89,13 @@ const AddEditEvent = props => {
         formState.values[description] = props["dataForEdit"]["description"];
       }
       if (props["dataForEdit"]["start_date_time"]) {
-        formState.values[dateFrom] = props["dataForEdit"]["start_date_time"];
+        let date = new Date(props["dataForEdit"]["start_date_time"]);
+        formState.values[dateFrom] =
+          date.getDate() +
+          "-" +
+          (date.getMonth() + 1) +
+          "-" +
+          date.getFullYear();
       }
       if (props["dataForEdit"]["end_date_time"]) {
         formState.values[dateTo] = props["dataForEdit"]["end_date_time"];
@@ -90,22 +108,19 @@ const AddEditEvent = props => {
       }
       if (
         props["dataForEdit"]["colleges"] &&
-        props["dataForEdit"]["colleges"]["id"]
+        props["dataForEdit"]["colleges"][0]["id"]
       ) {
         formState.values[college] = props["dataForEdit"]["colleges"][0]["name"];
       }
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
-      // if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
-      //   formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
-      // }
-      // if (
-      //   props["dataForEdit"]["college"] &&
-      //   props["dataForEdit"]["college"]["id"]
-      // ) {
-      //   formState.values[college] = props["dataForEdit"]["college"]["id"];
-      // }
+      if (
+        props["dataForEdit"]["streams"] &&
+        props["dataForEdit"]["streams"][0]["id"]
+      ) {
+        formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+      }
     }
     formState.counter += 1;
   }
@@ -117,7 +132,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
       .then(res => {
-        console.log("Zone DATA", res.data.result);
         setZones(res.data.result);
       })
 
@@ -127,7 +141,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(RPCS_URL, paramsForPageSize)
       .then(res => {
-        console.log("rpc DATA", res.data.result);
         setRpcs(res.data.result);
       })
 
@@ -137,7 +150,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(COLLEGE_URL, paramsForPageSize)
       .then(res => {
-        console.log("College DATA", res.data.result);
         setColleges(res.data.result);
       })
 
@@ -147,7 +159,6 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
       .then(res => {
-        console.log("stream DATA", res.data.result);
         setStreams(res.data.result);
       })
 
@@ -174,7 +185,6 @@ const AddEditEvent = props => {
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
     }
-    console.log("handleChange", formState);
   };
 
   /** Handle change for autocomplete fields */
@@ -196,7 +206,6 @@ const AddEditEvent = props => {
     } else {
       delete formState.values[eventName];
     }
-    console.log("HANDLEAUTOCOMPLETE", formState);
   };
 
   const handleSubmit = event => {
@@ -220,11 +229,9 @@ const AddEditEvent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, EventSchema);
     }
-    console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
-      console.log("ready to post");
-      // postUserData();
+      postEventData();
 
       /** Call axios from here */
       setFormState(formState => ({
@@ -239,9 +246,75 @@ const AddEditEvent = props => {
     }
   };
 
+  const postEventData = () => {
+    let postData = databaseUtilities.addEvent(
+      formState.values[eventName],
+      formState.values[description],
+      formState.values[dateFrom],
+      formState.values[dateTo],
+      formState.values[address],
+      formState.values[marks],
+      formState.values[age],
+      formState.values[zone] ? formState.values[zone] : null,
+      formState.values[rpc] ? formState.values[rpc] : null,
+      formState.values[college] ? formState.values[college] : null,
+      formState.values[stream] ? formState.values[stream] : null
+    );
+    serviceProvider
+      .serviceProviderForPostRequest(EVENTS_URL, postData)
+      .then(res => {
+        postImage(res.data.id);
+      })
+      .catch(error => {
+        console.log("posterror", error);
+      });
+  };
+
+  const postImage = id => {
+    let postImageData = databaseUtilities.uploadDocument(
+      formState.files,
+      ref,
+      id,
+      field
+    );
+    serviceProvider
+      .serviceProviderForPostRequest(DOCUMENT_URL, postImageData)
+      .then(res => {
+        history.push({
+          pathname: routeConstants.MANAGE_EVENT,
+          fromAddEvent: true,
+          isDataAdded: true,
+          addResponseMessage: "",
+          addedData: {}
+        });
+      })
+      .catch(err => {
+        console.log("error", err);
+      });
+  };
+
+  const handleFileChange = event => {
+    event.persist();
+    setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [event.target.name]: event.target.value
+      },
+      touched: {
+        ...formState.touched,
+        [event.target.name]: true
+      },
+      files: event.target.files[0]
+    }));
+
+    /** This is used to remove any existing errors if present in text field */
+    if (formState.errors.hasOwnProperty(event.target.name)) {
+      delete formState.errors[event.target.name];
+    }
+  };
+
   const handleDateChange = (datefrom, event) => {
-    // console.log("handleDateChange", event.target.value);
-    console.log("handleDateChange-->>>", datefrom, event.target.value);
     setFormState(formState => ({
       ...formState,
       values: {
@@ -254,15 +327,13 @@ const AddEditEvent = props => {
       },
       isStateClearFilter: false
     }));
-    console.log("datechangeformstate", formState);
   };
 
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          ADD EVENTS
-          {/* {genericConstants.ADD_USER_TITLE} */}
+          {genericConstants.ADD_EVENT_TEXT}
         </Typography>
         {/* alert */}
       </Grid>
@@ -425,6 +496,7 @@ const AddEditEvent = props => {
                         {...params}
                         label={get(EventSchema[zone], "label")}
                         variant="outlined"
+                        placeholder={get(EventSchema[zone], "placeholder")}
                         error={hasError(zone)}
                         helperText={
                           hasError(zone)
@@ -442,6 +514,7 @@ const AddEditEvent = props => {
                     id="combo-box-demo"
                     className={classes.root}
                     options={rpcs}
+                    placeholder={get(EventSchema[rpcs], "placeholder")}
                     getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(rpc, event, value);
@@ -458,6 +531,7 @@ const AddEditEvent = props => {
                         {...params}
                         label={get(EventSchema[rpc], "label")}
                         variant="outlined"
+                        placeholder={get(EventSchema[rpc], "placeholder")}
                         error={hasError(rpc)}
                         helperText={
                           hasError(rpc)
@@ -491,6 +565,7 @@ const AddEditEvent = props => {
                         {...params}
                         label={get(EventSchema[college], "label")}
                         variant="outlined"
+                        placeholder={get(EventSchema[college], "placeholder")}
                         error={hasError(college)}
                         helperText={
                           hasError(college)
@@ -525,6 +600,7 @@ const AddEditEvent = props => {
                       <TextField
                         {...params}
                         label={get(EventSchema[stream], "label")}
+                        placeholder={get(EventSchema[stream], "placeholder")}
                         variant="outlined"
                         error={hasError(stream)}
                         helperText={
@@ -581,20 +657,39 @@ const AddEditEvent = props => {
                   />
                 </Grid>
               </Grid>
+              <TextField
+                fullWidth
+                id={get(EventSchema[files], "id")}
+                margin="normal"
+                name={files}
+                onChange={handleFileChange}
+                required
+                type={get(EventSchema[files], "type")}
+                value={formState.values[files] || ""}
+                error={hasError(files)}
+                helperText={
+                  hasError(files)
+                    ? formState.errors[files].map(error => {
+                        return error + " ";
+                      })
+                    : null
+                }
+                variant="outlined"
+                className={classes.elementroot}
+              />
             </CardContent>
             <CardActions className={classes.btnspace}>
               <YellowButton type="submit" color="primary" variant="contained">
-                {/* {genericConstants.SAVE_BUTTON_TEXT} */}
-                SAVE
+                {genericConstants.SAVE_BUTTON_TEXT}
+               
               </YellowButton>
               <GrayButton
                 type="submit"
                 color="primary"
                 variant="contained"
-                // to={routeConstants.VIEW_USER}
+                to={routeConstants.MANAGE_EVENT}
               >
-                CANCEL
-                {/* {genericConstants.CANCEL_BUTTON_TEXT} */}
+                {genericConstants.CANCEL_BUTTON_TEXT}
               </GrayButton>
             </CardActions>
           </form>
