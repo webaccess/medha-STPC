@@ -4,7 +4,7 @@ const UserSchema = {
     id: "username",
     autoComplete: "username",
     required: true,
-    placeholder: "username",
+    placeholder: "Username",
     autoFocus: true,
     type: "text",
     validations: {
@@ -19,7 +19,7 @@ const UserSchema = {
     id: "password",
     autoComplete: "password",
     required: false,
-    placeholder: "password",
+    placeholder: "Password",
     autoFocus: true,
     type: "password",
     validations: {}
@@ -29,7 +29,7 @@ const UserSchema = {
     id: "firstname",
     autoComplete: "firstname",
     required: true,
-    placeholder: "firstname",
+    placeholder: "User Firstname",
     autoFocus: true,
     type: "text",
     validations: {
@@ -44,7 +44,7 @@ const UserSchema = {
     id: "lastname",
     autoComplete: "lastname",
     required: true,
-    placeholder: "lastname",
+    placeholder: "User Lastname",
     autoFocus: true,
     type: "text",
     validations: {
@@ -59,7 +59,7 @@ const UserSchema = {
     id: "email",
     autoComplete: "email",
     required: true,
-    placeholder: "email",
+    placeholder: "User Email of the format abc@abc.com",
     autoFocus: true,
     type: "text",
     validations: {
@@ -78,7 +78,7 @@ const UserSchema = {
     id: "contact",
     autoComplete: "contact",
     required: false,
-    placeholder: "contact",
+    placeholder: "User Contact Number",
     autoFocus: true,
     type: "integer",
     validations: {}
@@ -98,7 +98,7 @@ const UserSchema = {
     id: "state",
     autoComplete: "state",
     required: false,
-    placeholder: "state",
+    placeholder: "Choose State",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -108,7 +108,7 @@ const UserSchema = {
     id: "zone",
     autoComplete: "zone",
     required: false,
-    placeholder: "zone",
+    placeholder: "Choose Zone",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -118,7 +118,7 @@ const UserSchema = {
     id: "rpc",
     autoComplete: "rpc",
     required: false,
-    placeholder: "rpc",
+    placeholder: "Choose RPC",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -128,7 +128,7 @@ const UserSchema = {
     id: "college",
     autoComplete: "college",
     required: false,
-    placeholder: "college",
+    placeholder: "Choose College",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -138,7 +138,7 @@ const UserSchema = {
     id: "role",
     autoComplete: "role",
     required: true,
-    placeholder: "role",
+    placeholder: "Choose Role",
     autoFocus: true,
     type: "text",
     validations: {

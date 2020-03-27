@@ -25,6 +25,8 @@ export const EDIT_STUDENT_PROFILE = "Edit Profile";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";
+export const MANAGE_USER_TEXT = "Manage User";
+export const DELETE_MULTI_USER_BUTTON = "Delete Selected User";
 
 /** College */
 export const ADD_COLLEGE_TEXT = "Add College";

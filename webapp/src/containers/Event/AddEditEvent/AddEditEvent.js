@@ -105,9 +105,10 @@ const AddEditEvent = props => {
       }
       if (
         props["dataForEdit"]["streams"] &&
-        props["dataForEdit"]["streams"][0]["id"]
+        props["dataForEdit"]["streams"]["id"]
       ) {
-        formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+        console.log("insidedata", true);
+        formState.values[stream] = props["dataForEdit"]["streams"][0]["name"];
       }
     }
     formState.counter += 1;

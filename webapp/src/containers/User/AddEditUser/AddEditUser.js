@@ -63,6 +63,7 @@ const Adduser = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0
   });
+
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
@@ -77,9 +78,6 @@ const Adduser = props => {
 
   const ZONES_URL =
     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
-
-  const RPCS_URL =
-    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
 
   const COLLEGES_URL =
     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
@@ -145,14 +143,6 @@ const Adduser = props => {
       .catch(error => {
         console.log(error);
       });
-    serviceProvider
-      .serviceProviderForGetRequest(COLLEGES_URL, paramsForPageSize)
-      .then(res => {
-        setColleges(res.data.result);
-      })
-      .catch(error => {
-        console.log(error);
-      });
 
     serviceProvider
       .serviceProviderForGetRequest(ROLES_URL, paramsForPageSize)
@@ -172,17 +162,20 @@ const Adduser = props => {
       .catch(error => {
         console.log(error);
       });
-  }, []);
+  }, [STATES_URL, ROLES_URL]);
 
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
     if (formState.values[state]) {
       fetchZoneRpcDistrictData();
     }
+    if (formState.values[zone] && formState.values[rpc]) {
+      fetchCollegeData();
+    }
     return () => {};
-  }, [formState.values[state]]);
+  }, [formState.values]);
 
-  /** Common function to get zones, rpcs, districts after changing state */
+  /** Common function to get zones, rpcs after changing state */
   async function fetchZoneRpcDistrictData() {
     let zones_url =
       STATES_URL +
@@ -224,6 +217,25 @@ const Adduser = props => {
       pageSize: -1,
       "state.id": formState.values[state]
     };
+  }
+
+  /** Common function to get colleges after changing zone & rpc */
+  async function fetchCollegeData() {
+    let colleges_url =
+      ZONES_URL +
+      "/" +
+      formState.values[zone] +
+      "/" +
+      strapiApiConstants.STRAPI_COLLEGES;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(colleges_url)
+      .then(res => {
+        setColleges(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
   }
 
   const handleChange = e => {
@@ -284,8 +296,14 @@ const Adduser = props => {
         */
         setRpcs([]);
         setZones([]);
+        setColleges([]);
         delete formState.values[zone];
         delete formState.values[rpc];
+        delete formState.values[college];
+      }
+      if (eventName === zone || eventName === rpc) {
+        setColleges([]);
+        delete formState.values[college];
       }
       setFormState(formState => ({
         ...formState,
@@ -317,7 +335,6 @@ const Adduser = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, UserSchema);
     }
-    console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
       postUserData();
@@ -434,6 +451,7 @@ const Adduser = props => {
                 <Grid item md={3} xs={12}>
                   <TextField
                     label={get(UserSchema[firstname], "label")}
+                    placeholder={get(UserSchema[firstname], "placeholder")}
                     name={firstname}
                     value={formState.values[firstname] || ""}
                     error={hasError(firstname)}
@@ -453,6 +471,7 @@ const Adduser = props => {
                 <Grid item md={3} xs={12}>
                   <TextField
                     label={get(UserSchema[lastname], "label")}
+                    placeholder={get(UserSchema[lastname], "placeholder")}
                     name={lastname}
                     value={formState.values[lastname] || ""}
                     error={hasError(lastname)}
@@ -472,6 +491,7 @@ const Adduser = props => {
                 <Grid item md={3} xs={12}>
                   <TextField
                     label={get(UserSchema[email], "label")}
+                    placeholder={get(UserSchema[email], "placeholder")}
                     name={email}
                     value={formState.values[email] || ""}
                     error={hasError(email)}
@@ -491,6 +511,7 @@ const Adduser = props => {
                 <Grid item md={3} xs={12}>
                   <TextField
                     label={get(UserSchema[contact], "label")}
+                    placeholder={get(UserSchema[contact], "placeholder")}
                     name={contact}
                     value={formState.values[contact] || ""}
                     error={hasError(contact)}
@@ -513,6 +534,7 @@ const Adduser = props => {
                   <TextField
                     id={get(UserSchema[username], "id")}
                     label={get(UserSchema[username], "label")}
+                    placeholder={get(UserSchema[username], "placeholder")}
                     name={username}
                     value={formState.values[username] || ""}
                     error={hasError(username)}
@@ -536,6 +558,7 @@ const Adduser = props => {
                     </InputLabel>
                     <OutlinedInput
                       id={get(UserSchema[password], "id")}
+                      placeholder={get(UserSchema[password], "placeholder")}
                       name={password}
                       required
                       fullWidth
@@ -594,6 +617,7 @@ const Adduser = props => {
                         {...params}
                         error={hasError(role)}
                         label={get(UserSchema[role], "label")}
+                        placeholder={get(UserSchema[role], "placeholder")}
                         variant="outlined"
                         name="tester"
                         helperText={
@@ -627,6 +651,7 @@ const Adduser = props => {
                       <TextField
                         {...params}
                         label={get(UserSchema[state], "label")}
+                        placeholder={get(UserSchema[state], "placeholder")}
                         variant="outlined"
                         error={hasError(state)}
                         helperText={
@@ -685,6 +710,7 @@ const Adduser = props => {
                       <TextField
                         {...params}
                         label={get(UserSchema[zone], "label")}
+                        placeholder={get(UserSchema[zone], "placeholder")}
                         variant="outlined"
                         error={hasError(zone)}
                         helperText={
@@ -718,6 +744,7 @@ const Adduser = props => {
                       <TextField
                         {...params}
                         label={get(UserSchema[rpc], "label")}
+                        placeholder={get(UserSchema[rpc], "placeholder")}
                         variant="outlined"
                         error={hasError(rpc)}
                         helperText={
@@ -751,6 +778,7 @@ const Adduser = props => {
                       <TextField
                         {...params}
                         label={get(UserSchema[college], "label")}
+                        placeholder={get(UserSchema[college], "placeholder")}
                         variant="outlined"
                         error={hasError(college)}
                         helperText={
