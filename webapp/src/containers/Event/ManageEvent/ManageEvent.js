@@ -63,14 +63,14 @@ const ViewEvents = props => {
     pageCount: "",
     sortAscending: true,
     /** This is when we return from edit page */
-    isDataEdited: props["location"]["fromeditUser"]
+    isDataEdited: props["location"]["fromeditEvent"]
       ? props["location"]["isDataEdited"]
       : false,
-    editedData: props["location"]["fromeditUser"]
+    editedData: props["location"]["fromeditEvent"]
       ? props["location"]["editedData"]
       : {},
-    fromeditUser: props["location"]["fromeditUser"]
-      ? props["location"]["fromeditUser"]
+    fromeditEvent: props["location"]["fromeditEvent"]
+      ? props["location"]["fromeditEvent"]
       : false,
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddEvent"]
@@ -79,7 +79,7 @@ const ViewEvents = props => {
     addedData: props["location"]["fromAddEvent"]
       ? props["location"]["addedData"]
       : {},
-      fromAddEvent: props["location"]["fromAddEvent"]
+    fromAddEvent: props["location"]["fromAddEvent"]
       ? props["location"]["fromAddEvent"]
       : false
   });
@@ -143,9 +143,10 @@ const ViewEvents = props => {
     if (data.length > 0) {
       for (let i in data) {
         var eventIndividualData = {};
+        let startDate = new Date(data[i]["start_date_time"]);
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"];
-        eventIndividualData["start_date_time"] = data[i]["start_date_time"];
+        eventIndividualData["start_date_time"] = startDate.toDateString();
         x.push(eventIndividualData);
       }
       return x;

@@ -120,7 +120,8 @@ const AddEditEvent = props => {
         props["dataForEdit"]["streams"][0]["id"]
       ) {
         formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
-      }
+        props["dataForEdit"]["streams"]["id"]
+      ) 
     }
     formState.counter += 1;
   }
@@ -232,7 +233,6 @@ const AddEditEvent = props => {
     if (isValid) {
       /** CALL POST FUNCTION */
       postEventData();
-
       /** Call axios from here */
       setFormState(formState => ({
         ...formState,

@@ -474,6 +474,7 @@ const ManageCollege = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
       if (filterName === STATE_FILTER) {
+        console.log("STATE_FILTER", STATE_FILTER);
         getZonesAndRpcsOnState();
       }
       setFormState(formState => ({

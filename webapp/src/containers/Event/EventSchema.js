@@ -4,7 +4,7 @@ const EventSchema = {
     id: "eventname",
     autoComplete: "eventname",
     required: true,
-    placeholder: "eventname",
+    placeholder: "Event Name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -34,13 +34,14 @@ const EventSchema = {
     id: "dateFrom",
     autoComplete: "dateFrom",
     required: true,
-    placeholder: "dateFrom",
+    placeholder: "From Date",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
         message: "Date From is required"
+
       }
     }
   },
@@ -49,13 +50,14 @@ const EventSchema = {
     id: "dateTo",
     autoComplete: "dateTo",
     required: true,
-    placeholder: "dateTo",
+    placeholder: "To Date",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
         message: "Date To is required"
+
       }
     }
   },
@@ -64,7 +66,7 @@ const EventSchema = {
     id: "timeFrom",
     autoComplete: "timeFrom",
     required: true,
-    placeholder: "timeFrom",
+    placeholder: "Time From",
     autoFocus: true,
     type: "text",
     validations: {
@@ -77,9 +79,9 @@ const EventSchema = {
   timeTo: {
     label: "Time To",
     id: "timeTo",
-    autoComplete: "timeTo",
+    autoComplete: "Time To",
     required: true,
-    placeholder: "timeTo",
+    placeholder: "Time To",
     autoFocus: true,
     type: "integer",
     validations: {

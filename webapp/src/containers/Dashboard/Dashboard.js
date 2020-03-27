@@ -93,13 +93,15 @@ const Dashboard = props => {
   const StyledTableCell = withStyles((theme: Theme) =>
     createStyles({
       head: {
-        backgroundColor: "#f6c80a",
-        color: "#353535",
-        padding:"10px"
-            },
+        backgroundColor: "#000000",
+        color: "#ffffff",
+        padding: "10px",
+        fontSize: "14px",
+        fontWeight: 700
+      },
       body: {
         fontSize: "14px",
-        padding:"8px"
+        padding: "8px"
       }
     })
   )(TableCell);
@@ -197,7 +199,7 @@ const Dashboard = props => {
                   title: classes.title,
                   root: classes.titleRoot
                 }}
-                title="Interships"
+                title="Internships"
                 color="textSecondary"
                 align="center"
               />
@@ -371,24 +373,25 @@ const Dashboard = props => {
                     </FormControl>
                   </Grid>
                   <Grid item md={2} xs={12} className={classes.dash_search_btn}>
-                  <Grid item className={classes.filterButtonsMargin}>
-                    <YellowButton
-                      variant="contained"
-                      color="primary"
-                      disableElevation
-                    >
-                      {genericConstants.SEARCH_BUTTON_TEXT}
-                    </YellowButton>
+                    <Grid item className={classes.filterButtonsMargin}>
+                      <YellowButton
+                        variant="contained"
+                        color="primary"
+                        disableElevation
+                      >
+                        {genericConstants.SEARCH_BUTTON_TEXT}
+                      </YellowButton>
+                    </Grid>
+                    <Grid item className={classes.filterButtonsMargin}>
+                      <GrayButton
+                        variant="contained"
+                        color="primary"
+                        disableElevation
+                      >
+                        {genericConstants.RESET_BUTTON_TEXT}
+                      </GrayButton>
+                    </Grid>
                   </Grid>
-                  <Grid item className={classes.filterButtonsMargin}>
-                    <GrayButton
-                      variant="contained"
-                      color="primary"
-                      disableElevation
-                    >
-                      {genericConstants.RESET_BUTTON_TEXT}
-                    </GrayButton>
-                  </Grid></Grid>
                 </Grid>
               </CardContent>
             </Card>
