@@ -293,5 +293,33 @@ module.exports = {
     }, []);
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
     return { result, ...pagination };
+  },
+
+  /**
+   * @return {Array}
+   * This will fetch all training related to college
+   */
+  async activity(ctx) {
+    const { id } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    return strapi
+      .query("activity")
+      .model.query(
+        buildQuery({
+          model: strapi.models.activity,
+          filters
+        })
+      )
+      .where({ college: id })
+      .fetchPage({
+        page: page,
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize
+      })
+      .then(res => {
+        return utils.getPaginatedResponse(res);
+      });
   }
 };

@@ -65,6 +65,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/colleges/:id/activity",
+      "handler": "college.activity",
+      "config": {
+        "policies": [""]
+      }
+    },
+    {
       "method": "DELETE",
       "path": "/colleges/:id",
       "handler": "college.delete",

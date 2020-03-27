@@ -285,7 +285,9 @@ const roles = {
           "count",
           "create",
           "delete",
-          "update"
+          "update",
+          "activity",
+          "event"
         ]
       },
       {
