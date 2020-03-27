@@ -980,6 +980,7 @@ const ViewUsers = props => {
           </CardContent>
         </Card>
         <Card className={classes.tabledata} variant="outlined">
+          {console.log(formState.dataToShow)}
           {formState.dataToShow ? (
             formState.dataToShow.length ? (
               <Table

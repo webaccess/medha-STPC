@@ -1,7 +1,13 @@
 import React, { useState, useContext } from "react";
 import { get } from "lodash";
 import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import {
+  makeStyles,
+  useTheme,
+  createMuiTheme,
+  ThemeProvider
+} from "@material-ui/core/styles";
+
 import {
   IconButton,
   colors,
@@ -14,7 +20,10 @@ import {
   Collapse,
   Button,
   InputLabel,
-  ListItemIcon
+  ListItemIcon,
+  Tabs,
+  Tab,
+  Paper
 } from "@material-ui/core";
 
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
@@ -32,8 +41,8 @@ const useDrawerStyles = makeStyles(theme => ({
   drawer: {
     width: 240,
     [theme.breakpoints.up("lg")]: {
-      marginTop: 64,
-      height: "calc(100% - 64px)"
+      marginTop: 112,
+      height: "calc(100% - 112px)"
     }
   },
   root: {
@@ -41,8 +50,7 @@ const useDrawerStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    boxShadow: "none",
-    marginTop: "25px"
+    boxShadow: "none"
   },
   navigationpanel: {
     margin: theme.spacing(0)
@@ -86,6 +94,56 @@ const useTopBarStyles = makeStyles(theme => ({
     marginRight: "10px"
   }
 }));
+
+const useTabBarStyles = makeStyles(theme => ({
+  subHeader: {
+    top: 64,
+    position: "absolute",
+    left: 0,
+    width: "100%"
+  }
+}));
+
+const overrideTabsTheme = createMuiTheme({
+  overrides: {
+    // Style sheet name ⚛️
+    MuiTabs: {
+      // Name of the rule
+      flexContainer: {
+        display: "flex",
+        flexDirection: "row-reverse",
+        background: "white",
+        borderRadius: 0
+      }
+    },
+    MuiButtonBase: {
+      root: {
+        color: "white !important"
+      }
+    },
+    MuiTab: {
+      root: {
+        minHeight: "32px",
+        textTransform: "capitalize",
+        fontWeight: 400,
+        marginLeft: "8px",
+        marginRight: "8px",
+        marginTop: "8px"
+      },
+      textColorPrimary: {
+        background: "#333333"
+      }
+    },
+    MuiPaper: {
+      elevation1: {
+        boxShadow: "none"
+      },
+      rounded: {
+        borderRadius: "0px"
+      }
+    }
+  }
+});
 
 const useListStyles = makeStyles(theme => ({
   root: {},
@@ -160,11 +218,13 @@ function SideAndTopNavBar(props) {
   const classes = useDrawerStyles();
   const topBarClasses = useTopBarStyles();
   const listClasses = useListStyles();
-
+  const tabBarClasses = useTabBarStyles();
   const theme = useTheme();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [subListState, setSubListState] = useState({});
+  const [tabs, setTabs] = useState([]);
+  const [selectedTab, setSelectedTab] = useState(null);
 
   const { index, setIndex } = useContext(SetIndexContext);
 
@@ -172,10 +232,16 @@ function SideAndTopNavBar(props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleClick = name => {
+  const handleClick = list => {
+    const name = list.name;
     setSubListState({ ...subListState, [name]: !get(subListState, name) });
+    setTabs(list.items ? list.items : []);
   };
 
+  const setHighlightItem = (id, list) => {
+    setIndex(id);
+    setTabs(list.items ? list.items : []);
+  };
   const inputs = get(
     MenuItems(),
     auth.getUserInfo() ? auth.getUserInfo()["role"]["name"] : "",
@@ -201,7 +267,7 @@ function SideAndTopNavBar(props) {
                   className={listClasses.button}
                   disableGutters
                   key={list.name}
-                  onClick={e => handleClick(list.name)}
+                  onClick={e => handleClick(list)}
                   selected={index === id}
                 >
                   <ListItemIcon>{list.Icon}</ListItemIcon>
@@ -233,7 +299,7 @@ function SideAndTopNavBar(props) {
                             className={listClasses.button}
                             component={CustomRouterLink}
                             to={subList.link}
-                            onClick={() => setIndex(id)}
+                            onClick={() => setHighlightItem(id, list)}
                           >
                             {subList.name}
                           </Button>
@@ -259,7 +325,7 @@ function SideAndTopNavBar(props) {
                   selected={index === id}
                   component={CustomRouterLink}
                   to={list.link}
-                  onClick={() => setIndex(id)}
+                  onClick={() => setHighlightItem(id, list)}
                 >
                   <ListItemIcon>{list.Icon}</ListItemIcon>
                   {list.name}
@@ -271,6 +337,29 @@ function SideAndTopNavBar(props) {
       })}
     </div>
   );
+
+  const SubHeader = () => {
+    const handleTabChange = val => {
+      console.log(val);
+    };
+
+    return (
+      <ThemeProvider theme={overrideTabsTheme}>
+        <Paper>
+          <Tabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            {tabs.map((tab, id) => {
+              return <Tab label={tab.name} value={tab} />;
+            })}
+          </Tabs>
+        </Paper>
+      </ThemeProvider>
+    );
+  };
 
   return (
     <div className={topBarClasses.root}>
@@ -301,7 +390,9 @@ function SideAndTopNavBar(props) {
                   </div>
                   Sign out
                 </IconButton>
-
+                <div className={tabBarClasses.subHeader}>
+                  <SubHeader />
+                </div>
                 <Drawer
                   classes={{
                     paper: classes.drawer

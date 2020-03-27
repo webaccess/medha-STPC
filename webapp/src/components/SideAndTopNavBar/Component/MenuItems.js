@@ -5,6 +5,8 @@ import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined"
 import PeopleOutlineOutlinedIcon from "@material-ui/icons/PeopleOutlineOutlined";
 import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
 import DashboardIcon from "@material-ui/icons/Dashboard";
+import SchoolIcon from "@material-ui/icons/School";
+import PeopleIcon from "@material-ui/icons/People";
 
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -22,7 +24,7 @@ const MenuItems = props => {
         items: [
           {
             name: "Manage Training",
-            link: routeConstants.MANAGE_TRAINING
+            link: routeConstants.MANAGE_ACTIVITY
           },
           {
             name: "Validate Student",
@@ -77,11 +79,11 @@ const MenuItems = props => {
       {
         name: "College",
         link: routeConstants.DETAIL_COLLEGE,
-        Icon: ""
+        Icon: <SchoolIcon />
       },
       {
         name: "Students",
-        Icon: "",
+        Icon: <PeopleIcon />,
         items: [
           {
             name: "Manage Students",
@@ -95,8 +97,12 @@ const MenuItems = props => {
       },
       {
         name: "Training",
-        Icon: "",
+        Icon: <AssignmentOutlinedIcon />,
         items: [
+          {
+            name: "Manage Activity",
+            link: routeConstants.MANAGE_ACTIVITY
+          },
           {
             name: "Manage Students Group",
             link: ""
@@ -109,7 +115,7 @@ const MenuItems = props => {
       },
       {
         name: "Events",
-        Icon: "",
+        Icon: <EmojiFlagsOutlinedIcon />,
         link: ""
       }
     ],

@@ -54,6 +54,8 @@ import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEdit
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
 import EventDetails from "./containers/Event/ManageEvent/EventDetails";
 
+import ViewActivity from "./containers/Activity/ViewActivity.js";
+import AddEditActivity from "./containers/Activity/AddEditActivity";
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -93,12 +95,13 @@ function App() {
                 layout={Layout}
                 exact
               />
+              {/**Student Registration route */}
               <RegistrationRoute
                 path={routeConstants.NEW_REGISTRATION_URL}
                 layout={Layout}
                 exact
               />
-
+              {/**Edit Student Profile */}
               <RegistrationRoute
                 path={routeConstants.EDIT_PROFILE}
                 layout={Layout}
@@ -128,7 +131,7 @@ function App() {
                 component={NotFoundPage}
                 exact
               />
-
+              {/**View Student Profile  */}
               <RouteWithLayout
                 component={StudentProfile}
                 exact
@@ -193,6 +196,20 @@ function App() {
                 path={routeConstants.EDIT_ACADEMIC_HISTORY}
               />
 
+              {/**View Activity */}
+              <RouteWithLayout
+                component={ViewActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY}
+              />
+              {/**Add Edit Activity */}
+              <RouteWithLayout
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.CREATE_ACTIVITY}
+              />
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout

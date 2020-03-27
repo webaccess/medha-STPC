@@ -7,10 +7,10 @@ import auth from "../../components/Auth/Auth";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    paddingTop: 56,
+    paddingTop: 110,
     height: "100%",
     [theme.breakpoints.up("sm")]: {
-      paddingTop: 64
+      paddingTop: 110
     }
   },
   shiftContent: {
