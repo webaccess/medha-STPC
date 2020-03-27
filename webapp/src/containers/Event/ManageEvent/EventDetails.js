@@ -17,6 +17,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 const ReactMarkdown = require("react-markdown");
 
 const EVENTS_URL =
@@ -36,7 +37,9 @@ const EventDetails = props => {
   async function getEventDetails() {
     let paramsForEvent = null;
     if (auth.getUserInfo().role.name === "Medha Admin") {
-      paramsForEvent = props["location"]["dataForEdit"];
+      paramsForEvent = props["location"]["dataForView"];
+    } else if (auth.getUserInfo().role.name === "Student") {
+      paramsForEvent = props["location"]["dataForView"];
     }
     if (paramsForEvent !== null && paramsForEvent !== undefined) {
       await serviceProviders
@@ -56,6 +59,10 @@ const EventDetails = props => {
         history.push({
           pathname: routeConstants.MANAGE_EVENT
         });
+      } else if (auth.getUserInfo().role.name === "Student") {
+        history.push({
+          pathname: routeConstants.ELIGIBLE_EVENT
+        });
       } else {
         history.push({
           pathname: routeConstants.DASHBOARD_URL
@@ -64,10 +71,25 @@ const EventDetails = props => {
     }
   }
 
-  const routeToManageEvent = () => {
-    history.push({
-      pathname: routeConstants.MANAGE_EVENT
-    });
+  const route = () => {
+    if (auth.getUserInfo().role.name === "Student") {
+      history.push({
+        pathname: routeConstants.ELIGIBLE_EVENT
+      });
+    } else if (
+      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === "College Admin"
+    ) {
+      history.push({
+        pathname: routeConstants.MANAGE_EVENT
+      });
+    } else {
+      auth.clearToken();
+      auth.clearUserInfo();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
+      });
+    }
   };
 
   const getTime = () => {
@@ -104,6 +126,9 @@ const EventDetails = props => {
     return formState.eventDetails["address"];
   };
 
+  const register = () => {
+    console.log("Register");
+  };
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -114,7 +139,7 @@ const EventDetails = props => {
           variant="contained"
           color="primary"
           disableElevation
-          onClick={routeToManageEvent}
+          onClick={route}
           to={routeConstants.MANAGE_EVENT}
           startIcon={<Icon>keyboard_arrow_left</Icon>}
           greenButtonChecker={formState.greenButtonChecker}
@@ -127,10 +152,8 @@ const EventDetails = props => {
           <CardContent>
             <Grid container spacing={3} className={classes.formgrid}>
               <Grid item md={12} xs={12}>
-                {formState.eventDetails !== null &&
-                formState.eventDetails !== undefined &&
-                formState.eventDetails !== {} ? (
-                  <form>
+                {!formUtilities.checkEmpty(formState.eventDetails) ? (
+                  <React.Fragment>
                     <Grid item md={12} xs={12} className={classes.title}>
                       <Typography variant="h4" gutterBottom>
                         {formState.eventDetails["title"]}
@@ -160,7 +183,14 @@ const EventDetails = props => {
                               width="100%"
                               height="100%"
                             />
-                          ) : null}
+                          ) : (
+                            <Img
+                              src="/images/noImage.png"
+                              loader={<Spinner />}
+                              width="100%"
+                              height="100%"
+                            />
+                          )}
                         </Grid>
                         <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
@@ -194,30 +224,25 @@ const EventDetails = props => {
                         />
                       </Grid>
                     </Grid>
-                    {/* <Grid item md={12} xs={12}>
-                      <CardActions className={classes.btnspace}>
-                        <YellowButton
-                          type="submit"
-                          color="primary"
-                          variant="contained"
-                          //onClick={editData}
-                          className={classes.submitbtn}
-                        >
-                          {genericConstants.EDIT_TEXT}
-                        </YellowButton>
-                        {auth.getUserInfo().role.name !== "College Admin" ? (
-                          <GrayButton
-                            color="primary"
-                            variant="contained"
-                            to={routeConstants.VIEW_COLLEGE}
-                            className={classes.resetbtn}
-                          >
-                            {genericConstants.CANCEL_BUTTON_TEXT}
-                          </GrayButton>
-                        ) : null}
-                      </CardActions>
-                    </Grid> */}
-                  </form>
+                    <Grid>
+                      {auth.getUserInfo().role.name === "Student" ? (
+                        <Grid item md={12} xs={12}>
+                          <CardActions className={classes.btnspace}>
+                            <GreenButton
+                              variant="contained"
+                              color="primary"
+                              disableElevation
+                              onClick={register}
+                              to={routeConstants.MANAGE_EVENT}
+                              greenButtonChecker={formState.greenButtonChecker}
+                            >
+                              Register
+                            </GreenButton>
+                          </CardActions>
+                        </Grid>
+                      ) : null}
+                    </Grid>
+                  </React.Fragment>
                 ) : (
                   <Spinner />
                 )}

@@ -13,7 +13,6 @@ import {
 import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
 
-
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "./ManageEventStyles";
 import { GrayButton, YellowButton, GreenButton } from "../../../components";
@@ -303,7 +302,7 @@ const ViewEvents = props => {
   const viewCell = event => {
     history.push({
       pathname: routeConstants.VIEW_EVENT,
-      dataForEdit: event.target.id
+      dataForView: event.target.id
     });
   };
 
@@ -449,8 +448,8 @@ const ViewEvents = props => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-           {/** Error/Success messages to be shown for add */}
-           {formState.fromAddEvent && formState.isDataAdded ? (
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddEvent && formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
               severity="success"
