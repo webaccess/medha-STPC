@@ -422,7 +422,7 @@ const ViewEvents = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Event
+          Manage Events
         </Typography>
 
         <GreenButton
@@ -433,7 +433,7 @@ const ViewEvents = props => {
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Delete Selected User
+          Delete Selected Event
         </GreenButton>
 
         <GreenButton
@@ -503,6 +503,7 @@ const ViewEvents = props => {
                   onChange={handleFilterChange}
                 />
               </Grid>
+              {console.log("startDate", formState.startDate, formState.endDate)}
               <Grid item>
                 <DatePickers
                   id="date"

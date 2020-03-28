@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Layout from "../../hoc/Layout/Layout";
-import useStyles from "./Styles";
+import useStyles from "./DashboardStyles";
 import clsx from "clsx";
 
 import { withStyles, Theme, createStyles } from "@material-ui/core/styles";

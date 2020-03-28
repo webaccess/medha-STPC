@@ -38,12 +38,12 @@ export const STREAMS_OFFERED_TEXT = "Streams Offered";
 
 /**State */
 export const EDIT_STATE_TEXT = "Edit State";
-export const VIEW_STATE_TEXT = "Manage State";
+export const VIEW_STATE_TEXT = "Manage States";
 export const ADD_STATE_TEXT = "Add State";
 
 /**Zone */
 export const EDIT_ZONE_TEXT = "Edit Zone";
-export const VIEW_ZONE_TEXT = "Manage Zone";
+export const VIEW_ZONE_TEXT = "Manage Zones";
 export const ADD_ZONE_TEXT = "Add Zone";
 
 /** Rpc */
@@ -73,4 +73,4 @@ export const DELETE_SELECTED_STUDENT = "Delete Selected user";
 export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 
 /**MANAGE EVENTS*/
-export const ADD_EVENT_TEXT = "Add Event"
+export const ADD_EVENT_TEXT = "Add Event";

@@ -72,7 +72,7 @@ const EligibleEvents = props => {
     } else {
       if (auth.getUserInfo().role.name === "Student") {
         history.push({
-          pathname: routeConstants.DASHBOARD_URL
+          pathname: routeConstants.VIEW_PROFILE
         });
       } else {
         localStorage.clear();

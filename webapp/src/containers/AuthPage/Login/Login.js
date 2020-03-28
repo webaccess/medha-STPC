@@ -187,7 +187,21 @@ const LogIn = props => {
   };
 
   if (ifSuccess && auth.getToken()) {
-    return <Redirect to={routeConstants.DASHBOARD_URL} />;
+    return auth.getUserInfo().role.name === "Student" ? (
+      <Redirect
+        to={{
+          pathname: routeConstants.VIEW_PROFILE,
+          state: { from: props.location }
+        }}
+      />
+    ) : (
+      <Redirect
+        to={{
+          pathname: routeConstants.DASHBOARD_URL,
+          state: { from: props.location }
+        }}
+      />
+    );
   }
 
   const handleSignIn = event => {

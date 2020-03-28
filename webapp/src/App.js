@@ -66,13 +66,13 @@ function App() {
         <Router>
           <div>
             <Switch>
-              <PrivateRoute
-                path={routeConstants.DASHBOARD_URL}
+              <DefaultRoute
+                path={routeConstants.DEFAULT_URL}
                 component={Dashboard}
                 exact
               />
-              <DefaultRoute
-                path={routeConstants.DEFAULT_URL}
+              <PrivateRoute
+                path={routeConstants.DASHBOARD_URL}
                 component={Dashboard}
                 exact
               />

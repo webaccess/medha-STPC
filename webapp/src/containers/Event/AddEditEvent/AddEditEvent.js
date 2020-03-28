@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Alert, YellowButton, GrayButton } from "../../../components";
-import useStyles from "../ManageEvent/ManageEventStyles";
+import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
 import EventSchema from "../EventSchema";
 import { get } from "lodash";
@@ -334,362 +334,364 @@ const AddEditEvent = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.ADD_EVENT_TEXT}
         </Typography>
-        {/* alert */}
       </Grid>
-      <Grid item xs={12} className={classes.formgrid}>
-        <Card className={classes.root} variant="outlined">
+      <Grid spacing={3}>
+        <Card>
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={12} xs={12}>
-                  <TextField
-                    label={get(EventSchema[eventName], "label")}
-                    id={get(EventSchema[eventName], "id")}
-                    name={eventName}
-                    placeholder={get(EventSchema[eventName], "placeholder")}
-                    value={formState.values[eventName] || ""}
-                    error={hasError(eventName)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(eventName)
-                        ? formState.errors[eventName].map(error => {
-                            return error + " ";
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      label={get(EventSchema[eventName], "label")}
+                      id={get(EventSchema[eventName], "id")}
+                      name={eventName}
+                      placeholder={get(EventSchema[eventName], "placeholder")}
+                      value={formState.values[eventName] || ""}
+                      error={hasError(eventName)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(eventName)
+                          ? formState.errors[eventName].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      label={get(EventSchema[description], "label")}
+                      id={get(EventSchema[description], "id")}
+                      name={description}
+                      placeholder={get(EventSchema[description], "placeholder")}
+                      value={formState.values[description] || ""}
+                      error={hasError(description)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      multiline
+                      onChange={handleChange}
+                      helperText={
+                        hasError(description)
+                          ? formState.errors[description].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <DatePickers
+                      onChange={event => {
+                        handleDateChange(dateFrom, event);
+                      }}
+                      name={dateFrom}
+                      label="Start Date"
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <DatePickers
+                      onChange={event => {
+                        handleDateChange(dateTo, event);
+                      }}
+                      name={dateTo}
+                      label="End Date"
+                      fullWidth
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      label={get(EventSchema[timeFrom], "label")}
+                      id={get(EventSchema[timeFrom], "id")}
+                      name={timeFrom}
+                      placeholder={get(EventSchema[timeFrom], "placeholder")}
+                      value={formState.values[timeFrom] || ""}
+                      error={hasError(timeFrom)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(timeFrom)
+                          ? formState.errors[timeFrom].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      label={get(EventSchema[timeTo], "label")}
+                      id={get(EventSchema[timeTo], "id")}
+                      name={timeTo}
+                      placeholder={get(EventSchema[timeTo], "placeholder")}
+                      value={formState.values[timeTo] || ""}
+                      error={hasError(timeTo)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(timeTo)
+                          ? formState.errors[timeTo].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      label={get(EventSchema[address], "label")}
+                      id={get(EventSchema[address], "id")}
+                      name={address}
+                      placeholder={get(EventSchema[address], "placeholder")}
+                      value={formState.values[address] || ""}
+                      error={hasError(address)}
+                      variant="outlined"
+                      required
+                      multiline
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(address)
+                          ? formState.errors[address].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}></Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={zones}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(zone, event, value);
+                      }}
+                      value={
+                        zones[
+                          zones.findIndex(function(item, i) {
+                            return item.id === formState.values[zone];
                           })
-                        : null
-                    }
-                  />
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[zone], "label")}
+                          variant="outlined"
+                          placeholder={get(EventSchema[zone], "placeholder")}
+                          error={hasError(zone)}
+                          helperText={
+                            hasError(zone)
+                              ? formState.errors[zone].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={rpcs}
+                      placeholder={get(EventSchema[rpcs], "placeholder")}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(rpc, event, value);
+                      }}
+                      value={
+                        rpcs[
+                          rpcs.findIndex(function(item, i) {
+                            return item.id === formState.values[rpc];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[rpc], "label")}
+                          variant="outlined"
+                          placeholder={get(EventSchema[rpc], "placeholder")}
+                          error={hasError(rpc)}
+                          helperText={
+                            hasError(rpc)
+                              ? formState.errors[rpc].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={colleges}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(college, event, value);
+                      }}
+                      value={
+                        colleges[
+                          colleges.findIndex(function(item, i) {
+                            return item.id === formState.values[college];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[college], "label")}
+                          variant="outlined"
+                          placeholder={get(EventSchema[college], "placeholder")}
+                          error={hasError(college)}
+                          helperText={
+                            hasError(college)
+                              ? formState.errors[college].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={12} xs={12}>
-                  <TextField
-                    label={get(EventSchema[description], "label")}
-                    id={get(EventSchema[description], "id")}
-                    name={description}
-                    placeholder={get(EventSchema[description], "placeholder")}
-                    value={formState.values[description] || ""}
-                    error={hasError(description)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    multiline
-                    onChange={handleChange}
-                    helperText={
-                      hasError(description)
-                        ? formState.errors[description].map(error => {
-                            return error + " ";
+              <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={streams}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(stream, event, value);
+                      }}
+                      value={
+                        streams[
+                          streams.findIndex(function(item, i) {
+                            return item.id === formState.values[stream];
                           })
-                        : null
-                    }
-                  />
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[stream], "label")}
+                          placeholder={get(EventSchema[stream], "placeholder")}
+                          variant="outlined"
+                          error={hasError(stream)}
+                          helperText={
+                            hasError(stream)
+                              ? formState.errors[stream].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      label={get(EventSchema[marks], "label")}
+                      id={get(EventSchema[marks], "id")}
+                      name={marks}
+                      placeholder={get(EventSchema[marks], "placeholder")}
+                      value={formState.values[marks] || ""}
+                      error={hasError(marks)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(marks)
+                          ? formState.errors[marks].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}></Grid>
+                  <Grid item md={6} xs={12}></Grid>
                 </Grid>
               </Grid>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={3} xs={12}>
-                  <DatePickers
-                    onChange={event => {
-                      handleDateChange(dateFrom, event);
-                    }}
-                    name={dateFrom}
-                    label="Start Date"
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <DatePickers
-                    onChange={event => {
-                      handleDateChange(dateTo, event);
-                    }}
-                    name={dateTo}
-                    label="End Date"
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(EventSchema[timeFrom], "label")}
-                    id={get(EventSchema[timeFrom], "id")}
-                    name={timeFrom}
-                    placeholder={get(EventSchema[timeFrom], "placeholder")}
-                    value={formState.values[timeFrom] || ""}
-                    error={hasError(timeFrom)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(timeFrom)
-                        ? formState.errors[timeFrom].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(EventSchema[timeTo], "label")}
-                    id={get(EventSchema[timeTo], "id")}
-                    name={timeTo}
-                    placeholder={get(EventSchema[timeTo], "placeholder")}
-                    value={formState.values[timeTo] || ""}
-                    error={hasError(timeTo)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(timeTo)
-                        ? formState.errors[timeTo].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
+              <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      fullWidth
+                      id={get(EventSchema[files], "id")}
+                      name={files}
+                      onChange={handleFileChange}
+                      required
+                      type={get(EventSchema[files], "type")}
+                      value={formState.values[files] || ""}
+                      error={hasError(files)}
+                      helperText={
+                        hasError(files)
+                          ? formState.errors[files].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                      className={classes.elementroot}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={12} xs={12}>
-                  <TextField
-                    label={get(EventSchema[address], "label")}
-                    id={get(EventSchema[address], "id")}
-                    name={address}
-                    placeholder={get(EventSchema[address], "placeholder")}
-                    value={formState.values[address] || ""}
-                    error={hasError(address)}
-                    variant="outlined"
-                    required
-                    multiline
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(address)
-                        ? formState.errors[address].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={4} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={zones}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(zone, event, value);
-                    }}
-                    value={
-                      zones[
-                        zones.findIndex(function(item, i) {
-                          return item.id === formState.values[zone];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(EventSchema[zone], "label")}
-                        variant="outlined"
-                        placeholder={get(EventSchema[zone], "placeholder")}
-                        error={hasError(zone)}
-                        helperText={
-                          hasError(zone)
-                            ? formState.errors[zone].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={4} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={rpcs}
-                    placeholder={get(EventSchema[rpcs], "placeholder")}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(rpc, event, value);
-                    }}
-                    value={
-                      rpcs[
-                        rpcs.findIndex(function(item, i) {
-                          return item.id === formState.values[rpc];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(EventSchema[rpc], "label")}
-                        variant="outlined"
-                        placeholder={get(EventSchema[rpc], "placeholder")}
-                        error={hasError(rpc)}
-                        helperText={
-                          hasError(rpc)
-                            ? formState.errors[rpc].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={4} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={colleges}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(college, event, value);
-                    }}
-                    value={
-                      colleges[
-                        colleges.findIndex(function(item, i) {
-                          return item.id === formState.values[college];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(EventSchema[college], "label")}
-                        variant="outlined"
-                        placeholder={get(EventSchema[college], "placeholder")}
-                        error={hasError(college)}
-                        helperText={
-                          hasError(college)
-                            ? formState.errors[college].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={4} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={streams}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(stream, event, value);
-                    }}
-                    value={
-                      streams[
-                        streams.findIndex(function(item, i) {
-                          return item.id === formState.values[stream];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(EventSchema[stream], "label")}
-                        placeholder={get(EventSchema[stream], "placeholder")}
-                        variant="outlined"
-                        error={hasError(stream)}
-                        helperText={
-                          hasError(stream)
-                            ? formState.errors[stream].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={4} xs={12}>
-                  <TextField
-                    label={get(EventSchema[marks], "label")}
-                    id={get(EventSchema[marks], "id")}
-                    name={marks}
-                    placeholder={get(EventSchema[marks], "placeholder")}
-                    value={formState.values[marks] || ""}
-                    error={hasError(marks)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(marks)
-                        ? formState.errors[marks].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-                <Grid item md={4} xs={12}>
-                  <TextField
-                    label={get(EventSchema[age], "label")}
-                    id={get(EventSchema[age], "id")}
-                    name={age}
-                    placeholder={get(EventSchema[age], "placeholder")}
-                    value={formState.values[age] || ""}
-                    error={hasError(age)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(age)
-                        ? formState.errors[age].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-              </Grid>
-              <TextField
-                fullWidth
-                id={get(EventSchema[files], "id")}
-                margin="normal"
-                name={files}
-                onChange={handleFileChange}
-                required
-                type={get(EventSchema[files], "type")}
-                value={formState.values[files] || ""}
-                error={hasError(files)}
-                helperText={
-                  hasError(files)
-                    ? formState.errors[files].map(error => {
-                        return error + " ";
-                      })
-                    : null
-                }
-                variant="outlined"
-                className={classes.elementroot}
-              />
             </CardContent>
-            <CardActions className={classes.btnspace}>
-              <YellowButton type="submit" color="primary" variant="contained">
-                {genericConstants.SAVE_BUTTON_TEXT}
-              </YellowButton>
-              <GrayButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                to={routeConstants.MANAGE_EVENT}
-              >
-                {genericConstants.CANCEL_BUTTON_TEXT}
-              </GrayButton>
-            </CardActions>
+            <Grid item xs={12} className={classes.CardActionGrid}>
+              <CardActions className={classes.btnspace}>
+                <YellowButton type="submit" color="primary" variant="contained">
+                  {genericConstants.SAVE_BUTTON_TEXT}
+                </YellowButton>
+                <GrayButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  to={routeConstants.MANAGE_EVENT}
+                >
+                  {genericConstants.CANCEL_BUTTON_TEXT}
+                </GrayButton>
+              </CardActions>
+            </Grid>
           </form>
         </Card>
       </Grid>
