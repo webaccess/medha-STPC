@@ -106,6 +106,10 @@ const useStyles = makeStyles(theme => ({
   },
   MarginBottom: {
     marginBottom: "10px"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 export default useStyles;
