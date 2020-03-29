@@ -14,12 +14,12 @@ export default function DatePickers(props) {
         name={props.name}
         variant="outlined"
         placeholder={props.placeholder}
-        className={classes.textField}
         onChange={props.onChange}
         defaultValue={props.value}
         InputLabelProps={{
           shrink: true
         }}
+        fullWidth
       />
     </form>
   );

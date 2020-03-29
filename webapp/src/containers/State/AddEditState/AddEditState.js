@@ -206,19 +206,21 @@ const AddEditState = props => {
                 </Grid>
               </Grid>
             </CardContent>
-            <CardActions className={classes.btnspace}>
-              <YellowButton type="submit" color="primary" variant="contained">
-                {genericConstants.SAVE_BUTTON_TEXT}
-              </YellowButton>
-              <GrayButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                to={routeConstants.VIEW_STATES}
-              >
-                {genericConstants.CANCEL_BUTTON_TEXT}
-              </GrayButton>
-            </CardActions>
+            <Grid item xs={12} className={classes.CardActionGrid}>
+              <CardActions className={classes.btnspace}>
+                <YellowButton type="submit" color="primary" variant="contained">
+                  {genericConstants.SAVE_BUTTON_TEXT}
+                </YellowButton>
+                <GrayButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  to={routeConstants.VIEW_STATES}
+                >
+                  {genericConstants.CANCEL_BUTTON_TEXT}
+                </GrayButton>
+              </CardActions>
+            </Grid>
           </form>
         </Card>
       </Grid>

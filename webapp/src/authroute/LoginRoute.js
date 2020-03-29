@@ -14,7 +14,14 @@ export default function LoginRoute(props) {
   const { layout: Layout, ...rest } = props;
   if (props.type === "login") {
     if (auth.getToken() !== null) {
-      return (
+      return auth.getUserInfo().role.name === "Student" ? (
+        <Redirect
+          to={{
+            pathname: routeConstants.VIEW_PROFILE,
+            state: { from: props.location }
+          }}
+        />
+      ) : (
         <Redirect
           to={{
             pathname: routeConstants.DASHBOARD_URL,
@@ -25,8 +32,6 @@ export default function LoginRoute(props) {
     } else {
       return (
         <Layout>
-          {console.log("IN login route")}
-          {console.log(props.location)}
           <LogIn from={props.location} />
         </Layout>
       );
