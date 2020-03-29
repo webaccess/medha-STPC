@@ -8,7 +8,9 @@ import {
   CardActions,
   Grid,
   Divider,
-  InputLabel
+  InputLabel,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import useStyles from "./DisplayCollegeDetailsStyle";
 import { useHistory } from "react-router-dom";
@@ -33,12 +35,14 @@ const Principal = "Principal";
 const Streams = "Stream";
 const Strength = "Strength";
 const StreamNotPresent = "Stream and data not present";
+
 const DisplayCollegeDetails = props => {
   const history = useHistory();
   const classes = useStyles();
   const COLLEGE_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
   const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     collegeDetails: [],
     streams: []
@@ -59,6 +63,7 @@ const DisplayCollegeDetails = props => {
       };
     }
     if (paramsForCollege.id !== undefined) {
+      setOpen(true);
       await serviceProviders
         .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
         .then(res => {
@@ -67,9 +72,11 @@ const DisplayCollegeDetails = props => {
             ...formState,
             collegeDetails: viewData
           }));
+          setOpen(false);
         })
         .catch(error => {
           console.log("error", error);
+          setOpen(false);
         });
     } else {
       history.push({
@@ -252,6 +259,9 @@ const DisplayCollegeDetails = props => {
                 </Grid>
               </Grid>
             </Grid>
+            <Backdrop className={classes.backdrop} open={open}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </CardContent>
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>

@@ -102,6 +102,10 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     top: "-8px",
     backgroundColor: "#fff"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 export default useStyles;
