@@ -4,7 +4,7 @@ const UserSchema = {
     id: "username",
     autoComplete: "username",
     required: true,
-    placeholder: "Username",
+    placeholder: "User name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -29,7 +29,7 @@ const UserSchema = {
     id: "firstname",
     autoComplete: "firstname",
     required: true,
-    placeholder: "User Firstname",
+    placeholder: "First name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -44,7 +44,7 @@ const UserSchema = {
     id: "lastname",
     autoComplete: "lastname",
     required: true,
-    placeholder: "User Lastname",
+    placeholder: "Last name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -59,7 +59,7 @@ const UserSchema = {
     id: "email",
     autoComplete: "email",
     required: true,
-    placeholder: "User Email of the format abc@abc.com",
+    placeholder: "Email of the format abc@abc.com",
     autoFocus: true,
     type: "text",
     validations: {
@@ -77,11 +77,16 @@ const UserSchema = {
     label: "Contact",
     id: "contact",
     autoComplete: "contact",
-    required: false,
-    placeholder: "User Contact Number",
+    required: true,
+    placeholder: "Contact",
     autoFocus: true,
     type: "integer",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "User Name is required"
+      }
+    }
   },
   active: {
     label: "Active",
