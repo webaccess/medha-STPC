@@ -275,6 +275,47 @@ const LogIn = props => {
                     {authPageConstants.SIGN_IN_HEADER}
                   </Typography>
                 </div>
+                {ifFailure ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {authPageConstants.INVALID_USER}
+                    </Alert>
+                  </Collapse>
+                ) : formState.fromPasswordChangedPage ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="success"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {formState.dataToShow}
+                    </Alert>
+                  </Collapse>
+                ) : null}
                 <form
                   className={classes.form}
                   noValidate
@@ -408,47 +449,6 @@ const LogIn = props => {
                   </Grid>
                 </form>
               </div>
-              {ifFailure ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="error"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {authPageConstants.INVALID_USER}
-                  </Alert>
-                </Collapse>
-              ) : formState.fromPasswordChangedPage ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="success"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {formState.dataToShow}
-                  </Alert>
-                </Collapse>
-              ) : null}
             </CardContent>
             <Hidden mdDown>
               <CardMedia
