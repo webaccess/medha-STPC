@@ -340,6 +340,19 @@ const LogIn = props => {
                     onChange={handleChange}
                     type={get(form[identifier], "type")}
                     value={formState.values[identifier] || ""}
+                    InputLabelProps={{
+                      classes: {
+                        root: classes.cssLabel,
+                        focused: classes.cssFocused
+                      }
+                    }}
+                    InputProps={{
+                      classes: {
+                        root: classes.cssOutlinedInput,
+                        focused: classes.cssFocused,
+                        notchedOutline: classes.notchedOutline
+                      }
+                    }}
                   />
 
                   <FormControl
@@ -382,6 +395,19 @@ const LogIn = props => {
                         </InputAdornment>
                       }
                       labelWidth={70}
+                      InputLabelProps={{
+                        classes: {
+                          root: classes.cssLabel,
+                          focused: classes.cssFocused
+                        }
+                      }}
+                      InputProps={{
+                        classes: {
+                          root: classes.cssOutlinedInput,
+                          focused: classes.cssFocused,
+                          notchedOutline: classes.notchedOutline
+                        }
+                      }}
                     ></OutlinedInput>
                     <FormHelperText error={hasError(password)}>
                       {hasError(password)
