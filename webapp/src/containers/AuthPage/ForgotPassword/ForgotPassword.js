@@ -364,7 +364,50 @@ const ForgotPassword = props => {
                     {authPageConstants.FORGOT_PASSWORD_HEADER}
                   </Typography>
                 </div>
-
+                {isOtpVerificationFailed ||
+                formState.isChangePassFailed ||
+                formState.otpSendingFailed ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {formState.errorsToShow}
+                    </Alert>
+                  </Collapse>
+                ) : formState.otpResent &&
+                  formState.errorsToShow === "OTP sent successfully" ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="success"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {formState.errorsToShow}
+                    </Alert>
+                  </Collapse>
+                ) : null}
                 <form
                   className={classes.form}
                   noValidate
@@ -375,7 +418,7 @@ const ForgotPassword = props => {
                       <Typography
                         component="h5"
                         variant="subtitle2"
-                        style={{ marginTop: ".9rem" }}
+                        style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
                       >
                         {authPageConstants.CONFIRM_NEW_PASS_ALERT}
                       </Typography>
@@ -399,19 +442,6 @@ const ForgotPassword = props => {
                               })
                             : null
                         }
-                        InputLabelProps={{
-                          classes: {
-                            root: classes.cssLabel,
-                            focused: classes.cssFocused
-                          }
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.cssOutlinedInput,
-                            focused: classes.cssFocused,
-                            notchedOutline: classes.notchedOutline
-                          }
-                        }}
                       />
                       <TextField
                         variant="outlined"
@@ -434,19 +464,6 @@ const ForgotPassword = props => {
                               )
                             : null
                         }
-                        InputLabelProps={{
-                          classes: {
-                            root: classes.cssLabel,
-                            focused: classes.cssFocused
-                          }
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.cssOutlinedInput,
-                            focused: classes.cssFocused,
-                            notchedOutline: classes.notchedOutline
-                          }
-                        }}
                       />
                       <Button
                         color="primary"
@@ -464,7 +481,7 @@ const ForgotPassword = props => {
                       <Typography
                         component="h5"
                         variant="subtitle2"
-                        style={{ marginTop: ".9rem" }}
+                        style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
                       >
                         {authPageConstants.OTP_ALERT}{" "}
                         {formState.values.mobileNumber}
@@ -555,7 +572,7 @@ const ForgotPassword = props => {
                       <Typography
                         component="h5"
                         variant="subtitle2"
-                        style={{ marginTop: ".9rem" }}
+                        style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
                       >
                         {authPageConstants.MOBILE_NUMBER_ALERT}
                       </Typography>
@@ -579,19 +596,6 @@ const ForgotPassword = props => {
                         autoFocus
                         value={formState.values[mobileNumber] || ""}
                         onChange={handleChange}
-                        InputLabelProps={{
-                          classes: {
-                            root: classes.cssLabel,
-                            focused: classes.cssFocused
-                          }
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.cssOutlinedInput,
-                            focused: classes.cssFocused,
-                            notchedOutline: classes.notchedOutline
-                          }
-                        }}
                       />
                       <Button
                         color="primary"
@@ -607,57 +611,17 @@ const ForgotPassword = props => {
                   )}
                   <Grid container>
                     <Grid item xs={12} style={{ textAlign: "center" }}>
-                      <Link href={routeConstants.SIGN_IN_URL} variant="body2">
+                      <Link
+                        href={routeConstants.SIGN_IN_URL}
+                        variant="body2"
+                        className={classes.linkColor}
+                      >
                         {authPageConstants.BACK_TO_LOGIN_TEXT}
                       </Link>
                     </Grid>
                   </Grid>
                 </form>
               </div>
-              {isOtpVerificationFailed ||
-              formState.isChangePassFailed ||
-              formState.otpSendingFailed ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="error"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {formState.errorsToShow}
-                  </Alert>
-                </Collapse>
-              ) : formState.otpResent &&
-                formState.errorsToShow === "OTP sent successfully" ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="success"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {formState.errorsToShow}
-                  </Alert>
-                </Collapse>
-              ) : null}
             </CardContent>
 
             <Hidden mdDown>
