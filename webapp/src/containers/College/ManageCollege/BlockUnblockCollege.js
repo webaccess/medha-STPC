@@ -16,6 +16,7 @@ import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
@@ -25,77 +26,13 @@ const BlockUnblockCollege = props => {
   const [formState, setFormState] = useState({
     isDataBlockUnblock: false,
     isValid: false,
-    stateCounter: 0,
-    values: {},
-    dynamicBar: []
+    stateCounter: 0
   });
 
   /** Part for editing college */
   if (props.showModal && !formState.stateCounter) {
-    formState.values = {};
     formState.stateCounter = 0;
     formState.isDataBlockUnblock = false;
-    if (props["dataToBlockUnblock"]) {
-      if (props["dataToBlockUnblock"]["name"]) {
-        formState.values["collegeName"] = props["dataToBlockUnblock"]["name"];
-      }
-      if (props["dataToBlockUnblock"]["college_code"]) {
-        formState.values["collegeCode"] =
-          props["dataToBlockUnblock"]["college_code"];
-      }
-      if (props["dataToBlockUnblock"]["address"]) {
-        formState.values["address"] = props["dataToBlockUnblock"]["address"];
-      }
-      if (props["dataToBlockUnblock"]["contact_number"]) {
-        formState.values["contactNumber"] =
-          props["dataToBlockUnblock"]["contact_number"];
-      }
-      if (props["dataToBlockUnblock"]["college_email"]) {
-        formState.values["collegeEmail"] =
-          props["dataToBlockUnblock"]["college_email"];
-      }
-      if (props["dataToBlockUnblock"]["state"]) {
-        formState.values["state"] = props["dataToBlockUnblock"]["state"]["id"];
-      }
-      if (props["dataToBlockUnblock"]["district"]) {
-        formState.values["district"] =
-          props["dataToBlockUnblock"]["district"]["id"];
-      }
-      if (props["dataToBlockUnblock"]["blocked"]) {
-        formState.values["block"] = props["dataToBlockUnblock"]["blocked"];
-      }
-      if (props["dataToBlockUnblock"]["zone"]) {
-        formState.values["zone"] = props["dataToBlockUnblock"]["zone"]["id"];
-      }
-      if (props["dataToBlockUnblock"]["rpc"]) {
-        formState.values["rpc"] = props["dataToBlockUnblock"]["rpc"]["id"];
-      }
-      if (
-        props["dataToBlockUnblock"]["principal"] &&
-        props["dataToBlockUnblock"]["principal"]["id"]
-      ) {
-        formState.values["principal"] =
-          props["dataToBlockUnblock"]["principal"]["id"];
-      }
-      if (
-        props["dataToBlockUnblock"]["stream_strength"] &&
-        props["dataToBlockUnblock"]["stream_strength"].length
-      ) {
-        let dynamicBar = [];
-        for (let i in props["dataToBlockUnblock"]["stream_strength"]) {
-          let tempDynamicBarrValue = {};
-          tempDynamicBarrValue["index"] = Math.random();
-          tempDynamicBarrValue["streams"] =
-            props["dataToBlockUnblock"]["stream_strength"][i]["stream"]["id"];
-          tempDynamicBarrValue["strength"] = props["dataToBlockUnblock"][
-            "stream_strength"
-          ][i]["strength"].toString();
-          dynamicBar.push(tempDynamicBarrValue);
-        }
-        formState.dynamicBar = dynamicBar;
-      }
-      formState.counter += 1;
-    }
   }
 
   const handleCloseModal = (message = "") => {
@@ -129,67 +66,70 @@ const BlockUnblockCollege = props => {
     blockUnblockData();
   };
 
-  const getDynamicBarData = () => {
-    let streamStrengthArrayValues = [];
-    formState.dynamicBar.map(field => {
-      let streamStrengthValue = {};
-      if (field.hasOwnProperty("streams") && field.hasOwnProperty("strength")) {
-        streamStrengthValue["stream"] = field["streams"];
-        streamStrengthValue["strength"] = parseInt(field["strength"]);
-        streamStrengthArrayValues.push(streamStrengthValue);
-      }
-    });
-    return streamStrengthArrayValues;
-  };
-
   const blockUnblockData = () => {
     if (props.isMultiBlock || props.isMultiUnblock) {
-      console.log(
-        "ids",
-        props.multiBlockCollegeIds,
-        props.isMultiBlock,
-        props.isMultiUnblock
-      );
-      formState.isDataBlockUnblock = false;
-      handleCloseModal("Error blocking/unblocking selected Colleges");
-    } else {
-      let streamStrengthArray = [];
-      streamStrengthArray = getDynamicBarData();
-      let postData = databaseUtilities.addCollege(
-        formState.values["collegeName"],
-        formState.values["collegeCode"],
-        formState.values["address"],
-        formState.values["contactNumber"],
-        formState.values["collegeEmail"].toLowerCase(),
-        formState.values["block"] ? false : true,
-        formState.values["principal"] ? formState.values["principal"] : null,
-        formState.values["rpc"] ? formState.values["rpc"] : null,
-        formState.values["zone"] ? formState.values["zone"] : null,
-        formState.values["district"] ? formState.values["district"] : null,
-        streamStrengthArray
-      );
+      let blockUnblock = "";
+      if (props.isMultiUnblock) {
+        blockUnblock = "/unblock";
+      } else {
+        blockUnblock = "/block";
+      }
+      let postData = {
+        ids: props.multiBlockCollegeIds
+      };
       serviceProviders
-        .serviceProviderForPutRequest(
-          COLLEGE_URL,
-          props.dataToBlockUnblock["id"],
-          postData
-        )
+        .serviceProviderForPostRequest(COLLEGE_URL + blockUnblock, postData)
         .then(res => {
           setFormState(formState => ({
             ...formState,
             isValid: true
           }));
           formState.isDataBlockUnblock = true;
-          if (formState.values["block"]) {
+          if (props.isMultiUnblock) {
+            handleCloseModal("Colleges successfully unblocked");
+          } else {
+            handleCloseModal("Colleges successfully blocked");
+          }
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDataBlockUnblock = false;
+          if (props.isMultiUnblock) {
+            handleCloseModal("Error unblocking selected colleges");
+          } else {
+            handleCloseModal("Error blocking selected colleges");
+          }
+        });
+    } else {
+      let blockUnblock = "";
+      if (props.dataToBlockUnblock["blocked"]) {
+        blockUnblock = "/unblock";
+      } else {
+        blockUnblock = "/block";
+      }
+      let ids = [];
+      ids.push(props.dataToBlockUnblock["id"]);
+      let postData = {
+        ids: ids
+      };
+      serviceProviders
+        .serviceProviderForPostRequest(COLLEGE_URL + blockUnblock, postData)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDataBlockUnblock = true;
+          if (props.dataToBlockUnblock["blocked"]) {
             handleCloseModal(
               "College " +
-                formState.values["collegeName"] +
+                props.dataToBlockUnblock["name"] +
                 " successfully unblocked"
             );
           } else {
             handleCloseModal(
               "College " +
-                formState.values["collegeName"] +
+                props.dataToBlockUnblock["name"] +
                 " successfully blocked"
             );
           }
@@ -197,107 +137,118 @@ const BlockUnblockCollege = props => {
         .catch(error => {
           console.log("error");
           formState.isDataBlockUnblock = false;
-          if (formState.values["block"]) {
+          if (props.dataToBlockUnblock["blocked"]) {
             handleCloseModal(
-              "Error unblocking College " + formState.values["collegeName"]
+              "Error unblocking College " + props.dataToBlockUnblock["name"]
             );
           } else {
             handleCloseModal(
-              "Error blocking College " + formState.values["collegeName"]
+              "Error blocking College " + props.dataToBlockUnblock["name"]
             );
           }
         });
     }
   };
-
   const classes = useStyles();
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      className={classes.modal}
-      open={props.showModal}
-      onClose={handleCloseModal}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500
-      }}
-    >
-      <Fade in={props.showModal}>
-        <div className={classes.paper}>
-          <div className={classes.blockpanel}>
-            <Typography variant={"h2"} className={classes.textMargin}>
-              {formState.values["block"]
-                ? genericConstants.UNBLOCK_BUTTON_TEXT
-                : genericConstants.BLOCK_BUTTON_TEXT}
-            </Typography>
-            <div className={classes.crossbtn}>
-              <IconButton
-                aria-label="close"
-                className={classes.closeButton}
-                onClick={props.modalClose}
-              >
-                <CloseIcon />
-              </IconButton>
-            </div>
-          </div>
-          <div className={classes.edit_dialog}>
-            <Grid item xs={12}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item lg className={classes.deletemessage}>
+    <React.Fragment>
+      {!formUtilities.checkEmpty(props.dataToBlockUnblock) ||
+      props.multiBlockCollegeIds.length ? (
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={props.showModal}
+          onClose={handleCloseModal}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500
+          }}
+        >
+          <Fade in={props.showModal}>
+            <div className={classes.paper}>
+              <div className={classes.blockpanel}>
+                <Typography variant={"h2"} className={classes.textMargin}>
                   {props.isMultiBlock || props.isMultiUnblock
                     ? props.isMultiBlock
-                      ? "Are you sure you want to block all selected colleges"
-                      : "Are you sure you want to unblock all selected colleges"
+                      ? genericConstants.BLOCK_BUTTON_TEXT
+                      : genericConstants.UNBLOCK_BUTTON_TEXT
                     : null}
                   {!props.isMultiBlock && !props.isMultiUnblock
-                    ? formState.values["block"]
-                      ? "Are you sure you want to unblock college " +
-                        formState.values["collegeName"]
-                      : "Are you sure you want to block college " +
-                        formState.values["collegeName"]
+                    ? props.dataToBlockUnblock["blocked"]
+                      ? genericConstants.UNBLOCK_BUTTON_TEXT
+                      : genericConstants.BLOCK_BUTTON_TEXT
                     : null}
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item>
-                  <YellowButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    onClick={handleSubmit}
-                  >
-                    OK
-                  </YellowButton>
-                </Grid>
-                <Grid item>
-                  <GrayButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
+                </Typography>
+                <div className={classes.crossbtn}>
+                  <IconButton
+                    aria-label="close"
+                    className={classes.closeButton}
                     onClick={props.modalClose}
                   >
-                    Close
-                  </GrayButton>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+              </div>
+              <div className={classes.edit_dialog}>
+                <Grid item xs={12}>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item lg className={classes.deletemessage}>
+                      {props.isMultiBlock || props.isMultiUnblock
+                        ? props.isMultiBlock
+                          ? "Are you sure you want to block all selected colleges"
+                          : "Are you sure you want to unblock all selected colleges"
+                        : null}
+                      {!props.isMultiBlock && !props.isMultiUnblock
+                        ? props.dataToBlockUnblock["blocked"]
+                          ? "Are you sure you want to unblock college " +
+                            props.dataToBlockUnblock["name"]
+                          : "Are you sure you want to block college " +
+                            props.dataToBlockUnblock["name"]
+                        : null}
+                    </Grid>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Grid>
-          </div>
-          <Backdrop className={classes.backdrop} open={open}>
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        </div>
-      </Fade>
-    </Modal>
+                <Grid item xs={12}>
+                  <Grid
+                    container
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    spacing={2}
+                  >
+                    <Grid item>
+                      <YellowButton
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        onClick={handleSubmit}
+                      >
+                        OK
+                      </YellowButton>
+                    </Grid>
+                    <Grid item>
+                      <GrayButton
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        onClick={props.modalClose}
+                      >
+                        Close
+                      </GrayButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </div>
+              <Backdrop className={classes.backdrop} open={open}>
+                <CircularProgress color="inherit" />
+              </Backdrop>
+            </div>
+          </Fade>
+        </Modal>
+      ) : null}
+    </React.Fragment>
   );
 };
 
