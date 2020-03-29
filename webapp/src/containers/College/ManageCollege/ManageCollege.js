@@ -682,7 +682,7 @@ const ManageCollege = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_COLLEGE_TEXT}
+          {genericConstants.MANAGE_COLLEGE_TEXT}
         </Typography>
 
         <GreenButton

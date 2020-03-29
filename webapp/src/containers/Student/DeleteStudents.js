@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 
 import * as serviceProviders from "../../api/Axios";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
@@ -9,14 +13,15 @@ import * as genericConstants from "../../constants/GenericConstants";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { YellowButton } from "../../components";
-import useStyles from "./ManageStudentStyle";
+import { YellowButton, GrayButton } from "../../components";
+import useStyles from "./ApproveStudentStyles";
 
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
 const USER_ID = "UserName";
 
 const DeleteStudents = props => {
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
@@ -93,42 +98,62 @@ const DeleteStudents = props => {
     >
       <Fade in={props.showModal}>
         <div className={classes.paper}>
-          <MuiDialogTitle>
+          <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
               {genericConstants.DELETE_TEXT}
             </Typography>
-            <IconButton
-              aria-label="close"
-              className={classes.closeButton}
-              onClick={props.modalClose}
-            >
-              <CloseIcon />
-            </IconButton>
-          </MuiDialogTitle>
+            <div className={classes.crossbtn}>
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={handleCloseModal}
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {/* {props.isMultiDelete ? (
-                    <p>Do you want to delete multiple user field?</p>
-                  ) : (
-                    <p>Do you want to delete this field?</p>
-                  )} */}
-                  {props.id ? "Do you want to delete" : null}
+                  {props.id ? "Are you sure you want to delete?" : null}
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {genericConstants.DELETE_TEXT}
+                    Ok
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={handleCloseModal}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>

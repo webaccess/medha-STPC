@@ -7,19 +7,17 @@ import {
   CardContent,
   CardActions,
   Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableContainer,
-  TableCell,
-  TableRow,
-  TextField
+  Divider
 } from "@material-ui/core";
 import useStyles from "../DisplayUserDetailsStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
-import { YellowButton, GrayButton } from "../../../components";
-import { typography } from "@material-ui/system";
+import {
+  YellowButton,
+  GrayButton,
+  ReadOnlyTextField
+} from "../../../components";
+import * as genericConstants from "../../../constants/GenericConstants";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
@@ -77,103 +75,122 @@ const DisplayUserDetails = props => {
   };
 
   return (
-    <Grid className={classes.root}>
+    <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          View User
+          {genericConstants.VIEW_USER_TITLE}
         </Typography>
       </Grid>
       <Grid spacing={3}>
         <Card>
-          <Grid item xs={12} md={6} xl={3}>
-            <CardContent>
-              <TableContainer component={Paper}>
-                <Table aria-label="simple table">
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>
-                        First Name
-                      </TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.first_name}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>
-                        Last Name
-                      </TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.last_name}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>
-                        User Name
-                      </TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.username}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>
-                        Email
-                      </TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.email}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>
-                        Contact
-                      </TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.contact_number}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>Role</TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.role &&
-                          formState.userDetails.role.name}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>
-                        State
-                      </TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.state &&
-                          formState.userDetails.state.name}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>Zone</TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.zone &&
-                          formState.userDetails.zone.name}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>RPC</TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.rpc &&
-                          formState.userDetails.rpc.name}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={classes.CellHeader}>
-                        College
-                      </TableCell>
-                      <TableCell className={classes.CellValue}>
-                        {formState.userDetails.college &&
-                          formState.userDetails.college.name}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </Grid>
+          <CardContent>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="firstname"
+                    label="First Name"
+                    defaultValue={formState.userDetails.first_name}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="lastname"
+                    label="Last Name"
+                    defaultValue={formState.userDetails.last_name}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="email"
+                    label="Email"
+                    defaultValue={formState.userDetails.email}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="contact"
+                    label="Contact"
+                    defaultValue={formState.userDetails.contact_number}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="role"
+                    label="Role"
+                    defaultValue={
+                      formState.userDetails.role &&
+                      formState.userDetails.role.name
+                    }
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="username"
+                    label="Username"
+                    defaultValue={formState.userDetails.username}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}></Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="state"
+                    label="State"
+                    defaultValue={
+                      formState.userDetails.state &&
+                      formState.userDetails.state.name
+                    }
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="zone"
+                    label="Zone"
+                    defaultValue={
+                      formState.userDetails.zone &&
+                      formState.userDetails.zone.name
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="rpc"
+                    label="RPC"
+                    defaultValue={
+                      formState.userDetails.rpc &&
+                      formState.userDetails.rpc.name
+                    }
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="college"
+                    label="College"
+                    defaultValue={
+                      formState.userDetails.college &&
+                      formState.userDetails.college.name
+                    }
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </CardContent>
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>
               <YellowButton
