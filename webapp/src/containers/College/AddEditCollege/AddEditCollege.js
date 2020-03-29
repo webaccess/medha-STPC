@@ -1063,6 +1063,7 @@ const AddEditCollege = props => {
                     {user.length ? (
                       <Autocomplete
                         id={get(CollegeFormSchema[admins], "id")}
+                        multiple
                         options={user}
                         getOptionLabel={option => option.username}
                         onChange={(event, value) => {
