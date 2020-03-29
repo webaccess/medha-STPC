@@ -7,7 +7,9 @@ import {
   CardContent,
   CardActions,
   Grid,
-  Divider
+  Divider,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import useStyles from "../DisplayUserDetailsStyles";
 import { useHistory } from "react-router-dom";
@@ -22,6 +24,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
 const DisplayUserDetails = props => {
+  const [open, setOpen] = React.useState(false);
   const classes = useStyles();
   const history = useHistory();
 
@@ -43,6 +46,7 @@ const DisplayUserDetails = props => {
       };
     }
     if (paramsForUser.id !== undefined) {
+      setOpen(true);
       await serviceProviders
         .serviceProviderForGetRequest(USER_URL, paramsForUser)
         .then(res => {
@@ -50,9 +54,11 @@ const DisplayUserDetails = props => {
             ...formState,
             userDetails: res.data.result[0]
           }));
+          setOpen(false);
         })
         .catch(error => {
           console.log("error", error);
+          setOpen(false);
         });
     } else {
       history.push({
@@ -190,6 +196,9 @@ const DisplayUserDetails = props => {
                 </Grid>
               </Grid>
             </Grid>
+            <Backdrop className={classes.backdrop} open={open}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </CardContent>
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>
