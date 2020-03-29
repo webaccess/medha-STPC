@@ -25,15 +25,16 @@ export const EDIT_STUDENT_PROFILE = "Edit Profile";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";
+export const VIEW_USER_TITLE = "View User";
 export const MANAGE_USER_TEXT = "Manage User";
 export const DELETE_MULTI_USER_BUTTON = "Delete Selected User";
 
 /** College */
 export const ADD_COLLEGE_TEXT = "Add College";
-export const MANAGE_COLLEGE_TEXT = "Manage College";
+export const MANAGE_COLLEGE_TEXT = "Manage Colleges";
 export const ADD_COLLEGE_BUTTON = "Add College";
 export const EDIT_COLLEGE_TEXT = "Edit College";
-export const VIEW_COLLEGE_TEXT = "Manage College";
+export const VIEW_COLLEGE_TEXT = "View College";
 export const STREAMS_OFFERED_TEXT = "Streams Offered";
 
 /**State */

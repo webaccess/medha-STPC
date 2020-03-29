@@ -5,6 +5,8 @@ import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined"
 import PeopleOutlineOutlinedIcon from "@material-ui/icons/PeopleOutlineOutlined";
 import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
 import DashboardIcon from "@material-ui/icons/Dashboard";
+import GroupOutlinedIcon from "@material-ui/icons/GroupOutlined";
+import LocalLibraryOutlinedIcon from "@material-ui/icons/LocalLibraryOutlined";
 
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -15,6 +17,33 @@ const MenuItems = props => {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
         Icon: <DashboardIcon />
+      },
+      {
+        name: "Masters",
+        Icon: <AssignmentIndOutlinedIcon />,
+        items: [
+          {
+            name: "State",
+            link: routeConstants.VIEW_STATES
+          },
+          {
+            name: "Zone",
+            link: routeConstants.VIEW_ZONES
+          },
+          {
+            name: "RPC",
+            link: routeConstants.VIEW_RPC
+          },
+          {
+            name: "College",
+            link: routeConstants.VIEW_COLLEGE
+          }
+        ]
+      },
+      {
+        name: "User Management",
+        link: routeConstants.VIEW_USER,
+        Icon: <PeopleOutlineOutlinedIcon />
       },
       {
         name: "Training",
@@ -39,33 +68,6 @@ const MenuItems = props => {
         name: "Profile",
         link: routeConstants.PROFILE,
         Icon: <PersonOutlineOutlinedIcon />
-      },
-      {
-        name: "User Management",
-        link: routeConstants.VIEW_USER,
-        Icon: <PeopleOutlineOutlinedIcon />
-      },
-      {
-        name: "Masters",
-        Icon: <AssignmentIndOutlinedIcon />,
-        items: [
-          {
-            name: "State",
-            link: routeConstants.VIEW_STATES
-          },
-          {
-            name: "Zone",
-            link: routeConstants.VIEW_ZONES
-          },
-          {
-            name: "RPC",
-            link: routeConstants.VIEW_RPC
-          },
-          {
-            name: "College",
-            link: routeConstants.VIEW_COLLEGE
-          }
-        ]
       }
     ],
     "College Admin": [
@@ -75,13 +77,13 @@ const MenuItems = props => {
         Icon: <DashboardIcon />
       },
       {
-        name: "College",
+        name: "College Profile",
         link: routeConstants.DETAIL_COLLEGE,
-        Icon: ""
+        Icon: <LocalLibraryOutlinedIcon />
       },
       {
         name: "Students",
-        Icon: "",
+        Icon: <GroupOutlinedIcon />,
         items: [
           {
             name: "Manage Students",
@@ -95,7 +97,7 @@ const MenuItems = props => {
       },
       {
         name: "Training",
-        Icon: "",
+        Icon: <AssignmentOutlinedIcon />,
         items: [
           {
             name: "Manage Students Group",
@@ -109,21 +111,11 @@ const MenuItems = props => {
       },
       {
         name: "Events",
-        Icon: "",
+        Icon: <EmojiFlagsOutlinedIcon />,
         link: ""
       }
     ],
     Student: [
-      {
-        name: "Training",
-        link: "",
-        Icon: <AssignmentOutlinedIcon />
-      },
-      {
-        name: "Events",
-        link: routeConstants.ELIGIBLE_EVENT,
-        Icon: <EmojiFlagsOutlinedIcon />
-      },
       {
         name: "Profile",
         Icon: <PersonOutlineOutlinedIcon />,
@@ -145,6 +137,16 @@ const MenuItems = props => {
             link: routeConstants.VIEW_ACADEMIC_HISTORY
           }
         ]
+      },
+      {
+        name: "Training",
+        link: "",
+        Icon: <AssignmentOutlinedIcon />
+      },
+      {
+        name: "Events",
+        link: routeConstants.ELIGIBLE_EVENT,
+        Icon: <EmojiFlagsOutlinedIcon />
       }
     ]
   };
