@@ -74,6 +74,8 @@ const AddEditEvent = props => {
     files: {}
   });
 
+  console.log("eventdara", formState.values);
+
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
@@ -81,6 +83,8 @@ const AddEditEvent = props => {
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
+    console.log("data1", props["dataForEdit"]);
+
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
         formState.values[eventName] = props["dataForEdit"]["title"];
@@ -89,13 +93,16 @@ const AddEditEvent = props => {
         formState.values[description] = props["dataForEdit"]["description"];
       }
       if (props["dataForEdit"]["start_date_time"]) {
-        let date = new Date(props["dataForEdit"]["start_date_time"]);
-        formState.values[dateFrom] =
-          date.getDate() +
+        let today = new Date(props["dataForEdit"]["start_date_time"]);
+        let date =
+          today.getDate() +
           "-" +
-          (date.getMonth() + 1) +
+          parseInt(today.getMonth() + 1) +
           "-" +
-          date.getFullYear();
+          today.getFullYear();
+
+        formState.values[dateFrom] = date;
+        //formState.defaultDate = date;
       }
       if (props["dataForEdit"]["end_date_time"]) {
         formState.values[dateTo] = props["dataForEdit"]["end_date_time"];
@@ -106,19 +113,21 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["age"]) {
         formState.values[age] = props["dataForEdit"]["age"];
       }
-      if (
-        props["dataForEdit"]["colleges"] &&
-        props["dataForEdit"]["colleges"][0]["id"]
-      ) {
-        formState.values[college] = props["dataForEdit"]["colleges"][0]["name"];
-      }
+
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
       if (
-        props["dataForEdit"]["streams"] &&
-        props["dataForEdit"]["streams"][0]["id"]
+        props["dataForEdit"]["colleges"] &&
+        props["dataForEdit"]["colleges"].length
       ) {
+        formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
+      }
+      if (
+        props["dataForEdit"]["streams"] &&
+        props["dataForEdit"]["streams"].length
+      ) {
+        console.log("stream", true);
         formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
       }
     }
