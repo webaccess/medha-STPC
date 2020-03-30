@@ -268,6 +268,40 @@ module.exports = {
   },
 
   /**
+   *
+   * @param {ids} ctx
+   * This will unblock single or multiple colleges from array
+   */
+  async unblock(ctx) {
+    const { ids } = ctx.request.body;
+    let idsToBlock;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToBlock = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToBlock = ids;
+    }
+
+    if (!idsToBlock.length) {
+      return ctx.response.badRequest("College Ids are empty");
+    }
+
+    await strapi
+      .query("college")
+      .model.query(qb => {
+        qb.whereIn("id", idsToBlock);
+      })
+      .save({ blocked: false }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
+  },
+
+  /**
    * @return {Array}
    * This will fetch all events related to college
    */
