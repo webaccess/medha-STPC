@@ -15,6 +15,7 @@ export default function DatePickers(props) {
         variant="outlined"
         placeholder={props.placeholder}
         onChange={props.onChange}
+        onBlur={props.onBlur}
         defaultValue={props.value}
         InputLabelProps={{
           shrink: true
