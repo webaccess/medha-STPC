@@ -295,7 +295,7 @@ const roles = {
       },
       {
         name: "event",
-        action: []
+        action: ["findone"]
       },
       {
         name: "event-registration",
