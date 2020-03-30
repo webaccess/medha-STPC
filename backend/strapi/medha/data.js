@@ -283,6 +283,7 @@ const roles = {
           "findone",
           "showStudents",
           "count",
+          "event",
           "create",
           "delete",
           "update"
@@ -330,7 +331,15 @@ const roles = {
       },
       {
         name: "student",
-        action: ["find", "findone", "update", "count", "create", "delete"]
+        action: [
+          "find",
+          "findone",
+          "update",
+          "count",
+          "create",
+          "delete",
+          "edit"
+        ]
       },
       {
         name: "user",
@@ -371,7 +380,7 @@ const roles = {
       },
       {
         name: "college",
-        action: []
+        action: ["event"]
       },
       {
         name: "education",
@@ -379,7 +388,7 @@ const roles = {
       },
       {
         name: "event",
-        action: []
+        action: ["findone"]
       },
       {
         name: "event-registration",
