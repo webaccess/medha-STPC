@@ -11,10 +11,10 @@ import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "./DeleteEventStyles";
 
-const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-const EVENT_ID = "UserName";
+// const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
+// const EVENT_ID = "UserName";
 
-const DeleteUser = props => {
+const RegisterEvent = props => {
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
@@ -22,73 +22,70 @@ const DeleteUser = props => {
     values: {},
     username: ""
   });
+  // if (props.showModal && !formState.stateCounter) {
+  //   formState.stateCounter = 0;
+  //   formState.values[EVENT_ID] = props.id;
+  //   formState.isDeleteData = false;
+  // }
 
-  console.log("propsid", props.id);
+  // const handleCloseModal = () => {
+  //   setFormState(formState => ({
+  //     ...formState,
+  //     values: {},
+  //     isDeleteData: false,
+  //     isValid: false,
+  //     stateCounter: 0
+  //   }));
 
-  if (props.showModal && !formState.stateCounter) {
-    formState.stateCounter = 0;
-    formState.values[EVENT_ID] = props.id;
-    formState.isDeleteData = false;
-  }
+  //   if (formState.isDeleteData) {
+  //     props.deleteEvent(true);
+  //   } else {
+  //     props.deleteEvent(false);
+  //   }
+  //   props.closeModal();
+  // };
 
-  const handleCloseModal = () => {
-    setFormState(formState => ({
-      ...formState,
-      values: {},
-      isDeleteData: false,
-      isValid: false,
-      stateCounter: 0
-    }));
+  // const handleSubmit = event => {
+  //   /** CALL Put FUNCTION */
+  //   //deleteData();
+  //   event.preventDefault();
+  // };
 
-    if (formState.isDeleteData) {
-      props.deleteEvent(true);
-    } else {
-      props.deleteEvent(false);
-    }
-    props.closeModal();
-  };
-
-  const handleSubmit = event => {
-    /** CALL Put FUNCTION */
-    deleteData();
-    event.preventDefault();
-  };
-
-  const deleteData = () => {
-    if (props.isMultiDelete) {
-      serviceProviders
-        .serviceProviderForAllDeleteRequest(EVENT_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
-          handleCloseModal();
-        })
-        .catch(error => {
-          console.log("error", error);
-          formState.isDeleteData = false;
-          handleCloseModal();
-        });
-    } else {
-      serviceProviders
-        .serviceProviderForDeleteRequest(EVENT_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
-          handleCloseModal();
-        })
-        .catch(error => {
-          console.log("error");
-          formState.isDeleteData = false;
-          handleCloseModal();
-        });
-    }
-  };
+  // const deleteData = () => {
+  //   if (props.isMultiDelete) {
+  //     serviceProviders
+  //       .serviceProviderForAllDeleteRequest(EVENT_URL, props.id)
+  //       .then(res => {
+  //         setFormState(formState => ({
+  //           ...formState,
+  //           isValid: true
+  //         }));
+  //         formState.isDeleteData = true;
+  //         handleCloseModal();
+  //       })
+  //       .catch(error => {
+  //         console.log("error", error);
+  //         formState.isDeleteData = false;
+  //         handleCloseModal();
+  //       });
+  //   } else {
+  //     serviceProviders
+  //       .serviceProviderForDeleteRequest(EVENT_URL, props.id)
+  //       .then(res => {
+  //         setFormState(formState => ({
+  //           ...formState,
+  //           isValid: true
+  //         }));
+  //         formState.isDeleteData = true;
+  //         handleCloseModal();
+  //       })
+  //       .catch(error => {
+  //         console.log("error");
+  //         formState.isDeleteData = false;
+  //         handleCloseModal();
+  //       });
+  //   }
+  // };
 
   const classes = useStyles();
   return (
@@ -97,7 +94,7 @@ const DeleteUser = props => {
       aria-describedby="transition-modal-description"
       className={classes.modal}
       open={props.showModal}
-      onClose={handleCloseModal}
+      //onClose={handleCloseModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
@@ -108,7 +105,7 @@ const DeleteUser = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {genericConstants.DELETE_TEXT}
+              Confirmation
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -124,17 +121,10 @@ const DeleteUser = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isMultiDelete ? (
-                    <p>
-                      Are you sure you want to delete "{props.seletedUser}"
-                      Events?
-                    </p>
-                  ) : (
-                    <p>
-                      Are you sure you want to delete event "
-                      {props.dataToDelete["name"]}"?
-                    </p>
-                  )}
+                  <p>
+                    Are you sure you want to Register for Event "
+                    {props.eventTitle}" ?
+                  </p>
                 </Grid>
               </Grid>
             </Grid>
@@ -151,9 +141,9 @@ const DeleteUser = props => {
                     type="submit"
                     color="primary"
                     variant="contained"
-                    onClick={handleSubmit}
+                    //onClick={handleSubmit}
                   >
-                    Ok
+                    Yes
                   </YellowButton>
                 </Grid>
                 <Grid item>
@@ -163,7 +153,7 @@ const DeleteUser = props => {
                     variant="contained"
                     onClick={props.modalClose}
                   >
-                    Close
+                    No
                   </GrayButton>
                 </Grid>
               </Grid>
@@ -175,4 +165,4 @@ const DeleteUser = props => {
   );
 };
 
-export default DeleteUser;
+export default RegisterEvent;

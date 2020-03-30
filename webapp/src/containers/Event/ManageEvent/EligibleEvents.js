@@ -22,6 +22,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Image } from "@material-ui/icons";
 import spinner from "../../../components/Spinner";
+import RegisterEvent from "./EventRegistration";
 
 const EligibleEvents = props => {
   const history = useHistory();
@@ -29,7 +30,10 @@ const EligibleEvents = props => {
   const [formState, setFormState] = useState({
     eventDetails: {},
     galleryItems: [1, 2, 3, 4, 5],
-    greenButtonChecker: true
+    greenButtonChecker: true,
+    showRegisterModel: false,
+    registerUserId: "",
+    eventtitle: ""
   });
   useEffect(() => {
     getEventDetails();
@@ -116,6 +120,23 @@ const EligibleEvents = props => {
       pathname: routeConstants.VIEW_EVENT,
       dataForView: id
     });
+  };
+
+  /** Show event registration model */
+  const registerUserForEvent = (event, id, title) => {
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: true,
+      registerUserId: id,
+      eventtitle: title
+    }));
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: false
+    }));
   };
 
   return (
@@ -222,9 +243,10 @@ const EligibleEvents = props => {
                               variant="contained"
                               color="primary"
                               disableElevation
-                              //onClick={routeToManageEvent}
-                              to={routeConstants.MANAGE_EVENT}
                               greenButtonChecker={formState.greenButtonChecker}
+                              onClick={e =>
+                                registerUserForEvent(e, data.id, data.title)
+                              }
                             >
                               Register
                             </GreenButton>
@@ -258,6 +280,14 @@ const EligibleEvents = props => {
             <Spinner />
           )}
         </Grid>
+        <Card variant="outlined">
+          <RegisterEvent
+            showModal={formState.showRegisterModel}
+            modalClose={modalClose}
+            eventName={formState.registerUserId}
+            eventTitle={formState.eventtitle}
+          />
+        </Card>
       </Grid>
     </Grid>
   );
