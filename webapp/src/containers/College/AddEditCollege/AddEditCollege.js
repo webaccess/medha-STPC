@@ -77,6 +77,7 @@ const AddEditCollege = props => {
     isStateClearFilter: false,
     showing: false
   });
+  console.log("collegeFieldValues", formState.values);
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
   const [states, setStates] = useState([]);
@@ -106,6 +107,7 @@ const AddEditCollege = props => {
 
   /** Part for editing college */
   if (formState.isEditCollege && !formState.counter) {
+    console.log("collegeform", props["dataForEdit"]);
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["name"]) {
         formState.values[collegeName] = props["dataForEdit"]["name"];
@@ -761,6 +763,7 @@ const AddEditCollege = props => {
                         <TextField
                           {...params}
                           error={hasError(state)}
+                          required
                           helperText={
                             hasError(state)
                               ? formState.errors[state].map(error => {
@@ -814,6 +817,7 @@ const AddEditCollege = props => {
                       renderInput={params => (
                         <TextField
                           {...params}
+                          required
                           error={hasError(zone)}
                           helperText={
                             hasError(zone)
@@ -870,6 +874,7 @@ const AddEditCollege = props => {
                       renderInput={params => (
                         <TextField
                           {...params}
+                          required
                           error={hasError(rpc)}
                           helperText={
                             hasError(rpc)

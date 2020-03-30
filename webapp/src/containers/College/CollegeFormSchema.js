@@ -177,7 +177,7 @@ const CollegeFormSchema = {
     label: "Strength",
     id: "streams",
     autoComplete: "strength",
-    required: false,
+    required: true,
     placeholder: "Enter Strength",
     autoFocus: true,
     type: "text",
