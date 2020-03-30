@@ -39,7 +39,6 @@ import { Visibility, VisibilityOff } from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
 
 const newPassword = "newPassword";
-const confirmNewPassword = "confirmNewPassword";
 const mobileNumber = "mobileNumber";
 const otp = "OTP";
 
@@ -139,7 +138,7 @@ const ForgotPassword = props => {
     let areFieldsValid = false;
 
     Object.keys(form).map(field => {
-      if (field === newPassword || field === confirmNewPassword) {
+      if (field === newPassword) {
         if (form[field]["required"] === true && obj.hasOwnProperty(field)) {
           areFieldsValid = true;
         } else {
@@ -160,14 +159,6 @@ const ForgotPassword = props => {
         formState.values[field],
         form[field]["validations"]
       );
-      if (
-        field === confirmNewPassword &&
-        formState.values[field] &&
-        formState.values[field].length &&
-        formState.values[newPassword] !== formState.values[field]
-      ) {
-        errors.push("new password and confirm password doesn't match");
-      }
       formState.formType === authPageConstants.FORM_TYPE_CHANGE_PASS
         ? setFormState(formState => ({
             ...formState,
@@ -440,28 +431,6 @@ const ForgotPassword = props => {
                             ? formState.errors[newPassword].map(error => {
                                 return "\n" + error;
                               })
-                            : null
-                        }
-                      />
-                      <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        type={get(form[confirmNewPassword], "type")}
-                        fullWidth
-                        id={get(form[confirmNewPassword], "id")}
-                        label={get(form[confirmNewPassword], "label")}
-                        name={confirmNewPassword}
-                        value={formState.values[confirmNewPassword] || ""}
-                        onChange={handleChange}
-                        error={hasError(confirmNewPassword)}
-                        helperText={
-                          hasError(confirmNewPassword)
-                            ? formState.errors[confirmNewPassword].map(
-                                error => {
-                                  return "\n" + error;
-                                }
-                              )
                             : null
                         }
                       />
