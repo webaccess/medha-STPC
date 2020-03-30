@@ -12,6 +12,8 @@ import {
   DefaultRoute
 } from "./authroute";
 
+import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
+
 import Dashboard from "./containers/Dashboard/Dashboard";
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
 import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
@@ -135,42 +137,43 @@ function App() {
                 exact
               />
               {/**View Student Profile  */}
-              <RouteWithLayout
+
+              <RouteWithTabLayout
                 component={StudentProfile}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_PROFILE}
               />
               {/**Education */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_EDUCATION}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_EDUCATION}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={EditEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_EDUCATION}
               />
               {/**Student document */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewDocument}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_DOCUMENTS}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddDocument}
                 exact
                 layout={Layout}
@@ -178,21 +181,21 @@ function App() {
               />
 
               {/**Student Academic history */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewAcademicHistory}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_ACADEMIC_HISTORY}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddEditAcademicHistory}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ACADEMIC_HISTORY}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={EditAcademicHistoryRoute}
                 exact
                 layout={Layout}
