@@ -70,6 +70,29 @@ const useStyles = makeStyles(theme => ({
     borderBottom: "1px solid #ccc",
     marginBottom: "15px",
     borderRadius: "0px"
+  },
+  labelside: {
+    paddingBottom: "10px",
+    fontWeight: "600",
+    // backgroundColor: "#ccc",
+    marginRight: "15px",
+    fontWeight: "700",
+    borderBottom: "1px solid #ccc"
+  },
+  Cardtheming: {
+    paddingBottom: "16px !important"
+  },
+  Cardthemingstream: {
+    paddingLeft: "0px"
+  },
+  labelcontent: {
+    paddingBottom: "10px",
+    borderBottom: "1px solid #f6c80a",
+    marginRight: "15px",
+    maxWidth: "100% !important"
+  },
+  padding: {
+    padding: "0px !important"
   }
 }));
 
@@ -128,12 +151,12 @@ const StudentProfile = props => {
     }));
   }, [user]);
   async function handleSetDetails() {
-    let details = auth.getUserInfo();
+    let details = props.data ? props.data.id : auth.getUserInfo().id;
 
     await serviceProvider
       .serviceProviderForGetOneRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
-        details.id
+        details
       )
       .then(res => {
         const data = res.data.result;
@@ -177,235 +200,243 @@ const StudentProfile = props => {
   return (
     <Grid>
       {console.log(formState)}
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          Personal Details
-        </Typography>
-        {success ? (
-          <Collapse in={success}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setSuccess(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-      </Grid>
+      {success ? (
+        <Collapse in={success}>
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setSuccess(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+          </Alert>
+        </Collapse>
+      ) : null}
       <Grid item xs={12} className={classes.formgrid}>
         <Grid className={classes.root} variant="outlined">
-          <CardContent>
-            <Grid container spacing={3} className={classes.formgrid}>
-              <Grid item md={12} xs={12}>
-                {formState.values ? (
-                  <form>
-                    <Card>
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography>First Name:</Typography>
+          <Card>
+            <CardContent>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={12} xs={12} className={classes.padding}>
+                  {formState.values ? (
+                    <form>
+                      <Card style={{ boxShadow: "none" }}>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography>First Name:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.firstname}
+                              </Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography>Last Name:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.lastname}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.values.firstname}
-                            </Typography>
-                          </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography>Last Name:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.lastname}</Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
+                        </CardContent>
 
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Father's First Name:</Typography>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Father's First Name:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.fatherFirstName}
+                              </Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography>Father's Last Name:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.fatherLastName}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.values.fatherFirstName}
-                            </Typography>
-                          </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography>Father's Last Name:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.values.fatherLastName}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
+                        </CardContent>
 
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography>Address:</Typography>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography>Address:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.address}
+                              </Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> State:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>{formState.values.state}</Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.address}</Typography>
-                          </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> State:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.state}</Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
+                        </CardContent>
 
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> District:</Typography>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> District:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.district}
+                              </Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Contact Number:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.contact}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.district}</Typography>
-                          </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Contact Number:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.contact}</Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
+                        </CardContent>
 
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Email:</Typography>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Email:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>{formState.values.email}</Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Date of Birth:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {selectedDate.getFullYear() +
+                                  "-" +
+                                  (selectedDate.getMonth() + 1) +
+                                  "-" +
+                                  selectedDate.getDate()}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.email}</Typography>
+                        </CardContent>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Gender:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>{formState.values.gender}</Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Roll Number:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.rollnumber}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Date of Birth:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {selectedDate.getFullYear() +
-                                "-" +
-                                (selectedDate.getMonth() + 1) +
-                                "-" +
-                                selectedDate.getDate()}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Gender:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.gender}</Typography>
-                          </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Roll Number:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.values.rollnumber}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
+                        </CardContent>
 
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> College:</Typography>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> College:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.college}
+                              </Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Stream:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>{formState.values.stream}</Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.college}</Typography>
+                        </CardContent>
+                        <CardContent className={classes.Cardtheming}>
+                          <Grid
+                            className={classes.filterOptions}
+                            container
+                            spacing={1}
+                          >
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Username:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.username}
+                              </Typography>
+                            </Grid>
+                            <Grid md={2} className={classes.labelside}>
+                              <Typography> Physically Handicapped:</Typography>
+                            </Grid>
+                            <Grid md={3} className={classes.labelcontent}>
+                              <Typography>
+                                {formState.values.physicallyHandicapped
+                                  ? "Yes"
+                                  : "No"}
+                              </Typography>
+                            </Grid>
                           </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Stream:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.stream}</Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
-                      <CardContent className={classes.Cardtheming}>
-                        <Grid
-                          className={classes.filterOptions}
-                          container
-                          spacing={1}
-                        >
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Username:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>{formState.values.username}</Typography>
-                          </Grid>
-                          <Grid md={2} className={classes.labelside}>
-                            <Typography> Physically Handicapped:</Typography>
-                          </Grid>
-                          <Grid md={3}>
-                            <Typography>
-                              {formState.values.physicallyHandicapped
-                                ? "Yes"
-                                : "No"}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
+                        </CardContent>
 
-                      <CardActions className={classes.btnspace}>
-                        <YellowButton
-                          type="submit"
-                          color="primary"
-                          variant="contained"
-                          onClick={editData}
-                          className={classes.submitbtn}
-                        >
-                          {genericConstants.EDIT_TEXT}
-                        </YellowButton>
-                        {/* <GrayButton
+                        <CardActions className={classes.btnspace}>
+                          <YellowButton
+                            type="submit"
+                            color="primary"
+                            variant="contained"
+                            onClick={editData}
+                            className={classes.submitbtn}
+                          >
+                            {genericConstants.EDIT_TEXT}
+                          </YellowButton>
+                          {/* <GrayButton
                           color="primary"
                           variant="contained"
                           to={routeConstants.VIEW_COLLEGE}
@@ -413,13 +444,14 @@ const StudentProfile = props => {
                         >
                           {genericConstants.CANCEL_BUTTON_TEXT}
                         </GrayButton> */}
-                      </CardActions>
-                    </Card>
-                  </form>
-                ) : null}
+                        </CardActions>
+                      </Card>
+                    </form>
+                  ) : null}
+                </Grid>
               </Grid>
-            </Grid>
-          </CardContent>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </Grid>

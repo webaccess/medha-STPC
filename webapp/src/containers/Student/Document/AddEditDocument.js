@@ -27,7 +27,6 @@ const files = "files";
 const AddEditDocument = props => {
   const history = useHistory();
   const classes = useStyles();
-
   const DOCUMENT_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_UPLOAD;
 

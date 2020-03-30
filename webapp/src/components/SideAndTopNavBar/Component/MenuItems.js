@@ -51,7 +51,7 @@ const MenuItems = props => {
         items: [
           {
             name: "Manage Training",
-            link: routeConstants.MANAGE_TRAINING
+            link: routeConstants.MANAGE_ACTIVITY
           },
           {
             name: "Validate Student",
@@ -100,6 +100,10 @@ const MenuItems = props => {
         Icon: <AssignmentOutlinedIcon />,
         items: [
           {
+            name: "Manage Activity",
+            link: routeConstants.MANAGE_ACTIVITY
+          },
+          {
             name: "Manage Students Group",
             link: ""
           },
@@ -119,11 +123,8 @@ const MenuItems = props => {
       {
         name: "Profile",
         Icon: <PersonOutlineOutlinedIcon />,
-        items: [
-          {
-            name: "Personal Details",
-            link: routeConstants.VIEW_PROFILE
-          },
+        link: routeConstants.VIEW_PROFILE,
+        tabItems: [
           {
             name: "Education",
             link: routeConstants.VIEW_EDUCATION
@@ -135,11 +136,15 @@ const MenuItems = props => {
           {
             name: "Academic History",
             link: routeConstants.VIEW_ACADEMIC_HISTORY
+          },
+          {
+            name: "Personal Details",
+            link: routeConstants.VIEW_PROFILE
           }
         ]
       },
       {
-        name: "Training",
+        name: "Activity",
         link: "",
         Icon: <AssignmentOutlinedIcon />
       },

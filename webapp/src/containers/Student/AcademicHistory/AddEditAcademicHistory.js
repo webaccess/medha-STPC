@@ -214,11 +214,11 @@ const AddEditAcademicHistory = props => {
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
+        {/* <Typography variant="h4" gutterBottom>
           {formState.isEditAcademicHistory
             ? genericConstants.EDIT_ACADEMIC_HISTORY_TEXT
             : genericConstants.ADD_ACADEMIC_HISTORY_TEXT}
-        </Typography>
+        </Typography> */}
         {isSuccess ? (
           <Alert severity="success">
             {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
