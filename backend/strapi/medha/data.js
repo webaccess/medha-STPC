@@ -338,7 +338,9 @@ const roles = {
           "count",
           "create",
           "delete",
-          "edit"
+          "edit",
+          "approve",
+          "unapprove"
         ]
       },
       {
