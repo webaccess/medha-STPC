@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -21,12 +21,24 @@ const STUDENTS_URL =
 
 const ApprovedStudents = props => {
   const [open, setOpen] = React.useState(false);
+  const[username, setUsername] = useState([]);
   const [formState, setFormState] = useState({
     isDataBlock: false,
     isValid: false,
     stateCounter: 0,
     values: {}
   });
+
+  if(props.id){
+    serviceProviders.serviceProviderForGetOneRequest(STUDENTS_URL, props.id).then(res=>{
+      setUsername(res.data.user.username)
+    })
+    .catch(error => {
+      console.log('error',error)
+    })
+  }
+
+
   const handleCloseModal = () => {
     setFormState(formState => ({
       ...formState,
@@ -51,20 +63,45 @@ const ApprovedStudents = props => {
   };
 
   const ApprovedStudent = () => {
-    var body;
-    if (props.Data === true || props.isUnMulBlocked === true) {
-      body = {
-        verifiedByCollege: false
+    var approve_url;
+    var paramsId ;
+    if (props.Data === true ) {
+      approve_url =  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/unapprove"  ;
+      paramsId = {
+        ids: parseInt(props.id) 
       };
-    } else if (props.Data === false || props.isMulBlocked === true) {
-      body = {
-        verifiedByCollege: true
+    } 
+    if(props.Data === false){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/approve"  ;
+      paramsId = {
+        ids: parseInt(props.id) 
       };
     }
-
-    if (props.isMulBlocked || props.isUnMulBlocked) {
-      serviceProviders
-        .serviceProviderForAllBlockRequest(STUDENTS_URL, props.id, body)
+    if(props.isMulBlocked === true ){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/approve"  ;
+      for(var i=0 ; i<props.id.length;i++){
+        paramsId = {
+          ids: parseInt(props.id[i]) 
+        };
+        serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
+        .then(res => {
+          formState.isDataBlock = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          formState.isDataBlock = false;
+          handleCloseModal();
+        });
+      }
+   
+    }
+    if(props.isUnMulBlocked === true){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/unapprove"  ;
+      for(var i=0 ; i<props.id.length;i++){
+        paramsId = {
+          ids: parseInt(props.id[i]) 
+        };
+        serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
         .then(res => {
           formState.isDataBlock = true;
           handleCloseModal();
@@ -74,19 +111,20 @@ const ApprovedStudents = props => {
           formState.isDataBlock = false;
           handleCloseModal();
         });
-    } else {
-      serviceProviders
-        .serviceProviderForPutRequest(STUDENTS_URL, props.id, body)
-        .then(res => {
-          formState.isDataBlock = true;
-          handleCloseModal();
-        })
-        .catch(error => {
-          console.log("error", error);
-          formState.isDataBlock = false;
-          handleCloseModal();
-        });
+      }
     }
+
+    serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
+    .then(res => {
+      formState.isDataBlock = true;
+      handleCloseModal();
+    })
+    .catch(error => {
+      console.log("error---", error);
+      formState.isDataBlock = false;
+      handleCloseModal();
+    });
+  
   };
 
   const classes = useStyles();
@@ -107,7 +145,18 @@ const ApprovedStudents = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {props.Data ? "Unapprove" : "Approve"}
+              {/* {props.Data ? "Unapprove" : "Approve"} */}
+              {props.Data === false
+                    ? " Approve  " 
+                    : null}
+                  {props.Data === true
+                    ? " Unapprove  " 
+                    : null}
+                    {props.isMulBlocked === true ? " Approve "
+                    : null}
+                    {props.isUnMulBlocked === true
+                    ? " Unapprove "
+                    : null}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -123,10 +172,15 @@ const ApprovedStudents = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.Data === false || props.isMulBlocked === true
-                    ? "Are you sure you want to approve selected student?"
+                  {props.Data === false
+                    ? "Are you sure you want to approve student " + username + "  ?" 
                     : null}
-                  {props.Data === true || props.isUnMulBlocked === true
+                  {props.Data === true
+                    ? "Are you sure you want to unapprove student " + username + "  ?"
+                    : null}
+                    {props.isMulBlocked === true ? "Are you sure you want to approve selected student?"
+                    : null}
+                    {props.isUnMulBlocked === true
                     ? "Are you sure you want to unapprove selected student?"
                     : null}
                 </Grid>
