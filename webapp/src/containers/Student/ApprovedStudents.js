@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -20,13 +20,31 @@ const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
 
 const ApprovedStudents = props => {
+  console.log("APPROVED",props)
   const [open, setOpen] = React.useState(false);
+  const[username, setUsername] = useState([]);
   const [formState, setFormState] = useState({
     isDataBlock: false,
     isValid: false,
     stateCounter: 0,
     values: {}
   });
+
+  if(props.id){
+    console.log("tsihdxcfj",props.id)
+    serviceProviders.serviceProviderForGetOneRequest(STUDENTS_URL, props.id).then(res=>{
+      console.log("res.data",res.data.user.username);
+      setUsername(res.data.user.username)
+    })
+    .catch(error => {
+      console.log('error',error)
+    })
+  }
+
+  // useEffect(() => {
+   
+  // }, []);
+
   const handleCloseModal = () => {
     setFormState(formState => ({
       ...formState,
@@ -87,6 +105,7 @@ const ApprovedStudents = props => {
           handleCloseModal();
         });
     }
+    console.log("approvedBody",body);
   };
 
   const classes = useStyles();
@@ -107,7 +126,18 @@ const ApprovedStudents = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {props.Data ? "Unapprove" : "Approve"}
+              {/* {props.Data ? "Unapprove" : "Approve"} */}
+              {props.Data === false
+                    ? " Approve  " 
+                    : null}
+                  {props.Data === true
+                    ? " Unapprove  " 
+                    : null}
+                    {props.isMulBlocked === true ? " Approve "
+                    : null}
+                    {props.isUnMulBlocked === true
+                    ? " Unapprove "
+                    : null}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -123,10 +153,15 @@ const ApprovedStudents = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.Data === false || props.isMulBlocked === true
-                    ? "Are you sure you want to approve selected student?"
+                  {props.Data === false
+                    ? "Are you sure you want to approve student " + username + "  ?" 
                     : null}
-                  {props.Data === true || props.isUnMulBlocked === true
+                  {props.Data === true
+                    ? "Are you sure you want to unapprove student " + username + "  ?"
+                    : null}
+                    {props.isMulBlocked === true ? "Are you sure you want to approve selected student?"
+                    : null}
+                    {props.isUnMulBlocked === true
                     ? "Are you sure you want to unapprove selected student?"
                     : null}
                 </Grid>

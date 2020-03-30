@@ -25,7 +25,7 @@ import { serviceProviderForGetRequest } from "../../api/Axios";
 
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
-const USER_FILTER = "user.id";
+  const USER_FILTER = "user.username_contains";
 const STREAM_FILTER = "stream.id";
 const SORT_FIELD_KEY = "_sort";
 
@@ -77,16 +77,28 @@ const ManageStudents = props => {
         // [SORT_FIELD_KEY]: "username:asc"
       };
     }
+    console.log("paramsForUsers",paramsForUsers)
     serviceProviders
       .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
       .then(res => {
-        let tempStudentData = [];
-        let student_data = res.data;
-        tempStudentData = convertStudentData(student_data);
-        setFormState(formState => ({
-          ...formState,
-          student: tempStudentData
-        }));
+        console.log("studentres",res.data.length)
+        if(res.data.length){
+          console.log("dfnkjgd");
+          let tempStudentData = [];
+          let student_data = res.data;
+          tempStudentData = convertStudentData(student_data);
+          setFormState(formState => ({
+            ...formState,
+            student: tempStudentData
+          }));
+        }else {
+          console.log("zero");
+          setFormState(formState => ({
+            ...formState,
+            student: res.data.length
+          }));
+        }
+       
       })
       .catch(error => {
         console.log("error", error);
@@ -234,6 +246,11 @@ const ManageStudents = props => {
     }
   };
 
+  const handleFilterChange = event => {
+    console.log("handleFilterChange", event.target.name, event.target.value);
+    formState.filterDataParameters[event.target.name] = event.target.value;
+  };
+
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
@@ -334,7 +351,7 @@ const ManageStudents = props => {
     {
       cell: cell => (
         <Tooltip
-          title={cell.Approved ? "Unapprove" : "Approve"}
+          title={cell.Approved ? "Approve" : "Unapprove"}
           placement="top"
         >
           <i
@@ -455,7 +472,14 @@ const ManageStudents = props => {
         <CardContent className={classes.Cardtheming}>
           <Grid className={classes.filterOptions} container spacing={1}>
             <Grid item>
-              <Autocomplete
+            <TextField
+                  label={"User Name"}
+                  placeholder="User Name"
+                  variant="outlined"
+                  name={USER_FILTER}
+                  onChange={handleFilterChange}
+                />
+              {/* <Autocomplete
                 id="combo-box-demo"
                 name={USER_FILTER}
                 options={formState.student}
@@ -472,7 +496,7 @@ const ManageStudents = props => {
                     variant="outlined"
                   />
                 )}
-              />
+              /> */}
             </Grid>
             <Grid item>
               <Autocomplete
@@ -546,7 +570,7 @@ const ManageStudents = props => {
           <div className={classes.noDataMargin}>
             {genericConstants.NO_DATA_TO_SHOW_TEXT}
           </div>
-        )}{" "}
+        )}
         {formState.isMultiDelete ? (
           <DeleteStudents
             showModal={formState.showModalDelete}
