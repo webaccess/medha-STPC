@@ -20,6 +20,8 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DatePickers from "../../../components/Date/Date";
 import DeleteUser from "./DeleteEvent";
+import * as genericConstants from "../../../constants/GenericConstants";
+import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -30,6 +32,7 @@ const END_DATE_FILTER = "end_date_time_lte";
 const SORT_FIELD_KEY = "_sort";
 
 const ViewEvents = props => {
+  const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
@@ -57,7 +60,27 @@ const ViewEvents = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditEvent"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromeditEvent"]
+      ? props["location"]["editedData"]
+      : {},
+    fromeditEvent: props["location"]["fromeditEvent"]
+      ? props["location"]["fromeditEvent"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddEvent"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddEvent"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddEvent: props["location"]["fromAddEvent"]
+      ? props["location"]["fromAddEvent"]
+      : false
   });
 
   useEffect(() => {
@@ -96,7 +119,7 @@ const ViewEvents = props => {
         formState.dataToShow = [];
         formState.tempData = [];
         let eventData = [];
-        eventData = convertUserData(res.data.result);
+        eventData = convertEventData(res.data.result);
         setFormState(formState => ({
           ...formState,
           events: res.data.result,
@@ -114,19 +137,21 @@ const ViewEvents = props => {
       });
   };
 
-  const convertUserData = data => {
+  const convertEventData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
         var eventIndividualData = {};
+        let startDate = new Date(data[i]["start_date_time"]);
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"];
-        eventIndividualData["start_date_time"] = data[i]["start_date_time"];
+        eventIndividualData["start_date_time"] = startDate.toDateString();
         x.push(eventIndividualData);
       }
       return x;
     }
   };
+
   /** Pagination */
   const handlePerRowsChange = async (perPage, page) => {
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
@@ -208,7 +233,6 @@ const ViewEvents = props => {
     setFormState(formState => ({
       ...formState,
       startDate: date.target.value
-      //filterDataParameters: date.target.value
     }));
   };
 
@@ -278,8 +302,33 @@ const ViewEvents = props => {
   const viewCell = event => {
     history.push({
       pathname: routeConstants.VIEW_EVENT,
-      dataForEdit: event.target.id
+      dataForView: event.target.id
     });
+  };
+
+  /** Edit -------------------------------------------------------*/
+  const getDataForEdit = async id => {
+    let paramsForUsers = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(EVENT_URL, paramsForUsers)
+      .then(res => {
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_EVENT,
+          editUser: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  const editCell = event => {
+    getDataForEdit(event.target.id);
   };
 
   /** ------ */
@@ -311,7 +360,7 @@ const ViewEvents = props => {
             className="material-icons"
             id={cell.id}
             value={cell.name}
-            // onClick={editCell}
+            onClick={editCell}
             style={{ color: "green" }}
           >
             edit
@@ -373,7 +422,7 @@ const ViewEvents = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Event
+          Manage Events
         </Typography>
 
         <GreenButton
@@ -384,7 +433,7 @@ const ViewEvents = props => {
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Delete Selected User
+          Delete Selected Event
         </GreenButton>
 
         <GreenButton
@@ -392,14 +441,56 @@ const ViewEvents = props => {
           color="primary"
           onClick={clearFilter}
           disableElevation
-          //to={routeConstants.ADD_USER}
+          to={routeConstants.ADD_EVENT}
           startIcon={<AddCircleOutlineOutlinedIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
         >
           Add Event
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddEvent && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddEvent && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -412,6 +503,7 @@ const ViewEvents = props => {
                   onChange={handleFilterChange}
                 />
               </Grid>
+              {console.log("startDate", formState.startDate, formState.endDate)}
               <Grid item>
                 <DatePickers
                   id="date"

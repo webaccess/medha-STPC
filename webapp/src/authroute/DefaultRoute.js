@@ -18,12 +18,21 @@ const defaultRoute = ({ component: Component, ...rest }) => (
     {...rest}
     render={props =>
       auth.getToken() !== null ? (
-        <Redirect
-          to={{
-            pathname: routeConstants.DASHBOARD_URL,
-            state: { from: props.location }
-          }}
-        />
+        auth.getUserInfo().role.name === "Student" ? (
+          <Redirect
+            to={{
+              pathname: routeConstants.VIEW_PROFILE,
+              state: { from: props.location }
+            }}
+          />
+        ) : (
+          <Redirect
+            to={{
+              pathname: routeConstants.DASHBOARD_URL,
+              state: { from: props.location }
+            }}
+          />
+        )
       ) : (
         <Redirect
           to={{

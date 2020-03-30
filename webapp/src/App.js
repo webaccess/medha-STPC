@@ -24,6 +24,7 @@ import ViewStates from "./containers/State/ViewState/ViewState";
 import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
 import ViewZone from "./containers/Zone/ViewZone/ViewZone";
 import ViewEvents from "./containers/Event/ManageEvent/ManageEvent";
+import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
 import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
@@ -53,6 +54,8 @@ import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcadem
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
 import EventDetails from "./containers/Event/ManageEvent/EventDetails";
+import EditEventRoute from "./authroute/EditEventRoutes";
+import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
 
 import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
@@ -65,13 +68,13 @@ function App() {
         <Router>
           <div>
             <Switch>
-              <PrivateRoute
-                path={routeConstants.DASHBOARD_URL}
+              <DefaultRoute
+                path={routeConstants.DEFAULT_URL}
                 component={Dashboard}
                 exact
               />
-              <DefaultRoute
-                path={routeConstants.DEFAULT_URL}
+              <PrivateRoute
+                path={routeConstants.DASHBOARD_URL}
                 component={Dashboard}
                 exact
               />
@@ -347,6 +350,25 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_EVENT}
+              />
+              <RouteWithLayout
+                component={AddEditEvent}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_EVENT}
+              />
+              <RouteWithLayout
+                component={EligibleEvents}
+                exact
+                layout={Layout}
+                path={routeConstants.ELIGIBLE_EVENT}
+              />
+              {/** Edit Event Route */}
+              <RouteWithLayout
+                component={EditEventRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_EVENT}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>

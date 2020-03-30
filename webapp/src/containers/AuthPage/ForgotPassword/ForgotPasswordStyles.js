@@ -1,16 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2)
-  },
-  resendOtp: {
-    marginRight: theme.spacing(1)
-  },
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
@@ -22,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center"
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(5, 0, 2),
     backgroundColor: "#f6c80a !important",
     color: "#010101 !important",
     fontWeight: "700 !important",
@@ -134,17 +124,6 @@ const useStyles = makeStyles(theme => ({
     color: "#21abdc",
     fontSize: "0.8rem",
     textAlign: "right"
-  },
-  buttonProgress: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -12,
-    marginLeft: -12
-  },
-  wrapper: {
-    margin: theme.spacing(1),
-    position: "relative"
   }
 }));
 

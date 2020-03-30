@@ -25,23 +25,26 @@ export const EDIT_STUDENT_PROFILE = "Edit Profile";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";
+export const VIEW_USER_TITLE = "View User";
+export const MANAGE_USER_TEXT = "Manage User";
+export const DELETE_MULTI_USER_BUTTON = "Delete Selected User";
 
 /** College */
 export const ADD_COLLEGE_TEXT = "Add College";
-export const MANAGE_COLLEGE_TEXT = "Manage College";
+export const MANAGE_COLLEGE_TEXT = "Manage Colleges";
 export const ADD_COLLEGE_BUTTON = "Add College";
 export const EDIT_COLLEGE_TEXT = "Edit College";
-export const VIEW_COLLEGE_TEXT = "Manage College";
+export const VIEW_COLLEGE_TEXT = "View College";
 export const STREAMS_OFFERED_TEXT = "Streams Offered";
 
 /**State */
 export const EDIT_STATE_TEXT = "Edit State";
-export const VIEW_STATE_TEXT = "Manage State";
+export const VIEW_STATE_TEXT = "Manage States";
 export const ADD_STATE_TEXT = "Add State";
 
 /**Zone */
 export const EDIT_ZONE_TEXT = "Edit Zone";
-export const VIEW_ZONE_TEXT = "Manage Zone";
+export const VIEW_ZONE_TEXT = "Manage Zones";
 export const ADD_ZONE_TEXT = "Add Zone";
 
 /** Rpc */
@@ -73,3 +76,6 @@ export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 /**Activity */
 export const ADD_ACTIVITY_TEXT = "Add Activity";
 export const VIEW_ACTIVITY_TEXT = "Activity";
+
+/**MANAGE EVENTS*/
+export const ADD_EVENT_TEXT = "Add Event";

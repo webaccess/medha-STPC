@@ -70,7 +70,10 @@ const useStyles = makeStyles(theme => ({
   Cardtheming: {
     paddingBottom: "16px !important"
   },
-  FontWeight: { fontWeight: 700 }
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
+  }
 }));
 
 export default useStyles;
