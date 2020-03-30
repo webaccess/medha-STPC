@@ -1,6 +1,14 @@
 {
   "routes": [
     {
+      "method": "POST",
+      "path": "/students/register",
+      "handler": "student.register",
+      "config": {
+        "policies": ["validate"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/students",
       "handler": "student.find",
@@ -35,7 +43,7 @@
     {
       "method": "PUT",
       "path": "/students/:id",
-      "handler": "student.update",
+      "handler": "student.edit",
       "config": {
         "policies": []
       }
@@ -46,6 +54,38 @@
       "handler": "student.delete",
       "config": {
         "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/education",
+      "handler": "student.education",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/document",
+      "handler": "student.document",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/academic-history",
+      "handler": "student.academicHistory",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/students/:id/file/:fileId",
+      "handler": "student.deleteDocument",
+      "config": {
+        "policies": ["isOwner"]
       }
     }
   ]

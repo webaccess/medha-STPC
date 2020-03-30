@@ -516,7 +516,8 @@
     "schemas": {
       "Stream": {
         "required": [
-          "id"
+          "id",
+          "name"
         ],
         "properties": {
           "id": {
@@ -528,6 +529,9 @@
         }
       },
       "NewStream": {
+        "required": [
+          "name"
+        ],
         "properties": {
           "name": {
             "type": "string"

@@ -538,18 +538,18 @@
           "event": {
             "required": [
               "id",
+              "title",
               "start_date_time",
               "end_date_time",
-              "age"
+              "age",
+              "address",
+              "description"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
-              "Title": {
-                "type": "string"
-              },
-              "description": {
+              "title": {
                 "type": "string"
               },
               "start_date_time": {
@@ -557,9 +557,6 @@
               },
               "end_date_time": {
                 "type": "datetime"
-              },
-              "address": {
-                "type": "string"
               },
               "rpc": {
                 "type": "string"
@@ -578,6 +575,12 @@
               },
               "question_set": {
                 "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
               }
             }
           },
@@ -586,10 +589,10 @@
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -598,7 +601,7 @@
               "user": {
                 "type": "string"
               },
-              "Stream": {
+              "stream": {
                 "type": "string"
               },
               "documents": {
@@ -619,16 +622,13 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -636,6 +636,12 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
               }
             }
           },

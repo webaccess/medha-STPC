@@ -517,18 +517,18 @@
       "Event": {
         "required": [
           "id",
+          "title",
           "start_date_time",
           "end_date_time",
-          "age"
+          "age",
+          "address",
+          "description"
         ],
         "properties": {
           "id": {
             "type": "string"
           },
-          "Title": {
-            "type": "string"
-          },
-          "description": {
+          "title": {
             "type": "string"
           },
           "start_date_time": {
@@ -537,12 +537,10 @@
           "end_date_time": {
             "type": "datetime"
           },
-          "address": {
-            "type": "string"
-          },
           "rpc": {
             "required": [
-              "id"
+              "id",
+              "name"
             ],
             "properties": {
               "id": {
@@ -551,10 +549,10 @@
               "name": {
                 "type": "string"
               },
-              "zone": {
+              "main_college": {
                 "type": "string"
               },
-              "main_college": {
+              "state": {
                 "type": "string"
               }
             }
@@ -562,18 +560,16 @@
           "colleges": {
             "required": [
               "id",
+              "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
               "name": {
-                "type": "string"
-              },
-              "admins": {
                 "type": "string"
               },
               "rpc": {
@@ -582,26 +578,39 @@
               "college_code": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "contact_number": {
                 "type": "string"
               },
               "college_email": {
                 "type": "string"
               },
-              "streams": {
+              "principal": {
                 "type": "string"
               },
-              "principal": {
+              "district": {
+                "type": "string"
+              },
+              "blocked": {
+                "type": "boolean"
+              },
+              "stream_strength": {
+                "type": "component"
+              },
+              "zone": {
+                "type": "string"
+              },
+              "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
           },
           "streams": {
             "required": [
-              "id"
+              "id",
+              "name"
             ],
             "properties": {
               "id": {
@@ -692,20 +701,26 @@
                 }
               }
             }
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         }
       },
       "NewEvent": {
         "required": [
+          "title",
           "start_date_time",
           "end_date_time",
-          "age"
+          "age",
+          "address",
+          "description"
         ],
         "properties": {
-          "Title": {
-            "type": "string"
-          },
-          "description": {
+          "title": {
             "type": "string"
           },
           "start_date_time": {
@@ -713,9 +728,6 @@
           },
           "end_date_time": {
             "type": "datetime"
-          },
-          "address": {
-            "type": "string"
           },
           "rpc": {
             "type": "string"
@@ -730,6 +742,12 @@
             "type": "integer"
           },
           "question_set": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }

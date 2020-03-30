@@ -510,13 +510,82 @@
           }
         ]
       }
+    },
+    "/rpcs/{id}/colleges": {
+      "get": {
+        "deprecated": false,
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Rpc"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
       "Rpc": {
         "required": [
-          "id"
+          "id",
+          "name"
         ],
         "properties": {
           "id": {
@@ -525,37 +594,19 @@
           "name": {
             "type": "string"
           },
-          "zone": {
-            "required": [
-              "id"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "state": {
-                "type": "string"
-              }
-            }
-          },
           "main_college": {
             "required": [
               "id",
+              "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
               "name": {
-                "type": "string"
-              },
-              "admins": {
                 "type": "string"
               },
               "rpc": {
@@ -564,19 +615,45 @@
               "college_code": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "contact_number": {
                 "type": "string"
               },
               "college_email": {
                 "type": "string"
               },
-              "streams": {
+              "principal": {
                 "type": "string"
               },
-              "principal": {
+              "district": {
+                "type": "string"
+              },
+              "blocked": {
+                "type": "boolean"
+              },
+              "stream_strength": {
+                "type": "component"
+              },
+              "zone": {
+                "type": "string"
+              },
+              "tpos": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              }
+            }
+          },
+          "state": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
                 "type": "string"
               }
             }
@@ -584,14 +661,17 @@
         }
       },
       "NewRpc": {
+        "required": [
+          "name"
+        ],
         "properties": {
           "name": {
             "type": "string"
           },
-          "zone": {
+          "main_college": {
             "type": "string"
           },
-          "main_college": {
+          "state": {
             "type": "string"
           }
         }

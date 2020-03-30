@@ -63,7 +63,8 @@
     },
     "contact_number": {
       "type": "string",
-      "required": false
+      "required": true,
+      "unique": true
     },
     "state": {
       "model": "state"

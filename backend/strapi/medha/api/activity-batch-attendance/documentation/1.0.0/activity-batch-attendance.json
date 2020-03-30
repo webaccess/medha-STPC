@@ -549,10 +549,10 @@
               "name": {
                 "type": "string"
               },
-              "start_datetime": {
+              "start_date_time": {
                 "type": "datetime"
               },
-              "end_datetime": {
+              "end_date_time": {
                 "type": "datetime"
               }
             }
@@ -562,10 +562,10 @@
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -574,7 +574,7 @@
               "user": {
                 "type": "string"
               },
-              "Stream": {
+              "stream": {
                 "type": "string"
               },
               "documents": {
@@ -595,16 +595,13 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -612,13 +609,19 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
               }
             }
           },
-          "markedByStudent": {
+          "marked_by_student": {
             "type": "boolean"
           },
-          "verifiedByCollege": {
+          "verified_by_college": {
             "type": "boolean"
           }
         }
@@ -631,10 +634,10 @@
           "student": {
             "type": "string"
           },
-          "markedByStudent": {
+          "marked_by_student": {
             "type": "boolean"
           },
-          "verifiedByCollege": {
+          "verified_by_college": {
             "type": "boolean"
           }
         }

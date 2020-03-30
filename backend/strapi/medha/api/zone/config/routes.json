@@ -21,7 +21,7 @@
       "path": "/zones/:id",
       "handler": "zone.findOne",
       "config": {
-        "policies": []
+        "policies": ["isAllowed"]
       }
     },
     {
@@ -29,7 +29,7 @@
       "path": "/zones",
       "handler": "zone.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -37,7 +37,7 @@
       "path": "/zones/:id",
       "handler": "zone.update",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -45,7 +45,15 @@
       "path": "/zones/:id",
       "handler": "zone.delete",
       "config": {
-        "policies": []
+        "policies": ["isDeleteAllowed"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/zones/:id/colleges",
+      "handler": "zone.colleges",
+      "config": {
+        "policies": ["isAllowed"]
       }
     }
   ]

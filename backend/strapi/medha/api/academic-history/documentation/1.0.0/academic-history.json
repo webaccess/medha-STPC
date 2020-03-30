@@ -540,10 +540,10 @@
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -552,7 +552,7 @@
               "user": {
                 "type": "string"
               },
-              "Stream": {
+              "stream": {
                 "type": "string"
               },
               "documents": {
@@ -573,16 +573,13 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -590,12 +587,21 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
               }
             }
           },
           "academic_year": {
             "required": [
-              "id"
+              "id",
+              "name",
+              "start_date",
+              "end_date"
             ],
             "properties": {
               "id": {
@@ -604,11 +610,11 @@
               "name": {
                 "type": "string"
               },
-              "startDate": {
-                "type": "string"
+              "start_date": {
+                "type": "datetime"
               },
-              "endDate": {
-                "type": "string"
+              "end_date": {
+                "type": "datetime"
               }
             }
           },

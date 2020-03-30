@@ -10,11 +10,9 @@
   },
   "attributes": {
     "name": {
-      "type": "string"
-    },
-    "admins": {
-      "plugin": "users-permissions",
-      "collection": "user"
+      "type": "string",
+      "required": true,
+      "unique": true
     },
     "rpc": {
       "model": "rpc"
@@ -24,10 +22,6 @@
       "required": true,
       "unique": true
     },
-    "address": {
-      "type": "richtext",
-      "required": true
-    },
     "contact_number": {
       "type": "string"
     },
@@ -36,12 +30,32 @@
       "unique": true,
       "required": true
     },
-    "streams": {
-      "collection": "stream"
-    },
     "principal": {
       "plugin": "users-permissions",
       "model": "user"
+    },
+    "district": {
+      "model": "district"
+    },
+    "blocked": {
+      "type": "boolean",
+      "default": false
+    },
+    "stream_strength": {
+      "type": "component",
+      "repeatable": true,
+      "component": "college-stream-strength.streams-strength"
+    },
+    "zone": {
+      "model": "zone"
+    },
+    "tpos": {
+      "plugin": "users-permissions",
+      "collection": "user"
+    },
+    "address": {
+      "type": "text",
+      "required": true
     }
   }
 }

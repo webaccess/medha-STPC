@@ -538,8 +538,12 @@
           "activity": {
             "required": [
               "id",
-              "address",
-              "age"
+              "title",
+              "activity_type",
+              "start_date_time",
+              "end_date_time",
+              "age",
+              "address"
             ],
             "properties": {
               "id": {
@@ -557,22 +561,16 @@
               "college": {
                 "type": "string"
               },
-              "start_datetime": {
+              "start_date_time": {
                 "type": "datetime"
               },
-              "end_datetime": {
+              "end_date_time": {
                 "type": "datetime"
               },
               "education_year": {
                 "type": "string"
               },
               "streams": {
-                "type": "string"
-              },
-              "address": {
-                "type": "string"
-              },
-              "description": {
                 "type": "string"
               },
               "upload_logo": {
@@ -586,16 +584,22 @@
               },
               "question_set": {
                 "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
               }
             }
           },
           "name": {
             "type": "string"
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           }
         }
@@ -608,10 +612,10 @@
           "name": {
             "type": "string"
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           }
         }

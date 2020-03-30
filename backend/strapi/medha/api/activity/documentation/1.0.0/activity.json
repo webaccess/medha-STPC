@@ -517,8 +517,12 @@
       "Activity": {
         "required": [
           "id",
-          "address",
-          "age"
+          "title",
+          "activity_type",
+          "start_date_time",
+          "end_date_time",
+          "age",
+          "address"
         ],
         "properties": {
           "id": {
@@ -537,7 +541,10 @@
           },
           "academic_year": {
             "required": [
-              "id"
+              "id",
+              "name",
+              "start_date",
+              "end_date"
             ],
             "properties": {
               "id": {
@@ -546,29 +553,27 @@
               "name": {
                 "type": "string"
               },
-              "startDate": {
-                "type": "string"
+              "start_date": {
+                "type": "datetime"
               },
-              "endDate": {
-                "type": "string"
+              "end_date": {
+                "type": "datetime"
               }
             }
           },
           "college": {
             "required": [
               "id",
+              "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
               "name": {
-                "type": "string"
-              },
-              "admins": {
                 "type": "string"
               },
               "rpc": {
@@ -577,27 +582,39 @@
               "college_code": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "contact_number": {
                 "type": "string"
               },
               "college_email": {
                 "type": "string"
               },
-              "streams": {
+              "principal": {
                 "type": "string"
               },
-              "principal": {
+              "district": {
+                "type": "string"
+              },
+              "blocked": {
+                "type": "boolean"
+              },
+              "stream_strength": {
+                "type": "component"
+              },
+              "zone": {
+                "type": "string"
+              },
+              "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           },
           "education_year": {
@@ -611,7 +628,8 @@
           },
           "streams": {
             "required": [
-              "id"
+              "id",
+              "name"
             ],
             "properties": {
               "id": {
@@ -621,12 +639,6 @@
                 "type": "string"
               }
             }
-          },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
           },
           "upload_logo": {
             "required": [
@@ -711,13 +723,23 @@
                 }
               }
             }
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
           }
         }
       },
       "NewActivity": {
         "required": [
-          "address",
-          "age"
+          "title",
+          "activity_type",
+          "start_date_time",
+          "end_date_time",
+          "age",
+          "address"
         ],
         "properties": {
           "title": {
@@ -737,10 +759,10 @@
           "college": {
             "type": "string"
           },
-          "start_datetime": {
+          "start_date_time": {
             "type": "datetime"
           },
-          "end_datetime": {
+          "end_date_time": {
             "type": "datetime"
           },
           "education_year": {
@@ -755,12 +777,6 @@
           "streams": {
             "type": "string"
           },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
           "age": {
             "type": "integer"
           },
@@ -768,6 +784,12 @@
             "type": "string"
           },
           "question_set": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           }
         }
