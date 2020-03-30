@@ -124,6 +124,10 @@ const useStyles = makeStyles(theme => ({
     color: "#21abdc",
     fontSize: "0.8rem",
     textAlign: "right"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 
