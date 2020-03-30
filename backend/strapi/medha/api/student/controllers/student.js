@@ -379,5 +379,73 @@ module.exports = {
       response = response.filter(ah => ah.id === parseInt(academicHistoryId));
     }
     return utils.getFindOneResponse(response);
+  },
+
+  /**
+   *
+   * @param {ids} ctx
+   * This will unapprove single or multiple students
+   */
+  async unapprove(ctx) {
+    const { ids } = ctx.request.body;
+    let idsToUnApprove;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToUnApprove = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToUnApprove = ids;
+    }
+
+    if (!idsToUnApprove.length) {
+      return ctx.response.badRequest("Student Ids are empty");
+    }
+
+    await strapi
+      .query("student")
+      .model.query(qb => {
+        qb.whereIn("id", idsToUnApprove);
+      })
+      .save({ verifiedByCollege: false }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
+  },
+
+  /**
+   *
+   * @param {ids} ctx
+   * This will approve single or multiple students
+   */
+  async approve(ctx) {
+    const { ids } = ctx.request.body;
+    let idsToApprove;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToApprove = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToApprove = ids;
+    }
+
+    if (!idsToApprove.length) {
+      return ctx.response.badRequest("Student Ids are empty");
+    }
+
+    await strapi
+      .query("student")
+      .model.query(qb => {
+        qb.whereIn("id", idsToApprove);
+      })
+      .save({ verifiedByCollege: true }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
   }
 };
