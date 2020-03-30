@@ -77,13 +77,10 @@ const ManageStudents = props => {
         // [SORT_FIELD_KEY]: "username:asc"
       };
     }
-    console.log("paramsForUsers",paramsForUsers)
     serviceProviders
       .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
       .then(res => {
-        console.log("studentres",res.data.length)
         if(res.data.length){
-          console.log("dfnkjgd");
           let tempStudentData = [];
           let student_data = res.data;
           tempStudentData = convertStudentData(student_data);
@@ -92,7 +89,6 @@ const ManageStudents = props => {
             student: tempStudentData
           }));
         }else {
-          console.log("zero");
           setFormState(formState => ({
             ...formState,
             student: res.data.length
@@ -247,7 +243,6 @@ const ManageStudents = props => {
   };
 
   const handleFilterChange = event => {
-    console.log("handleFilterChange", event.target.name, event.target.value);
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 

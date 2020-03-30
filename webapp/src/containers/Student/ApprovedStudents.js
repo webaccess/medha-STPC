@@ -20,7 +20,6 @@ const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
 
 const ApprovedStudents = props => {
-  console.log("APPROVED",props)
   const [open, setOpen] = React.useState(false);
   const[username, setUsername] = useState([]);
   const [formState, setFormState] = useState({
@@ -31,9 +30,7 @@ const ApprovedStudents = props => {
   });
 
   if(props.id){
-    console.log("tsihdxcfj",props.id)
     serviceProviders.serviceProviderForGetOneRequest(STUDENTS_URL, props.id).then(res=>{
-      console.log("res.data",res.data.user.username);
       setUsername(res.data.user.username)
     })
     .catch(error => {
@@ -41,9 +38,6 @@ const ApprovedStudents = props => {
     })
   }
 
-  // useEffect(() => {
-   
-  // }, []);
 
   const handleCloseModal = () => {
     setFormState(formState => ({
@@ -69,20 +63,45 @@ const ApprovedStudents = props => {
   };
 
   const ApprovedStudent = () => {
-    var body;
-    if (props.Data === true || props.isUnMulBlocked === true) {
-      body = {
-        verifiedByCollege: false
+    var approve_url;
+    var paramsId ;
+    if (props.Data === true ) {
+      approve_url =  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/unapprove"  ;
+      paramsId = {
+        ids: parseInt(props.id) 
       };
-    } else if (props.Data === false || props.isMulBlocked === true) {
-      body = {
-        verifiedByCollege: true
+    } 
+    if(props.Data === false){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/approve"  ;
+      paramsId = {
+        ids: parseInt(props.id) 
       };
     }
-
-    if (props.isMulBlocked || props.isUnMulBlocked) {
-      serviceProviders
-        .serviceProviderForAllBlockRequest(STUDENTS_URL, props.id, body)
+    if(props.isMulBlocked === true ){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/approve"  ;
+      for(var i=0 ; i<props.id.length;i++){
+        paramsId = {
+          ids: parseInt(props.id[i]) 
+        };
+        serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
+        .then(res => {
+          formState.isDataBlock = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          formState.isDataBlock = false;
+          handleCloseModal();
+        });
+      }
+   
+    }
+    if(props.isUnMulBlocked === true){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/unapprove"  ;
+      for(var i=0 ; i<props.id.length;i++){
+        paramsId = {
+          ids: parseInt(props.id[i]) 
+        };
+        serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
         .then(res => {
           formState.isDataBlock = true;
           handleCloseModal();
@@ -92,20 +111,20 @@ const ApprovedStudents = props => {
           formState.isDataBlock = false;
           handleCloseModal();
         });
-    } else {
-      serviceProviders
-        .serviceProviderForPutRequest(STUDENTS_URL, props.id, body)
-        .then(res => {
-          formState.isDataBlock = true;
-          handleCloseModal();
-        })
-        .catch(error => {
-          console.log("error", error);
-          formState.isDataBlock = false;
-          handleCloseModal();
-        });
+      }
     }
-    console.log("approvedBody",body);
+
+    serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
+    .then(res => {
+      formState.isDataBlock = true;
+      handleCloseModal();
+    })
+    .catch(error => {
+      console.log("error---", error);
+      formState.isDataBlock = false;
+      handleCloseModal();
+    });
+  
   };
 
   const classes = useStyles();
