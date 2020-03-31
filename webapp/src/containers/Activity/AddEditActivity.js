@@ -361,11 +361,17 @@ const AddEditActivity = props => {
             ? "0" + (selectedDateFrom.getMonth() + 1)
             : selectedDateFrom.getMonth() + 1) +
           "-" +
-          selectedDateTo.getDate() +
+          (selectedDateTo.getDate() < 9
+            ? "0" + selectedDateTo.getDate()
+            : selectedDateTo.getDate()) +
           "T" +
-          selectedDateTo.getHours() +
+          (selectedDateTo.getHours() < 9
+            ? "0" + selectedDateTo.getHours()
+            : selectedDateTo.getHours()) +
           ":" +
-          selectedDateTo.getMinutes(),
+          (selectedDateTo.getMinutes() < 9
+            ? "0" + selectedDateTo.getMinutes()
+            : selectedDateTo.getMinutes()),
         formState.values["educationyear"],
         formState.values["address"],
         formState.values["description"],
