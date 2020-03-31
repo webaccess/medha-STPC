@@ -24,6 +24,12 @@ import { useHistory } from "react-router-dom";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "./Styles.css";
+import { EditorState, convertToRaw } from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 
 const eventName = "eventName";
 const description = "description";
@@ -57,6 +63,9 @@ const DOCUMENT_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD;
 
 const AddEditEvent = props => {
+  const [editorState, setEditorState] = React.useState(
+    EditorState.createEmpty()
+  );
   const classes = useStyles();
   const history = useHistory();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -74,8 +83,6 @@ const AddEditEvent = props => {
     files: {}
   });
 
-  console.log("eventdara", formState.values);
-
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
@@ -83,8 +90,6 @@ const AddEditEvent = props => {
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
-    console.log("data1", props["dataForEdit"]);
-
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
         formState.values[eventName] = props["dataForEdit"]["title"];
@@ -372,9 +377,7 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                 </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={12} xs={12}>
-                    <TextField
+                {/* <TextField
                       label={get(EventSchema[description], "label")}
                       id={get(EventSchema[description], "id")}
                       name={description}
@@ -393,7 +396,27 @@ const AddEditEvent = props => {
                             })
                           : null
                       }
-                    />
+                    /> */}
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    <div className="rdw-storybook-root">
+                      <Editor
+                        editorState={editorState}
+                        toolbarClassName="rdw-storybook-toolbar"
+                        wrapperClassName="rdw-storybook-wrapper"
+                        editorClassName="rdw-storybook-editor"
+                        onEditorStateChange={data => {
+                          console.log(editorState.getCurrentContent());
+                          setEditorState(data);
+                        }}
+                      />
+                      <textarea
+                        disabled
+                        value={draftToHtml(
+                          convertToRaw(editorState.getCurrentContent())
+                        )}
+                      />
+                    </div>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>

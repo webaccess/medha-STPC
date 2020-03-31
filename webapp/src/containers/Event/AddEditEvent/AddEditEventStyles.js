@@ -57,6 +57,10 @@ const useStyles = makeStyles(theme => ({
   },
   MarginBottom: {
     marginBottom: "10px"
+  },
+  toolbarMargin: {
+    marginTop: theme.spacing(2),
+    border: "1px solid"
   }
 }));
 export default useStyles;
