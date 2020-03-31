@@ -755,6 +755,32 @@
                 "type": "string"
               }
             }
+          },
+          "question_set": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "questions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "activities": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -795,6 +821,9 @@
             "type": "number"
           },
           "qualification": {
+            "type": "string"
+          },
+          "question_set": {
             "type": "string"
           }
         }

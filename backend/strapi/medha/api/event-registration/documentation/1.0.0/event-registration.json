@@ -580,6 +580,9 @@
               },
               "qualification": {
                 "type": "string"
+              },
+              "question_set": {
+                "type": "string"
               }
             }
           },

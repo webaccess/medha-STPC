@@ -49,6 +49,9 @@
     },
     "qualification": {
       "model": "qualifications"
+    },
+    "question_set": {
+      "model": "question-set"
     }
   }
 }
