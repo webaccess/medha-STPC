@@ -54,10 +54,6 @@
       "plugin": "upload",
       "required": false
     },
-    "age": {
-      "type": "integer",
-      "required": true
-    },
     "trainer_name": {
       "type": "string"
     },

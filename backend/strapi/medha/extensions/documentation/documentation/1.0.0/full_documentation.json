@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "03/20/2020 11:45:26 AM"
+    "x-generation-date": "03/30/2020 11:36:19 AM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -13705,7 +13705,6 @@
               "activity_type",
               "start_date_time",
               "end_date_time",
-              "age",
               "address"
             ],
             "properties": {
@@ -13738,9 +13737,6 @@
               },
               "upload_logo": {
                 "type": "string"
-              },
-              "age": {
-                "type": "integer"
               },
               "trainer_name": {
                 "type": "string"
@@ -13790,7 +13786,6 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "age",
           "address"
         ],
         "properties": {
@@ -13955,9 +13950,6 @@
               }
             }
           },
-          "age": {
-            "type": "integer"
-          },
           "trainer_name": {
             "type": "string"
           },
@@ -14007,7 +13999,6 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "age",
           "address"
         ],
         "properties": {
@@ -14045,9 +14036,6 @@
           },
           "streams": {
             "type": "string"
-          },
-          "age": {
-            "type": "integer"
           },
           "trainer_name": {
             "type": "string"
@@ -14930,7 +14918,6 @@
               "activity_type",
               "start_date_time",
               "end_date_time",
-              "age",
               "address"
             ],
             "properties": {
@@ -14963,9 +14950,6 @@
               },
               "upload_logo": {
                 "type": "string"
-              },
-              "age": {
-                "type": "integer"
               },
               "trainer_name": {
                 "type": "string"
@@ -15222,7 +15206,6 @@
                 "activity_type",
                 "start_date_time",
                 "end_date_time",
-                "age",
                 "address"
               ],
               "properties": {
@@ -15255,9 +15238,6 @@
                 },
                 "upload_logo": {
                   "type": "string"
-                },
-                "age": {
-                  "type": "integer"
                 },
                 "trainer_name": {
                   "type": "string"

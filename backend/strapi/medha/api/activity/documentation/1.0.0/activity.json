@@ -521,7 +521,6 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "age",
           "address"
         ],
         "properties": {
@@ -686,9 +685,6 @@
               }
             }
           },
-          "age": {
-            "type": "integer"
-          },
           "trainer_name": {
             "type": "string"
           },
@@ -738,7 +734,6 @@
           "activity_type",
           "start_date_time",
           "end_date_time",
-          "age",
           "address"
         ],
         "properties": {
@@ -776,9 +771,6 @@
           },
           "streams": {
             "type": "string"
-          },
-          "age": {
-            "type": "integer"
           },
           "trainer_name": {
             "type": "string"
