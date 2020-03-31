@@ -1,28 +1,38 @@
 import React, { useState, useEffect } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import { green } from "@material-ui/core/colors";
+import CloseIcon from "@material-ui/icons/Close";
+
 import {
   Auth as auth,
   Spinner,
   GreenButton,
-  YellowButton
+  YellowButton,
+  Alert
 } from "../../../components";
 import {
   Card,
   CardContent,
   Grid,
   Divider,
-  Typography
+  Typography,
+  IconButton,
+  Collapse
 } from "@material-ui/core";
 import useStyles from "./EventDetailsStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
 import RegisterEvent from "./EventRegistration";
 
 const EligibleEvents = props => {
   const history = useHistory();
+  const [open, setOpen] = useState(true);
+
   const classes = useStyles();
   const [formState, setFormState] = useState({
     eventDetails: {},
@@ -31,7 +41,7 @@ const EligibleEvents = props => {
     showRegisterModel: false,
     registerUserId: "",
     eventtitle: "",
-    isDataDeleted: false,
+    isStudentRegister: false,
     authUserRegistering: auth.getUserInfo().id
   });
   useEffect(() => {
@@ -133,8 +143,8 @@ const EligibleEvents = props => {
     }));
   };
 
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
+  const isRegistrationCompleted = status => {
+    formState.isStudentRegister = status;
   };
 
   const modalClose = () => {
@@ -142,12 +152,17 @@ const EligibleEvents = props => {
       ...formState,
       showRegisterModel: false
     }));
-    if (formState.isDataDeleted) {
-      setFormState(formState => ({
-        ...formState,
-        showRegisterModel: false
-      }));
-    }
+    // if (formState.isDataDeleted) {
+    //   getEventDetails();
+    // }
+  };
+
+  const handleCloseBlockModal = () => {
+    /** This restores all the data when we close the modal */
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: false
+    }));
   };
 
   return (
@@ -158,12 +173,38 @@ const EligibleEvents = props => {
         </Typography>
       </Grid>
       <Grid item xs={12}>
+        {formState.isStudentRegister ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_STUDENT_REGISTRATION}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Grid container justify="center" spacing={3}>
           {formState.eventDetails.length ? (
             formState.eventDetails.map(data => {
               return (
                 <Grid key={data.id} item md={4} xs={12}>
                   <Card className={classes.cardHeight}>
+                    {formState.isStudentRegister ? (
+                      <IconButton aria-label="add to favorites">
+                        <CheckCircleIcon style={{ color: green[500] }} />
+                      </IconButton>
+                    ) : null}
                     <CardContent>
                       {data["upload_logo"] !== null &&
                       data["upload_logo"] !== undefined &&
@@ -295,10 +336,11 @@ const EligibleEvents = props => {
           <RegisterEvent
             showModal={formState.showRegisterModel}
             modalClose={modalClose}
+            closeBlockModal={handleCloseBlockModal}
             eventName={formState.registerUserId}
             eventTitle={formState.eventtitle}
             userRegistering={formState.authUserRegistering}
-            registerEvent={isDeleteCellCompleted}
+            statusRegistartion={isRegistrationCompleted}
           />
         </Card>
       </Grid>

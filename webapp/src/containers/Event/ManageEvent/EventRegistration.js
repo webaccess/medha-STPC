@@ -59,15 +59,13 @@ const RegisterEvent = props => {
       ...formState,
       values: {},
       isStudentRegistered: false,
-      isValid: false,
-      stateCounter: 0
     }));
-
     if (formState.isStudentRegistered) {
-      props.deleteEvent(true);
+      props.statusRegistartion(true);
     } else {
-      props.deleteEvent(false);
+      props.statusRegistartion(false);
     }
+    props.closeBlockModal();
   };
 
   const classes = useStyles();
