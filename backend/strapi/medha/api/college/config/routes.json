@@ -17,6 +17,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/colleges/unblock",
+      "handler": "college.unblock",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/colleges/:id/students",
       "handler": "college.showStudents",
