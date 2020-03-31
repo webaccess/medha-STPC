@@ -529,7 +529,6 @@
               "activity_type",
               "start_date_time",
               "end_date_time",
-              "age",
               "address",
               "description"
             ],
@@ -563,9 +562,6 @@
               },
               "upload_logo": {
                 "type": "string"
-              },
-              "age": {
-                "type": "integer"
               },
               "trainer_name": {
                 "type": "string"
