@@ -19,7 +19,8 @@ const useStyles = makeStyles(theme => ({
   },
   formgrid: {
     marginTop: theme.spacing(0),
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: "10px"
   },
   divider: {
     marginTop: "15px",
@@ -99,6 +100,16 @@ const useStyles = makeStyles(theme => ({
   },
   CardActionGrid: {
     backgroundColor: "#EEEEEE"
+  },
+  CardActionGrid: {
+    backgroundColor: "#EEEEEE"
+  },
+  MarginBottom: {
+    marginBottom: "10px"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 export default useStyles;

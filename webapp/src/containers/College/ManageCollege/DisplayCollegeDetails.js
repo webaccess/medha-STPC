@@ -7,17 +7,19 @@ import {
   CardContent,
   CardActions,
   Grid,
-  TableContainer,
-  Paper,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell
+  Divider,
+  InputLabel,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import useStyles from "./DisplayCollegeDetailsStyle";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
-import { YellowButton, GrayButton } from "../../../components";
+import {
+  YellowButton,
+  GrayButton,
+  ReadOnlyTextField
+} from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 
 const CollegeName = "College name";
@@ -33,12 +35,14 @@ const Principal = "Principal";
 const Streams = "Stream";
 const Strength = "Strength";
 const StreamNotPresent = "Stream and data not present";
+
 const DisplayCollegeDetails = props => {
   const history = useHistory();
   const classes = useStyles();
   const COLLEGE_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
   const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     collegeDetails: [],
     streams: []
@@ -59,6 +63,7 @@ const DisplayCollegeDetails = props => {
       };
     }
     if (paramsForCollege.id !== undefined) {
+      setOpen(true);
       await serviceProviders
         .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
         .then(res => {
@@ -67,9 +72,11 @@ const DisplayCollegeDetails = props => {
             ...formState,
             collegeDetails: viewData
           }));
+          setOpen(false);
         })
         .catch(error => {
           console.log("error", error);
+          setOpen(false);
         });
     } else {
       history.push({
@@ -87,163 +94,199 @@ const DisplayCollegeDetails = props => {
   };
 
   return (
-    <Grid className={classes.root}>
+    <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          View College
+          {genericConstants.VIEW_COLLEGE_TEXT}
         </Typography>
       </Grid>
       <Grid spacing={3}>
-        {formState.collegeDetails ? (
-          <form>
-            <Card>
-              <Grid item xs={12} md={6} xl={3}>
-                <CardContent>
-                  <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {CollegeName}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.name}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {CollegeCode}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.college_code}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {CollegeAddress}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.address}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {State}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.state &&
-                              formState.collegeDetails.state.name}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {District}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.district &&
-                              formState.collegeDetails.district.name}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {Zone}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.zone &&
-                              formState.collegeDetails.zone.name}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {RPCName}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.rpc &&
-                              formState.collegeDetails.rpc.name}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {ContactNumber}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.contact_number}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {Email}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.college_email}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.CellHeader}>
-                            {Principal}
-                          </TableCell>
-                          <TableCell className={classes.CellValue}>
-                            {formState.collegeDetails.principal &&
-                              formState.collegeDetails.principal.username}
-                          </TableCell>
-                        </TableRow>
-                        {formState.collegeDetails.stream_strength ? (
-                          <div>
-                            <TableRow>
-                              <TableCell className={classes.CellHeader}>
-                                Stream And Strength
-                              </TableCell>
-                              <TableCell
-                                className={classes.CellValue}
-                              ></TableCell>
-                            </TableRow>
-                            {formState.collegeDetails.stream_strength.map(
-                              value => (
-                                <TableRow>
-                                  <TableCell className={classes.CellHeader}>
-                                    {value.stream.name}
-                                  </TableCell>
-                                  <TableCell className={classes.CellValue}>
-                                    {value.strength}
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            )}
-                          </div>
-                        ) : (
-                          <p>{StreamNotPresent}</p>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </CardContent>
+        <Card>
+          <CardContent>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="CollegeName"
+                    label={CollegeName}
+                    defaultValue={formState.collegeDetails.name}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="CollegeCode"
+                    label={CollegeCode}
+                    defaultValue={formState.collegeDetails.college_code}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12} className={classes.CardActionGrid}>
-                <CardActions className={classes.btnspace}>
-                  <YellowButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    onClick={editData}
-                    className={classes.submitbtn}
-                  >
-                    {genericConstants.EDIT_TEXT}
-                  </YellowButton>
-                  {auth.getUserInfo().role.name !== "College Admin" ? (
-                    <GrayButton
-                      color="primary"
-                      variant="contained"
-                      to={routeConstants.VIEW_COLLEGE}
-                      className={classes.resetbtn}
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="Email"
+                    label={Email}
+                    defaultValue={formState.collegeDetails.college_email}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="State"
+                    label={State}
+                    defaultValue={
+                      formState.collegeDetails.state &&
+                      formState.collegeDetails.state.name
+                    }
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="Zone"
+                    label={Zone}
+                    defaultValue={
+                      formState.collegeDetails.zone &&
+                      formState.collegeDetails.zone.name
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="RPCName"
+                    label={RPCName}
+                    defaultValue={
+                      formState.collegeDetails.rpc &&
+                      formState.collegeDetails.rpc.name
+                    }
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="District"
+                    label={District}
+                    defaultValue={
+                      formState.collegeDetails.district &&
+                      formState.collegeDetails.district.name
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="CollegeAddress"
+                    label={CollegeAddress}
+                    defaultValue={formState.collegeDetails.address}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="ContactNumber"
+                    label={ContactNumber}
+                    defaultValue={formState.collegeDetails.contact_number}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="Principal"
+                    label={Principal}
+                    defaultValue={
+                      formState.collegeDetails.principal &&
+                      formState.collegeDetails.principal.username
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}></Grid>
+                <Grid item md={6} xs={12}></Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={1} className={classes.formgrid}>
+                <Grid item md={12} xs={12} className={classes.streamcard}>
+                  <Card className={classes.streamoffer}>
+                    <InputLabel
+                      htmlFor="outlined-stream-card"
+                      fullwidth={true.toString()}
+                      className={classes.CssLabelStyling}
                     >
-                      {genericConstants.CANCEL_BUTTON_TEXT}
-                    </GrayButton>
-                  ) : null}
-                </CardActions>
+                      {genericConstants.STREAMS_OFFERED_TEXT}
+                    </InputLabel>
+                    {formState.collegeDetails.stream_strength ? (
+                      <Card
+                        id="outlined-stream-card"
+                        fullwidth={true.toString()}
+                        className={classes.streamcardcontent}
+                      >
+                        {formState.collegeDetails.stream_strength.map(value => (
+                          <div>
+                            <CardContent>
+                              <Grid container spacing={1}>
+                                <Grid item xs={6}>
+                                  <ReadOnlyTextField
+                                    id={"stream-" + value.stream.name}
+                                    label="Stream"
+                                    defaultValue={value.stream.name}
+                                  />
+                                </Grid>
+
+                                <Grid item xs={6}>
+                                  <ReadOnlyTextField
+                                    id={"trength" + value.strength}
+                                    label="Strength"
+                                    defaultValue={value.strength}
+                                  />
+                                </Grid>
+                              </Grid>
+                            </CardContent>
+                            <Divider className={classes.divider} />
+                          </div>
+                        ))}
+                      </Card>
+                    ) : (
+                      <p>{StreamNotPresent}</p>
+                    )}
+                  </Card>
+                </Grid>
               </Grid>
-            </Card>
-          </form>
-        ) : null}
+            </Grid>
+            <Backdrop className={classes.backdrop} open={open}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
+          </CardContent>
+          <Grid item xs={12} className={classes.CardActionGrid}>
+            <CardActions className={classes.btnspace}>
+              <YellowButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                onClick={editData}
+                className={classes.submitbtn}
+              >
+                {genericConstants.EDIT_TEXT}
+              </YellowButton>
+              {auth.getUserInfo().role.name !== "College Admin" ? (
+                <GrayButton
+                  color="primary"
+                  variant="contained"
+                  to={routeConstants.VIEW_COLLEGE}
+                  className={classes.resetbtn}
+                >
+                  {genericConstants.CANCEL_BUTTON_TEXT}
+                </GrayButton>
+              ) : null}
+            </CardActions>
+          </Grid>
+        </Card>
       </Grid>
     </Grid>
   );

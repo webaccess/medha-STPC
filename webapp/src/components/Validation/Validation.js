@@ -65,6 +65,12 @@ const validation = (value, inputValidations = {}, type = "text") => {
           errors.push(validationValue.message);
         }
         break;
+      case "validateOtpForForgotPassword":
+        //change the value and condition for length after length of otp is decided
+        if (value.length !== 0 && value.length < validationValue.value) {
+          errors.push(validationValue.message);
+        }
+        break;
       case "validateConfirmNewPassword":
         if (value !== validationValue.value) {
           errors.push(validationValue.message);

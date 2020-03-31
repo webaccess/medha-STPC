@@ -609,7 +609,7 @@ const AddEditActivity = props => {
         <Typography variant="h4" gutterBottom>
           {formState.editActivity
             ? genericConstants.EDIT_STUDENT_PROFILE
-            : genericConstants.ADD_ACTIVITY}
+            : genericConstants.ADD_ACTIVITY_TEXT}
         </Typography>
         {isFailed && formState.editActivity ? (
           <Collapse in={isFailed}>

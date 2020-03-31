@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import moment from "moment";
 import {
   TextField,
   Card,
@@ -51,9 +52,11 @@ const ViewEvents = props => {
     selectedRowFilter: true,
     MultiDeleteID: [],
     filterDataParameters: {},
+    isClearResetFilter: false,
     isFilterSearch: false,
     startDate: new Date(),
     endDate: new Date(),
+    texttvalue: "",
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -185,7 +188,6 @@ const ViewEvents = props => {
       await getEventData(perPage, page, formState.filterDataParameters);
     }
   };
-
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
@@ -195,8 +197,11 @@ const ViewEvents = props => {
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true
+      isClearResetFilter: true,
+      isDataLoading: true,
+      texttvalue: ""
     }));
+
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
@@ -226,6 +231,10 @@ const ViewEvents = props => {
 
   const handleFilterChange = event => {
     formState.filterDataParameters[event.target.name] = event.target.value;
+    setFormState(formState => ({
+      ...formState,
+      texttvalue: event.target.value
+    }));
   };
 
   const handleStartDateChange = date => {
@@ -242,6 +251,17 @@ const ViewEvents = props => {
       ...formState,
       endDate: date.target.value
     }));
+  };
+
+  const focousOut = date => {
+    let clearDate = (date.target.value = null);
+    if (formState.isClearResetFilter) {
+      setFormState(formState => ({
+        ...formState,
+        startDate: clearDate,
+        endDate: clearDate
+      }));
+    }
   };
 
   /** This is used to handle the close modal event */
@@ -272,10 +292,12 @@ const ViewEvents = props => {
   };
 
   const deleteCell = event => {
-    let dataId = event.target.id;
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: dataId },
+      dataToDelete: {
+        id: event.target.id,
+        name: event.target.getAttribute("value")
+      },
       showEditModal: false,
       showModalDelete: true
     }));
@@ -343,6 +365,7 @@ const ViewEvents = props => {
           <i
             className="material-icons"
             id={cell.id}
+            value={cell.name}
             onClick={viewCell}
             style={{ color: "green", fontSize: "19px" }}
           >
@@ -406,6 +429,7 @@ const ViewEvents = props => {
           <i
             className="material-icons"
             id={cell.id}
+            value={cell.title}
             onClick={deleteCell}
             style={{ color: "red" }}
           >
@@ -422,7 +446,7 @@ const ViewEvents = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Event
+          Manage Events
         </Typography>
 
         <GreenButton
@@ -433,7 +457,7 @@ const ViewEvents = props => {
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Delete Selected User
+          Delete Selected Event
         </GreenButton>
 
         <GreenButton
@@ -500,6 +524,7 @@ const ViewEvents = props => {
                   placeholder="Event"
                   variant="outlined"
                   name={EVENT_FILTER}
+                  value={formState.texttvalue}
                   onChange={handleFilterChange}
                 />
               </Grid>
@@ -511,6 +536,7 @@ const ViewEvents = props => {
                   value={formState.startDate}
                   name={START_DATE_FILTER}
                   onChange={handleStartDateChange}
+                  onBlur={focousOut}
                 />
               </Grid>
               <Grid item>
@@ -521,6 +547,7 @@ const ViewEvents = props => {
                   value={formState.endDate}
                   name={END_DATE_FILTER}
                   onChange={handleEndDateChange}
+                  onBlur={focousOut}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
@@ -540,7 +567,7 @@ const ViewEvents = props => {
                 <GrayButton
                   variant="contained"
                   color="primary"
-                  //onClick={refreshPage}
+                  onClick={clearFilter}
                   disableElevation
                 >
                   Reset
@@ -589,6 +616,7 @@ const ViewEvents = props => {
               deleteEvent={isDeleteCellCompleted}
               modalClose={modalClose}
               userName={formState.userNameDelete}
+              dataToDelete={formState.dataToDelete}
             />
           )}
         </Card>

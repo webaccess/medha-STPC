@@ -4,7 +4,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%"
   },
   btnspace: {
-    padding: "15px 18px 50px"
+    padding: "20px 18px 20px"
   },
   btnspaceadd: {
     padding: "0px 15px 15px"
@@ -17,7 +17,8 @@ const useStyles = makeStyles(theme => ({
   },
   formgrid: {
     marginTop: theme.spacing(0),
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: "10px"
   },
   divider: {
     marginTop: "15px",
@@ -30,23 +31,16 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid #ccc",
     borderRadius: "5px",
     padding: "15px !important",
-    margin: "15px",
-    position: "relative",
-    "& label": {
-      position: "absolute",
-      top: "-8px",
-      backgroundColor: "#fff"
-    }
+    marginTop: "15px",
+    marginLeft: "4px",
+    position: "relative"
   },
   streamoffer: {
-    paddingLeft: "15px",
-    paddingRight: "15px",
     borderRadius: "0px",
     boxShadow: "none !important"
   },
   streamcardcontent: {
     boxShadow: "none",
-    borderBottom: "1px solid #ccc",
     marginBottom: "15px",
     borderRadius: "0px"
   },
@@ -92,7 +86,7 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     display: "flex",
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
     "& h4": {
       flex: "1",
       fontWeight: "700"
@@ -100,6 +94,18 @@ const useStyles = makeStyles(theme => ({
   },
   CardActionGrid: {
     backgroundColor: "#EEEEEE"
+  },
+  MarginBottom: {
+    marginBottom: "10px"
+  },
+  CssLabelStyling: {
+    position: "absolute",
+    top: "-8px",
+    backgroundColor: "#fff"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 export default useStyles;

@@ -2,20 +2,12 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    // padding: theme.spacing(4)
     maxWidth: "100%"
   },
   content: {
     display: "content"
   },
-  filterOptions: {
-    // marginTop: theme.spacing(3)
-  },
-  filterMargin: {
-    // margin: theme.spacing(3)
-  },
   filterButtonsMargin: {
-    // margin: theme.spacing(0.5)
     alignSelf: "center",
     marginLeft: "10px"
   },
@@ -24,18 +16,42 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center"
   },
+  edit_dialog: {
+    padding: "15px 15px"
+  },
+  deletemessage: {
+    flex: "inherit",
+    fontSize: "14px",
+    paddingBottom: "18px !important"
+  },
+  blockpanel: {
+    display: "flex",
+    position: "relative",
+    "& h2": {
+      flexGrow: "1"
+    }
+  },
+  crossbtn: {
+    position: "absolute",
+    top: "-7px",
+    right: "-7px",
+    padding: "0px",
+    color: "#fff"
+  },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "primary",
-    boxShadow: theme.shadows[5],
-    marginBottom: theme.spacing(3)
-    // padding: theme.spacing(2, 4, 3)
+    border: "primary"
   },
   tabledata: {
     marginTop: theme.spacing(3)
   },
   textMargin: {
-    margin: "10px"
+    margin: "0px",
+    backgroundColor: "#000",
+    color: "#fff",
+    fontSize: "16px",
+    paddingLeft: "8px",
+    width: "100%"
   },
   autoCompleteField: {
     width: 200
@@ -49,12 +65,14 @@ const useStyles = makeStyles(theme => ({
     "& h4": {
       flex: "1",
       fontWeight: "700"
-    },
-    flexDirection: "row-reverse",
-    marginTop: "8px"
+    }
   },
   Cardtheming: {
     paddingBottom: "16px !important"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 

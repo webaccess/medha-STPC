@@ -12,6 +12,8 @@ import {
   DefaultRoute
 } from "./authroute";
 
+import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
+
 import Dashboard from "./containers/Dashboard/Dashboard";
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
 import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
@@ -50,15 +52,14 @@ import AddDocument from "./containers/Student/Document/AddEditDocument";
 import SetIndexContext from "./context/SetIndexContext";
 import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
 import ManageStudents from "./containers/Student/ManageStudents";
-import ViewActivity from "./containers/Activity/ViewActivity.js";
-import AddEditActivity from "./containers/Activity/AddEditActivity";
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
 import EventDetails from "./containers/Event/ManageEvent/EventDetails";
 import EditEventRoute from "./authroute/EditEventRoutes";
 import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
-
+import ViewActivity from "./containers/Activity/ViewActivity.js";
+import AddEditActivity from "./containers/Activity/AddEditActivity";
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -68,13 +69,13 @@ function App() {
         <Router>
           <div>
             <Switch>
-              <PrivateRoute
-                path={routeConstants.DASHBOARD_URL}
+              <DefaultRoute
+                path={routeConstants.DEFAULT_URL}
                 component={Dashboard}
                 exact
               />
-              <DefaultRoute
-                path={routeConstants.DEFAULT_URL}
+              <PrivateRoute
+                path={routeConstants.DASHBOARD_URL}
                 component={Dashboard}
                 exact
               />
@@ -135,42 +136,43 @@ function App() {
                 exact
               />
               {/**View Student Profile  */}
-              <RouteWithLayout
+
+              <RouteWithTabLayout
                 component={StudentProfile}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_PROFILE}
               />
               {/**Education */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_EDUCATION}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_EDUCATION}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={EditEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_EDUCATION}
               />
               {/**Student document */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewDocument}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_DOCUMENTS}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddDocument}
                 exact
                 layout={Layout}
@@ -188,31 +190,45 @@ function App() {
                 component={AddEditActivity}
                 exact
                 layout={Layout}
-                path={routeConstants.CREATE_ACTIVITY}
+                path={routeConstants.ADD_ACTIVITY}
               />
 
               {/**Student Academic history */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewAcademicHistory}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_ACADEMIC_HISTORY}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddEditAcademicHistory}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ACADEMIC_HISTORY}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={EditAcademicHistoryRoute}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_ACADEMIC_HISTORY}
               />
 
+              {/**View Activity */}
+              <RouteWithLayout
+                component={ViewActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY}
+              />
+              {/**Add Edit Activity */}
+              <RouteWithLayout
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.CREATE_ACTIVITY}
+              />
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout

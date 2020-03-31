@@ -560,7 +560,7 @@ const Adduser = props => {
                   </Grid>
                 </Grid>
               </Grid>
-              {/* <Divider className={classes.divider} /> */}
+              <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
@@ -630,7 +630,7 @@ const Adduser = props => {
               </Grid>
               <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
-                <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id="combo-box-demo"

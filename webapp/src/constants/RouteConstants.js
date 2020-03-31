@@ -64,8 +64,12 @@ export const EDIT_RPC = "/edit-rpc";
 export const MANAGE_STUDENT = "/manage-student";
 
 /**Event's */
-export const MANAGE_EVENT = "/manage-event";
+export const MANAGE_EVENT = "/manage-events";
 export const VIEW_EVENT = "/view-event";
 export const ADD_EVENT = "/add-event";
 export const EDIT_EVENT = "/edit-event";
 export const ELIGIBLE_EVENT = "/eligible-event";
+
+/**Training and Activity */
+export const EDIT_ACTIVITY = "/edit-activity";
+export const ADD_ACTIVITY = "/add-activity";

@@ -7,9 +7,8 @@ export const INVALID_USER = "Invalid email or password";
 export const REGISTER = "Register";
 export const CREATE_ACTIVITY = "Create Activity";
 /* Forgot Password Constants */
-export const FORGOT_PASSWORD_HEADER = "Forgot Your Password?";
-export const CONFIRM_NEW_PASS_ALERT =
-  "Please enter new password and confirm new password";
+export const FORGOT_PASSWORD_HEADER = "Forgot your password?";
+export const CONFIRM_NEW_PASS_ALERT = "Please enter new password";
 export const OTP_ALERT = "Please enter the OTP sent to";
 export const MOBILE_NUMBER_ALERT =
   "Enter the mobile number associated with your account and we'll send you an OTP";

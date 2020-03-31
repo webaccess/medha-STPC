@@ -153,7 +153,6 @@ const ManageCollege = props => {
       pageSize: -1,
       "state.id": formState.filterDataParameters[STATE_FILTER]
     };
-    console.log(params, formState.filterDataParameters);
     serviceProviders
       .serviceProviderForGetRequest(RPCS_URL, params)
       .then(res => {
@@ -301,7 +300,6 @@ const ManageCollege = props => {
     setRpcs([]);
     setZones([]);
     formState.filterDataParameters[COLLEGE_FILTER] = "";
-    console.log("formstate--->>", formState.filterDataParameters);
     // window.location.reload();
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -474,7 +472,6 @@ const ManageCollege = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
       if (filterName === STATE_FILTER) {
-        console.log("STATE_FILTER", STATE_FILTER);
         getZonesAndRpcsOnState();
       }
       setFormState(formState => ({
@@ -531,7 +528,6 @@ const ManageCollege = props => {
   };
 
   const handleFilterChange = event => {
-    console.log("handleFilterChange", event.target.name, event.target.value);
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
@@ -682,7 +678,7 @@ const ManageCollege = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_COLLEGE_TEXT}
+          {genericConstants.MANAGE_COLLEGE_TEXT}
         </Typography>
 
         <GreenButton
@@ -906,10 +902,6 @@ const ManageCollege = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                {console.log(
-                  "return",
-                  formState.filterDataParameters[COLLEGE_FILTER]
-                )}
                 <TextField
                   label={"College"}
                   placeholder="College"

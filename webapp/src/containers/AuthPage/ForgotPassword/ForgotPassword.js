@@ -21,7 +21,8 @@ import {
   IconButton,
   FormHelperText,
   Collapse,
-  CircularProgress
+  CircularProgress,
+  Backdrop
 } from "@material-ui/core";
 import clsx from "clsx";
 import useStyles from "./ForgotPasswordStyles";
@@ -39,7 +40,6 @@ import { Visibility, VisibilityOff } from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
 
 const newPassword = "newPassword";
-const confirmNewPassword = "confirmNewPassword";
 const mobileNumber = "mobileNumber";
 const otp = "OTP";
 
@@ -51,6 +51,7 @@ const CHANGE_PASSWORD_URL =
   StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_CHANGE_PASS_URL;
 
 const ForgotPassword = props => {
+  const [openBackdrop, setOpenBackdrop] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const theme = useTheme();
   const history = useHistory();
@@ -104,6 +105,7 @@ const ForgotPassword = props => {
   };
 
   const changePassword = async () => {
+    setOpenBackdrop(true);
     setFormState(formState => ({
       ...formState,
       isChangePassFailed: false
@@ -119,6 +121,7 @@ const ForgotPassword = props => {
     await serviceProvider
       .serviceProviderForPostRequest(CHANGE_PASSWORD_URL, postData, headers)
       .then(res => {
+        setOpenBackdrop(false);
         history.push({
           pathname: routeConstants.SIGN_IN_URL,
           fromPasswordChangedPage: true,
@@ -132,6 +135,7 @@ const ForgotPassword = props => {
           isChangePassFailed: true,
           errorsToShow: "Error Changing Password"
         }));
+        setOpenBackdrop(false);
       });
   };
 
@@ -139,7 +143,7 @@ const ForgotPassword = props => {
     let areFieldsValid = false;
 
     Object.keys(form).map(field => {
-      if (field === newPassword || field === confirmNewPassword) {
+      if (field === newPassword) {
         if (form[field]["required"] === true && obj.hasOwnProperty(field)) {
           areFieldsValid = true;
         } else {
@@ -160,14 +164,6 @@ const ForgotPassword = props => {
         formState.values[field],
         form[field]["validations"]
       );
-      if (
-        field === confirmNewPassword &&
-        formState.values[field] &&
-        formState.values[field].length &&
-        formState.values[newPassword] !== formState.values[field]
-      ) {
-        errors.push("new password and confirm password doesn't match");
-      }
       formState.formType === authPageConstants.FORM_TYPE_CHANGE_PASS
         ? setFormState(formState => ({
             ...formState,
@@ -231,6 +227,7 @@ const ForgotPassword = props => {
   /** Function used to generate otp */
   const generateOtp = async (sendOtp, resendOtp) => {
     /** Reset error message */
+    setOpenBackdrop(true);
     setIsOtpVerificationFailed(false);
     setFormState(formState => ({
       ...formState,
@@ -264,6 +261,7 @@ const ForgotPassword = props => {
             }));
           }
         }
+        setOpenBackdrop(false);
       })
       .catch(error => {
         setOpen(true);
@@ -272,10 +270,12 @@ const ForgotPassword = props => {
           otpSendingFailed: true,
           errorsToShow: "Error Generating OTP"
         }));
+        setOpenBackdrop(false);
       });
   };
 
   const verifyOtp = async () => {
+    setOpenBackdrop(true);
     setIsOtpVerificationFailed(false);
     let postData = {
       contact_number: formState.values[mobileNumber],
@@ -322,6 +322,7 @@ const ForgotPassword = props => {
             formType: authPageConstants.FORM_TYPE_CHANGE_PASS
           }));
         }
+        setOpenBackdrop(false);
       })
       .catch(error => {
         console.log("error verifying otp ", error);
@@ -331,6 +332,7 @@ const ForgotPassword = props => {
           ...formState,
           errorsToShow: "Error verifying OTP"
         }));
+        setOpenBackdrop(false);
       });
   };
 
@@ -364,7 +366,50 @@ const ForgotPassword = props => {
                     {authPageConstants.FORGOT_PASSWORD_HEADER}
                   </Typography>
                 </div>
-
+                {isOtpVerificationFailed ||
+                formState.isChangePassFailed ||
+                formState.otpSendingFailed ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {formState.errorsToShow}
+                    </Alert>
+                  </Collapse>
+                ) : formState.otpResent &&
+                  formState.errorsToShow === "OTP sent successfully" ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="success"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {formState.errorsToShow}
+                    </Alert>
+                  </Collapse>
+                ) : null}
                 <form
                   className={classes.form}
                   noValidate
@@ -375,79 +420,72 @@ const ForgotPassword = props => {
                       <Typography
                         component="h5"
                         variant="subtitle2"
-                        style={{ marginTop: ".9rem" }}
+                        style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
                       >
                         {authPageConstants.CONFIRM_NEW_PASS_ALERT}
                       </Typography>
-                      <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
+                      <FormControl
                         fullWidth
-                        type={get(form[newPassword], "type")}
-                        id={get(form[newPassword], "id")}
-                        label={get(form[newPassword], "label")}
-                        name={newPassword}
-                        autoFocus
-                        value={formState.values[newPassword] || ""}
-                        onChange={handleChange}
-                        error={hasError(newPassword)}
-                        helperText={
-                          hasError(newPassword)
+                        className={clsx(classes.margin, classes.textField)}
+                        variant="outlined"
+                      >
+                        <InputLabel
+                          htmlFor="outlined-adornment-password"
+                          fullWidth
+                          error={hasError(newPassword)}
+                        >
+                          New Password
+                        </InputLabel>
+                        <OutlinedInput
+                          id={get(form[newPassword], "id")}
+                          name={newPassword}
+                          type={formState.showPassword ? "text" : "password"}
+                          value={formState.values[newPassword] || ""}
+                          onChange={handleChange}
+                          fullWidth
+                          error={hasError(newPassword)}
+                          endAdornment={
+                            <InputAdornment
+                              position="end"
+                              error={hasError(newPassword)}
+                            >
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                              >
+                                {formState.showPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                          labelWidth={70}
+                          InputLabelProps={{
+                            classes: {
+                              root: classes.cssLabel,
+                              focused: classes.cssFocused
+                            }
+                          }}
+                          InputProps={{
+                            classes: {
+                              root: classes.cssOutlinedInput,
+                              focused: classes.cssFocused,
+                              notchedOutline: classes.notchedOutline
+                            }
+                          }}
+                        ></OutlinedInput>
+                        <FormHelperText error={hasError(newPassword)}>
+                          {hasError(newPassword)
                             ? formState.errors[newPassword].map(error => {
                                 return "\n" + error;
                               })
-                            : null
-                        }
-                        InputLabelProps={{
-                          classes: {
-                            root: classes.cssLabel,
-                            focused: classes.cssFocused
-                          }
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.cssOutlinedInput,
-                            focused: classes.cssFocused,
-                            notchedOutline: classes.notchedOutline
-                          }
-                        }}
-                      />
-                      <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        type={get(form[confirmNewPassword], "type")}
-                        fullWidth
-                        id={get(form[confirmNewPassword], "id")}
-                        label={get(form[confirmNewPassword], "label")}
-                        name={confirmNewPassword}
-                        value={formState.values[confirmNewPassword] || ""}
-                        onChange={handleChange}
-                        error={hasError(confirmNewPassword)}
-                        helperText={
-                          hasError(confirmNewPassword)
-                            ? formState.errors[confirmNewPassword].map(
-                                error => {
-                                  return "\n" + error;
-                                }
-                              )
-                            : null
-                        }
-                        InputLabelProps={{
-                          classes: {
-                            root: classes.cssLabel,
-                            focused: classes.cssFocused
-                          }
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.cssOutlinedInput,
-                            focused: classes.cssFocused,
-                            notchedOutline: classes.notchedOutline
-                          }
-                        }}
-                      />
+                            : null}
+                        </FormHelperText>
+                      </FormControl>
                       <Button
                         color="primary"
                         disabled={!formState.isValid}
@@ -458,13 +496,19 @@ const ForgotPassword = props => {
                       >
                         {authPageConstants.RESET_PASS_BUTTON}
                       </Button>
+                      <Backdrop
+                        className={classes.backdrop}
+                        open={openBackdrop}
+                      >
+                        <CircularProgress color="inherit" />
+                      </Backdrop>
                     </React.Fragment>
                   ) : formState.otpSent === true ? (
                     <React.Fragment>
                       <Typography
                         component="h5"
                         variant="subtitle2"
-                        style={{ marginTop: ".9rem" }}
+                        style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
                       >
                         {authPageConstants.OTP_ALERT}{" "}
                         {formState.values.mobileNumber}
@@ -549,13 +593,19 @@ const ForgotPassword = props => {
                       >
                         {authPageConstants.VERIFY_OTP_BUTTON}
                       </Button>
+                      <Backdrop
+                        className={classes.backdrop}
+                        open={openBackdrop}
+                      >
+                        <CircularProgress color="inherit" />
+                      </Backdrop>
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
                       <Typography
                         component="h5"
                         variant="subtitle2"
-                        style={{ marginTop: ".9rem" }}
+                        style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
                       >
                         {authPageConstants.MOBILE_NUMBER_ALERT}
                       </Typography>
@@ -579,19 +629,6 @@ const ForgotPassword = props => {
                         autoFocus
                         value={formState.values[mobileNumber] || ""}
                         onChange={handleChange}
-                        InputLabelProps={{
-                          classes: {
-                            root: classes.cssLabel,
-                            focused: classes.cssFocused
-                          }
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.cssOutlinedInput,
-                            focused: classes.cssFocused,
-                            notchedOutline: classes.notchedOutline
-                          }
-                        }}
                       />
                       <Button
                         color="primary"
@@ -603,61 +640,27 @@ const ForgotPassword = props => {
                       >
                         {authPageConstants.SEND_OTP_BUTTON}
                       </Button>
+                      <Backdrop
+                        className={classes.backdrop}
+                        open={openBackdrop}
+                      >
+                        <CircularProgress color="inherit" />
+                      </Backdrop>
                     </React.Fragment>
                   )}
                   <Grid container>
                     <Grid item xs={12} style={{ textAlign: "center" }}>
-                      <Link href={routeConstants.SIGN_IN_URL} variant="body2">
+                      <Link
+                        href={routeConstants.SIGN_IN_URL}
+                        variant="body2"
+                        className={classes.linkColor}
+                      >
                         {authPageConstants.BACK_TO_LOGIN_TEXT}
                       </Link>
                     </Grid>
                   </Grid>
                 </form>
               </div>
-              {isOtpVerificationFailed ||
-              formState.isChangePassFailed ||
-              formState.otpSendingFailed ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="error"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {formState.errorsToShow}
-                  </Alert>
-                </Collapse>
-              ) : formState.otpResent &&
-                formState.errorsToShow === "OTP sent successfully" ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="success"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {formState.errorsToShow}
-                  </Alert>
-                </Collapse>
-              ) : null}
             </CardContent>
 
             <Hidden mdDown>
