@@ -403,41 +403,48 @@ const ViewStates = props => {
   /** --------------------------------------------------- */
   /** Columns to show in table */
   const column = [
-    { name: "Name", sortable: true, selector: "name" },
-    /** Columns for edit and delete */
     {
-      cell: cell => (
-        <Tooltip title="Edit" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={editCell}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            edit
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
+      name: "Name",
+      sortable: true,
+      selector: "name"
     },
     {
+      name: "Actions",
       cell: cell => (
-        <Tooltip title="Delete" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={deleteCell}
-            style={{ color: "red" }}
-          >
-            delete_outline
-          </i>
-        </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <Tooltip title="Edit" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={editCell}
+                style={{ color: "green", fontSize: "21px" }}
+              >
+                edit
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="Delete" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={deleteCell}
+                style={{ color: "red", fontSize: "23px" }}
+              >
+                delete_outline
+              </i>
+            </Tooltip>
+          </div>
+        </div>
       ),
-      button: true,
-      conditionalCellStyles: []
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
     }
   ];
 

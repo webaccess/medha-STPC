@@ -597,79 +597,72 @@ const ManageCollege = props => {
     { name: "Name", sortable: true, selector: "name" },
     { name: "Zone", sortable: true, selector: "zone_name" },
     { name: "RPC", sortable: true, selector: "rpc" },
-
-    /** Columns for block, view, edit and delete */
-
     {
+      name: "Actions",
       cell: cell => (
-        <Tooltip title="View" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            onClick={viewCell}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            view_list
-          </i>
-        </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <Tooltip title="View" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                onClick={viewCell}
+                style={{ color: "green" }}
+              >
+                view_list
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="Edit" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={editCell}
+                style={{ color: "green", fontSize: "21px" }}
+              >
+                edit
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={blockCell}
+                style={
+                  cell.blocked
+                    ? { color: "red", fontSize: "21px" }
+                    : { color: "green", fontSize: "21px" }
+                }
+              >
+                block
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="Delete" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={deleteCell}
+                style={{ color: "red", fontSize: "23px" }}
+              >
+                delete_outline
+              </i>
+            </Tooltip>
+          </div>
+        </div>
       ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Edit" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={editCell}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            edit
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={blockCell}
-            style={
-              cell.blocked
-                ? { color: "red", fontSize: "19px" }
-                : { color: "green", fontSize: "19px" }
-            }
-          >
-            block
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Delete" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={deleteCell}
-            style={{ color: "red" }}
-          >
-            delete_outline
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
     }
   ];
 
