@@ -586,7 +586,6 @@
               "title",
               "start_date_time",
               "end_date_time",
-              "age",
               "address",
               "description"
             ],
@@ -612,19 +611,19 @@
               "streams": {
                 "type": "string"
               },
-              "age": {
-                "type": "integer"
-              },
               "upload_logo": {
-                "type": "string"
-              },
-              "question_set": {
                 "type": "string"
               },
               "address": {
                 "type": "string"
               },
               "description": {
+                "type": "string"
+              },
+              "marks": {
+                "type": "number"
+              },
+              "qualification": {
                 "type": "string"
               }
             }
@@ -708,12 +707,6 @@
                 }
               },
               "activities": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "events": {
                 "type": "array",
                 "items": {
                   "type": "string"

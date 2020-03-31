@@ -510,6 +510,74 @@
           }
         ]
       }
+    },
+    "/events/{id}/students": {
+      "get": {
+        "deprecated": false,
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Event"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -520,7 +588,6 @@
           "title",
           "start_date_time",
           "end_date_time",
-          "age",
           "address",
           "description"
         ],
@@ -621,9 +688,6 @@
               }
             }
           },
-          "age": {
-            "type": "integer"
-          },
           "upload_logo": {
             "required": [
               "id",
@@ -670,10 +734,18 @@
               }
             }
           },
-          "question_set": {
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "qualification": {
             "required": [
-              "id",
-              "name"
+              "id"
             ],
             "properties": {
               "id": {
@@ -681,32 +753,8 @@
               },
               "name": {
                 "type": "string"
-              },
-              "questions": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "activities": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "events": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
-          },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
           }
         }
       },
@@ -715,7 +763,6 @@
           "title",
           "start_date_time",
           "end_date_time",
-          "age",
           "address",
           "description"
         ],
@@ -738,16 +785,16 @@
           "streams": {
             "type": "string"
           },
-          "age": {
-            "type": "integer"
-          },
-          "question_set": {
-            "type": "string"
-          },
           "address": {
             "type": "string"
           },
           "description": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "qualification": {
             "type": "string"
           }
         }

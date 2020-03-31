@@ -30,19 +30,11 @@
     "streams": {
       "collection": "stream"
     },
-    "age": {
-      "type": "integer",
-      "required": true
-    },
     "upload_logo": {
       "model": "file",
       "via": "related",
       "plugin": "upload",
       "required": false
-    },
-    "question_set": {
-      "model": "question-set",
-      "via": "events"
     },
     "address": {
       "type": "text",
@@ -51,6 +43,12 @@
     "description": {
       "type": "richtext",
       "required": true
+    },
+    "marks": {
+      "type": "decimal"
+    },
+    "qualification": {
+      "model": "qualifications"
     }
   }
 }

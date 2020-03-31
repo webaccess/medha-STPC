@@ -1,19 +1,18 @@
 {
   "paths": {
-    "/event-registrations": {
+    "/qualifications": {
       "get": {
         "deprecated": false,
-        "description": "",
+        "description": "Find all the qualifications's records",
         "responses": {
           "200": {
-            "description": "response",
+            "description": "Retrieve qualifications document(s)",
             "content": {
               "application/json": {
                 "schema": {
-                  "properties": {
-                    "foo": {
-                      "type": "string"
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Qualifications"
                   }
                 }
               }
@@ -52,7 +51,7 @@
         },
         "summary": "",
         "tags": [
-          "Event-registration"
+          "Qualifications"
         ],
         "parameters": [
           {
@@ -195,18 +194,14 @@
       },
       "post": {
         "deprecated": false,
-        "description": "Create a new record",
+        "description": "Create a new qualifications record",
         "responses": {
           "200": {
-            "description": "response",
+            "description": "Retrieve qualifications document(s)",
             "content": {
               "application/json": {
                 "schema": {
-                  "properties": {
-                    "foo": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Qualifications"
                 }
               }
             }
@@ -244,7 +239,7 @@
         },
         "summary": "",
         "tags": [
-          "Event-registration"
+          "Qualifications"
         ],
         "requestBody": {
           "description": "",
@@ -252,26 +247,26 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewEvent-registration"
+                "$ref": "#/components/schemas/NewQualifications"
               }
             }
           }
         }
       }
     },
-    "/event-registrations/count": {
+    "/qualifications/count": {
       "get": {
         "deprecated": false,
-        "description": "",
+        "description": "Retrieve the numver of qualifications documents",
         "responses": {
           "200": {
-            "description": "response",
+            "description": "Retrieve qualifications document(s)",
             "content": {
               "application/json": {
                 "schema": {
                   "properties": {
-                    "foo": {
-                      "type": "string"
+                    "count": {
+                      "type": "integer"
                     }
                   }
                 }
@@ -311,26 +306,22 @@
         },
         "summary": "",
         "tags": [
-          "Event-registration"
+          "Qualifications"
         ],
         "parameters": []
       }
     },
-    "/event-registrations/{id}": {
+    "/qualifications/{id}": {
       "get": {
         "deprecated": false,
-        "description": "",
+        "description": "Find one qualifications record",
         "responses": {
           "200": {
-            "description": "response",
+            "description": "Retrieve qualifications document(s)",
             "content": {
               "application/json": {
                 "schema": {
-                  "properties": {
-                    "foo": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Qualifications"
                 }
               }
             }
@@ -368,7 +359,7 @@
         },
         "summary": "",
         "tags": [
-          "Event-registration"
+          "Qualifications"
         ],
         "parameters": [
           {
@@ -385,18 +376,14 @@
       },
       "put": {
         "deprecated": false,
-        "description": "Update a record",
+        "description": "Update a single qualifications record",
         "responses": {
           "200": {
-            "description": "response",
+            "description": "Retrieve qualifications document(s)",
             "content": {
               "application/json": {
                 "schema": {
-                  "properties": {
-                    "foo": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Qualifications"
                 }
               }
             }
@@ -434,7 +421,7 @@
         },
         "summary": "",
         "tags": [
-          "Event-registration"
+          "Qualifications"
         ],
         "requestBody": {
           "description": "",
@@ -442,7 +429,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewEvent-registration"
+                "$ref": "#/components/schemas/NewQualifications"
               }
             }
           }
@@ -462,10 +449,10 @@
       },
       "delete": {
         "deprecated": false,
-        "description": "Delete a record",
+        "description": "Delete a single qualifications record",
         "responses": {
           "200": {
-            "description": "deletes a single record based on the ID supplied",
+            "description": "deletes a single qualifications based on the ID supplied",
             "content": {
               "application/json": {
                 "schema": {
@@ -508,7 +495,7 @@
         },
         "summary": "",
         "tags": [
-          "Event-registration"
+          "Qualifications"
         ],
         "parameters": [
           {
@@ -527,7 +514,7 @@
   },
   "components": {
     "schemas": {
-      "Event-registration": {
+      "Qualifications": {
         "required": [
           "id"
         ],
@@ -535,146 +522,23 @@
           "id": {
             "type": "string"
           },
-          "event": {
-            "required": [
-              "id",
-              "title",
-              "start_date_time",
-              "end_date_time",
-              "address",
-              "description"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "title": {
-                "type": "string"
-              },
-              "start_date_time": {
-                "type": "datetime"
-              },
-              "end_date_time": {
-                "type": "datetime"
-              },
-              "rpc": {
-                "type": "string"
-              },
-              "colleges": {
-                "type": "string"
-              },
-              "streams": {
-                "type": "string"
-              },
-              "upload_logo": {
-                "type": "string"
-              },
-              "address": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "marks": {
-                "type": "number"
-              },
-              "qualification": {
-                "type": "string"
-              }
-            }
-          },
-          "student": {
-            "required": [
-              "id",
-              "father_first_name",
-              "father_last_name",
-              "date_of_birth",
-              "gender",
-              "roll_number",
-              "address"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "user": {
-                "type": "string"
-              },
-              "stream": {
-                "type": "string"
-              },
-              "documents": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "verifiedByCollege": {
-                "type": "boolean"
-              },
-              "physicallyHandicapped": {
-                "type": "boolean"
-              },
-              "father_first_name": {
-                "type": "string"
-              },
-              "father_last_name": {
-                "type": "string"
-              },
-              "date_of_birth": {
-                "type": "datetime"
-              },
-              "gender": {
-                "type": "string"
-              },
-              "roll_number": {
-                "type": "integer"
-              },
-              "educations": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "district": {
-                "type": "string"
-              },
-              "address": {
-                "type": "string"
-              }
-            }
-          },
-          "attendance_verified": {
-            "type": "boolean"
-          },
-          "hired_at_event": {
-            "type": "boolean"
-          },
-          "plan_on_attending": {
-            "type": "boolean"
+          "name": {
+            "type": "string"
           }
         }
       },
-      "NewEvent-registration": {
+      "NewQualifications": {
         "properties": {
-          "event": {
+          "name": {
             "type": "string"
-          },
-          "student": {
-            "type": "string"
-          },
-          "attendance_verified": {
-            "type": "boolean"
-          },
-          "hired_at_event": {
-            "type": "boolean"
-          },
-          "plan_on_attending": {
-            "type": "boolean"
           }
         }
       }
     }
   },
-  "tags": []
+  "tags": [
+    {
+      "name": "Qualifications"
+    }
+  ]
 }
