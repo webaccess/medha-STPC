@@ -135,7 +135,33 @@ export const addCollege = (
     stream_strength: stream_strength
   };
 };
-
+export const addEvent = (
+  title,
+  description,
+  start_date_time,
+  end_date_time,
+  address,
+  marks,
+  age,
+  zone = null,
+  rpc = null,
+  colleges = null,
+  streams = null
+) => {
+  return {
+    title: title,
+    description: description,
+    start_date_time: start_date_time,
+    end_date_time: end_date_time,
+    address: address,
+    marks: marks,
+    age: age,
+    zone: zone,
+    rpc: rpc,
+    colleges: colleges,
+    streams: streams
+  };
+};
 export const addState = name => {
   return {
     name: name
@@ -306,3 +332,9 @@ export const addActivity = (
 };
 
 export const editActivity = () => {};
+export const addAcademicHistory = (academicYear, educationYear) => {
+  return {
+    academic_year: academicYear,
+    education_year: educationYear
+  };
+};

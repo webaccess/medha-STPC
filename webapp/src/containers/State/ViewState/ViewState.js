@@ -33,7 +33,7 @@ import { useHistory } from "react-router-dom";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const STATE_FILTER = "id";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewStates = props => {
@@ -41,6 +41,7 @@ const ViewStates = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [statesFilter, setStatesFilter] = useState([]);
   /** Form state variables */
   const [formState, setFormState] = useState({
     filterState: "",
@@ -94,7 +95,7 @@ const ViewStates = props => {
 
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
@@ -139,10 +140,17 @@ const ViewStates = props => {
       .serviceProviderForGetRequest(STATES_URL, paramsForState)
       .then(res => {
         formState.dataToShow = [];
+        let tempCollegeData = [];
+        let college_data = res.data.result;
+
+        /** As college data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+        tempCollegeData = convertCollegeData(college_data);
         setFormState(formState => ({
           ...formState,
           states: res.data.result,
-          dataToShow: res.data.result,
+          dataToShow: tempCollegeData,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
@@ -153,6 +161,20 @@ const ViewStates = props => {
       .catch(error => {
         console.log("error", error);
       });
+  };
+
+  /** Converting college unstructured data into structred flat format for passing it into datatable */
+  const convertCollegeData = data => {
+    let collegeDataArray = [];
+    if (data.length > 0) {
+      for (let i in data) {
+        var tempIndividualCollegeData = {};
+        tempIndividualCollegeData["id"] = data[i]["id"];
+        tempIndividualCollegeData["name"] = data[i]["name"];
+        collegeDataArray.push(tempIndividualCollegeData);
+      }
+      return collegeDataArray;
+    }
   };
 
   /** Pagination to handle row change*/
@@ -194,6 +216,7 @@ const ViewStates = props => {
 
   /** This is used for clearing filter */
   const clearFilter = () => {
+    setStatesFilter([""]);
     setFormState(formState => ({
       ...formState,
       filterState: "",
@@ -322,7 +345,7 @@ const ViewStates = props => {
 
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false
@@ -337,15 +360,15 @@ const ViewStates = props => {
   }, []);
 
   const handleFilterChange = event => {
-    console.log("event", event.target.value);
-    setFormState(formState => ({
-      ...formState,
-      filterState: event.target.value
-    }));
+    setStatesFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterState: event.target.value
+    // }));
   };
 
   const filterStateData = () => {
-    let params = "?name_contains=" + formState.filterState;
+    let params = "?name_contains=" + statesFilter;
 
     let FilterStateURL =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES + params;
@@ -353,10 +376,18 @@ const ViewStates = props => {
       .serviceProviderForGetRequest(FilterStateURL)
       .then(res => {
         formState.dataToShow = [];
+        let tempCollegeData = [];
+        let college_data = res.data.result;
+
+        /** As college data is in nested form we first convert it into
+         * a float structure and store it in data
+         */
+
+        tempCollegeData = convertCollegeData(college_data);
         setFormState(formState => ({
           ...formState,
           states: res.data.result,
-          dataToShow: res.data.result,
+          dataToShow: tempCollegeData,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
@@ -484,7 +515,6 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         {/** Error/Success messages to be shown for add */}
         {formState.fromAddState && formState.isDataAdded ? (
           <Collapse in={open}>
@@ -551,7 +581,6 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         {formState.fromDeleteModal &&
         !formState.isDataDeleted &&
         formState.messageToShow !== "" ? (
@@ -575,12 +604,17 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField variant="outlined" onChange={handleFilterChange} />
+                <TextField
+                  label={"State"}
+                  placeholder="State"
+                  value={statesFilter}
+                  variant="outlined"
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
@@ -626,7 +660,7 @@ const ViewStates = props => {
           )
         ) : (
           <div className={classes.noDataMargin}>No data to show</div>
-        )}
+        )}{" "}
         <DeleteState
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}

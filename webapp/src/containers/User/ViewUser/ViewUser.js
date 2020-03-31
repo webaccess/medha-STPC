@@ -34,11 +34,11 @@ const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
 
-const STATE_FILTER = "state.id";
+const STATE_FILTER = "rpc.state";
 const ZONE_FILTER = "zone.id";
 const RPC_FILTER = "rpc.id";
 const IPC_FILTER = "college.id";
-const USER_FILTER = "id";
+const USER_FILTER = "username_contains";
 const ROLE_FILTER = "role.id";
 
 const SORT_FIELD_KEY = "_sort";
@@ -48,9 +48,11 @@ const ViewUsers = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [rpcs, setRpcs] = React.useState([]);
-  const [zones, setZones] = React.useState([]);
-  const [states, setStates] = React.useState([]);
+  const [rpcs, setRpcs] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [states, setStates] = useState([]);
+  const [ipcs, setIpcs] = useState([]);
+
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
@@ -59,7 +61,6 @@ const ViewUsers = props => {
     zones: [],
     rpcs: [],
     roles: [],
-    ipcs: [],
     filterDataParameters: {},
     isFilterSearch: false,
     /** This is when we return from edit page */
@@ -111,12 +112,13 @@ const ViewUsers = props => {
     userNameDelete: ""
   });
 
-  useEffect(() => {
-    /** Seperate function to get user data */
-    getUserData(10, 1);
+  const getFilterData = () => {
+    let params = {
+      pageSize: -1
+    };
 
     serviceProviders
-      .serviceProviderForGetRequest(STATE_URL)
+      .serviceProviderForGetRequest(STATE_URL, params)
       .then(res => {
         setStates(res.data.result);
       })
@@ -125,43 +127,7 @@ const ViewUsers = props => {
       });
 
     serviceProviders
-      .serviceProviderForGetRequest(ZONES_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          zones: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error");
-      });
-
-    serviceProviders
-      .serviceProviderForGetRequest(RPCS_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          rpcs: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error");
-      });
-
-    serviceProviders
-      .serviceProviderForGetRequest(IPC_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          ipcs: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error");
-      });
-
-    serviceProviders
-      .serviceProviderForGetRequest(ROLE_URL)
+      .serviceProviderForGetRequest(ROLE_URL, params)
       .then(res => {
         let rolesArray = [];
         for (let i in res.data.roles) {
@@ -175,13 +141,18 @@ const ViewUsers = props => {
         }
         setFormState(formState => ({
           ...formState,
-
           roles: rolesArray
         }));
       })
       .catch(error => {
         console.log("error");
       });
+  };
+
+  useEffect(() => {
+    /** Seperate function to get user data */
+    getUserData(10, 1);
+    getFilterData();
   }, []);
 
   /** Get rpcs and zones from state */
@@ -192,9 +163,10 @@ const ViewUsers = props => {
     delete formState.filterDataParameters[RPC_FILTER];
 
     let params = {
-      pageSize: 10000000,
+      pageSize: -1,
       "state.id": formState.filterDataParameters[STATE_FILTER]
     };
+    console.log("paramschecker", params, formState.filterDataParameters);
     serviceProviders
       .serviceProviderForGetRequest(RPCS_URL, params)
       .then(res => {
@@ -207,6 +179,26 @@ const ViewUsers = props => {
       .serviceProviderForGetRequest(ZONES_URL, params)
       .then(res => {
         setZones(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
+  const getCollegesOnStateAndZone = () => {
+    setIpcs([]);
+    delete formState.filterDataParameters[IPC_FILTER];
+
+    let params = {
+      pageSize: -1,
+      "zone.id": formState.filterDataParameters[ZONE_FILTER]
+    };
+    console.log("paramschecker", params, formState.filterDataParameters);
+    serviceProviders
+      .serviceProviderForGetRequest(IPC_URL, params)
+      .then(res => {
+        setIpcs(res.data.result);
+        console.log("collegeName", res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -235,7 +227,7 @@ const ViewUsers = props => {
       ...formState,
       isDataLoading: true
     }));
-
+    console.log("paramsForusers", paramsForUsers);
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
       .then(res => {
@@ -315,15 +307,39 @@ const ViewUsers = props => {
 
   /** This restores all the data when we clear the filters*/
 
+  // const clearFilter = () => {
+  //   setFormState(formState => ({
+  //     ...formState,
+  //     isFilterSearch: false,
+  //     /** Clear all filters */
+  //     filterDataParameters: {},
+  //     /** Turns on the spinner */
+  //     isDataLoading: true
+  //   }));
+  //   /**Need to confirm this thing for resetting the data */
+  //   restoreData();
+  // };
+
+  /** This restores all the data when we clear the filters*/
+
   const clearFilter = () => {
+    formState.filterDataParameters = {};
+    // formState.filterDataParameters["name_contains"] = "";
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
+      isClearResetFilter: true,
+      isStateClearFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
       isDataLoading: true
     }));
+    setRpcs([]);
+    setZones([]);
+    formState.filterDataParameters[STATE_FILTER] = "";
+    console.log("formstate--->>", formState.filterDataParameters);
+    // window.location.reload();
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
@@ -392,13 +408,6 @@ const ViewUsers = props => {
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
-
     /** When we click cross for auto complete */
     if (value === null) {
       let setStateFilterValue = false;
@@ -414,8 +423,10 @@ const ViewUsers = props => {
             */
         setRpcs([]);
         setZones([]);
+        setIpcs([]);
         delete formState.filterDataParameters[ZONE_FILTER];
         delete formState.filterDataParameters[RPC_FILTER];
+        delete formState.filterDataParameters[IPC_FILTER];
       }
       setFormState(formState => ({
         ...formState,
@@ -429,12 +440,20 @@ const ViewUsers = props => {
       if (filterName === STATE_FILTER) {
         getZonesAndRpcsOnState();
       }
+      if (filterName === ZONE_FILTER) {
+        getCollegesOnStateAndZone();
+      }
       setFormState(formState => ({
         ...formState,
         isClearResetFilter: false,
         isStateClearFilter: false
       }));
     }
+  };
+
+  const handleFilterChange = event => {
+    console.log("handleFilterChange", event.target.name, event.target.value);
+    formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
   /** Get multiple user id for delete */
@@ -641,32 +660,24 @@ const ViewUsers = props => {
     },
     {
       cell: cell => (
-        <Tooltip title="Block" placement="top">
+        <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
           <i
             className="material-icons"
             id={cell.id}
             value={cell.name}
             onClick={blockedCell}
+            style={
+              cell.blocked
+                ? { color: "red", fontSize: "19px" }
+                : { color: "green", fontSize: "19px" }
+            }
           >
             block
           </i>
         </Tooltip>
       ),
       button: true,
-      conditionalCellStyles: [
-        {
-          when: row => row.blocked === true,
-          style: {
-            color: "red"
-          }
-        },
-        {
-          when: row => row.blocked === false,
-          style: {
-            color: "green"
-          }
-        }
-      ]
+      conditionalCellStyles: []
     },
     {
       cell: cell => (
@@ -690,7 +701,7 @@ const ViewUsers = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage User
+          {genericConstants.MANAGE_USER_TEXT}
         </Typography>
         <GreenButton
           variant="contained"
@@ -711,7 +722,7 @@ const ViewUsers = props => {
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Delete Selected User
+          {genericConstants.DELETE_MULTI_USER_BUTTON}
         </GreenButton>
 
         <GreenButton
@@ -723,7 +734,7 @@ const ViewUsers = props => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Add User
+          {genericConstants.ADD_USER_TITLE}
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
@@ -818,7 +829,14 @@ const ViewUsers = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
+                <TextField
+                  label={"User Name"}
+                  placeholder="User Name"
+                  variant="outlined"
+                  name={USER_FILTER}
+                  onChange={handleFilterChange}
+                />
+                {/* <Autocomplete
                   id="combo-box-demo"
                   name={USER_FILTER}
                   options={formState.users}
@@ -835,7 +853,7 @@ const ViewUsers = props => {
                       variant="outlined"
                     />
                   )}
-                />
+                /> */}
               </Grid>
               <Grid item>
                 <Autocomplete
@@ -851,6 +869,7 @@ const ViewUsers = props => {
                     <TextField
                       {...params}
                       label="Role"
+                      placeholder="Role"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -883,6 +902,7 @@ const ViewUsers = props => {
                     <TextField
                       {...params}
                       label="State"
+                      placeholder="State"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -892,17 +912,29 @@ const ViewUsers = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  name={ZONE_FILTER}
                   options={zones}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ZONE_FILTER, event, value)
                   }
+                  value={
+                    formState.isClearResetFilter || formState.isStateClearFilter
+                      ? null
+                      : zones[
+                          zones.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[ZONE_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
                       label="Zone"
+                      placeholder="Zone"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -919,10 +951,23 @@ const ViewUsers = props => {
                   onChange={(event, value) =>
                     handleChangeAutoComplete(RPC_FILTER, event, value)
                   }
+                  value={
+                    formState.isClearResetFilter || formState.isStateClearFilter
+                      ? null
+                      : rpcs[
+                          rpcs.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[RPC_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
                       label="RPC"
+                      placeholder="RPC"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -933,16 +978,29 @@ const ViewUsers = props => {
                 <Autocomplete
                   id="combo-box-demo"
                   name={IPC_FILTER}
-                  options={formState.ipcs}
+                  options={ipcs}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(IPC_FILTER, event, value)
                   }
+                  value={
+                    formState.isClearResetFilter || formState.isStateClearFilter
+                      ? null
+                      : ipcs[
+                          ipcs.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[IPC_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
                       label="IPC"
+                      placeholder="IPC"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -959,7 +1017,7 @@ const ViewUsers = props => {
                     searchFilter();
                   }}
                 >
-                  Search
+                  {genericConstants.SEARCH_BUTTON_TEXT}
                 </YellowButton>
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
@@ -969,7 +1027,7 @@ const ViewUsers = props => {
                   onClick={refreshPage}
                   disableElevation
                 >
-                  Reset
+                  {genericConstants.RESET_BUTTON_TEXT}
                 </GrayButton>
               </Grid>
             </Grid>
@@ -993,10 +1051,10 @@ const ViewUsers = props => {
                 onChangePage={handlePageChange}
               />
             ) : (
-              <div className={classes.noDataMargin}>No data to show</div>
+              <Spinner />
             )
           ) : (
-            <Spinner />
+            <div className={classes.noDataMargin}>No data to show</div>
           )}
 
           {formState.isMultiDelete ? (

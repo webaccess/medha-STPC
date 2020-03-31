@@ -25,6 +25,8 @@ export const EDIT_STUDENT_PROFILE = "Edit Profile";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";
+export const MANAGE_USER_TEXT = "Manage User";
+export const DELETE_MULTI_USER_BUTTON = "Delete Selected User";
 
 /** College */
 export const ADD_COLLEGE_TEXT = "Add College";
@@ -59,6 +61,12 @@ export const VIEW_EDUCATION_TEXT = "Education";
 export const ADD_DOCUMENT_TEXT = "Add Document";
 export const EDIT_DOCUMENT_TEXT = "Edit Document";
 export const VIEW_DOCUMENT_TEXT = "Document";
+
+/**Academic History */
+export const ADD_ACADEMIC_HISTORY_TEXT = "Add Academic History";
+export const EDIT_ACADEMIC_HISTORY_TEXT = "Edit Academic History";
+export const VIEW_ACADEMIC_HISTORY_TEXT = "Academic History";
+
 /**Manage Students */
 export const MANAGE_STUDENTS = "Manage Student";
 export const DELETE_SELECTED_STUDENT = "Delete Selected user";
@@ -66,3 +74,5 @@ export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 
 /**Activity */
 export const ADD_ACTIVITY = "Add Activity";
+/**MANAGE EVENTS*/
+export const ADD_EVENT_TEXT = "Add Event";

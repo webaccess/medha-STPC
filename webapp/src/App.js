@@ -23,6 +23,8 @@ import AddEditState from "./containers/State/AddEditState/AddEditState";
 import ViewStates from "./containers/State/ViewState/ViewState";
 import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
 import ViewZone from "./containers/Zone/ViewZone/ViewZone";
+import ViewEvents from "./containers/Event/ManageEvent/ManageEvent";
+import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
 import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
@@ -50,6 +52,13 @@ import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
 import ManageStudents from "./containers/Student/ManageStudents";
 import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
+import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
+import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
+import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
+import EventDetails from "./containers/Event/ManageEvent/EventDetails";
+import EditEventRoute from "./authroute/EditEventRoutes";
+import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
+
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -181,6 +190,29 @@ function App() {
                 layout={Layout}
                 path={routeConstants.CREATE_ACTIVITY}
               />
+
+              {/**Student Academic history */}
+              <RouteWithLayout
+                component={ViewAcademicHistory}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_ACADEMIC_HISTORY}
+              />
+
+              <RouteWithLayout
+                component={AddEditAcademicHistory}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_ACADEMIC_HISTORY}
+              />
+
+              <RouteWithLayout
+                component={EditAcademicHistoryRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_ACADEMIC_HISTORY}
+              />
+
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout
@@ -305,6 +337,38 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_STUDENT}
+              />
+              {/** Event */}
+              <RouteWithLayout
+                component={ViewEvents}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_EVENT}
+              />
+              <RouteWithLayout
+                component={EventDetails}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_EVENT}
+              />
+              <RouteWithLayout
+                component={AddEditEvent}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_EVENT}
+              />
+              <RouteWithLayout
+                component={EligibleEvents}
+                exact
+                layout={Layout}
+                path={routeConstants.ELIGIBLE_EVENT}
+              />
+              {/** Edit Event Route */}
+              <RouteWithLayout
+                component={EditEventRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_EVENT}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>

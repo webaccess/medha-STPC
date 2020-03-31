@@ -32,7 +32,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
-const RPC_FILTER = "id";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewRpc = props => {
@@ -40,6 +40,7 @@ const ViewRpc = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [rpcsFilter, setRpcsFilter] = useState([]);
 
   const [formState, setFormState] = useState({
     filterRpc: "",
@@ -95,7 +96,7 @@ const ViewRpc = props => {
   });
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
@@ -213,6 +214,7 @@ const ViewRpc = props => {
 
   /**---------------------------clear filter------------------------ */
   const clearFilter = () => {
+    setRpcsFilter([""]);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -335,14 +337,15 @@ const ViewRpc = props => {
   };
 
   const handleFilterChange = event => {
-    setFormState(formState => ({
-      ...formState,
-      filterRpc: event.target.value
-    }));
+    setRpcsFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterRpc: event.target.value
+    // }));
   };
 
   const filterRpcData = () => {
-    let params = "?name_contains=" + formState.filterRpc;
+    let params = "?name_contains=" + rpcsFilter;
 
     let FilterRpcURL =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS + params;
@@ -377,7 +380,7 @@ const ViewRpc = props => {
 
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false
@@ -599,7 +602,13 @@ const ViewRpc = props => {
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField variant="outlined" onChange={handleFilterChange} />
+                <TextField
+                  label={"RPC"}
+                  placeholder="RPC"
+                  variant="outlined"
+                  value={rpcsFilter}
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton

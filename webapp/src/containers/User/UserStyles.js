@@ -5,11 +5,12 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%"
   },
   btnspace: {
-    padding: "0px 18px 50px"
+    padding: "20px 18px 20px"
   },
   formgrid: {
-    marginTop: theme.spacing(2),
-    alignItems: "center"
+    marginTop: theme.spacing(0),
+    alignItems: "center",
+    marginBottom: "10px"
   },
   divider: {
     marginTop: "15px",
@@ -17,6 +18,20 @@ const useStyles = makeStyles(theme => ({
   },
   addcollegetextfield: {
     padding: "25px"
+  },
+  title: {
+    display: "flex",
+    marginBottom: theme.spacing(1),
+    "& h4": {
+      flex: "1",
+      fontWeight: "700"
+    }
+  },
+  CardActionGrid: {
+    backgroundColor: "#EEEEEE"
+  },
+  MarginBottom: {
+    marginBottom: "10px"
   }
 }));
 

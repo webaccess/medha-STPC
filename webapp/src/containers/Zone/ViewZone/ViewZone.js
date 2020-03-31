@@ -27,13 +27,14 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const ZONE_FILTER = "id";
+
 const SORT_FIELD_KEY = "_sort";
 
 const ViewZone = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [zonesFilter, setZonesFilter] = useState([]);
   const [formState, setFormState] = useState({
     filterZone: "",
     dataToShow: [],
@@ -89,7 +90,7 @@ const ViewZone = props => {
   useEffect(() => {
     /** Seperate function to get zone data */
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
@@ -221,6 +222,7 @@ const ViewZone = props => {
   };
 
   const clearFilter = () => {
+    setZonesFilter([""]);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -334,7 +336,7 @@ const ViewZone = props => {
 
   /** On select multiple rows */
   const handleRowSelected = useCallback(state => {
-    if (state.selectedCount > 1) {
+    if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
         selectedRowFilter: false
@@ -349,14 +351,15 @@ const ViewZone = props => {
   }, []);
 
   const handleFilterChange = event => {
-    setFormState(formState => ({
-      ...formState,
-      filterZone: event.target.value
-    }));
+    setZonesFilter(event.target.value);
+    // setFormState(formState => ({
+    //   ...formState,
+    //   filterZone: event.target.value
+    // }));
   };
 
   const filterZoneData = () => {
-    let params = "?name_contains=" + formState.filterZone;
+    let params = "?name_contains=" + zonesFilter;
 
     let FilterZoneURL =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES + params;
@@ -602,7 +605,13 @@ const ViewZone = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField variant="outlined" onChange={handleFilterChange} />
+                <TextField
+                  label={"Zone"}
+                  placeholder="Zone"
+                  variant="outlined"
+                  value={zonesFilter}
+                  onChange={handleFilterChange}
+                />
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton

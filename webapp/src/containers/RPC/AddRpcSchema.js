@@ -1,10 +1,10 @@
 const AddRpcSchema = {
   rpcName: {
-    label: "RPC Name",
+    label: "RPC",
     id: "rpcname",
     autoComplete: "rpcname",
     required: true,
-    placeholder: "RPC Name",
+    placeholder: "RPC",
     autoFocus: true,
     type: "text",
     validations: {
@@ -19,7 +19,7 @@ const AddRpcSchema = {
     id: "statename",
     autoComplete: "statename",
     required: true,
-    placeholder: "State",
+    placeholder: "Select State",
     autoFocus: true,
     type: "text",
     validations: {
@@ -34,7 +34,7 @@ const AddRpcSchema = {
     id: "collegename",
     autoComplete: "collegename",
     required: false,
-    placeholder: "College Name",
+    placeholder: "Select College",
     autoFocus: true,
     type: "text",
     validations: {}

@@ -168,7 +168,7 @@ const AddEditCollege = props => {
   /** Here we initialize our data and bring users, states and streams*/
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(USERS_URL, paramsForPageSize)
@@ -265,18 +265,21 @@ const AddEditCollege = props => {
       });
 
     let params = {
-      pageSize: 10000000,
+      pageSize: -1,
       "state.id": formState.values[state]
     };
 
-    await serviceProviders
-      .serviceProviderForGetRequest(DISTRICTS_URL, params)
-      .then(res => {
-        setDistricts(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    if (formState.values[state] !== undefined) {
+      await serviceProviders
+        .serviceProviderForGetRequest(DISTRICTS_URL, params)
+        .then(res => {
+          setDistricts(res.data.result);
+          console.log(res.data.result, params);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
   }
 
   /** Handle change for text fields */
@@ -646,646 +649,676 @@ const AddEditCollege = props => {
             : genericConstants.ADD_COLLEGE_TEXT}
         </Typography>
       </Grid>
-      <Grid item xs={12} className={classes.formgrid}>
-        <Card className={classes.root} variant="outlined">
+      <Grid spacing={3}>
+        <Card>
           <CardContent>
-            <Grid container spacing={3} className={classes.formgrid}>
-              <Grid item md={3} xs={12}>
-                <TextField
-                  fullWidth
-                  // helperText="Please specify the college name"
-                  id={get(CollegeFormSchema[collegeName], "id")}
-                  label={get(CollegeFormSchema[collegeName], "label")}
-                  name={collegeName}
-                  onChange={handleChange}
-                  placeholder={get(
-                    CollegeFormSchema[collegeName],
-                    "placeholder"
-                  )}
-                  required
-                  type={get(CollegeFormSchema[collegeName], "type")}
-                  value={formState.values[collegeName] || ""}
-                  error={hasError(collegeName)}
-                  helperText={
-                    hasError(collegeName)
-                      ? formState.errors[collegeName].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <TextField
-                  fullWidth
-                  id={get(CollegeFormSchema[collegeCode], "id")}
-                  label={get(CollegeFormSchema[collegeCode], "label")}
-                  name={collegeCode}
-                  onChange={handleChange}
-                  placeholder={get(
-                    CollegeFormSchema[collegeCode],
-                    "placeholder"
-                  )}
-                  required
-                  value={formState.values[collegeCode] || ""}
-                  error={hasError(collegeCode)}
-                  helperText={
-                    hasError(collegeCode)
-                      ? formState.errors[collegeCode].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <TextField
-                  fullWidth
-                  label={get(CollegeFormSchema[collegeEmail], "label")}
-                  id={get(CollegeFormSchema[collegeEmail], "id")}
-                  name={collegeEmail}
-                  onChange={handleChange}
-                  placeholder={get(
-                    CollegeFormSchema[collegeEmail],
-                    "placeholder"
-                  )}
-                  required
-                  value={formState.values[collegeEmail] || ""}
-                  error={hasError(collegeEmail)}
-                  helperText={
-                    hasError(collegeEmail)
-                      ? formState.errors[collegeEmail].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  className={classes.formControl}
-                >
-                  <InputLabel ref={inputLabel} id="state-label">
-                    {/* State */}
-                  </InputLabel>
-                  <Autocomplete
-                    id={get(CollegeFormSchema[state], "id")}
-                    options={states}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(state, event, value);
-                    }}
-                    /** This is used to set the default value to the auto complete */
-                    value={
-                      states[
-                        states.findIndex(function(item, i) {
-                          return item.id === formState.values[state];
-                        })
-                      ] || null
-                    }
-                    name={state}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(state)}
-                        helperText={
-                          hasError(state)
-                            ? formState.errors[state].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        placeholder={get(
-                          CollegeFormSchema[state],
-                          "placeholder"
-                        )}
-                        value={option => option.id}
-                        name={state}
-                        key={option => option.id}
-                        label={get(CollegeFormSchema[state], "label")}
-                        variant="outlined"
-                      />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    // helperText="Please specify the college name"
+                    id={get(CollegeFormSchema[collegeName], "id")}
+                    label={get(CollegeFormSchema[collegeName], "label")}
+                    name={collegeName}
+                    onChange={handleChange}
+                    placeholder={get(
+                      CollegeFormSchema[collegeName],
+                      "placeholder"
                     )}
-                  />
-                </FormControl>
-              </Grid>
-
-              <Grid item md={3} xs={12}>
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  className={classes.formControl}
-                >
-                  <InputLabel ref={inputLabel} id="zone-label">
-                    {/* Zone */}
-                  </InputLabel>
-
-                  <Autocomplete
-                    id={get(CollegeFormSchema[zone], "id")}
-                    options={zones ? zones : <CircularProgress />}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(zone, event, value);
-                    }}
-                    /** This is used to set the default value to the auto complete */
-                    value={
-                      formState.isStateClearFilter
-                        ? null
-                        : zones[
-                            zones.findIndex(function(item, i) {
-                              return item.id === formState.values[zone];
-                            })
-                          ] || null /** Please give a default " " blank value */
+                    required
+                    type={get(CollegeFormSchema[collegeName], "type")}
+                    value={formState.values[collegeName] || ""}
+                    error={hasError(collegeName)}
+                    helperText={
+                      hasError(collegeName)
+                        ? formState.errors[collegeName].map(error => {
+                            return error + " ";
+                          })
+                        : null
                     }
-                    name={zone}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(zone)}
-                        helperText={
-                          hasError(zone)
-                            ? formState.errors[zone].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        placeholder={get(
-                          CollegeFormSchema[zone],
-                          "placeholder"
-                        )}
-                        value={option => option.id}
-                        name={rpc}
-                        key={option => option.id}
-                        label={get(CollegeFormSchema[zone], "label")}
-                        variant="outlined"
-                      />
-                    )}
+                    variant="outlined"
                   />
-                </FormControl>
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  className={classes.formControl}
-                >
-                  <InputLabel ref={inputLabel} id="rpcs-label">
-                    {/* RPCs */}
-                  </InputLabel>
-
-                  <Autocomplete
-                    id={get(CollegeFormSchema[rpc], "id")}
-                    options={rpcs}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(rpc, event, value);
-                    }}
-                    name={rpc}
-                    /** This is used to set the default value to the auto complete */
-                    value={
-                      formState.isStateClearFilter
-                        ? null
-                        : rpcs[
-                            rpcs.findIndex(function(item, i) {
-                              return item.id === formState.values[rpc];
-                            })
-                          ] || null /** Please give a default " " blank value */
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    id={get(CollegeFormSchema[collegeCode], "id")}
+                    label={get(CollegeFormSchema[collegeCode], "label")}
+                    name={collegeCode}
+                    onChange={handleChange}
+                    placeholder={get(
+                      CollegeFormSchema[collegeCode],
+                      "placeholder"
+                    )}
+                    required
+                    value={formState.values[collegeCode] || ""}
+                    error={hasError(collegeCode)}
+                    helperText={
+                      hasError(collegeCode)
+                        ? formState.errors[collegeCode].map(error => {
+                            return error + " ";
+                          })
+                        : null
                     }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(rpc)}
-                        helperText={
-                          hasError(rpc)
-                            ? formState.errors[rpc].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        placeholder={get(CollegeFormSchema[rpc], "placeholder")}
-                        value={option => option.id}
-                        name={rpc}
-                        key={option => option.id}
-                        label={get(CollegeFormSchema[rpc], "label")}
-                        variant="outlined"
-                      />
-                    )}
+                    variant="outlined"
                   />
-                </FormControl>
+                </Grid>
               </Grid>
-              <Grid item md={3} xs={12}>
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  className={classes.formControl}
-                >
-                  <InputLabel ref={inputLabel} id="districts-label">
-                    {/* Districts */}
-                  </InputLabel>
-
-                  <Autocomplete
-                    id={get(CollegeFormSchema[district], "id")}
-                    options={districts}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(district, event, value);
-                    }}
-                    name={district}
-                    /** This is used to set the default value to the auto complete */
-                    value={
-                      formState.isStateClearFilter
-                        ? null
-                        : districts[
-                            districts.findIndex(function(item, i) {
-                              return item.id === formState.values[district];
-                            })
-                          ] || null /** Please give a default " " blank value */
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    fullWidth
+                    label={get(CollegeFormSchema[collegeEmail], "label")}
+                    id={get(CollegeFormSchema[collegeEmail], "id")}
+                    name={collegeEmail}
+                    onChange={handleChange}
+                    placeholder={get(
+                      CollegeFormSchema[collegeEmail],
+                      "placeholder"
+                    )}
+                    required
+                    value={formState.values[collegeEmail] || ""}
+                    error={hasError(collegeEmail)}
+                    helperText={
+                      hasError(collegeEmail)
+                        ? formState.errors[collegeEmail].map(error => {
+                            return error + " ";
+                          })
+                        : null
                     }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(district)}
-                        helperText={
-                          hasError(district)
-                            ? formState.errors[district].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        placeholder={get(
-                          CollegeFormSchema[district],
-                          "placeholder"
-                        )}
-                        value={option => option.id}
-                        name={district}
-                        key={option => option.id}
-                        label={get(CollegeFormSchema[district], "label")}
-                        variant="outlined"
-                      />
-                    )}
+                    variant="outlined"
                   />
-                </FormControl>
+                </Grid>
               </Grid>
-              <Grid item md={12} xs={12}>
-                <TextField
-                  fullWidth
-                  id={get(CollegeFormSchema[address], "id")}
-                  label={get(CollegeFormSchema[address], "label")}
-                  name={address}
-                  onChange={handleChange}
-                  required
-                  placeholder={get(CollegeFormSchema[address], "placeholder")}
-                  value={formState.values[address] || ""}
-                  error={hasError(address)}
-                  helperText={
-                    hasError(address)
-                      ? formState.errors[address].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                  variant="outlined"
-                />
-              </Grid>
-            </Grid>
-            <Divider className={classes.divider} />
-            <Grid container spacing={3}>
-              <Grid item md={3} xs={12}>
-                <TextField
-                  fullWidth
-                  label="Contact Number"
-                  name={contactNumber}
-                  onChange={handleChange}
-                  required
-                  placeholder={get(
-                    CollegeFormSchema[contactNumber],
-                    "placeholder"
-                  )}
-                  value={formState.values[contactNumber] || ""}
-                  error={hasError(contactNumber)}
-                  helperText={
-                    hasError(contactNumber)
-                      ? formState.errors[contactNumber].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  className={classes.formControl}
-                >
-                  <InputLabel ref={inputLabel} id="principal-label">
-                    {/* principal */}
-                  </InputLabel>
-                  {user.length ? (
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                    className={classes.formControl}
+                  >
+                    <InputLabel ref={inputLabel} id="state-label">
+                      {/* State */}
+                    </InputLabel>
                     <Autocomplete
-                      id={get(CollegeFormSchema[principal], "id")}
-                      options={user}
-                      getOptionLabel={option => option.username}
+                      id={get(CollegeFormSchema[state], "id")}
+                      options={states}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
-                        handleChangeAutoComplete(principal, event, value);
+                        handleChangeAutoComplete(state, event, value);
                       }}
                       /** This is used to set the default value to the auto complete */
                       value={
-                        user[
-                          user.findIndex(function(item, i) {
-                            return item.id === formState.values[principal];
+                        states[
+                          states.findIndex(function(item, i) {
+                            return item.id === formState.values[state];
                           })
-                        ] || null /** Please give a default " " blank value */
+                        ] || null
                       }
-                      name={principal}
+                      name={state}
                       renderInput={params => (
                         <TextField
                           {...params}
-                          error={hasError(principal)}
+                          error={hasError(state)}
                           helperText={
-                            hasError(principal)
-                              ? formState.errors[principal].map(error => {
+                            hasError(state)
+                              ? formState.errors[state].map(error => {
                                   return error + " ";
                                 })
                               : null
                           }
                           placeholder={get(
-                            CollegeFormSchema[principal],
+                            CollegeFormSchema[state],
                             "placeholder"
                           )}
                           value={option => option.id}
-                          name={principal}
+                          name={state}
                           key={option => option.id}
-                          label={get(CollegeFormSchema[principal], "label")}
+                          label={get(CollegeFormSchema[state], "label")}
                           variant="outlined"
                         />
                       )}
                     />
-                  ) : null}
-                </FormControl>
-              </Grid>
-              {/** TPO */}
-              <Grid item md={3} xs={12}>
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  className={classes.formControl}
-                >
-                  <InputLabel ref={inputLabel} id="admins-label">
-                    {/* TPO */}
-                  </InputLabel>
-                  {user.length ? (
-                    <Autocomplete
-                      id={get(CollegeFormSchema[admins], "id")}
-                      options={user}
-                      getOptionLabel={option => option.username}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(admins, event, value);
-                      }}
-                      name={admins}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(admins)}
-                          helperText={
-                            hasError(admins)
-                              ? formState.errors[admins].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          placeholder={get(
-                            CollegeFormSchema[admins],
-                            "placeholder"
-                          )}
-                          value={option => option.id}
-                          name={principal}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[admins], "label")}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  ) : null}
-                </FormControl>
-              </Grid>
-              <Divider />
-              <Grid item md={3} xs={12}>
-                <div style={{ display: formState.showing ? "block" : "none" }}>
-                  <FormGroup row>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          name={block}
-                          checked={formState.values[block]}
-                          onChange={handleChange}
-                          value={formState.values[block]}
-                          error={hasError(block).toString()}
-                          helpertext={
-                            hasError(block)
-                              ? formState.errors[block].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      }
-                      label={get(CollegeFormSchema[block], "label")}
-                    />
-                  </FormGroup>
-                </div>
-              </Grid>
-              <Grid item md={12} xs={12} className={classes.streamcard}>
-                <Card className={classes.streamoffer}>
-                  <InputLabel
-                    htmlFor="outlined-stream-card"
-                    fullwidth={true.toString()}
+                  </FormControl>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                    className={classes.formControl}
                   >
-                    {genericConstants.STREAMS_OFFERED_TEXT}
-                  </InputLabel>
+                    <InputLabel ref={inputLabel} id="zone-label">
+                      {/* Zone */}
+                    </InputLabel>
 
-                  {formState.dynamicBar.map((val, idx) => {
-                    let streamId = `stream-${idx}`,
-                      strengthId = `strength-${idx}`;
-                    return (
-                      <Card
-                        id="outlined-stream-card"
-                        fullwidth={true.toString()}
-                        className={classes.streamcardcontent}
-                        key={Math.random()}
-                      >
-                        <CardContent>
-                          <Grid container spacing={3}>
-                            <Grid item md xs>
-                              <FormControl
-                                variant="outlined"
-                                fullWidth
-                                className={classes.formControl}
-                              >
-                                <InputLabel
-                                  ref={inputLabel}
-                                  id="demo-simple-select-outlined-label"
+                    <Autocomplete
+                      id={get(CollegeFormSchema[zone], "id")}
+                      options={zones ? zones : <CircularProgress />}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(zone, event, value);
+                      }}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        formState.isStateClearFilter
+                          ? null
+                          : zones[
+                              zones.findIndex(function(item, i) {
+                                return item.id === formState.values[zone];
+                              })
+                            ] ||
+                            null /** Please give a default " " blank value */
+                      }
+                      name={zone}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(zone)}
+                          helperText={
+                            hasError(zone)
+                              ? formState.errors[zone].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(
+                            CollegeFormSchema[zone],
+                            "placeholder"
+                          )}
+                          value={option => option.id}
+                          name={rpc}
+                          key={option => option.id}
+                          label={get(CollegeFormSchema[zone], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                    className={classes.formControl}
+                  >
+                    <InputLabel ref={inputLabel} id="rpcs-label">
+                      {/* RPCs */}
+                    </InputLabel>
+
+                    <Autocomplete
+                      id={get(CollegeFormSchema[rpc], "id")}
+                      options={rpcs}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(rpc, event, value);
+                      }}
+                      name={rpc}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        formState.isStateClearFilter
+                          ? null
+                          : rpcs[
+                              rpcs.findIndex(function(item, i) {
+                                return item.id === formState.values[rpc];
+                              })
+                            ] ||
+                            null /** Please give a default " " blank value */
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(rpc)}
+                          helperText={
+                            hasError(rpc)
+                              ? formState.errors[rpc].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(
+                            CollegeFormSchema[rpc],
+                            "placeholder"
+                          )}
+                          value={option => option.id}
+                          name={rpc}
+                          key={option => option.id}
+                          label={get(CollegeFormSchema[rpc], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                    className={classes.formControl}
+                  >
+                    <InputLabel ref={inputLabel} id="districts-label">
+                      {/* Districts */}
+                    </InputLabel>
+
+                    <Autocomplete
+                      id={get(CollegeFormSchema[district], "id")}
+                      options={districts}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(district, event, value);
+                      }}
+                      name={district}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        formState.isStateClearFilter
+                          ? null
+                          : districts[
+                              districts.findIndex(function(item, i) {
+                                return item.id === formState.values[district];
+                              })
+                            ] ||
+                            null /** Please give a default " " blank value */
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(district)}
+                          helperText={
+                            hasError(district)
+                              ? formState.errors[district].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(
+                            CollegeFormSchema[district],
+                            "placeholder"
+                          )}
+                          value={option => option.id}
+                          name={district}
+                          key={option => option.id}
+                          label={get(CollegeFormSchema[district], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    fullWidth
+                    id={get(CollegeFormSchema[address], "id")}
+                    label={get(CollegeFormSchema[address], "label")}
+                    name={address}
+                    onChange={handleChange}
+                    required
+                    placeholder={get(CollegeFormSchema[address], "placeholder")}
+                    value={formState.values[address] || ""}
+                    error={hasError(address)}
+                    helperText={
+                      hasError(address)
+                        ? formState.errors[address].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Contact Number"
+                    name={contactNumber}
+                    onChange={handleChange}
+                    required
+                    placeholder={get(
+                      CollegeFormSchema[contactNumber],
+                      "placeholder"
+                    )}
+                    value={formState.values[contactNumber] || ""}
+                    error={hasError(contactNumber)}
+                    helperText={
+                      hasError(contactNumber)
+                        ? formState.errors[contactNumber].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                    className={classes.formControl}
+                  >
+                    <InputLabel ref={inputLabel} id="principal-label">
+                      {/* principal */}
+                    </InputLabel>
+                    {user.length ? (
+                      <Autocomplete
+                        id={get(CollegeFormSchema[principal], "id")}
+                        options={user}
+                        getOptionLabel={option => option.username}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(principal, event, value);
+                        }}
+                        /** This is used to set the default value to the auto complete */
+                        value={
+                          user[
+                            user.findIndex(function(item, i) {
+                              return item.id === formState.values[principal];
+                            })
+                          ] || null /** Please give a default " " blank value */
+                        }
+                        name={principal}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(principal)}
+                            helperText={
+                              hasError(principal)
+                                ? formState.errors[principal].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            placeholder={get(
+                              CollegeFormSchema[principal],
+                              "placeholder"
+                            )}
+                            value={option => option.id}
+                            name={principal}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[principal], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    ) : null}
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                    className={classes.formControl}
+                  >
+                    <InputLabel ref={inputLabel} id="admins-label">
+                      {/* TPO */}
+                    </InputLabel>
+                    {user.length ? (
+                      <Autocomplete
+                        id={get(CollegeFormSchema[admins], "id")}
+                        options={user}
+                        getOptionLabel={option => option.username}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(admins, event, value);
+                        }}
+                        name={admins}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(admins)}
+                            helperText={
+                              hasError(admins)
+                                ? formState.errors[admins].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            placeholder={get(
+                              CollegeFormSchema[admins],
+                              "placeholder"
+                            )}
+                            value={option => option.id}
+                            name={principal}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[admins], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    ) : null}
+                  </FormControl>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <div
+                    style={{ display: formState.showing ? "block" : "none" }}
+                  >
+                    <FormGroup row>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            name={block}
+                            checked={formState.values[block]}
+                            onChange={handleChange}
+                            value={formState.values[block]}
+                            error={hasError(block).toString()}
+                            helpertext={
+                              hasError(block)
+                                ? formState.errors[block].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                          />
+                        }
+                        label={get(CollegeFormSchema[block], "label")}
+                      />
+                    </FormGroup>
+                  </div>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={1} className={classes.formgrid}>
+                <Grid item md={12} xs={12} className={classes.streamcard}>
+                  <Card className={classes.streamoffer}>
+                    <InputLabel
+                      htmlFor="outlined-stream-card"
+                      fullwidth={true.toString()}
+                    >
+                      {genericConstants.STREAMS_OFFERED_TEXT}
+                    </InputLabel>
+
+                    {formState.dynamicBar.map((val, idx) => {
+                      let streamId = `stream-${idx}`,
+                        strengthId = `strength-${idx}`;
+                      return (
+                        <Card
+                          id="outlined-stream-card"
+                          fullwidth={true.toString()}
+                          className={classes.streamcardcontent}
+                          key={Math.random()}
+                        >
+                          <CardContent>
+                            <Grid container spacing={1}>
+                              <Grid item xs={5}>
+                                <FormControl
+                                  variant="outlined"
+                                  fullWidth
+                                  className={classes.formControl}
                                 >
-                                  {/* Streams */}
-                                </InputLabel>
-                                <Autocomplete
-                                  id={streamId}
-                                  options={streamsData}
-                                  getOptionLabel={option => option.name}
-                                  onChange={(event, value) => {
+                                  <InputLabel
+                                    ref={inputLabel}
+                                    id="demo-simple-select-outlined-label"
+                                  >
+                                    {/* Streams */}
+                                  </InputLabel>
+                                  <Autocomplete
+                                    id={streamId}
+                                    options={streamsData}
+                                    getOptionLabel={option => option.name}
+                                    onChange={(event, value) => {
+                                      handleChangeForDynamicGrid(
+                                        streams,
+                                        event,
+                                        value,
+                                        val,
+                                        true,
+                                        false
+                                      );
+                                    }}
+                                    data-id={idx}
+                                    name={streamId}
+                                    value={
+                                      streamsDataBackup[
+                                        streamsDataBackup.findIndex(function(
+                                          item,
+                                          i
+                                        ) {
+                                          return (
+                                            item.id ===
+                                            formState.dynamicBar[idx][streams]
+                                          );
+                                        })
+                                      ] || null
+                                    }
+                                    renderInput={params => (
+                                      <TextField
+                                        {...params}
+                                        value={option => option.id}
+                                        name={streamId}
+                                        error={
+                                          checkErrorInDynamicBar(streams, val)[
+                                            "error"
+                                          ]
+                                        }
+                                        helperText={
+                                          checkErrorInDynamicBar(streams, val)[
+                                            "error"
+                                          ]
+                                            ? checkErrorInDynamicBar(
+                                                streams,
+                                                val
+                                              )["value"]
+                                            : null
+                                        }
+                                        placeholder={get(
+                                          CollegeFormSchema[streams],
+                                          "placeholder"
+                                        )}
+                                        key={option => option.id}
+                                        label={get(
+                                          CollegeFormSchema[streams],
+                                          "label"
+                                        )}
+                                        variant="outlined"
+                                      />
+                                    )}
+                                  />
+                                </FormControl>
+                              </Grid>
+                              {/** Need to map streams with strength */}
+                              <Grid item xs={5}>
+                                <TextField
+                                  label="Strength"
+                                  name={strengthId}
+                                  variant="outlined"
+                                  fullWidth
+                                  data-id={idx}
+                                  id={strengthId}
+                                  value={
+                                    formState.dynamicBar[idx][strength] || ""
+                                  }
+                                  error={
+                                    checkErrorInDynamicBar(strength, val)[
+                                      "error"
+                                    ]
+                                  }
+                                  helperText={
+                                    checkErrorInDynamicBar(strength, val)[
+                                      "error"
+                                    ]
+                                      ? checkErrorInDynamicBar(strength, val)[
+                                          "value"
+                                        ]
+                                      : null
+                                  }
+                                  placeholder={get(
+                                    CollegeFormSchema[strength],
+                                    "placeholder"
+                                  )}
+                                  onChange={event => {
                                     handleChangeForDynamicGrid(
-                                      streams,
+                                      strength,
                                       event,
-                                      value,
+                                      null,
                                       val,
-                                      true,
-                                      false
+                                      false,
+                                      true
                                     );
                                   }}
-                                  data-id={idx}
-                                  name={streamId}
-                                  value={
-                                    streamsDataBackup[
-                                      streamsDataBackup.findIndex(function(
-                                        item,
-                                        i
-                                      ) {
-                                        return (
-                                          item.id ===
-                                          formState.dynamicBar[idx][streams]
-                                        );
-                                      })
-                                    ] || null
-                                  }
-                                  renderInput={params => (
-                                    <TextField
-                                      {...params}
-                                      value={option => option.id}
-                                      name={streamId}
-                                      error={
-                                        checkErrorInDynamicBar(streams, val)[
-                                          "error"
-                                        ]
-                                      }
-                                      helperText={
-                                        checkErrorInDynamicBar(streams, val)[
-                                          "error"
-                                        ]
-                                          ? checkErrorInDynamicBar(
-                                              streams,
-                                              val
-                                            )["value"]
-                                          : null
-                                      }
-                                      placeholder={get(
-                                        CollegeFormSchema[streams],
-                                        "placeholder"
-                                      )}
-                                      key={option => option.id}
-                                      label={get(
-                                        CollegeFormSchema[streams],
-                                        "label"
-                                      )}
-                                      variant="outlined"
-                                    />
-                                  )}
                                 />
-                              </FormControl>
-                            </Grid>
-                            {/** Need to map streams with strength */}
-                            <Grid item md xs>
-                              <TextField
-                                label="Strength"
-                                name={strengthId}
-                                variant="outlined"
-                                fullWidth
-                                data-id={idx}
-                                id={strengthId}
-                                value={
-                                  formState.dynamicBar[idx][strength] || ""
-                                }
-                                error={
-                                  checkErrorInDynamicBar(strength, val)["error"]
-                                }
-                                helperText={
-                                  checkErrorInDynamicBar(strength, val)["error"]
-                                    ? checkErrorInDynamicBar(strength, val)[
-                                        "value"
-                                      ]
-                                    : null
-                                }
-                                placeholder={get(
-                                  CollegeFormSchema[strength],
-                                  "placeholder"
+                              </Grid>
+                              <Grid item xs={2}>
+                                {idx > 0 ? (
+                                  <DeleteForeverOutlinedIcon
+                                    onClick={e => clickOnDelete(val, idx)}
+                                    style={{ color: "red", fontSize: "24px" }}
+                                  />
+                                ) : (
+                                  ""
                                 )}
-                                onChange={event => {
-                                  handleChangeForDynamicGrid(
-                                    strength,
-                                    event,
-                                    null,
-                                    val,
-                                    false,
-                                    true
-                                  );
-                                }}
-                              />
+                              </Grid>
                             </Grid>
-                            <Grid item md xs>
-                              {idx > 0 ? (
-                                <DeleteForeverOutlinedIcon
-                                  onClick={e => clickOnDelete(val, idx)}
-                                  style={{ color: "red", fontSize: "24px" }}
-                                />
-                              ) : (
-                                ""
-                              )}
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                  <div className={classes.btnspaceadd}>
-                    <YellowButton
-                      disabled={streamsData.length ? false : true}
-                      color="primary"
-                      variant="contained"
-                      className={classes.add_more_btn}
-                      onClick={addNewRow}
-                    >
-                      {genericConstants.ADD_MORE_TEXT}
-                    </YellowButton>
-                  </div>
-                </Card>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                    <div className={classes.btnspaceadd}>
+                      <YellowButton
+                        disabled={streamsData.length ? false : true}
+                        color="primary"
+                        variant="contained"
+                        className={classes.add_more_btn}
+                        onClick={addNewRow}
+                      >
+                        {genericConstants.ADD_MORE_TEXT}
+                      </YellowButton>
+                    </div>
+                  </Card>
+                </Grid>
               </Grid>
             </Grid>
           </CardContent>
-          <CardActions className={classes.btnspace}>
-            <YellowButton
-              type="submit"
-              color="primary"
-              variant="contained"
-              onClick={handleSubmit}
-              className={classes.submitbtn}
-            >
-              {genericConstants.SAVE_BUTTON_TEXT}
-            </YellowButton>
-            <GrayButton
-              color="primary"
-              variant="contained"
-              onClick={clickedCancelButton}
-              // to={routeConstants.VIEW_COLLEGE}
-              className={classes.resetbtn}
-            >
-              {genericConstants.CANCEL_BUTTON_TEXT}
-            </GrayButton>
-          </CardActions>
+          <Grid item xs={12} className={classes.CardActionGrid}>
+            <CardActions className={classes.btnspace}>
+              <YellowButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                onClick={handleSubmit}
+                className={classes.submitbtn}
+              >
+                {genericConstants.SAVE_BUTTON_TEXT}
+              </YellowButton>
+              <GrayButton
+                color="primary"
+                variant="contained"
+                onClick={clickedCancelButton}
+                // to={routeConstants.VIEW_COLLEGE}
+                className={classes.resetbtn}
+              >
+                {genericConstants.CANCEL_BUTTON_TEXT}
+              </GrayButton>
+            </CardActions>
+          </Grid>
         </Card>
       </Grid>
     </Grid>

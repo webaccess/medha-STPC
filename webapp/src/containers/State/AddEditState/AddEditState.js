@@ -189,6 +189,7 @@ const AddEditState = props => {
                     name={state}
                     value={formState.values[state] || ""}
                     error={hasError(state)}
+                    placeholder={get(StateSchema[state], "placeholder")}
                     variant="outlined"
                     required
                     fullWidth

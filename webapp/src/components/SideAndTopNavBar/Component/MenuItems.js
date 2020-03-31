@@ -32,7 +32,7 @@ const MenuItems = props => {
       },
       {
         name: "Events",
-        link: routeConstants.EVENTS,
+        link: routeConstants.MANAGE_EVENT,
         Icon: <EmojiFlagsOutlinedIcon />
       },
       {
@@ -121,7 +121,7 @@ const MenuItems = props => {
       },
       {
         name: "Events",
-        link: "",
+        link: routeConstants.ELIGIBLE_EVENT,
         Icon: <EmojiFlagsOutlinedIcon />
       },
       {
@@ -139,6 +139,10 @@ const MenuItems = props => {
           {
             name: "Documents",
             link: routeConstants.VIEW_DOCUMENTS
+          },
+          {
+            name: "Academic History",
+            link: routeConstants.VIEW_ACADEMIC_HISTORY
           }
         ]
       }

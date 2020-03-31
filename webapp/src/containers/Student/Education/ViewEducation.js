@@ -32,9 +32,6 @@ import DeleteEducation from "./DeleteEducation";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
-// const EDUCATION_URL =
-//   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EDUCATIONS;
-
 const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
 const studentId = studentInfo ? studentInfo.id : null;
 
@@ -197,29 +194,7 @@ const ViewEducation = props => {
     getEducationData(formState.pageSize, 1);
   };
 
-  // const getDataForEdit = async id => {
-  //   let paramsForeducations = {
-  //     id: idgetDataForEdit
-  //   };
-  //   await serviceProviders
-  //     .serviceProviderForGetRequest(EDUCATION_URL, paramsForeducations)
-  //     .then(res => {
-  //       let editData = res.data.result[0];
-  //       console.log({ editData });
-  //       /** move to edit page */
-  //       history.push({
-  //         pathname: routeConstants.EDIT_EDUCATION,
-  //         editEducation: true,
-  //         dataForEdit: editData
-  //       });
-  //     })
-  //     .catch(error => {
-  //       console.log("error");
-  //     });
-  // };
-
   const editCell = data => {
-    // getDataForEdit(event.target.id);
     history.push({
       pathname: routeConstants.EDIT_EDUCATION,
       editEducation: true,
