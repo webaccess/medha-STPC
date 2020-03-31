@@ -1,27 +1,24 @@
 import React, { useState, useEffect } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Auth as auth, Spinner, GreenButton } from "../../../components";
+import {
+  Auth as auth,
+  Spinner,
+  GreenButton,
+  YellowButton
+} from "../../../components";
 import {
   Card,
   CardContent,
   Grid,
   Divider,
-  Icon,
-  Typography,
-  withStyles,
-  Paper
+  Typography
 } from "@material-ui/core";
 import useStyles from "./EventDetailsStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
-import { YellowButton, GrayButton } from "../../../components";
-import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
-import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { Image } from "@material-ui/icons";
-import spinner from "../../../components/Spinner";
 import RegisterEvent from "./EventRegistration";
 
 const EligibleEvents = props => {
@@ -33,11 +30,15 @@ const EligibleEvents = props => {
     greenButtonChecker: true,
     showRegisterModel: false,
     registerUserId: "",
-    eventtitle: ""
+    eventtitle: "",
+    isDataDeleted: false,
+    authUserRegistering: auth.getUserInfo().id
   });
   useEffect(() => {
     getEventDetails();
   }, []);
+
+  console.log("aurhUser", formState.authUserRegistering);
 
   async function getEventDetails() {
     let paramsForCollege = null;
@@ -132,11 +133,21 @@ const EligibleEvents = props => {
     }));
   };
 
+  const isDeleteCellCompleted = status => {
+    formState.isDataDeleted = status;
+  };
+
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
       showRegisterModel: false
     }));
+    if (formState.isDataDeleted) {
+      setFormState(formState => ({
+        ...formState,
+        showRegisterModel: false
+      }));
+    }
   };
 
   return (
@@ -286,6 +297,8 @@ const EligibleEvents = props => {
             modalClose={modalClose}
             eventName={formState.registerUserId}
             eventTitle={formState.eventtitle}
+            userRegistering={formState.authUserRegistering}
+            registerEvent={isDeleteCellCompleted}
           />
         </Card>
       </Grid>

@@ -309,3 +309,10 @@ export const addAcademicHistory = (academicYear, educationYear) => {
     education_year: educationYear
   };
 };
+
+export const studentEventRegistration = (event, student) => {
+  return {
+    event: event,
+    student: student
+  };
+};
