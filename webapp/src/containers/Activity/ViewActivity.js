@@ -31,6 +31,7 @@ import {
 // import DeleteEducation from "./DeleteEducation";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import moment from "moment";
 
 // const ACTIVITY_URL =
 //   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
@@ -265,7 +266,11 @@ const ViewActivity = props => {
       selector: row => `${row.streams.map(s => ` ${s.name}`)}`
     },
     { name: "College", sortable: true, selector: "college.name" },
-    /** Columns for edit and delete */
+    {
+      name: "Date",
+      sortable: true,
+      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`
+    },
     {
       cell: cell => (
         <Grid container spacing={1}>
