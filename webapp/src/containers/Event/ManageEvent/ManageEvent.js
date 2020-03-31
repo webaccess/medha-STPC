@@ -360,85 +360,68 @@ const ViewEvents = props => {
     { name: "Event", sortable: true, selector: "title" },
     { name: "Date", sortable: true, selector: "start_date_time" },
     {
+      name: "Actions",
       cell: cell => (
-        <Tooltip title="View" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={viewCell}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            view_list
-          </i>
-        </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <Tooltip title="View" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={viewCell}
+                style={{ color: "green" }}
+              >
+                view_list
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="Edit" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={editCell}
+                style={{ color: "green", fontSize: "21px" }}
+              >
+                edit
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="View Student List" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                style={{ color: "green", fontSize: "21px" }}
+                // onClick={blockedCell}
+              >
+                group
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="Delete" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.title}
+                onClick={deleteCell}
+                style={{ color: "red", fontSize: "23px" }}
+              >
+                delete_outline
+              </i>
+            </Tooltip>
+          </div>
+        </div>
       ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Edit" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={editCell}
-            style={{ color: "green" }}
-          >
-            edit
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="View Student List" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            style={{ color: "blue" }}
-            // onClick={blockedCell}
-          >
-            group
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: [
-        {
-          when: row => row.blocked === true,
-          style: {
-            color: "red"
-          }
-        },
-        {
-          when: row => row.blocked === false,
-          style: {
-            color: "green"
-          }
-        }
-      ]
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Delete" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.title}
-            onClick={deleteCell}
-            style={{ color: "red" }}
-          >
-            delete_outline
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
     }
   ];
 

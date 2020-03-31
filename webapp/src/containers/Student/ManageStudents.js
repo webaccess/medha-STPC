@@ -25,7 +25,7 @@ import { serviceProviderForGetRequest } from "../../api/Axios";
 
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
-  const USER_FILTER = "user.username_contains";
+const USER_FILTER = "user.username_contains";
 const STREAM_FILTER = "stream.id";
 const SORT_FIELD_KEY = "_sort";
 
@@ -80,7 +80,7 @@ const ManageStudents = props => {
     serviceProviders
       .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
       .then(res => {
-        if(res.data.length){
+        if (res.data.length) {
           let tempStudentData = [];
           let student_data = res.data;
           tempStudentData = convertStudentData(student_data);
@@ -88,13 +88,12 @@ const ManageStudents = props => {
             ...formState,
             student: tempStudentData
           }));
-        }else {
+        } else {
           setFormState(formState => ({
             ...formState,
             student: res.data.length
           }));
         }
-       
       })
       .catch(error => {
         console.log("error", error);
@@ -339,81 +338,70 @@ const ManageStudents = props => {
   /** Columns to show in table */
   const column = [
     { name: "Name", sortable: true, selector: "name" },
-    { name: "stream", sortable: true, selector: "stream" },
-    // { name: "year_of_passing", sortable: true, selector: "year_of_passing" },
-
-    /** Columns for block, view, edit and delete */
+    { name: "Stream", sortable: true, selector: "stream" },
     {
+      name: "Actions",
       cell: cell => (
-        <Tooltip
-          title={cell.Approved ? "Approve" : "Unapprove"}
-          placement="top"
-        >
-          <i
-            className="material-icons"
-            id={cell.id}
-            onClick={blockedCell}
-            style={
-              cell.Approved
-                ? { color: "green", fontSize: "19px" }
-                : { color: "red", fontSize: "19px" }
-            }
-          >
-            done
-          </i>
-        </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <Tooltip
+              title={cell.Approved ? "Approve" : "Unapprove"}
+              placement="top"
+            >
+              <i
+                className="material-icons"
+                id={cell.id}
+                onClick={blockedCell}
+                style={cell.Approved ? { color: "green" } : { color: "red" }}
+              >
+                done
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="View" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                // onClick={viewCell}
+                style={{ color: "green" }}
+              >
+                view_list
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="Edit" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                // onClick={editCell}
+                style={{ color: "green", fontSize: "21px" }}
+              >
+                edit
+              </i>
+            </Tooltip>
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <Tooltip title="Delete" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                onClick={deleteCell}
+                style={{ color: "red", fontSize: "23px" }}
+              >
+                delete_outline
+              </i>
+            </Tooltip>
+          </div>
+        </div>
       ),
-      button: true
-      // conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="View" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            // onClick={viewCell}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            view_list
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Edit" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            // onClick={editCell}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            edit
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Delete" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            onClick={deleteCell}
-            style={{ color: "red" }}
-          >
-            delete_outline
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
     }
   ];
 
@@ -467,13 +455,13 @@ const ManageStudents = props => {
         <CardContent className={classes.Cardtheming}>
           <Grid className={classes.filterOptions} container spacing={1}>
             <Grid item>
-            <TextField
-                  label={"User Name"}
-                  placeholder="User Name"
-                  variant="outlined"
-                  name={USER_FILTER}
-                  onChange={handleFilterChange}
-                />
+              <TextField
+                label={"User Name"}
+                placeholder="User Name"
+                variant="outlined"
+                name={USER_FILTER}
+                onChange={handleFilterChange}
+              />
               {/* <Autocomplete
                 id="combo-box-demo"
                 name={USER_FILTER}
