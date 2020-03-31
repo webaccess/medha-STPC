@@ -2,56 +2,48 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/events",
-      "handler": "event.find",
+      "path": "/qualifications",
+      "handler": "qualifications.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/events/count",
-      "handler": "event.count",
+      "path": "/qualifications/count",
+      "handler": "qualifications.count",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/events/:id",
-      "handler": "event.findOne",
+      "path": "/qualifications/:id",
+      "handler": "qualifications.findOne",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/events",
-      "handler": "event.create",
+      "path": "/qualifications",
+      "handler": "qualifications.create",
       "config": {
         "policies": []
       }
     },
     {
       "method": "PUT",
-      "path": "/events/:id",
-      "handler": "event.update",
+      "path": "/qualifications/:id",
+      "handler": "qualifications.update",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/events/:id",
-      "handler": "event.delete",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/events/:id/students",
-      "handler": "event.students",
+      "path": "/qualifications/:id",
+      "handler": "qualifications.delete",
       "config": {
         "policies": []
       }

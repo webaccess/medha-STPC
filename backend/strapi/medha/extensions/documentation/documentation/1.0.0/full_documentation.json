@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "03/30/2020 5:10:03 PM"
+    "x-generation-date": "03/31/2020 6:38:47 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -3028,7 +3028,7 @@
         },
         "summary": "",
         "tags": [
-          "Unclassified"
+          "College"
         ],
         "requestBody": {
           "description": "",
@@ -5497,6 +5497,74 @@
         ]
       }
     },
+    "/events/{id}/students": {
+      "get": {
+        "deprecated": false,
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Event"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/feedbacks": {
       "get": {
         "deprecated": false,
@@ -6788,6 +6856,517 @@
         "summary": "",
         "tags": [
           "Otp"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/qualifications": {
+      "get": {
+        "deprecated": false,
+        "description": "Find all the qualifications's records",
+        "responses": {
+          "200": {
+            "description": "Retrieve qualifications document(s)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Qualifications"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Qualifications"
+        ],
+        "parameters": [
+          {
+            "name": "_limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of results possible",
+            "schema": {
+              "type": "integer"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort according to a specific field.",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_start",
+            "in": "query",
+            "required": false,
+            "description": "Skip a specific number of entries (especially useful for pagination)",
+            "schema": {
+              "type": "integer"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "=",
+            "in": "query",
+            "required": false,
+            "description": "Get entries that matches exactly your input",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_ne",
+            "in": "query",
+            "required": false,
+            "description": "Get records that are not equals to something",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_lt",
+            "in": "query",
+            "required": false,
+            "description": "Get record that are lower than a value",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_lte",
+            "in": "query",
+            "required": false,
+            "description": "Get records that are lower than or equal to a value",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_gt",
+            "in": "query",
+            "required": false,
+            "description": "Get records that are greater than a value",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_gte",
+            "in": "query",
+            "required": false,
+            "description": "Get records that are greater than  or equal a value",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_contains",
+            "in": "query",
+            "required": false,
+            "description": "Get records that contains a value",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_containss",
+            "in": "query",
+            "required": false,
+            "description": "Get records that contains (case sensitive) a value",
+            "schema": {
+              "type": "string"
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_in",
+            "in": "query",
+            "required": false,
+            "description": "Get records that matches any value in the array of values",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "deprecated": false
+          },
+          {
+            "name": "_nin",
+            "in": "query",
+            "required": false,
+            "description": "Get records that doesn't match any value in the array of values",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "deprecated": false
+          }
+        ]
+      },
+      "post": {
+        "deprecated": false,
+        "description": "Create a new qualifications record",
+        "responses": {
+          "200": {
+            "description": "Retrieve qualifications document(s)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Qualifications"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Qualifications"
+        ],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewQualifications"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/qualifications/count": {
+      "get": {
+        "deprecated": false,
+        "description": "Retrieve the numver of qualifications documents",
+        "responses": {
+          "200": {
+            "description": "Retrieve qualifications document(s)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Qualifications"
+        ],
+        "parameters": []
+      }
+    },
+    "/qualifications/{id}": {
+      "get": {
+        "deprecated": false,
+        "description": "Find one qualifications record",
+        "responses": {
+          "200": {
+            "description": "Retrieve qualifications document(s)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Qualifications"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Qualifications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "deprecated": false,
+        "description": "Update a single qualifications record",
+        "responses": {
+          "200": {
+            "description": "Retrieve qualifications document(s)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Qualifications"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Qualifications"
+        ],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewQualifications"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "deprecated": false,
+        "description": "Delete a single qualifications record",
+        "responses": {
+          "200": {
+            "description": "deletes a single qualifications based on the ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "Qualifications"
         ],
         "parameters": [
           {
@@ -14404,12 +14983,6 @@
                 "items": {
                   "type": "string"
                 }
-              },
-              "events": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           },
@@ -14963,7 +15536,6 @@
               "title",
               "start_date_time",
               "end_date_time",
-              "age",
               "address",
               "description"
             ],
@@ -14989,19 +15561,22 @@
               "streams": {
                 "type": "string"
               },
-              "age": {
-                "type": "integer"
-              },
               "upload_logo": {
-                "type": "string"
-              },
-              "question_set": {
                 "type": "string"
               },
               "address": {
                 "type": "string"
               },
               "description": {
+                "type": "string"
+              },
+              "marks": {
+                "type": "number"
+              },
+              "qualification": {
+                "type": "string"
+              },
+              "question_set": {
                 "type": "string"
               }
             }
@@ -15103,7 +15678,6 @@
           "title",
           "start_date_time",
           "end_date_time",
-          "age",
           "address",
           "description"
         ],
@@ -15204,9 +15778,6 @@
               }
             }
           },
-          "age": {
-            "type": "integer"
-          },
           "upload_logo": {
             "required": [
               "id",
@@ -15253,6 +15824,28 @@
               }
             }
           },
+          "address": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "qualification": {
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
           "question_set": {
             "required": [
               "id",
@@ -15276,20 +15869,8 @@
                 "items": {
                   "type": "string"
                 }
-              },
-              "events": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
-          },
-          "address": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
           }
         }
       },
@@ -15298,7 +15879,6 @@
           "title",
           "start_date_time",
           "end_date_time",
-          "age",
           "address",
           "description"
         ],
@@ -15321,16 +15901,19 @@
           "streams": {
             "type": "string"
           },
-          "age": {
-            "type": "integer"
-          },
-          "question_set": {
-            "type": "string"
-          },
           "address": {
             "type": "string"
           },
           "description": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "qualification": {
+            "type": "string"
+          },
+          "question_set": {
             "type": "string"
           }
         }
@@ -15407,7 +15990,6 @@
               "title",
               "start_date_time",
               "end_date_time",
-              "age",
               "address",
               "description"
             ],
@@ -15433,19 +16015,22 @@
               "streams": {
                 "type": "string"
               },
-              "age": {
-                "type": "integer"
-              },
               "upload_logo": {
-                "type": "string"
-              },
-              "question_set": {
                 "type": "string"
               },
               "address": {
                 "type": "string"
               },
               "description": {
+                "type": "string"
+              },
+              "marks": {
+                "type": "number"
+              },
+              "qualification": {
+                "type": "string"
+              },
+              "question_set": {
                 "type": "string"
               }
             }
@@ -15533,12 +16118,6 @@
                 "items": {
                   "type": "string"
                 }
-              },
-              "events": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           }
@@ -15595,6 +16174,26 @@
           },
           "otp": {
             "type": "integer"
+          }
+        }
+      },
+      "Qualifications": {
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "NewQualifications": {
+        "properties": {
+          "name": {
+            "type": "string"
           }
         }
       },
@@ -15693,58 +16292,6 @@
                 }
               }
             }
-          },
-          "events": {
-            "type": "array",
-            "items": {
-              "required": [
-                "id",
-                "title",
-                "start_date_time",
-                "end_date_time",
-                "age",
-                "address",
-                "description"
-              ],
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "title": {
-                  "type": "string"
-                },
-                "start_date_time": {
-                  "type": "datetime"
-                },
-                "end_date_time": {
-                  "type": "datetime"
-                },
-                "rpc": {
-                  "type": "string"
-                },
-                "colleges": {
-                  "type": "string"
-                },
-                "streams": {
-                  "type": "string"
-                },
-                "age": {
-                  "type": "integer"
-                },
-                "upload_logo": {
-                  "type": "string"
-                },
-                "question_set": {
-                  "type": "string"
-                },
-                "address": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                }
-              }
-            }
           }
         }
       },
@@ -15763,12 +16310,6 @@
             }
           },
           "activities": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "events": {
             "type": "array",
             "items": {
               "type": "string"
@@ -15807,12 +16348,6 @@
                 }
               },
               "activities": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "events": {
                 "type": "array",
                 "items": {
                   "type": "string"
@@ -16809,6 +17344,9 @@
       "name": "Otp"
     },
     {
+      "name": "Qualifications"
+    },
+    {
       "name": "Question"
     },
     {
@@ -16825,9 +17363,6 @@
     },
     {
       "name": "Student"
-    },
-    {
-      "name": "Unclassified"
     },
     {
       "name": "Zone"
