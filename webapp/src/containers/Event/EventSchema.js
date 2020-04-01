@@ -14,21 +14,6 @@ const EventSchema = {
       }
     }
   },
-  description: {
-    label: "Description",
-    id: "description",
-    autoComplete: "description",
-    required: true,
-    placeholder: "Description",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Description is required"
-      }
-    }
-  },
   dateFrom: {
     label: "Date From",
     id: "dateFrom",
@@ -41,7 +26,6 @@ const EventSchema = {
       required: {
         value: "true",
         message: "Date From is required"
-
       }
     }
   },
@@ -57,7 +41,6 @@ const EventSchema = {
       required: {
         value: "true",
         message: "Date To is required"
-
       }
     }
   },
@@ -161,16 +144,10 @@ const EventSchema = {
     label: "Marks",
     id: "marks",
     autoComplete: "marks",
-    required: true,
     placeholder: "Marks",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Marks is required"
-      }
-    }
+    validations: {}
   },
   // qualifications: {
   //   label: "qualifications",

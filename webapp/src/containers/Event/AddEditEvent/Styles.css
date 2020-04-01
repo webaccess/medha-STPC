@@ -1,0 +1,21 @@
+.rdw-storybook-root {
+}
+.rdw-storybook-wrapper {
+}
+.rdw-storybook-editor {
+  border: 1px solid #9b9393;
+  padding: 5px;
+  border-radius: 2px;
+  height: 300px;
+}
+.rdw-storybook-toolbar {
+  top: -130px;
+  border: 1px solid #9b9393;
+}
+.rdw-storybook-textarea {
+  margin-top: 20px;
+  resize: none;
+  width: 100%;
+  border: 1px solid #8a2525;
+  height: 300px;
+}
