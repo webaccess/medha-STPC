@@ -219,7 +219,7 @@ const DeleteZone = props => {
               <Grid
                 container
                 direction="row"
-                justify="center"
+                justify="flex-end"
                 alignItems="center"
                 spacing={2}
               >
@@ -230,7 +230,8 @@ const DeleteZone = props => {
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    Ok                  </YellowButton>
+                    Ok{" "}
+                  </YellowButton>
                 </Grid>
                 <Grid item>
                   <GrayButton

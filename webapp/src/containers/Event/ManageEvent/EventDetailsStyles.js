@@ -23,9 +23,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: "15px",
     marginBottom: "15px"
   },
-  add_more_btn: {
-    float: "right"
-  },
   streamcard: {
     border: "1px solid #ccc",
     borderRadius: "5px",
@@ -80,6 +77,25 @@ const useStyles = makeStyles(theme => ({
   },
   defaultMargin: {
     margin: "2%"
+  },
+  cardHeight: {
+    height: "600px"
+  },
+  imageDiv: {
+    width: "100%",
+    height: "200px"
+  },
+  titleDiv: { width: "100%", height: "50px" },
+  contentDiv: {
+    width: "100%",
+    height: "200px"
+  },
+  buttonsDiv: {
+    width: "100%",
+    height: "50px"
+  },
+  buttonAlign: {
+    textAlign: "center"
   }
 }));
 export default useStyles;

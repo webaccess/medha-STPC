@@ -187,7 +187,21 @@ const LogIn = props => {
   };
 
   if (ifSuccess && auth.getToken()) {
-    return <Redirect to={routeConstants.DASHBOARD_URL} />;
+    return auth.getUserInfo().role.name === "Student" ? (
+      <Redirect
+        to={{
+          pathname: routeConstants.VIEW_PROFILE,
+          state: { from: props.location }
+        }}
+      />
+    ) : (
+      <Redirect
+        to={{
+          pathname: routeConstants.DASHBOARD_URL,
+          state: { from: props.location }
+        }}
+      />
+    );
   }
 
   const handleSignIn = event => {
@@ -261,6 +275,47 @@ const LogIn = props => {
                     {authPageConstants.SIGN_IN_HEADER}
                   </Typography>
                 </div>
+                {ifFailure ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {authPageConstants.INVALID_USER}
+                    </Alert>
+                  </Collapse>
+                ) : formState.fromPasswordChangedPage ? (
+                  <Collapse in={open}>
+                    <Alert
+                      severity="success"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      {formState.dataToShow}
+                    </Alert>
+                  </Collapse>
+                ) : null}
                 <form
                   className={classes.form}
                   noValidate
@@ -394,47 +449,6 @@ const LogIn = props => {
                   </Grid>
                 </form>
               </div>
-              {ifFailure ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="error"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {authPageConstants.INVALID_USER}
-                  </Alert>
-                </Collapse>
-              ) : formState.fromPasswordChangedPage ? (
-                <Collapse in={open}>
-                  <Alert
-                    severity="success"
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                  >
-                    {formState.dataToShow}
-                  </Alert>
-                </Collapse>
-              ) : null}
             </CardContent>
             <Hidden mdDown>
               <CardMedia

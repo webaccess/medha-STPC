@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import React, { useState, useEffect, useCallback } from "react";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import moment from "moment";
 import {
   TextField,
   Card,
@@ -21,16 +21,19 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DatePickers from "../../../components/Date/Date";
 import DeleteUser from "./DeleteEvent";
+import * as genericConstants from "../../../constants/GenericConstants";
+import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-// http://104.236.28.24:1338/events
-// page: 1, pageSize: 10, _sort: "title:asc"
-
+const EVENT_FILTER = "title_contains";
+const START_DATE_FILTER = "start_date_time_gte";
+const END_DATE_FILTER = "end_date_time_lte";
 const SORT_FIELD_KEY = "_sort";
 
 const ViewEvents = props => {
+  const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
@@ -38,7 +41,7 @@ const ViewEvents = props => {
   const [formState, setFormState] = useState({
     dataToShow: [],
     tempData: [],
-    events: "",
+    events: [],
     greenButtonChecker: true,
     isDataDeleted: false,
     dataToEdit: {},
@@ -46,14 +49,41 @@ const ViewEvents = props => {
     showEditModal: false,
     showModalDelete: false,
     isMultiDelete: false,
+    selectedRowFilter: true,
     MultiDeleteID: [],
+    filterDataParameters: {},
+    isClearResetFilter: false,
+    isFilterSearch: false,
+    startDate: new Date(),
+    endDate: new Date(),
+    texttvalue: "",
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditEvent"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    editedData: props["location"]["fromeditEvent"]
+      ? props["location"]["editedData"]
+      : {},
+    fromeditEvent: props["location"]["fromeditEvent"]
+      ? props["location"]["fromeditEvent"]
+      : false,
+    /** This is when we return from add page */
+    isDataAdded: props["location"]["fromAddEvent"]
+      ? props["location"]["isDataAdded"]
+      : false,
+    addedData: props["location"]["fromAddEvent"]
+      ? props["location"]["addedData"]
+      : {},
+    fromAddEvent: props["location"]["fromAddEvent"]
+      ? props["location"]["fromAddEvent"]
+      : false
   });
 
   useEffect(() => {
@@ -68,7 +98,7 @@ const ViewEvents = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "title:asc"
+        [SORT_FIELD_KEY]: "start_date_time:asc"
       };
       Object.keys(paramsForevents).map(key => {
         defaultParams[key] = paramsForevents[key];
@@ -78,20 +108,21 @@ const ViewEvents = props => {
       paramsForevents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "title:asc"
+        [SORT_FIELD_KEY]: "start_date_time:asc"
       };
     }
     setFormState(formState => ({
       ...formState,
       isDataLoading: true
     }));
+
     await serviceProviders
       .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
       .then(res => {
         formState.dataToShow = [];
         formState.tempData = [];
         let eventData = [];
-        eventData = convertUserData(res.data.result);
+        eventData = convertEventData(res.data.result);
         setFormState(formState => ({
           ...formState,
           events: res.data.result,
@@ -109,20 +140,127 @@ const ViewEvents = props => {
       });
   };
 
-  const convertUserData = data => {
+  const convertEventData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
         var eventIndividualData = {};
+        let startDate = new Date(data[i]["start_date_time"]);
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"];
-        eventIndividualData["start_date_time"] = data[i]["start_date_time"];
-        eventIndividualData["streams"] = data[i]["streams"]
-          ? data[i]["streams"]["name"]
-          : "";
+        eventIndividualData["start_date_time"] = startDate.toDateString();
         x.push(eventIndividualData);
       }
       return x;
+    }
+  };
+
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getEventData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getEventData(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getEventData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getEventData(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getEventData(perPage, page, formState.filterDataParameters);
+    }
+  };
+  /** This restores all the data when we clear the filters*/
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isClearResetFilter: true,
+      isDataLoading: true,
+      texttvalue: ""
+    }));
+
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
+   * i.e the nested zones data and also resets the data to []
+   */
+
+  const restoreData = () => {
+    getEventData(formState.pageSize, 1);
+  };
+
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount >= 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
+
+  const handleFilterChange = event => {
+    formState.filterDataParameters[event.target.name] = event.target.value;
+    setFormState(formState => ({
+      ...formState,
+      texttvalue: event.target.value
+    }));
+  };
+
+  const handleStartDateChange = date => {
+    formState.filterDataParameters[date.target.name] = date.target.value;
+    setFormState(formState => ({
+      ...formState,
+      startDate: date.target.value
+    }));
+  };
+
+  const handleEndDateChange = date => {
+    formState.filterDataParameters[date.target.name] = date.target.value;
+    setFormState(formState => ({
+      ...formState,
+      endDate: date.target.value
+    }));
+  };
+
+  const focousOut = date => {
+    let clearDate = (date.target.value = null);
+    if (formState.isClearResetFilter) {
+      setFormState(formState => ({
+        ...formState,
+        startDate: clearDate,
+        endDate: clearDate
+      }));
     }
   };
 
@@ -154,11 +292,12 @@ const ViewEvents = props => {
   };
 
   const deleteCell = event => {
-    console.log(event.target.id);
-    let dataId = event.target.id;
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: dataId },
+      dataToDelete: {
+        id: event.target.id,
+        name: event.target.getAttribute("value")
+      },
       showEditModal: false,
       showModalDelete: true
     }));
@@ -185,8 +324,33 @@ const ViewEvents = props => {
   const viewCell = event => {
     history.push({
       pathname: routeConstants.VIEW_EVENT,
-      dataForEdit: event.target.id
+      dataForView: event.target.id
     });
+  };
+
+  /** Edit -------------------------------------------------------*/
+  const getDataForEdit = async id => {
+    let paramsForUsers = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(EVENT_URL, paramsForUsers)
+      .then(res => {
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_EVENT,
+          editUser: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  const editCell = event => {
+    getDataForEdit(event.target.id);
   };
 
   /** ------ */
@@ -194,19 +358,14 @@ const ViewEvents = props => {
   /** Table Data */
   const column = [
     { name: "Event", sortable: true, selector: "title" },
-    // { name: "Stream", sortable: true, selector: "streams" },
-    //{ name: "Location", sortable: true, selector: "rpc" },
     { name: "Date", sortable: true, selector: "start_date_time" },
-    // { name: "RPC", sortable: true, selector: "rpc" },
-    // { name: "IPC", sortable: true, selector: "college" },
-    /** Columns for edit and delete */
-
     {
       cell: cell => (
         <Tooltip title="View" placement="top">
           <i
             className="material-icons"
             id={cell.id}
+            value={cell.name}
             onClick={viewCell}
             style={{ color: "green", fontSize: "19px" }}
           >
@@ -224,7 +383,7 @@ const ViewEvents = props => {
             className="material-icons"
             id={cell.id}
             value={cell.name}
-            // onClick={editCell}
+            onClick={editCell}
             style={{ color: "green" }}
           >
             edit
@@ -270,6 +429,7 @@ const ViewEvents = props => {
           <i
             className="material-icons"
             id={cell.id}
+            value={cell.title}
             onClick={deleteCell}
             style={{ color: "red" }}
           >
@@ -286,7 +446,7 @@ const ViewEvents = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Event
+          Manage Events
         </Typography>
 
         <GreenButton
@@ -297,84 +457,108 @@ const ViewEvents = props => {
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Delete Selected User
+          Delete Selected Event
         </GreenButton>
 
         <GreenButton
           variant="contained"
           color="primary"
-          //onClick={clearFilter}
+          onClick={clearFilter}
           disableElevation
-          //to={routeConstants.ADD_USER}
+          to={routeConstants.ADD_EVENT}
           startIcon={<AddCircleOutlineOutlinedIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
         >
           Add Event
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for add */}
+        {formState.fromAddEvent && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddEvent && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  //name={USER_FILTER}
-                  //options={formState.users}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.username}
-                  //   onChange={(event, value) =>
-                  //     handleChangeAutoComplete(USER_FILTER, event, value)
-                  //   }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Event"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                <TextField
+                  label={"Event"}
+                  placeholder="Event"
+                  variant="outlined"
+                  name={EVENT_FILTER}
+                  value={formState.texttvalue}
+                  onChange={handleFilterChange}
                 />
-              </Grid>
-              <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  //name={USER_FILTER}
-                  //options={formState.users}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.username}
-                  //   onChange={(event, value) =>
-                  //     handleChangeAutoComplete(USER_FILTER, event, value)
-                  //   }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Location"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
-                />{" "}
               </Grid>
               <Grid item>
                 <DatePickers
                   id="date"
                   label="Start Date"
                   placeholder="dd-mm-yyyy"
+                  value={formState.startDate}
+                  name={START_DATE_FILTER}
+                  onChange={handleStartDateChange}
+                  onBlur={focousOut}
                 />
               </Grid>
               <Grid item>
-                <DatePickers label="End Date" placeholder="dd-mm-yyyy" />
+                <DatePickers
+                  id="date"
+                  label="End Date"
+                  placeholder="dd-mm-yyyy"
+                  value={formState.endDate}
+                  name={END_DATE_FILTER}
+                  onChange={handleEndDateChange}
+                  onBlur={focousOut}
+                />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  // onClick={event => {
-                  //   event.persist();
-                  //   searchFilter();
-                  // }}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   Search
                 </YellowButton>
@@ -383,7 +567,7 @@ const ViewEvents = props => {
                 <GrayButton
                   variant="contained"
                   color="primary"
-                  //onClick={refreshPage}
+                  onClick={clearFilter}
                   disableElevation
                 >
                   Reset
@@ -398,15 +582,15 @@ const ViewEvents = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                //onSelectedRowsChange={handleRowSelected}
+                onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
                 defaultSortField="title"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
-                // onChangeRowsPerPage={handlePerRowsChange}
-                // onChangePage={handlePageChange}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />
@@ -422,7 +606,7 @@ const ViewEvents = props => {
               id={formState.MultiDeleteID}
               isMultiDelete={formState.isMultiDelete}
               modalClose={modalClose}
-              //seletedUser={selectedRows.length}
+              seletedUser={selectedRows.length}
             />
           ) : (
             <DeleteUser
@@ -432,6 +616,7 @@ const ViewEvents = props => {
               deleteEvent={isDeleteCellCompleted}
               modalClose={modalClose}
               userName={formState.userNameDelete}
+              dataToDelete={formState.dataToDelete}
             />
           )}
         </Card>

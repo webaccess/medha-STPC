@@ -5,11 +5,11 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#43a047",
     color: "#fff",
     borderRadius: "3px",
-    padding: "0px 12px",
+    // padding: "0px 12px",
     textTransform: "capitalize",
     fontSize: "13px",
     fontWeight: "700",
-    marginRight: "15px",
+    marginLeft: "15px",
     "&:hover": {
       background: "#000",
       color: "#fff"
