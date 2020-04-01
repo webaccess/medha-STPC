@@ -4,88 +4,69 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as genericConstants from "../../../constants/GenericConstants";
+import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "./DeleteEventStyles";
 
-// const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-// const EVENT_ID = "UserName";
+const EVENT_REG_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
+const EVENT_ID = "event";
+const STUDENT_ID = "student";
 
 const RegisterEvent = props => {
   const [formState, setFormState] = useState({
-    isDeleteData: false,
+    isStudentRegistered: false,
     isValid: false,
-    stateCounter: 0,
     values: {},
-    username: ""
+    stateCounter: 0
   });
-  // if (props.showModal && !formState.stateCounter) {
-  //   formState.stateCounter = 0;
-  //   formState.values[EVENT_ID] = props.id;
-  //   formState.isDeleteData = false;
-  // }
 
-  // const handleCloseModal = () => {
-  //   setFormState(formState => ({
-  //     ...formState,
-  //     values: {},
-  //     isDeleteData: false,
-  //     isValid: false,
-  //     stateCounter: 0
-  //   }));
+  if (props.showModal && !formState.stateCounter) {
+    formState.stateCounter = 0;
+    formState.values[EVENT_ID] = props.eventName;
+    formState.values[STUDENT_ID] = props.userRegistering;
+    formState.isStudentRegistered = false;
+  }
 
-  //   if (formState.isDeleteData) {
-  //     props.deleteEvent(true);
-  //   } else {
-  //     props.deleteEvent(false);
-  //   }
-  //   props.closeModal();
-  // };
+  const handleSubmit = async () => {
+    let postData = databaseUtilities.studentEventRegistration(
+      formState.values[EVENT_ID],
+      formState.values[STUDENT_ID]
+    );
+    serviceProviders
+      .serviceProviderForPostRequest(EVENT_REG_URL, postData)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          isValid: true
+        }));
+        formState.isStudentRegistered = true;
+        handleCloseModal();
+      })
+      .catch(error => {
+        console.log("error", error);
+        formState.isStudentRegistered = false;
+        handleCloseModal();
+      });
+  };
 
-  // const handleSubmit = event => {
-  //   /** CALL Put FUNCTION */
-  //   //deleteData();
-  //   event.preventDefault();
-  // };
-
-  // const deleteData = () => {
-  //   if (props.isMultiDelete) {
-  //     serviceProviders
-  //       .serviceProviderForAllDeleteRequest(EVENT_URL, props.id)
-  //       .then(res => {
-  //         setFormState(formState => ({
-  //           ...formState,
-  //           isValid: true
-  //         }));
-  //         formState.isDeleteData = true;
-  //         handleCloseModal();
-  //       })
-  //       .catch(error => {
-  //         console.log("error", error);
-  //         formState.isDeleteData = false;
-  //         handleCloseModal();
-  //       });
-  //   } else {
-  //     serviceProviders
-  //       .serviceProviderForDeleteRequest(EVENT_URL, props.id)
-  //       .then(res => {
-  //         setFormState(formState => ({
-  //           ...formState,
-  //           isValid: true
-  //         }));
-  //         formState.isDeleteData = true;
-  //         handleCloseModal();
-  //       })
-  //       .catch(error => {
-  //         console.log("error");
-  //         formState.isDeleteData = false;
-  //         handleCloseModal();
-  //       });
-  //   }
-  // };
+  const handleCloseModal = () => {
+    setFormState(formState => ({
+      ...formState,
+      values: {},
+      isStudentRegistered: false,
+    }));
+    if (formState.isStudentRegistered) {
+      props.statusRegistartion(true);
+    } else {
+      props.statusRegistartion(false);
+    }
+    props.closeBlockModal();
+  };
 
   const classes = useStyles();
   return (
@@ -94,7 +75,7 @@ const RegisterEvent = props => {
       aria-describedby="transition-modal-description"
       className={classes.modal}
       open={props.showModal}
-      //onClose={handleCloseModal}
+      onClose={handleCloseModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
@@ -141,7 +122,7 @@ const RegisterEvent = props => {
                     type="submit"
                     color="primary"
                     variant="contained"
-                    //onClick={handleSubmit}
+                    onClick={handleSubmit}
                   >
                     Yes
                   </YellowButton>

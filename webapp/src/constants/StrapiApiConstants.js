@@ -26,3 +26,4 @@ export const STRAPI_ACADEMIC_HISTORY = "academic-histories";
 export const STRAPI_EVENTS = "events";
 export const STRAPI_ACTIVITY = "activities";
 export const STRAPI_COLLEGE_ACTIVITY = "activity";
+export const STRAPI_EVENT_REGISTRATION = "event-registrations";

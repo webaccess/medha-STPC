@@ -18,3 +18,4 @@ export { default as Table } from "./Table";
 export { default as Typography } from "./Typography";
 export { default as CustomRouterLink } from "./CustomRouterLink";
 export { default as ReadOnlyTextField } from "./ReadOnlyTextField";
+export { default as CustomDateTimePicker } from "./CustomDateTimePicker";

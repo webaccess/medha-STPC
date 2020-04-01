@@ -14,21 +14,6 @@ const EventSchema = {
       }
     }
   },
-  description: {
-    label: "Description",
-    id: "description",
-    autoComplete: "description",
-    required: true,
-    placeholder: "Description",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Description is required"
-      }
-    }
-  },
   dateFrom: {
     label: "Date From",
     id: "dateFrom",
@@ -41,7 +26,6 @@ const EventSchema = {
       required: {
         value: "true",
         message: "Date From is required"
-
       }
     }
   },
@@ -57,7 +41,6 @@ const EventSchema = {
       required: {
         value: "true",
         message: "Date To is required"
-
       }
     }
   },
@@ -106,6 +89,16 @@ const EventSchema = {
       }
     }
   },
+  state: {
+    label: "State",
+    id: "state",
+    autoComplete: "state",
+    required: false,
+    placeholder: "State",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
 
   zone: {
     label: "Zone",
@@ -151,32 +144,26 @@ const EventSchema = {
     label: "Marks",
     id: "marks",
     autoComplete: "marks",
-    required: true,
     placeholder: "Marks",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Marks is required"
-      }
-    }
+    validations: {}
   },
-  age: {
-    label: "Age",
-    id: "age",
-    autoComplete: "age",
-    required: true,
-    placeholder: "Age",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Age is required"
-      }
-    }
-  },
+  // qualifications: {
+  //   label: "qualifications",
+  //   id: "qualifications",
+  //   autoComplete: "Qualifications",
+  //   required: true,
+  //   placeholder: "Qualifications",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "Qualifications is required"
+  //     }
+  //   }
+  // },
   files: {
     label: "Upload",
     id: "files",

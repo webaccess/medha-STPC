@@ -26,12 +26,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-  KeyboardTimePicker,
-  KeyboardDateTimePicker
-} from "@material-ui/pickers";
+import CustomDateTimePicker from "../../components/CustomDateTimePicker/CustomDateTimePicker.js";
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
@@ -724,54 +719,50 @@ const AddEditActivity = props => {
                 </Grid>
                 <Grid container spacing={3} className={classes.Datetime}>
                   <Grid item md={6} xs={12}>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                      <KeyboardDateTimePicker
-                        // variant="inline"
-                        format="dd/MM/yyyy HH:mm"
-                        margin="normal"
-                        required
-                        id="date-picker-inline"
-                        label="Date & Time From"
-                        value={selectedDateFrom}
-                        onChange={date => setSelectedDateFrom(date)}
-                        error={hasError("datefrom")}
-                        helperText={
-                          hasError("datefrom")
-                            ? formState.errors["datefrom"].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        KeyboardButtonProps={{
-                          "aria-label": "change date"
-                        }}
-                      />
-                    </MuiPickersUtilsProvider>
+                    <CustomDateTimePicker
+                      variant="inline"
+                      format="dd/MM/yyyy HH:mm"
+                      margin="normal"
+                      required
+                      id="date-picker-inline"
+                      label="Date & Time From"
+                      value={selectedDateFrom}
+                      onChange={date => setSelectedDateFrom(date)}
+                      error={hasError("datefrom")}
+                      helperText={
+                        hasError("datefrom")
+                          ? formState.errors["datefrom"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      KeyboardButtonProps={{
+                        "aria-label": "change date"
+                      }}
+                    />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                      <KeyboardDateTimePicker
-                        // variant="inline"
-                        format="dd/MM/yyyy HH:mm"
-                        margin="normal"
-                        required
-                        id="date-picker-inline"
-                        label="Date & Time To"
-                        value={selectedDateTo}
-                        onChange={date => setSelectedDateTo(date)}
-                        error={hasError("dateto")}
-                        helperText={
-                          hasError("dateto")
-                            ? formState.errors["dateto"].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        KeyboardButtonProps={{
-                          "aria-label": "change date"
-                        }}
-                      />
-                    </MuiPickersUtilsProvider>
+                    <CustomDateTimePicker
+                      variant="inline"
+                      format="dd/MM/yyyy HH:mm"
+                      margin="normal"
+                      required
+                      id="date-picker-inline"
+                      label="Date & Time To"
+                      value={selectedDateTo}
+                      onChange={date => setSelectedDateTo(date)}
+                      error={hasError("dateto")}
+                      helperText={
+                        hasError("dateto")
+                          ? formState.errors["dateto"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      KeyboardButtonProps={{
+                        "aria-label": "change date"
+                      }}
+                    />
                   </Grid>
                 </Grid>
 

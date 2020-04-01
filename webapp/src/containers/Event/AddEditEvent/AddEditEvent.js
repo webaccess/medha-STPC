@@ -1,4 +1,13 @@
 import React, { useState, useEffect } from "react";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import ListItemText from "@material-ui/core/ListItemText";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
+import MenuItem from "@material-ui/core/MenuItem";
+import Chip from "@material-ui/core/Chip";
+
 import {
   Card,
   CardContent,
@@ -24,6 +33,17 @@ import { useHistory } from "react-router-dom";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "./Styles.css";
+import {
+  EditorState,
+  convertToRaw,
+  convertFromRaw,
+  ContentState
+} from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 
 const eventName = "eventName";
 const description = "description";
@@ -32,17 +52,20 @@ const dateTo = "dateTo";
 const timeFrom = "timeFrom";
 const timeTo = "timeTo";
 const address = "address";
+const state = "state";
 const zone = "zone";
 const rpc = "rpc";
 const college = "college";
 const stream = "stream";
 const marks = "marks";
-const age = "age";
+const qualifications = "qualifications";
 
 const field = "upload_logo";
 const ref = "event";
 const files = "files";
 
+const STATES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
 const ZONES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
 const RPCS_URL =
@@ -56,8 +79,33 @@ const EVENTS_URL =
 const DOCUMENT_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD;
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium
+  };
+}
+
 const AddEditEvent = props => {
+  const [editorState, setEditorState] = React.useState(
+    EditorState.createEmpty()
+  );
   const classes = useStyles();
+  // const theme = useTheme();
   const history = useHistory();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -74,23 +122,32 @@ const AddEditEvent = props => {
     files: {}
   });
 
-  console.log("eventdara", formState.values);
-
+  const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
+  const [qualifications, setQualifications] = useState([]);
+  const [selectedStreams, setSelectedStreams] = useState([]);
+  const [personName, setPersonName] = React.useState([]);
+  const [collegeName, setCollegeName] = React.useState([]);
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
-    console.log("data1", props["dataForEdit"]);
-
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
         formState.values[eventName] = props["dataForEdit"]["title"];
       }
       if (props["dataForEdit"]["description"]) {
         formState.values[description] = props["dataForEdit"]["description"];
+        const blocksFromHtml = htmlToDraft(props["dataForEdit"]["description"]);
+        const { contentBlocks, entityMap } = blocksFromHtml;
+        const contentState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        const editorState = EditorState.createWithContent(contentState);
+        setEditorState(editorState);
       }
       if (props["dataForEdit"]["start_date_time"]) {
         let today = new Date(props["dataForEdit"]["start_date_time"]);
@@ -110,9 +167,9 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["address"]) {
         formState.values[address] = props["dataForEdit"]["address"];
       }
-      if (props["dataForEdit"]["age"]) {
-        formState.values[age] = props["dataForEdit"]["age"];
-      }
+      // if (props["dataForEdit"]["age"]) {
+      //   formState.values[age] = props["dataForEdit"]["age"];
+      // }
 
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
@@ -127,7 +184,6 @@ const AddEditEvent = props => {
         props["dataForEdit"]["streams"] &&
         props["dataForEdit"]["streams"].length
       ) {
-        console.log("stream", true);
         formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
       }
     }
@@ -138,33 +194,16 @@ const AddEditEvent = props => {
     let paramsForPageSize = {
       pageSize: -1
     };
-    serviceProvider
-      .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
-      .then(res => {
-        setZones(res.data.result);
-      })
 
-      .catch(error => {
-        console.log("errorZone", error);
-      });
     serviceProvider
-      .serviceProviderForGetRequest(RPCS_URL, paramsForPageSize)
+      .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
-        setRpcs(res.data.result);
+        setStates(res.data.result);
       })
-
       .catch(error => {
-        console.log("errorRPc", error);
+        console.log("error", error);
       });
-    serviceProvider
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForPageSize)
-      .then(res => {
-        setColleges(res.data.result);
-      })
 
-      .catch(error => {
-        console.log("errorcollege", error);
-      });
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
       .then(res => {
@@ -175,6 +214,127 @@ const AddEditEvent = props => {
         console.log("errorstream", error);
       });
   }, []);
+
+  /** This gets data into zones, rpcs and districts when we change the state */
+  useEffect(() => {
+    if (formState.values[state]) {
+      fetchZoneRpcDistrictData();
+    }
+    if (formState.values[zone] && formState.values[rpc]) {
+      fetchCollegeData();
+    }
+    return () => {};
+  }, [formState.values]);
+
+  /** Common function to get zones, rpcs after changing state */
+  async function fetchZoneRpcDistrictData() {
+    let zones_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiApiConstants.STRAPI_ZONES;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(zones_url)
+      .then(res => {
+        setZones(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let rpcs_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiApiConstants.STRAPI_RPCS;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(rpcs_url)
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setRpcs(res.data[0].result);
+        } else {
+          setRpcs(res.data.result);
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let params = {
+      pageSize: -1,
+      "state.id": formState.values[state]
+    };
+  }
+
+  /** Common function to get colleges after changing zone & rpc */
+  async function fetchCollegeData() {
+    let colleges_url =
+      ZONES_URL +
+      "/" +
+      formState.values[zone] +
+      "/" +
+      strapiApiConstants.STRAPI_COLLEGES;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(colleges_url)
+      .then(res => {
+        setColleges(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  }
+
+  const handleChangeMultiSelect = (stream, event) => {
+    setPersonName(event.target.value);
+    let streamarray = [];
+    for (var i = 0; i < streams.length; i++) {
+      for (var j = 0; j < event.target.value.length; j++) {
+        if (streams[i].name == event.target.value[j]) {
+          streamarray.push(streams[i].id);
+        }
+      }
+    }
+    setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [stream]: streamarray
+      },
+      touched: {
+        ...formState.touched,
+        [stream]: true
+      },
+      isStateClearFilter: false
+    }));
+  };
+  const handleChangeCollegeMultiSelect = (college, event) => {
+    setCollegeName(event.target.value);
+    let collegearray = [];
+    for (var i = 0; i < colleges.length; i++) {
+      for (var j = 0; j < event.target.value.length; j++) {
+        if (colleges[i].name === event.target.value[j]) {
+          collegearray.push(colleges[i].id);
+        }
+      }
+    }
+    setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [college]: collegearray
+      },
+      touched: {
+        ...formState.touched,
+        [college]: true
+      },
+      isStateClearFilter: false
+    }));
+  };
 
   const hasError = field => (formState.errors[field] ? true : false);
   const handleChange = e => {
@@ -257,12 +417,11 @@ const AddEditEvent = props => {
   const postEventData = () => {
     let postData = databaseUtilities.addEvent(
       formState.values[eventName],
-      formState.values[description],
+      draftToHtml(convertToRaw(editorState.getCurrentContent())),
       formState.values[dateFrom],
       formState.values[dateTo],
       formState.values[address],
       formState.values[marks],
-      formState.values[age],
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
       formState.values[college] ? formState.values[college] : null,
@@ -372,28 +531,29 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                 </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
-                    <TextField
-                      label={get(EventSchema[description], "label")}
-                      id={get(EventSchema[description], "id")}
-                      name={description}
-                      placeholder={get(EventSchema[description], "placeholder")}
-                      value={formState.values[description] || ""}
-                      error={hasError(description)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      multiline
-                      onChange={handleChange}
-                      helperText={
-                        hasError(description)
-                          ? formState.errors[description].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
+                    <Grid className={classes.streamcard}>
+                      <Card className={classes.streamoffer}>
+                        <InputLabel
+                          htmlFor="outlined-stream-card"
+                          fullwidth={true.toString()}
+                        >
+                          {genericConstants.DESCRIPTION}
+                        </InputLabel>
+                        <div className="rdw-storybook-root">
+                          <Editor
+                            editorState={editorState}
+                            toolbarClassName="rdw-storybook-toolbar"
+                            wrapperClassName="rdw-storybook-wrapper"
+                            editorClassName="rdw-storybook-editor"
+                            onEditorStateChange={data => {
+                              setEditorState(data);
+                            }}
+                          />
+                        </div>
+                      </Card>
+                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
@@ -487,7 +647,40 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}></Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={states}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(state, event, value);
+                      }}
+                      value={
+                        states[
+                          states.findIndex(function(item, i) {
+                            return item.id === formState.values[state];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[state], "label")}
+                          variant="outlined"
+                          placeholder={get(EventSchema[state], "placeholder")}
+                          error={hasError(state)}
+                          helperText={
+                            hasError(state)
+                              ? formState.errors[state].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id="combo-box-demo"
@@ -560,38 +753,32 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={colleges}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(college, event, value);
-                      }}
-                      value={
-                        colleges[
-                          colleges.findIndex(function(item, i) {
-                            return item.id === formState.values[college];
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label={get(EventSchema[college], "label")}
-                          variant="outlined"
-                          placeholder={get(EventSchema[college], "placeholder")}
-                          error={hasError(college)}
-                          helperText={
-                            hasError(college)
-                              ? formState.errors[college].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
+                    <FormControl className={classes.formControl}>
+                      <InputLabel id="demo-mutiple-checkbox-label">
+                        Colleges
+                      </InputLabel>
+                      <Select
+                        labelId="demo-mutiple-checkbox-label"
+                        id="demo-mutiple-checkbox"
+                        multiple
+                        value={collegeName}
+                        onChange={event => {
+                          handleChangeCollegeMultiSelect(college, event);
+                        }}
+                        input={<Input />}
+                        renderValue={selected => selected.join(", ")}
+                        MenuProps={MenuProps}
+                      >
+                        {colleges.map(name => (
+                          <MenuItem key={name.id} value={name.name}>
+                            <Checkbox
+                              checked={collegeName.indexOf(name.name) > -1}
+                            />
+                            <ListItemText primary={name.name} />
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
                 </Grid>
               </Grid>
@@ -599,38 +786,33 @@ const AddEditEvent = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={streams}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(stream, event, value);
-                      }}
-                      value={
-                        streams[
-                          streams.findIndex(function(item, i) {
-                            return item.id === formState.values[stream];
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label={get(EventSchema[stream], "label")}
-                          placeholder={get(EventSchema[stream], "placeholder")}
-                          variant="outlined"
-                          error={hasError(stream)}
-                          helperText={
-                            hasError(stream)
-                              ? formState.errors[stream].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
+                    <FormControl className={classes.formControl}>
+                      <InputLabel id="demo-mutiple-checkbox-label">
+                        Streams
+                      </InputLabel>
+                      <Select
+                        labelId="demo-mutiple-checkbox-label"
+                        id="demo-mutiple-checkbox"
+                        multiple
+                        value={personName}
+                        onChange={event => {
+                          handleChangeMultiSelect(stream, event);
+                        }}
+                        // onChange={handleChangeMultiSelect}
+                        input={<Input />}
+                        renderValue={selected => selected.join(", ")}
+                        MenuProps={MenuProps}
+                      >
+                        {streams.map(name => (
+                          <MenuItem key={name.id} value={name.name}>
+                            <Checkbox
+                              checked={personName.indexOf(name.name) > -1}
+                            />
+                            <ListItemText primary={name.name} />
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
@@ -655,8 +837,42 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}></Grid>
-                  <Grid item md={6} xs={12}></Grid>
+                  {/* <Grid item md={12} xs={12}>
+                  <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={qualifications}
+                      placeholder={get(EventSchema[qualifications], "placeholder")}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(qualifications, event, value);
+                      }}
+                      value={
+                        qualifications[
+                          qualifications.findIndex(function(item, i) {
+                            return item.id === formState.values[qualifications];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[qualifications], "label")}
+                          variant="outlined"
+                          placeholder={get(EventSchema[qualifications], "placeholder")}
+                          error={hasError(qualifications)}
+                          helperText={
+                            hasError(qualifications)
+                              ? formState.errors[qualifications].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid> */}
+                  {/* <Grid item md={6} xs={12}></Grid> */}
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />

@@ -2,24 +2,16 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    // padding: theme.spacing(1),
     maxWidth: "100%"
   },
   content: {
     display: "content"
   },
-  filterOptions: {
-    // marginTop: theme.spacing(3)
-  },
-  filterMargin: {
-    // margin: theme.spacing(3)
-  },
   filterButtonsMargin: {
-    // margin: theme.spacing(0.5)
     alignSelf: "center",
     marginLeft: "10px"
   },
-   modal: {
+  modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
@@ -28,7 +20,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
     border: "primary",
     boxShadow: theme.shadows[5]
-    // padding: theme.spacing(2, 0, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
@@ -51,8 +42,21 @@ const useStyles = makeStyles(theme => ({
     }
   },
   Cardtheming: {
-    paddingBottom:"16px !important"
+    paddingBottom: "16px !important"
+  },
+  /**css for datatable action buttons */
+  DisplayFlex: {
+    display: "flex"
+  },
+  PaddingActionButton: {
+    padding: "2px 8px 0px 8px",
+    cursor: "pointer"
+  },
+  PaddingFirstActionButton: {
+    padding: "0px 8px 0px 0px",
+    cursor: "pointer"
   }
+  /** */
 }));
 
 export default useStyles;

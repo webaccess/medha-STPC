@@ -142,7 +142,6 @@ export const addEvent = (
   end_date_time,
   address,
   marks,
-  age,
   zone = null,
   rpc = null,
   colleges = null,
@@ -155,7 +154,6 @@ export const addEvent = (
     end_date_time: end_date_time,
     address: address,
     marks: marks,
-    age: age,
     zone: zone,
     rpc: rpc,
     colleges: colleges,
@@ -374,5 +372,12 @@ export const addAcademicHistory = (academicYear, educationYear) => {
   return {
     academic_year: academicYear,
     education_year: educationYear
+  };
+};
+
+export const studentEventRegistration = (event, student) => {
+  return {
+    event: event,
+    student: student
   };
 };
