@@ -32,16 +32,11 @@ const ActivityFormSchema = {
   files: {
     label: "files",
     id: "files",
-    required: true,
+    required: false,
     placeholder: "Upload files",
     autoFocus: true,
     type: "file",
-    validations: {
-      required: {
-        value: "true",
-        message: "File is required"
-      }
-    }
+    validations: {}
   },
   address: {
     label: "Address",

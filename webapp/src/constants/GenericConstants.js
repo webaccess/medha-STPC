@@ -76,6 +76,7 @@ export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 /**Activity */
 export const ADD_ACTIVITY_TEXT = "Add Activity";
 export const VIEW_ACTIVITY_TEXT = "Activity";
+export const EDIT_ACTIVITY_TEXT = "Edit Activity";
 
 /**MANAGE EVENTS*/
 export const ADD_EVENT_TEXT = "Add Event";

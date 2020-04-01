@@ -46,11 +46,11 @@ const MenuItems = props => {
         Icon: <PeopleOutlineOutlinedIcon />
       },
       {
-        name: "Training",
+        name: "Activity",
         Icon: <AssignmentOutlinedIcon />,
         items: [
           {
-            name: "Manage Training",
+            name: "Manage Activity",
             link: routeConstants.MANAGE_ACTIVITY
           },
           {

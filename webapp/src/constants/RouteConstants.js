@@ -38,8 +38,7 @@ export const VERIFY_OTP = "/verifyotp";
 /** user */
 export const EDIT_USER = "/edit-user";
 export const VIEW_USER = "/manage-user";
-export const MANAGE_ACTIVITY = "/manage-activity";
-export const CREATE_ACTIVITY = "/create-activity";
+
 export const VALIDATE_STUDENT = "/validate-student";
 export const EVENTS = "/events";
 export const PROFILE = "/profile";
@@ -73,3 +72,5 @@ export const ELIGIBLE_EVENT = "/eligible-event";
 /**Training and Activity */
 export const EDIT_ACTIVITY = "/edit-activity";
 export const ADD_ACTIVITY = "/add-activity";
+export const MANAGE_ACTIVITY = "/manage-activity";
+export const VIEW_ACTIVITY = "/view-activity";

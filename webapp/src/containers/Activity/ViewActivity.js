@@ -232,6 +232,13 @@ const ViewActivity = props => {
     }));
   };
 
+  const viewCell = data => {
+    history.push({
+      pathname: routeConstants.VIEW_ACTIVITY,
+      dataForView: data.id
+    });
+  };
+
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
       delete formState.filterDataParameters[filterName];
@@ -311,7 +318,7 @@ const ViewActivity = props => {
                     className="material-icons"
                     id={cell.id}
                     value={cell.name}
-                    // onClick={() => editCell(cell)}
+                    onClick={() => editCell(cell)}
                     style={{
                       color: "green",
                       fontSize: "19px",
@@ -328,7 +335,7 @@ const ViewActivity = props => {
                     className="material-icons"
                     id={cell.id}
                     value={cell.name}
-                    // onClick={() => editCell(cell)}
+                    onClick={() => viewCell(cell)}
                     style={{
                       color: "green",
                       fontSize: "19px",
@@ -368,7 +375,8 @@ const ViewActivity = props => {
 
   const handleAddActivityClick = () => {
     history.push({
-      pathname: routeConstants.ADD_ACTIVITY
+      pathname: routeConstants.ADD_ACTIVITY,
+      addActivity: true
     });
   };
 
@@ -385,6 +393,7 @@ const ViewActivity = props => {
           color="primary"
           onClick={handleAddActivityClick}
           disableElevation
+          greenButtonChecker
           to={routeConstants.ADD_ACTIVITY}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >

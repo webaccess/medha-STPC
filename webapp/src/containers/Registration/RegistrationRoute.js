@@ -1,5 +1,5 @@
 /**
- * LoginRoute component basically routes every /Login
+ * RegistrationRoute component basically routes every /register or
  * requests to this component to verify the identity
  *
  */

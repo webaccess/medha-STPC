@@ -314,9 +314,10 @@ export const addActivity = (
   address,
   description,
   trainer_name,
-  streams
+  streams,
+  files
 ) => {
-  return {
+  const data = {
     title: title,
     activity_type: activity_type,
     academic_year: academic_year,
@@ -329,9 +330,46 @@ export const addActivity = (
     trainer_name: trainer_name,
     streams: streams
   };
+  const formdata = new FormData();
+  formdata.append("files.upload_logo", files, files.name);
+  formdata.append("data", JSON.stringify(data));
+  return formdata;
 };
 
-export const editActivity = () => {};
+export const editActivity = (
+  title,
+  activity_type,
+  academic_year,
+  college,
+  start_date_time,
+  end_date_time,
+  education_year,
+  address,
+  description,
+  trainer_name,
+  streams,
+  id,
+  files
+) => {
+  const data = {
+    title: title,
+    activity_type: activity_type,
+    academic_year: academic_year,
+    college: college,
+    start_date_time: start_date_time,
+    end_date_time: end_date_time,
+    education_year: education_year,
+    address: address,
+    description: description,
+    trainer_name: trainer_name,
+    streams: streams,
+    id: id
+  };
+  const formdata = new FormData();
+  formdata.append("files.upload_logo", files, files.name);
+  formdata.append("data", JSON.stringify(data));
+  return formdata;
+};
 export const addAcademicHistory = (academicYear, educationYear) => {
   return {
     academic_year: academicYear,

@@ -60,6 +60,9 @@ import EditEventRoute from "./authroute/EditEventRoutes";
 import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
 import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
+import ActivityRoute from "./containers/Activity/ActivityRoute.js";
+import ActivityDetails from "./containers/Activity/ActivityDetails";
+
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -178,19 +181,33 @@ function App() {
                 layout={Layout}
                 path={routeConstants.ADD_DOCUMENTS}
               />
-              {/**View Activity */}
+              {/** Activity List*/}
               <RouteWithLayout
                 component={ViewActivity}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_ACTIVITY}
               />
-              {/**Add Edit Activity */}
+              {/**Activity Details */}
               <RouteWithLayout
+                component={ActivityDetails}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_ACTIVITY}
+              />
+              {/**Add  Activity */}
+              <ActivityRoute
                 component={AddEditActivity}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ACTIVITY}
+              />
+              {/**Edit Activity */}
+              <ActivityRoute
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_ACTIVITY}
               />
 
               {/**Student Academic history */}
@@ -215,20 +232,6 @@ function App() {
                 path={routeConstants.EDIT_ACADEMIC_HISTORY}
               />
 
-              {/**View Activity */}
-              <RouteWithLayout
-                component={ViewActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_ACTIVITY}
-              />
-              {/**Add Edit Activity */}
-              <RouteWithLayout
-                component={AddEditActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.CREATE_ACTIVITY}
-              />
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout
