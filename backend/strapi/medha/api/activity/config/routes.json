@@ -55,6 +55,22 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id/activity-batches",
+      "handler": "activity.activityBatch",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activities/:id/create-activity-batch",
+      "handler": "activity.createActivityBatch",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

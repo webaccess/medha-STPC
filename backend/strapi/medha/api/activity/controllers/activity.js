@@ -56,7 +56,9 @@ module.exports = {
    */
   async student(ctx) {
     const { id } = ctx.params;
-    const { page, pageSize } = utils.getRequestParams(ctx.request.query);
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+
+    const { student_id, stream_id } = query;
 
     const activity = await strapi.query("activity").findOne({ id });
     if (!activity) {
@@ -84,7 +86,7 @@ module.exports = {
       .query("activity-batch-attendance")
       .find({ activity_batch_in: activityBatchIds });
 
-    let response;
+    let responseData;
     if (activityBatch && activityBatchAttendance) {
       const studentIds = activityBatchAttendance.map(ab => ab.student.id);
       let students = await strapi.query("student").find({ id_nin: studentIds });
@@ -93,7 +95,7 @@ module.exports = {
         return student;
       });
 
-      response = utils.paginate(students, page, pageSize);
+      responseData = students;
     } else {
       // Get all users Ids belongs to college
       const userIds = await strapi.services.college.getUsers(id);
@@ -103,8 +105,20 @@ module.exports = {
         return student;
       });
 
-      response = utils.paginate(students, page, pageSize);
+      responseData = students;
     }
+
+    if (student_id) {
+      responseData = responseData.filter(student => student.id == student_id);
+    }
+
+    if (stream_id) {
+      responseData = responseData.filter(
+        student => (student.stream.id = stream_id)
+      );
+    }
+
+    const response = utils.paginate(responseData, page, pageSize);
     return { result: response.result, ...response.pagination };
   },
 
@@ -117,16 +131,24 @@ module.exports = {
    */
   async activityBatch(ctx) {
     const { id } = ctx.params;
-    const { page, pageSize } = utils.getRequestParams(ctx.request.query);
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const { activity_batch_id } = query;
+
     const activity = await strapi.query("activity").findOne({ id });
 
     if (!activity) {
       return ctx.response.notFound("Activity does not exist");
     }
 
-    const activityBatches = await strapi
+    let activityBatches = await strapi
       .query("activity-batch")
       .find({ activity: id });
+
+    if (activity_batch_id) {
+      activityBatches = activityBatches.filter(
+        ab => ab.id == activity_batch_id
+      );
+    }
     const response = utils.paginate(activityBatches, page, pageSize);
     return {
       result: response.result,
@@ -170,6 +192,6 @@ module.exports = {
       return ctx.response.badRequest("Invalid student Ids");
     }
 
-    await strapi.services.activity.createBatchForStudents(id, students);
+    return strapi.services.activity.createBatchForStudents(id, ctx);
   }
 };
