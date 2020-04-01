@@ -549,12 +549,6 @@
                 "items": {
                   "type": "string"
                 }
-              },
-              "events": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
               }
             }
           },
