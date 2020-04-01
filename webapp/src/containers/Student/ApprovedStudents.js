@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import React, { useState, useEffect } from "react";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import Modal from "@material-ui/core/Modal";
@@ -8,19 +13,32 @@ import Fade from "@material-ui/core/Fade";
 
 import * as serviceProviders from "../../api/Axios";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
-import { YellowButton } from "../../components";
-import useStyles from "./ManageStudentStyle";
+import { YellowButton, GrayButton } from "../../components";
+import useStyles from "./ApproveStudentStyles";
 
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
 
 const ApprovedStudents = props => {
+  const [open, setOpen] = React.useState(false);
+  const[username, setUsername] = useState([]);
   const [formState, setFormState] = useState({
     isDataBlock: false,
     isValid: false,
     stateCounter: 0,
     values: {}
   });
+
+  if(props.id){
+    serviceProviders.serviceProviderForGetOneRequest(STUDENTS_URL, props.id).then(res=>{
+      setUsername(res.data.user.username)
+    })
+    .catch(error => {
+      console.log('error',error)
+    })
+  }
+
+
   const handleCloseModal = () => {
     setFormState(formState => ({
       ...formState,
@@ -45,20 +63,45 @@ const ApprovedStudents = props => {
   };
 
   const ApprovedStudent = () => {
-    var body;
-    if (props.Data === true || props.isUnMulBlocked === true) {
-      body = {
-        verifiedByCollege: false
+    var approve_url;
+    var paramsId ;
+    if (props.Data === true ) {
+      approve_url =  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/unapprove"  ;
+      paramsId = {
+        ids: parseInt(props.id) 
       };
-    } else if (props.Data === false || props.isMulBlocked === true) {
-      body = {
-        verifiedByCollege: true
+    } 
+    if(props.Data === false){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/approve"  ;
+      paramsId = {
+        ids: parseInt(props.id) 
       };
     }
-
-    if (props.isMulBlocked || props.isUnMulBlocked) {
-      serviceProviders
-        .serviceProviderForAllBlockRequest(STUDENTS_URL, props.id, body)
+    if(props.isMulBlocked === true ){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/approve"  ;
+      for(var i=0 ; i<props.id.length;i++){
+        paramsId = {
+          ids: parseInt(props.id[i]) 
+        };
+        serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
+        .then(res => {
+          formState.isDataBlock = true;
+          handleCloseModal();
+        })
+        .catch(error => {
+          formState.isDataBlock = false;
+          handleCloseModal();
+        });
+      }
+   
+    }
+    if(props.isUnMulBlocked === true){
+      approve_url =   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/unapprove"  ;
+      for(var i=0 ; i<props.id.length;i++){
+        paramsId = {
+          ids: parseInt(props.id[i]) 
+        };
+        serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
         .then(res => {
           formState.isDataBlock = true;
           handleCloseModal();
@@ -68,19 +111,20 @@ const ApprovedStudents = props => {
           formState.isDataBlock = false;
           handleCloseModal();
         });
-    } else {
-      serviceProviders
-        .serviceProviderForPutRequest(STUDENTS_URL, props.id, body)
-        .then(res => {
-          formState.isDataBlock = true;
-          handleCloseModal();
-        })
-        .catch(error => {
-          console.log("error", error);
-          formState.isDataBlock = false;
-          handleCloseModal();
-        });
+      }
     }
+
+    serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
+    .then(res => {
+      formState.isDataBlock = true;
+      handleCloseModal();
+    })
+    .catch(error => {
+      console.log("error---", error);
+      formState.isDataBlock = false;
+      handleCloseModal();
+    });
+  
   };
 
   const classes = useStyles();
@@ -99,15 +143,25 @@ const ApprovedStudents = props => {
     >
       <Fade in={props.getModel}>
         <div className={classes.paper}>
-          <div className={classes.deletepanel}>
+          <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {props.Data ? "Unapprove" : "Approve"}
+              {/* {props.Data ? "Unapprove" : "Approve"} */}
+              {props.Data === false
+                    ? " Approve  " 
+                    : null}
+                  {props.Data === true
+                    ? " Unapprove  " 
+                    : null}
+                    {props.isMulBlocked === true ? " Approve "
+                    : null}
+                    {props.isUnMulBlocked === true
+                    ? " Unapprove "
+                    : null}
             </Typography>
-
             <div className={classes.crossbtn}>
               <IconButton
-                className={classes.closeButton}
                 aria-label="close"
+                className={classes.closeButton}
                 onClick={props.modalClose}
               >
                 <CloseIcon />
@@ -118,31 +172,54 @@ const ApprovedStudents = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.Data === false || props.isMulBlocked === true
-                    ? "Do you want to approved selected student"
+                  {props.Data === false
+                    ? "Are you sure you want to approve student " + username + "  ?" 
                     : null}
-                  {props.Data === true || props.isUnMulBlocked === true
-                    ? "Do you want to Unapprove selected student"
+                  {props.Data === true
+                    ? "Are you sure you want to unapprove student " + username + "  ?"
+                    : null}
+                    {props.isMulBlocked === true ? "Are you sure you want to approve selected student?"
+                    : null}
+                    {props.isUnMulBlocked === true
+                    ? "Are you sure you want to unapprove selected student?"
                     : null}
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {props.Data === true || props.isUnMulBlocked === true
-                      ? "Unapprove"
-                      : null}
-                    {props.Data === false || props.isMulBlocked === true
-                      ? "Approve"
-                      : null}
+                    Ok
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={props.modalClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>

@@ -235,190 +235,198 @@ const ViewAcademicHistory = props => {
   };
 
   return (
-    <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
+    <Card style={{ padding: "8px" }}>
+      <CardContent className={classes.Cardtheming}>
+        <Grid>
+          <Grid item xs={12} className={classes.title}>
+            {/* <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_ACADEMIC_HISTORY_TEXT}
-        </Typography>
+        </Typography> */}
 
-        <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={handleAddAcademicHistoryClick}
-          disableElevation
-          to={routeConstants.ADD_ACADEMIC_HISTORY}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_ACADEMIC_HISTORY_TEXT}
-        </GreenButton>
-      </Grid>
+            <GreenButton
+              variant="contained"
+              color="primary"
+              onClick={handleAddAcademicHistoryClick}
+              disableElevation
+              to={routeConstants.ADD_ACADEMIC_HISTORY}
+              startIcon={<AddCircleOutlineOutlinedIcon />}
+            >
+              {genericConstants.ADD_ACADEMIC_HISTORY_TEXT}
+            </GreenButton>
+          </Grid>
 
-      <Grid item xs={12} className={classes.formgrid}>
-        {/** Error/Success messages to be shown for edit */}
-        {formState.fromEditAcademicHistory && formState.isDataEdited ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-        {formState.fromEditAcademicHistory && !formState.isDataEdited ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {/** Error/Success messages to be shown for add */}
-        {formState.fromAddAcademicHistory && formState.isDataAdded ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-        {formState.fromAddAcademicHistory && !formState.isDataAdded ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        <Card className={styles.filterButton}>
-          <CardContent className={classes.Cardtheming}>
-            <Grid className={classes.filterOptions} container spacing={1}>
-              <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  options={formState.academicHistoryFilters}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.academic_year.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(ACADEMIC_YEAR_FILTER, event, value)
+          <Grid item xs={12} className={classes.formgrid}>
+            {/** Error/Success messages to be shown for edit */}
+            {formState.fromEditAcademicHistory && formState.isDataEdited ? (
+              <Collapse in={open}>
+                <Alert
+                  severity="success"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
                   }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Academic Year"
+                >
+                  {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+                </Alert>
+              </Collapse>
+            ) : null}
+            {formState.fromEditAcademicHistory && !formState.isDataEdited ? (
+              <Collapse in={open}>
+                <Alert
+                  severity="error"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+                </Alert>
+              </Collapse>
+            ) : null}
+
+            {/** Error/Success messages to be shown for add */}
+            {formState.fromAddAcademicHistory && formState.isDataAdded ? (
+              <Collapse in={open}>
+                <Alert
+                  severity="success"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+                </Alert>
+              </Collapse>
+            ) : null}
+            {formState.fromAddAcademicHistory && !formState.isDataAdded ? (
+              <Collapse in={open}>
+                <Alert
+                  severity="error"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+                </Alert>
+              </Collapse>
+            ) : null}
+
+            <Card className={styles.filterButton}>
+              <CardContent className={classes.Cardtheming}>
+                <Grid className={classes.filterOptions} container spacing={1}>
+                  <Grid item>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      options={formState.academicHistoryFilters}
                       className={classes.autoCompleteField}
-                      variant="outlined"
+                      getOptionLabel={option => option.academic_year.name}
+                      onChange={(event, value) =>
+                        handleChangeAutoComplete(
+                          ACADEMIC_YEAR_FILTER,
+                          event,
+                          value
+                        )
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label="Academic Year"
+                          className={classes.autoCompleteField}
+                          variant="outlined"
+                        />
+                      )}
                     />
-                  )}
+                  </Grid>
+                  <Grid item className={classes.filterButtonsMargin}>
+                    <YellowButton
+                      variant="contained"
+                      color="primary"
+                      disableElevation
+                      onClick={event => {
+                        event.persist();
+                        searchFilter();
+                      }}
+                    >
+                      {genericConstants.SEARCH_BUTTON_TEXT}
+                    </YellowButton>
+                  </Grid>
+                  <Grid item className={classes.filterButtonsMargin}>
+                    <GrayButton
+                      variant="contained"
+                      color="primary"
+                      onClick={clearFilter}
+                      disableElevation
+                    >
+                      {genericConstants.RESET_BUTTON_TEXT}
+                    </GrayButton>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+            {formState.dataToShow ? (
+              formState.dataToShow.length ? (
+                <Table
+                  data={formState.dataToShow}
+                  column={column}
+                  defaultSortField="name"
+                  defaultSortAsc={formState.sortAscending}
+                  editEvent={editCell}
+                  deleteEvent={deleteCell}
+                  progressPending={formState.isDataLoading}
+                  pagination={false}
+                  selectableRows={false}
                 />
-              </Grid>
-              <Grid item className={classes.filterButtonsMargin}>
-                <YellowButton
-                  variant="contained"
-                  color="primary"
-                  disableElevation
-                  onClick={event => {
-                    event.persist();
-                    searchFilter();
-                  }}
-                >
-                  {genericConstants.SEARCH_BUTTON_TEXT}
-                </YellowButton>
-              </Grid>
-              <Grid item className={classes.filterButtonsMargin}>
-                <GrayButton
-                  variant="contained"
-                  color="primary"
-                  onClick={clearFilter}
-                  disableElevation
-                >
-                  {genericConstants.RESET_BUTTON_TEXT}
-                </GrayButton>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-              progressPending={formState.isDataLoading}
-              pagination={false}
-              selectableRows={false}
+              ) : (
+                <div className={classes.noDataMargin}>
+                  No academicHistory details found
+                </div>
+              )
+            ) : (
+              <Spinner />
+            )}
+            <DeleteAcademicHistory
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              id={formState.dataToDelete["id"]}
+              deleteEvent={isDeleteCellCompleted}
             />
-          ) : (
-            <div className={classes.noDataMargin}>
-              No academicHistory details found
-            </div>
-          )
-        ) : (
-          <Spinner />
-        )}
-        <DeleteAcademicHistory
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
-          deleteEvent={isDeleteCellCompleted}
-        />
-      </Grid>
-    </Grid>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   );
 };
 

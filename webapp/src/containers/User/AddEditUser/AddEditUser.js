@@ -63,6 +63,7 @@ const Adduser = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0
   });
+
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
@@ -77,9 +78,6 @@ const Adduser = props => {
 
   const ZONES_URL =
     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
-
-  const RPCS_URL =
-    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
 
   const COLLEGES_URL =
     strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
@@ -145,14 +143,6 @@ const Adduser = props => {
       .catch(error => {
         console.log(error);
       });
-    serviceProvider
-      .serviceProviderForGetRequest(COLLEGES_URL, paramsForPageSize)
-      .then(res => {
-        setColleges(res.data.result);
-      })
-      .catch(error => {
-        console.log(error);
-      });
 
     serviceProvider
       .serviceProviderForGetRequest(ROLES_URL, paramsForPageSize)
@@ -172,17 +162,20 @@ const Adduser = props => {
       .catch(error => {
         console.log(error);
       });
-  }, []);
+  }, [STATES_URL, ROLES_URL]);
 
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
     if (formState.values[state]) {
       fetchZoneRpcDistrictData();
     }
+    if (formState.values[zone] && formState.values[rpc]) {
+      fetchCollegeData();
+    }
     return () => {};
-  }, [formState.values[state]]);
+  }, [formState.values]);
 
-  /** Common function to get zones, rpcs, districts after changing state */
+  /** Common function to get zones, rpcs after changing state */
   async function fetchZoneRpcDistrictData() {
     let zones_url =
       STATES_URL +
@@ -224,6 +217,25 @@ const Adduser = props => {
       pageSize: -1,
       "state.id": formState.values[state]
     };
+  }
+
+  /** Common function to get colleges after changing zone & rpc */
+  async function fetchCollegeData() {
+    let colleges_url =
+      ZONES_URL +
+      "/" +
+      formState.values[zone] +
+      "/" +
+      strapiApiConstants.STRAPI_COLLEGES;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(colleges_url)
+      .then(res => {
+        setColleges(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
   }
 
   const handleChange = e => {
@@ -284,8 +296,14 @@ const Adduser = props => {
         */
         setRpcs([]);
         setZones([]);
+        setColleges([]);
         delete formState.values[zone];
         delete formState.values[rpc];
+        delete formState.values[college];
+      }
+      if (eventName === zone || eventName === rpc) {
+        setColleges([]);
+        delete formState.values[college];
       }
       setFormState(formState => ({
         ...formState,
@@ -317,7 +335,6 @@ const Adduser = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, UserSchema);
     }
-    console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
       postUserData();
@@ -415,371 +432,361 @@ const Adduser = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.ADD_USER_TITLE}
         </Typography>
-        {isSuccess ? (
-          <Alert severity="success">
-            {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
-        {isFailed ? (
-          <Alert severity="error">
-            {genericConstants.ALERT_ERROR_BUTTON_MESSAGE}
-          </Alert>
-        ) : null}
       </Grid>
-      <Grid item xs={12} className={classes.formgrid}>
-        <Card className={classes.root} variant="outlined">
+      <Grid spacing={3}>
+        <Card>
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(UserSchema[firstname], "label")}
-                    name={firstname}
-                    value={formState.values[firstname] || ""}
-                    error={hasError(firstname)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(firstname)
-                        ? formState.errors[firstname].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(UserSchema[lastname], "label")}
-                    name={lastname}
-                    value={formState.values[lastname] || ""}
-                    error={hasError(lastname)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(lastname)
-                        ? formState.errors[lastname].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(UserSchema[email], "label")}
-                    name={email}
-                    value={formState.values[email] || ""}
-                    error={hasError(email)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(email)
-                        ? formState.errors[email].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    label={get(UserSchema[contact], "label")}
-                    name={contact}
-                    value={formState.values[contact] || ""}
-                    error={hasError(contact)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(contact)
-                        ? formState.errors[contact].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-              </Grid>
-              <Grid container spacing={3}>
-                <Grid item md={3} xs={12}>
-                  <TextField
-                    id={get(UserSchema[username], "id")}
-                    label={get(UserSchema[username], "label")}
-                    name={username}
-                    value={formState.values[username] || ""}
-                    error={hasError(username)}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    helperText={
-                      hasError(username)
-                        ? formState.errors[username].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <FormControl variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-password">
-                      {get(UserSchema[password], "label")}
-                    </InputLabel>
-                    <OutlinedInput
-                      id={get(UserSchema[password], "id")}
-                      name={password}
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      label={get(UserSchema[firstname], "label")}
+                      placeholder={get(UserSchema[firstname], "placeholder")}
+                      name={firstname}
+                      value={formState.values[firstname] || ""}
+                      error={hasError(firstname)}
+                      variant="outlined"
                       required
                       fullWidth
-                      error={hasError(password)}
-                      type={formState.showPassword ? "text" : "password"}
-                      value={formState.values[password] || ""}
                       onChange={handleChange}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge="end"
-                          >
-                            {formState.showPassword ? (
-                              <Visibility />
-                            ) : (
-                              <VisibilityOff />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
+                      helperText={
+                        hasError(firstname)
+                          ? formState.errors[firstname].map(error => {
+                              return error + " ";
+                            })
+                          : null
                       }
-                      labelWidth={70}
                     />
-                    <FormHelperText error={hasError(password)}>
-                      {hasError(password)
-                        ? formState.errors[password].map(error => {
-                            return error + " ";
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      label={get(UserSchema[lastname], "label")}
+                      placeholder={get(UserSchema[lastname], "placeholder")}
+                      name={lastname}
+                      value={formState.values[lastname] || ""}
+                      error={hasError(lastname)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(lastname)
+                          ? formState.errors[lastname].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      label={get(UserSchema[email], "label")}
+                      placeholder={get(UserSchema[email], "placeholder")}
+                      name={email}
+                      value={formState.values[email] || ""}
+                      error={hasError(email)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(email)
+                          ? formState.errors[email].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      label={get(UserSchema[contact], "label")}
+                      placeholder={get(UserSchema[contact], "placeholder")}
+                      name={contact}
+                      value={formState.values[contact] || ""}
+                      error={hasError(contact)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(contact)
+                          ? formState.errors[contact].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={roles}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(role, event, value);
+                      }}
+                      value={
+                        roles[
+                          roles.findIndex(function(item, i) {
+                            return item.id === formState.values[role];
                           })
-                        : null}
-                    </FormHelperText>
-                  </FormControl>
-                </Grid>
-              </Grid>
-              <Divider className={classes.divider} />
-              <Grid container spacing={3}>
-                <Grid item md={3} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={roles}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(role, event, value);
-                    }}
-                    value={
-                      roles[
-                        roles.findIndex(function(item, i) {
-                          return item.id === formState.values[role];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(role)}
-                        label={get(UserSchema[role], "label")}
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError(role)
-                            ? formState.errors[role].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={states}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(state, event, value);
-                    }}
-                    value={
-                      states[
-                        states.findIndex(function(item, i) {
-                          return item.id === formState.values[state];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(UserSchema[state], "label")}
-                        variant="outlined"
-                        error={hasError(state)}
-                        helperText={
-                          hasError(state)
-                            ? formState.errors[state].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={4} xs={12}>
-                  {/* <FormGroup row>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          name={active}
-                          checked={formState.values[active]}
-                          onChange={handleChange}
-                          value={formState.values[active]}
-                          error={hasError(active)}
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(role)}
+                          label={get(UserSchema[role], "label")}
+                          placeholder={get(UserSchema[role], "placeholder")}
+                          variant="outlined"
+                          name="tester"
                           helperText={
-                            hasError(active)
-                              ? formState.errors[active].map(error => {
+                            hasError(role)
+                              ? formState.errors[role].map(error => {
                                   return error + " ";
                                 })
                               : null
                           }
                         />
-                      }
-                      label={get(UserSchema[active], "label")}
+                      )}
                     />
-                  </FormGroup> */}
-                </Grid>
-              </Grid>
-              <Grid container spacing={3}>
-                <Grid item md={3} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={zones}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(zone, event, value);
-                    }}
-                    value={
-                      zones[
-                        zones.findIndex(function(item, i) {
-                          return item.id === formState.values[zone];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(UserSchema[zone], "label")}
-                        variant="outlined"
-                        error={hasError(zone)}
-                        helperText={
-                          hasError(zone)
-                            ? formState.errors[zone].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={rpcs}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(rpc, event, value);
-                    }}
-                    value={
-                      rpcs[
-                        rpcs.findIndex(function(item, i) {
-                          return item.id === formState.values[rpc];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(UserSchema[rpc], "label")}
-                        variant="outlined"
-                        error={hasError(rpc)}
-                        helperText={
-                          hasError(rpc)
-                            ? formState.errors[rpc].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={3} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={colleges}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(college, event, value);
-                    }}
-                    value={
-                      colleges[
-                        colleges.findIndex(function(item, i) {
-                          return item.id === formState.values[college];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label={get(UserSchema[college], "label")}
-                        variant="outlined"
-                        error={hasError(college)}
-                        helperText={
-                          hasError(college)
-                            ? formState.errors[college].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
+                  </Grid>
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      id={get(UserSchema[username], "id")}
+                      label={get(UserSchema[username], "label")}
+                      placeholder={get(UserSchema[username], "placeholder")}
+                      name={username}
+                      value={formState.values[username] || ""}
+                      error={hasError(username)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError(username)
+                          ? formState.errors[username].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-adornment-password">
+                        {get(UserSchema[password], "label")}
+                      </InputLabel>
+                      <OutlinedInput
+                        id={get(UserSchema[password], "id")}
+                        placeholder={get(UserSchema[password], "placeholder")}
+                        name={password}
+                        required
+                        fullWidth
+                        error={hasError(password)}
+                        type={formState.showPassword ? "text" : "password"}
+                        value={formState.values[password] || ""}
+                        onChange={handleChange}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={handleClickShowPassword}
+                              onMouseDown={handleMouseDownPassword}
+                              edge="end"
+                            >
+                              {formState.showPassword ? (
+                                <Visibility />
+                              ) : (
+                                <VisibilityOff />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                        labelWidth={70}
+                      />
+                      <FormHelperText error={hasError(password)}>
+                        {hasError(password)
+                          ? formState.errors[password].map(error => {
+                              return error + " ";
+                            })
+                          : null}
+                      </FormHelperText>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={states}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(state, event, value);
+                      }}
+                      value={
+                        states[
+                          states.findIndex(function(item, i) {
+                            return item.id === formState.values[state];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(UserSchema[state], "label")}
+                          placeholder={get(UserSchema[state], "placeholder")}
+                          variant="outlined"
+                          error={hasError(state)}
+                          helperText={
+                            hasError(state)
+                              ? formState.errors[state].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={zones}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(zone, event, value);
+                      }}
+                      value={
+                        zones[
+                          zones.findIndex(function(item, i) {
+                            return item.id === formState.values[zone];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(UserSchema[zone], "label")}
+                          placeholder={get(UserSchema[zone], "placeholder")}
+                          variant="outlined"
+                          error={hasError(zone)}
+                          helperText={
+                            hasError(zone)
+                              ? formState.errors[zone].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={rpcs}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(rpc, event, value);
+                      }}
+                      value={
+                        rpcs[
+                          rpcs.findIndex(function(item, i) {
+                            return item.id === formState.values[rpc];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(UserSchema[rpc], "label")}
+                          placeholder={get(UserSchema[rpc], "placeholder")}
+                          variant="outlined"
+                          error={hasError(rpc)}
+                          helperText={
+                            hasError(rpc)
+                              ? formState.errors[rpc].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={colleges}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(college, event, value);
+                      }}
+                      value={
+                        colleges[
+                          colleges.findIndex(function(item, i) {
+                            return item.id === formState.values[college];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(UserSchema[college], "label")}
+                          placeholder={get(UserSchema[college], "placeholder")}
+                          variant="outlined"
+                          error={hasError(college)}
+                          helperText={
+                            hasError(college)
+                              ? formState.errors[college].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
             </CardContent>
-            <CardActions className={classes.btnspace}>
-              <YellowButton type="submit" color="primary" variant="contained">
-                {genericConstants.SAVE_BUTTON_TEXT}
-              </YellowButton>
-              <GrayButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                to={routeConstants.VIEW_USER}
-              >
-                {genericConstants.CANCEL_BUTTON_TEXT}
-              </GrayButton>
-            </CardActions>
+            <Grid item xs={12} className={classes.CardActionGrid}>
+              <CardActions className={classes.btnspace}>
+                <YellowButton type="submit" color="primary" variant="contained">
+                  {genericConstants.SAVE_BUTTON_TEXT}
+                </YellowButton>
+                <GrayButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  to={routeConstants.VIEW_USER}
+                >
+                  {genericConstants.CANCEL_BUTTON_TEXT}
+                </GrayButton>
+              </CardActions>
+            </Grid>
           </form>
         </Card>
       </Grid>
