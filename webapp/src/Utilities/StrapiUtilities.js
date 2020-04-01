@@ -99,6 +99,12 @@ export const setCollege = id => {
   };
 };
 
+export const setQualification = id => {
+  return {
+    id: id
+  };
+};
+
 /**  Adders */
 export const addRpc = (name, state = null, main_college = null) => {
   return {
@@ -142,6 +148,7 @@ export const addEvent = (
   end_date_time,
   address,
   marks,
+  qualification = null,
   zone = null,
   rpc = null,
   colleges = null,
@@ -154,6 +161,7 @@ export const addEvent = (
     end_date_time: end_date_time,
     address: address,
     marks: marks,
+    qualification: qualification,
     zone: zone,
     rpc: rpc,
     colleges: colleges,
