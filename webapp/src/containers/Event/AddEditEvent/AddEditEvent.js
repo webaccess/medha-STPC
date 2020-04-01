@@ -119,7 +119,8 @@ const AddEditEvent = props => {
     isEditUser: props["editUser"] ? props["editUser"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
-    files: {}
+    files: {},
+    descriptionError: false
   });
 
   const [states, setStates] = useState([]);
@@ -532,21 +533,22 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={12} xs={12}>
+                  <Grid item md={12} xs={12} className={"descriptionBox"}>
                     <Grid className={classes.streamcard}>
                       <Card className={classes.streamoffer}>
                         <InputLabel
                           htmlFor="outlined-stream-card"
                           fullwidth={true.toString()}
+                          error={formState.descriptionError}
                         >
                           {genericConstants.DESCRIPTION}
                         </InputLabel>
-                        <div className="rdw-storybook-root">
+                        <div className="rdw-root">
                           <Editor
                             editorState={editorState}
-                            toolbarClassName="rdw-storybook-toolbar"
-                            wrapperClassName="rdw-storybook-wrapper"
-                            editorClassName="rdw-storybook-editor"
+                            toolbarClassName="rdw-toolbar"
+                            wrapperClassName="rdw-wrapper"
+                            editorClassName="rdw-editor"
                             onEditorStateChange={data => {
                               setEditorState(data);
                             }}
