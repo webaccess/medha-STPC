@@ -80,6 +80,10 @@ const roles = {
       {
         name: "district",
         action: ["find", "findone"]
+      },
+      {
+        name: "qualifications",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -165,6 +169,10 @@ const roles = {
       {
         name: "district",
         action: ["find", "findone"]
+      },
+      {
+        name: "qualifications",
+        action: []
       }
     ],
     grantAllPermissions: false
@@ -250,6 +258,10 @@ const roles = {
       {
         name: "district",
         action: ["find", "findone"]
+      },
+      {
+        name: "qualifications",
+        action: []
       }
     ],
     grantAllPermissions: false
@@ -354,6 +366,10 @@ const roles = {
       {
         name: "district",
         action: ["find", "findone"]
+      },
+      {
+        name: "qualifications",
+        action: ["find", "findone", "count", "update", "create"]
       }
     ],
     grantAllPermissions: false
@@ -448,6 +464,10 @@ const roles = {
       {
         name: "district",
         action: []
+      },
+      {
+        name: "qualifications",
+        action: []
       }
     ],
     grantAllPermissions: false
@@ -532,6 +552,10 @@ const roles = {
       },
       {
         name: "district",
+        action: []
+      },
+      {
+        name: "qualifications",
         action: []
       }
     ],
