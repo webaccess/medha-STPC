@@ -81,3 +81,6 @@ export const VIEW_ACTIVITY_TEXT = "Activity";
 
 /**MANAGE EVENTS*/
 export const ADD_EVENT_TEXT = "Add Event";
+
+/** Events */
+export const DESCRIPTION = "Description";

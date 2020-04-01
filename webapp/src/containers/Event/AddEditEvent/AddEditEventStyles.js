@@ -39,7 +39,6 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid #ccc",
     borderRadius: "5px",
     padding: "15px !important",
-    margin: "15px",
     position: "relative",
     "& label": {
       position: "absolute",

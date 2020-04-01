@@ -18,6 +18,12 @@ import { YellowButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
 import * as formUtilities from "../../../Utilities/FormUtilities";
+import ReactHtmlParser, {
+  processNodes,
+  convertNodeToElement,
+  htmlparser2
+} from "react-html-parser";
+
 const ReactMarkdown = require("react-markdown");
 
 const EVENTS_URL =
@@ -126,9 +132,7 @@ const EventDetails = props => {
     return formState.eventDetails["address"];
   };
 
-  const register = () => {
-    console.log("Register");
-  };
+  const register = () => {};
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -219,9 +223,10 @@ const EventDetails = props => {
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
-                        <ReactMarkdown
+                        {/* <ReactMarkdown
                           source={formState.eventDetails["description"]}
-                        />
+                        /> */}
+                        {ReactHtmlParser(formState.eventDetails["description"])}
                       </Grid>
                     </Grid>
                     <Grid>
