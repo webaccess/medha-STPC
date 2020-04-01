@@ -15,7 +15,7 @@ const EventSchema = {
     }
   },
   dateFrom: {
-    label: "Date From",
+    label: "Start Date",
     id: "dateFrom",
     autoComplete: "dateFrom",
     required: true,
@@ -25,12 +25,12 @@ const EventSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Date From is required"
+        message: "Start Date is required"
       }
     }
   },
   dateTo: {
-    label: "date To",
+    label: "End Date",
     id: "dateTo",
     autoComplete: "dateTo",
     required: true,
@@ -40,40 +40,11 @@ const EventSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Date To is required"
+        message: "End Date is required"
       }
     }
   },
-  timeFrom: {
-    label: "Time From",
-    id: "timeFrom",
-    autoComplete: "timeFrom",
-    required: true,
-    placeholder: "Time From",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Time From is required"
-      }
-    }
-  },
-  timeTo: {
-    label: "Time To",
-    id: "timeTo",
-    autoComplete: "Time To",
-    required: true,
-    placeholder: "Time To",
-    autoFocus: true,
-    type: "integer",
-    validations: {
-      required: {
-        value: "true",
-        message: "Time To is required"
-      }
-    }
-  },
+  
   address: {
     label: "Address",
     id: "address",
@@ -144,39 +115,36 @@ const EventSchema = {
     label: "Marks",
     id: "marks",
     autoComplete: "marks",
+    required: true,
     placeholder: "Marks",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "percentage ( Min percentage through SSC, HSC, graduation ) 1-100"
+      }
+    }
+  },
+  qualification: {
+    label: "Qualification",
+    id: "qualification",
+    autoComplete: "Qualification",
+    required: false,
+    placeholder: "Qualification",
     autoFocus: true,
     type: "text",
     validations: {}
   },
-  // qualifications: {
-  //   label: "qualifications",
-  //   id: "qualifications",
-  //   autoComplete: "Qualifications",
-  //   required: true,
-  //   placeholder: "Qualifications",
-  //   autoFocus: true,
-  //   type: "text",
-  //   validations: {
-  //     required: {
-  //       value: "true",
-  //       message: "Qualifications is required"
-  //     }
-  //   }
-  // },
+
   files: {
     label: "Upload",
     id: "files",
-    required: true,
+    required: false,
     placeholder: "Upload files",
     autoFocus: true,
     type: "file",
-    validations: {
-      required: {
-        value: "true",
-        message: "File is required"
-      }
-    }
+    validations: {}
   }
 };
 
