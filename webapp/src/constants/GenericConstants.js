@@ -22,6 +22,8 @@ export const UNBLOCK_BUTTON_TEXT = "Unblock";
  */
 export const STUDENT_REGISTRATION = "Student Registration";
 export const EDIT_STUDENT_PROFILE = "Edit Profile";
+export const ALERT_SUCCESS_STUDENT_REGISTRATION = "Successfully Register";
+export const ALERT_ERROR_STUDENT_REGISTRATION = "Registration fail";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";

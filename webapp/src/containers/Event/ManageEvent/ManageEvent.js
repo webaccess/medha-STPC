@@ -519,7 +519,7 @@ const ViewEvents = props => {
                   value={formState.startDate}
                   name={START_DATE_FILTER}
                   onChange={handleStartDateChange}
-                  onBlur={focousOut}
+                  //onBlur={focousOut}
                 />
               </Grid>
               <Grid item>
@@ -530,7 +530,7 @@ const ViewEvents = props => {
                   value={formState.endDate}
                   name={END_DATE_FILTER}
                   onChange={handleEndDateChange}
-                  onBlur={focousOut}
+                  // onBlur={focousOut}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
