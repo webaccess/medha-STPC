@@ -84,21 +84,21 @@ const UserSchema = {
     }
   },
   contact: {
-    label: "Mobile Number",
-    id: "mobile_number",
-    autoComplete: "Mobile Number",
+    label: "Contact Number",
+    id: "contact_number",
+    autoComplete: "Contact Number",
     required: true,
-    placeholder: "Mobile Number",
+    placeholder: "Contact Number",
     autoFocus: true,
     type: "integer",
     validations: {
       required: {
         value: "true",
-        message: "Mobile number is required"
+        message: "Contact number is required"
       },
       validateMobileNumber: {
         value: 10,
-        message: "Please enter a valid mobile number"
+        message: "Please enter a valid contact number"
       }
     }
   },
