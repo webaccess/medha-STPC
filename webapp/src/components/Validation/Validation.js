@@ -12,7 +12,9 @@ const validation = (value, inputValidations = {}, type = "text") => {
   const emailRegex = new RegExp(
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
-  const passRegx = new RegExp("^(?=.*[a-zA-Z])");
+  const passRegx = new RegExp(
+    "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d^a-zA-Z0-9].{5,50}$"
+  );
   const phonenoRegx = /^\d{10}$/;
 
   // handle i18n

@@ -8,6 +8,7 @@ export const STRAPI_COLLEGES = "colleges";
 export const STRAPI_STREAMS = "streams";
 export const STRAPI_USERS = "users";
 export const STRAPI_DISTRICTS = "districts";
+export const STRAPI_QUALIFICATIONS = "qualifications";
 export const STRAPI_ROLES = "users-permissions/roles";
 export const STRAPI_REQUEST_STUDENT_OTP = "otps/requestotpforstudent";
 export const STRAPI_CHECK_OTP = "otps/checkotp";
