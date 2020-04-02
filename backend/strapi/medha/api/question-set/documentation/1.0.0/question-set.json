@@ -618,58 +618,6 @@
                 }
               }
             }
-          },
-          "events": {
-            "type": "array",
-            "items": {
-              "required": [
-                "id",
-                "title",
-                "start_date_time",
-                "end_date_time",
-                "age",
-                "address",
-                "description"
-              ],
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "title": {
-                  "type": "string"
-                },
-                "start_date_time": {
-                  "type": "datetime"
-                },
-                "end_date_time": {
-                  "type": "datetime"
-                },
-                "rpc": {
-                  "type": "string"
-                },
-                "colleges": {
-                  "type": "string"
-                },
-                "streams": {
-                  "type": "string"
-                },
-                "age": {
-                  "type": "integer"
-                },
-                "upload_logo": {
-                  "type": "string"
-                },
-                "question_set": {
-                  "type": "string"
-                },
-                "address": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                }
-              }
-            }
           }
         }
       },
@@ -688,12 +636,6 @@
             }
           },
           "activities": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "events": {
             "type": "array",
             "items": {
               "type": "string"

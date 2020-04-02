@@ -712,6 +712,7 @@ const AddEditStudent = props => {
                   required
                   fullWidth
                   readOnly
+                  disabled
                   error={hasError("contact")}
                   helperText={
                     hasError("contact")
@@ -725,7 +726,7 @@ const AddEditStudent = props => {
               <Grid item md={3} xs={12}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
-                    variant="inline"
+                    // variant="inline"
                     format="dd/MM/yyyy"
                     margin="normal"
                     id="date-picker-inline"

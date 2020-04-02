@@ -4,7 +4,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%"
   },
   btnspace: {
-    padding: "15px 18px 50px"
+    padding: "20px 18px 20px"
   },
   btnspaceadd: {
     padding: "0px 15px 15px"
@@ -43,6 +43,20 @@ const useStyles = makeStyles(theme => ({
     borderBottom: "1px solid #ccc",
     marginBottom: "15px",
     borderRadius: "0px"
+  },
+  title: {
+    display: "flex",
+    marginBottom: theme.spacing(1),
+    "& h4": {
+      flex: "1",
+      fontWeight: "700"
+    }
+  },
+  CardActionGrid: {
+    backgroundColor: "#EEEEEE"
+  },
+  MarginBottom: {
+    marginBottom: "10px"
   }
 }));
 export default useStyles;

@@ -17,6 +17,8 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
+import * as formUtilities from "../../../Utilities/FormUtilities";
+const ReactMarkdown = require("react-markdown");
 
 const EVENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
@@ -34,10 +36,10 @@ const EventDetails = props => {
 
   async function getEventDetails() {
     let paramsForEvent = null;
-    if (auth.getUserInfo().role.name === "College Admin") {
-      paramsForEvent = auth.getUserInfo().college.id;
-    } else if (auth.getUserInfo().role.name === "Medha Admin") {
-      paramsForEvent = props["location"]["dataForEdit"];
+    if (auth.getUserInfo().role.name === "Medha Admin") {
+      paramsForEvent = props["location"]["dataForView"];
+    } else if (auth.getUserInfo().role.name === "Student") {
+      paramsForEvent = props["location"]["dataForView"];
     }
     if (paramsForEvent !== null && paramsForEvent !== undefined) {
       await serviceProviders
@@ -53,16 +55,41 @@ const EventDetails = props => {
           console.log("error", error);
         });
     } else {
-      history.push({
-        pathname: routeConstants.DASHBOARD_URL
-      });
+      if (auth.getUserInfo().role.name === "Medha Admin") {
+        history.push({
+          pathname: routeConstants.MANAGE_EVENT
+        });
+      } else if (auth.getUserInfo().role.name === "Student") {
+        history.push({
+          pathname: routeConstants.ELIGIBLE_EVENT
+        });
+      } else {
+        history.push({
+          pathname: routeConstants.DASHBOARD_URL
+        });
+      }
     }
   }
 
-  const routeToManageEvent = () => {
-    history.push({
-      pathname: routeConstants.MANAGE_EVENT
-    });
+  const route = () => {
+    if (auth.getUserInfo().role.name === "Student") {
+      history.push({
+        pathname: routeConstants.ELIGIBLE_EVENT
+      });
+    } else if (
+      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === "College Admin"
+    ) {
+      history.push({
+        pathname: routeConstants.MANAGE_EVENT
+      });
+    } else {
+      auth.clearToken();
+      auth.clearUserInfo();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
+      });
+    }
   };
 
   const getTime = () => {
@@ -73,7 +100,7 @@ const EventDetails = props => {
     ) {
       let endTime = new Date(formState.eventDetails["end_date_time"]);
       return (
-        startTime.toLocaleTimeString() + " - " + endTime.toLocaleTimeString()
+        startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
       );
     } else {
       startTime = new Date(formState.eventDetails["start_date_time"]);
@@ -88,7 +115,7 @@ const EventDetails = props => {
       formState.eventDetails["end_date_time"]
     ) {
       let endDate = new Date(formState.eventDetails["end_date_time"]);
-      return startDate.toDateString() + " - " + endDate.toDateString();
+      return startDate.toDateString() + " to " + endDate.toDateString();
     } else {
       startDate = new Date(formState.eventDetails["start_date_time"]);
       return startDate.toDateString();
@@ -99,6 +126,9 @@ const EventDetails = props => {
     return formState.eventDetails["address"];
   };
 
+  const register = () => {
+    console.log("Register");
+  };
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -109,7 +139,7 @@ const EventDetails = props => {
           variant="contained"
           color="primary"
           disableElevation
-          onClick={routeToManageEvent}
+          onClick={route}
           to={routeConstants.MANAGE_EVENT}
           startIcon={<Icon>keyboard_arrow_left</Icon>}
           greenButtonChecker={formState.greenButtonChecker}
@@ -122,10 +152,8 @@ const EventDetails = props => {
           <CardContent>
             <Grid container spacing={3} className={classes.formgrid}>
               <Grid item md={12} xs={12}>
-                {formState.eventDetails !== null &&
-                formState.eventDetails !== undefined &&
-                formState.eventDetails !== {} ? (
-                  <form>
+                {!formUtilities.checkEmpty(formState.eventDetails) ? (
+                  <React.Fragment>
                     <Grid item md={12} xs={12} className={classes.title}>
                       <Typography variant="h4" gutterBottom>
                         {formState.eventDetails["title"]}
@@ -148,66 +176,73 @@ const EventDetails = props => {
                           formState.eventDetails["upload_logo"] !== {} ? (
                             <Img
                               src={
-                                "http://104.236.28.24:1338" +
+                                strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
                                 formState.eventDetails["upload_logo"]["url"]
                               }
                               loader={<Spinner />}
                               width="100%"
                               height="100%"
                             />
-                          ) : null}
+                          ) : (
+                            <Img
+                              src="/images/noImage.png"
+                              loader={<Spinner />}
+                              width="100%"
+                              height="100%"
+                            />
+                          )}
                         </Grid>
-                        <Grid
-                          item
-                          className={classes.defaultMargin}
-                          spacing={4}
-                        >
-                          Date :- {getDate()}
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Date :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getDate()}
+                          </Grid>
                         </Grid>
-                        <Grid
-                          item
-                          className={classes.defaultMargin}
-                          spacing={4}
-                        >
-                          Time :- {getTime()}
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Time :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getTime()}
+                          </Grid>
                         </Grid>
-                        <Grid
-                          item
-                          className={classes.defaultMargin}
-                          spacing={4}
-                        >
-                          Venue :- {getVenue()}
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Venue :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getVenue()}
+                          </Grid>
                         </Grid>
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
-                        {formState.eventDetails["description"]}
+                        <ReactMarkdown
+                          source={formState.eventDetails["description"]}
+                        />
                       </Grid>
                     </Grid>
-                    {/* <Grid item md={12} xs={12}>
-                      <CardActions className={classes.btnspace}>
-                        <YellowButton
-                          type="submit"
-                          color="primary"
-                          variant="contained"
-                          //onClick={editData}
-                          className={classes.submitbtn}
-                        >
-                          {genericConstants.EDIT_TEXT}
-                        </YellowButton>
-                        {auth.getUserInfo().role.name !== "College Admin" ? (
-                          <GrayButton
-                            color="primary"
-                            variant="contained"
-                            to={routeConstants.VIEW_COLLEGE}
-                            className={classes.resetbtn}
-                          >
-                            {genericConstants.CANCEL_BUTTON_TEXT}
-                          </GrayButton>
-                        ) : null}
-                      </CardActions>
-                    </Grid> */}
-                  </form>
+                    <Grid>
+                      {auth.getUserInfo().role.name === "Student" ? (
+                        <Grid item md={12} xs={12}>
+                          <CardActions className={classes.btnspace}>
+                            <GreenButton
+                              variant="contained"
+                              color="primary"
+                              disableElevation
+                              onClick={register}
+                              to={routeConstants.MANAGE_EVENT}
+                              greenButtonChecker={formState.greenButtonChecker}
+                            >
+                              Register
+                            </GreenButton>
+                          </CardActions>
+                        </Grid>
+                      ) : null}
+                    </Grid>
+                  </React.Fragment>
                 ) : (
                   <Spinner />
                 )}

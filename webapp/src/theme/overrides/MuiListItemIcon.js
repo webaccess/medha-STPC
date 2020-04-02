@@ -4,6 +4,7 @@ export default {
     height: 24,
     display: "flex",
     alignItems: "center",
-    color: "none"
+    color: "none",
+    minWidth: "41px"
   }
 };

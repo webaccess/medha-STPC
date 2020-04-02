@@ -49,10 +49,15 @@ const useStyles = makeStyles(theme => ({
     "& h4": {
       flex: "1",
       fontWeight: "700"
-    }
+    },
+    flexDirection: "row-reverse",
+    marginTop: "8px"
   },
   Cardtheming: {
     paddingBottom: "16px !important"
+  },
+  formgrid: {
+    marginTop: "8px !important"
   }
 }));
 

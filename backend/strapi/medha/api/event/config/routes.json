@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:id/students",
+      "handler": "event.students",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

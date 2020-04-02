@@ -12,6 +12,8 @@ import {
   DefaultRoute
 } from "./authroute";
 
+import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
+
 import Dashboard from "./containers/Dashboard/Dashboard";
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
 import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
@@ -24,6 +26,7 @@ import ViewStates from "./containers/State/ViewState/ViewState";
 import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
 import ViewZone from "./containers/Zone/ViewZone/ViewZone";
 import ViewEvents from "./containers/Event/ManageEvent/ManageEvent";
+import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
 import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
@@ -53,7 +56,10 @@ import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcadem
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
 import EventDetails from "./containers/Event/ManageEvent/EventDetails";
-
+import EditEventRoute from "./authroute/EditEventRoutes";
+import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
+import ViewActivity from "./containers/Activity/ViewActivity.js";
+import AddEditActivity from "./containers/Activity/AddEditActivity";
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -63,13 +69,13 @@ function App() {
         <Router>
           <div>
             <Switch>
-              <PrivateRoute
-                path={routeConstants.DASHBOARD_URL}
+              <DefaultRoute
+                path={routeConstants.DEFAULT_URL}
                 component={Dashboard}
                 exact
               />
-              <DefaultRoute
-                path={routeConstants.DEFAULT_URL}
+              <PrivateRoute
+                path={routeConstants.DASHBOARD_URL}
                 component={Dashboard}
                 exact
               />
@@ -93,12 +99,13 @@ function App() {
                 layout={Layout}
                 exact
               />
+              {/**Student Registration route */}
               <RegistrationRoute
                 path={routeConstants.NEW_REGISTRATION_URL}
                 layout={Layout}
                 exact
               />
-
+              {/**Edit Student Profile */}
               <RegistrationRoute
                 path={routeConstants.EDIT_PROFILE}
                 layout={Layout}
@@ -128,71 +135,100 @@ function App() {
                 component={NotFoundPage}
                 exact
               />
+              {/**View Student Profile  */}
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={StudentProfile}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_PROFILE}
               />
               {/**Education */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_EDUCATION}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_EDUCATION}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={EditEducation}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_EDUCATION}
               />
               {/**Student document */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewDocument}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_DOCUMENTS}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddDocument}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_DOCUMENTS}
               />
+              {/**View Activity */}
+              <RouteWithLayout
+                component={ViewActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY}
+              />
+              {/**Add Edit Activity */}
+              <RouteWithLayout
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_ACTIVITY}
+              />
 
               {/**Student Academic history */}
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={ViewAcademicHistory}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_ACADEMIC_HISTORY}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={AddEditAcademicHistory}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ACADEMIC_HISTORY}
               />
 
-              <RouteWithLayout
+              <RouteWithTabLayout
                 component={EditAcademicHistoryRoute}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_ACADEMIC_HISTORY}
               />
 
+              {/**View Activity */}
+              <RouteWithLayout
+                component={ViewActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY}
+              />
+              {/**Add Edit Activity */}
+              <RouteWithLayout
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.CREATE_ACTIVITY}
+              />
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout
@@ -330,6 +366,25 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_EVENT}
+              />
+              <RouteWithLayout
+                component={AddEditEvent}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_EVENT}
+              />
+              <RouteWithLayout
+                component={EligibleEvents}
+                exact
+                layout={Layout}
+                path={routeConstants.ELIGIBLE_EVENT}
+              />
+              {/** Edit Event Route */}
+              <RouteWithLayout
+                component={EditEventRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_EVENT}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>

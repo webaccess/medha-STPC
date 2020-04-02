@@ -69,7 +69,8 @@ const useStyles = makeStyles(theme => ({
   },
   Cardtheming: {
     paddingBottom: "16px !important"
-  }
+  },
+  FontWeight: { fontWeight: 700 }
 }));
 
 export default useStyles;
