@@ -5,8 +5,17 @@
  * to customize this controller
  */
 
-const { convertRestQueryParams, buildQuery } = require("strapi-utils");
+const {
+  convertRestQueryParams,
+  buildQuery,
+  sanitizeEntity
+} = require("strapi-utils");
+
 const utils = require("../../../config/utils.js");
+const sanitizeUser = user =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model
+  });
 
 module.exports = {
   async find(ctx) {
@@ -37,5 +46,46 @@ module.exports = {
     const { id } = ctx.params;
     const response = await strapi.query("activity-batch").findOne({ id });
     return utils.getFindOneResponse(response);
+  },
+
+  /**
+   * Get Activity batch students
+   */
+  async student(ctx) {
+    const { id } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+
+    const { student_id, stream_id } = query;
+
+    const activityBatch = await strapi.query("activity-batch").findOne({ id });
+    if (!activityBatch) {
+      return ctx.response.notFound("Activity batch does not exist");
+    }
+
+    const activityBatchStudents = await strapi
+      .query("activity-batch-attendance")
+      .find({ activity_batch: id });
+
+    const studentIds = activityBatchStudents.map(ab => ab.student.id);
+
+    let students = await strapi.query("student").find({ id_in: studentIds });
+    students = students.map(student => {
+      student.user = sanitizeUser(student.user);
+      return student;
+    });
+
+    if (student_id) {
+      students = students.filter(student => student.id == student_id);
+    }
+
+    if (stream_id) {
+      students = students.filter(student => (student.stream.id = stream_id));
+    }
+
+    const response = utils.paginate(students, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
   }
 };

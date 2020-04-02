@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/activity-batches/:id/students",
+      "handler": "activity-batch.student",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
