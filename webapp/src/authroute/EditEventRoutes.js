@@ -12,7 +12,7 @@ const EditEventRoute = props => {
       return (
         <AddEditEvent
           dataForEdit={props["location"]["dataForEdit"]}
-          editUser={props["location"]["editUser"]}
+          editEvent={props["location"]["editEvent"]}
         />
       );
     } else {

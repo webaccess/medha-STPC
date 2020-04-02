@@ -87,7 +87,6 @@ function getStyles(name, personName, theme) {
 }
 
 const AddEditEvent = props => {
-  console.log("editevents",props["dataForEdit"]);
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
@@ -101,7 +100,8 @@ const AddEditEvent = props => {
     errors: {},
     isSuccess: false,
     showPassword: false,
-    isEditUser: props["editUser"] ? props["editUser"] : false,
+    isEditEvent: props["editEvent"] ? props["editEvent"] : false,
+  
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     files: {},
@@ -187,7 +187,7 @@ const AddEditEvent = props => {
         for (let i in props["dataForEdit"]["streams"]) {
           finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
         }
-        formState.values[college] = finalDataStream;
+        formState.values[stream] = finalDataStream;
       }
       if (props["dataForEdit"]["marks"]) {
         formState.values[marks] = props["dataForEdit"]["marks"];
@@ -196,7 +196,9 @@ const AddEditEvent = props => {
         formState.values[qualification] = props["dataForEdit"]["qualification"]["id"];
       }
       if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"]){
-        console.log("prefilled image",props["dataForEdit"]["upload_logo"]);
+
+      //  formState.values[files] = props["dataForEdit"]["upload_logo"]["name"];
+       formState.files.name = props["dataForEdit"]["upload_logo"]["hash"];
       }
     }
     formState.counter += 1;
@@ -422,6 +424,27 @@ const AddEditEvent = props => {
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null
     );
+    if(formState.isEditEvent){
+
+      serviceProvider.serviceProviderForPutRequest(EVENTS_URL, formState.dataForEdit["id"], postData)
+      .then(res => {
+        if (formState.files.name) {
+          postImage(res.data.id);
+        } else {
+          history.push({
+            pathname: routeConstants.MANAGE_EVENT,
+            fromAddEvent: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        }
+      })
+      .catch(error => {
+        console.log("puterror", error);
+      });
+
+    }else{
     serviceProvider
       .serviceProviderForPostRequest(EVENTS_URL, postData)
       .then(res => {
@@ -440,6 +463,7 @@ const AddEditEvent = props => {
       .catch(error => {
         console.log("posterror", error);
       });
+    }
   };
 
   const postImage = id => {
