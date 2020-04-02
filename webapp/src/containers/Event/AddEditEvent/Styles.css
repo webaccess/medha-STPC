@@ -1,21 +1,24 @@
-.rdw-storybook-root {
+.rdw-root {
 }
-.rdw-storybook-wrapper {
+.rdw-wrapper {
 }
-.rdw-storybook-editor {
+.rdw-editor {
   border: 1px solid #9b9393;
   padding: 5px;
   border-radius: 2px;
   height: 300px;
 }
-.rdw-storybook-toolbar {
+.rdw-toolbar {
   top: -130px;
   border: 1px solid #9b9393;
 }
-.rdw-storybook-textarea {
+.rdw-textarea {
   margin-top: 20px;
   resize: none;
   width: 100%;
   border: 1px solid #8a2525;
   height: 300px;
+}
+.makeStyles-streamcard-75:hover {
+  border: 1px solid black;
 }
