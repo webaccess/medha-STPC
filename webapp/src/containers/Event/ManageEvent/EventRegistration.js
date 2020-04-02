@@ -58,12 +58,14 @@ const RegisterEvent = props => {
     setFormState(formState => ({
       ...formState,
       values: {},
-      isStudentRegistered: false,
+      isStudentRegistered: false
     }));
     if (formState.isStudentRegistered) {
       props.statusRegistartion(true);
+      props.registrationFailed(false);
     } else {
       props.statusRegistartion(false);
+      props.registrationFailed(true);
     }
     props.closeBlockModal();
   };
