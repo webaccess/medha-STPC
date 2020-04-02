@@ -18,3 +18,8 @@
   width: auto;
   min-width: 30px;
 }
+
+.noBorderNoShadow {
+  border-radius: 0px !important;
+  box-shadow: none !important;
+}

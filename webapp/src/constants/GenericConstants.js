@@ -76,6 +76,10 @@ export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 /**Activity */
 export const ADD_ACTIVITY_TEXT = "Add Activity";
 export const VIEW_ACTIVITY_TEXT = "Activity";
+export const VIEW_ACTIVITY_BATCHES = "Activity Batch";
+export const ADD_ACTIVITY_BATCHES = "Add Activity Batch";
+
+export const ADD_STUDENT_TO_ACTIVITY_BATCH = "Add Students";
 
 /**MANAGE EVENTS*/
 export const ADD_EVENT_TEXT = "Add Event";

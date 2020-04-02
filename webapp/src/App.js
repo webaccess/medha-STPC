@@ -60,6 +60,9 @@ import EditEventRoute from "./authroute/EditEventRoutes";
 import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
 import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
+import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
+import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
+import EditActivityBatchRoute from "./authroute/EditActivityBatchRoute";
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -386,6 +389,29 @@ function App() {
                 layout={Layout}
                 path={routeConstants.EDIT_EVENT}
               />
+
+              {/* Manage Activity Batch */}
+              <RouteWithLayout
+                component={ViewActivityBatches}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY_BATCH}
+              />
+
+              <RouteWithLayout
+                component={EditActivityBatchRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_ACTIVITY_BATCH}
+              />
+
+              <RouteWithLayout
+                component={AddEditActivityBatch}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_ACTIVITY_BATCH}
+              />
+
               <Route path="*" component={NotFoundPage} />
             </Switch>
           </div>

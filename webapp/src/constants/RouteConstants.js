@@ -73,3 +73,9 @@ export const ELIGIBLE_EVENT = "/eligible-event";
 /**Training and Activity */
 export const EDIT_ACTIVITY = "/edit-activity";
 export const ADD_ACTIVITY = "/add-activity";
+
+/**Activty Batches */
+export const MANAGE_ACTIVITY_BATCH = "/manage-activity-batch/:activity";
+export const ADD_ACTIVITY_BATCH = "/add-activity-batch/:activity";
+export const EDIT_ACTIVITY_BATCH = "/edit-activity-batch/:activity";
+export const VIEW_ACTIVITY_BATCH = "/view-activity-batch/:activity";

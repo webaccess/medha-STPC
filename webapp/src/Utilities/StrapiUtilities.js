@@ -338,3 +338,10 @@ export const addAcademicHistory = (academicYear, educationYear) => {
     education_year: educationYear
   };
 };
+
+export const addActivityBatch = (name, students) => {
+  return {
+    name,
+    students
+  };
+};
