@@ -8,7 +8,8 @@ import {
   Divider,
   Grid,
   TextField,
-  Typography
+  Typography,
+  FormHelperText
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
@@ -57,10 +58,6 @@ const QUALIFICATIONS_URL =
 
 const ZONES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
-const RPCS_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
-const COLLEGE_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
 const STREAM_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS;
 const EVENTS_URL =
@@ -96,8 +93,6 @@ const AddEditEvent = props => {
   const classes = useStyles();
   // const theme = useTheme();
   const history = useHistory();
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -118,9 +113,6 @@ const AddEditEvent = props => {
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
   const [qualifications, setQualifications] = useState([]);
-  const [selectedStreams, setSelectedStreams] = useState([]);
-  const [personName, setPersonName] = React.useState([]);
-  const [collegeName, setCollegeName] = React.useState([]);
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
@@ -157,9 +149,6 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["address"]) {
         formState.values[address] = props["dataForEdit"]["address"];
       }
-      // if (props["dataForEdit"]["age"]) {
-      //   formState.values[age] = props["dataForEdit"]["age"];
-      // }
 
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
@@ -350,7 +339,27 @@ const AddEditEvent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, EventSchema);
     }
-    if (isValid) {
+    formState.descriptionError = false;
+    if (
+      convertToRaw(editorState.getCurrentContent()).blocks &&
+      convertToRaw(editorState.getCurrentContent()).blocks.length
+    ) {
+      let arrayToCheckIn = convertToRaw(editorState.getCurrentContent()).blocks;
+      let validationCounter = 0;
+      for (let i in arrayToCheckIn) {
+        if (
+          arrayToCheckIn[i]["text"] &&
+          arrayToCheckIn[i]["text"].trim().length !== 0
+        ) {
+          validationCounter += 1;
+          break;
+        }
+      }
+      if (validationCounter === 0) {
+        formState.descriptionError = true;
+      }
+    }
+    if (isValid && !formState.descriptionError) {
       /** CALL POST FUNCTION */
       postEventData();
       /** Call axios from here */
@@ -519,7 +528,13 @@ const AddEditEvent = props => {
                 </Grid>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12} className={"descriptionBox"}>
-                    <Grid className={classes.streamcard}>
+                    <Grid
+                      className={
+                        formState.descriptionError
+                          ? classes.streamcardError
+                          : classes.streamcard
+                      }
+                    >
                       <Card className={classes.streamoffer}>
                         <InputLabel
                           htmlFor="outlined-stream-card"
@@ -535,10 +550,16 @@ const AddEditEvent = props => {
                             wrapperClassName="rdw-wrapper"
                             editorClassName="rdw-editor"
                             onEditorStateChange={data => {
+                              formState.descriptionError = false;
                               setEditorState(data);
                             }}
                           />
                         </div>
+                        {formState.descriptionError ? (
+                          <FormHelperText error={true}>
+                            Description is required
+                          </FormHelperText>
+                        ) : null}
                       </Card>
                     </Grid>
                   </Grid>

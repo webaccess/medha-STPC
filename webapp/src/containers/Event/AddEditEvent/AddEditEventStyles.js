@@ -46,6 +46,17 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: "#fff"
     }
   },
+  streamcardError: {
+    border: "1px solid red",
+    borderRadius: "5px",
+    padding: "15px !important",
+    position: "relative",
+    "& label": {
+      position: "absolute",
+      top: "-8px",
+      backgroundColor: "#fff"
+    }
+  },
   streamoffer: {
     paddingLeft: "15px",
     paddingRight: "15px",
