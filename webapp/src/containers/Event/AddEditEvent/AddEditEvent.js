@@ -87,6 +87,7 @@ function getStyles(name, personName, theme) {
 }
 
 const AddEditEvent = props => {
+  console.log("editevents",props["dataForEdit"]);
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
@@ -104,7 +105,9 @@ const AddEditEvent = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     files: {},
-    descriptionError: false
+    descriptionError: false,
+    dataToShowForMultiSelect: [],
+    dataToShowForStreamMultiSelect: []
   });
 
   const [states, setStates] = useState([]);
@@ -140,7 +143,7 @@ const AddEditEvent = props => {
           "-" +
           today.getFullYear();
 
-        formState.values[dateFrom] = date;
+        formState.values[dateFrom] = props["dataForEdit"]["start_date_time"];
         //formState.defaultDate = date;
       }
       if (props["dataForEdit"]["end_date_time"]) {
@@ -149,21 +152,51 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["address"]) {
         formState.values[address] = props["dataForEdit"]["address"];
       }
+      if ( props["dataForEdit"] &&
+      props["dataForEdit"]["rpc"] &&
+      props["dataForEdit"]["rpc"]["state"]
+    ) {
+      formState.values[state] = props["dataForEdit"]["rpc"]["state"];
+    }
 
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
+      }
+      if( props["dataForEdit"] && props["dataForEdit"]["colleges"] && props["dataForEdit"]["colleges"][0] && props["dataForEdit"]["colleges"][0]["zone"]){
+        formState.values[zone] = props["dataForEdit"]["colleges"][0]["zone"];
       }
       if (
         props["dataForEdit"]["colleges"] &&
         props["dataForEdit"]["colleges"].length
       ) {
-        formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
+        // formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
+        formState.dataToShowForMultiSelect = props["dataForEdit"]["colleges"];
+        let finalData = [];
+        for (let i in props["dataForEdit"]["colleges"]) {
+          finalData.push(props["dataForEdit"]["colleges"][i]["id"]);
+        }
+        formState.values[college] = finalData;
       }
       if (
         props["dataForEdit"]["streams"] &&
         props["dataForEdit"]["streams"].length
       ) {
-        formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+        // formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+        formState.dataToShowForStreamMultiSelect = props["dataForEdit"]["streams"];
+        let finalDataStream = [];
+        for (let i in props["dataForEdit"]["streams"]) {
+          finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
+        }
+        formState.values[college] = finalDataStream;
+      }
+      if (props["dataForEdit"]["marks"]) {
+        formState.values[marks] = props["dataForEdit"]["marks"];
+      }
+      if(props["dataForEdit"] && props["dataForEdit"]["qualification"] && props["dataForEdit"]["qualification"]["id"]){
+        formState.values[qualification] = props["dataForEdit"]["qualification"]["id"];
+      }
+      if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"]){
+        console.log("prefilled image",props["dataForEdit"]["upload_logo"]);
       }
     }
     formState.counter += 1;
@@ -469,6 +502,12 @@ const AddEditEvent = props => {
   };
 
   const handleMultiSelectChange = (eventName, event, value) => {
+    if (eventName === college) {
+      formState.dataToShowForMultiSelect = value;
+    }
+    if (eventName === stream) {
+      formState.dataToShowForStreamMultiSelect = value;
+    }
     let multiarray = [];
     for (var i = 0; i < value.length; i++) {
       multiarray.push(value[i].id);
@@ -744,7 +783,9 @@ const AddEditEvent = props => {
                       onChange={(event, value) => {
                         handleMultiSelectChange(college, event, value);
                       }}
+                      filterSelectedOptions
                       name={college}
+                      value={formState.dataToShowForMultiSelect || null}
                       renderInput={params => (
                         <TextField
                           {...params}
@@ -780,7 +821,9 @@ const AddEditEvent = props => {
                       onChange={(event, value) => {
                         handleMultiSelectChange(stream, event, value);
                       }}
+                      filterSelectedOptions
                       name={stream}
+                      value={formState.dataToShowForStreamMultiSelect || null}
                       renderInput={params => (
                         <TextField
                           {...params}
