@@ -9,6 +9,22 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/colleges/block",
+      "handler": "college.block",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/colleges/unblock",
+      "handler": "college.unblock",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/colleges/:id/students",
       "handler": "college.showStudents",
@@ -46,6 +62,14 @@
       "handler": "college.update",
       "config": {
         "policies": ["validate"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/colleges/:id/event",
+      "handler": "college.event",
+      "config": {
+        "policies": [""]
       }
     },
     {

@@ -28,7 +28,10 @@ const marks = "marks";
 const AddEditEducation = props => {
   const history = useHistory();
   const classes = useStyles();
-  const { studentInfo } = auth.getUserInfo();
+  const studentInfo = auth.getUserInfo()
+    ? auth.getUserInfo().studentInfo
+    : null;
+
   const EDUCATION_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EDUCATIONS;
 
@@ -46,7 +49,6 @@ const AddEditEducation = props => {
   });
 
   /** Part for editing Education */
-  console.log(props);
   if (formState.isEditEducation && !formState.counter) {
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["qualification"]) {
@@ -135,7 +137,8 @@ const AddEditEducation = props => {
   };
 
   const postEducationData = async () => {
-    const { id } = studentInfo;
+    const id = studentInfo ? studentInfo.id : null;
+
     let postData = databaseUtilities.addEducation(
       formState.values[qualification],
       formState.values[board],

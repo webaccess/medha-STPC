@@ -283,6 +283,7 @@ const roles = {
           "findone",
           "showStudents",
           "count",
+          "event",
           "create",
           "delete",
           "update"
@@ -294,7 +295,7 @@ const roles = {
       },
       {
         name: "event",
-        action: []
+        action: ["findone"]
       },
       {
         name: "event-registration",
@@ -330,7 +331,17 @@ const roles = {
       },
       {
         name: "student",
-        action: ["find", "findone", "update", "count", "create", "delete"]
+        action: [
+          "find",
+          "findone",
+          "update",
+          "count",
+          "create",
+          "delete",
+          "edit",
+          "approve",
+          "unapprove"
+        ]
       },
       {
         name: "user",
@@ -351,11 +362,11 @@ const roles = {
     controllers: [
       {
         name: "academic-history",
-        action: []
+        action: ["create", "update", "delete"]
       },
       {
         name: "academic-year",
-        action: []
+        action: ["find", "findOne"]
       },
       {
         name: "activity",
@@ -371,7 +382,7 @@ const roles = {
       },
       {
         name: "college",
-        action: []
+        action: ["event"]
       },
       {
         name: "education",
@@ -379,7 +390,7 @@ const roles = {
       },
       {
         name: "event",
-        action: []
+        action: ["findone"]
       },
       {
         name: "event-registration",
@@ -422,7 +433,8 @@ const roles = {
           "create",
           "edit",
           "document",
-          "deletedocument"
+          "deletedocument",
+          "academicHistory"
         ]
       },
       {

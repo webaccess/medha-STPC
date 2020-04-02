@@ -11,6 +11,15 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Spinner from "../Spinner/Spinner";
 
 const Table = props => {
+  /**
+   * allowPagination: If pagination prop is absent by default return true, Otherwise If pagination prop is present return props.pagination value
+   * selectableRows: If selectableRows prop is absent by default return true, Otherwise If selectableRows prop is present return props.pagination value
+   */
+  const allowPagination =
+    props.pagination === undefined ? true : props.pagination;
+  const allowSelectable =
+    props.selectableRows === undefined ? true : props.selectableRows;
+
   return (
     <>
       <DataTable
@@ -21,7 +30,7 @@ const Table = props => {
         defaultSortField={props.defaultSortField}
         defaultSortAsc={props.defaultSortAsc}
         /** pagination */
-        pagination
+        pagination={allowPagination}
         paginationServer
         progressPending={props.progressPending}
         paginationTotalRows={props.paginationTotalRows}
@@ -31,7 +40,7 @@ const Table = props => {
         /** Selectable components */
         selectableRowsComponent={Checkbox}
         actions={props.actions}
-        selectableRows
+        selectableRows={allowSelectable}
         highlightOnHover
         onSelectedRowsChange={props.onSelectedRowsChange}
         persistTableHead

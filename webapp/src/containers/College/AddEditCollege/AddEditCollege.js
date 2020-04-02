@@ -168,7 +168,7 @@ const AddEditCollege = props => {
   /** Here we initialize our data and bring users, states and streams*/
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: 100000
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(USERS_URL, paramsForPageSize)
@@ -265,18 +265,21 @@ const AddEditCollege = props => {
       });
 
     let params = {
-      pageSize: 10000000,
+      pageSize: -1,
       "state.id": formState.values[state]
     };
 
-    await serviceProviders
-      .serviceProviderForGetRequest(DISTRICTS_URL, params)
-      .then(res => {
-        setDistricts(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    if (formState.values[state] !== undefined) {
+      await serviceProviders
+        .serviceProviderForGetRequest(DISTRICTS_URL, params)
+        .then(res => {
+          setDistricts(res.data.result);
+          console.log(res.data.result, params);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
   }
 
   /** Handle change for text fields */
@@ -1077,33 +1080,36 @@ const AddEditCollege = props => {
               </Grid>
               <Divider />
               <Grid item md={3} xs={12}>
-                <div style={{ display: (formState.showing ? 'block' : 'none') }}>
+                <div style={{ display: formState.showing ? "block" : "none" }}>
                   <FormGroup row>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            name={block}
-                            checked={formState.values[block]}
-                            onChange={handleChange}
-                            value={formState.values[block]}
-                            error={hasError(block)}
-                            helperText={
-                              hasError(block)
-                                ? formState.errors[block].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                          />
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          name={block}
+                          checked={formState.values[block]}
+                          onChange={handleChange}
+                          value={formState.values[block]}
+                          error={hasError(block).toString()}
+                          helpertext={
+                            hasError(block)
+                              ? formState.errors[block].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
                       }
                       label={get(CollegeFormSchema[block], "label")}
                     />
-                </FormGroup>
+                  </FormGroup>
                 </div>
               </Grid>
               <Grid item md={12} xs={12} className={classes.streamcard}>
                 <Card className={classes.streamoffer}>
-                  <InputLabel htmlFor="outlined-stream-card" fullWidth>
+                  <InputLabel
+                    htmlFor="outlined-stream-card"
+                    fullwidth={true.toString()}
+                  >
                     {genericConstants.STREAMS_OFFERED_TEXT}
                   </InputLabel>
 
@@ -1113,8 +1119,9 @@ const AddEditCollege = props => {
                     return (
                       <Card
                         id="outlined-stream-card"
-                        fullWidth
+                        fullwidth={true.toString()}
                         className={classes.streamcardcontent}
+                        key={Math.random()}
                       >
                         <CardContent>
                           <Grid container spacing={3}>

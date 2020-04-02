@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { BorderTopOutlined } from "@material-ui/icons";
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: "100%",
+    maxWidth: "100%"
   },
   btnspace: {
     padding: "15px 18px 50px"
@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
   formgrid: {
     marginTop: theme.spacing(0),
-    alignItems: "center"
+    alignItems: "center",
   },
   divider: {
     marginTop: "15px",
@@ -40,15 +40,21 @@ const useStyles = makeStyles(theme => ({
     boxShadow: "none !important"
   },
   labelside: {
-    // padding: "10px",
+    paddingBottom: "10px",
     fontWeight: "600",
     // backgroundColor: "#ccc",
     marginRight:"15px",
-    fontWeight:"700"
+    fontWeight:"700",
+    borderBottom:"1px solid #ccc"
+  },
+  Cardtheming: {
+    paddingBottom: "16px !important"
   },
   labelcontent: {
-    // padding: "10px"
-    // borderBottom: "1px solid #ccc"
+    paddingBottom: "10px",
+    borderBottom: "1px solid #f6c80a",
+    marginRight:"15px",
+    maxWidth:"100% !important"
   },
   streamcardcontent: {
     boxShadow: "none",

@@ -4,11 +4,11 @@ const StateSchema = {
     button: "Save"
   },
   state: {
-    label: "State Name",
+    label: "State",
     id: "statename",
     autoComplete: "statename",
     required: true,
-    placeholder: "statename",
+    placeholder: "State",
     autoFocus: true,
     type: "text",
     validations: {

@@ -25,6 +25,22 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/students/unapprove",
+      "handler": "student.unapprove",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/students/approve",
+      "handler": "student.approve",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/students/:id",
       "handler": "student.findOne",
@@ -68,6 +84,14 @@
       "method": "GET",
       "path": "/students/:id/document",
       "handler": "student.document",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/academic-history",
+      "handler": "student.academicHistory",
       "config": {
         "policies": ["isOwner"]
       }

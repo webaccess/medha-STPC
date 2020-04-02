@@ -265,7 +265,7 @@ const BlockUnblockCollege = props => {
               <Grid
                 container
                 direction="row"
-                justify="flex-end"
+                justify="center"
                 alignItems="center"
                 spacing={2}
               >
