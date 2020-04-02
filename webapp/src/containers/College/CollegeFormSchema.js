@@ -120,7 +120,11 @@ const CollegeFormSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Contact Number is required"
+        message: "Contact number is required"
+      },
+      validateMobileNumber: {
+        value: 10,
+        message: "Please enter a valid contact number"
       }
     }
   },
@@ -153,14 +157,14 @@ const CollegeFormSchema = {
     type: "text",
     validations: {}
   },
-  admins: {
+  tpos: {
     label: "TPO Name",
-    id: "admins",
-    autoComplete: "admins",
+    id: "tpos",
+    autoComplete: "tpos",
     required: false,
     placeholder: "Choose TPO",
     autoFocus: true,
-    type: "text",
+    type: "multi-select",
     validations: {}
   },
   streams: {

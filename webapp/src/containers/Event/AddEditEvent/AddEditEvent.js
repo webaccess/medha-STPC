@@ -21,7 +21,7 @@ import {
   Typography
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Alert, YellowButton, GrayButton } from "../../../components";
+import { Alert, YellowButton,CustomDateTimePicker, GrayButton } from "../../../components";
 import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
 import EventSchema from "../EventSchema";
@@ -58,7 +58,7 @@ const rpc = "rpc";
 const college = "college";
 const stream = "stream";
 const marks = "marks";
-const qualifications = "qualifications";
+const qualification = "qualification";
 
 const field = "upload_logo";
 const ref = "event";
@@ -66,6 +66,8 @@ const files = "files";
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
+  const QUALIFICATIONS_URL = strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
+
 const ZONES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
 const RPCS_URL =
@@ -205,6 +207,14 @@ const AddEditEvent = props => {
         console.log("error", error);
       });
 
+      serviceProvider.serviceProviderForGetRequest(QUALIFICATIONS_URL).then(res => {
+    
+        setQualifications(res.data);
+      })
+      .catch(error => {
+        console.log("errorQualifications",error)
+      })
+
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
       .then(res => {
@@ -290,52 +300,8 @@ const AddEditEvent = props => {
       });
   }
 
-  const handleChangeMultiSelect = (stream, event) => {
-    setPersonName(event.target.value);
-    let streamarray = [];
-    for (var i = 0; i < streams.length; i++) {
-      for (var j = 0; j < event.target.value.length; j++) {
-        if (streams[i].name == event.target.value[j]) {
-          streamarray.push(streams[i].id);
-        }
-      }
-    }
-    setFormState(formState => ({
-      ...formState,
-      values: {
-        ...formState.values,
-        [stream]: streamarray
-      },
-      touched: {
-        ...formState.touched,
-        [stream]: true
-      },
-      isStateClearFilter: false
-    }));
-  };
-  const handleChangeCollegeMultiSelect = (college, event) => {
-    setCollegeName(event.target.value);
-    let collegearray = [];
-    for (var i = 0; i < colleges.length; i++) {
-      for (var j = 0; j < event.target.value.length; j++) {
-        if (colleges[i].name === event.target.value[j]) {
-          collegearray.push(colleges[i].id);
-        }
-      }
-    }
-    setFormState(formState => ({
-      ...formState,
-      values: {
-        ...formState.values,
-        [college]: collegearray
-      },
-      touched: {
-        ...formState.touched,
-        [college]: true
-      },
-      isStateClearFilter: false
-    }));
-  };
+
+
 
   const hasError = field => (formState.errors[field] ? true : false);
   const handleChange = e => {
@@ -423,6 +389,7 @@ const AddEditEvent = props => {
       formState.values[dateTo],
       formState.values[address],
       formState.values[marks],
+      formState.values[qualification] ? formState.values[qualification] : null,
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
       formState.values[college] ? formState.values[college] : null,
@@ -431,7 +398,19 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForPostRequest(EVENTS_URL, postData)
       .then(res => {
-        postImage(res.data.id);
+        
+        if(formState.files.name){
+           postImage(res.data.id);
+        }else{
+          history.push({
+            pathname: routeConstants.MANAGE_EVENT,
+            fromAddEvent: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {}
+          });
+        }
+       
       })
       .catch(error => {
         console.log("posterror", error);
@@ -459,7 +438,7 @@ const AddEditEvent = props => {
       .catch(err => {
         console.log("error", err);
       });
-  };
+  }
 
   const handleFileChange = event => {
     event.persist();
@@ -487,7 +466,7 @@ const AddEditEvent = props => {
       ...formState,
       values: {
         ...formState.values,
-        [datefrom]: event.target.value
+        [datefrom]: event
       },
       touched: {
         ...formState.touched,
@@ -495,9 +474,35 @@ const AddEditEvent = props => {
       },
       isStateClearFilter: false
     }));
+    
   };
 
+  const handleMultiSelectChange = (eventName, event, value) => {
+    let multiarray = [];
+    for(var i=0;i<value.length;i++){
+      multiarray.push(value[i].id);
+    }
+    if (value !== null) {
+      setFormState(formState => ({
+        ...formState,
+        values: {
+          ...formState.values,
+          [eventName]: multiarray
+        },
+        touched: {
+          ...formState.touched,
+          [eventName]: true
+        },
+        isStateClearFilter: false
+      }));
+    } else {
+      delete formState.values[eventName];
+    }
+  }
+
+ 
   return (
+  
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
@@ -560,70 +565,47 @@ const AddEditEvent = props => {
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
-                    <DatePickers
-                      onChange={event => {
-                        handleDateChange(dateFrom, event);
-                      }}
-                      name={dateFrom}
-                      label="Start Date"
-                      fullWidth
-                    />
+                  <CustomDateTimePicker 
+                  onChange={event => {
+                      handleDateChange(dateFrom, event);
+                    }} 
+                    value={formState.values[dateFrom]}
+                    name={dateFrom}
+                    label={get(EventSchema[dateFrom], "label")}
+                    fullWidth 
+                    error={hasError(dateFrom)}
+                    helperText={
+                      hasError(dateFrom)
+                        ? formState.errors[dateFrom].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                    
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <DatePickers
-                      onChange={event => {
-                        handleDateChange(dateTo, event);
-                      }}
-                      name={dateTo}
-                      label="End Date"
-                      fullWidth
-                    />
+                  <CustomDateTimePicker 
+                  onChange={event => {
+                      handleDateChange(dateTo, event);
+                    }} 
+                    value={formState.values[dateTo]}
+                    name={dateTo}
+                    label={get(EventSchema[dateTo], "label")}
+                    fullWidth 
+                    error={hasError(dateTo)}
+                    helperText={
+                      hasError(dateTo)
+                        ? formState.errors[dateTo].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                   
                   </Grid>
                 </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      label={get(EventSchema[timeFrom], "label")}
-                      id={get(EventSchema[timeFrom], "id")}
-                      name={timeFrom}
-                      placeholder={get(EventSchema[timeFrom], "placeholder")}
-                      value={formState.values[timeFrom] || ""}
-                      error={hasError(timeFrom)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      helperText={
-                        hasError(timeFrom)
-                          ? formState.errors[timeFrom].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      label={get(EventSchema[timeTo], "label")}
-                      id={get(EventSchema[timeTo], "id")}
-                      name={timeTo}
-                      placeholder={get(EventSchema[timeTo], "placeholder")}
-                      value={formState.values[timeTo] || ""}
-                      error={hasError(timeTo)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      helperText={
-                        hasError(timeTo)
-                          ? formState.errors[timeTo].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
-                </Grid>
+               
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <TextField
@@ -755,32 +737,37 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <FormControl className={classes.formControl}>
-                      <InputLabel id="demo-mutiple-checkbox-label">
-                        Colleges
-                      </InputLabel>
-                      <Select
-                        labelId="demo-mutiple-checkbox-label"
-                        id="demo-mutiple-checkbox"
-                        multiple
-                        value={collegeName}
-                        onChange={event => {
-                          handleChangeCollegeMultiSelect(college, event);
-                        }}
-                        input={<Input />}
-                        renderValue={selected => selected.join(", ")}
-                        MenuProps={MenuProps}
-                      >
-                        {colleges.map(name => (
-                          <MenuItem key={name.id} value={name.name}>
-                            <Checkbox
-                              checked={collegeName.indexOf(name.name) > -1}
-                            />
-                            <ListItemText primary={name.name} />
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                  <Autocomplete
+                      id={get(EventSchema[college], "id")}
+                      multiple
+                      options={colleges}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleMultiSelectChange(college, event, value);
+                      }}
+                      
+                      name={college}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(college)}
+                          helperText={
+                            hasError(college)
+                              ? formState.errors[college].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(EventSchema[college], "placeholder")}
+                          value={option => option.id}
+                          name={college}
+                          key={option => option.id}
+                          label={get(EventSchema[college], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                   
                   </Grid>
                 </Grid>
               </Grid>
@@ -788,33 +775,36 @@ const AddEditEvent = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
-                    <FormControl className={classes.formControl}>
-                      <InputLabel id="demo-mutiple-checkbox-label">
-                        Streams
-                      </InputLabel>
-                      <Select
-                        labelId="demo-mutiple-checkbox-label"
-                        id="demo-mutiple-checkbox"
-                        multiple
-                        value={personName}
-                        onChange={event => {
-                          handleChangeMultiSelect(stream, event);
-                        }}
-                        // onChange={handleChangeMultiSelect}
-                        input={<Input />}
-                        renderValue={selected => selected.join(", ")}
-                        MenuProps={MenuProps}
-                      >
-                        {streams.map(name => (
-                          <MenuItem key={name.id} value={name.name}>
-                            <Checkbox
-                              checked={personName.indexOf(name.name) > -1}
-                            />
-                            <ListItemText primary={name.name} />
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                  <Autocomplete
+                      id={get(EventSchema[stream], "id")}
+                      multiple
+                      options={streams}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleMultiSelectChange(stream, event, value);
+                      }}
+                      name={stream}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(stream)}
+                          helperText={
+                            hasError(stream)
+                              ? formState.errors[stream].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(EventSchema[stream], "placeholder")}
+                          value={option => option.id}
+                          name={stream}
+                          key={option => option.id}
+                          label={get(EventSchema[stream], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
@@ -839,33 +829,33 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  {/* <Grid item md={12} xs={12}>
+                <Grid item md={12} xs={12}>
                   <Autocomplete
                       id="combo-box-demo"
                       className={classes.root}
                       options={qualifications}
-                      placeholder={get(EventSchema[qualifications], "placeholder")}
+                      placeholder={get(EventSchema[qualification], "placeholder")}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
-                        handleChangeAutoComplete(qualifications, event, value);
+                        handleChangeAutoComplete(qualification, event, value);
                       }}
                       value={
                         qualifications[
                           qualifications.findIndex(function(item, i) {
-                            return item.id === formState.values[qualifications];
+                            return item.id === formState.values[qualification];
                           })
                         ] || null
                       }
                       renderInput={params => (
                         <TextField
                           {...params}
-                          label={get(EventSchema[qualifications], "label")}
+                          label={get(EventSchema[qualification], "label")}
                           variant="outlined"
-                          placeholder={get(EventSchema[qualifications], "placeholder")}
-                          error={hasError(qualifications)}
+                          placeholder={get(EventSchema[qualification], "placeholder")}
+                          error={hasError(qualification)}
                           helperText={
-                            hasError(qualifications)
-                              ? formState.errors[qualifications].map(error => {
+                            hasError(qualification)
+                              ? formState.errors[qualification].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -873,8 +863,7 @@ const AddEditEvent = props => {
                         />
                       )}
                     />
-                  </Grid> */}
-                  {/* <Grid item md={6} xs={12}></Grid> */}
+                  </Grid>
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />
@@ -890,6 +879,7 @@ const AddEditEvent = props => {
                       type={get(EventSchema[files], "type")}
                       value={formState.values[files] || ""}
                       error={hasError(files)}
+                      inputProps={{ accept: 'image/*' }}
                       helperText={
                         hasError(files)
                           ? formState.errors[files].map(error => {

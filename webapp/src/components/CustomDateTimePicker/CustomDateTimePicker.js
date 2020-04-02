@@ -9,10 +9,11 @@ const CustomDateTimePicker = props => {
     <MuiThemeProvider theme={customTheme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <DateTimePicker
-          label="DateTimePicker"
+          label={props.label}
           inputVariant="outlined"
           value={props.value}
           onChange={props.onChange}
+          helperText={props.helperText}
         />
       </MuiPickersUtilsProvider>
     </MuiThemeProvider>
