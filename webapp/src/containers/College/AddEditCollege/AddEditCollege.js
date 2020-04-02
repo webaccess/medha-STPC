@@ -590,7 +590,6 @@ const AddEditCollege = props => {
   };
 
   const postCollegeData = async () => {
-    setBackDropOpen(true);
     let streamStrengthArray = [];
     streamStrengthArray = getDynamicBarData();
     let postData = databaseUtilities.addCollege(
@@ -607,6 +606,7 @@ const AddEditCollege = props => {
       streamStrengthArray,
       formState.values[tpos] ? formState.values[tpos] : []
     );
+    setBackDropOpen(true);
     if (formState.isEditCollege) {
       serviceProviders
         .serviceProviderForPutRequest(
@@ -1139,9 +1139,9 @@ const AddEditCollege = props => {
                         control={
                           <Switch
                             name={block}
-                            checked={formState.values[block]}
+                            checked={formState.values[block] || false}
                             onChange={handleChange}
-                            value={formState.values[block]}
+                            value={formState.values[block] || false}
                             error={hasError(block).toString()}
                             helpertext={
                               hasError(block)
@@ -1152,7 +1152,9 @@ const AddEditCollege = props => {
                             }
                           />
                         }
-                        label={get(CollegeFormSchema[block], "label")}
+                        label={
+                          formState.values[block] === true ? "Unblock" : "Block"
+                        }
                       />
                     </FormGroup>
                   </div>
