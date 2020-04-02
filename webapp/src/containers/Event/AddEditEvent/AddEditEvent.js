@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import ListItemText from "@material-ui/core/ListItemText";
-import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
-import MenuItem from "@material-ui/core/MenuItem";
-import Chip from "@material-ui/core/Chip";
 
 import {
   Card,
@@ -15,18 +8,18 @@ import {
   Divider,
   Grid,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Switch,
   Typography
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Alert, YellowButton,CustomDateTimePicker, GrayButton } from "../../../components";
+import {
+  YellowButton,
+  CustomDateTimePicker,
+  GrayButton
+} from "../../../components";
 import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
 import EventSchema from "../EventSchema";
 import { get } from "lodash";
-import DatePickers from "../../../components/Date/Date";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import { useHistory } from "react-router-dom";
@@ -36,12 +29,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Styles.css";
-import {
-  EditorState,
-  convertToRaw,
-  convertFromRaw,
-  ContentState
-} from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 
@@ -49,8 +37,6 @@ const eventName = "eventName";
 const description = "description";
 const dateFrom = "dateFrom";
 const dateTo = "dateTo";
-const timeFrom = "timeFrom";
-const timeTo = "timeTo";
 const address = "address";
 const state = "state";
 const zone = "zone";
@@ -66,7 +52,8 @@ const files = "files";
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
-  const QUALIFICATIONS_URL = strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
+const QUALIFICATIONS_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
 
 const ZONES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
@@ -207,13 +194,14 @@ const AddEditEvent = props => {
         console.log("error", error);
       });
 
-      serviceProvider.serviceProviderForGetRequest(QUALIFICATIONS_URL).then(res => {
-    
+    serviceProvider
+      .serviceProviderForGetRequest(QUALIFICATIONS_URL)
+      .then(res => {
         setQualifications(res.data);
       })
       .catch(error => {
-        console.log("errorQualifications",error)
-      })
+        console.log("errorQualifications", error);
+      });
 
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
@@ -299,9 +287,6 @@ const AddEditEvent = props => {
         console.log("error", error);
       });
   }
-
-
-
 
   const hasError = field => (formState.errors[field] ? true : false);
   const handleChange = e => {
@@ -398,10 +383,9 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForPostRequest(EVENTS_URL, postData)
       .then(res => {
-        
-        if(formState.files.name){
-           postImage(res.data.id);
-        }else{
+        if (formState.files.name) {
+          postImage(res.data.id);
+        } else {
           history.push({
             pathname: routeConstants.MANAGE_EVENT,
             fromAddEvent: true,
@@ -410,7 +394,6 @@ const AddEditEvent = props => {
             addedData: {}
           });
         }
-       
       })
       .catch(error => {
         console.log("posterror", error);
@@ -438,7 +421,7 @@ const AddEditEvent = props => {
       .catch(err => {
         console.log("error", err);
       });
-  }
+  };
 
   const handleFileChange = event => {
     event.persist();
@@ -474,12 +457,11 @@ const AddEditEvent = props => {
       },
       isStateClearFilter: false
     }));
-    
   };
 
   const handleMultiSelectChange = (eventName, event, value) => {
     let multiarray = [];
-    for(var i=0;i<value.length;i++){
+    for (var i = 0; i < value.length; i++) {
       multiarray.push(value[i].id);
     }
     if (value !== null) {
@@ -498,11 +480,9 @@ const AddEditEvent = props => {
     } else {
       delete formState.values[eventName];
     }
-  }
+  };
 
- 
   return (
-  
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
@@ -565,47 +545,45 @@ const AddEditEvent = props => {
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
-                  <CustomDateTimePicker 
-                  onChange={event => {
-                      handleDateChange(dateFrom, event);
-                    }} 
-                    value={formState.values[dateFrom]}
-                    name={dateFrom}
-                    label={get(EventSchema[dateFrom], "label")}
-                    fullWidth 
-                    error={hasError(dateFrom)}
-                    helperText={
-                      hasError(dateFrom)
-                        ? formState.errors[dateFrom].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                    
+                    <CustomDateTimePicker
+                      onChange={event => {
+                        handleDateChange(dateFrom, event);
+                      }}
+                      value={formState.values[dateFrom]}
+                      name={dateFrom}
+                      label={get(EventSchema[dateFrom], "label")}
+                      fullWidth
+                      error={hasError(dateFrom)}
+                      helperText={
+                        hasError(dateFrom)
+                          ? formState.errors[dateFrom].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                  <CustomDateTimePicker 
-                  onChange={event => {
-                      handleDateChange(dateTo, event);
-                    }} 
-                    value={formState.values[dateTo]}
-                    name={dateTo}
-                    label={get(EventSchema[dateTo], "label")}
-                    fullWidth 
-                    error={hasError(dateTo)}
-                    helperText={
-                      hasError(dateTo)
-                        ? formState.errors[dateTo].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                   
+                    <CustomDateTimePicker
+                      onChange={event => {
+                        handleDateChange(dateTo, event);
+                      }}
+                      value={formState.values[dateTo]}
+                      name={dateTo}
+                      label={get(EventSchema[dateTo], "label")}
+                      fullWidth
+                      error={hasError(dateTo)}
+                      helperText={
+                        hasError(dateTo)
+                          ? formState.errors[dateTo].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
                   </Grid>
                 </Grid>
-               
+
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <TextField
@@ -737,7 +715,7 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                  <Autocomplete
+                    <Autocomplete
                       id={get(EventSchema[college], "id")}
                       multiple
                       options={colleges}
@@ -745,7 +723,6 @@ const AddEditEvent = props => {
                       onChange={(event, value) => {
                         handleMultiSelectChange(college, event, value);
                       }}
-                      
                       name={college}
                       renderInput={params => (
                         <TextField
@@ -767,7 +744,6 @@ const AddEditEvent = props => {
                         />
                       )}
                     />
-                   
                   </Grid>
                 </Grid>
               </Grid>
@@ -775,7 +751,7 @@ const AddEditEvent = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
-                  <Autocomplete
+                    <Autocomplete
                       id={get(EventSchema[stream], "id")}
                       multiple
                       options={streams}
@@ -804,7 +780,6 @@ const AddEditEvent = props => {
                         />
                       )}
                     />
-                  
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
@@ -829,12 +804,15 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
+                  <Grid item md={12} xs={12}>
+                    <Autocomplete
                       id="combo-box-demo"
                       className={classes.root}
                       options={qualifications}
-                      placeholder={get(EventSchema[qualification], "placeholder")}
+                      placeholder={get(
+                        EventSchema[qualification],
+                        "placeholder"
+                      )}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(qualification, event, value);
@@ -851,7 +829,10 @@ const AddEditEvent = props => {
                           {...params}
                           label={get(EventSchema[qualification], "label")}
                           variant="outlined"
-                          placeholder={get(EventSchema[qualification], "placeholder")}
+                          placeholder={get(
+                            EventSchema[qualification],
+                            "placeholder"
+                          )}
                           error={hasError(qualification)}
                           helperText={
                             hasError(qualification)
@@ -879,7 +860,7 @@ const AddEditEvent = props => {
                       type={get(EventSchema[files], "type")}
                       value={formState.values[files] || ""}
                       error={hasError(files)}
-                      inputProps={{ accept: 'image/*' }}
+                      inputProps={{ accept: "image/*" }}
                       helperText={
                         hasError(files)
                           ? formState.errors[files].map(error => {
