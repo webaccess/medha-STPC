@@ -69,6 +69,7 @@ export const VIEW_EVENT = "/view-event";
 export const ADD_EVENT = "/add-event";
 export const EDIT_EVENT = "/edit-event";
 export const ELIGIBLE_EVENT = "/eligible-event";
+export const EVENT_STUDENT_LIST = "/event-student-list";
 
 /**Training and Activity */
 export const EDIT_ACTIVITY = "/edit-activity";

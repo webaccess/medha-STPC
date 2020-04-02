@@ -27,6 +27,7 @@ import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
 import ViewZone from "./containers/Zone/ViewZone/ViewZone";
 import ViewEvents from "./containers/Event/ManageEvent/ManageEvent";
 import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
+import StudentList from "./containers/Event/ManageEvent/EventStudentList";
 import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
@@ -372,6 +373,13 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_EVENT}
+              />
+              {/** Event Student List Route */}
+              <RouteWithLayout
+                component={StudentList}
+                exact
+                layout={Layout}
+                path={routeConstants.EVENT_STUDENT_LIST}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>

@@ -42,7 +42,8 @@ const EligibleEvents = props => {
     registerUserId: "",
     eventtitle: "",
     isStudentRegister: false,
-    authUserRegistering: auth.getUserInfo().id
+    registrationFail: false,
+    authUserRegistering: auth.getUserInfo().studentInfo.id
   });
   useEffect(() => {
     getEventDetails();
@@ -147,6 +148,10 @@ const EligibleEvents = props => {
     formState.isStudentRegister = status;
   };
 
+  const isRegistrationFailed = status => {
+    formState.registrationFail = status;
+  };
+
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
@@ -191,6 +196,27 @@ const EligibleEvents = props => {
               }
             >
               {genericConstants.ALERT_SUCCESS_STUDENT_REGISTRATION}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.registrationFail ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_STUDENT_REGISTRATION}
             </Alert>
           </Collapse>
         ) : null}
@@ -341,6 +367,7 @@ const EligibleEvents = props => {
             eventTitle={formState.eventtitle}
             userRegistering={formState.authUserRegistering}
             statusRegistartion={isRegistrationCompleted}
+            registrationFailed={isRegistrationFailed}
           />
         </Card>
       </Grid>

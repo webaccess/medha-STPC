@@ -23,8 +23,6 @@ const DeleteUser = props => {
     username: ""
   });
 
-  console.log("propsid", props.id);
-
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[EVENT_ID] = props.id;
