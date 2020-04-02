@@ -340,7 +340,7 @@ const ViewEvents = props => {
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_EVENT,
-          editUser: true,
+          editEvent: true,
           dataForEdit: editData
         });
       })
