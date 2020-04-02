@@ -47,6 +47,8 @@ const REQUEST_OTP_URL =
   StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_REQUEST_OTP;
 const VALIDATE_OTP_URL =
   StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_VALIDATE_OTP;
+const CHECK_USER =
+  StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_CHECK_OTP;
 const CHANGE_PASSWORD_URL =
   StrapiApiConstants.STRAPI_DB_URL + StrapiApiConstants.STRAPI_CHANGE_PASS_URL;
 
@@ -285,53 +287,91 @@ const ForgotPassword = props => {
       "Content-Type": "application/json"
     };
     await serviceProvider
-      .serviceProviderForPostRequest(VALIDATE_OTP_URL, postData, headers)
+      .serviceProviderForPostRequest(CHECK_USER, postData, headers)
       .then(res => {
-        if (
-          res.data.statusCode === 400 &&
-          res.data.message === "OTP has expired"
-        ) {
-          setOpen(true);
-          setIsOtpVerificationFailed(true);
-          setFormState(formState => ({
-            ...formState,
-            errorsToShow: "OTP has expired"
-          }));
-        } else if (res.data.message === "EmptyResponse") {
-          setOpen(true);
-          setIsOtpVerificationFailed(true);
-          setFormState(formState => ({
-            ...formState,
-            errorsToShow: "Invalid OTP"
-          }));
-        } else if (formUtilities.checkEmpty(res.data)) {
-          setOpen(true);
-          setIsOtpVerificationFailed(true);
-          setFormState(formState => ({
-            ...formState,
-            errorsToShow: "Invalid OTP"
-          }));
-        } else if (res.data.result && res.data.result.resetPasswordToken) {
-          formState.resetPasswordToken = res.data.result.resetPasswordToken;
-          setFormState(formState => ({
-            ...formState,
-            otpVerify: true,
-            isValid: false,
-            resetPasswordToken: res.data.result.resetPasswordToken,
-            errorsToShow: "",
-            formType: authPageConstants.FORM_TYPE_CHANGE_PASS
-          }));
-        }
-        setOpenBackdrop(false);
-      })
-      .catch(error => {
-        console.log("error verifying otp ", error);
-        setOpen(true);
         setIsOtpVerificationFailed(true);
+        setOpen(true);
         setFormState(formState => ({
           ...formState,
-          errorsToShow: "Error verifying OTP"
+          errorsToShow: "User not registered"
         }));
+        setOpenBackdrop(false);
+      })
+      .catch(async function(error) {
+        let verificationError = false;
+        let invalidOtp = false;
+        if (error.response) {
+          if (error.response.data.message === "User already registered.") {
+            await serviceProvider
+              .serviceProviderForPostRequest(
+                VALIDATE_OTP_URL,
+                postData,
+                headers
+              )
+              .then(res => {
+                if (
+                  res.data.statusCode === 400 &&
+                  res.data.message === "OTP has expired"
+                ) {
+                  setOpen(true);
+                  setIsOtpVerificationFailed(true);
+                  setFormState(formState => ({
+                    ...formState,
+                    errorsToShow: "OTP has expired"
+                  }));
+                } else if (res.data.message === "EmptyResponse") {
+                  invalidOtp = true;
+                } else if (formUtilities.checkEmpty(res.data)) {
+                  invalidOtp = true;
+                } else if (
+                  res.data.result &&
+                  res.data.result.resetPasswordToken
+                ) {
+                  /** Otp verified and reset password token genarated */
+                  formState.resetPasswordToken =
+                    res.data.result.resetPasswordToken;
+                  setFormState(formState => ({
+                    ...formState,
+                    otpVerify: true,
+                    isValid: false,
+                    resetPasswordToken: res.data.result.resetPasswordToken,
+                    errorsToShow: "",
+                    formType: authPageConstants.FORM_TYPE_CHANGE_PASS
+                  }));
+                }
+                setOpenBackdrop(false);
+              })
+              .catch(error => {
+                verificationError = true;
+              });
+          } else if (error.response.data.message === "Invalid OTP") {
+            invalidOtp = true;
+          } else {
+            verificationError = true;
+          }
+        } else {
+          verificationError = true;
+        }
+
+        if (verificationError) {
+          /** Error verifying otp */
+          setOpen(true);
+          setIsOtpVerificationFailed(true);
+          setFormState(formState => ({
+            ...formState,
+            errorsToShow: "Error verifying OTP"
+          }));
+          setOpenBackdrop(false);
+        } else if (invalidOtp) {
+          /** Invalid Otp message */
+          setOpen(true);
+          setIsOtpVerificationFailed(true);
+          setFormState(formState => ({
+            ...formState,
+            errorsToShow: "Invalid OTP"
+          }));
+          setOpenBackdrop(false);
+        }
         setOpenBackdrop(false);
       });
   };
