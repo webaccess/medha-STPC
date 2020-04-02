@@ -50,9 +50,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": [
           {
             "name": "_limit",
@@ -238,9 +236,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -305,9 +301,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": []
       }
     },
@@ -358,9 +352,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": [
           {
             "name": "id",
@@ -420,9 +412,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -494,9 +484,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "parameters": [
           {
             "name": "id",
@@ -515,9 +503,7 @@
   "components": {
     "schemas": {
       "Feedback": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -689,10 +675,7 @@
             }
           },
           "question_set": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"

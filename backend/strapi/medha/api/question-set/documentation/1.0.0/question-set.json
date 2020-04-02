@@ -51,9 +51,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": [
           {
             "name": "_limit",
@@ -243,9 +241,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -310,9 +306,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": []
       }
     },
@@ -367,9 +361,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": [
           {
             "name": "id",
@@ -433,9 +425,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -507,9 +497,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "Question-set"
-        ],
+        "tags": ["Question-set"],
         "parameters": [
           {
             "name": "id",
@@ -528,10 +516,7 @@
   "components": {
     "schemas": {
       "Question-set": {
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -542,10 +527,7 @@
           "questions": {
             "type": "array",
             "items": {
-              "required": [
-                "id",
-                "title"
-              ],
+              "required": ["id", "title"],
               "properties": {
                 "id": {
                   "type": "string"
@@ -623,9 +605,7 @@
         }
       },
       "NewQuestion-set": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"

@@ -15,11 +15,7 @@
     },
     "activity_type": {
       "type": "enumeration",
-      "enum": [
-        "workshop",
-        "industrialVisit",
-        "training"
-      ],
+      "enum": ["workshop", "industrialVisit", "training"],
       "required": true
     },
     "academic_year": {
@@ -38,12 +34,7 @@
     },
     "education_year": {
       "type": "enumeration",
-      "enum": [
-        "First",
-        "Second",
-        "Third",
-        "Fourth"
-      ]
+      "enum": ["First", "Second", "Third", "Fourth"]
     },
     "streams": {
       "collection": "stream"
