@@ -71,14 +71,6 @@
       "config": {
         "policies": []
       }
-    },
-    {
-      "method": "POST",
-      "path": "/activities/:id/validate-activity-batch",
-      "handler": "activity.validateActivityBatchStudents",
-      "config": {
-        "policies": []
-      }
     }
   ]
 }

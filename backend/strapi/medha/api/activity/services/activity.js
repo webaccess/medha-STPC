@@ -71,20 +71,5 @@ module.exports = {
       .catch(error => {
         return ctx.response.badRequest(`Invalid ${error.detail}`);
       });
-  },
-
-  /**
-   * Validate all student for given activity batch and student Ids
-   */
-  validateStudentForActivityBatch: async ctx => {
-    const { students, batch } = ctx.request.body;
-
-    await strapi
-      .query("activity-batch-attendance")
-      .model.query(qb => {
-        qb.where("activity_batch", batch).whereIn("student", students);
-      })
-      .save({ verified_by_college: true }, { patch: true, require: false });
-    return ctx.send(utils.getFindOneResponse("success"));
   }
 };

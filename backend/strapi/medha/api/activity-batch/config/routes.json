@@ -55,6 +55,30 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/remove-students",
+      "handler": "activity-batch.removeStudents",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/validate-activity-batch",
+      "handler": "activity-batch.validateActivityBatchStudents",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/add-students",
+      "handler": "activity-batch.addStudentsToActivityBatch",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
