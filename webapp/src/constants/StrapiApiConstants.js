@@ -29,3 +29,6 @@ export const STRAPI_COLLEGE_ACTIVITY = "activity";
 export const STRAPI_ACTIVITY_BATCH_URL = "activity-batches";
 export const STRAPI_CREATE_ACTIVITY_BATCH_URL = "create-activity-batch";
 export const STRAPI_MANAGE_ACTIVITY_BATCH_URL = "manage-activity-batch";
+export const STRAPI_DELETE_STUDENT_ACTIVITY_BATCH_URL = "remove-students";
+export const STRAPI_ADD_STUDENT_ACTIVITY_BATCH = "add-students";
+export const STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH = "validate-activity-batch";

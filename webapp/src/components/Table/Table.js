@@ -46,6 +46,7 @@ const Table = props => {
         persistTableHead
         conditionalRowStyles={props.conditionalRowStyles}
         progressComponent={<Spinner />}
+        clearSelectedRows={props.clearSelectedRows || false}
       />
     </>
   );

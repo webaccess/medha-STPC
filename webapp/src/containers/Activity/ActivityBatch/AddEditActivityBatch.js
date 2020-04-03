@@ -25,12 +25,16 @@ import {
   Spinner,
   YellowButton,
   GrayButton,
+  GreenButton,
   Alert
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import { uniqBy, get } from "lodash";
 import AddActivityBatchSchema from "./AddActivityBatchSchema.js";
 import AddStudentToActivityBatch from "./AddStudentToActivityBatch.js";
+import DeleteActivityBatchStudents from "./DeleteActivityBatchStudents.js";
+import DeleteIcon from "@material-ui/icons/Delete";
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
@@ -73,6 +77,7 @@ const AddEditActivityBatches = props => {
 
   const [selectedStudents, setSeletedStudent] = useState([]);
   const [showStudentModal, setShowStudentModal] = useState(false);
+  const [clearSelectedRows, setClearSelectedRows] = useState(false);
 
   const { activity } = props.activity ? props : props.match.params;
   const ACTIVITY_URL =
@@ -235,14 +240,6 @@ const AddEditActivityBatches = props => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = event => {
-    setFormState(formState => ({
-      ...formState,
-      dataToDelete: { id: event.target.id },
-      showModalDelete: true
-    }));
-  };
-
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
       delete formState.filterDataParameters[filterName];
@@ -255,23 +252,56 @@ const AddEditActivityBatches = props => {
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
-    //restoreData();
     setFormState(formState => ({
       ...formState,
       isDataDeleted: false,
       showModalDelete: false
     }));
+    setSeletedStudent([]);
+    setClearSelectedRows(val => ({ clearSelectedRows: !val }));
     if (formState.isDataDeleted) {
       getStudents(formState.pageSize, formState.page);
     }
   };
 
-  /**
-   * Redirect to Activity batch UI for given activity
-   */
-  const handleManageActivityBatchClick = activity => {
-    const manageActivityBatchURL = `/manage-activity-batch/${activity.id}`;
-    history.push(manageActivityBatchURL);
+  const handleDeleteActivityBatchStudent = student => {
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: [student.id],
+      showModalDelete: true
+    }));
+  };
+
+  const handleDeleteMultipleStudents = () => {
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: selectedStudents,
+      showModalDelete: true
+    }));
+  };
+
+  const handleVerifyMultipleStudents = ids => {
+    const studentsToVerify = ids;
+    const URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_ACTIVITY_BATCH_URL +
+      `/${formState.dataForEdit.id}/` +
+      strapiConstants.STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH;
+
+    const postData = {
+      students: studentsToVerify
+    };
+
+    serviceProviders
+      .serviceProviderForPostRequest(URL, postData)
+      .then(() => {
+        setSeletedStudent([]);
+        setClearSelectedRows(val => ({ clearSelectedRows: !val }));
+        getStudents(formState.pageSize, formState.page);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   /** This handle change is used to handle changes to text field */
@@ -352,82 +382,95 @@ const AddEditActivityBatches = props => {
       selectedStudents
     );
 
-    if (formState.isDataEdited) {
-      // serviceProviders
-      //   .serviceProviderForPutRequest(
-      //     EDUCATION_URL,
-      //     formState.dataForEdit["id"],
-      //     postData
-      //   )
-      //   .then(res => {
-      //     history.push({
-      //       pathname: routeConstants.VIEW_EDUCATION,
-      //       fromEditEducation: true,
-      //       isDataEdited: true,
-      //       editResponseMessage: "",
-      //       editedData: {}
-      //     });
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //     history.push({
-      //       pathname: routeConstants.VIEW_EDUCATION,
-      //       fromEditEducation: true,
-      //       isDataEdited: false,
-      //       editResponseMessage: "",
-      //       editedData: {}
-      //     });
-      //   });
-    } else {
-      serviceProviders
-        .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
-        .then(res => {
-          history.push({
-            pathname: `/manage-activity-batch/${activity}`,
-            fromAddActivityBatch: true,
-            isDataAdded: true,
-            addResponseMessage: "",
-            addedData: {}
-          });
-        })
-        .catch(error => {
-          history.push({
-            pathname: `/manage-activity-batch/${activity}`,
-            fromAddActivityBatch: true,
-            isDataAdded: false,
-            addResponseMessage: "",
-            addedData: {}
-          });
+    serviceProviders
+      .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
+      .then(res => {
+        history.push({
+          pathname: `/manage-activity-batch/${activity}`,
+          fromAddActivityBatch: true,
+          isDataAdded: true,
+          addResponseMessage: "",
+          addedData: {}
         });
-    }
+      })
+      .catch(error => {
+        history.push({
+          pathname: `/manage-activity-batch/${activity}`,
+          fromAddActivityBatch: true,
+          isDataAdded: false,
+          addResponseMessage: "",
+          addedData: {}
+        });
+      });
   };
 
   /** Columns to show in table */
-  const column = [
+  let column = [
     {
       name: "Student Name",
       sortable: true,
       cell: row => `${row.user.first_name} ${row.user.last_name}`
     },
     { name: "Stream", sortable: true, selector: "stream.name" },
-    { name: "Mobile No.", sortable: true, selector: "user.contact_number" },
-    {
+    { name: "Mobile No.", sortable: true, selector: "user.contact_number" }
+  ];
+
+  if (formState.isEditActivityBatch) {
+    column.push({
+      name: "Action",
       cell: cell => (
         <div style={{ display: "flex" }}>
+          {!!cell.activityBatch.verified_by_college ? (
+            <div style={{ marginLeft: "8px" }}>
+              <Tooltip title="Verified Student" placement="top">
+                <i
+                  className="material-icons"
+                  id={cell.id}
+                  value={cell.name}
+                  onClick={() => handleVerifyMultipleStudents([cell.id])}
+                  style={{
+                    color: "green",
+                    fontSize: "19px",
+                    cursor: "pointer"
+                  }}
+                >
+                  check
+                </i>
+              </Tooltip>
+            </div>
+          ) : (
+            <div style={{ marginLeft: "8px" }}>
+              <Tooltip title="Verified Student" placement="top">
+                <i
+                  className="material-icons"
+                  id={cell.id}
+                  value={cell.name}
+                  onClick={() => handleVerifyMultipleStudents([cell.id])}
+                  style={{
+                    color: "red",
+                    fontSize: "19px",
+                    cursor: "pointer"
+                  }}
+                >
+                  check
+                </i>
+              </Tooltip>
+            </div>
+          )}
           <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Manage Activity Batch" placement="top">
+            <Tooltip title="Remove Student" placement="top">
               <i
                 className="material-icons"
                 id={cell.id}
                 value={cell.name}
-                onClick={() => handleManageActivityBatchClick(cell)}
+                onClick={() => handleDeleteActivityBatchStudent(cell)}
                 style={{
-                  color: "green",
+                  color: "red",
                   fontSize: "19px",
                   cursor: "pointer"
                 }}
               >
-                group
+                delete_outline
               </i>
             </Tooltip>
           </div>
@@ -436,8 +479,8 @@ const AddEditActivityBatches = props => {
       button: true,
       conditionalCellStyles: [],
       width: "200px"
-    }
-  ];
+    });
+  }
 
   const CreateActivityBatch = () => {
     return (
@@ -511,7 +554,7 @@ const AddEditActivityBatches = props => {
           <Card className={styles.noBorderNoShadow}>
             <CardContent>
               <Grid container spacing={2}>
-                <Grid item md={3} xs={4}>
+                <Grid item className={classes.filterButtonsMargin}>
                   <YellowButton
                     type="submit"
                     color="primary"
@@ -521,6 +564,16 @@ const AddEditActivityBatches = props => {
                     {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
                   </YellowButton>
                 </Grid>
+                <Grid item className={classes.filterButtonsMargin}>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    to={`/manage-activity-batch/${activity}`}
+                  >
+                    {genericConstants.CANCEL_BUTTON_TEXT}
+                  </GrayButton>
+                </Grid>
               </Grid>
             </CardContent>
           </Card>
@@ -529,12 +582,49 @@ const AddEditActivityBatches = props => {
     );
   };
 
+  const MultiDeleteStudentButton = () => {
+    return (
+      <GreenButton
+        type="submit"
+        color="primary"
+        variant="contained"
+        onClick={handleDeleteMultipleStudents}
+        startIcon={<DeleteIcon />}
+        greenButtonChecker={true}
+        buttonDisabled={selectedStudents.length <= 0}
+      >
+        {genericConstants.DELETE_STUDENT_TO_ACTIVITY_BATCH}
+      </GreenButton>
+    );
+  };
+
+  const MultiVerifyStudentButton = () => {
+    return (
+      <GreenButton
+        type="submit"
+        color="primary"
+        variant="contained"
+        onClick={() => handleVerifyMultipleStudents(selectedStudents)}
+        startIcon={<VerifiedUserIcon />}
+        greenButtonChecker={true}
+        buttonDisabled={selectedStudents.length <= 0}
+      >
+        {genericConstants.VERIFY_STUDENT_TO_ACTIVITY_BATCH}
+      </GreenButton>
+    );
+  };
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_ACTIVITY_BATCHES}
         </Typography>
+        {formState.isEditActivityBatch ? (
+          <>
+            <MultiVerifyStudentButton />
+            <MultiDeleteStudentButton />
+          </>
+        ) : null}
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
@@ -711,7 +801,6 @@ const AddEditActivityBatches = props => {
                 column={column}
                 defaultSortField="name"
                 defaultSortAsc={formState.sortAscending}
-                deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
@@ -719,13 +808,7 @@ const AddEditActivityBatches = props => {
                 onChangePage={handlePageChange}
                 onSelectedRowsChange={handleRowChange}
                 noDataComponent="No Student Details found"
-              />
-              <CreateActivityBatch />
-              <AddStudentButton />
-              <AddStudentToActivityBatch
-                showModal={showStudentModal}
-                closeModal={() => setShowStudentModal(false)}
-                activity={activity}
+                clearSelectedRows={clearSelectedRows}
               />
             </div>
           ) : (
@@ -734,6 +817,26 @@ const AddEditActivityBatches = props => {
         ) : (
           <Spinner />
         )}
+        <CreateActivityBatch />
+        <AddStudentButton />
+        {showStudentModal ? (
+          <AddStudentToActivityBatch
+            showModal={showStudentModal}
+            closeModal={() => setShowStudentModal(false)}
+            activity={activity}
+            activityBatch={formState.dataForEdit.id}
+            getLatestData={() =>
+              getStudents(formState.pageSize, formState.page)
+            }
+          />
+        ) : null}
+        <DeleteActivityBatchStudents
+          showModal={formState.showModalDelete}
+          closeModal={handleCloseDeleteModal}
+          id={formState.dataForEdit.id}
+          students={formState.dataToDelete}
+          deleteEvent={isDeleteCellCompleted}
+        />
       </Grid>
     </Grid>
   );

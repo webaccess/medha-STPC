@@ -300,8 +300,8 @@ const ViewEducation = props => {
               color="primary"
               onClick={handleAddEducationClick}
               disableElevation
-              to={routeConstants.ADD_EDUCATION}
               startIcon={<AddCircleOutlineOutlinedIcon />}
+              to={routeConstants.ADD_EDUCATION}
             >
               {genericConstants.ADD_EDUCATION_TEXT}
             </GreenButton>

@@ -80,6 +80,8 @@ export const VIEW_ACTIVITY_BATCHES = "Activity Batch";
 export const ADD_ACTIVITY_BATCHES = "Add Activity Batch";
 
 export const ADD_STUDENT_TO_ACTIVITY_BATCH = "Add Students";
+export const DELETE_STUDENT_TO_ACTIVITY_BATCH = "Delete Students";
+export const VERIFY_STUDENT_TO_ACTIVITY_BATCH = "Verify Students";
 
 /**MANAGE EVENTS*/
 export const ADD_EVENT_TEXT = "Add Event";
