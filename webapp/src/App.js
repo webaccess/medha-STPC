@@ -9,7 +9,7 @@ import {
   ForgotPasswordRoute,
   RouteWithLayout,
   PrivateRoute,
-  DefaultRoute
+  DefaultRoute,
 } from "./authroute";
 
 import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
@@ -52,7 +52,7 @@ import ViewDocument from "./containers/Student/Document/ViewDocument";
 import AddDocument from "./containers/Student/Document/AddEditDocument";
 import SetIndexContext from "./context/SetIndexContext";
 import ViewUser from "./containers/User/ManageUser/ViewUser";
-import ManageStudents from "./containers/Student/ManageStudent/ManageStudents";
+import ManageStudents from "./containers/Student/ManageStudents";
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
