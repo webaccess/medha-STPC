@@ -3,22 +3,20 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress,
-  Backdrop,
-  Fade,
-  Modal
+  CircularProgress
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
 
-import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
 
-const COLLEGE_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
-const COLLEGE_ID = "id";
+const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 
 const DeleteZone = props => {
   const [open, setOpen] = React.useState(false);
@@ -32,9 +30,8 @@ const DeleteZone = props => {
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
-    formState.values[COLLEGE_ID] = props.id;
-    formState.isDeleteData = false;
     formState.dataToDelete = props.dataToDelete;
+    formState.isDeleteData = false;
   }
 
   const handleCloseModal = (message = "") => {
@@ -66,9 +63,9 @@ const DeleteZone = props => {
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
      and returns back an opbject with status and message*/
     if (props.isMultiDelete) {
-      status = await checkIfMultiCollegeCanBeDelete();
+      status = await checkIfMultiZoneCanBeDelete();
     } else {
-      status = await checkIfCollegeCanBeDelete(props.id);
+      status = await checkIfZoneCanBeDelete(props.id);
     }
     setOpen(false);
     if (status["status"]) {
@@ -81,21 +78,18 @@ const DeleteZone = props => {
     }
   };
 
-  const checkIfMultiCollegeCanBeDelete = async () => {
+  const checkIfMultiZoneCanBeDelete = async () => {
     let dataToSent = {};
     let isErrorCounter = 0;
     for (let i in props.id) {
-      let status = await checkIfCollegeCanBeDelete(props.id[i]);
+      let status = await checkIfZoneCanBeDelete(props.id[i]);
       if (!status["status"]) {
         isErrorCounter += 1;
         break;
       }
     }
     if (isErrorCounter > 0) {
-      dataToSent = {
-        status: false,
-        message: "Error deleting selected Colleges"
-      };
+      dataToSent = { status: false, message: "Error deleting selected Zones" };
     } else {
       dataToSent = { status: true, message: "Success" };
     }
@@ -103,20 +97,20 @@ const DeleteZone = props => {
   };
 
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfCollegeCanBeDelete = async id => {
+  const checkIfZoneCanBeDelete = async id => {
     let dataToReturn = {};
-    let studentsCheckUrl =
-      COLLEGE_URL + "/" + id + "/" + strapiConstants.STRAPI_STUDENT;
+    let collegesCheckUrl =
+      ZONES_URL + "/" + id + "/" + strapiConstants.STRAPI_COLLEGES;
     await serviceProviders
-      .serviceProviderForGetRequest(studentsCheckUrl)
+      .serviceProviderForGetRequest(collegesCheckUrl)
       .then(res => {
         if (res.data.result.length) {
           dataToReturn = {
             status: false,
             message:
-              "Cannot delete College " +
+              "Cannot delete Zone " +
               formState.dataToDelete["name"] +
-              " as it is linked to other Students"
+              " as it is linked to other College's"
           };
         } else {
           dataToReturn = {
@@ -130,7 +124,7 @@ const DeleteZone = props => {
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting College " + formState.dataToDelete["name"]
+          message: "Error deleting Zone " + formState.dataToDelete["name"]
         };
       });
     return dataToReturn;
@@ -139,7 +133,7 @@ const DeleteZone = props => {
   const deleteData = () => {
     if (props.isMultiDelete) {
       serviceProviders
-        .serviceProviderForAllDeleteRequest(COLLEGE_URL, props.id)
+        .serviceProviderForAllDeleteRequest(ZONES_URL, props.id)
         .then(res => {
           setFormState(formState => ({
             ...formState,
@@ -147,16 +141,16 @@ const DeleteZone = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("Colleges successfully deleted");
+          handleCloseModal("Zones successfully deleted");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error deleting selected Colleges");
+          handleCloseModal("Error deleting selected Zones");
         });
     } else {
       serviceProviders
-        .serviceProviderForDeleteRequest(COLLEGE_URL, props.id)
+        .serviceProviderForDeleteRequest(ZONES_URL, props.id)
         .then(res => {
           setFormState(formState => ({
             ...formState,
@@ -164,16 +158,14 @@ const DeleteZone = props => {
           }));
           formState.isDeleteData = true;
           handleCloseModal(
-            "College " +
-              formState.dataToDelete["name"] +
-              " successfully deleted"
+            "Zone " + formState.dataToDelete["name"] + " successfully deleted"
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error deleting College " + formState.dataToDelete["name"]
+            "Error deleting Zone " + formState.dataToDelete["name"]
           );
         });
     }
@@ -216,8 +208,8 @@ const DeleteZone = props => {
                   {props.isMultiDelete
                     ? "Are you sure you want to delete " +
                       props.id.length +
-                      " Colleges?"
-                    : "Are you sure you want to delete College " +
+                      " Zones?"
+                    : "Are you sure you want to delete Zone " +
                       formState.dataToDelete["name"] +
                       "?"}
                 </Grid>
@@ -238,7 +230,7 @@ const DeleteZone = props => {
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    Ok
+                    Ok{" "}
                   </YellowButton>
                 </Grid>
                 <Grid item>

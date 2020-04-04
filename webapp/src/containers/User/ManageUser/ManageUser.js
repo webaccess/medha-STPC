@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useCallback } from "react";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import BlockIcon from "@material-ui/icons/Block";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { useHistory } from "react-router-dom";
+import CloseIcon from "@material-ui/icons/Close";
 import {
   TextField,
   Card,
   CardContent,
   Grid,
-  Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Typography
 } from "@material-ui/core";
 
-import BlockIcon from "@material-ui/icons/Block";
-import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Table, Spinner, Alert } from "../../../components";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "../../ContainerStyles/ManagePageStyles";
-import * as serviceProviders from "../../../api/Axios";
-import * as genericConstants from "../../../constants/GenericConstants";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as routeConstants from "../../../constants/RouteConstants";
 import {
   GrayButton,
   YellowButton,
@@ -25,127 +27,138 @@ import {
   BlockGridIcon,
   DeleteGridIcon
 } from "../../../components";
-import * as routeConstants from "../../../constants/RouteConstants";
-import DeleteCollege from "./DeleteCollege";
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import { useHistory } from "react-router-dom";
-import CloseIcon from "@material-ui/icons/Close";
+import * as serviceProviders from "../../../api/Axios";
+import * as genericConstants from "../../../constants/GenericConstants";
+import useStyles from "../../ContainerStyles/ManagePageStyles";
+import DeleteUser from "./DeleteUser";
+import BlockUser from "./BlockUser";
 import * as formUtilities from "../../../Utilities/FormUtilities";
-import BlockUnblockCollege from "./BlockUnblockCollege";
-import DeleteIcon from "@material-ui/icons/Delete";
 
-/** Contsants for filters */
-const COLLEGE_FILTER = "name_contains";
+const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
+const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
+const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
+const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
+const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
+
 const STATE_FILTER = "rpc.state";
 const ZONE_FILTER = "zone.id";
 const RPC_FILTER = "rpc.id";
+const IPC_FILTER = "college.id";
+const USER_FILTER = "username_contains";
+const ROLE_FILTER = "role.id";
+
 const SORT_FIELD_KEY = "_sort";
 
-/** Url's */
-const STATES_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
-const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-const COLLEGE_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
-
-const ManageCollege = props => {
+const ManageUser = props => {
+  const [open, setOpen] = useState(true);
+  const classes = useStyles();
   const history = useHistory();
-  const [open, setOpen] = React.useState(true);
-  /** Data we get for filtering */
-  const [collegesFilter, setCollegesFilter] = React.useState([]);
-  const [rpcs, setRpcs] = React.useState([]);
-  const [zones, setZones] = React.useState([]);
-  const [states, setStates] = React.useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  /**------------------------------------ */
-  /** Our actual form data  */
+  const [rpcs, setRpcs] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [states, setStates] = useState([]);
+  const [ipcs, setIpcs] = useState([]);
+
   const [formState, setFormState] = useState({
     dataToShow: [],
-    colleges: [],
-    zonesForEdit: [],
-    rpcsForEdit: [],
+    tempData: [],
+    users: [],
     states: [],
+    zones: [],
+    rpcs: [],
+    roles: [],
+    filterDataParameters: {},
+    isFilterSearch: false,
     /** This is when we return from edit page */
-    isDataEdited: props["location"]["fromeditCollege"]
+    isDataEdited: props["location"]["fromeditUser"]
       ? props["location"]["isDataEdited"]
       : false,
-    editedData: props["location"]["fromeditCollege"]
+    editedData: props["location"]["fromeditUser"]
       ? props["location"]["editedData"]
       : {},
-    fromeditCollege: props["location"]["fromeditCollege"]
-      ? props["location"]["fromeditCollege"]
+    fromeditUser: props["location"]["fromeditUser"]
+      ? props["location"]["fromeditUser"]
       : false,
     /** This is when we return from add page */
-    isDataAdded: props["location"]["fromAddCollege"]
+    isDataAdded: props["location"]["fromAddUser"]
       ? props["location"]["isDataAdded"]
       : false,
-    addedData: props["location"]["fromAddCollege"]
+    addedData: props["location"]["fromAddUser"]
       ? props["location"]["addedData"]
       : {},
-    fromAddCollege: props["location"]["fromAddCollege"]
-      ? props["location"]["fromAddCollege"]
+    fromAddUser: props["location"]["fromAddUser"]
+      ? props["location"]["fromAddUser"]
       : false,
-    /** This is for delete */
     isDataDeleted: false,
+    dataToEdit: {},
     dataToDelete: {},
+    showEditModal: false,
     showModalDelete: false,
     isMultiDelete: false,
     MultiDeleteID: [],
-    selectedRowFilter: true,
-    greenButtonChecker: true,
-    /** View  */
-    isView: false,
-    /** Filters */
-    filterDataParameters: {},
-    isFilterSearch: false,
-    isClearResetFilter: false,
-    isStateClearFilter: false,
-    /** For Block */
-    isDataBlockUnblock: false,
-    dataToBlockUnblock: {},
+    isBlocked: false,
+    isUnBlocked: false,
+    isDelete: false,
+    dataToBlock: {},
     showModalBlock: false,
+    isUserBlocked: false,
     isMulBlocked: false,
     isMulUnBlocked: false,
-    multiBlockCollegeIds: [],
-    bottonBlockUnblock: "Block Selected Colleges",
-    fromBlockModal: false,
+    MultiBlockUser: {},
+    bottonBlockUnblock: "Block Selected User",
+    greenButtonChecker: true,
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    selectedRowFilter: true,
+    userNameDelete: ""
   });
 
-  /** Get filter data parameters i.e intially get only state and college */
   const getFilterData = () => {
     let params = {
       pageSize: -1
     };
+
     serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, params)
-      .then(res => {
-        setCollegesFilter(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-    serviceProviders
-      .serviceProviderForGetRequest(STATES_URL, params)
+      .serviceProviderForGetRequest(STATE_URL, params)
       .then(res => {
         setStates(res.data.result);
       })
       .catch(error => {
-        console.log("error", error);
+        console.log("error");
+      });
+
+    serviceProviders
+      .serviceProviderForGetRequest(ROLE_URL, params)
+      .then(res => {
+        let rolesArray = [];
+        for (let i in res.data.roles) {
+          if (
+            res.data.roles[i]["name"] !== "Admin" &&
+            res.data.roles[i]["name"] !== "Authenticated" &&
+            res.data.roles[i]["name"] !== "Public"
+          ) {
+            rolesArray.push(res.data.roles[i]);
+          }
+        }
+        setFormState(formState => ({
+          ...formState,
+          roles: rolesArray
+        }));
+      })
+      .catch(error => {
+        console.log("error");
       });
   };
 
   useEffect(() => {
-    /** Seperate function to get college paginated data */
-    getCollegeData(10, 1);
-    /** Seperate function to get state and college data */
+    /** Seperate function to get user data */
+    getUserData(10, 1);
     getFilterData();
   }, []);
 
@@ -160,6 +173,7 @@ const ManageCollege = props => {
       pageSize: -1,
       "state.id": formState.filterDataParameters[STATE_FILTER]
     };
+    console.log("paramschecker", params, formState.filterDataParameters);
     serviceProviders
       .serviceProviderForGetRequest(RPCS_URL, params)
       .then(res => {
@@ -178,52 +192,65 @@ const ManageCollege = props => {
       });
   };
 
-  /** This seperate function is used to get the college data*/
-  const getCollegeData = async (pageSize, page, paramsForCollege = null) => {
-    if (
-      paramsForCollege !== null &&
-      !formUtilities.checkEmpty(paramsForCollege)
-    ) {
+  const getCollegesOnStateAndZone = () => {
+    setIpcs([]);
+    delete formState.filterDataParameters[IPC_FILTER];
+
+    let params = {
+      pageSize: -1,
+      "zone.id": formState.filterDataParameters[ZONE_FILTER]
+    };
+    console.log("paramschecker", params, formState.filterDataParameters);
+    serviceProviders
+      .serviceProviderForGetRequest(IPC_URL, params)
+      .then(res => {
+        setIpcs(res.data.result);
+        console.log("collegeName", res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
+  const getUserData = async (pageSize, page, paramsForUsers = null) => {
+    if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
+        [SORT_FIELD_KEY]: "username:asc"
       };
-      Object.keys(paramsForCollege).map(key => {
-        defaultParams[key] = paramsForCollege[key];
+      Object.keys(paramsForUsers).map(key => {
+        defaultParams[key] = paramsForUsers[key];
       });
-      paramsForCollege = defaultParams;
+      paramsForUsers = defaultParams;
     } else {
-      paramsForCollege = {
+      paramsForUsers = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
+        [SORT_FIELD_KEY]: "username:asc"
       };
     }
     setFormState(formState => ({
       ...formState,
       isDataLoading: true
     }));
-
+    console.log("paramsForusers", paramsForUsers);
     await serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
-      .then(async res => {
+      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
+      .then(res => {
         formState.dataToShow = [];
-        let tempCollegeData = [];
-        let college_data = res.data.result;
-
-        /** As college data is in nested form we first convert it into
-         * a float structure and store it in data
-         */
-        tempCollegeData = convertCollegeData(college_data);
+        formState.tempData = [];
+        let temp = [];
+        temp = convertUserData(res.data.result);
         setFormState(formState => ({
           ...formState,
-          colleges: college_data,
-          dataToShow: tempCollegeData,
+          users: res.data.result,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
+          dataToShow: temp,
+          tempData: temp,
           isDataLoading: false
         }));
       })
@@ -231,25 +258,23 @@ const ManageCollege = props => {
         console.log("error", error);
       });
   };
-
-  /** Converting college unstructured data into structred flat format for passing it into datatable */
-  const convertCollegeData = data => {
-    let collegeDataArray = [];
+  const convertUserData = data => {
+    let x = [];
     if (data.length > 0) {
       for (let i in data) {
-        var tempIndividualCollegeData = {};
-        tempIndividualCollegeData["id"] = data[i]["id"];
-        tempIndividualCollegeData["blocked"] = data[i]["blocked"];
-        tempIndividualCollegeData["name"] = data[i]["name"];
-        tempIndividualCollegeData["rpc"] = data[i]["rpc"]
-          ? data[i]["rpc"]["name"]
-          : "";
-        tempIndividualCollegeData["zone_name"] = data[i]["zone"]
-          ? data[i]["zone"]["name"]
-          : "";
-        collegeDataArray.push(tempIndividualCollegeData);
+        var temp = {};
+        temp["id"] = data[i]["id"];
+        temp["username"] = data[i]["username"];
+        temp["blocked"] = data[i]["blocked"];
+        temp["role"] = data[i]["role"]["name"];
+        temp["state"] = data[i]["state"] ? data[i]["state"]["name"] : "";
+        temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
+        temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
+        temp["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
+
+        x.push(temp);
       }
-      return collegeDataArray;
+      return x;
     }
   };
 
@@ -257,24 +282,24 @@ const ManageCollege = props => {
   const handlePerRowsChange = async (perPage, page) => {
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getCollegeData(perPage, page);
+      await getUserData(perPage, page);
     } else {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getCollegeData(perPage, page);
+        await getUserData(perPage, page);
       }
     }
   };
 
   const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getCollegeData(formState.pageSize, page);
+      await getUserData(formState.pageSize, page);
     } else {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getCollegeData(formState.pageSize, page);
+        await getUserData(formState.pageSize, page);
       }
     }
   };
@@ -283,9 +308,7 @@ const ManageCollege = props => {
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
-      await getCollegeData(perPage, page, formState.filterDataParameters);
-    } else {
-      await getCollegeData(perPage, page);
+      await getUserData(perPage, page, formState.filterDataParameters);
     }
   };
 
@@ -306,7 +329,8 @@ const ManageCollege = props => {
     }));
     setRpcs([]);
     setZones([]);
-    formState.filterDataParameters[COLLEGE_FILTER] = "";
+    formState.filterDataParameters[STATE_FILTER] = "";
+    console.log("formstate--->>", formState.filterDataParameters);
     // window.location.reload();
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -317,139 +341,64 @@ const ManageCollege = props => {
    */
 
   const restoreData = () => {
-    getCollegeData(formState.pageSize, 1);
+    getUserData(formState.pageSize, 1);
   };
 
-  /** Edit cell */
-  const getDataForEdit = async (id, isView = false) => {
-    /** Get college data for edit */
-    let paramsForCollege = {
-      id: id
-    };
-    await serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
+  const isDeleteCellCompleted = status => {
+    formState.isDataDeleted = status;
+  };
+
+  const deleteCell = event => {
+    let dataId = event.target.id;
+
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: { id: dataId },
+      showEditModal: false,
+      showModalDelete: true
+    }));
+    let url_user = USER_URL + "/" + dataId;
+    serviceProviders
+      .serviceProviderForGetRequest(url_user)
       .then(res => {
-        /** This we will use as final data for edit we send to modal */
-        let editData = res.data.result[0];
-        history.push({
-          pathname: routeConstants.EDIT_COLLEGE,
-          editCollege: true,
-          dataForEdit: editData
-        });
-      })
-      .catch(error => {
-        console.log("error");
-      });
-  };
-
-  const editCell = event => {
-    getDataForEdit(event.target.id);
-  };
-
-  /**---------------------------------------------------------- */
-  /** View Cell */
-  const viewCell = event => {
-    history.push({
-      pathname: routeConstants.VIEW_COLLEGE,
-      dataForEdit: event.target.id
-    });
-  };
-
-  /** ---------------------------------------------------------- */
-  /** For Block */
-  /** This is called when block event is called */
-  const blockCell = event => {
-    event.persist();
-    getDataForBlockUnblock(event.target.id);
-  };
-
-  const isBlockUnblockCellCompleted = status => {
-    formState.isDataBlockUnblock = status;
-  };
-
-  const getDataForBlockUnblock = async id => {
-    /** Get college data for edit */
-    let paramsForCollege = {
-      id: id
-    };
-    await serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
-      .then(res => {
-        /** This we will use as final data for edit we send to modal */
-        let editData = res.data.result[0];
         setFormState(formState => ({
           ...formState,
-          dataToBlockUnblock: editData,
-          isMulBlocked: false,
-          isMulUnBlocked: false,
-          showModalBlock: true,
-          multiBlockCollegeIds: [],
-          fromDeleteModal: false,
-          fromAddCollege: false,
-          fromeditCollege: false,
-          fromBlockModal: false
+          userNameDelete: res.data.result.username
         }));
       })
       .catch(error => {
-        console.log("error");
+        console.log("error", error);
       });
   };
 
-  const blockMulCollegeById = () => {
-    let arrayId = [];
-    for (var k = 0; k < selectedRows.length; k++) {
-      arrayId.push(selectedRows[k]["id"]);
-    }
-    if (formState.bottonBlockUnblock === "Block Selected Colleges") {
-      setFormState(formState => ({
-        ...formState,
-        isMulBlocked: true,
-        isMulUnBlocked: false,
-        showModalBlock: true,
-        multiBlockCollegeIds: arrayId,
-        fromDeleteModal: false,
-        fromAddCollege: false,
-        fromeditCollege: false,
-        fromBlockModal: false
-      }));
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        isMulBlocked: false,
-        isMulUnBlocked: true,
-        showModalBlock: true,
-        multiBlockCollegeIds: arrayId,
-        fromDeleteModal: false,
-        fromAddCollege: false,
-        fromeditCollege: false,
-        fromBlockModal: false
-      }));
-    }
-  };
-
   /** This is used to handle the close modal event */
-  const handleCloseBlockUnblockModal = (status, statusToShow = "") => {
+  const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setOpen(true);
     setFormState(formState => ({
       ...formState,
-      isDataBlockUnblock: status,
-      showModalBlock: false,
-      fromBlockModal: true,
-      isMulBlocked: false,
-      isMulUnBlocked: false,
-      multiBlockCollegeIds: [],
-      dataToBlockUnblock: {},
-      messageToShow: statusToShow
+      showEditModal: false,
+      isDataDeleted: false,
+      showModalDelete: false
     }));
-    if (status) {
-      getCollegeData(formState.pageSize, 1);
+    if (formState.isDataDeleted) {
+      getUserData();
     }
   };
 
-  /** ------------------------------------------------------------------ */
-  /** Handles change in auto complete for filters */
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false,
+      showModalDelete: false
+    }));
+  };
+
+  /** To reset search filter */
+  const refreshPage = () => {
+    window.location.reload(false);
+  };
+
   const handleChangeAutoComplete = (filterName, event, value) => {
     /** When we click cross for auto complete */
     if (value === null) {
@@ -457,17 +406,19 @@ const ManageCollege = props => {
       /** If we click cross for state the zone and rpc should clear off! */
       if (filterName === STATE_FILTER) {
         /** 
-        This flag is used to determine that state is cleared which clears 
-        off zone and rpc by setting their value to null 
-        */
+            This flag is used to determine that state is cleared which clears 
+            off zone and rpc by setting their value to null 
+            */
         setStateFilterValue = true;
         /** 
-        When state is cleared then clear rpc and zone 
-        */
+            When state is cleared then clear rpc and zone 
+            */
         setRpcs([]);
         setZones([]);
+        setIpcs([]);
         delete formState.filterDataParameters[ZONE_FILTER];
         delete formState.filterDataParameters[RPC_FILTER];
+        delete formState.filterDataParameters[IPC_FILTER];
       }
       setFormState(formState => ({
         ...formState,
@@ -481,6 +432,9 @@ const ManageCollege = props => {
       if (filterName === STATE_FILTER) {
         getZonesAndRpcsOnState();
       }
+      if (filterName === ZONE_FILTER) {
+        getCollegesOnStateAndZone();
+      }
       setFormState(formState => ({
         ...formState,
         isClearResetFilter: false,
@@ -489,58 +443,13 @@ const ManageCollege = props => {
     }
   };
 
-  /**----------------------------------------------------- */
-
-  const deleteCell = event => {
-    setFormState(formState => ({
-      ...formState,
-      dataToDelete: {
-        id: event.target.id,
-        name: event.target.getAttribute("value")
-      },
-      showModalDelete: true,
-      isDataDeleted: false,
-      messageToShow: "",
-      fromDeleteModal: false,
-      fromAddCollege: false,
-      fromeditCollege: false,
-      fromBlockModal: false
-    }));
-  };
-
-  /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = (status, statusToShow = "") => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    setOpen(true);
-    setFormState(formState => ({
-      ...formState,
-      isDataDeleted: status,
-      showModalDelete: false,
-      fromDeleteModal: true,
-      isMultiDelete: false,
-      messageToShow: statusToShow
-    }));
-    if (status) {
-      getCollegeData(formState.pageSize, 1);
-    }
-  };
-
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showModalBlock: false,
-      showModalDelete: false
-    }));
-  };
-
   const handleFilterChange = event => {
+    console.log("handleFilterChange", event.target.name, event.target.value);
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
-  /** Multi Delete */
   /** Get multiple user id for delete */
-  const deleteMulCollegeById = () => {
+  const deleteMulUserById = () => {
     let arrayId = [];
 
     selectedRows.forEach(d => {
@@ -552,16 +461,60 @@ const ManageCollege = props => {
       showEditModal: false,
       showModalDelete: true,
       isMultiDelete: true,
-      MultiDeleteID: arrayId,
-      isDataDeleted: false,
-      fromDeleteModal: false,
-      fromAddCollege: false,
-      fromeditCollege: false,
-      fromBlockModal: false
+      MultiDeleteID: arrayId
     }));
   };
 
-  /** On select multiple rows */
+  const blockedCell = event => {
+    for (var k = 0; k < formState.dataToShow.length; k++) {
+      if (
+        parseInt(event.target.id) === parseInt(formState.dataToShow[k]["id"])
+      ) {
+        if (formState.dataToShow[k]["blocked"] === true) {
+          blockedCellData(event.target.id, false);
+        } else {
+          blockedCellData(event.target.id, true);
+        }
+      }
+    }
+  };
+
+  const blockedCellData = (id, isBlocked = false) => {
+    if (isBlocked === true) {
+      setFormState(formState => ({
+        ...formState,
+        dataToBlock: id,
+        isBlocked: true,
+        isUnBlocked: false,
+        showModalBlock: true
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        dataToBlock: id,
+        isBlocked: false,
+        isUnBlocked: true,
+        showModalBlock: true
+      }));
+    }
+  };
+
+  const isUserBlockCompleted = status => {
+    formState.isUserBlocked = status;
+  };
+
+  const handleCloseBlockModal = () => {
+    /** This restores all the data when we close the modal */
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false
+    }));
+    if (formState.isUserBlocked) {
+      //getUserData();
+      window.location.reload(false);
+    }
+  };
+
   const handleRowSelected = useCallback(state => {
     let blockData = [];
     let unblockData = [];
@@ -587,23 +540,81 @@ const ManageCollege = props => {
       if (blockData.length > 0) {
         setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Block Selected Colleges"
+          bottonBlockUnblock: "Block Selected User"
         }));
       } else {
         setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Unblock Selected Colleges"
+          bottonBlockUnblock: "Unblock Selected User"
         }));
       }
     });
     setSelectedRows(state.selectedRows);
   }, []);
 
-  /** Columns to show in table */
+  const blockMulUserById = () => {
+    let arrayId = [];
+    for (var k = 0; k < selectedRows.length; k++) {
+      arrayId.push(selectedRows[k]["id"]);
+    }
+    if (formState.bottonBlockUnblock === "Block Selected User") {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: true,
+        isMulUnBlocked: false,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        isMulBlocked: false,
+        isMulUnBlocked: true,
+        showModalBlock: true,
+        MultiBlockUser: arrayId
+      }));
+    }
+  };
+
+  const getDataForEdit = async id => {
+    let paramsForUsers = {
+      id: id
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
+      .then(res => {
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_USER,
+          editUser: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
+  const editCell = event => {
+    getDataForEdit(event.target.id);
+  };
+
+  const viewCell = event => {
+    history.push({
+      pathname: routeConstants.DETAIL_USER,
+      dataForEdit: event.target.id
+    });
+  };
+
+  /** Table Data */
   const column = [
-    { name: "Name", sortable: true, selector: "name" },
-    { name: "Zone", sortable: true, selector: "zone_name" },
+    { name: "User Name", sortable: true, selector: "username" },
+    { name: "Role", sortable: true, selector: "role" },
+    { name: "State", sortable: true, selector: "state" },
+    { name: "Zone", sortable: true, selector: "zone" },
     { name: "RPC", sortable: true, selector: "rpc" },
+    { name: "IPC", sortable: true, selector: "college" },
     {
       name: "Actions",
       cell: cell => (
@@ -619,16 +630,12 @@ const ManageCollege = props => {
               title={cell.blocked}
               id={cell.id}
               value={cell.name}
-              onClick={blockCell}
+              onClick={blockedCell}
               style={cell.blocked}
             />
           </div>
           <div className={classes.PaddingActionButton}>
-            <DeleteGridIcon
-              id={cell.id}
-              value={cell.name}
-              onClick={deleteCell}
-            />
+            <DeleteGridIcon id={cell.id} onClick={deleteCell} />
           </div>
         </div>
       ),
@@ -640,18 +647,16 @@ const ManageCollege = props => {
     }
   ];
 
-  const classes = useStyles();
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.MANAGE_COLLEGE_TEXT}
+          {genericConstants.MANAGE_USER_TEXT}
         </Typography>
-
         <GreenButton
           variant="contained"
           color="secondary"
-          onClick={() => blockMulCollegeById()}
+          onClick={() => blockMulUserById()}
           startIcon={<BlockIcon />}
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
@@ -662,12 +667,12 @@ const ManageCollege = props => {
         <GreenButton
           variant="contained"
           color="secondary"
-          onClick={() => deleteMulCollegeById()}
+          onClick={() => deleteMulUserById()}
           startIcon={<DeleteIcon />}
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Delete Selected Colleges
+          {genericConstants.DELETE_MULTI_USER_BUTTON}
         </GreenButton>
 
         <GreenButton
@@ -675,15 +680,16 @@ const ManageCollege = props => {
           color="primary"
           onClick={clearFilter}
           disableElevation
-          to={routeConstants.ADD_COLLEGE}
+          to={routeConstants.ADD_USER}
           startIcon={<AddCircleOutlineOutlinedIcon />}
+          buttonDisabled={formState.selectedRowFilter}
         >
-          {genericConstants.ADD_COLLEGE_BUTTON}
+          {genericConstants.ADD_USER_TITLE}
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for edit */}
-        {formState.fromeditCollege && formState.isDataEdited ? (
+        {formState.fromeditUser && formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -704,7 +710,7 @@ const ManageCollege = props => {
             </Alert>
           </Collapse>
         ) : null}
-        {formState.fromeditCollege && !formState.isDataEdited ? (
+        {formState.fromeditUser && !formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
               severity="error"
@@ -727,7 +733,7 @@ const ManageCollege = props => {
         ) : null}
 
         {/** Error/Success messages to be shown for add */}
-        {formState.fromAddCollege && formState.isDataAdded ? (
+        {formState.fromAddUser && formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -748,7 +754,7 @@ const ManageCollege = props => {
             </Alert>
           </Collapse>
         ) : null}
-        {formState.fromAddCollege && !formState.isDataAdded ? (
+        {formState.fromAddUser && !formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
               severity="error"
@@ -765,126 +771,53 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
             </Alert>
           </Collapse>
         ) : null}
-        {formState.fromDeleteModal &&
-        formState.isDataDeleted &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {formState.fromDeleteModal &&
-        !formState.isDataDeleted &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {formState.fromBlockModal &&
-        formState.isDataBlockUnblock &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {formState.fromBlockModal &&
-        !formState.isDataBlockUnblock &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
-
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label={"College"}
-                  placeholder="College"
+                  label={"User Name"}
+                  placeholder="User Name"
                   variant="outlined"
-                  name={COLLEGE_FILTER}
+                  name={USER_FILTER}
                   onChange={handleFilterChange}
                 />
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="states_filter_college"
-                  options={states}
+                  id="combo-box-demo"
+                  name={ROLE_FILTER}
+                  options={formState.roles}
+                  className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete(STATE_FILTER, event, value);
-                  }}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(ROLE_FILTER, event, value)
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Role"
+                      placeholder="Role"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item>
+                <Autocomplete
+                  id="combo-box-demo"
+                  name={STATE_FILTER}
+                  options={states}
+                  className={classes.autoCompleteField}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(STATE_FILTER, event, value)
+                  }
                   value={
                     formState.isClearResetFilter
                       ? null
@@ -910,12 +843,13 @@ const ManageCollege = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="zones_filter_college"
+                  id="combo-box-demo"
                   options={zones}
+                  className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete(ZONE_FILTER, event, value);
-                  }}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(ZONE_FILTER, event, value)
+                  }
                   value={
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
@@ -941,12 +875,14 @@ const ManageCollege = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="rpcs_filter_college"
+                  id="combo-box-demo"
+                  name={RPC_FILTER}
                   options={rpcs}
+                  className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete(RPC_FILTER, event, value);
-                  }}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(RPC_FILTER, event, value)
+                  }
                   value={
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
@@ -970,6 +906,39 @@ const ManageCollege = props => {
                   )}
                 />
               </Grid>
+              <Grid item>
+                <Autocomplete
+                  id="combo-box-demo"
+                  name={IPC_FILTER}
+                  options={ipcs}
+                  className={classes.autoCompleteField}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(IPC_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter || formState.isStateClearFilter
+                      ? null
+                      : ipcs[
+                          ipcs.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[IPC_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="IPC"
+                      placeholder="IPC"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
@@ -987,7 +956,7 @@ const ManageCollege = props => {
                 <GrayButton
                   variant="contained"
                   color="primary"
-                  onClick={clearFilter}
+                  onClick={refreshPage}
                   disableElevation
                 >
                   {genericConstants.RESET_BUTTON_TEXT}
@@ -1002,11 +971,10 @@ const ManageCollege = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                defaultSortField="name"
                 onSelectedRowsChange={handleRowSelected}
-                defaultSortAsc={formState.sortAscending}
-                editEvent={editCell}
                 deleteEvent={deleteCell}
+                defaultSortField="username"
+                defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
@@ -1017,36 +985,54 @@ const ManageCollege = props => {
               <Spinner />
             )
           ) : (
-            <div className={classes.noDataMargin}>
-              {genericConstants.NO_DATA_TO_SHOW_TEXT}
-            </div>
-          )}{" "}
-          <DeleteCollege
-            showModal={formState.showModalDelete}
-            closeModal={handleCloseDeleteModal}
-            id={
-              formState.isMultiDelete
-                ? formState.MultiDeleteID
-                : formState.dataToDelete["id"]
-            }
-            modalClose={modalClose}
-            isMultiDelete={formState.isMultiDelete ? true : false}
-            dataToDelete={formState.dataToDelete}
-          />
-          <BlockUnblockCollege
-            showModal={formState.showModalBlock}
-            closeModal={handleCloseBlockUnblockModal}
-            dataToBlockUnblock={formState.dataToBlockUnblock}
-            blockUnblockEvent={isBlockUnblockCellCompleted}
-            isMultiBlock={formState.isMulBlocked ? true : false}
-            isMultiUnblock={formState.isMulUnBlocked ? true : false}
-            multiBlockCollegeIds={formState.multiBlockCollegeIds}
-            modalClose={modalClose}
-          />
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
+
+          {formState.isMultiDelete ? (
+            <DeleteUser
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              deleteEvent={isDeleteCellCompleted}
+              id={formState.MultiDeleteID}
+              isMultiDelete={formState.isMultiDelete}
+              modalClose={modalClose}
+              seletedUser={selectedRows.length}
+            />
+          ) : (
+            <DeleteUser
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              id={formState.dataToDelete["id"]}
+              deleteEvent={isDeleteCellCompleted}
+              modalClose={modalClose}
+              userName={formState.userNameDelete}
+            />
+          )}
+          {formState.isMulBlocked || formState.isMulUnBlocked ? (
+            <BlockUser
+              id={formState.MultiBlockUser}
+              isMulBlocked={formState.isMulBlocked}
+              isUnMulBlocked={formState.isMulUnBlocked}
+              getModel={formState.showModalBlock}
+              closeBlockModal={handleCloseBlockModal}
+              blockEvent={isUserBlockCompleted}
+              modalClose={modalClose}
+            />
+          ) : (
+            <BlockUser
+              id={formState.dataToBlock}
+              getModel={formState.showModalBlock}
+              closeBlockModal={handleCloseBlockModal}
+              blockEvent={isUserBlockCompleted}
+              isBlocked={formState.isBlocked}
+              isUnBlocked={formState.isUnBlocked}
+              modalClose={modalClose}
+            />
+          )}
         </Card>
       </Grid>
     </Grid>
   );
 };
 
-export default ManageCollege;
+export default ManageUser;

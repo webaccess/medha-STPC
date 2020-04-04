@@ -14,8 +14,16 @@ import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import useStyles from "./ManageEventStyles";
-import { GrayButton, YellowButton, GreenButton } from "../../../components";
+import useStyles from "../../ContainerStyles/ManagePageStyles";
+import {
+  GrayButton,
+  YellowButton,
+  GreenButton,
+  ViewGridIcon,
+  EditGridIcon,
+  ViewStudentGridIcon,
+  DeleteGridIcon
+} from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DatePickers from "../../../components/Date/Date";
@@ -379,56 +387,24 @@ const ViewEvents = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            <Tooltip title="View" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={viewCell}
-                style={{ color: "green" }}
-              >
-                view_list
-              </i>
-            </Tooltip>
+            <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
           </div>
           <div className={classes.PaddingActionButton}>
-            <Tooltip title="Edit" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={editCell}
-                style={{ color: "green", fontSize: "21px" }}
-              >
-                edit
-              </i>
-            </Tooltip>
+            <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
           </div>
           <div className={classes.PaddingActionButton}>
-            <Tooltip title="View Student List" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                style={{ color: "green", fontSize: "21px" }}
-                onClick={viewStudentList}
-              >
-                group
-              </i>
-            </Tooltip>
+            <ViewStudentGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={viewStudentList}
+            />
           </div>
           <div className={classes.PaddingActionButton}>
-            <Tooltip title="Delete" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.title}
-                onClick={deleteCell}
-                style={{ color: "red", fontSize: "23px" }}
-              >
-                delete_outline
-              </i>
-            </Tooltip>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={deleteCell}
+            />
           </div>
         </div>
       ),

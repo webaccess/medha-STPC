@@ -3,6 +3,7 @@ import {
   Grid,
   Typography,
   IconButton,
+  CircularProgress,
   Modal,
   Backdrop,
   Fade
@@ -11,82 +12,80 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
-const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-const EVENT_ID = "UserName";
+const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
-const DeleteUser = props => {
+const BlockUser = props => {
+  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
-    isDeleteData: false,
+    isDataBlock: false,
     isValid: false,
     stateCounter: 0,
-    values: {},
-    username: ""
+    values: {}
   });
 
-  if (props.showModal && !formState.stateCounter) {
-    formState.stateCounter = 0;
-    formState.values[EVENT_ID] = props.id;
-    formState.isDeleteData = false;
-  }
-
   const handleCloseModal = () => {
+    setOpen(false);
     setFormState(formState => ({
       ...formState,
       values: {},
-      isDeleteData: false,
+      isDataBlock: false,
       isValid: false,
       stateCounter: 0
     }));
 
-    if (formState.isDeleteData) {
-      props.deleteEvent(true);
+    if (formState.isDataBlock) {
+      props.blockEvent(true);
     } else {
-      props.deleteEvent(false);
+      props.blockEvent(false);
     }
-    props.closeModal();
+    props.closeBlockModal();
   };
 
   const handleSubmit = event => {
+    setOpen(true);
     /** CALL Put FUNCTION */
-    deleteData();
+    blockUser();
     event.preventDefault();
   };
 
-  const deleteData = () => {
-    if (props.isMultiDelete) {
+  const blockUser = () => {
+    var body;
+    if (props.isUnBlocked || props.isUnMulBlocked) {
+      body = {
+        blocked: false
+      };
+    }
+    if (props.isBlocked || props.isMulBlocked) {
+      body = {
+        blocked: true
+      };
+    }
+
+    if (props.isMulBlocked || props.isUnMulBlocked) {
       serviceProviders
-        .serviceProviderForAllDeleteRequest(EVENT_URL, props.id)
+        .serviceProviderForAllBlockRequest(USER_URL, props.id, body)
         .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
+          formState.isDataBlock = true;
           handleCloseModal();
         })
         .catch(error => {
-          console.log("error", error);
-          formState.isDeleteData = false;
+          console.log("error---", error);
+          formState.isDataBlock = false;
           handleCloseModal();
         });
     } else {
       serviceProviders
-        .serviceProviderForDeleteRequest(EVENT_URL, props.id)
+        .serviceProviderForPutRequest(USER_URL, props.id, body)
         .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
+          formState.isDataBlock = true;
           handleCloseModal();
         })
         .catch(error => {
-          console.log("error");
-          formState.isDeleteData = false;
+          console.log("error", error);
+          formState.isDataBlock = false;
           handleCloseModal();
         });
     }
@@ -98,7 +97,7 @@ const DeleteUser = props => {
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       className={classes.modal}
-      open={props.showModal}
+      open={props.getModel}
       onClose={handleCloseModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
@@ -106,11 +105,12 @@ const DeleteUser = props => {
         timeout: 500
       }}
     >
-      <Fade in={props.showModal}>
+      <Fade in={props.getModel}>
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {genericConstants.DELETE_TEXT}
+              {props.isUnBlocked || props.isUnMulBlocked ? "Unblock" : null}
+              {props.isBlocked || props.isMulBlocked ? "Block" : null}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -124,19 +124,19 @@ const DeleteUser = props => {
           </div>
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
-              <Grid container spacing={2} alignItems="center">
+              <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                justifyContent="center"
+              >
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isMultiDelete ? (
-                    <p>
-                      Are you sure you want to delete "{props.seletedUser}"
-                      Events?
-                    </p>
-                  ) : (
-                    <p>
-                      Are you sure you want to delete event "
-                      {props.dataToDelete["name"]}"?
-                    </p>
-                  )}
+                  {props.isUnBlocked || props.isUnMulBlocked
+                    ? "Are you sure you want to unblock this user"
+                    : null}
+                  {props.isBlocked || props.isMulBlocked
+                    ? "Are you sure you want to block this user"
+                    : null}
                 </Grid>
               </Grid>
             </Grid>
@@ -155,7 +155,7 @@ const DeleteUser = props => {
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    Ok
+                    OK
                   </YellowButton>
                 </Grid>
                 <Grid item>
@@ -171,10 +171,13 @@ const DeleteUser = props => {
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>
   );
 };
 
-export default DeleteUser;
+export default BlockUser;

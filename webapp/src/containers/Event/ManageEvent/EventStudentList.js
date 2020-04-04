@@ -24,7 +24,7 @@ import {
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
-import useStyles from "./ManageEventStyles";
+import useStyles from "../../ContainerStyles/ManagePageStyles";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 
@@ -203,7 +203,7 @@ const StudentList = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Events
+          Event Students List
         </Typography>
 
         <GreenButton

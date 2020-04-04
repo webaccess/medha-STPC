@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import useStyles from "./AddEditCollegeStyles";
+import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import CollegeFormSchema from "../CollegeFormSchema";
@@ -12,7 +12,6 @@ import * as serviceProviders from "../../../api/Axios";
 import { YellowButton, GrayButton } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
-import DynamicBar from "../../../components/DynamicBar/DynamicBar";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import { Auth as auth } from "../../../components";
 
@@ -616,7 +615,7 @@ const AddEditCollege = props => {
         )
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
             isDataEdited: true,
             editResponseMessage: "",
@@ -627,7 +626,7 @@ const AddEditCollege = props => {
         .catch(error => {
           console.log(error.response);
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
             isDataEdited: false,
             editResponseMessage: "",
@@ -640,7 +639,7 @@ const AddEditCollege = props => {
         .serviceProviderForPostRequest(COLLEGES_URL, postData)
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromAddCollege: true,
             isDataAdded: true,
             addResponseMessage: "",
@@ -650,7 +649,7 @@ const AddEditCollege = props => {
         })
         .catch(error => {
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromAddCollege: true,
             isDataAdded: false,
             addResponseMessage: "",
@@ -664,11 +663,11 @@ const AddEditCollege = props => {
   const clickedCancelButton = () => {
     if (auth.getUserInfo().role.name === "Medha Admin") {
       history.push({
-        pathname: routeConstants.VIEW_COLLEGE
+        pathname: routeConstants.MANAGE_COLLEGE
       });
     } else if (auth.getUserInfo().role.name === "College Admin") {
       history.push({
-        pathname: routeConstants.DETAIL_COLLEGE
+        pathname: routeConstants.VIEW_COLLEGE
       });
     }
   };
@@ -1349,7 +1348,6 @@ const AddEditCollege = props => {
                 color="primary"
                 variant="contained"
                 onClick={clickedCancelButton}
-                // to={routeConstants.VIEW_COLLEGE}
                 className={classes.resetbtn}
               >
                 {genericConstants.CANCEL_BUTTON_TEXT}

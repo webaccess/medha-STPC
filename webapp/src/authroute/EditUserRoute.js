@@ -19,7 +19,7 @@ const EditUserRoute = props => {
       return (
         <Redirect
           to={{
-            pathname: routeConstants.VIEW_USER,
+            pathname: routeConstants.MANAGE_USER,
             state: { from: props.location }
           }}
         />

@@ -5,14 +5,12 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#666666",
     color: "#fff",
     borderRadius: "3px",
-    padding: "0px 12px",
     textTransform: "capitalize",
     fontSize: "13px",
     fontWeight: "700",
-    marginRight: "15px",
-    letterSpacing: "0px",
     "&:hover": {
-      background: "#666"
+      background: "#666666",
+      color: "#fff"
     }
   }
 }));
