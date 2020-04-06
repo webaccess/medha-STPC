@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import UserSchema from "../UserSchema";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
-import { get } from "lodash";
+import { get, set } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
@@ -31,6 +31,7 @@ import {
   Typography
 } from "@material-ui/core";
 
+/** Constants  declaration */
 const firstname = "firstname";
 const lastname = "lastname";
 const email = "email";
@@ -44,7 +45,49 @@ const role = "role";
 const college = "college";
 const active = "active";
 
-const Adduser = props => {
+/** URLS */
+const USERS_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS;
+
+const STATES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
+
+const ZONES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
+
+const ROLES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES;
+
+const COLLEGE_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
+
+let VALIDATIONFORRPC = {
+  required: {
+    value: "true",
+    message: "RPC is required"
+  }
+};
+let VALIDATIONFORSTATE = {
+  required: {
+    value: "true",
+    message: "State is required"
+  }
+};
+let VALIDATIONFORZONE = {
+  required: {
+    value: "true",
+    message: "Zone is required"
+  }
+};
+let VALIDATIONFORCOLLEGE = {
+  required: {
+    value: "true",
+    message: "College is required"
+  }
+};
+
+const AddEditUser = props => {
+  /** Initializing all the hooks */
   const classes = useStyles();
   const history = useHistory();
   const [formState, setFormState] = useState({
@@ -58,29 +101,13 @@ const Adduser = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0
   });
-
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [roles, setRoles] = useState([]);
 
-  const USERS_URL =
-    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS;
-
-  const STATES_URL =
-    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
-
-  const ZONES_URL =
-    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
-
-  const COLLEGES_URL =
-    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
-
-  const ROLES_URL =
-    strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES;
-
-  /** Part for editing state */
+  /** Part for editing user */
   if (formState.dataForEdit && !formState.counter) {
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["first_name"]) {
@@ -126,6 +153,7 @@ const Adduser = props => {
     formState.counter += 1;
   }
 
+  /** Use Effect function to set roles */
   useEffect(() => {
     let paramsForPageSize = {
       pageSize: -1
@@ -147,7 +175,8 @@ const Adduser = props => {
           if (
             res.data.roles[i]["name"] !== "Admin" &&
             res.data.roles[i]["name"] !== "Authenticated" &&
-            res.data.roles[i]["name"] !== "Public"
+            res.data.roles[i]["name"] !== "Public" &&
+            res.data.roles[i]["name"] !== "Student"
           ) {
             roles.push(res.data.roles[i]);
           }
@@ -161,70 +190,77 @@ const Adduser = props => {
 
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
-    if (formState.values[state]) {
+    if (
+      formState.values.hasOwnProperty(state) &&
+      formState.values[state] !== null &&
+      formState.values[state] !== undefined
+    ) {
       fetchZoneRpcDistrictData();
     }
-    if (formState.values[zone] && formState.values[rpc]) {
-      fetchCollegeData();
-    }
-    return () => {};
-  }, [formState.values]);
+  }, [formState.values[state]]);
 
   /** Common function to get zones, rpcs after changing state */
   async function fetchZoneRpcDistrictData() {
-    let zones_url =
-      STATES_URL +
-      "/" +
-      formState.values[state] +
-      "/" +
-      strapiApiConstants.STRAPI_ZONES;
+    if (
+      formState.values.hasOwnProperty(state) &&
+      formState.values[state] !== null &&
+      formState.values[state] !== undefined &&
+      formState.values[state] !== ""
+    ) {
+      let zones_url =
+        STATES_URL +
+        "/" +
+        formState.values[state] +
+        "/" +
+        strapiApiConstants.STRAPI_ZONES;
 
-    await serviceProvider
-      .serviceProviderForGetRequest(zones_url)
-      .then(res => {
-        setZones(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+      await serviceProvider
+        .serviceProviderForGetRequest(zones_url)
+        .then(res => {
+          setZones(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
 
-    let rpcs_url =
-      STATES_URL +
-      "/" +
-      formState.values[state] +
-      "/" +
-      strapiApiConstants.STRAPI_RPCS;
+      let rpcs_url =
+        STATES_URL +
+        "/" +
+        formState.values[state] +
+        "/" +
+        strapiApiConstants.STRAPI_RPCS;
 
-    await serviceProvider
-      .serviceProviderForGetRequest(rpcs_url)
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setRpcs(res.data[0].result);
-        } else {
-          setRpcs(res.data.result);
-        }
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-
-    let params = {
-      pageSize: -1,
-      "state.id": formState.values[state]
-    };
+      await serviceProvider
+        .serviceProviderForGetRequest(rpcs_url)
+        .then(res => {
+          if (Array.isArray(res.data)) {
+            setRpcs(res.data[0].result);
+          } else {
+            setRpcs(res.data.result);
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
   }
 
-  /** Common function to get colleges after changing zone & rpc */
+  useEffect(() => {
+    if (formState.values[zone] && formState.values[rpc]) {
+      fetchCollegeData();
+    }
+  }, [formState.values[zone], formState.values[rpc]]);
+
+  /** Function to get college data after selcting zones and rpc's */
   async function fetchCollegeData() {
-    let colleges_url =
-      ZONES_URL +
-      "/" +
-      formState.values[zone] +
-      "/" +
-      strapiApiConstants.STRAPI_COLLEGES;
+    let params = {
+      "zone.id": formState.values[zone],
+      "rpc.id": formState.values[rpc],
+      pageSize: -1
+    };
 
     await serviceProvider
-      .serviceProviderForGetRequest(colleges_url)
+      .serviceProviderForGetRequest(COLLEGE_URL, params)
       .then(res => {
         setColleges(res.data.result);
       })
@@ -273,6 +309,12 @@ const Adduser = props => {
       if (eventName === state) {
         fetchZoneRpcDistrictData();
       }
+      /** Get dependent roles */
+      if (eventName === role) {
+        let roleName = value.name;
+        clearValidations();
+        setValidationsForCollegeAdmin(roleName);
+      }
       /** This is used to remove any existing errors if present in auto complete */
       if (formState.errors.hasOwnProperty(eventName)) {
         delete formState.errors[eventName];
@@ -286,19 +328,20 @@ const Adduser = props => {
         off zone and rpc by setting their value to null 
         */
         setStateFilterValue = true;
+        clearZoneRpcCollege();
         /** 
         When state is cleared then clear rpc and zone 
         */
-        setRpcs([]);
-        setZones([]);
-        setColleges([]);
-        delete formState.values[zone];
-        delete formState.values[rpc];
-        delete formState.values[college];
       }
       if (eventName === zone || eventName === rpc) {
         setColleges([]);
         delete formState.values[college];
+      }
+      /** Clear dependent roles */
+      if (eventName === role) {
+        clearZoneRpcCollege();
+        delete formState.values[state];
+        clearValidations();
       }
       setFormState(formState => ({
         ...formState,
@@ -306,6 +349,49 @@ const Adduser = props => {
       }));
       /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
+    }
+  };
+
+  const clearZoneRpcCollege = () => {
+    setRpcs([]);
+    setZones([]);
+    setColleges([]);
+    delete formState.values[zone];
+    delete formState.values[rpc];
+    delete formState.values[college];
+  };
+
+  const clearValidations = () => {
+    UserSchema[rpc]["required"] = false;
+    UserSchema[state]["required"] = false;
+    UserSchema[zone]["required"] = false;
+    UserSchema[college]["required"] = false;
+    UserSchema[rpc]["validations"] = {};
+    UserSchema[state]["validations"] = {};
+    UserSchema[zone]["validations"] = {};
+    UserSchema[college]["validations"] = {};
+  };
+
+  const setValidationsForCollegeAdmin = roleName => {
+    if (roleName === "College Admin") {
+      UserSchema[rpc]["required"] = true;
+      UserSchema[state]["required"] = true;
+      UserSchema[zone]["required"] = true;
+      UserSchema[college]["required"] = true;
+      UserSchema[rpc]["validations"] = VALIDATIONFORRPC;
+      UserSchema[state]["validations"] = VALIDATIONFORSTATE;
+      UserSchema[zone]["validations"] = VALIDATIONFORZONE;
+      UserSchema[college]["validations"] = VALIDATIONFORCOLLEGE;
+    } else if (roleName === "RPC Admin") {
+      UserSchema[rpc]["required"] = true;
+      UserSchema[state]["required"] = true;
+      UserSchema[rpc]["validations"] = VALIDATIONFORRPC;
+      UserSchema[state]["validations"] = VALIDATIONFORSTATE;
+    } else if (roleName === "Zonal Admin") {
+      UserSchema[state]["required"] = true;
+      UserSchema[zone]["required"] = true;
+      UserSchema[state]["validations"] = VALIDATIONFORSTATE;
+      UserSchema[zone]["validations"] = VALIDATIONFORZONE;
     }
   };
 
@@ -529,7 +615,7 @@ const Adduser = props => {
                       }}
                       value={
                         roles[
-                          roles.findIndex(function(item, i) {
+                          roles.findIndex(function (item, i) {
                             return item.id === formState.values[role];
                           })
                         ] || null
@@ -581,7 +667,11 @@ const Adduser = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-adornment-password">
+                      <InputLabel
+                        htmlFor="outlined-adornment-password"
+                        fullWidth
+                        error={hasError(password)}
+                      >
                         {get(UserSchema[password], "label")}
                       </InputLabel>
                       <OutlinedInput
@@ -595,7 +685,10 @@ const Adduser = props => {
                         value={formState.values[password] || ""}
                         onChange={handleChange}
                         endAdornment={
-                          <InputAdornment position="end">
+                          <InputAdornment
+                            position="end"
+                            error={hasError(password)}
+                          >
                             <IconButton
                               aria-label="toggle password visibility"
                               onClick={handleClickShowPassword}
@@ -637,7 +730,7 @@ const Adduser = props => {
                       }}
                       value={
                         states[
-                          states.findIndex(function(item, i) {
+                          states.findIndex(function (item, i) {
                             return item.id === formState.values[state];
                           })
                         ] || null
@@ -671,7 +764,7 @@ const Adduser = props => {
                       }}
                       value={
                         zones[
-                          zones.findIndex(function(item, i) {
+                          zones.findIndex(function (item, i) {
                             return item.id === formState.values[zone];
                           })
                         ] || null
@@ -707,7 +800,7 @@ const Adduser = props => {
                       }}
                       value={
                         rpcs[
-                          rpcs.findIndex(function(item, i) {
+                          rpcs.findIndex(function (item, i) {
                             return item.id === formState.values[rpc];
                           })
                         ] || null
@@ -741,7 +834,7 @@ const Adduser = props => {
                       }}
                       value={
                         colleges[
-                          colleges.findIndex(function(item, i) {
+                          colleges.findIndex(function (item, i) {
                             return item.id === formState.values[college];
                           })
                         ] || null
@@ -788,4 +881,4 @@ const Adduser = props => {
     </Grid>
   );
 };
-export default Adduser;
+export default AddEditUser;

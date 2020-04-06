@@ -30,10 +30,6 @@ const useStyles = makeStyles(theme => ({
   btnspace: {
     padding: "20px 18px 20px"
   },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: "#fff"
-  },
   /**Css for streams section */
   btnspaceadd: {
     padding: "0px 15px 15px"
@@ -59,7 +55,11 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     top: "-8px",
     backgroundColor: "#fff"
-  }
+  },
   /**Css for streams section ends here*/
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
+  }
 }));
 export default useStyles;
