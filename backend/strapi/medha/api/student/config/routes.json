@@ -42,6 +42,14 @@
     },
     {
       "method": "GET",
+      "path": "/students/:id/activity",
+      "handler": "student.activity",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/students/:id",
       "handler": "student.findOne",
       "config": {

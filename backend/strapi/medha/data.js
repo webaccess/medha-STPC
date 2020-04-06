@@ -388,7 +388,7 @@ const roles = {
       },
       {
         name: "activity",
-        action: []
+        action: ["findone"]
       },
       {
         name: "activity-batch",
@@ -400,7 +400,7 @@ const roles = {
       },
       {
         name: "college",
-        action: ["event"]
+        action: ["event", "activity"]
       },
       {
         name: "education",
