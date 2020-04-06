@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import InputLabel from "@material-ui/core/InputLabel";
+
 import {
   Card,
   CardContent,
@@ -6,49 +8,56 @@ import {
   Divider,
   Grid,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Switch,
-  Typography
+  Typography,
+  FormHelperText
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Alert, YellowButton, GrayButton } from "../../../components";
+import {
+  YellowButton,
+  CustomDateTimePicker,
+  GrayButton
+} from "../../../components";
 import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
 import EventSchema from "../EventSchema";
 import { get } from "lodash";
-import DatePickers from "../../../components/Date/Date";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import { useHistory } from "react-router-dom";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "./RichTextFieldStyles.css";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 
 const eventName = "eventName";
 const description = "description";
 const dateFrom = "dateFrom";
 const dateTo = "dateTo";
-const timeFrom = "timeFrom";
-const timeTo = "timeTo";
 const address = "address";
+const state = "state";
 const zone = "zone";
 const rpc = "rpc";
 const college = "college";
 const stream = "stream";
 const marks = "marks";
-const age = "age";
+const qualification = "qualification";
 
 const field = "upload_logo";
 const ref = "event";
 const files = "files";
 
+const STATES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
+const QUALIFICATIONS_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
+
 const ZONES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
-const RPCS_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
-const COLLEGE_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
 const STREAM_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS;
 const EVENTS_URL =
@@ -56,11 +65,34 @@ const EVENTS_URL =
 const DOCUMENT_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD;
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium
+  };
+}
+
 const AddEditEvent = props => {
+  const [editorState, setEditorState] = React.useState(
+    EditorState.createEmpty()
+  );
   const classes = useStyles();
+  // const theme = useTheme();
   const history = useHistory();
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -68,29 +100,39 @@ const AddEditEvent = props => {
     errors: {},
     isSuccess: false,
     showPassword: false,
-    isEditUser: props["editUser"] ? props["editUser"] : false,
+    isEditEvent: props["editEvent"] ? props["editEvent"] : false,
+
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
-    files: {}
+    files: {},
+    descriptionError: false,
+    dataToShowForMultiSelect: [],
+    dataToShowForStreamMultiSelect: []
   });
 
-  console.log("eventdara", formState.values);
-
+  const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
+  const [qualifications, setQualifications] = useState([]);
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
-    console.log("data1", props["dataForEdit"]);
-
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
         formState.values[eventName] = props["dataForEdit"]["title"];
       }
       if (props["dataForEdit"]["description"]) {
         formState.values[description] = props["dataForEdit"]["description"];
+        const blocksFromHtml = htmlToDraft(props["dataForEdit"]["description"]);
+        const { contentBlocks, entityMap } = blocksFromHtml;
+        const contentState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        const editorState = EditorState.createWithContent(contentState);
+        setEditorState(editorState);
       }
       if (props["dataForEdit"]["start_date_time"]) {
         let today = new Date(props["dataForEdit"]["start_date_time"]);
@@ -101,7 +143,7 @@ const AddEditEvent = props => {
           "-" +
           today.getFullYear();
 
-        formState.values[dateFrom] = date;
+        formState.values[dateFrom] = props["dataForEdit"]["start_date_time"];
         //formState.defaultDate = date;
       }
       if (props["dataForEdit"]["end_date_time"]) {
@@ -110,25 +152,64 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["address"]) {
         formState.values[address] = props["dataForEdit"]["address"];
       }
-      if (props["dataForEdit"]["age"]) {
-        formState.values[age] = props["dataForEdit"]["age"];
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["rpc"] &&
+        props["dataForEdit"]["rpc"]["state"]
+      ) {
+        formState.values[state] = props["dataForEdit"]["rpc"]["state"];
       }
 
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
       if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["colleges"] &&
+        props["dataForEdit"]["colleges"][0] &&
+        props["dataForEdit"]["colleges"][0]["zone"]
+      ) {
+        formState.values[zone] = props["dataForEdit"]["colleges"][0]["zone"];
+      }
+      if (
         props["dataForEdit"]["colleges"] &&
         props["dataForEdit"]["colleges"].length
       ) {
-        formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
+        // formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
+        formState.dataToShowForMultiSelect = props["dataForEdit"]["colleges"];
+        let finalData = [];
+        for (let i in props["dataForEdit"]["colleges"]) {
+          finalData.push(props["dataForEdit"]["colleges"][i]["id"]);
+        }
+        formState.values[college] = finalData;
       }
       if (
         props["dataForEdit"]["streams"] &&
         props["dataForEdit"]["streams"].length
       ) {
-        console.log("stream", true);
-        formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+        // formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+        formState.dataToShowForStreamMultiSelect =
+          props["dataForEdit"]["streams"];
+        let finalDataStream = [];
+        for (let i in props["dataForEdit"]["streams"]) {
+          finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
+        }
+        formState.values[stream] = finalDataStream;
+      }
+      if (props["dataForEdit"]["marks"]) {
+        formState.values[marks] = props["dataForEdit"]["marks"];
+      }
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["qualification"] &&
+        props["dataForEdit"]["qualification"]["id"]
+      ) {
+        formState.values[qualification] =
+          props["dataForEdit"]["qualification"]["id"];
+      }
+      if (props["dataForEdit"] && props["dataForEdit"]["upload_logo"]) {
+        //  formState.values[files] = props["dataForEdit"]["upload_logo"]["name"];
+        formState.files.name = props["dataForEdit"]["upload_logo"]["hash"];
       }
     }
     formState.counter += 1;
@@ -138,33 +219,25 @@ const AddEditEvent = props => {
     let paramsForPageSize = {
       pageSize: -1
     };
-    serviceProvider
-      .serviceProviderForGetRequest(ZONES_URL, paramsForPageSize)
-      .then(res => {
-        setZones(res.data.result);
-      })
 
-      .catch(error => {
-        console.log("errorZone", error);
-      });
     serviceProvider
-      .serviceProviderForGetRequest(RPCS_URL, paramsForPageSize)
+      .serviceProviderForGetRequest(STATES_URL)
       .then(res => {
-        setRpcs(res.data.result);
+        setStates(res.data.result);
       })
-
       .catch(error => {
-        console.log("errorRPc", error);
+        console.log("error", error);
       });
+
     serviceProvider
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForPageSize)
+      .serviceProviderForGetRequest(QUALIFICATIONS_URL)
       .then(res => {
-        setColleges(res.data.result);
+        setQualifications(res.data);
       })
-
       .catch(error => {
-        console.log("errorcollege", error);
+        console.log("errorQualifications", error);
       });
+
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
       .then(res => {
@@ -175,6 +248,80 @@ const AddEditEvent = props => {
         console.log("errorstream", error);
       });
   }, []);
+
+  /** This gets data into zones, rpcs and districts when we change the state */
+  useEffect(() => {
+    if (formState.values[state]) {
+      fetchZoneRpcDistrictData();
+    }
+    if (formState.values[zone] && formState.values[rpc]) {
+      fetchCollegeData();
+    }
+    return () => {};
+  }, [formState.values]);
+
+  /** Common function to get zones, rpcs after changing state */
+  async function fetchZoneRpcDistrictData() {
+    let zones_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiApiConstants.STRAPI_ZONES;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(zones_url)
+      .then(res => {
+        setZones(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let rpcs_url =
+      STATES_URL +
+      "/" +
+      formState.values[state] +
+      "/" +
+      strapiApiConstants.STRAPI_RPCS;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(rpcs_url)
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setRpcs(res.data[0].result);
+        } else {
+          setRpcs(res.data.result);
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+
+    let params = {
+      pageSize: -1,
+      "state.id": formState.values[state]
+    };
+  }
+
+  /** Common function to get colleges after changing zone & rpc */
+  async function fetchCollegeData() {
+    let colleges_url =
+      ZONES_URL +
+      "/" +
+      formState.values[zone] +
+      "/" +
+      strapiApiConstants.STRAPI_COLLEGES;
+
+    await serviceProvider
+      .serviceProviderForGetRequest(colleges_url)
+      .then(res => {
+        setColleges(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  }
 
   const hasError = field => (formState.errors[field] ? true : false);
   const handleChange = e => {
@@ -238,7 +385,27 @@ const AddEditEvent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, EventSchema);
     }
-    if (isValid) {
+    formState.descriptionError = false;
+    if (
+      convertToRaw(editorState.getCurrentContent()).blocks &&
+      convertToRaw(editorState.getCurrentContent()).blocks.length
+    ) {
+      let arrayToCheckIn = convertToRaw(editorState.getCurrentContent()).blocks;
+      let validationCounter = 0;
+      for (let i in arrayToCheckIn) {
+        if (
+          arrayToCheckIn[i]["text"] &&
+          arrayToCheckIn[i]["text"].trim().length !== 0
+        ) {
+          validationCounter += 1;
+          break;
+        }
+      }
+      if (validationCounter === 0) {
+        formState.descriptionError = true;
+      }
+    }
+    if (isValid && !formState.descriptionError) {
       /** CALL POST FUNCTION */
       postEventData();
       /** Call axios from here */
@@ -257,25 +424,60 @@ const AddEditEvent = props => {
   const postEventData = () => {
     let postData = databaseUtilities.addEvent(
       formState.values[eventName],
-      formState.values[description],
+      draftToHtml(convertToRaw(editorState.getCurrentContent())),
       formState.values[dateFrom],
       formState.values[dateTo],
       formState.values[address],
       formState.values[marks],
-      formState.values[age],
+      formState.values[qualification] ? formState.values[qualification] : null,
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null
     );
-    serviceProvider
-      .serviceProviderForPostRequest(EVENTS_URL, postData)
-      .then(res => {
-        postImage(res.data.id);
-      })
-      .catch(error => {
-        console.log("posterror", error);
-      });
+    if (formState.isEditEvent) {
+      serviceProvider
+        .serviceProviderForPutRequest(
+          EVENTS_URL,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          if (formState.files.name) {
+            postImage(res.data.id);
+          } else {
+            history.push({
+              pathname: routeConstants.MANAGE_EVENT,
+              fromAddEvent: true,
+              isDataAdded: true,
+              addResponseMessage: "",
+              addedData: {}
+            });
+          }
+        })
+        .catch(error => {
+          console.log("puterror", error);
+        });
+    } else {
+      serviceProvider
+        .serviceProviderForPostRequest(EVENTS_URL, postData)
+        .then(res => {
+          if (formState.files.name) {
+            postImage(res.data.id);
+          } else {
+            history.push({
+              pathname: routeConstants.MANAGE_EVENT,
+              fromAddEvent: true,
+              isDataAdded: true,
+              addResponseMessage: "",
+              addedData: {}
+            });
+          }
+        })
+        .catch(error => {
+          console.log("posterror", error);
+        });
+    }
   };
 
   const postImage = id => {
@@ -327,7 +529,7 @@ const AddEditEvent = props => {
       ...formState,
       values: {
         ...formState.values,
-        [datefrom]: event.target.value
+        [datefrom]: event
       },
       touched: {
         ...formState.touched,
@@ -335,6 +537,35 @@ const AddEditEvent = props => {
       },
       isStateClearFilter: false
     }));
+  };
+
+  const handleMultiSelectChange = (eventName, event, value) => {
+    if (eventName === college) {
+      formState.dataToShowForMultiSelect = value;
+    }
+    if (eventName === stream) {
+      formState.dataToShowForStreamMultiSelect = value;
+    }
+    let multiarray = [];
+    for (var i = 0; i < value.length; i++) {
+      multiarray.push(value[i].id);
+    }
+    if (value !== null) {
+      setFormState(formState => ({
+        ...formState,
+        values: {
+          ...formState.values,
+          [eventName]: multiarray
+        },
+        touched: {
+          ...formState.touched,
+          [eventName]: true
+        },
+        isStateClearFilter: false
+      }));
+    } else {
+      delete formState.values[eventName];
+    }
   };
 
   return (
@@ -372,89 +603,77 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                 </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={12} xs={12}>
-                    <TextField
-                      label={get(EventSchema[description], "label")}
-                      id={get(EventSchema[description], "id")}
-                      name={description}
-                      placeholder={get(EventSchema[description], "placeholder")}
-                      value={formState.values[description] || ""}
-                      error={hasError(description)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      multiline
-                      onChange={handleChange}
-                      helperText={
-                        hasError(description)
-                          ? formState.errors[description].map(error => {
-                              return error + " ";
-                            })
-                          : null
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12} className={"descriptionBox"}>
+                    <Grid
+                      className={
+                        formState.descriptionError
+                          ? classes.streamcardError
+                          : classes.streamcard
                       }
-                    />
+                    >
+                      <Card className={classes.streamoffer}>
+                        <InputLabel
+                          htmlFor="outlined-stream-card"
+                          fullwidth={true.toString()}
+                          error={formState.descriptionError}
+                        >
+                          {genericConstants.DESCRIPTION}
+                        </InputLabel>
+                        <div className="rdw-root">
+                          <Editor
+                            editorState={editorState}
+                            toolbarClassName="rdw-toolbar"
+                            wrapperClassName="rdw-wrapper"
+                            editorClassName="rdw-editor"
+                            onEditorStateChange={data => {
+                              formState.descriptionError = false;
+                              setEditorState(data);
+                            }}
+                          />
+                        </div>
+                        {formState.descriptionError ? (
+                          <FormHelperText error={true}>
+                            Description is required
+                          </FormHelperText>
+                        ) : null}
+                      </Card>
+                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
-                    <DatePickers
+                    <CustomDateTimePicker
                       onChange={event => {
                         handleDateChange(dateFrom, event);
                       }}
+                      value={formState.values[dateFrom]}
                       name={dateFrom}
-                      label="Start Date"
+                      label={get(EventSchema[dateFrom], "label")}
                       fullWidth
+                      error={hasError(dateFrom)}
+                      helperText={
+                        hasError(dateFrom)
+                          ? formState.errors[dateFrom].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <DatePickers
+                    <CustomDateTimePicker
                       onChange={event => {
                         handleDateChange(dateTo, event);
                       }}
+                      value={formState.values[dateTo]}
                       name={dateTo}
-                      label="End Date"
+                      label={get(EventSchema[dateTo], "label")}
                       fullWidth
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      label={get(EventSchema[timeFrom], "label")}
-                      id={get(EventSchema[timeFrom], "id")}
-                      name={timeFrom}
-                      placeholder={get(EventSchema[timeFrom], "placeholder")}
-                      value={formState.values[timeFrom] || ""}
-                      error={hasError(timeFrom)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
+                      error={hasError(dateTo)}
                       helperText={
-                        hasError(timeFrom)
-                          ? formState.errors[timeFrom].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      label={get(EventSchema[timeTo], "label")}
-                      id={get(EventSchema[timeTo], "id")}
-                      name={timeTo}
-                      placeholder={get(EventSchema[timeTo], "placeholder")}
-                      value={formState.values[timeTo] || ""}
-                      error={hasError(timeTo)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      helperText={
-                        hasError(timeTo)
-                          ? formState.errors[timeTo].map(error => {
+                        hasError(dateTo)
+                          ? formState.errors[dateTo].map(error => {
                               return error + " ";
                             })
                           : null
@@ -462,6 +681,7 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                 </Grid>
+
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <TextField
@@ -487,7 +707,40 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}></Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={states}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(state, event, value);
+                      }}
+                      value={
+                        states[
+                          states.findIndex(function(item, i) {
+                            return item.id === formState.values[state];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[state], "label")}
+                          variant="outlined"
+                          placeholder={get(EventSchema[state], "placeholder")}
+                          error={hasError(state)}
+                          helperText={
+                            hasError(state)
+                              ? formState.errors[state].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id="combo-box-demo"
@@ -561,26 +814,19 @@ const AddEditEvent = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
+                      id={get(EventSchema[college], "id")}
+                      multiple
                       options={colleges}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
-                        handleChangeAutoComplete(college, event, value);
+                        handleMultiSelectChange(college, event, value);
                       }}
-                      value={
-                        colleges[
-                          colleges.findIndex(function(item, i) {
-                            return item.id === formState.values[college];
-                          })
-                        ] || null
-                      }
+                      filterSelectedOptions
+                      name={college}
+                      value={formState.dataToShowForMultiSelect || null}
                       renderInput={params => (
                         <TextField
                           {...params}
-                          label={get(EventSchema[college], "label")}
-                          variant="outlined"
-                          placeholder={get(EventSchema[college], "placeholder")}
                           error={hasError(college)}
                           helperText={
                             hasError(college)
@@ -589,6 +835,12 @@ const AddEditEvent = props => {
                                 })
                               : null
                           }
+                          placeholder={get(EventSchema[college], "placeholder")}
+                          value={option => option.id}
+                          name={college}
+                          key={option => option.id}
+                          label={get(EventSchema[college], "label")}
+                          variant="outlined"
                         />
                       )}
                     />
@@ -600,26 +852,19 @@ const AddEditEvent = props => {
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
+                      id={get(EventSchema[stream], "id")}
+                      multiple
                       options={streams}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
-                        handleChangeAutoComplete(stream, event, value);
+                        handleMultiSelectChange(stream, event, value);
                       }}
-                      value={
-                        streams[
-                          streams.findIndex(function(item, i) {
-                            return item.id === formState.values[stream];
-                          })
-                        ] || null
-                      }
+                      filterSelectedOptions
+                      name={stream}
+                      value={formState.dataToShowForStreamMultiSelect || null}
                       renderInput={params => (
                         <TextField
                           {...params}
-                          label={get(EventSchema[stream], "label")}
-                          placeholder={get(EventSchema[stream], "placeholder")}
-                          variant="outlined"
                           error={hasError(stream)}
                           helperText={
                             hasError(stream)
@@ -628,6 +873,12 @@ const AddEditEvent = props => {
                                 })
                               : null
                           }
+                          placeholder={get(EventSchema[stream], "placeholder")}
+                          value={option => option.id}
+                          name={stream}
+                          key={option => option.id}
+                          label={get(EventSchema[stream], "label")}
+                          variant="outlined"
                         />
                       )}
                     />
@@ -655,8 +906,47 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}></Grid>
-                  <Grid item md={6} xs={12}></Grid>
+                  <Grid item md={12} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={qualifications}
+                      placeholder={get(
+                        EventSchema[qualification],
+                        "placeholder"
+                      )}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(qualification, event, value);
+                      }}
+                      value={
+                        qualifications[
+                          qualifications.findIndex(function(item, i) {
+                            return item.id === formState.values[qualification];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[qualification], "label")}
+                          variant="outlined"
+                          placeholder={get(
+                            EventSchema[qualification],
+                            "placeholder"
+                          )}
+                          error={hasError(qualification)}
+                          helperText={
+                            hasError(qualification)
+                              ? formState.errors[qualification].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />
@@ -672,6 +962,7 @@ const AddEditEvent = props => {
                       type={get(EventSchema[files], "type")}
                       value={formState.values[files] || ""}
                       error={hasError(files)}
+                      inputProps={{ accept: "image/*" }}
                       helperText={
                         hasError(files)
                           ? formState.errors[files].map(error => {

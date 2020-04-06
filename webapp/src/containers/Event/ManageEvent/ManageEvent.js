@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import moment from "moment";
 import {
   TextField,
   Card,
@@ -15,8 +14,16 @@ import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import useStyles from "./ManageEventStyles";
-import { GrayButton, YellowButton, GreenButton } from "../../../components";
+import useStyles from "../../ContainerStyles/ManagePageStyles";
+import {
+  GrayButton,
+  YellowButton,
+  GreenButton,
+  ViewGridIcon,
+  EditGridIcon,
+  ViewStudentGridIcon,
+  DeleteGridIcon
+} from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DatePickers from "../../../components/Date/Date";
@@ -147,7 +154,7 @@ const ViewEvents = props => {
         var eventIndividualData = {};
         let startDate = new Date(data[i]["start_date_time"]);
         eventIndividualData["id"] = data[i]["id"];
-        eventIndividualData["title"] = data[i]["title"];
+        eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["start_date_time"] = startDate.toDateString();
         x.push(eventIndividualData);
       }
@@ -229,12 +236,20 @@ const ViewEvents = props => {
     setSelectedRows(state.selectedRows);
   }, []);
 
-  const handleFilterChange = event => {
-    formState.filterDataParameters[event.target.name] = event.target.value;
-    setFormState(formState => ({
-      ...formState,
-      texttvalue: event.target.value
-    }));
+  const handleFilterChange = (event, value) => {
+    if (value != null) {
+      formState.filterDataParameters[event.target.name] = event.target.value;
+      setFormState(formState => ({
+        ...formState,
+        texttvalue: event.target.value
+      }));
+    } else {
+      formState.filterDataParameters[event.target.name] = event.target.value;
+      setFormState(formState => ({
+        ...formState,
+        texttvalue: null
+      }));
+    }
   };
 
   const handleStartDateChange = date => {
@@ -328,6 +343,14 @@ const ViewEvents = props => {
     });
   };
 
+  /** View Student List */
+  const viewStudentList = event => {
+    history.push({
+      pathname: routeConstants.EVENT_STUDENT_LIST,
+      eventIdStudent: event.target.id
+    });
+  };
+
   /** Edit -------------------------------------------------------*/
   const getDataForEdit = async id => {
     let paramsForUsers = {
@@ -340,7 +363,7 @@ const ViewEvents = props => {
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_EVENT,
-          editUser: true,
+          editEvent: true,
           dataForEdit: editData
         });
       })
@@ -360,85 +383,36 @@ const ViewEvents = props => {
     { name: "Event", sortable: true, selector: "title" },
     { name: "Date", sortable: true, selector: "start_date_time" },
     {
+      name: "Actions",
       cell: cell => (
-        <Tooltip title="View" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={viewCell}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            view_list
-          </i>
-        </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <ViewStudentGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={viewStudentList}
+            />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={deleteCell}
+            />
+          </div>
+        </div>
       ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Edit" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={editCell}
-            style={{ color: "green" }}
-          >
-            edit
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="View Student List" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            style={{ color: "blue" }}
-            // onClick={blockedCell}
-          >
-            group
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: [
-        {
-          when: row => row.blocked === true,
-          style: {
-            color: "red"
-          }
-        },
-        {
-          when: row => row.blocked === false,
-          style: {
-            color: "green"
-          }
-        }
-      ]
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Delete" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.title}
-            onClick={deleteCell}
-            style={{ color: "red" }}
-          >
-            delete_outline
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
     }
   ];
 
@@ -525,7 +499,8 @@ const ViewEvents = props => {
                   variant="outlined"
                   name={EVENT_FILTER}
                   value={formState.texttvalue}
-                  onChange={handleFilterChange}
+                  //onChange={handleFilterChange}
+                  onChange={(event, value) => handleFilterChange(event, value)}
                 />
               </Grid>
               <Grid item>
@@ -536,7 +511,7 @@ const ViewEvents = props => {
                   value={formState.startDate}
                   name={START_DATE_FILTER}
                   onChange={handleStartDateChange}
-                  onBlur={focousOut}
+                  //onBlur={focousOut}
                 />
               </Grid>
               <Grid item>
@@ -547,7 +522,7 @@ const ViewEvents = props => {
                   value={formState.endDate}
                   name={END_DATE_FILTER}
                   onChange={handleEndDateChange}
-                  onBlur={focousOut}
+                  // onBlur={focousOut}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>

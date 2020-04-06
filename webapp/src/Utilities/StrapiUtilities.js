@@ -99,6 +99,12 @@ export const setCollege = id => {
   };
 };
 
+export const setQualification = id => {
+  return {
+    id: id
+  };
+};
+
 /**  Adders */
 export const addRpc = (name, state = null, main_college = null) => {
   return {
@@ -119,7 +125,8 @@ export const addCollege = (
   rpc = null,
   zone = null,
   district = null,
-  stream_strength = []
+  stream_strength = [],
+  tpos = []
 ) => {
   return {
     name: name,
@@ -132,7 +139,8 @@ export const addCollege = (
     rpc: rpc,
     zone: zone,
     district: district,
-    stream_strength: stream_strength
+    stream_strength: stream_strength,
+    tpos: tpos
   };
 };
 export const addEvent = (
@@ -142,7 +150,7 @@ export const addEvent = (
   end_date_time,
   address,
   marks,
-  age,
+  qualification = null,
   zone = null,
   rpc = null,
   colleges = null,
@@ -155,7 +163,7 @@ export const addEvent = (
     end_date_time: end_date_time,
     address: address,
     marks: marks,
-    age: age,
+    qualification: qualification,
     zone: zone,
     rpc: rpc,
     colleges: colleges,
@@ -343,5 +351,12 @@ export const addActivityBatch = (name, students) => {
   return {
     name,
     students
+  };
+};
+
+export const studentEventRegistration = (event, student) => {
+  return {
+    event: event,
+    student: student
   };
 };

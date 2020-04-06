@@ -1,5 +1,20 @@
 import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300
+  },
+  chips: {
+    display: "flex",
+    flexWrap: "wrap"
+  },
+  chip: {
+    margin: 2
+  },
+  noLabel: {
+    marginTop: theme.spacing(3)
+  },
   root: {
     maxWidth: "100%"
   },
@@ -24,7 +39,17 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid #ccc",
     borderRadius: "5px",
     padding: "15px !important",
-    margin: "15px",
+    position: "relative",
+    "& label": {
+      position: "absolute",
+      top: "-8px",
+      backgroundColor: "#fff"
+    }
+  },
+  streamcardError: {
+    border: "1px solid red",
+    borderRadius: "5px",
+    padding: "15px !important",
     position: "relative",
     "& label": {
       position: "absolute",
@@ -57,6 +82,10 @@ const useStyles = makeStyles(theme => ({
   },
   MarginBottom: {
     marginBottom: "10px"
+  },
+  toolbarMargin: {
+    marginTop: theme.spacing(2),
+    border: "1px solid"
   }
 }));
 export default useStyles;

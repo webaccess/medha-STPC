@@ -18,11 +18,21 @@ const UserSchema = {
     label: "Password",
     id: "password",
     autoComplete: "password",
-    required: false,
+    required: true,
     placeholder: "Password",
     autoFocus: true,
     type: "password",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "password is required"
+      },
+      validatePasswordRegex: {
+        value: "true",
+        message:
+          "Password must contain numbers and letters and should be atleast 6 characters long"
+      }
+    }
   },
   firstname: {
     label: "First Name",
@@ -74,17 +84,21 @@ const UserSchema = {
     }
   },
   contact: {
-    label: "Contact",
-    id: "contact",
-    autoComplete: "contact",
+    label: "Contact Number",
+    id: "contact_number",
+    autoComplete: "Contact Number",
     required: true,
-    placeholder: "Contact",
+    placeholder: "Contact Number",
     autoFocus: true,
     type: "integer",
     validations: {
       required: {
         value: "true",
-        message: "User Name is required"
+        message: "Contact number is required"
+      },
+      validateMobileNumber: {
+        value: 10,
+        message: "Please enter a valid contact number"
       }
     }
   },

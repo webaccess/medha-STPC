@@ -20,6 +20,16 @@ const Table = props => {
   const allowSelectable =
     props.selectableRows === undefined ? true : props.selectableRows;
 
+  const customStyles = {
+    headCells: {
+      style: {
+        backgroundColor: "#EEEEEE",
+        fontWeight: 700,
+        fontSize: "13px"
+      }
+    }
+  };
+
   return (
     <>
       <DataTable
@@ -47,6 +57,7 @@ const Table = props => {
         conditionalRowStyles={props.conditionalRowStyles}
         progressComponent={<Spinner />}
         clearSelectedRows={props.clearSelectedRows || false}
+        customStyles={customStyles}
       />
     </>
   );

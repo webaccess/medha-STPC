@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import useStyles from "./AddEditCollegeStyles";
+import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import CollegeFormSchema from "../CollegeFormSchema";
@@ -12,7 +12,6 @@ import * as serviceProviders from "../../../api/Axios";
 import { YellowButton, GrayButton } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
-import DynamicBar from "../../../components/DynamicBar/DynamicBar";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import { Auth as auth } from "../../../components";
 
@@ -28,7 +27,9 @@ import {
   CircularProgress,
   FormGroup,
   FormControlLabel,
-  Switch
+  Switch,
+  Backdrop,
+  Chip
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
@@ -41,7 +42,7 @@ const rpc = "rpc";
 const contactNumber = "contactNumber";
 const collegeEmail = "collegeEmail";
 const principal = "principal";
-const admins = "admins";
+const tpos = "tpos";
 const district = "district";
 const block = "block";
 
@@ -75,9 +76,9 @@ const AddEditCollege = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     isStateClearFilter: false,
-    showing: false
+    showing: false,
+    dataToShowForMultiSelect: []
   });
-  console.log("collegeFieldValues", formState.values);
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
   const [states, setStates] = useState([]);
@@ -88,6 +89,7 @@ const AddEditCollege = props => {
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
+  const [backDropOpen, setBackDropOpen] = React.useState(false);
 
   React.useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
@@ -107,7 +109,6 @@ const AddEditCollege = props => {
 
   /** Part for editing college */
   if (formState.isEditCollege && !formState.counter) {
-    console.log("collegeform", props["dataForEdit"]);
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["name"]) {
         formState.values[collegeName] = props["dataForEdit"]["name"];
@@ -162,6 +163,17 @@ const AddEditCollege = props => {
           dynamicBar.push(tempDynamicBarrValue);
         }
         formState.dynamicBar = dynamicBar;
+      }
+      if (
+        props["dataForEdit"]["tpos"] &&
+        props["dataForEdit"]["tpos"].length !== 0
+      ) {
+        formState.dataToShowForMultiSelect = props["dataForEdit"]["tpos"];
+        let finalData = [];
+        for (let i in props["dataForEdit"]["tpos"]) {
+          finalData.push(props["dataForEdit"]["tpos"][i]["id"]);
+        }
+        formState.values[tpos] = finalData;
       }
       formState.counter += 1;
     }
@@ -276,7 +288,6 @@ const AddEditCollege = props => {
         .serviceProviderForGetRequest(DISTRICTS_URL, params)
         .then(res => {
           setDistricts(res.data.result);
-          console.log(res.data.result, params);
         })
         .catch(error => {
           console.log("error", error);
@@ -307,6 +318,18 @@ const AddEditCollege = props => {
   /** Handle change for autocomplete fields */
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
+    if (eventName === tpos) {
+      formState.dataToShowForMultiSelect = value;
+    }
+    if (get(CollegeFormSchema[eventName], "type") === "multi-select") {
+      let finalValues = [];
+      for (let i in value) {
+        finalValues.push(value[i]["id"]);
+      }
+      value = {
+        id: finalValues
+      };
+    }
     if (value !== null) {
       setFormState(formState => ({
         ...formState,
@@ -579,8 +602,10 @@ const AddEditCollege = props => {
       formState.values[rpc] ? formState.values[rpc] : null,
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[district] ? formState.values[district] : null,
-      streamStrengthArray
+      streamStrengthArray,
+      formState.values[tpos] ? formState.values[tpos] : []
     );
+    setBackDropOpen(true);
     if (formState.isEditCollege) {
       serviceProviders
         .serviceProviderForPutRequest(
@@ -590,43 +615,47 @@ const AddEditCollege = props => {
         )
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
             isDataEdited: true,
             editResponseMessage: "",
             editedData: {}
           });
+          setBackDropOpen(false);
         })
         .catch(error => {
           console.log(error.response);
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
             isDataEdited: false,
             editResponseMessage: "",
             editedData: {}
           });
+          setBackDropOpen(false);
         });
     } else {
       serviceProviders
         .serviceProviderForPostRequest(COLLEGES_URL, postData)
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromAddCollege: true,
             isDataAdded: true,
             addResponseMessage: "",
             addedData: {}
           });
+          setBackDropOpen(false);
         })
         .catch(error => {
           history.push({
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             fromAddCollege: true,
             isDataAdded: false,
             addResponseMessage: "",
             addedData: {}
           });
+          setBackDropOpen(false);
         });
     }
   };
@@ -634,11 +663,11 @@ const AddEditCollege = props => {
   const clickedCancelButton = () => {
     if (auth.getUserInfo().role.name === "Medha Admin") {
       history.push({
-        pathname: routeConstants.VIEW_COLLEGE
+        pathname: routeConstants.MANAGE_COLLEGE
       });
     } else if (auth.getUserInfo().role.name === "College Admin") {
       history.push({
-        pathname: routeConstants.DETAIL_COLLEGE
+        pathname: routeConstants.VIEW_COLLEGE
       });
     }
   };
@@ -1062,38 +1091,37 @@ const AddEditCollege = props => {
                     fullWidth
                     className={classes.formControl}
                   >
-                    <InputLabel ref={inputLabel} id="admins-label">
+                    <InputLabel ref={inputLabel} id="tpos-label">
                       {/* TPO */}
                     </InputLabel>
                     {user.length ? (
                       <Autocomplete
-                        id={get(CollegeFormSchema[admins], "id")}
+                        id={get(CollegeFormSchema[tpos], "id")}
                         multiple
                         options={user}
                         getOptionLabel={option => option.username}
                         onChange={(event, value) => {
-                          handleChangeAutoComplete(admins, event, value);
+                          handleChangeAutoComplete(tpos, event, value);
                         }}
-                        name={admins}
+                        name={tpos}
+                        filterSelectedOptions
+                        value={formState.dataToShowForMultiSelect || null}
                         renderInput={params => (
                           <TextField
                             {...params}
-                            error={hasError(admins)}
+                            error={hasError(tpos)}
                             helperText={
-                              hasError(admins)
-                                ? formState.errors[admins].map(error => {
+                              hasError(tpos)
+                                ? formState.errors[tpos].map(error => {
                                     return error + " ";
                                   })
                                 : null
                             }
                             placeholder={get(
-                              CollegeFormSchema[admins],
+                              CollegeFormSchema[tpos],
                               "placeholder"
                             )}
-                            value={option => option.id}
-                            name={principal}
-                            key={option => option.id}
-                            label={get(CollegeFormSchema[admins], "label")}
+                            label={get(CollegeFormSchema[tpos], "label")}
                             variant="outlined"
                           />
                         )}
@@ -1110,9 +1138,9 @@ const AddEditCollege = props => {
                         control={
                           <Switch
                             name={block}
-                            checked={formState.values[block]}
+                            checked={formState.values[block] || false}
                             onChange={handleChange}
-                            value={formState.values[block]}
+                            value={formState.values[block] || false}
                             error={hasError(block).toString()}
                             helpertext={
                               hasError(block)
@@ -1123,7 +1151,9 @@ const AddEditCollege = props => {
                             }
                           />
                         }
-                        label={get(CollegeFormSchema[block], "label")}
+                        label={
+                          formState.values[block] === true ? "Unblock" : "Block"
+                        }
                       />
                     </FormGroup>
                   </div>
@@ -1318,13 +1348,15 @@ const AddEditCollege = props => {
                 color="primary"
                 variant="contained"
                 onClick={clickedCancelButton}
-                // to={routeConstants.VIEW_COLLEGE}
                 className={classes.resetbtn}
               >
                 {genericConstants.CANCEL_BUTTON_TEXT}
               </GrayButton>
             </CardActions>
           </Grid>
+          <Backdrop className={classes.backdrop} open={backDropOpen}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </Card>
       </Grid>
     </Grid>

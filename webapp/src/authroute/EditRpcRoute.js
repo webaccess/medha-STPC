@@ -20,7 +20,7 @@ const EditRpcRoute = props => {
       return (
         <Redirect
           to={{
-            pathname: routeConstants.VIEW_RPC,
+            pathname: routeConstants.MANAGE_RPC,
             state: { from: props.location }
           }}
         />

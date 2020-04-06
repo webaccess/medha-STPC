@@ -3,12 +3,12 @@ import UserSchema from "../UserSchema";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "../UserStyles";
+import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { Alert, YellowButton, GrayButton } from "../../../components";
+import { YellowButton, GrayButton } from "../../../components";
 import {
   InputAdornment,
   IconButton,
@@ -28,9 +28,6 @@ import {
   Divider,
   Grid,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Switch,
   Typography
 } from "@material-ui/core";
 
@@ -50,8 +47,6 @@ const active = "active";
 const Adduser = props => {
   const classes = useStyles();
   const history = useHistory();
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -376,7 +371,7 @@ const Adduser = props => {
         )
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_USER,
+            pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
             isDataEdited: true,
             editResponseMessage: "",
@@ -385,7 +380,7 @@ const Adduser = props => {
         })
         .catch(error => {
           history.push({
-            pathname: routeConstants.VIEW_USER,
+            pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
             isDataEdited: false,
             editResponseMessage: "",
@@ -397,7 +392,7 @@ const Adduser = props => {
         .serviceProviderForPostRequest(USERS_URL, postData)
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_USER,
+            pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: true,
             addResponseMessage: "",
@@ -406,7 +401,7 @@ const Adduser = props => {
         })
         .catch(error => {
           history.push({
-            pathname: routeConstants.VIEW_USER,
+            pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: false,
             addResponseMessage: "",
@@ -781,7 +776,7 @@ const Adduser = props => {
                   type="submit"
                   color="primary"
                   variant="contained"
-                  to={routeConstants.VIEW_USER}
+                  to={routeConstants.MANAGE_USER}
                 >
                   {genericConstants.CANCEL_BUTTON_TEXT}
                 </GrayButton>

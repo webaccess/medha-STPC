@@ -3,19 +3,18 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Modal,
+  Backdrop,
+  Fade
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
-import useStyles from "./DeleteCollegeStyles";
+import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 
 const COLLEGE_URL =
@@ -214,7 +213,7 @@ const BlockUnblockCollege = props => {
                   <Grid
                     container
                     direction="row"
-                    justify="center"
+                    justify="flex-end"
                     alignItems="center"
                     spacing={2}
                   >

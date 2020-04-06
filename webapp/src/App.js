@@ -16,17 +16,18 @@ import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
 
 import Dashboard from "./containers/Dashboard/Dashboard";
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
-import ViewCollege from "./containers/College/ManageCollege/ManageCollege";
+import ManageCollege from "./containers/College/ManageCollege/ManageCollege";
 import AddUser from "./containers/User/AddEditUser/AddEditUser";
-import ViewUsers from "./containers/User/ViewUser/ViewUser";
+import ManageUser from "./containers/User/ManageUser/ManageUser";
 import AddEditRpc from "./containers/RPC/AddEditRpc/AddEditRpc";
-import ViewRpc from "./containers/RPC/ViewRpc/ViewRpc";
+import ManageRpc from "./containers/RPC/ManageRpc/ManageRpc";
 import AddEditState from "./containers/State/AddEditState/AddEditState";
-import ViewStates from "./containers/State/ViewState/ViewState";
+import ManageState from "./containers/State/ManageState/ManageState";
 import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
-import ViewZone from "./containers/Zone/ViewZone/ViewZone";
+import ManageZone from "./containers/Zone/ManageZone/ManageZone";
 import ViewEvents from "./containers/Event/ManageEvent/ManageEvent";
 import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
+import StudentList from "./containers/Event/ManageEvent/EventStudentList";
 import Layout from "./hoc/Layout/Layout";
 
 import { ThemeProvider } from "@material-ui/styles";
@@ -42,7 +43,7 @@ import EditStateRoute from "./authroute/EditStateRoute";
 import EditZoneRoute from "./authroute/EditZoneRoute";
 import EditRpcRoute from "./authroute/EditRpcRoute";
 import EditUserRoute from "./authroute/EditUserRoute";
-import DisplayCollegeDetails from "./containers/College/ManageCollege/DisplayCollegeDetails";
+import ViewCollege from "./containers/College/ManageCollege/ViewCollege";
 import StudentProfile from "./containers/Student/StudentProfile";
 import ViewEducation from "./containers/Student/Education/ViewEducation";
 import AddEducation from "./containers/Student/Education/AddEditEducation";
@@ -50,14 +51,15 @@ import EditEducation from "./authroute/EditEducationRoute";
 import ViewDocument from "./containers/Student/Document/ViewDocument";
 import AddDocument from "./containers/Student/Document/AddEditDocument";
 import SetIndexContext from "./context/SetIndexContext";
-import DisplayUserDetails from "./containers/User/ViewUser/DisplayUserDetails";
+import ViewUser from "./containers/User/ManageUser/ViewUser";
 import ManageStudents from "./containers/Student/ManageStudents";
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
-import EventDetails from "./containers/Event/ManageEvent/EventDetails";
+import ViewEvent from "./containers/Event/ViewEvent/ViewEvent";
 import EditEventRoute from "./authroute/EditEventRoutes";
-import EligibleEvents from "./containers/Event/ManageEvent/EligibleEvents";
+import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
+
 import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
@@ -242,10 +244,10 @@ function App() {
               />
               {/** View User */}
               <RouteWithLayout
-                component={ViewUsers}
+                component={ManageUser}
                 exact
                 layout={Layout}
-                path={routeConstants.VIEW_USER}
+                path={routeConstants.MANAGE_USER}
               />
               {/** Edit User Route*/}
               <RouteWithLayout
@@ -256,7 +258,7 @@ function App() {
               />
               {/** View User Data*/}
               <RouteWithLayout
-                component={DisplayUserDetails}
+                component={ViewUser}
                 exact
                 layout={Layout}
                 path={routeConstants.DETAIL_USER}
@@ -277,10 +279,10 @@ function App() {
                 path={routeConstants.EDIT_STATE}
               />
               <RouteWithLayout
-                component={ViewStates}
+                component={ManageState}
                 exact
                 layout={Layout}
-                path={routeConstants.VIEW_STATES}
+                path={routeConstants.MANAGE_STATES}
               />
               {/** Rpc */}
               <RouteWithLayout
@@ -290,10 +292,10 @@ function App() {
                 path={routeConstants.ADD_RPC}
               />
               <RouteWithLayout
-                component={ViewRpc}
+                component={ManageRpc}
                 exact
                 layout={Layout}
-                path={routeConstants.VIEW_RPC}
+                path={routeConstants.MANAGE_RPC}
               />
               <RouteWithLayout
                 component={EditRpcRoute}
@@ -310,10 +312,10 @@ function App() {
                 path={routeConstants.ADD_ZONES}
               />
               <RouteWithLayout
-                component={ViewZone}
+                component={ManageZone}
                 exact
                 layout={Layout}
-                path={routeConstants.VIEW_ZONES}
+                path={routeConstants.MANAGE_ZONES}
               />
               <RouteWithLayout
                 component={EditZoneRoute}
@@ -325,10 +327,10 @@ function App() {
               {/** College */}
               {/** Add College */}
               <RouteWithLayout
-                component={DisplayCollegeDetails}
+                component={ViewCollege}
                 exact
                 layout={Layout}
-                path={routeConstants.DETAIL_COLLEGE}
+                path={routeConstants.VIEW_COLLEGE}
               />
               <RouteWithLayout
                 component={AddEditCollege}
@@ -345,10 +347,10 @@ function App() {
               />
               {/** View College */}
               <RouteWithLayout
-                component={ViewCollege}
+                component={ManageCollege}
                 exact
                 layout={Layout}
-                path={routeConstants.VIEW_COLLEGE}
+                path={routeConstants.MANAGE_COLLEGE}
               />
               {/** Manage Student */}
               <RouteWithLayout
@@ -365,7 +367,7 @@ function App() {
                 path={routeConstants.MANAGE_EVENT}
               />
               <RouteWithLayout
-                component={EventDetails}
+                component={ViewEvent}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_EVENT}
@@ -412,6 +414,13 @@ function App() {
                 path={routeConstants.ADD_ACTIVITY_BATCH}
               />
 
+              {/** Event Student List Route */}
+              <RouteWithLayout
+                component={StudentList}
+                exact
+                layout={Layout}
+                path={routeConstants.EVENT_STUDENT_LIST}
+              />
               <Route path="*" component={NotFoundPage} />
             </Switch>
           </div>

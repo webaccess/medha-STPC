@@ -3,15 +3,15 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Backdrop,
+  Fade,
+  Modal
 } from "@material-ui/core";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
-import Modal from "@material-ui/core/Modal";
 import CloseIcon from "@material-ui/icons/Close";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import useStyles from "./DeleteCollegeStyles";
+import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
