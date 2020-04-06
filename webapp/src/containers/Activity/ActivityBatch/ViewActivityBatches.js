@@ -292,40 +292,6 @@ const ViewActivityBatches = props => {
               </i>
             </Tooltip>
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Validate" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                // onClick={() => editCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer"
-                }}
-              >
-                check_circle
-              </i>
-            </Tooltip>
-          </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="View" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                // onClick={() => editCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer"
-                }}
-              >
-                view_headline
-              </i>
-            </Tooltip>
-          </div>
         </div>
       ),
       button: true,

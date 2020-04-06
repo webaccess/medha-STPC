@@ -526,71 +526,6 @@ const AddEditActivityBatches = (props) => {
     });
   }
 
-  const CreateActivityBatch = () => {
-    return (
-      <div>
-        {!formState.isEditActivityBatch ? (
-          <Card className={styles.noBorderNoShadow}>
-            <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-              <CardContent>
-                <Grid container spacing={2}>
-                  <Grid item md={3} xs={4}>
-                    <TextField
-                      fullWidth
-                      id={get(AddActivityBatchSchema[activityBatchName], "id")}
-                      label={get(
-                        AddActivityBatchSchema[activityBatchName],
-                        "label"
-                      )}
-                      margin="normal"
-                      name={activityBatchName}
-                      onChange={handleChange}
-                      required
-                      type={get(
-                        AddActivityBatchSchema[activityBatchName],
-                        "type"
-                      )}
-                      value={formState.values[activityBatchName] || ""}
-                      error={hasError(activityBatchName)}
-                      helperText={
-                        hasError(activityBatchName)
-                          ? formState.errors[activityBatchName].map((error) => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      variant="outlined"
-                      className={classes.elementroot}
-                    />
-                  </Grid>
-                  <Grid item className={classes.filterButtonsMargin}>
-                    <YellowButton
-                      type="submit"
-                      color="primary"
-                      variant="contained"
-                    >
-                      {genericConstants.SAVE_BUTTON_TEXT}
-                    </YellowButton>
-                  </Grid>
-                  <Grid item className={classes.filterButtonsMargin}>
-                    <GrayButton
-                      type="submit"
-                      color="primary"
-                      variant="contained"
-                      to={`/manage-activity-batch/${activity}`}
-                    >
-                      {genericConstants.CANCEL_BUTTON_TEXT}
-                    </GrayButton>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </form>
-          </Card>
-        ) : null}
-      </div>
-    );
-  };
-
   const AddStudentButton = () => {
     return (
       <div>
@@ -861,7 +796,72 @@ const AddEditActivityBatches = (props) => {
         ) : (
           <Spinner />
         )}
-        <CreateActivityBatch />
+
+        {/* 
+          Create Activity Batch UI
+        */}
+        {!formState.isEditActivityBatch ? (
+          <Card className={styles.noBorderNoShadow}>
+            <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+              <CardContent>
+                <Grid container spacing={2}>
+                  <Grid item md={3} xs={4}>
+                    <TextField
+                      fullWidth
+                      id={get(AddActivityBatchSchema[activityBatchName], "id")}
+                      label={get(
+                        AddActivityBatchSchema[activityBatchName],
+                        "label"
+                      )}
+                      margin="normal"
+                      name={activityBatchName}
+                      onChange={handleChange}
+                      required
+                      type={get(
+                        AddActivityBatchSchema[activityBatchName],
+                        "type"
+                      )}
+                      value={formState.values[activityBatchName] || ""}
+                      error={hasError(activityBatchName)}
+                      helperText={
+                        hasError(activityBatchName)
+                          ? formState.errors[activityBatchName].map((error) => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                      className={classes.elementroot}
+                    />
+                  </Grid>
+                  <Grid item className={classes.filterButtonsMargin}>
+                    <YellowButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                    >
+                      {genericConstants.SAVE_BUTTON_TEXT}
+                    </YellowButton>
+                  </Grid>
+                  <Grid item className={classes.filterButtonsMargin}>
+                    <GrayButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      to={`/manage-activity-batch/${activity}`}
+                    >
+                      {genericConstants.CANCEL_BUTTON_TEXT}
+                    </GrayButton>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </form>
+          </Card>
+        ) : null}
+
+        {/* 
+          Add Student Button for edit activity batch
+         */}
         <AddStudentButton />
         {showStudentModal ? (
           <AddStudentToActivityBatch

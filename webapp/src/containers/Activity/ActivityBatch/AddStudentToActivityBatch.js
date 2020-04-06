@@ -5,11 +5,8 @@ import {
   Card,
   CardContent,
   Grid,
-  Collapse,
-  IconButton,
   Typography
 } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
 
 import styles from "../Activity.module.css";
 import useStyles from "../ViewActivityStyles.js";
@@ -17,14 +14,7 @@ import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import {
-  Table,
-  Spinner,
-  YellowButton,
-  GrayButton,
-  Alert
-} from "../../../components";
+import { Table, Spinner, YellowButton, GrayButton } from "../../../components";
 import { uniqBy } from "lodash";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -34,7 +24,6 @@ const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
 
 const AddEditActivityBatches = props => {
-  const [open, setOpen] = React.useState(true);
   const classes = useStyles();
 
   const [formState, setFormState] = useState({

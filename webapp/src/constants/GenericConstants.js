@@ -91,3 +91,13 @@ export const ADD_EVENT_TEXT = "Add Event";
 
 /** Events */
 export const DESCRIPTION = "Description";
+
+/**Qualifications */
+
+export const QUALIFICATIONS = [
+  { id: "SSC", value: "SSC" },
+  { id: "HSC", value: "HSC" },
+  { id: "BSc", value: "BSc" },
+  { id: "MSc", value: "MSc" },
+  { id: "BE", value: "BE" }
+];

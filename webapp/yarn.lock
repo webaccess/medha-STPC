@@ -2212,9 +2212,9 @@ atob@^2.1.2:
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
 autolinker@^3.11.0:
-  version "3.13.0"
-  resolved "https://registry.yarnpkg.com/autolinker/-/autolinker-3.13.0.tgz#7a51244bb11bf75de89a48047919e93071e78f43"
-  integrity sha512-qlM0Su9lYYJ7lAth6xxB0rRdpS4FGmRboaghmM45Ud6ygGZa/TK/cbRAX6afvusJ79vyciy18QSKrWTM6cJHiw==
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/autolinker/-/autolinker-3.14.0.tgz#70f01bc0fb8be8b2340480df7f323abe04ee4b3f"
+  integrity sha512-4b9rvvEkeCC0v/vUtsEyTGrZz2ltGZFqJvifSFlegeTP1q8549jFoohJPqxvAeS9cVa64JlZiXA9Q51G9iti7w==
   dependencies:
     tslib "^1.9.3"
 

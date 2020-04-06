@@ -69,6 +69,7 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 import EditActivityBatchRoute from "./authroute/EditActivityBatchRoute";
+import AddEditStudent from "./containers/Registration/AddEditStudent";
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -115,10 +116,11 @@ function App() {
                 exact
               />
               {/**Edit Student Profile */}
-              <RegistrationRoute
+              <RouteWithTabLayout
                 path={routeConstants.EDIT_PROFILE}
                 layout={Layout}
                 exact
+                component={AddEditStudent}
               />
 
               <RequestOtp
