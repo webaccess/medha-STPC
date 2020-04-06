@@ -394,7 +394,7 @@ const ViewEvents = props => {
             <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
           </div>
           <div className={classes.PaddingActionButton}>
-            <Tooltip title="View Student List" placement="top">
+            {/* <Tooltip title="View Student List" placement="top">
               <i
                 className="material-icons"
                 id={cell.id}
@@ -404,10 +404,10 @@ const ViewEvents = props => {
               >
                 group
               </i>
-            </Tooltip>
+            </Tooltip> */}
             <ViewStudentGridIcon
               id={cell.id}
-              value={cell.name}
+              value={cell.title}
               onClick={viewStudentList}
             />
           </div>

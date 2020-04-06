@@ -26,11 +26,16 @@ import {
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
+import HireStudent from "./HireStudent";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
+const REGISTRATION_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
 const STUDENT_URL = strapiConstants.STRAPI_STUDENTS;
 const SORT_FIELD_KEY = "_sort";
 const NAME_FILTER = "username_contains";
+const EVENT_FILTER = "event.id";
+const STUDENT_FILTER = "student.id";
 
 const StudentList = props => {
   const history = useHistory();
@@ -39,6 +44,7 @@ const StudentList = props => {
 
   const [formState, setFormState] = useState({
     students: [],
+    registration: [],
     greenButtonChecker: true,
     dataToShow: [],
     tempData: [],
@@ -50,6 +56,13 @@ const StudentList = props => {
     texttvalue: "",
     selectedRowFilter: true,
 
+    /*** Hire */
+    dataToHire: {},
+    isHired: false,
+    isUnHired: false,
+    showModalHire: false,
+    isStudentHired: false,
+
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -59,8 +72,10 @@ const StudentList = props => {
     sortAscending: true
   });
 
+  console.log("formstate.register", formState.registration);
   useEffect(() => {
     getStudentList(10, 1);
+    //getEventRegistrationData();
   }, []);
 
   const getStudentList = async (pageSize, page, paramsForevents = null) => {
@@ -94,7 +109,6 @@ const StudentList = props => {
       EVENT_ID = props["location"]["eventIdStudent"];
       zones_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
     }
-    console.log("params", paramsForevents);
     if (EVENT_ID !== null && zones_url !== null) {
       await serviceProvider
         .serviceProviderForGetRequest(zones_url, paramsForevents)
@@ -140,6 +154,7 @@ const StudentList = props => {
     if (data.length > 0) {
       for (let i in data) {
         var eventIndividualData = {};
+        eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";
@@ -155,6 +170,74 @@ const StudentList = props => {
         x.push(eventIndividualData);
       }
       return x;
+    }
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalHire: false
+    }));
+  };
+
+  const handleCloseHireModal = () => {
+    /** This restores all the data when we close the modal */
+    setFormState(formState => ({
+      ...formState,
+      showModalHire: false
+    }));
+    if (formState.isStudentHired) {
+      restoreData();
+    }
+  };
+
+  const isStudentHiredCompleted = status => {
+    formState.isStudentHired = status;
+  };
+
+  const hiredCell = event => {
+    getEventRegistrationData(event.target.id);
+  };
+
+  const getEventRegistrationData = async id => {
+    let paramsForHire = {
+      "student.id": id
+    };
+    serviceProvider
+      .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
+      .then(res => {
+        let registerData = res.data.result[0];
+        let regUserID = registerData.id;
+        if (registerData.hired_at_event) {
+          registerCellData(regUserID, false);
+        } else {
+          registerCellData(regUserID, true);
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
+  const registerCellData = (id, isHired = false) => {
+    if (isHired === true) {
+      console.log("hire", id);
+      setFormState(formState => ({
+        ...formState,
+        dataToHire: id,
+        isHired: true,
+        isUnHired: false,
+        showModalHire: true
+      }));
+    } else {
+      console.log("unhire", id);
+      setFormState(formState => ({
+        ...formState,
+        dataToHire: id,
+        isHired: false,
+        isUnHired: true,
+        showModalHire: true
+      }));
     }
   };
 
@@ -209,10 +292,6 @@ const StudentList = props => {
     restoreData();
   };
 
-  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
-   * i.e the nested zones data and also resets the data to []
-   */
-
   const restoreData = () => {
     getStudentList(formState.pageSize, 1);
   };
@@ -241,7 +320,6 @@ const StudentList = props => {
   };
 
   const handleFilterChange = (event, value) => {
-    console.log("value", event.target.value);
     if (value != null) {
       formState.filterDataParameters[event.target.name] = event.target.value;
       setFormState(formState => ({
@@ -274,7 +352,7 @@ const StudentList = props => {
                 className="material-icons"
                 id={cell.id}
                 value={cell.name}
-                //onClick={viewCell}
+                onClick={hiredCell}
                 style={{ color: "green" }}
               >
                 thumb_up
@@ -431,6 +509,15 @@ const StudentList = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}
+          <HireStudent
+            id={formState.dataToHire}
+            showModal={formState.showModalHire}
+            isHired={formState.isHired}
+            isUnHired={formState.isUnHired}
+            hiredSuccessfully={isStudentHiredCompleted}
+            closeHireModal={handleCloseHireModal}
+            modalClose={modalClose}
+          />
         </Card>
       </Grid>
     </Grid>

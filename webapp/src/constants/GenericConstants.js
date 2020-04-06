@@ -17,6 +17,7 @@ export const NO_DATA_TO_SHOW_TEXT = "No data to show";
 export const ADD_MORE_TEXT = "Add More";
 export const BLOCK_BUTTON_TEXT = "Block";
 export const UNBLOCK_BUTTON_TEXT = "Unblock";
+export const HIRE_BUTTON_TEXT = "Hire";
 
 /**Student
  */
