@@ -78,9 +78,26 @@ export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 /**Activity */
 export const ADD_ACTIVITY_TEXT = "Add Activity";
 export const VIEW_ACTIVITY_TEXT = "Activity";
+export const EDIT_ACTIVITY_TEXT = "Edit Activity";
+export const VIEW_ACTIVITY_BATCHES = "Activity Batch";
+export const ADD_ACTIVITY_BATCHES = "Add Activity Batch";
+
+export const ADD_STUDENT_TO_ACTIVITY_BATCH = "Add Students";
+export const DELETE_STUDENT_TO_ACTIVITY_BATCH = "Delete Students";
+export const VERIFY_STUDENT_TO_ACTIVITY_BATCH = "Verify Students";
 
 /**MANAGE EVENTS*/
 export const ADD_EVENT_TEXT = "Add Event";
 
 /** Events */
 export const DESCRIPTION = "Description";
+
+/**Qualifications */
+
+export const QUALIFICATIONS = [
+  { id: "SSC", value: "SSC" },
+  { id: "HSC", value: "HSC" },
+  { id: "BSc", value: "BSc" },
+  { id: "MSc", value: "MSc" },
+  { id: "BE", value: "BE" }
+];

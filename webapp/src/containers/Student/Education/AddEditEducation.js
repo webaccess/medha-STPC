@@ -19,6 +19,7 @@ import { Alert, GrayButton, YellowButton } from "../../../components";
 import { useHistory } from "react-router-dom";
 import EducationSchema from "../EducationSchema.js";
 import auth from "../../../components/Auth/Auth.js";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const qualification = "qualification";
 const yearOfPassing = "yearOfPassing";
@@ -145,7 +146,7 @@ const AddEditEducation = props => {
       formState.values[yearOfPassing],
       formState.values[marks]
     );
-
+    console.log(postData);
     // Adding student id to post data
     postData.student = id;
     if (formState.isEditEducation) {
@@ -200,12 +201,27 @@ const AddEditEducation = props => {
     }
   };
 
+  const handleChangeAutoComplete = (eventName, event, value) => {
+    /**TO SET VALUES OF AUTOCOMPLETE */
+    setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [eventName]: value ? value.id : ""
+      },
+      touched: {
+        ...formState.touched,
+        [eventName]: true
+      }
+    }));
+    if (formState.errors.hasOwnProperty(eventName)) {
+      delete formState.errors[eventName];
+    }
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.ADD_EDUCATION_TEXT}
-        </Typography>
         {isSuccess ? (
           <Alert severity="success">
             {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
@@ -223,26 +239,40 @@ const AddEditEducation = props => {
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
-                  <TextField
-                    fullWidth
-                    id={get(EducationSchema[qualification], "id")}
-                    label={get(EducationSchema[qualification], "label")}
-                    margin="normal"
-                    name={qualification}
-                    onChange={handleChange}
-                    required
-                    type={get(EducationSchema[qualification], "type")}
-                    value={formState.values[qualification] || ""}
-                    error={hasError(qualification)}
-                    helperText={
-                      hasError(qualification)
-                        ? formState.errors[qualification].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
+                  <Autocomplete
+                    id="qualification-list"
                     className={classes.elementroot}
+                    options={genericConstants.QUALIFICATIONS}
+                    getOptionLabel={option => option.value}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(qualification, event, value);
+                    }}
+                    value={
+                      genericConstants.QUALIFICATIONS[
+                        genericConstants.QUALIFICATIONS.findIndex(function(
+                          item
+                        ) {
+                          return item.value === formState.values[qualification];
+                        })
+                      ] || null
+                    }
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        error={hasError(qualification)}
+                        label="Qualification"
+                        required
+                        variant="outlined"
+                        name="tester"
+                        helperText={
+                          hasError(qualification)
+                            ? formState.errors[qualification].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                      />
+                    )}
                   />
                 </Grid>
                 <Grid item md={12} xs={12}>

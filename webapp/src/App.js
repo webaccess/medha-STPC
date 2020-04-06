@@ -62,6 +62,14 @@ import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
 
 import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
+import ActivityRoute from "./containers/Activity/ActivityRoute.js";
+import ActivityDetails from "./containers/Activity/ActivityDetails";
+import EligibleActivity from "./containers/Activity/EligibleActivity";
+
+import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
+import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
+import EditActivityBatchRoute from "./authroute/EditActivityBatchRoute";
+import AddEditStudent from "./containers/Registration/AddEditStudent";
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -108,10 +116,11 @@ function App() {
                 exact
               />
               {/**Edit Student Profile */}
-              <RegistrationRoute
+              <RouteWithTabLayout
                 path={routeConstants.EDIT_PROFILE}
                 layout={Layout}
                 exact
+                component={AddEditStudent}
               />
 
               <RequestOtp
@@ -180,6 +189,41 @@ function App() {
                 layout={Layout}
                 path={routeConstants.ADD_DOCUMENTS}
               />
+              {/** Activity List*/}
+              <RouteWithLayout
+                component={ViewActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY}
+              />
+              {/**Activity Details */}
+              <RouteWithLayout
+                component={ActivityDetails}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_ACTIVITY}
+              />
+              {/**Add  Activity */}
+              <ActivityRoute
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_ACTIVITY}
+              />
+              {/**Edit Activity */}
+              <ActivityRoute
+                component={AddEditActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_ACTIVITY}
+              />
+              {/**Eligible Activity */}
+              <RouteWithLayout
+                component={EligibleActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.ELIGIBLE_ACTIVITY}
+              />
 
               {/**Student Academic history */}
               <RouteWithTabLayout
@@ -203,20 +247,6 @@ function App() {
                 path={routeConstants.EDIT_ACADEMIC_HISTORY}
               />
 
-              {/**View Activity */}
-              <RouteWithLayout
-                component={ViewActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_ACTIVITY}
-              />
-              {/**Add Edit Activity */}
-              <RouteWithLayout
-                component={AddEditActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.CREATE_ACTIVITY}
-              />
               {/** User */}
               {/** Add User **/}
               <RouteWithLayout
@@ -374,6 +404,29 @@ function App() {
                 layout={Layout}
                 path={routeConstants.EDIT_EVENT}
               />
+
+              {/* Manage Activity Batch */}
+              <RouteWithLayout
+                component={ViewActivityBatches}
+                exact
+                layout={Layout}
+                path={routeConstants.MANAGE_ACTIVITY_BATCH}
+              />
+
+              <RouteWithLayout
+                component={EditActivityBatchRoute}
+                exact
+                layout={Layout}
+                path={routeConstants.EDIT_ACTIVITY_BATCH}
+              />
+
+              <RouteWithLayout
+                component={AddEditActivityBatch}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_ACTIVITY_BATCH}
+              />
+
               {/** Event Student List Route */}
               <RouteWithLayout
                 component={StudentList}
