@@ -114,7 +114,7 @@ const ViewEvents = props => {
       ...formState,
       isDataLoading: true
     }));
-
+    console.log("params", paramsForevents);
     await serviceProviders
       .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
       .then(res => {
@@ -339,7 +339,8 @@ const ViewEvents = props => {
   const viewStudentList = event => {
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
-      eventIdStudent: event.target.id
+      eventIdStudent: event.target.id,
+      eventTitle: event.target.getAttribute("value")
     });
   };
 
@@ -409,7 +410,7 @@ const ViewEvents = props => {
               <i
                 className="material-icons"
                 id={cell.id}
-                value={cell.name}
+                value={cell.title}
                 style={{ color: "green", fontSize: "21px" }}
                 onClick={viewStudentList}
               >

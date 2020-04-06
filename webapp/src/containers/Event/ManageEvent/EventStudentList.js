@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -20,20 +20,21 @@ import {
   GreenButton,
   YellowButton,
   GrayButton,
-  Table
+  Table,
+  YearMonthPicker
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
 import useStyles from "./ManageEventStyles";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-
 const STUDENT_URL = strapiConstants.STRAPI_STUDENTS;
 const SORT_FIELD_KEY = "_sort";
+const NAME_FILTER = "username_contains";
 
 const StudentList = props => {
   const history = useHistory();
-
+  const [selectedRows, setSelectedRows] = useState([]);
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
@@ -41,6 +42,13 @@ const StudentList = props => {
     greenButtonChecker: true,
     dataToShow: [],
     tempData: [],
+    eventTitle: props["location"]["eventTitle"],
+    year: new Date(),
+    filterDataParameters: {},
+    isClearResetFilter: false,
+    isFilterSearch: false,
+    texttvalue: "",
+    selectedRowFilter: true,
 
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -50,8 +58,6 @@ const StudentList = props => {
     pageCount: "",
     sortAscending: true
   });
-
-  console.log("studentDATA", formState.students);
 
   useEffect(() => {
     getStudentList(10, 1);
@@ -88,7 +94,7 @@ const StudentList = props => {
       EVENT_ID = props["location"]["eventIdStudent"];
       zones_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
     }
-
+    console.log("params", paramsForevents);
     if (EVENT_ID !== null && zones_url !== null) {
       await serviceProvider
         .serviceProviderForGetRequest(zones_url, paramsForevents)
@@ -133,7 +139,6 @@ const StudentList = props => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
-        console.log("data", data[i]["educations"][0]);
         var eventIndividualData = {};
         eventIndividualData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
@@ -152,11 +157,111 @@ const StudentList = props => {
       return x;
     }
   };
+
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStudentList(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
+        await getStudentList(perPage, page);
+      }
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStudentList(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
+        await getStudentList(formState.pageSize, page);
+      }
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getStudentList(perPage, page, formState.filterDataParameters);
+    }
+  };
+  /** This restores all the data when we clear the filters*/
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isClearResetFilter: true,
+      isDataLoading: true,
+      texttvalue: ""
+    }));
+
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
+   * i.e the nested zones data and also resets the data to []
+   */
+
+  const restoreData = () => {
+    getStudentList(formState.pageSize, 1);
+  };
+
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount >= 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
+
+  const handleYearChange = date => {
+    //formState.filterDataParameters[date.target.name] = date.target.value;
+    setFormState(formState => ({
+      ...formState,
+      year: date
+    }));
+  };
+
+  const handleFilterChange = (event, value) => {
+    console.log("value", event.target.value);
+    if (value != null) {
+      formState.filterDataParameters[event.target.name] = event.target.value;
+      setFormState(formState => ({
+        ...formState,
+        texttvalue: event.target.value
+      }));
+    } else {
+      formState.filterDataParameters[event.target.name] = event.target.value;
+      setFormState(formState => ({
+        ...formState,
+        texttvalue: null
+      }));
+    }
+  };
+
   /** Table Data */
   const column = [
     { name: "Students", sortable: true, selector: "user" },
     { name: "Stream", sortable: true, selector: "stream" },
-    { name: "Year Of Passing", sortable: true, selector: "educations" },
+    { name: "Academic Year", sortable: true, selector: "educations" },
     { name: "Mobile", sortable: true, selector: "mobile" },
 
     {
@@ -203,7 +308,7 @@ const StudentList = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Events
+          Event Student List
         </Typography>
 
         <GreenButton
@@ -212,7 +317,6 @@ const StudentList = props => {
           // onClick={() => deleteMulUserById()}
           // startIcon={<DeleteIcon />}
           greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
         >
           Download List
         </GreenButton>
@@ -225,10 +329,17 @@ const StudentList = props => {
           //to={routeConstants.ADD_EVENT}
           // startIcon={<AddCircleOutlineOutlinedIcon />}
           greenButtonChecker={formState.greenButtonChecker}
+          buttonDisabled={formState.selectedRowFilter}
         >
           Mark as Hired
         </GreenButton>
       </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
+        <Typography variant="h3" gutterBottom>
+          {formState.eventTitle}
+        </Typography>
+      </Grid>
+
       <Grid item xs={12} className={classes.formgrid}>
         <Card>
           <CardContent className={classes.Cardtheming}>
@@ -238,9 +349,9 @@ const StudentList = props => {
                   label={"Student Name"}
                   placeholder="Student Name"
                   variant="outlined"
-                  //name={EVENT_FILTER}
+                  name={NAME_FILTER}
                   value={formState.texttvalue}
-                  //onChange={(event, value) => handleFilterChange(event, value)}
+                  onChange={(event, value) => handleFilterChange(event, value)}
                 />
               </Grid>
               <Grid item>
@@ -265,35 +376,22 @@ const StudentList = props => {
                 />
               </Grid>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  //name={ROLE_FILTER}
-                  options={[]}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  // onChange={(event, value) =>
-                  //   handleChangeAutoComplete(ROLE_FILTER, event, value)
-                  // }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Year Of Passing"
-                      placeholder="Year Of Passing"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                <YearMonthPicker
+                  label="Academic Year"
+                  value={formState.year}
+                  onChange={handleYearChange}
                 />
               </Grid>
+
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  //   onClick={event => {
-                  //     event.persist();
-                  //     searchFilter();
-                  //   }}
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
                 >
                   Search
                 </YellowButton>
@@ -317,15 +415,15 @@ const StudentList = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                // onSelectedRowsChange={handleRowSelected}
+                onSelectedRowsChange={handleRowSelected}
                 // deleteEvent={deleteCell}
-                defaultSortField="username"
+                //defaultSortField="username"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
-                // onChangeRowsPerPage={handlePerRowsChange}
-                // onChangePage={handlePageChange}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
               />
             ) : (
               <Spinner />

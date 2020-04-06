@@ -19,3 +19,4 @@ export { default as Typography } from "./Typography";
 export { default as CustomRouterLink } from "./CustomRouterLink";
 export { default as ReadOnlyTextField } from "./ReadOnlyTextField";
 export { default as CustomDateTimePicker } from "./CustomDateTimePicker";
+export { default as YearMonthPicker } from "./YearMonthPicker";
