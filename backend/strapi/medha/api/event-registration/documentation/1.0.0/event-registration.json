@@ -578,11 +578,11 @@
               "marks": {
                 "type": "number"
               },
-              "qualification": {
-                "type": "string"
-              },
               "question_set": {
                 "type": "string"
+              },
+              "qualifications": {
+                "type": "component"
               }
             }
           },
