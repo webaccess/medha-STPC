@@ -8,13 +8,13 @@
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity
+  sanitizeEntity,
 } = require("strapi-utils");
 
 const utils = require("../../../config/utils.js");
-const sanitizeUser = user =>
+const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model
+    model: strapi.query("user", "users-permissions").model,
   });
 
 module.exports = {
@@ -27,15 +27,15 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["activity"],
-          filters
+          filters,
         })
       )
       .fetchPage({
         page: page,
         pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize
+          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize,
       })
-      .then(res => {
+      .then((res) => {
         return utils.getPaginatedResponse(res);
       });
   },
@@ -80,7 +80,7 @@ module.exports = {
       .query("activity-batch")
       .find({ activity: id });
 
-    const activityBatchIds = activityBatch.map(ab => ab.id);
+    const activityBatchIds = activityBatch.map((ab) => ab.id);
 
     const activityBatchAttendance = await strapi
       .query("activity-batch-attendance")
@@ -88,9 +88,14 @@ module.exports = {
 
     let responseData;
     if (activityBatch && activityBatchAttendance) {
-      const studentIds = activityBatchAttendance.map(ab => ab.student.id);
-      let students = await strapi.query("student").find({ id_nin: studentIds });
-      students = students.map(student => {
+      // Only get college student for given college Id
+      // Get all student who are not in any activity batch
+      const userIds = await strapi.services.college.getUsers(collegeId);
+      const studentIds = activityBatchAttendance.map((ab) => ab.student.id);
+      let students = await strapi
+        .query("student")
+        .find({ user_in: userIds, id_nin: studentIds });
+      students = students.map((student) => {
         student.user = sanitizeUser(student.user);
         return student;
       });
@@ -98,9 +103,9 @@ module.exports = {
       responseData = students;
     } else {
       // Get all users Ids belongs to college
-      const userIds = await strapi.services.college.getUsers(id);
+      const userIds = await strapi.services.college.getUsers(collegeId);
       let students = await strapi.query("student").find({ user_in: userIds });
-      students = students.map(student => {
+      students = students.map((student) => {
         student.user = sanitizeUser(student.user);
         return student;
       });
@@ -109,12 +114,12 @@ module.exports = {
     }
 
     if (student_id) {
-      responseData = responseData.filter(student => student.id == student_id);
+      responseData = responseData.filter((student) => student.id == student_id);
     }
 
     if (stream_id) {
       responseData = responseData.filter(
-        student => (student.stream.id = stream_id)
+        (student) => (student.stream.id = stream_id)
       );
     }
 
@@ -146,13 +151,13 @@ module.exports = {
 
     if (activity_batch_id) {
       activityBatches = activityBatches.filter(
-        ab => ab.id == activity_batch_id
+        (ab) => ab.id == activity_batch_id
       );
     }
     const response = utils.paginate(activityBatches, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination
+      ...response.pagination,
     };
   },
 
@@ -186,15 +191,15 @@ module.exports = {
      */
 
     const studentsResponse = await Promise.all(
-      students.map(studentId =>
+      students.map((studentId) =>
         strapi.query("student").findOne({ id: studentId })
       )
     );
 
-    if (studentsResponse.some(s => s === null)) {
+    if (studentsResponse.some((s) => s === null)) {
       return ctx.response.badRequest("Invalid student Ids");
     }
 
     return strapi.services.activity.createBatchForStudents(id, ctx);
-  }
+  },
 };
