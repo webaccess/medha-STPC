@@ -19,3 +19,8 @@ export { default as Typography } from "./Typography";
 export { default as CustomRouterLink } from "./CustomRouterLink";
 export { default as ReadOnlyTextField } from "./ReadOnlyTextField";
 export { default as CustomDateTimePicker } from "./CustomDateTimePicker";
+export { default as ViewGridIcon } from "./ViewGridIcon";
+export { default as EditGridIcon } from "./EditGridIcon";
+export { default as DeleteGridIcon } from "./DeleteGridIcon";
+export { default as BlockGridIcon } from "./BlockGridIcon";
+export { default as ViewStudentGridIcon } from "./ViewStudentGridIcon";

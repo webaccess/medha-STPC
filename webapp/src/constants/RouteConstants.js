@@ -28,17 +28,16 @@ export const EDIT_ACADEMIC_HISTORY = "/edit-academic-history";
 
 /** College */
 export const ADD_COLLEGE = "/add-college";
-export const VIEW_COLLEGE = "/manage-college";
+export const MANAGE_COLLEGE = "/manage-college";
 export const EDIT_COLLEGE = "/edit-college";
-export const DETAIL_COLLEGE = "/view-college";
+export const VIEW_COLLEGE = "/view-college";
 
 /**OTP */
 export const REQUEST_OTP = "/requestotp";
 export const VERIFY_OTP = "/verifyotp";
 /** user */
 export const EDIT_USER = "/edit-user";
-export const VIEW_USER = "/manage-user";
-
+export const MANAGE_USER = "/manage-user";
 export const VALIDATE_STUDENT = "/validate-student";
 export const EVENTS = "/events";
 export const PROFILE = "/profile";
@@ -46,16 +45,16 @@ export const DETAIL_USER = "/view-user";
 
 /** State */
 export const EDIT_STATE = "/edit-state";
-export const VIEW_STATES = "/manage-states";
+export const MANAGE_STATES = "/manage-states";
 export const ADD_STATES = "/add-states";
 
 /** Zone */
 export const EDIT_ZONES = "/edit-zones";
-export const VIEW_ZONES = "/manage-zones";
+export const MANAGE_ZONES = "/manage-zones";
 export const ADD_ZONES = "/add-zones";
 
 /** RPC's */
-export const VIEW_RPC = "/manage-rpc";
+export const MANAGE_RPC = "/manage-rpc";
 export const ADD_RPC = "/add-rpc";
 export const EDIT_RPC = "/edit-rpc";
 
@@ -68,6 +67,7 @@ export const VIEW_EVENT = "/view-event";
 export const ADD_EVENT = "/add-event";
 export const EDIT_EVENT = "/edit-event";
 export const ELIGIBLE_EVENT = "/eligible-event";
+export const EVENT_STUDENT_LIST = "/event-student-list";
 
 /**Training and Activity */
 export const EDIT_ACTIVITY = "/edit-activity";
@@ -75,3 +75,9 @@ export const ADD_ACTIVITY = "/add-activity";
 export const MANAGE_ACTIVITY = "/manage-activity";
 export const VIEW_ACTIVITY = "/view-activity";
 export const ELIGIBLE_ACTIVITY = "/eligible-activity";
+
+/**Activty Batches */
+export const MANAGE_ACTIVITY_BATCH = "/manage-activity-batch/:activity";
+export const ADD_ACTIVITY_BATCH = "/add-activity-batch/:activity";
+export const EDIT_ACTIVITY_BATCH = "/edit-activity-batch/:activity";
+export const VIEW_ACTIVITY_BATCH = "/view-activity-batch/:activity";

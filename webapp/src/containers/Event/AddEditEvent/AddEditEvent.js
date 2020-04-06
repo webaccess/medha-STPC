@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import ListItemText from "@material-ui/core/ListItemText";
-import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
-import MenuItem from "@material-ui/core/MenuItem";
-import Chip from "@material-ui/core/Chip";
 
 import {
   Card,
@@ -15,18 +8,19 @@ import {
   Divider,
   Grid,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Switch,
-  Typography
+  Typography,
+  FormHelperText
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Alert, YellowButton,CustomDateTimePicker, GrayButton } from "../../../components";
+import {
+  YellowButton,
+  CustomDateTimePicker,
+  GrayButton
+} from "../../../components";
 import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
 import EventSchema from "../EventSchema";
 import { get } from "lodash";
-import DatePickers from "../../../components/Date/Date";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import { useHistory } from "react-router-dom";
@@ -35,13 +29,8 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "./Styles.css";
-import {
-  EditorState,
-  convertToRaw,
-  convertFromRaw,
-  ContentState
-} from "draft-js";
+import "./RichTextFieldStyles.css";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 
@@ -49,8 +38,6 @@ const eventName = "eventName";
 const description = "description";
 const dateFrom = "dateFrom";
 const dateTo = "dateTo";
-const timeFrom = "timeFrom";
-const timeTo = "timeTo";
 const address = "address";
 const state = "state";
 const zone = "zone";
@@ -66,14 +53,11 @@ const files = "files";
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
-  const QUALIFICATIONS_URL = strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
+const QUALIFICATIONS_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
 
 const ZONES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
-const RPCS_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
-const COLLEGE_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
 const STREAM_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS;
 const EVENTS_URL =
@@ -109,8 +93,6 @@ const AddEditEvent = props => {
   const classes = useStyles();
   // const theme = useTheme();
   const history = useHistory();
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -118,10 +100,14 @@ const AddEditEvent = props => {
     errors: {},
     isSuccess: false,
     showPassword: false,
-    isEditUser: props["editUser"] ? props["editUser"] : false,
+    isEditEvent: props["editEvent"] ? props["editEvent"] : false,
+
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
-    files: {}
+    files: {},
+    descriptionError: false,
+    dataToShowForMultiSelect: [],
+    dataToShowForStreamMultiSelect: []
   });
 
   const [states, setStates] = useState([]);
@@ -130,9 +116,6 @@ const AddEditEvent = props => {
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
   const [qualifications, setQualifications] = useState([]);
-  const [selectedStreams, setSelectedStreams] = useState([]);
-  const [personName, setPersonName] = React.useState([]);
-  const [collegeName, setCollegeName] = React.useState([]);
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
@@ -160,7 +143,7 @@ const AddEditEvent = props => {
           "-" +
           today.getFullYear();
 
-        formState.values[dateFrom] = date;
+        formState.values[dateFrom] = props["dataForEdit"]["start_date_time"];
         //formState.defaultDate = date;
       }
       if (props["dataForEdit"]["end_date_time"]) {
@@ -169,24 +152,64 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["address"]) {
         formState.values[address] = props["dataForEdit"]["address"];
       }
-      // if (props["dataForEdit"]["age"]) {
-      //   formState.values[age] = props["dataForEdit"]["age"];
-      // }
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["rpc"] &&
+        props["dataForEdit"]["rpc"]["state"]
+      ) {
+        formState.values[state] = props["dataForEdit"]["rpc"]["state"];
+      }
 
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
       if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["colleges"] &&
+        props["dataForEdit"]["colleges"][0] &&
+        props["dataForEdit"]["colleges"][0]["zone"]
+      ) {
+        formState.values[zone] = props["dataForEdit"]["colleges"][0]["zone"];
+      }
+      if (
         props["dataForEdit"]["colleges"] &&
         props["dataForEdit"]["colleges"].length
       ) {
-        formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
+        // formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
+        formState.dataToShowForMultiSelect = props["dataForEdit"]["colleges"];
+        let finalData = [];
+        for (let i in props["dataForEdit"]["colleges"]) {
+          finalData.push(props["dataForEdit"]["colleges"][i]["id"]);
+        }
+        formState.values[college] = finalData;
       }
       if (
         props["dataForEdit"]["streams"] &&
         props["dataForEdit"]["streams"].length
       ) {
-        formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+        // formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+        formState.dataToShowForStreamMultiSelect =
+          props["dataForEdit"]["streams"];
+        let finalDataStream = [];
+        for (let i in props["dataForEdit"]["streams"]) {
+          finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
+        }
+        formState.values[stream] = finalDataStream;
+      }
+      if (props["dataForEdit"]["marks"]) {
+        formState.values[marks] = props["dataForEdit"]["marks"];
+      }
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["qualification"] &&
+        props["dataForEdit"]["qualification"]["id"]
+      ) {
+        formState.values[qualification] =
+          props["dataForEdit"]["qualification"]["id"];
+      }
+      if (props["dataForEdit"] && props["dataForEdit"]["upload_logo"]) {
+        //  formState.values[files] = props["dataForEdit"]["upload_logo"]["name"];
+        formState.files.name = props["dataForEdit"]["upload_logo"]["hash"];
       }
     }
     formState.counter += 1;
@@ -206,13 +229,14 @@ const AddEditEvent = props => {
         console.log("error", error);
       });
 
-      serviceProvider.serviceProviderForGetRequest(QUALIFICATIONS_URL).then(res => {
-    
+    serviceProvider
+      .serviceProviderForGetRequest(QUALIFICATIONS_URL)
+      .then(res => {
         setQualifications(res.data);
       })
       .catch(error => {
-        console.log("errorQualifications",error)
-      })
+        console.log("errorQualifications", error);
+      });
 
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
@@ -299,9 +323,6 @@ const AddEditEvent = props => {
       });
   }
 
-
-
-
   const hasError = field => (formState.errors[field] ? true : false);
   const handleChange = e => {
     e.persist();
@@ -364,7 +385,27 @@ const AddEditEvent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, EventSchema);
     }
-    if (isValid) {
+    formState.descriptionError = false;
+    if (
+      convertToRaw(editorState.getCurrentContent()).blocks &&
+      convertToRaw(editorState.getCurrentContent()).blocks.length
+    ) {
+      let arrayToCheckIn = convertToRaw(editorState.getCurrentContent()).blocks;
+      let validationCounter = 0;
+      for (let i in arrayToCheckIn) {
+        if (
+          arrayToCheckIn[i]["text"] &&
+          arrayToCheckIn[i]["text"].trim().length !== 0
+        ) {
+          validationCounter += 1;
+          break;
+        }
+      }
+      if (validationCounter === 0) {
+        formState.descriptionError = true;
+      }
+    }
+    if (isValid && !formState.descriptionError) {
       /** CALL POST FUNCTION */
       postEventData();
       /** Call axios from here */
@@ -394,26 +435,49 @@ const AddEditEvent = props => {
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null
     );
-    serviceProvider
-      .serviceProviderForPostRequest(EVENTS_URL, postData)
-      .then(res => {
-        
-        if(formState.files.name){
-           postImage(res.data.id);
-        }else{
-          history.push({
-            pathname: routeConstants.MANAGE_EVENT,
-            fromAddEvent: true,
-            isDataAdded: true,
-            addResponseMessage: "",
-            addedData: {}
-          });
-        }
-       
-      })
-      .catch(error => {
-        console.log("posterror", error);
-      });
+    if (formState.isEditEvent) {
+      serviceProvider
+        .serviceProviderForPutRequest(
+          EVENTS_URL,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          if (formState.files.name) {
+            postImage(res.data.id);
+          } else {
+            history.push({
+              pathname: routeConstants.MANAGE_EVENT,
+              fromAddEvent: true,
+              isDataAdded: true,
+              addResponseMessage: "",
+              addedData: {}
+            });
+          }
+        })
+        .catch(error => {
+          console.log("puterror", error);
+        });
+    } else {
+      serviceProvider
+        .serviceProviderForPostRequest(EVENTS_URL, postData)
+        .then(res => {
+          if (formState.files.name) {
+            postImage(res.data.id);
+          } else {
+            history.push({
+              pathname: routeConstants.MANAGE_EVENT,
+              fromAddEvent: true,
+              isDataAdded: true,
+              addResponseMessage: "",
+              addedData: {}
+            });
+          }
+        })
+        .catch(error => {
+          console.log("posterror", error);
+        });
+    }
   };
 
   const postImage = id => {
@@ -437,7 +501,7 @@ const AddEditEvent = props => {
       .catch(err => {
         console.log("error", err);
       });
-  }
+  };
 
   const handleFileChange = event => {
     event.persist();
@@ -473,12 +537,17 @@ const AddEditEvent = props => {
       },
       isStateClearFilter: false
     }));
-    
   };
 
   const handleMultiSelectChange = (eventName, event, value) => {
+    if (eventName === college) {
+      formState.dataToShowForMultiSelect = value;
+    }
+    if (eventName === stream) {
+      formState.dataToShowForStreamMultiSelect = value;
+    }
     let multiarray = [];
-    for(var i=0;i<value.length;i++){
+    for (var i = 0; i < value.length; i++) {
       multiarray.push(value[i].id);
     }
     if (value !== null) {
@@ -497,11 +566,9 @@ const AddEditEvent = props => {
     } else {
       delete formState.values[eventName];
     }
-  }
+  };
 
- 
   return (
-  
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
@@ -537,73 +604,84 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={12} xs={12}>
-                    <Grid className={classes.streamcard}>
+                  <Grid item md={12} xs={12} className={"descriptionBox"}>
+                    <Grid
+                      className={
+                        formState.descriptionError
+                          ? classes.streamcardError
+                          : classes.streamcard
+                      }
+                    >
                       <Card className={classes.streamoffer}>
                         <InputLabel
                           htmlFor="outlined-stream-card"
                           fullwidth={true.toString()}
+                          error={formState.descriptionError}
                         >
                           {genericConstants.DESCRIPTION}
                         </InputLabel>
-                        <div className="rdw-storybook-root">
+                        <div className="rdw-root">
                           <Editor
                             editorState={editorState}
-                            toolbarClassName="rdw-storybook-toolbar"
-                            wrapperClassName="rdw-storybook-wrapper"
-                            editorClassName="rdw-storybook-editor"
+                            toolbarClassName="rdw-toolbar"
+                            wrapperClassName="rdw-wrapper"
+                            editorClassName="rdw-editor"
                             onEditorStateChange={data => {
+                              formState.descriptionError = false;
                               setEditorState(data);
                             }}
                           />
                         </div>
+                        {formState.descriptionError ? (
+                          <FormHelperText error={true}>
+                            Description is required
+                          </FormHelperText>
+                        ) : null}
                       </Card>
                     </Grid>
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
-                  <CustomDateTimePicker 
-                  onChange={event => {
-                      handleDateChange(dateFrom, event);
-                    }} 
-                    value={formState.values[dateFrom]}
-                    name={dateFrom}
-                    label={get(EventSchema[dateFrom], "label")}
-                    fullWidth 
-                    error={hasError(dateFrom)}
-                    helperText={
-                      hasError(dateFrom)
-                        ? formState.errors[dateFrom].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                    
+                    <CustomDateTimePicker
+                      onChange={event => {
+                        handleDateChange(dateFrom, event);
+                      }}
+                      value={formState.values[dateFrom]}
+                      name={dateFrom}
+                      label={get(EventSchema[dateFrom], "label")}
+                      fullWidth
+                      error={hasError(dateFrom)}
+                      helperText={
+                        hasError(dateFrom)
+                          ? formState.errors[dateFrom].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                  <CustomDateTimePicker 
-                  onChange={event => {
-                      handleDateChange(dateTo, event);
-                    }} 
-                    value={formState.values[dateTo]}
-                    name={dateTo}
-                    label={get(EventSchema[dateTo], "label")}
-                    fullWidth 
-                    error={hasError(dateTo)}
-                    helperText={
-                      hasError(dateTo)
-                        ? formState.errors[dateTo].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                   
+                    <CustomDateTimePicker
+                      onChange={event => {
+                        handleDateChange(dateTo, event);
+                      }}
+                      value={formState.values[dateTo]}
+                      name={dateTo}
+                      label={get(EventSchema[dateTo], "label")}
+                      fullWidth
+                      error={hasError(dateTo)}
+                      helperText={
+                        hasError(dateTo)
+                          ? formState.errors[dateTo].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
                   </Grid>
                 </Grid>
-               
+
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <TextField
@@ -735,7 +813,7 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                  <Autocomplete
+                    <Autocomplete
                       id={get(EventSchema[college], "id")}
                       multiple
                       options={colleges}
@@ -743,8 +821,9 @@ const AddEditEvent = props => {
                       onChange={(event, value) => {
                         handleMultiSelectChange(college, event, value);
                       }}
-                      
+                      filterSelectedOptions
                       name={college}
+                      value={formState.dataToShowForMultiSelect || null}
                       renderInput={params => (
                         <TextField
                           {...params}
@@ -765,7 +844,6 @@ const AddEditEvent = props => {
                         />
                       )}
                     />
-                   
                   </Grid>
                 </Grid>
               </Grid>
@@ -773,7 +851,7 @@ const AddEditEvent = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
-                  <Autocomplete
+                    <Autocomplete
                       id={get(EventSchema[stream], "id")}
                       multiple
                       options={streams}
@@ -781,7 +859,9 @@ const AddEditEvent = props => {
                       onChange={(event, value) => {
                         handleMultiSelectChange(stream, event, value);
                       }}
+                      filterSelectedOptions
                       name={stream}
+                      value={formState.dataToShowForStreamMultiSelect || null}
                       renderInput={params => (
                         <TextField
                           {...params}
@@ -802,7 +882,6 @@ const AddEditEvent = props => {
                         />
                       )}
                     />
-                  
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
@@ -827,12 +906,15 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
+                  <Grid item md={12} xs={12}>
+                    <Autocomplete
                       id="combo-box-demo"
                       className={classes.root}
                       options={qualifications}
-                      placeholder={get(EventSchema[qualification], "placeholder")}
+                      placeholder={get(
+                        EventSchema[qualification],
+                        "placeholder"
+                      )}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(qualification, event, value);
@@ -849,7 +931,10 @@ const AddEditEvent = props => {
                           {...params}
                           label={get(EventSchema[qualification], "label")}
                           variant="outlined"
-                          placeholder={get(EventSchema[qualification], "placeholder")}
+                          placeholder={get(
+                            EventSchema[qualification],
+                            "placeholder"
+                          )}
                           error={hasError(qualification)}
                           helperText={
                             hasError(qualification)
@@ -877,7 +962,7 @@ const AddEditEvent = props => {
                       type={get(EventSchema[files], "type")}
                       value={formState.values[files] || ""}
                       error={hasError(files)}
-                      inputProps={{ accept: 'image/*' }}
+                      inputProps={{ accept: "image/*" }}
                       helperText={
                         hasError(files)
                           ? formState.errors[files].map(error => {

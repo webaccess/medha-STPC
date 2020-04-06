@@ -23,7 +23,9 @@ import {
   Paper,
   Hidden,
   useMediaQuery,
-  Collapse
+  Collapse,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import useStyles from "./LoginStyles";
 import form from "./loginform.json";
@@ -48,6 +50,7 @@ const identifier = "identifier";
 const password = "password";
 
 const LogIn = props => {
+  const [openSpinner, setOpenSpinner] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const theme = useTheme();
@@ -213,6 +216,7 @@ const LogIn = props => {
     formState.touched[field] && formState.errors[field] ? true : false;
 
   const processLogin = async () => {
+    setOpenSpinner(true);
     await axios
       .post(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_LOGIN_PATH,
@@ -225,9 +229,10 @@ const LogIn = props => {
         if (
           response.data.user.role.name === "Student" &&
           !response.data.user.studentInfo.verifiedByCollege
-        )
+        ) {
+          setOpenSpinner(false);
           history.push(routeConstants.REQUIRED_CONFORMATION);
-        else {
+        } else {
           auth.setToken(response.data.jwt, true);
           auth.setUserInfo(response.data.user, true);
           setIfSuccess(true);
@@ -239,6 +244,7 @@ const LogIn = props => {
         setIfFailure(true);
         console.log("An error occurred:", JSON.stringify(error));
       });
+    setOpenSpinner(false);
   };
 
   const handleClickShowPassword = () => {
@@ -457,6 +463,9 @@ const LogIn = props => {
                 title="Live from space album cover"
               />
             </Hidden>
+            <Backdrop className={classes.backdrop} open={openSpinner}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </Paper>
         </div>
       </div>

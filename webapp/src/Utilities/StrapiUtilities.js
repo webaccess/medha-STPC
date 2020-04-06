@@ -125,7 +125,8 @@ export const addCollege = (
   rpc = null,
   zone = null,
   district = null,
-  stream_strength = []
+  stream_strength = [],
+  tpos = []
 ) => {
   return {
     name: name,
@@ -138,7 +139,8 @@ export const addCollege = (
     rpc: rpc,
     zone: zone,
     district: district,
-    stream_strength: stream_strength
+    stream_strength: stream_strength,
+    tpos: tpos
   };
 };
 export const addEvent = (
@@ -383,6 +385,13 @@ export const addAcademicHistory = (academicYear, educationYear) => {
   return {
     academic_year: academicYear,
     education_year: educationYear
+  };
+};
+
+export const addActivityBatch = (name, students) => {
+  return {
+    name,
+    students
   };
 };
 

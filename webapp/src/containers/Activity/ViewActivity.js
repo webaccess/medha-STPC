@@ -8,7 +8,7 @@ import {
   Typography,
   Tooltip,
   Collapse,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -26,14 +26,13 @@ import {
   YellowButton,
   GrayButton,
   Alert,
-  Auth
+  Auth,
 } from "../../components";
-// import DeleteEducation from "./DeleteEducation";
+// import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import moment from "moment";
 
-// const ACTIVITY_URL =
-//   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
 const ACTIVITY_FILTER = "id";
 
 const url = () => {
@@ -57,10 +56,10 @@ const url = () => {
   return url;
 };
 
-const ViewActivity = props => {
+const ViewActivity = (props) => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
-  const history = useHistory();
+  let history = useHistory();
   const [formState, setFormState] = useState({
     dataToShow: [],
     activities: [],
@@ -98,20 +97,20 @@ const ViewActivity = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
   });
 
   useEffect(() => {
     const URL = url();
     serviceProviders
       .serviceProviderForGetRequest(URL)
-      .then(res => {
-        setFormState(formState => ({
+      .then((res) => {
+        setFormState((formState) => ({
           ...formState,
-          activityFilter: res.data.result
+          activityFilter: res.data.result,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
 
@@ -124,28 +123,28 @@ const ViewActivity = props => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
       };
-      Object.keys(params).map(key => {
+      Object.keys(params).map((key) => {
         defaultParams[key] = params[key];
       });
       params = defaultParams;
     } else {
       params = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
       };
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(URL, params)
-      .then(res => {
+      .then((res) => {
         formState.dataToShow = [];
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
           activities: res.data.result,
           dataToShow: res.data.result,
@@ -153,10 +152,10 @@ const ViewActivity = props => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false
+          isDataLoading: false,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
@@ -175,7 +174,7 @@ const ViewActivity = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getActivityData(formState.pageSize, page);
     } else {
@@ -196,13 +195,13 @@ const ViewActivity = props => {
   };
 
   const clearFilter = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true
+      isDataLoading: true,
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -212,30 +211,30 @@ const ViewActivity = props => {
     getActivityData(formState.pageSize, 1);
   };
 
-  const editCell = data => {
+  const editCell = (data) => {
     history.push({
       pathname: routeConstants.EDIT_ACTIVITY,
       editActivity: true,
-      dataForEdit: data
+      dataForEdit: data,
     });
   };
 
-  const isDeleteCellCompleted = status => {
+  const isDeleteCellCompleted = (status) => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = event => {
-    setFormState(formState => ({
+  const deleteCell = (event) => {
+    setFormState((formState) => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showModalDelete: true
+      showModalDelete: true,
     }));
   };
 
-  const viewCell = data => {
+  const viewCell = (data) => {
     history.push({
       pathname: routeConstants.VIEW_ACTIVITY,
-      dataForView: data.id
+      dataForView: data.id,
     });
   };
 
@@ -252,14 +251,22 @@ const ViewActivity = props => {
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false
+      showModalDelete: false,
     }));
     if (formState.isDataDeleted) {
       getActivityData(formState.pageSize, formState.page);
     }
+  };
+
+  /**
+   * Redirect to Activity batch UI for given activity
+   */
+  const handleManageActivityBatchClick = (activity) => {
+    const manageActivityBatchURL = `/manage-activity-batch/${activity.id}`;
+    history.push(manageActivityBatchURL);
   };
 
   /** Columns to show in table */
@@ -269,114 +276,115 @@ const ViewActivity = props => {
     {
       name: "Streams",
       sortable: true,
-      selector: row => `${row.streams.map(s => ` ${s.name}`)}`
+      selector: (row) => `${row.streams.map((s) => ` ${s.name}`)}`,
     },
     { name: "College", sortable: true, selector: "college.name" },
-    /** Columns for edit and delete */
     {
-      cell: cell => (
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Grid container spacing={2}>
-              <Grid item>
-                <Tooltip title="Manage Group" placement="top">
-                  <i
-                    className="material-icons"
-                    id={cell.id}
-                    value={cell.name}
-                    // onClick={() => editCell(cell)}
-                    style={{
-                      color: "green",
-                      fontSize: "19px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    group
-                  </i>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Validate" placement="top">
-                  <i
-                    className="material-icons"
-                    id={cell.id}
-                    value={cell.name}
-                    // onClick={() => editCell(cell)}
-                    style={{
-                      color: "green",
-                      fontSize: "19px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    check_circle
-                  </i>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Edit" placement="top">
-                  <i
-                    className="material-icons"
-                    id={cell.id}
-                    value={cell.name}
-                    onClick={() => editCell(cell)}
-                    style={{
-                      color: "green",
-                      fontSize: "19px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    edit
-                  </i>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="View" placement="top">
-                  <i
-                    className="material-icons"
-                    id={cell.id}
-                    value={cell.name}
-                    onClick={() => viewCell(cell)}
-                    style={{
-                      color: "green",
-                      fontSize: "19px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    view_headline
-                  </i>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Download Students" placement="top">
-                  <i
-                    className="material-icons"
-                    id={cell.id}
-                    value={cell.name}
-                    // onClick={() => editCell(cell)}
-                    style={{
-                      color: "green",
-                      fontSize: "19px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    get_app
-                  </i>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+      name: "Date",
+      sortable: true,
+      selector: (row) => `${moment(row.start_date_time).format("DD MMM YYYY")}`,
+    },
+    {
+      name: "Action",
+      cell: (cell) => (
+        <div style={{ display: "flex", direction: "flex-row" }}>
+          <div style={{ marginLeft: "8px" }}>
+            <Tooltip title="Manage Activity Batch" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleManageActivityBatchClick(cell)}
+                style={{
+                  color: "green",
+                  fontSize: "19px",
+                  cursor: "pointer",
+                }}
+              >
+                group
+              </i>
+            </Tooltip>
+          </div>
+          <div style={{ marginLeft: "8px" }}>
+            <Tooltip title="Validate" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                // onClick={() => editCell(cell)}
+                style={{
+                  color: "green",
+                  fontSize: "19px",
+                  cursor: "pointer",
+                }}
+              >
+                check_circle
+              </i>
+            </Tooltip>
+          </div>
+          <div style={{ marginLeft: "8px" }}>
+            <Tooltip title="Edit" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={() => editCell(cell)}
+                style={{
+                  color: "green",
+                  fontSize: "19px",
+                  cursor: "pointer",
+                }}
+              >
+                edit
+              </i>
+            </Tooltip>
+          </div>
+          <div style={{ marginLeft: "8px" }}>
+            <Tooltip title="View" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={() => viewCell(cell)}
+                style={{
+                  color: "green",
+                  fontSize: "19px",
+                  cursor: "pointer",
+                }}
+              >
+                view_headline
+              </i>
+            </Tooltip>
+          </div>
+          <div style={{ marginLeft: "8px" }}>
+            <Tooltip title="Download Students" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                // onClick={() => editCell(cell)}
+                style={{
+                  color: "green",
+                  fontSize: "19px",
+                  cursor: "pointer",
+                }}
+              >
+                get_app
+              </i>
+            </Tooltip>
+          </div>
+        </div>
       ),
       button: true,
       conditionalCellStyles: [],
-      width: "200px"
-    }
+      width: "20%",
+    },
   ];
 
   const handleAddActivityClick = () => {
     history.push({
       pathname: routeConstants.ADD_ACTIVITY,
-      addActivity: true
+      addActivity: true,
     });
   };
 
@@ -498,11 +506,11 @@ const ViewActivity = props => {
                   id="combo-box-demo"
                   options={formState.activityFilter}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.title}
+                  getOptionLabel={(option) => option.title}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ACTIVITY_FILTER, event, value)
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Activity Title"
@@ -517,7 +525,7 @@ const ViewActivity = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     searchFilter();
                   }}
@@ -549,10 +557,11 @@ const ViewActivity = props => {
               deleteEvent={deleteCell}
               progressPending={formState.isDataLoading}
               paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, "20px", "20px"]}
+              paginationRowsPerPageOptions={[10, 20, 50]}
               onChangeRowsPerPage={handlePerRowsChange}
               onChangePage={handlePageChange}
               noDataComponent="No Activity details found"
+              style={{ overflowX: "hidden !important" }}
             />
           ) : (
             <div className={classes.noDataMargin}>
@@ -562,7 +571,7 @@ const ViewActivity = props => {
         ) : (
           <Spinner />
         )}
-        {/* <DeleteEducation
+        {/* <DeleteActivity
           showModal={formState.showModalDelete}
           closeModal={handleCloseDeleteModal}
           id={formState.dataToDelete["id"]}

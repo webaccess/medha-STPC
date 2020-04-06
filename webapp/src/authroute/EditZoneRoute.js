@@ -20,7 +20,7 @@ const EditZoneRoute = props => {
       return (
         <Redirect
           to={{
-            pathname: routeConstants.VIEW_ZONES,
+            pathname: routeConstants.MANAGE_ZONES,
             state: { from: props.location }
           }}
         />

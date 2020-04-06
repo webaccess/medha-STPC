@@ -1,15 +1,19 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Modal,
+  Backdrop,
+  Fade
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../components";
-import useStyles from "./DeleteEventStyles";
+import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_ID = "UserName";
@@ -22,8 +26,6 @@ const DeleteUser = props => {
     values: {},
     username: ""
   });
-
-  console.log("propsid", props.id);
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
@@ -142,7 +144,7 @@ const DeleteUser = props => {
               <Grid
                 container
                 direction="row"
-                justify="center"
+                justify="flex-end"
                 alignItems="center"
                 spacing={2}
               >

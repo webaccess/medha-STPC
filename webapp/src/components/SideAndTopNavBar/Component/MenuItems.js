@@ -24,25 +24,25 @@ const MenuItems = props => {
         items: [
           {
             name: "State",
-            link: routeConstants.VIEW_STATES
+            link: routeConstants.MANAGE_STATES
           },
           {
             name: "Zone",
-            link: routeConstants.VIEW_ZONES
+            link: routeConstants.MANAGE_ZONES
           },
           {
             name: "RPC",
-            link: routeConstants.VIEW_RPC
+            link: routeConstants.MANAGE_RPC
           },
           {
             name: "College",
-            link: routeConstants.VIEW_COLLEGE
+            link: routeConstants.MANAGE_COLLEGE
           }
         ]
       },
       {
         name: "User Management",
-        link: routeConstants.VIEW_USER,
+        link: routeConstants.MANAGE_USER,
         Icon: <PeopleOutlineOutlinedIcon />
       },
       {
@@ -78,7 +78,7 @@ const MenuItems = props => {
       },
       {
         name: "College Profile",
-        link: routeConstants.DETAIL_COLLEGE,
+        link: routeConstants.VIEW_COLLEGE,
         Icon: <LocalLibraryOutlinedIcon />
       },
       {
@@ -96,7 +96,7 @@ const MenuItems = props => {
         ]
       },
       {
-        name: "Training",
+        name: "Activity",
         Icon: <AssignmentOutlinedIcon />,
         items: [
           {

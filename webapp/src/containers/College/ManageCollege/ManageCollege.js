@@ -6,18 +6,25 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton,
-  Tooltip
+  IconButton
 } from "@material-ui/core";
 
 import BlockIcon from "@material-ui/icons/Block";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Table, Spinner, Alert } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import useStyles from "./ManageCollegeStyles";
+import useStyles from "../../ContainerStyles/ManagePageStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
-import { GrayButton, YellowButton, GreenButton } from "../../../components";
+import {
+  GrayButton,
+  YellowButton,
+  GreenButton,
+  ViewGridIcon,
+  EditGridIcon,
+  BlockGridIcon,
+  DeleteGridIcon
+} from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import DeleteCollege from "./DeleteCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -343,7 +350,7 @@ const ManageCollege = props => {
   /** View Cell */
   const viewCell = event => {
     history.push({
-      pathname: routeConstants.DETAIL_COLLEGE,
+      pathname: routeConstants.VIEW_COLLEGE,
       dataForEdit: event.target.id
     });
   };
@@ -602,59 +609,26 @@ const ManageCollege = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            <Tooltip title="View" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                onClick={viewCell}
-                style={{ color: "green" }}
-              >
-                view_list
-              </i>
-            </Tooltip>
+            <ViewGridIcon id={cell.id} onClick={viewCell} />
           </div>
           <div className={classes.PaddingActionButton}>
-            <Tooltip title="Edit" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={editCell}
-                style={{ color: "green", fontSize: "21px" }}
-              >
-                edit
-              </i>
-            </Tooltip>
+            <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
           </div>
           <div className={classes.PaddingActionButton}>
-            <Tooltip title={cell.blocked ? "Unblock" : "Block"} placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={blockCell}
-                style={
-                  cell.blocked
-                    ? { color: "red", fontSize: "21px" }
-                    : { color: "green", fontSize: "21px" }
-                }
-              >
-                block
-              </i>
-            </Tooltip>
+            <BlockGridIcon
+              title={cell.blocked}
+              id={cell.id}
+              value={cell.name}
+              onClick={blockCell}
+              style={cell.blocked}
+            />
           </div>
           <div className={classes.PaddingActionButton}>
-            <Tooltip title="Delete" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={deleteCell}
-                style={{ color: "red", fontSize: "23px" }}
-              >
-                delete_outline
-              </i>
-            </Tooltip>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={deleteCell}
+            />
           </div>
         </div>
       ),

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddRpcSchema from "../AddRpcSchema";
-import useStyles from "./AddEditRpcStyles";
+import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
@@ -22,7 +22,6 @@ import { useHistory } from "react-router-dom";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
-// const zoneName = "zoneName";
 const collegeName = "collegeName";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -201,7 +200,7 @@ const AddEditRpc = props => {
         )
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_RPC,
+            pathname: routeConstants.MANAGE_RPC,
             fromEditRpc: true,
             isDataEdited: true,
             editResponseMessage: "",
@@ -211,7 +210,7 @@ const AddEditRpc = props => {
         .catch(error => {
           console.log(error);
           history.push({
-            pathname: routeConstants.VIEW_RPC,
+            pathname: routeConstants.MANAGE_RPC,
             fromEditRpc: true,
             isDataEdited: false,
             editResponseMessage: "",
@@ -223,7 +222,7 @@ const AddEditRpc = props => {
         .serviceProviderForPostRequest(RPCS_URL, postData)
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_RPC,
+            pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
             isDataAdded: true,
             addResponseMessage: "",
@@ -232,7 +231,7 @@ const AddEditRpc = props => {
         })
         .catch(error => {
           history.push({
-            pathname: routeConstants.VIEW_RPC,
+            pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
             isDataAdded: false,
             addResponseMessage: "",
@@ -381,7 +380,7 @@ const AddEditRpc = props => {
                   type="submit"
                   color="primary"
                   variant="contained"
-                  to={routeConstants.VIEW_RPC}
+                  to={routeConstants.MANAGE_RPC}
                 >
                   {genericConstants.CANCEL_BUTTON_TEXT}
                 </GrayButton>

@@ -20,7 +20,7 @@ const EditCollegeRoute = props => {
       return (
         <Redirect
           to={{
-            pathname: routeConstants.VIEW_COLLEGE,
+            pathname: routeConstants.MANAGE_COLLEGE,
             state: { from: props.location }
           }}
         />
