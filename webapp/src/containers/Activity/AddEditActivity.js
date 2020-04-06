@@ -12,8 +12,10 @@ import {
   IconButton,
   InputAdornment,
   OutlinedInput,
-  Collapse
+  Collapse,
 } from "@material-ui/core";
+import Spinner from "../../components/Spinner/Spinner.js";
+import Chip from "@material-ui/core/Chip";
 import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth } from "../../components";
 import * as routeConstants from "../../constants/RouteConstants";
@@ -25,12 +27,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-  KeyboardTimePicker,
-  KeyboardDateTimePicker
-} from "@material-ui/pickers";
+import CustomDateTimePicker from "../../components/CustomDateTimePicker/CustomDateTimePicker.js";
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
@@ -40,31 +37,106 @@ import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
 //import registrationSchema from "./RegistrationSchema.js";
+import Img from "react-image";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
+import ActivityFormSchema from "./ActivityFormSchema";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import {
+  EditorState,
+  convertToRaw,
+  convertFromRaw,
+  ContentState,
+} from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+  },
+  chips: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  chip: {
+    margin: 2,
+  },
+  noLabel: {
+    marginTop: theme.spacing(3),
+  },
   root: {
-    maxWidth: "100%"
+    maxWidth: "100%",
   },
   btnspace: {
-    padding: "0px 18px 50px"
+    padding: "20px 18px 20px",
+  },
+  btnspaceadd: {
+    padding: "0px 15px 15px",
   },
   formgrid: {
-    marginTop: theme.spacing(2),
-    alignItems: "center"
+    marginTop: theme.spacing(0),
+    alignItems: "center",
   },
   divider: {
     marginTop: "15px",
-    marginBottom: "15px"
+    marginBottom: "15px",
   },
-  addcollegetextfield: {
-    padding: "25px"
-  }
+  add_more_btn: {
+    float: "right",
+  },
+  streamcard: {
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    padding: "15px !important",
+    position: "relative",
+    "& label": {
+      position: "absolute",
+      top: "-8px",
+      backgroundColor: "#fff",
+    },
+  },
+  streamoffer: {
+    paddingLeft: "15px",
+    paddingRight: "15px",
+    borderRadius: "0px",
+    boxShadow: "none !important",
+  },
+  streamcardcontent: {
+    boxShadow: "none",
+    borderBottom: "1px solid #ccc",
+    marginBottom: "15px",
+    borderRadius: "0px",
+  },
+  title: {
+    display: "flex",
+    marginBottom: theme.spacing(1),
+    "& h4": {
+      flex: "1",
+      fontWeight: "700",
+    },
+  },
+  CardActionGrid: {
+    backgroundColor: "#EEEEEE",
+  },
+  MarginBottom: {
+    marginBottom: "10px",
+  },
+  toolbarMargin: {
+    marginTop: theme.spacing(2),
+    border: "1px solid",
+  },
 }));
 
-const AddEditActivity = props => {
+const AddEditActivity = (props) => {
   let history = useHistory();
+
+  const [editorState, setEditorState] = React.useState(
+    EditorState.createEmpty()
+  );
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -73,25 +145,30 @@ const AddEditActivity = props => {
     errors: {},
     isSuccess: false,
     showPassword: false,
-    editStudent: props.location.editStudent
-      ? props.location.editStudent
+    editActivity: props.location.editActivity
+      ? props.location.editActivity
       : false,
     dataForEdit: props.location.dataForEdit
       ? props.location.dataForEdit
       : false,
-    counter: 0
+    counter: 0,
+    stream: [],
+    files: {},
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
 
-  const genderlist = [
-    { name: "Male", id: "male" },
-    { name: "Female", id: "female" }
+  const activitytypelist = [
+    { name: "Workshop", id: "workshop" },
+    { name: "Training", id: "training" },
+    { name: "Industrial Visit", id: "industrialVisit" },
   ];
 
-  const physicallyHandicappedlist = [
-    { name: "Yes", id: true },
-    { name: "No", id: false }
+  const educationyearlist = [
+    { name: "First", id: "First" },
+    { name: "Second", id: "Second" },
+    { name: "Third", id: "Third" },
+    { name: "Fourth", id: "Fourth" },
   ];
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -100,90 +177,72 @@ const AddEditActivity = props => {
   const classes = useStyles();
 
   const [statelist, setstatelist] = useState([]);
-  const [districtlist, setdistrictlist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
-
+  const [zonelist, setzonelist] = useState([]);
+  const [rpclist, setrpclist] = useState([]);
+  const [academicyearlist, setacademicyearlist] = useState([]);
   useEffect(() => {
     getStates();
-    getDistrict();
+
     getColleges();
     getStreams();
-
+    getZones();
+    getRpc();
+    getAcademicYear();
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
   if (formState.dataForEdit && !formState.counter) {
     if (props.location["dataForEdit"]) {
-      if (props.location["dataForEdit"]["first_name"]) {
-        formState.values["firstname"] =
-          props.location["dataForEdit"]["first_name"];
+      if (props.location["dataForEdit"]["title"]) {
+        formState.values["activityname"] =
+          props.location["dataForEdit"]["title"];
       }
-      if (props.location["dataForEdit"]["last_name"]) {
-        formState.values["lastname"] =
-          props.location["dataForEdit"]["last_name"];
-      }
-      if (props.location["dataForEdit"]["email"]) {
-        formState.values["email"] = props.location["dataForEdit"]["email"];
-      }
-      if (props.location["dataForEdit"]["contact_number"]) {
-        formState.values["contact"] =
-          props.location["dataForEdit"]["contact_number"];
-      }
-      if (props.location["dataForEdit"]["username"]) {
-        formState.values["username"] =
-          props.location["dataForEdit"]["username"];
-      }
-
-      if (
-        props.location["dataForEdit"]["state"] &&
-        props.location["dataForEdit"]["state"]["id"]
-      ) {
-        formState.values["state"] =
-          props.location["dataForEdit"]["state"]["id"];
+      if (props.location["dataForEdit"]["activity_type"]) {
+        formState.values["activitytype"] =
+          props.location["dataForEdit"]["activity_type"];
       }
       if (
-        props.location["dataForEdit"]["studentInfo"]["stream"] &&
-        props.location["dataForEdit"]["studentInfo"]["stream"]["id"]
+        props.location["dataForEdit"]["academic_year"] &&
+        props.location["dataForEdit"]["academic_year"]["id"]
       ) {
-        formState.values["stream"] =
-          props.location["dataForEdit"]["studentInfo"]["stream"]["id"];
+        formState.values["academicyear"] =
+          props.location["dataForEdit"]["academic_year"]["id"];
+      }
+      if (props.location["dataForEdit"]["streams"]) {
+        formState.values["stream"] = props.location["dataForEdit"]["streams"];
+        const id = props.location["dataForEdit"]["streams"].map((stream) => {
+          return stream.id;
+        });
+        formState["stream"] = id;
+      }
+      if (props.location["dataForEdit"]["address"]) {
+        formState.values["address"] = props.location["dataForEdit"]["address"];
+      }
+      if (props.location["dataForEdit"]["education_year"]) {
+        formState.values["educationyear"] =
+          props.location["dataForEdit"]["education_year"];
       }
 
-      if (
-        props.location["dataForEdit"]["studentInfo"]["district"] &&
-        props.location["dataForEdit"]["studentInfo"]["district"]["id"]
-      ) {
-        formState.values["district"] =
-          props.location["dataForEdit"]["studentInfo"]["district"]["id"];
+      if (props.location["dataForEdit"]["description"]) {
+        // formState.values["description"] = props["dataForEdit"]["description"];
+        const blocksFromHtml = htmlToDraft(
+          props.location["dataForEdit"]["description"]
+        );
+        const { contentBlocks, entityMap } = blocksFromHtml;
+        const contentState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        const editorState = EditorState.createWithContent(contentState);
+        setEditorState(editorState);
+      }
+      if (props.location["dataForEdit"]["trainer_name"]) {
+        formState.values["trainer"] =
+          props.location["dataForEdit"]["trainer_name"];
       }
 
-      if (props.location["dataForEdit"]["studentInfo"]["father_first_name"]) {
-        formState.values["fatherFirstName"] =
-          props.location["dataForEdit"]["studentInfo"]["father_first_name"];
-      }
-      if (props.location["dataForEdit"]["studentInfo"]["father_last_name"]) {
-        formState.values["fatherLastName"] =
-          props.location["dataForEdit"]["studentInfo"]["father_last_name"];
-      }
-      if (props.location["dataForEdit"]["studentInfo"]["address"]) {
-        formState.values["address"] =
-          props.location["dataForEdit"]["studentInfo"]["address"];
-      }
-      if (props.location["dataForEdit"]["studentInfo"]["gender"]) {
-        formState.values["gender"] =
-          props.location["dataForEdit"]["studentInfo"]["gender"];
-      }
-
-      if (props.location["dataForEdit"]["studentInfo"]["roll_number"]) {
-        formState.values["rollnumber"] =
-          props.location["dataForEdit"]["studentInfo"]["roll_number"];
-      }
-
-      if (props.location["dataForEdit"]["studentInfo"]) {
-        formState.values["physicallyHandicapped"] =
-          props.location["dataForEdit"]["studentInfo"]["physicallyHandicapped"];
-      }
       if (
         props.location["dataForEdit"]["college"] &&
         props.location["dataForEdit"]["college"]["id"]
@@ -191,13 +250,24 @@ const AddEditActivity = props => {
         formState.values["college"] =
           props.location["dataForEdit"]["college"]["id"];
       }
-      // if (props.location["dataForEdit"]["studentInfo"]["date_of_birth"]) {
-      //   setSelectedDate(
-      //     new Date(
-      //       props.location["dataForEdit"]["studentInfo"]["date_of_birth"]
-      //     )
-      //   );
-      // }
+      if (props.location["dataForEdit"]["start_date_time"]) {
+        setSelectedDateFrom(
+          new Date(props.location["dataForEdit"]["start_date_time"])
+        );
+      }
+      if (props.location["dataForEdit"]["end_date_time"]) {
+        setSelectedDateTo(
+          new Date(props.location["dataForEdit"]["end_date_time"])
+        );
+      }
+      if (
+        props.location["dataForEdit"]["upload_logo"] &&
+        props.location["dataForEdit"]["upload_logo"]["id"]
+      ) {
+        formState.files = props.location["dataForEdit"]["upload_logo"];
+        //      formState.values["files"] =
+        //        props.location["dataForEdit"]["upload_logo"]["name"];
+      }
     }
     formState.counter += 1;
   }
@@ -210,11 +280,11 @@ const AddEditActivity = props => {
     formState.counter += 1;
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     let schema;
-    // if (formState.editStudent) {
+    // if (formState.editActivity) {
     //   schema = Object.assign(
     //     {},
     //     _.omit(registrationSchema, ["password", "otp"])
@@ -226,12 +296,15 @@ const AddEditActivity = props => {
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
-      schema
+      ActivityFormSchema
     );
     console.log(checkAllFieldsValid);
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
-      formState.errors = formUtilities.setErrors(formState.values, schema);
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        ActivityFormSchema
+      );
 
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
@@ -240,145 +313,271 @@ const AddEditActivity = props => {
       /** This is used to find out which all required fields are not filled */
       formState.values = formUtilities.getListOfKeysNotPresent(
         formState.values,
-        schema
+        ActivityFormSchema
       );
-      formState.errors = formUtilities.setErrors(formState.values, schema);
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        ActivityFormSchema
+      );
     }
     console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
       console.log("postcall");
-      // postStudentData();
+      postActivityData();
 
       /** Call axios from here */
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isValid: true
+        isValid: true,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isValid: false
+        isValid: false,
       }));
     }
   };
 
-  const postStudentData = () => {
+  const postActivityData = () => {
     let postData;
-    if (formState.editStudent) {
-      postData = databaseUtilities.editStudent(
-        formState.values["firstname"],
-        formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
-        formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
-        formState.values["email"],
-        formState.values["contact"],
-        formState.values["username"],
-        formState.values["gender"],
-        // selectedDate.getFullYear() +
-        //   "-" +
-        //   (selectedDate.getMonth() + 1) +
-        //   "-" +
-        //   selectedDate.getDate(),
-        formState.values["physicallyHandicapped"],
+    if (formState.editActivity) {
+      postData = databaseUtilities.editActivity(
+        formState.values["activityname"],
+        formState.values["activitytype"],
+        formState.values["academicyear"],
         formState.values["college"],
-        formState.values["stream"],
-        parseInt(formState.values["rollnumber"]),
-        formState.dataForEdit.id
+        selectedDateFrom.getFullYear() +
+          "-" +
+          (selectedDateFrom.getMonth() + 1 < 9
+            ? "0" + (selectedDateFrom.getMonth() + 1)
+            : selectedDateFrom.getMonth() + 1) +
+          "-" +
+          (selectedDateFrom.getDate() < 9
+            ? "0" + selectedDateFrom.getDate()
+            : selectedDateFrom.getDate()) +
+          "T" +
+          (selectedDateFrom.getHours() < 9
+            ? "0" + selectedDateFrom.getHours()
+            : selectedDateFrom.getHours()) +
+          ":" +
+          (selectedDateFrom.getMinutes() < 9
+            ? "0" + selectedDateFrom.getMinutes()
+            : selectedDateFrom.getMinutes()),
+        selectedDateTo.getFullYear() +
+          "-" +
+          (selectedDateFrom.getMonth() + 1 < 9
+            ? "0" + (selectedDateFrom.getMonth() + 1)
+            : selectedDateFrom.getMonth() + 1) +
+          "-" +
+          (selectedDateTo.getDate() < 9
+            ? "0" + selectedDateTo.getDate()
+            : selectedDateTo.getDate()) +
+          "T" +
+          (selectedDateTo.getHours() < 9
+            ? "0" + selectedDateTo.getHours()
+            : selectedDateTo.getHours()) +
+          ":" +
+          (selectedDateTo.getMinutes() < 9
+            ? "0" + selectedDateTo.getMinutes()
+            : selectedDateTo.getMinutes()),
+        formState.values["educationyear"],
+        formState.values["address"],
+        draftToHtml(convertToRaw(editorState.getCurrentContent())),
+        formState.values["trainer"],
+        formState["stream"],
+        formState["dataForEdit"]["id"],
+        formState.files
       );
       console.log(postData);
       console.log(formState.dataForEdit.id);
       serviceProvider
         .serviceProviderForPutRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-          formState.dataForEdit.studentInfo.id,
+          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
+          formState.dataForEdit.id,
           postData
         )
-        .then(response => {
+        .then((response) => {
           console.log(response);
           console.log("Success");
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
           history.push({
-            pathname: routeConstants.VIEW_PROFILE,
-            success: true
+            pathname: routeConstants.MANAGE_ACTIVITY,
+            isDataEdited: true,
+            editedData: response.data,
           });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           console.log(err.response.data);
           console.log(JSON.stringify(err));
           setIsFailed(true);
         });
     } else {
-      postData = databaseUtilities.addStudent(
-        formState.values["firstname"],
-        formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
-        formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
-        formState.values["email"],
-        formState.values["contact"],
-        formState.values["username"],
-        formState.values["password"],
-        formState.values["gender"],
-        // selectedDate.getFullYear() +
-        //   "-" +
-        //   (selectedDate.getMonth() + 1) +
-        //   "-" +
-        //   selectedDate.getDate(),
-        formState.values["physicallyHandicapped"],
+      postData = databaseUtilities.addActivity(
+        formState.values["activityname"],
+        formState.values["activitytype"],
+        formState.values["academicyear"],
         formState.values["college"],
-        formState.values["stream"],
-        parseInt(formState.values["rollnumber"]),
-        formState.values.otp
+        selectedDateFrom.getFullYear() +
+          "-" +
+          (selectedDateFrom.getMonth() + 1 < 9
+            ? "0" + (selectedDateFrom.getMonth() + 1)
+            : selectedDateFrom.getMonth() + 1) +
+          "-" +
+          (selectedDateFrom.getDate() < 9
+            ? "0" + selectedDateFrom.getDate()
+            : selectedDateFrom.getDate()) +
+          "T" +
+          (selectedDateFrom.getHours() < 9
+            ? "0" + selectedDateFrom.getHours()
+            : selectedDateFrom.getHours()) +
+          ":" +
+          (selectedDateFrom.getMinutes() < 9
+            ? "0" + selectedDateFrom.getMinutes()
+            : selectedDateFrom.getMinutes()),
+        selectedDateTo.getFullYear() +
+          "-" +
+          (selectedDateFrom.getMonth() + 1 < 9
+            ? "0" + (selectedDateFrom.getMonth() + 1)
+            : selectedDateFrom.getMonth() + 1) +
+          "-" +
+          (selectedDateTo.getDate() < 9
+            ? "0" + selectedDateTo.getDate()
+            : selectedDateTo.getDate()) +
+          "T" +
+          (selectedDateTo.getHours() < 9
+            ? "0" + selectedDateTo.getHours()
+            : selectedDateTo.getHours()) +
+          ":" +
+          (selectedDateTo.getMinutes() < 9
+            ? "0" + selectedDateTo.getMinutes()
+            : selectedDateTo.getMinutes()),
+        formState.values["educationyear"],
+        formState.values["address"],
+        draftToHtml(convertToRaw(editorState.getCurrentContent())),
+        formState.values["trainer"],
+        formState["stream"],
+        formState.files
       );
       console.log(postData);
-      axios
-        .post(
-          strapiApiConstants.STRAPI_DB_URL +
-            strapiApiConstants.STRAPI_REGISTER_STUDENT,
+      serviceProvider
+        .serviceProviderForPostRequest(
+          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
           postData
         )
-        .then(response => {
+        .then((response) => {
           console.log(response);
-          history.push(routeConstants.REGISTERED);
+          history.push({
+            pathname: routeConstants.MANAGE_ACTIVITY,
+            isDataAdded: true,
+            addedData: response,
+          });
+          // ImageUpload(response);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
+          setIsFailed(true);
         });
+      console.log(postData);
     }
   };
 
+  const ImageUpload = (response) => {
+    console.log(response);
+    let ImageData = databaseUtilities.uploadDocument(
+      formState.files,
+      "activity",
+      response.data.id,
+      "upload_logo"
+    );
+    console.log(ImageData);
+    serviceProvider
+      .serviceProviderForPostRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD,
+        ImageData
+      )
+      .then((res) => {
+        console.log(res);
+        //setIsSuccess(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsFailed(true);
+      });
+  };
+  const getAcademicYear = () => {
+    serviceProvider
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_ACADEMIC_YEARS
+      )
+      .then((response) => {
+        console.log(response);
+        setacademicyearlist(
+          response.data.result.map(({ id, name }) => ({ id, name }))
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const getZones = () => {
+    serviceProvider
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
+      )
+      .then((response) => {
+        console.log(response);
+        setzonelist(response.data.result.map(({ id, name }) => ({ id, name })));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getRpc = () => {
+    serviceProvider
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS
+      )
+      .then((response) => {
+        console.log(response);
+        setrpclist(response.data.result.map(({ id, name }) => ({ id, name })));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const getStreams = () => {
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS)
-      .then(res => {
+    serviceProvider
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS
+      )
+      .then((res) => {
         console.log(res);
         setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
 
   const getColleges = () => {
-    axios
-      .get(
+    serviceProvider
+      .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
-      .then(res => {
+      .then((res) => {
         console.log(res);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
 
   const getStates = () => {
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
-      .then(res => {
+    serviceProvider
+      .serviceProviderForGetRequest(
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
+      )
+      .then((res) => {
         console.log(res);
         //   const sanitzedOptions = res.data.map(state => {
         //     return {
@@ -389,39 +588,41 @@ const AddEditActivity = props => {
         setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
-
-  const getDistrict = () => {
-    axios
-      .get(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DISTRICTS
-      )
-      .then(res => {
-        console.log(res);
-        //   const sanitzedOptions = res.data.map(district => {
-        //     return {
-        //       id: district.id,
-        //       name: district.name
-        //     };
-        //   });
-        setdistrictlist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
-  };
-
-  const handleChange = e => {
-    /** TO SET VALUES IN FORMSTATE */
+  const handleChangefile = (e) => {
     e.persist();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
 
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value
+          e.target.type === "checkbox" ? e.target.checked : e.target.value,
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true
-      }
+        [e.target.name]: true,
+      },
+      files: e.target.files[0],
+    }));
+    if (formState.errors.hasOwnProperty(e.target.name)) {
+      delete formState.errors[e.target.name];
+    }
+  };
+  const handleChange = (e) => {
+    /** TO SET VALUES IN FORMSTATE */
+    e.persist();
+    setFormState((formState) => ({
+      ...formState,
+
+      values: {
+        ...formState.values,
+        [e.target.name]:
+          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+      },
+      touched: {
+        ...formState.touched,
+        [e.target.name]: true,
+      },
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -430,18 +631,39 @@ const AddEditActivity = props => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
+    console.log("value is:  ");
+    console.log(value);
+
     if (value !== null) {
-      setFormState(formState => ({
-        ...formState,
-        values: {
-          ...formState.values,
-          [eventName]: value.id
-        },
-        touched: {
-          ...formState.touched,
-          [eventName]: true
-        }
-      }));
+      if (eventName === "stream") {
+        const id = value.map((stream) => {
+          return stream.id;
+        });
+        setFormState((formState) => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value,
+          },
+          touched: {
+            ...formState.touched,
+            [eventName]: true,
+          },
+          stream: id,
+        }));
+      } else {
+        setFormState((formState) => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value.id,
+          },
+          touched: {
+            ...formState.touched,
+            [eventName]: true,
+          },
+        }));
+      }
       if (formState.errors.hasOwnProperty(eventName)) {
         delete formState.errors[eventName];
       }
@@ -450,14 +672,7 @@ const AddEditActivity = props => {
     }
   };
 
-  const handleClickShowPassword = () => {
-    setFormState({
-      ...formState,
-      showPassword: !formState.showPassword
-    });
-  };
-
-  const hasError = field => (formState.errors[field] ? true : false);
+  const hasError = (field) => (formState.errors[field] ? true : false);
 
   return (
     <Grid>
@@ -466,11 +681,11 @@ const AddEditActivity = props => {
       {console.log(selectedDateTo)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {formState.editStudent
-            ? genericConstants.EDIT_STUDENT_PROFILE
+          {formState.editActivity
+            ? genericConstants.EDIT_ACTIVITY_TEXT
             : genericConstants.ADD_ACTIVITY_TEXT}
         </Typography>
-        {isFailed && formState.editStudent ? (
+        {isFailed && formState.editActivity ? (
           <Collapse in={isFailed}>
             <Alert
               severity="error"
@@ -491,7 +706,7 @@ const AddEditActivity = props => {
             </Alert>
           </Collapse>
         ) : null}
-        {isFailed && !formState.editStudent ? (
+        {isFailed && !formState.editActivity ? (
           <Collapse in={isFailed}>
             <Alert
               severity="error"
@@ -513,532 +728,463 @@ const AddEditActivity = props => {
           </Collapse>
         ) : null}
       </Grid>
-      <Card>
-        {console.log(props)}
-        {console.log(formState)}
-        {console.log(districtlist)}
-        {console.log(statelist)}
-        <form autoComplete="off">
-          <CardContent>
-            <Grid container spacing={3} className={classes.formgrid}>
-              <Grid item md={12} xs={12}>
-                <TextField
-                  label="Activity Name"
-                  name="activityname"
-                  value={formState.values["activityname"]}
-                  variant="outlined"
-                  error={hasError("activityname")}
-                  required
-                  fullWidth
-                  onChange={handleChange}
-                  helperText={
-                    hasError("activityname")
-                      ? formState.errors["activityname"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item md={12} xs={12}>
-                <TextField
-                  label="Description"
-                  name="description"
-                  value={formState.values["description"]}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  multiline
-                  rows="3"
-                  error={hasError("description")}
-                  onChange={handleChange}
-                  helperText={
-                    hasError("description")
-                      ? formState.errors["description"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDateTimePicker
-                    // variant="inline"
-                    format="dd/MM/yyyy"
-                    margin="normal"
-                    id="date-picker-inline"
-                    label="Date & Time From"
-                    value={selectedDateFrom}
-                    onChange={date => setSelectedDateFrom(date)}
-                    error={hasError("datefrom")}
-                    helperText={
-                      hasError("datefrom")
-                        ? formState.errors["datefrom"].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    KeyboardButtonProps={{
-                      "aria-label": "change date"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    // variant="inline"
-                    format="dd/MM/yyyy"
-                    margin="normal"
-                    id="date-picker-inline"
-                    label="Date & Time To"
-                    value={selectedDateTo}
-                    onChange={date => setSelectedDateTo(date)}
-                    error={hasError("dateto")}
-                    helperText={
-                      hasError("dateto")
-                        ? formState.errors["dateto"].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    KeyboardButtonProps={{
-                      "aria-label": "change date"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
-              </Grid>
-              <Grid item md={12} xs={12}>
-                <TextField
-                  label="Address"
-                  name="address"
-                  value={formState.values["address"] || ""}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  onChange={handleChange}
-                  error={hasError("address")}
-                  helperText={
-                    hasError("address")
-                      ? formState.errors["address"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <Autocomplete
-                  id="combo-box-demo"
-                  className={classes.root}
-                  options={statelist}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete("state", event, value);
-                  }}
-                  value={
-                    statelist[
-                      statelist.findIndex(function(item, i) {
-                        return item.id === formState.values.state;
-                      })
-                    ] || null
-                  }
-                  renderInput={params => (
+      <Grid spacing={3}>
+        <Card>
+          {console.log(props)}
+          {console.log(formState)}
+          {console.log(statelist)}
+          <form autoComplete="off">
+            <CardContent>
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
                     <TextField
-                      {...params}
-                      error={hasError("state")}
-                      label="State"
+                      label="Activity Name"
+                      name="activityname"
+                      value={formState.values["activityname"]}
                       variant="outlined"
-                      name="tester"
-                      helperText={
-                        hasError("state")
-                          ? formState.errors["state"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <Autocomplete
-                  id="combo-box-demo"
-                  className={classes.root}
-                  options={districtlist}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete("district", event, value);
-                  }}
-                  value={
-                    districtlist[
-                      districtlist.findIndex(function(item, i) {
-                        return item.id === formState.values.district;
-                      })
-                    ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      error={hasError("district")}
-                      label="District"
-                      variant="outlined"
-                      name="tester"
-                      helperText={
-                        hasError("district")
-                          ? formState.errors["district"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item md={3} xs={12}>
-                <TextField
-                  label="Contact Number"
-                  name="contact"
-                  value={formState.values["contact"] || ""}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  readOnly
-                  disabled
-                  error={hasError("contact")}
-                  helperText={
-                    hasError("contact")
-                      ? formState.errors["contact"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    // variant="inline"
-                    format="dd/MM/yyyy"
-                    margin="normal"
-                    id="date-picker-inline"
-                    label="Date of Birth"
-                    // value={selectedDate}
-                    // onChange={date => setSelectedDate(date)}
-                    error={hasError("dateofbirth")}
-                    helperText={
-                      hasError("dateofbirth")
-                        ? formState.errors["dateofbirth"].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    KeyboardButtonProps={{
-                      "aria-label": "change date"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <Autocomplete
-                  id="combo-box-demo"
-                  className={classes.root}
-                  options={genderlist}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete("gender", event, value);
-                  }}
-                  value={
-                    genderlist[
-                      genderlist.findIndex(function(item, i) {
-                        return item.id === formState.values.gender;
-                      })
-                    ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      error={hasError("gender")}
-                      label="Gender"
-                      required
-                      variant="outlined"
-                      name="tester"
-                      helperText={
-                        hasError("gender")
-                          ? formState.errors["gender"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <TextField
-                  label="Email-Id"
-                  name="email"
-                  value={formState.values["email"] || ""}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  disabled={formState.editStudent ? true : false}
-                  onChange={handleChange}
-                  error={hasError("email")}
-                  helperText={
-                    hasError("email")
-                      ? formState.errors["email"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <Autocomplete
-                  id="combo-box-demo"
-                  className={classes.root}
-                  options={collegelist}
-                  disabled={formState.editStudent ? true : false}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete("college", event, value);
-                  }}
-                  value={
-                    collegelist[
-                      collegelist.findIndex(function(item, i) {
-                        return item.id === formState.values.college;
-                      })
-                    ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      error={hasError("college")}
-                      label="College"
-                      variant="outlined"
-                      required
-                      name="tester"
-                      helperText={
-                        hasError("college")
-                          ? formState.errors["college"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <Autocomplete
-                  id="combo-box-demo"
-                  className={classes.root}
-                  options={streamlist}
-                  disabled={formState.editStudent ? true : false}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete("stream", event, value);
-                  }}
-                  value={
-                    streamlist[
-                      streamlist.findIndex(function(item, i) {
-                        return item.id === formState.values.stream;
-                      })
-                    ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      error={hasError("stream")}
-                      label="Stream"
-                      variant="outlined"
-                      name="tester"
-                      helperText={
-                        hasError("stream")
-                          ? formState.errors["stream"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item md={3} xs={12}>
-                <TextField
-                  label="College Roll Number "
-                  name="rollnumber"
-                  value={formState.values["rollnumber"] || ""}
-                  variant="outlined"
-                  fullWidth
-                  required
-                  onChange={handleChange}
-                  error={hasError("rollnumber")}
-                  helperText={
-                    hasError("rollnumber")
-                      ? formState.errors["rollnumber"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <TextField
-                  label="Username"
-                  name="username"
-                  value={formState.values["username"] || ""}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  disabled={formState.editStudent ? true : false}
-                  onChange={handleChange}
-                  error={hasError("username")}
-                  helperText={
-                    hasError("username")
-                      ? formState.errors["username"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid>
-
-              {formState.editStudent ? null : (
-                <Grid item md={3} xs={12}>
-                  <FormControl fullWidth variant="outlined">
-                    <InputLabel
-                      htmlFor="outlined-adornment-password"
-                      fullWidth
-                      error={hasError("password")}
-                    >
-                      Password
-                    </InputLabel>
-                    <OutlinedInput
-                      label="Password"
-                      name="password"
-                      type={formState.showPassword ? "text" : "password"}
-                      // value={formState.values[user.password]}
+                      error={hasError("activityname")}
                       required
                       fullWidth
                       onChange={handleChange}
-                      error={hasError("password")}
                       helperText={
-                        hasError("password")
-                          ? formState.errors["password"].map(error => {
+                        hasError("activityname")
+                          ? formState.errors["activityname"].map((error) => {
                               return error + " ";
                             })
                           : null
                       }
-                      endAdornment={
-                        <InputAdornment
-                          position="end"
-                          error={hasError("password")}
-                        >
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            edge="end"
-                          >
-                            {formState.showPassword ? (
-                              <Visibility />
-                            ) : (
-                              <VisibilityOff />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      }
                     />
-                  </FormControl>
+                  </Grid>
                 </Grid>
-              )}
-              <Grid item md={3} xs={12}>
-                <Autocomplete
-                  id="combo-box-demo"
-                  className={classes.root}
-                  options={physicallyHandicappedlist}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) => {
-                    handleChangeAutoComplete(
-                      "physicallyHandicapped",
-                      event,
-                      value
-                    );
-                  }}
-                  value={
-                    physicallyHandicappedlist[
-                      physicallyHandicappedlist.findIndex(function(item, i) {
-                        return (
-                          item.id === formState.values.physicallyHandicapped
-                        );
-                      })
-                    ] || null
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      error={hasError("physicallyHandicapped")}
-                      label="Physically Handicapped"
-                      variant="outlined"
-                      name="tester"
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={12} xs={12}>
+                    <Grid className={classes.streamcard}>
+                      <Card className={classes.streamoffer}>
+                        <InputLabel
+                          htmlFor="outlined-stream-card"
+                          fullwidth={true.toString()}
+                        >
+                          {genericConstants.DESCRIPTION}
+                        </InputLabel>
+                        <div className="rdw-storybook-root">
+                          <Editor
+                            editorState={editorState}
+                            toolbarClassName="rdw-storybook-toolbar"
+                            wrapperClassName="rdw-storybook-wrapper"
+                            editorClassName="rdw-storybook-editor"
+                            value={editorState}
+                            onEditorStateChange={(data) => {
+                              setEditorState(data);
+                            }}
+                          />
+                        </div>
+                      </Card>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid container spacing={3} className={classes.Datetime}>
+                  <Grid item md={6} xs={12}>
+                    <CustomDateTimePicker
+                      variant="inline"
+                      format="dd/MM/yyyy HH:mm"
+                      margin="normal"
+                      required
+                      id="date-picker-inline"
+                      label="Date & Time From"
+                      value={selectedDateFrom}
+                      onChange={(date) => setSelectedDateFrom(date)}
+                      error={hasError("datefrom")}
                       helperText={
-                        hasError("physicallyHandicapped")
-                          ? formState.errors["physicallyHandicapped"].map(
-                              error => {
-                                return error + " ";
-                              }
-                            )
+                        hasError("datefrom")
+                          ? formState.errors["datefrom"].map((error) => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <CustomDateTimePicker
+                      variant="inline"
+                      format="dd/MM/yyyy HH:mm"
+                      margin="normal"
+                      required
+                      id="date-picker-inline"
+                      label="Date & Time To"
+                      value={selectedDateTo}
+                      onChange={(date) => setSelectedDateTo(date)}
+                      error={hasError("dateto")}
+                      helperText={
+                        hasError("dateto")
+                          ? formState.errors["dateto"].map((error) => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      label="Address"
+                      name="address"
+                      value={formState.values["address"] || ""}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      error={hasError("address")}
+                      helperText={
+                        hasError("address")
+                          ? formState.errors["address"].map((error) => {
+                              return error + " ";
+                            })
                           : null
                       }
                     />
-                  )}
-                />
+                  </Grid>
+                </Grid>
+
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={collegelist}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("college", event, value);
+                      }}
+                      value={
+                        collegelist[
+                          collegelist.findIndex(function (item, i) {
+                            return item.id === formState.values.college;
+                          })
+                        ] || null
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={hasError("college")}
+                          label="College"
+                          variant="outlined"
+                          required
+                          name="tester"
+                          helperText={
+                            hasError("college")
+                              ? formState.errors["college"].map((error) => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={academicyearlist}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("academicyear", event, value);
+                      }}
+                      value={
+                        academicyearlist[
+                          academicyearlist.findIndex(function (item, i) {
+                            return item.id === formState.values.academicyear;
+                          })
+                        ] || null
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={hasError("academicyear")}
+                          label="Academic Year"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("academicyear")
+                              ? formState.errors["academicyear"].map(
+                                  (error) => {
+                                    return error + " ";
+                                  }
+                                )
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={12} xs={12} className={classes.root}>
+                    <Autocomplete
+                      multiple={true}
+                      id="tags-outlined"
+                      required
+                      options={streamlist}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("stream", event, value);
+                      }}
+                      value={formState.values.stream}
+                      filterSelectedOptions
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={hasError("stream")}
+                          label="Stream"
+                          variant="outlined"
+                          required
+                          name="tester"
+                          helperText={
+                            hasError("stream")
+                              ? formState.errors["stream"].map((error) => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
-              {formState.editStudent ? (
-                <Grid item md={12} xs={12} className={classes.btnspace}>
-                  <YellowButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    style={{ marginRight: "18px" }}
-                    onClick={handleSubmit}
-                  >
-                    <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
-                  </YellowButton>
-                  <GrayButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    onClick={() => {
-                      history.push(routeConstants.VIEW_PROFILE);
-                    }}
-                  >
-                    <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
-                  </GrayButton>
+              <Divider className={classes.divider} />
+              {/* <Grid item md={4} xs={12}>
+                <TextField
+                  label="Marks"
+                  name="marks"
+                  value={formState.values["marks"] || ""}
+                  variant="outlined"
+                  required
+                  fullWidth
+                  disabled={formState.editActivity ? true : false}
+                  onChange={handleChange}
+                  error={hasError("marks")}
+                  helperText={
+                    hasError("marks")
+                      ? formState.errors["marks"].map(error => {
+                          return error + " ";
+                        })
+                      : null
+                  }
+                />
+              </Grid> */}
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={educationyearlist}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("educationyear", event, value);
+                      }}
+                      value={
+                        educationyearlist[
+                          educationyearlist.findIndex(function (item, i) {
+                            return item.id === formState.values.educationyear;
+                          })
+                        ] || null
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={hasError("educationyear")}
+                          label="Education Year"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("educationyear")
+                              ? formState.errors["educationyear"].map(
+                                  (error) => {
+                                    return error + " ";
+                                  }
+                                )
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={activitytypelist}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("activitytype", event, value);
+                      }}
+                      value={
+                        activitytypelist[
+                          activitytypelist.findIndex(function (item, i) {
+                            return item.id === formState.values.activitytype;
+                          })
+                        ] || null
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={hasError("activitytype")}
+                          label="Activity Type"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("activitytype")
+                              ? formState.errors["activitytype"].map(
+                                  (error) => {
+                                    return error + " ";
+                                  }
+                                )
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
-              ) : (
-                <Grid item md={12} xs={12} className={classes.btnspace}>
-                  <YellowButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    onClick={handleSubmit}
-                  >
-                    <span>{authPageConstants.REGISTER}</span>
-                  </YellowButton>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      label="Trainer Name"
+                      name="trainer"
+                      value={formState.values["trainer"] || ""}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      error={hasError("trainer")}
+                      helperText={
+                        hasError("trainer")
+                          ? formState.errors["trainer"].map((error) => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>
                 </Grid>
-              )}
-            </Grid>
-          </CardContent>
-        </form>
-      </Card>
+              </Grid>
+              <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    {console.log(formState.values.files)}
+                    {formState.files !== null &&
+                    formState.files !== undefined &&
+                    formState.files !== {} ? (
+                      <Img
+                        src={
+                          formState.files["url"]
+                            ? strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                              formState.files["url"]
+                            : formState.values.files
+                        }
+                        loader={<Spinner />}
+                        width="50%"
+                        height="50%"
+                      />
+                    ) : (
+                      <Img
+                        src="/images/noImage.png"
+                        loader={<Spinner />}
+                        width="100%"
+                        height="100%"
+                      />
+                    )}
+                  </Grid>
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      fullWidth
+                      id="files"
+                      margin="normal"
+                      name="files"
+                      placeholder="Upload Logo"
+                      onChange={handleChangefile}
+                      required
+                      type="file"
+                      value={formState.values["files"] || ""}
+                      error={hasError("files")}
+                      helperText={
+                        hasError("files")
+                          ? formState.errors["files"].map((error) => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                    />
+                  </Grid>
+                </Grid>
+                {formState.editActivity ? (
+                  <Grid item md={12} xs={12} className={classes.btnspace}>
+                    <YellowButton
+                      color="primary"
+                      type="submit"
+                      mfullWidth
+                      variant="contained"
+                      style={{ marginRight: "18px" }}
+                      onClick={handleSubmit}
+                    >
+                      <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
+                    </YellowButton>
+                    <GrayButton
+                      color="primary"
+                      type="submit"
+                      mfullWidth
+                      variant="contained"
+                      onClick={() => {
+                        history.push(routeConstants.MANAGE_ACTIVITY);
+                      }}
+                    >
+                      <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                    </GrayButton>
+                  </Grid>
+                ) : (
+                  <Grid item md={12} xs={12} className={classes.btnspace}>
+                    <YellowButton
+                      color="primary"
+                      type="submit"
+                      mfullWidth
+                      variant="contained"
+                      style={{ marginRight: "18px" }}
+                      onClick={handleSubmit}
+                    >
+                      <span>{authPageConstants.CREATE_ACTIVITY}</span>
+                    </YellowButton>
+                    <GrayButton
+                      color="primary"
+                      type="submit"
+                      mfullWidth
+                      variant="contained"
+                      onClick={() => {
+                        history.push(routeConstants.MANAGE_ACTIVITY);
+                      }}
+                    >
+                      <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                    </GrayButton>
+                  </Grid>
+                )}
+              </Grid>
+            </CardContent>
+          </form>
+        </Card>
+      </Grid>
     </Grid>
   );
 };

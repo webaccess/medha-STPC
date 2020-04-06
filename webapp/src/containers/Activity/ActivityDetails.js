@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from "react";
-import * as serviceProviders from "../../../api/Axios";
-import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Auth as auth, Spinner, GreenButton } from "../../../components";
+import * as serviceProviders from "../../api/Axios";
+import * as strapiConstants from "../../constants/StrapiApiConstants";
+import { Auth as auth } from "../../components";
+import Spinner from "../../components/Spinner/Spinner.js";
+import GreenButton from "../../components/GreenButton/GreenButton.js";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import {
+  EditorState,
+  convertToRaw,
+  convertFromRaw,
+  ContentState
+} from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 import {
   Card,
   CardContent,
@@ -11,30 +23,34 @@ import {
   Icon,
   Typography
 } from "@material-ui/core";
-import useStyles from "./ViewEventStyles";
+import ReactHtmlParser, {
+  processNodes,
+  convertNodeToElement,
+  htmlparser2
+} from "react-html-parser";
+import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
-import * as routeConstants from "../../../constants/RouteConstants";
+import * as routeConstants from "../../constants/RouteConstants";
+import * as genericConstants from "../../constants/GenericConstants";
 import Img from "react-image";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import ReactHtmlParser from "react-html-parser";
-
+import * as formUtilities from "../../Utilities/FormUtilities.js";
 const ReactMarkdown = require("react-markdown");
 
-const EVENTS_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
+const ACTIVITIES_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
 
-const ViewEvent = props => {
+const ActivityDetails = props => {
   const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
-    eventDetails: {},
+    activityDetails: {},
     greenButtonChecker: true
   });
   useEffect(() => {
-    getEventDetails();
+    getactivityDetails();
   }, []);
 
-  async function getEventDetails() {
+  async function getactivityDetails() {
     let paramsForEvent = null;
     if (auth.getUserInfo().role.name === "Medha Admin") {
       paramsForEvent = props["location"]["dataForView"];
@@ -43,12 +59,12 @@ const ViewEvent = props => {
     }
     if (paramsForEvent !== null && paramsForEvent !== undefined) {
       await serviceProviders
-        .serviceProviderForGetOneRequest(EVENTS_URL, paramsForEvent)
+        .serviceProviderForGetOneRequest(ACTIVITIES_URL, paramsForEvent)
         .then(res => {
           let viewData = res.data.result;
           setFormState(formState => ({
             ...formState,
-            eventDetails: viewData
+            activityDetails: viewData
           }));
         })
         .catch(error => {
@@ -57,11 +73,11 @@ const ViewEvent = props => {
     } else {
       if (auth.getUserInfo().role.name === "Medha Admin") {
         history.push({
-          pathname: routeConstants.MANAGE_EVENT
+          pathname: routeConstants.MANAGE_ACTIVITY
         });
       } else if (auth.getUserInfo().role.name === "Student") {
         history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT
+          pathname: routeConstants.ELIGIBLE_ACTIVITY
         });
       } else {
         history.push({
@@ -74,14 +90,14 @@ const ViewEvent = props => {
   const route = () => {
     if (auth.getUserInfo().role.name === "Student") {
       history.push({
-        pathname: routeConstants.ELIGIBLE_EVENT
+        pathname: routeConstants.ELIGIBLE_ACTIVITY
       });
     } else if (
       auth.getUserInfo().role.name === "Medha Admin" ||
       auth.getUserInfo().role.name === "College Admin"
     ) {
       history.push({
-        pathname: routeConstants.MANAGE_EVENT
+        pathname: routeConstants.MANAGE_ACTIVITY
       });
     } else {
       auth.clearToken();
@@ -93,53 +109,55 @@ const ViewEvent = props => {
   };
 
   const getTime = () => {
-    let startTime = new Date(formState.eventDetails["start_date_time"]);
+    let startTime = new Date(formState.activityDetails["start_date_time"]);
     if (
-      formState.eventDetails["start_date_time"] &&
-      formState.eventDetails["end_date_time"]
+      formState.activityDetails["start_date_time"] &&
+      formState.activityDetails["end_date_time"]
     ) {
-      let endTime = new Date(formState.eventDetails["end_date_time"]);
+      let endTime = new Date(formState.activityDetails["end_date_time"]);
       return (
         startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
       );
     } else {
-      startTime = new Date(formState.eventDetails["start_date_time"]);
+      startTime = new Date(formState.activityDetails["start_date_time"]);
       return startTime.toLocaleTimeString();
     }
   };
 
   const getDate = () => {
-    let startDate = new Date(formState.eventDetails["start_date_time"]);
+    let startDate = new Date(formState.activityDetails["start_date_time"]);
     if (
-      formState.eventDetails["start_date_time"] &&
-      formState.eventDetails["end_date_time"]
+      formState.activityDetails["start_date_time"] &&
+      formState.activityDetails["end_date_time"]
     ) {
-      let endDate = new Date(formState.eventDetails["end_date_time"]);
+      let endDate = new Date(formState.activityDetails["end_date_time"]);
       return startDate.toDateString() + " to " + endDate.toDateString();
     } else {
-      startDate = new Date(formState.eventDetails["start_date_time"]);
+      startDate = new Date(formState.activityDetails["start_date_time"]);
       return startDate.toDateString();
     }
   };
 
   const getVenue = () => {
-    return formState.eventDetails["address"];
+    return formState.activityDetails["address"];
   };
 
-  const register = () => {};
+  const register = () => {
+    console.log("Register");
+  };
   return (
     <Grid>
       {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Event
+          Activity
         </Typography>
         <GreenButton
           variant="contained"
           color="primary"
           disableElevation
           onClick={route}
-          to={routeConstants.MANAGE_EVENT}
+          to={routeConstants.MANAGE_ACTIVITY}
           startIcon={<Icon>keyboard_arrow_left</Icon>}
           greenButtonChecker={formState.greenButtonChecker}
         >
@@ -151,11 +169,11 @@ const ViewEvent = props => {
           <CardContent>
             <Grid container spacing={3} className={classes.formgrid}>
               <Grid item md={12} xs={12}>
-                {!formUtilities.checkEmpty(formState.eventDetails) ? (
+                {!formUtilities.checkEmpty(formState.activityDetails) ? (
                   <React.Fragment>
                     <Grid item md={12} xs={12} className={classes.title}>
                       <Typography variant="h4" gutterBottom>
-                        {formState.eventDetails["title"]}
+                        {formState.activityDetails["title"]}
                       </Typography>
                     </Grid>
                     <Divider />
@@ -170,13 +188,14 @@ const ViewEvent = props => {
                           className={classes.defaultMargin}
                           spacing={4}
                         >
-                          {formState.eventDetails["upload_logo"] !== null &&
-                          formState.eventDetails["upload_logo"] !== undefined &&
-                          formState.eventDetails["upload_logo"] !== {} ? (
+                          {formState.activityDetails["upload_logo"] !== null &&
+                          formState.activityDetails["upload_logo"] !==
+                            undefined &&
+                          formState.activityDetails["upload_logo"] !== {} ? (
                             <Img
                               src={
                                 strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                                formState.eventDetails["upload_logo"]["url"]
+                                formState.activityDetails["upload_logo"]["url"]
                               }
                               loader={<Spinner />}
                               width="100%"
@@ -218,10 +237,9 @@ const ViewEvent = props => {
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
-                        {/* <ReactMarkdown
-                          source={formState.eventDetails["description"]}
-                        /> */}
-                        {ReactHtmlParser(formState.eventDetails["description"])}
+                        {ReactHtmlParser(
+                          formState.activityDetails["description"]
+                        )}
                       </Grid>
                     </Grid>
                     <Grid>
@@ -233,7 +251,7 @@ const ViewEvent = props => {
                               color="primary"
                               disableElevation
                               onClick={register}
-                              to={routeConstants.MANAGE_EVENT}
+                              to={routeConstants.ELIGIBLE_ACTIVITY}
                               greenButtonChecker={formState.greenButtonChecker}
                             >
                               Register
@@ -254,4 +272,4 @@ const ViewEvent = props => {
     </Grid>
   );
 };
-export default ViewEvent;
+export default ActivityDetails;

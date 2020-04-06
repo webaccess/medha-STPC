@@ -311,10 +311,87 @@ export const uploadDocument = (files, ref, refId, field) => {
   return formData;
 };
 
+export const addActivity = (
+  title,
+  activity_type,
+  academic_year,
+  college,
+  start_date_time,
+  end_date_time,
+  education_year,
+  address,
+  description,
+  trainer_name,
+  streams,
+  files
+) => {
+  const data = {
+    title: title,
+    activity_type: activity_type,
+    academic_year: academic_year,
+    college: college,
+    start_date_time: start_date_time,
+    end_date_time: end_date_time,
+    education_year: education_year,
+    address: address,
+    description: description,
+    trainer_name: trainer_name,
+    streams: streams
+  };
+  const formdata = new FormData();
+  formdata.append("files.upload_logo", files, files.name);
+  formdata.append("data", JSON.stringify(data));
+  return formdata;
+};
+
+export const editActivity = (
+  title,
+  activity_type,
+  academic_year,
+  college,
+  start_date_time,
+  end_date_time,
+  education_year,
+  address,
+  description,
+  trainer_name,
+  streams,
+  id,
+  files
+) => {
+  const data = {
+    title: title,
+    activity_type: activity_type,
+    academic_year: academic_year,
+    college: college,
+    start_date_time: start_date_time,
+    end_date_time: end_date_time,
+    education_year: education_year,
+    address: address,
+    description: description,
+    trainer_name: trainer_name,
+    streams: streams,
+    id: id
+  };
+  const formdata = new FormData();
+  console.log(Object.keys(files).length);
+  if (Object.keys(files).length) {
+    formdata.append("files.upload_logo", files, files.name);
+    formdata.append("data", JSON.stringify(data));
+    return formdata;
+  } else return data;
+};
 export const addAcademicHistory = (academicYear, educationYear) => {
   return {
     academic_year: academicYear,
     education_year: educationYear
+  };
+};
+
+export const addActivityBatch = (name, students) => {
+  return {
+    name,
+    students
   };
 };
 

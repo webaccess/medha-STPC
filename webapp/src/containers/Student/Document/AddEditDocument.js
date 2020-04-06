@@ -150,10 +150,8 @@ const AddEditDocument = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.ADD_DOCUMENT_TEXT}
-        </Typography>
         {isSuccess ? (
           <Alert severity="success">
             {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}

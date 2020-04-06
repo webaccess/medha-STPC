@@ -1,6 +1,7 @@
 export const STRAPI_LOGIN_PATH = "auth/local";
-export const STRAPI_DB_URL = "http://104.236.28.24:1338/";
-export const STRAPI_DB_URL_WITHOUT_HASH = "http://104.236.28.24:1338";
+export const STRAPI_DB_URL = process.env.REACT_APP_SERVER_URL;
+export const STRAPI_DB_URL_WITHOUT_HASH =
+  process.env.REACT_APP_SERVER_URL_WITHOUT_HASH;
 export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "states";
 export const STRAPI_RPCS = "rpcs";
@@ -27,4 +28,12 @@ export const STRAPI_ACADEMIC_HISTORY = "academic-histories";
 export const STRAPI_EVENTS = "events";
 export const STRAPI_ACTIVITY = "activities";
 export const STRAPI_COLLEGE_ACTIVITY = "activity";
+export const STRAPI_ACTIVITY_BATCH_URL = "activity-batches";
+export const STRAPI_CREATE_ACTIVITY_BATCH_URL = "create-activity-batch";
+export const STRAPI_MANAGE_ACTIVITY_BATCH_URL = "manage-activity-batch";
+export const STRAPI_DELETE_STUDENT_ACTIVITY_BATCH_URL = "remove-students";
+export const STRAPI_ADD_STUDENT_ACTIVITY_BATCH = "add-students";
+export const STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH = "validate-activity-batch";
+export const STRAPI_UNVALIDATE_STUDENT_ACTIVITY_BATCH =
+  "invalidate-activity-batch";
 export const STRAPI_EVENT_REGISTRATION = "event-registrations";
