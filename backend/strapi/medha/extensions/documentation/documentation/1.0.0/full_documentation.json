@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "04/03/2020 4:45:59 PM"
+    "x-generation-date": "04/06/2020 1:45:26 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -16188,11 +16188,11 @@
               "marks": {
                 "type": "number"
               },
-              "qualification": {
-                "type": "string"
-              },
               "question_set": {
                 "type": "string"
+              },
+              "qualifications": {
+                "type": "component"
               }
             }
           },
@@ -16448,19 +16448,6 @@
           "marks": {
             "type": "number"
           },
-          "qualification": {
-            "required": [
-              "id"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            }
-          },
           "question_set": {
             "required": [
               "id",
@@ -16483,6 +16470,33 @@
                 "type": "array",
                 "items": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "qualifications": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "qualification": {
+                  "type": "string",
+                  "enum": [
+                    "SSC",
+                    "HSC",
+                    "BSc",
+                    "MSc",
+                    "BE"
+                  ]
+                },
+                "marks": {
+                  "type": "number"
                 }
               }
             }
@@ -16525,11 +16539,35 @@
           "marks": {
             "type": "number"
           },
-          "qualification": {
-            "type": "string"
-          },
           "question_set": {
             "type": "string"
+          },
+          "qualifications": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "qualification": {
+                  "type": "string",
+                  "enum": [
+                    "SSC",
+                    "HSC",
+                    "BSc",
+                    "MSc",
+                    "BE"
+                  ]
+                },
+                "marks": {
+                  "type": "number"
+                }
+              }
+            }
           }
         }
       },
@@ -16639,11 +16677,11 @@
               "marks": {
                 "type": "number"
               },
-              "qualification": {
-                "type": "string"
-              },
               "question_set": {
                 "type": "string"
+              },
+              "qualifications": {
+                "type": "component"
               }
             }
           },

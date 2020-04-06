@@ -743,19 +743,6 @@
           "marks": {
             "type": "number"
           },
-          "qualification": {
-            "required": [
-              "id"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            }
-          },
           "question_set": {
             "required": [
               "id",
@@ -778,6 +765,33 @@
                 "type": "array",
                 "items": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "qualifications": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "qualification": {
+                  "type": "string",
+                  "enum": [
+                    "SSC",
+                    "HSC",
+                    "BSc",
+                    "MSc",
+                    "BE"
+                  ]
+                },
+                "marks": {
+                  "type": "number"
                 }
               }
             }
@@ -820,11 +834,35 @@
           "marks": {
             "type": "number"
           },
-          "qualification": {
-            "type": "string"
-          },
           "question_set": {
             "type": "string"
+          },
+          "qualifications": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "qualification": {
+                  "type": "string",
+                  "enum": [
+                    "SSC",
+                    "HSC",
+                    "BSc",
+                    "MSc",
+                    "BE"
+                  ]
+                },
+                "marks": {
+                  "type": "number"
+                }
+              }
+            }
           }
         }
       }

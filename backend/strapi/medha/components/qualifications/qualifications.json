@@ -1,0 +1,24 @@
+{
+  "info": {
+    "name": "qualifications",
+    "icon": "asterisk"
+  },
+  "options": {},
+  "attributes": {
+    "qualification": {
+      "type": "enumeration",
+      "enum": [
+        "SSC",
+        "HSC",
+        "BSc",
+        "MSc",
+        "BE"
+      ]
+    },
+    "marks": {
+      "type": "decimal"
+    }
+  },
+  "connection": "default",
+  "collectionName": "components_qualifications_qualifications"
+}
