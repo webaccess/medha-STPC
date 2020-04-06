@@ -24,6 +24,19 @@ module.exports = {
     return ctx.send(utils.getFindOneResponse("success"));
   },
 
+  inValidateStudentForActivityBatch: async ctx => {
+    const { students } = ctx.request.body;
+    const { id } = ctx.params;
+
+    await strapi
+      .query("activity-batch-attendance")
+      .model.query(qb => {
+        qb.where("activity_batch", id).whereIn("student", students);
+      })
+      .save({ verified_by_college: false }, { patch: true, require: false });
+    return ctx.send(utils.getFindOneResponse("success"));
+  },
+
   addStudentsToActivityBatch: async ctx => {
     const { students } = ctx.request.body;
     const { id } = ctx.params;
