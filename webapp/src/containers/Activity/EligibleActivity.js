@@ -10,7 +10,7 @@ import {
   Spinner,
   GreenButton,
   YellowButton,
-  Alert
+  Alert,
 } from "../../components";
 import {
   Card,
@@ -19,7 +19,7 @@ import {
   Divider,
   Typography,
   IconButton,
-  Collapse
+  Collapse,
 } from "@material-ui/core";
 import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
@@ -29,7 +29,7 @@ import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
 //import RegisterEvent from "./EventRegistration";
 
-const EligibleActivity = props => {
+const EligibleActivity = (props) => {
   const history = useHistory();
   const [open, setOpen] = useState(true);
 
@@ -42,7 +42,7 @@ const EligibleActivity = props => {
     registerUserId: "",
     eventtitle: "",
     isStudentRegister: false,
-    authUserRegistering: auth.getUserInfo().id
+    authUserRegistering: auth.getUserInfo().id,
   });
   useEffect(() => {
     getactivityDetails();
@@ -51,54 +51,54 @@ const EligibleActivity = props => {
   console.log("aurhUser", formState.authUserRegistering);
 
   async function getactivityDetails() {
-    let paramsForCollege = null;
+    let paramsForStudent = null;
     if (
       auth.getUserInfo().role.name === "Student" &&
-      auth.getUserInfo().college !== null
+      auth.getUserInfo().studentInfo !== null
     ) {
-      paramsForCollege = auth.getUserInfo().college.id;
+      paramsForStudent = auth.getUserInfo().studentInfo.id;
     } else {
       localStorage.clear();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.SIGN_IN_URL,
       });
     }
-    if (paramsForCollege !== null && paramsForCollege !== undefined) {
+    if (paramsForStudent !== null && paramsForStudent !== undefined) {
       const COLLEGES_URL =
         strapiConstants.STRAPI_DB_URL +
-        "colleges/" +
-        paramsForCollege +
+        "students/" +
+        paramsForStudent +
         "/activity";
       let params = {
-        pageSize: -1
+        pageSize: -1,
       };
       await serviceProviders
         .serviceProviderForGetRequest(COLLEGES_URL, params)
-        .then(res => {
+        .then((res) => {
           let viewData = res.data.result;
-          setFormState(formState => ({
+          setFormState((formState) => ({
             ...formState,
-            activityDetails: viewData
+            activityDetails: viewData,
           }));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
         });
     } else {
       if (auth.getUserInfo().role.name === "Student") {
         history.push({
-          pathname: routeConstants.VIEW_PROFILE
+          pathname: routeConstants.VIEW_PROFILE,
         });
       } else {
         localStorage.clear();
         history.push({
-          pathname: routeConstants.SIGN_IN_URL
+          pathname: routeConstants.SIGN_IN_URL,
         });
       }
     }
   }
 
-  const getTime = data => {
+  const getTime = (data) => {
     let startTime = new Date(data["start_date_time"]);
     if (data["start_date_time"] && data["end_date_time"]) {
       let endTime = new Date(data["end_date_time"]);
@@ -111,7 +111,7 @@ const EligibleActivity = props => {
     }
   };
 
-  const getDate = data => {
+  const getDate = (data) => {
     let startDate = new Date(data["start_date_time"]);
     if (data["start_date_time"] && data["end_date_time"]) {
       let endDate = new Date(data["end_date_time"]);
@@ -122,35 +122,35 @@ const EligibleActivity = props => {
     }
   };
 
-  const getVenue = data => {
+  const getVenue = (data) => {
     return data["address"];
   };
 
-  const routeToDisplayActivity = id => {
+  const routeToDisplayActivity = (id) => {
     history.push({
       pathname: routeConstants.VIEW_ACTIVITY,
-      dataForView: id
+      dataForView: id,
     });
   };
 
   /** Show event registration model */
   const registerUserForEvent = (event, id, title) => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showRegisterModel: true,
       registerUserId: id,
-      eventtitle: title
+      eventtitle: title,
     }));
   };
 
-  const isRegistrationCompleted = status => {
+  const isRegistrationCompleted = (status) => {
     formState.isStudentRegister = status;
   };
 
   const modalClose = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      showRegisterModel: false
+      showRegisterModel: false,
     }));
     // if (formState.isDataDeleted) {
     //   getactivityDetails();
@@ -159,9 +159,9 @@ const EligibleActivity = props => {
 
   const handleCloseBlockModal = () => {
     /** This restores all the data when we close the modal */
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      showRegisterModel: false
+      showRegisterModel: false,
     }));
   };
 
@@ -196,7 +196,7 @@ const EligibleActivity = props => {
         ) : null}
         <Grid container justify="center" spacing={3}>
           {formState.activityDetails.length ? (
-            formState.activityDetails.map(data => {
+            formState.activityDetails.map((data) => {
               return (
                 <Grid key={data.id} item md={4} xs={12}>
                   <Card className={classes.cardHeight}>
