@@ -299,23 +299,6 @@ const ViewActivity = props => {
             </Tooltip>
           </div>
           <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Validate" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                // onClick={() => editCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer"
-                }}
-              >
-                check_circle
-              </i>
-            </Tooltip>
-          </div>
-          <div style={{ marginLeft: "8px" }}>
             <Tooltip title="Edit" placement="top">
               <i
                 className="material-icons"

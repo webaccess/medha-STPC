@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Grid,
-  Typography,
   Tooltip,
   Collapse,
   IconButton
@@ -239,10 +238,6 @@ const ViewAcademicHistory = props => {
       <CardContent className={classes.Cardtheming}>
         <Grid>
           <Grid item xs={12} className={classes.title}>
-            {/* <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_ACADEMIC_HISTORY_TEXT}
-        </Typography> */}
-
             <GreenButton
               variant="contained"
               color="primary"

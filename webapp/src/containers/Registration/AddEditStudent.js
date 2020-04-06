@@ -479,14 +479,16 @@ const AddEditStudent = props => {
   const hasError = field => (formState.errors[field] ? true : false);
 
   return (
-    <Layout>
-      {console.log(formState)}
+    // <Layout>
+    //   {console.log(formState)}
+    <>
       <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {formState.editStudent
-            ? genericConstants.EDIT_STUDENT_PROFILE
-            : genericConstants.STUDENT_REGISTRATION}
-        </Typography>
+        {formState.editStudent ? null : (
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.STUDENT_REGISTRATION}
+          </Typography>
+        )}
+
         {isFailed && formState.editStudent ? (
           <Collapse in={isFailed}>
             <Alert
@@ -531,11 +533,6 @@ const AddEditStudent = props => {
         ) : null}
       </Grid>
       <Card>
-        {console.log(props)}
-        {console.log(formState)}
-        {console.log(districtlist)}
-        {console.log(statelist)}
-        {console.log(user)}
         <form autoComplete="off">
           <CardContent>
             <Grid container spacing={3} className={classes.formgrid}>
@@ -1045,7 +1042,8 @@ const AddEditStudent = props => {
           </CardContent>
         </form>
       </Card>
-    </Layout>
+    </>
+    // </Layout>
   );
 };
 export default AddEditStudent;
