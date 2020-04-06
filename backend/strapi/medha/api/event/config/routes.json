@@ -55,6 +55,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "DELETE",
+      "path": "/events/:id/file/:imageId",
+      "handler": "event.deleteImage",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

@@ -5,16 +5,17 @@
  * to customize this controller
  */
 
+const bookshelf = require("../../../config/config.js");
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity
+  sanitizeEntity,
 } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 
-const sanitizeUser = user =>
+const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model
+    model: strapi.query("user", "users-permissions").model,
   });
 
 module.exports = {
@@ -27,14 +28,15 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["event"],
-          filters
+          filters,
         })
       )
       .fetchPage({
         page: page,
-        pageSize: pageSize < 0 ? await utils.getTotalRecords("event") : pageSize
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("event") : pageSize,
       })
-      .then(res => {
+      .then((res) => {
         return utils.getPaginatedResponse(res);
       });
   },
@@ -45,22 +47,66 @@ module.exports = {
     return utils.getFindOneResponse(response);
   },
 
+  /**
+   *
+   * get student using event id
+   */
   async students(ctx) {
     const { id } = ctx.params;
     const { page, pageSize } = utils.getRequestParams(ctx.request.query);
     const registrations = await strapi
       .query("event-registration")
       .find({ event: id });
-    const studentIds = registrations.map(r => r.student.id);
+    const studentIds = registrations.map((r) => r.student.id);
     let students = await strapi.query("student").find({ id_in: studentIds });
-    students = students.map(student => {
+    students = students.map((student) => {
       student.user = sanitizeUser(student.user);
       return student;
     });
     const response = utils.paginate(students, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination
+      ...response.pagination,
     };
-  }
+  },
+
+  /**
+   * Delete Image
+   */
+
+  async deleteImage(ctx) {
+    const { imageId } = ctx.params;
+    if (!imageId) {
+      return ctx.response.badRequest("Image Id is absent");
+    }
+
+    const config = await strapi
+      .store({
+        environment: strapi.config.environment,
+        type: "plugin",
+        name: "upload",
+      })
+      .get({ key: "provider" });
+
+    const file = await strapi.plugins["upload"].services.upload.fetch({
+      id: imageId,
+    });
+
+    if (!file) {
+      return ctx.notFound("Image.notFound");
+    }
+
+    const related = await bookshelf
+      .model("uploadMorph")
+      .where({ upload_file_id: imageId })
+      .fetch();
+
+    if (related) {
+      await related.destroy();
+    }
+
+    await strapi.plugins["upload"].services.upload.remove(file, config);
+
+    ctx.send(file);
+  },
 };
