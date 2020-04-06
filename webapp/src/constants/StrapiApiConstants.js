@@ -1,6 +1,6 @@
 export const STRAPI_LOGIN_PATH = "auth/local";
 export const STRAPI_DB_URL = "http://104.236.28.24:1338/";
-export const STRAPI_DB_URL_WITHOUT_HASH = "http://104.236.28.24:1338/";
+export const STRAPI_DB_URL_WITHOUT_HASH = "http://104.236.28.24:1338";
 export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "states";
 export const STRAPI_RPCS = "rpcs";

@@ -33,6 +33,7 @@ import useStyles from "../../ContainerStyles/ManagePageStyles";
 import DeleteUser from "./DeleteUser";
 import BlockUser from "./BlockUser";
 import * as formUtilities from "../../../Utilities/FormUtilities";
+import { setCollege, setRole } from "../../../Utilities/StrapiUtilities";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -59,6 +60,7 @@ const ManageUser = props => {
   const [zones, setZones] = useState([]);
   const [states, setStates] = useState([]);
   const [ipcs, setIpcs] = useState([]);
+  const [roles, setRoles] = useState([]);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -69,7 +71,6 @@ const ManageUser = props => {
     rpcs: [],
     roles: [],
     filterDataParameters: {},
-    isFilterSearch: false,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromeditUser"]
       ? props["location"]["isDataEdited"]
@@ -116,7 +117,12 @@ const ManageUser = props => {
     pageCount: "",
     sortAscending: true,
     selectedRowFilter: true,
-    userNameDelete: ""
+    userNameDelete: "",
+    /** Filter */
+    filterDataParameters: {},
+    isFilterSearch: false,
+    isClearResetFilter: false,
+    isStateClearFilter: false
   });
 
   const getFilterData = () => {
@@ -146,10 +152,7 @@ const ManageUser = props => {
             rolesArray.push(res.data.roles[i]);
           }
         }
-        setFormState(formState => ({
-          ...formState,
-          roles: rolesArray
-        }));
+        setRoles(rolesArray);
       })
       .catch(error => {
         console.log("error");
@@ -173,7 +176,6 @@ const ManageUser = props => {
       pageSize: -1,
       "state.id": formState.filterDataParameters[STATE_FILTER]
     };
-    console.log("paramschecker", params, formState.filterDataParameters);
     serviceProviders
       .serviceProviderForGetRequest(RPCS_URL, params)
       .then(res => {
@@ -192,20 +194,16 @@ const ManageUser = props => {
       });
   };
 
-  const getCollegesOnStateAndZone = () => {
-    setIpcs([]);
-    delete formState.filterDataParameters[IPC_FILTER];
-
+  const getColleges = () => {
     let params = {
       pageSize: -1,
-      "zone.id": formState.filterDataParameters[ZONE_FILTER]
+      "zone.id": formState.filterDataParameters[ZONE_FILTER],
+      "rpc.id": formState.filterDataParameters[RPC_FILTER]
     };
-    console.log("paramschecker", params, formState.filterDataParameters);
     serviceProviders
       .serviceProviderForGetRequest(IPC_URL, params)
       .then(res => {
         setIpcs(res.data.result);
-        console.log("collegeName", res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -234,7 +232,6 @@ const ManageUser = props => {
       ...formState,
       isDataLoading: true
     }));
-    console.log("paramsForusers", paramsForUsers);
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
       .then(res => {
@@ -309,6 +306,8 @@ const ManageUser = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getUserData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getUserData(perPage, page);
     }
   };
 
@@ -330,7 +329,6 @@ const ManageUser = props => {
     setRpcs([]);
     setZones([]);
     formState.filterDataParameters[STATE_FILTER] = "";
-    console.log("formstate--->>", formState.filterDataParameters);
     // window.location.reload();
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -382,7 +380,7 @@ const ManageUser = props => {
       showModalDelete: false
     }));
     if (formState.isDataDeleted) {
-      getUserData();
+      restoreData();
     }
   };
 
@@ -393,10 +391,41 @@ const ManageUser = props => {
       showModalDelete: false
     }));
   };
+  /** This restores all the data when we clear the filters*/
 
-  /** To reset search filter */
   const refreshPage = () => {
-    window.location.reload(false);
+    formState.filterDataParameters = {};
+    // formState.filterDataParameters["name_contains"] = "";
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      isClearResetFilter: true,
+      isStateClearFilter: true,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isDataLoading: true
+    }));
+    clearData();
+    // window.location.reload();
+    /**Need to confirm this thing for resetting the data */
+    restoreData();
+  };
+
+  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
+   * i.e the nested zones data and also resets the data to []
+   */
+
+  const clearData = () => {
+    setRpcs([]);
+    setZones([]);
+    setIpcs([]);
+    delete formState.filterDataParameters[RPC_FILTER];
+    delete formState.filterDataParameters[ZONE_FILTER];
+    delete formState.filterDataParameters[STATE_FILTER];
+    delete formState.filterDataParameters[IPC_FILTER];
+    delete formState.filterDataParameters[ROLE_FILTER];
+    delete formState.filterDataParameters[USER_FILTER];
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
@@ -413,26 +442,25 @@ const ManageUser = props => {
         /** 
             When state is cleared then clear rpc and zone 
             */
-        setRpcs([]);
-        setZones([]);
+        clearStateZoneRpc();
+      }
+      if (filterName === ZONE_FILTER || filterName === RPC_FILTER) {
         setIpcs([]);
-        delete formState.filterDataParameters[ZONE_FILTER];
-        delete formState.filterDataParameters[RPC_FILTER];
         delete formState.filterDataParameters[IPC_FILTER];
       }
+      delete formState.filterDataParameters[filterName];
       setFormState(formState => ({
         ...formState,
         isClearResetFilter: false,
         isStateClearFilter: setStateFilterValue
       }));
-      delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
       formState.filterDataParameters[filterName] = value["id"];
       if (filterName === STATE_FILTER) {
         getZonesAndRpcsOnState();
       }
-      if (filterName === ZONE_FILTER) {
+      if (filterName === ZONE_FILTER || filterName === RPC_FILTER) {
         getCollegesOnStateAndZone();
       }
       setFormState(formState => ({
@@ -443,8 +471,37 @@ const ManageUser = props => {
     }
   };
 
-  const handleFilterChange = event => {
-    console.log("handleFilterChange", event.target.name, event.target.value);
+  /** Get colleges on change of state zone and rpc */
+  const getCollegesOnStateAndZone = () => {
+    setIpcs([]);
+    delete formState.filterDataParameters[IPC_FILTER];
+
+    if (
+      formState.filterDataParameters.hasOwnProperty(ZONE_FILTER) &&
+      formState.filterDataParameters.hasOwnProperty(RPC_FILTER)
+    ) {
+      if (
+        formState.filterDataParameters[ZONE_FILTER] &&
+        formState.filterDataParameters[ZONE_FILTER] !== "" &&
+        formState.filterDataParameters[RPC_FILTER] &&
+        formState.filterDataParameters[RPC_FILTER] !== ""
+      ) {
+        getColleges();
+      }
+    }
+  };
+
+  /** Clear rpc and zone */
+  const clearStateZoneRpc = () => {
+    setRpcs([]);
+    setZones([]);
+    setIpcs([]);
+    delete formState.filterDataParameters[ZONE_FILTER];
+    delete formState.filterDataParameters[RPC_FILTER];
+    delete formState.filterDataParameters[IPC_FILTER];
+  };
+
+  const handleFilterChange = (event, eventName) => {
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
@@ -510,8 +567,7 @@ const ManageUser = props => {
       showModalBlock: false
     }));
     if (formState.isUserBlocked) {
-      //getUserData();
-      window.location.reload(false);
+      restoreData();
     }
   };
 
@@ -780,22 +836,37 @@ const ManageUser = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label={"User Name"}
+                  label="User Name"
                   placeholder="User Name"
                   variant="outlined"
+                  value={formState.filterDataParameters[USER_FILTER]}
                   name={USER_FILTER}
-                  onChange={handleFilterChange}
+                  onChange={event => {
+                    handleFilterChange(event, USER_FILTER);
+                  }}
                 />
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="username_filter"
                   name={ROLE_FILTER}
-                  options={formState.roles}
+                  options={roles}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ROLE_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : roles[
+                          roles.findIndex(function (item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[ROLE_FILTER]
+                            );
+                          })
+                        ] || null
                   }
                   renderInput={params => (
                     <TextField
@@ -810,7 +881,7 @@ const ManageUser = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="state_filter"
                   name={STATE_FILTER}
                   options={states}
                   className={classes.autoCompleteField}
@@ -822,7 +893,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter
                       ? null
                       : states[
-                          states.findIndex(function(item, i) {
+                          states.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STATE_FILTER]
@@ -843,7 +914,7 @@ const ManageUser = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="zone_filter"
                   options={zones}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
@@ -854,7 +925,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : zones[
-                          zones.findIndex(function(item, i) {
+                          zones.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[ZONE_FILTER]
@@ -875,7 +946,7 @@ const ManageUser = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="rpc_filter"
                   name={RPC_FILTER}
                   options={rpcs}
                   className={classes.autoCompleteField}
@@ -887,7 +958,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : rpcs[
-                          rpcs.findIndex(function(item, i) {
+                          rpcs.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[RPC_FILTER]
@@ -908,7 +979,7 @@ const ManageUser = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="ipc_filter"
                   name={IPC_FILTER}
                   options={ipcs}
                   className={classes.autoCompleteField}
@@ -920,7 +991,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : ipcs[
-                          ipcs.findIndex(function(item, i) {
+                          ipcs.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[IPC_FILTER]
