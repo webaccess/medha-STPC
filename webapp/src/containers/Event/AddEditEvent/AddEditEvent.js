@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import InputLabel from "@material-ui/core/InputLabel";
-
 import {
   Card,
   CardContent,
@@ -15,7 +14,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   YellowButton,
   CustomDateTimePicker,
-  GrayButton
+  GrayButton, Spinner
 } from "../../../components";
 import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
@@ -33,6 +32,7 @@ import "./RichTextFieldStyles.css";
 import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
+import Img from "react-image";
 
 const eventName = "eventName";
 const description = "description";
@@ -46,7 +46,6 @@ const college = "college";
 const stream = "stream";
 const marks = "marks";
 const qualification = "qualification";
-
 const field = "upload_logo";
 const ref = "event";
 const files = "files";
@@ -55,36 +54,14 @@ const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
 const QUALIFICATIONS_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
-
-const ZONES_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
 const STREAM_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS;
 const EVENTS_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_EVENTS;
 const DOCUMENT_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD;
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
-
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium
-  };
-}
+const COLLEGE_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
 
 const AddEditEvent = props => {
   const [editorState, setEditorState] = React.useState(
@@ -105,9 +82,15 @@ const AddEditEvent = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     files: {},
+    filess:{},
     descriptionError: false,
     dataToShowForMultiSelect: [],
-    dataToShowForStreamMultiSelect: []
+    dataToShowForStreamMultiSelect: [],
+    deleteImage: false,
+    previewFile:{},
+    showPreviewImage:false,
+    showPreviewEditImage:false,
+    showPreviewNoImage:false
   });
 
   const [states, setStates] = useState([]);
@@ -207,9 +190,11 @@ const AddEditEvent = props => {
         formState.values[qualification] =
           props["dataForEdit"]["qualification"]["id"];
       }
-      if (props["dataForEdit"] && props["dataForEdit"]["upload_logo"]) {
-        //  formState.values[files] = props["dataForEdit"]["upload_logo"]["name"];
-        formState.files.name = props["dataForEdit"]["upload_logo"]["hash"];
+      if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"]){
+        formState.showPreviewEditImage = true;
+      }
+      if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"] === null){
+        formState.showPreviewNoImage = true;
       }
     }
     formState.counter += 1;
@@ -249,72 +234,78 @@ const AddEditEvent = props => {
       });
   }, []);
 
-  /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
-    if (formState.values[state]) {
+    if (
+      formState.values.hasOwnProperty(state) &&
+      formState.values[state] !== null &&
+      formState.values[state] !== undefined
+    ) {
       fetchZoneRpcDistrictData();
     }
-    if (formState.values[zone] && formState.values[rpc]) {
-      fetchCollegeData();
-    }
-    return () => {};
-  }, [formState.values]);
+  }, [formState.values[state]]);
 
   /** Common function to get zones, rpcs after changing state */
   async function fetchZoneRpcDistrictData() {
-    let zones_url =
-      STATES_URL +
-      "/" +
-      formState.values[state] +
-      "/" +
-      strapiApiConstants.STRAPI_ZONES;
+    if (
+      formState.values.hasOwnProperty(state) &&
+      formState.values[state] !== null &&
+      formState.values[state] !== undefined &&
+      formState.values[state] !== ""
+    ) {
+      let zones_url =
+        STATES_URL +
+        "/" +
+        formState.values[state] +
+        "/" +
+        strapiApiConstants.STRAPI_ZONES;
 
-    await serviceProvider
-      .serviceProviderForGetRequest(zones_url)
-      .then(res => {
-        setZones(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+      await serviceProvider
+        .serviceProviderForGetRequest(zones_url)
+        .then(res => {
+          setZones(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
 
-    let rpcs_url =
-      STATES_URL +
-      "/" +
-      formState.values[state] +
-      "/" +
-      strapiApiConstants.STRAPI_RPCS;
+      let rpcs_url =
+        STATES_URL +
+        "/" +
+        formState.values[state] +
+        "/" +
+        strapiApiConstants.STRAPI_RPCS;
 
-    await serviceProvider
-      .serviceProviderForGetRequest(rpcs_url)
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setRpcs(res.data[0].result);
-        } else {
-          setRpcs(res.data.result);
-        }
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-
-    let params = {
-      pageSize: -1,
-      "state.id": formState.values[state]
-    };
+      await serviceProvider
+        .serviceProviderForGetRequest(rpcs_url)
+        .then(res => {
+          if (Array.isArray(res.data)) {
+            setRpcs(res.data[0].result);
+          } else {
+            setRpcs(res.data.result);
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
   }
 
-  /** Common function to get colleges after changing zone & rpc */
+  useEffect(() => {
+    if (formState.values[zone] && formState.values[rpc]) {
+      fetchCollegeData();
+    }
+  }, [formState.values[zone], formState.values[rpc]]);
+
+  /** Function to get college data after selcting zones and rpc's */
   async function fetchCollegeData() {
-    let colleges_url =
-      ZONES_URL +
-      "/" +
-      formState.values[zone] +
-      "/" +
-      strapiApiConstants.STRAPI_COLLEGES;
+    let params = {
+      "zone.id": formState.values[zone],
+      "rpc.id": formState.values[rpc],
+      pageSize: -1
+    };
 
     await serviceProvider
-      .serviceProviderForGetRequest(colleges_url)
+      .serviceProviderForGetRequest(COLLEGE_URL, params)
       .then(res => {
         setColleges(res.data.result);
       })
@@ -515,7 +506,11 @@ const AddEditEvent = props => {
         ...formState.touched,
         [event.target.name]: true
       },
-      files: event.target.files[0]
+      files: event.target.files[0],
+      previewFile:  URL.createObjectURL(event.target.files[0]),
+      showPreviewEditImage:false,
+      showPreviewNoImage:false,
+      showPreviewImage:true
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -718,7 +713,7 @@ const AddEditEvent = props => {
                       }}
                       value={
                         states[
-                          states.findIndex(function(item, i) {
+                          states.findIndex(function (item, i) {
                             return item.id === formState.values[state];
                           })
                         ] || null
@@ -752,7 +747,7 @@ const AddEditEvent = props => {
                       }}
                       value={
                         zones[
-                          zones.findIndex(function(item, i) {
+                          zones.findIndex(function (item, i) {
                             return item.id === formState.values[zone];
                           })
                         ] || null
@@ -789,7 +784,7 @@ const AddEditEvent = props => {
                       }}
                       value={
                         rpcs[
-                          rpcs.findIndex(function(item, i) {
+                          rpcs.findIndex(function (item, i) {
                             return item.id === formState.values[rpc];
                           })
                         ] || null
@@ -921,7 +916,7 @@ const AddEditEvent = props => {
                       }}
                       value={
                         qualifications[
-                          qualifications.findIndex(function(item, i) {
+                          qualifications.findIndex(function (item, i) {
                             return item.id === formState.values[qualification];
                           })
                         ] || null
@@ -953,6 +948,32 @@ const AddEditEvent = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
+                  {formState.showPreviewImage ? <img src={formState.previewFile} alt="abc"/> : null }
+
+                    {formState.showPreviewEditImage && formState.dataForEdit["upload_logo"] !== null &&
+                      formState.dataForEdit["upload_logo"] !== undefined &&
+                      formState.dataForEdit["upload_logo"] !== {} ? (
+                        <Img
+                          src={
+                            strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                            formState.dataForEdit["upload_logo"]["url"]
+                          }
+                          loader={<Spinner />}
+                          width="100%"
+                          height="100%"
+                        />
+                      ) : (
+                        null
+                      )
+                    }
+                    {formState.showPreviewNoImage ? 
+                     <Img
+                        src="/images/noImage.png"
+                        loader={<Spinner />}
+                        width="100%"
+                        height="100%"
+                      /> : null
+                    }
                     <TextField
                       fullWidth
                       id={get(EventSchema[files], "id")}
@@ -973,6 +994,8 @@ const AddEditEvent = props => {
                       variant="outlined"
                       className={classes.elementroot}
                     />
+                  
+                      
                   </Grid>
                 </Grid>
               </Grid>

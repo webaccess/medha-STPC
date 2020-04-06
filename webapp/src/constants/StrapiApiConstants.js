@@ -1,6 +1,7 @@
 export const STRAPI_LOGIN_PATH = "auth/local";
-export const STRAPI_DB_URL = "http://localhost:1337/";
-export const STRAPI_DB_URL_WITHOUT_HASH = "http://localhost:1337";
+export const STRAPI_DB_URL = process.env.REACT_APP_SERVER_URL;
+export const STRAPI_DB_URL_WITHOUT_HASH =
+  process.env.REACT_APP_SERVER_URL_WITHOUT_HASH;
 export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "states";
 export const STRAPI_RPCS = "rpcs";
