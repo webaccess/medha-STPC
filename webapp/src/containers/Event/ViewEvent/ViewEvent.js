@@ -17,8 +17,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import Img from "react-image";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import ReactHtmlParser from "react-html-parser";
-
-const ReactMarkdown = require("react-markdown");
+import "../../../assets/cssstylesheet/ImageCssStyles.css";
 
 const EVENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
@@ -36,38 +35,45 @@ const ViewEvent = props => {
 
   async function getEventDetails() {
     let paramsForEvent = null;
-    if (auth.getUserInfo().role.name === "Medha Admin") {
-      paramsForEvent = props["location"]["dataForView"];
-    } else if (auth.getUserInfo().role.name === "Student") {
-      paramsForEvent = props["location"]["dataForView"];
-    }
-    if (paramsForEvent !== null && paramsForEvent !== undefined) {
-      await serviceProviders
-        .serviceProviderForGetOneRequest(EVENTS_URL, paramsForEvent)
-        .then(res => {
-          let viewData = res.data.result;
-          setFormState(formState => ({
-            ...formState,
-            eventDetails: viewData
-          }));
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    } else {
+    if (auth.getUserInfo() && auth.getUserInfo().role) {
       if (auth.getUserInfo().role.name === "Medha Admin") {
-        history.push({
-          pathname: routeConstants.MANAGE_EVENT
-        });
+        paramsForEvent = props["location"]["dataForView"];
       } else if (auth.getUserInfo().role.name === "Student") {
-        history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT
-        });
-      } else {
-        history.push({
-          pathname: routeConstants.DASHBOARD_URL
-        });
+        paramsForEvent = props["location"]["dataForView"];
       }
+      if (paramsForEvent !== null && paramsForEvent !== undefined) {
+        await serviceProviders
+          .serviceProviderForGetOneRequest(EVENTS_URL, paramsForEvent)
+          .then(res => {
+            let viewData = res.data.result;
+            setFormState(formState => ({
+              ...formState,
+              eventDetails: viewData
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+      } else {
+        if (auth.getUserInfo().role.name === "Medha Admin") {
+          history.push({
+            pathname: routeConstants.MANAGE_EVENT
+          });
+        } else if (auth.getUserInfo().role.name === "Student") {
+          history.push({
+            pathname: routeConstants.ELIGIBLE_EVENT
+          });
+        } else {
+          history.push({
+            pathname: routeConstants.DASHBOARD_URL
+          });
+        }
+      }
+    } else {
+      auth.clearAppStorage();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
+      });
     }
   }
 
@@ -173,22 +179,28 @@ const ViewEvent = props => {
                           {formState.eventDetails["upload_logo"] !== null &&
                           formState.eventDetails["upload_logo"] !== undefined &&
                           formState.eventDetails["upload_logo"] !== {} ? (
-                            <Img
-                              src={
-                                strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                                formState.eventDetails["upload_logo"]["url"]
-                              }
-                              loader={<Spinner />}
-                              width="100%"
-                              height="100%"
-                            />
+                            <div className={classes.imageDiv}>
+                              <Img
+                                src={
+                                  strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                                  formState.eventDetails["upload_logo"]["url"]
+                                }
+                                className="image-center"
+                                loader={<Spinner />}
+                                width="100%"
+                                height="100%"
+                              />
+                            </div>
                           ) : (
-                            <Img
-                              src="/images/noImage.png"
-                              loader={<Spinner />}
-                              width="100%"
-                              height="100%"
-                            />
+                            <div className={classes.imageDiv}>
+                              <Img
+                                className="image-center"
+                                src="/images/noImage.png"
+                                loader={<Spinner />}
+                                width="100%"
+                                height="100%"
+                              />
+                            </div>
                           )}
                         </Grid>
                         <Grid container className={classes.defaultMargin}>
