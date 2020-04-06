@@ -12,7 +12,7 @@ import {
   IconButton,
   InputAdornment,
   OutlinedInput,
-  Collapse
+  Collapse,
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
 import Chip from "@material-ui/core/Chip";
@@ -47,46 +47,46 @@ import {
   EditorState,
   convertToRaw,
   convertFromRaw,
-  ContentState
+  ContentState,
 } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
-    maxWidth: 300
+    maxWidth: 300,
   },
   chips: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   chip: {
-    margin: 2
+    margin: 2,
   },
   noLabel: {
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   root: {
-    maxWidth: "100%"
+    maxWidth: "100%",
   },
   btnspace: {
-    padding: "20px 18px 20px"
+    padding: "20px 18px 20px",
   },
   btnspaceadd: {
-    padding: "0px 15px 15px"
+    padding: "0px 15px 15px",
   },
   formgrid: {
     marginTop: theme.spacing(0),
-    alignItems: "center"
+    alignItems: "center",
   },
   divider: {
     marginTop: "15px",
-    marginBottom: "15px"
+    marginBottom: "15px",
   },
   add_more_btn: {
-    float: "right"
+    float: "right",
   },
   streamcard: {
     border: "1px solid #ccc",
@@ -96,42 +96,42 @@ const useStyles = makeStyles(theme => ({
     "& label": {
       position: "absolute",
       top: "-8px",
-      backgroundColor: "#fff"
-    }
+      backgroundColor: "#fff",
+    },
   },
   streamoffer: {
     paddingLeft: "15px",
     paddingRight: "15px",
     borderRadius: "0px",
-    boxShadow: "none !important"
+    boxShadow: "none !important",
   },
   streamcardcontent: {
     boxShadow: "none",
     borderBottom: "1px solid #ccc",
     marginBottom: "15px",
-    borderRadius: "0px"
+    borderRadius: "0px",
   },
   title: {
     display: "flex",
     marginBottom: theme.spacing(1),
     "& h4": {
       flex: "1",
-      fontWeight: "700"
-    }
+      fontWeight: "700",
+    },
   },
   CardActionGrid: {
-    backgroundColor: "#EEEEEE"
+    backgroundColor: "#EEEEEE",
   },
   MarginBottom: {
-    marginBottom: "10px"
+    marginBottom: "10px",
   },
   toolbarMargin: {
     marginTop: theme.spacing(2),
-    border: "1px solid"
-  }
+    border: "1px solid",
+  },
 }));
 
-const AddEditActivity = props => {
+const AddEditActivity = (props) => {
   let history = useHistory();
 
   const [editorState, setEditorState] = React.useState(
@@ -153,7 +153,7 @@ const AddEditActivity = props => {
       : false,
     counter: 0,
     stream: [],
-    files: {}
+    files: {},
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
@@ -161,14 +161,14 @@ const AddEditActivity = props => {
   const activitytypelist = [
     { name: "Workshop", id: "workshop" },
     { name: "Training", id: "training" },
-    { name: "Industrial Visit", id: "industrialVisit" }
+    { name: "Industrial Visit", id: "industrialVisit" },
   ];
 
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
     { name: "Third", id: "Third" },
-    { name: "Fourth", id: "Fourth" }
+    { name: "Fourth", id: "Fourth" },
   ];
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -212,7 +212,7 @@ const AddEditActivity = props => {
       }
       if (props.location["dataForEdit"]["streams"]) {
         formState.values["stream"] = props.location["dataForEdit"]["streams"];
-        const id = props.location["dataForEdit"]["streams"].map(stream => {
+        const id = props.location["dataForEdit"]["streams"].map((stream) => {
           return stream.id;
         });
         formState["stream"] = id;
@@ -280,7 +280,7 @@ const AddEditActivity = props => {
     formState.counter += 1;
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     let schema;
@@ -327,14 +327,14 @@ const AddEditActivity = props => {
       postActivityData();
 
       /** Call axios from here */
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isValid: true
+        isValid: true,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isValid: false
+        isValid: false,
       }));
     }
   };
@@ -397,7 +397,7 @@ const AddEditActivity = props => {
           formState.dataForEdit.id,
           postData
         )
-        .then(response => {
+        .then((response) => {
           console.log(response);
           console.log("Success");
           setIsSuccess(true);
@@ -405,10 +405,10 @@ const AddEditActivity = props => {
           history.push({
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataEdited: true,
-            editedData: response.data
+            editedData: response.data,
           });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           console.log(err.response.data);
           console.log(JSON.stringify(err));
@@ -467,16 +467,16 @@ const AddEditActivity = props => {
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
           postData
         )
-        .then(response => {
+        .then((response) => {
           console.log(response);
           history.push({
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataAdded: true,
-            addedData: response
+            addedData: response,
           });
           // ImageUpload(response);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           setIsFailed(true);
         });
@@ -484,7 +484,7 @@ const AddEditActivity = props => {
     }
   };
 
-  const ImageUpload = response => {
+  const ImageUpload = (response) => {
     console.log(response);
     let ImageData = databaseUtilities.uploadDocument(
       formState.files,
@@ -498,11 +498,11 @@ const AddEditActivity = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD,
         ImageData
       )
-      .then(res => {
+      .then((res) => {
         console.log(res);
         //setIsSuccess(true);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         setIsFailed(true);
       });
@@ -513,13 +513,13 @@ const AddEditActivity = props => {
         strapiApiConstants.STRAPI_DB_URL +
           strapiApiConstants.STRAPI_ACADEMIC_YEARS
       )
-      .then(response => {
+      .then((response) => {
         console.log(response);
         setacademicyearlist(
           response.data.result.map(({ id, name }) => ({ id, name }))
         );
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -528,11 +528,11 @@ const AddEditActivity = props => {
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
       )
-      .then(response => {
+      .then((response) => {
         console.log(response);
         setzonelist(response.data.result.map(({ id, name }) => ({ id, name })));
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -542,11 +542,11 @@ const AddEditActivity = props => {
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS
       )
-      .then(response => {
+      .then((response) => {
         console.log(response);
         setrpclist(response.data.result.map(({ id, name }) => ({ id, name })));
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -555,7 +555,7 @@ const AddEditActivity = props => {
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS
       )
-      .then(res => {
+      .then((res) => {
         console.log(res);
         setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
@@ -566,7 +566,7 @@ const AddEditActivity = props => {
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
-      .then(res => {
+      .then((res) => {
         console.log(res);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
@@ -577,7 +577,7 @@ const AddEditActivity = props => {
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
       )
-      .then(res => {
+      .then((res) => {
         console.log(res);
         //   const sanitzedOptions = res.data.map(state => {
         //     return {
@@ -588,41 +588,41 @@ const AddEditActivity = props => {
         setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
-  const handleChangefile = e => {
+  const handleChangefile = (e) => {
     e.persist();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
 
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value
+          e.target.type === "checkbox" ? e.target.checked : e.target.value,
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true
+        [e.target.name]: true,
       },
-      files: e.target.files[0]
+      files: e.target.files[0],
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
     }
   };
-  const handleChange = e => {
+  const handleChange = (e) => {
     /** TO SET VALUES IN FORMSTATE */
     e.persist();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
 
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value
+          e.target.type === "checkbox" ? e.target.checked : e.target.value,
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true
-      }
+        [e.target.name]: true,
+      },
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -636,32 +636,32 @@ const AddEditActivity = props => {
 
     if (value !== null) {
       if (eventName === "stream") {
-        const id = value.map(stream => {
+        const id = value.map((stream) => {
           return stream.id;
         });
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value
+            [eventName]: value,
           },
           touched: {
             ...formState.touched,
-            [eventName]: true
+            [eventName]: true,
           },
-          stream: id
+          stream: id,
         }));
       } else {
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value.id
+            [eventName]: value.id,
           },
           touched: {
             ...formState.touched,
-            [eventName]: true
-          }
+            [eventName]: true,
+          },
         }));
       }
       if (formState.errors.hasOwnProperty(eventName)) {
@@ -672,7 +672,7 @@ const AddEditActivity = props => {
     }
   };
 
-  const hasError = field => (formState.errors[field] ? true : false);
+  const hasError = (field) => (formState.errors[field] ? true : false);
 
   return (
     <Grid>
@@ -682,7 +682,7 @@ const AddEditActivity = props => {
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editActivity
-            ? genericConstants.EDIT_STUDENT_PROFILE
+            ? genericConstants.EDIT_ACTIVITY_TEXT
             : genericConstants.ADD_ACTIVITY_TEXT}
         </Typography>
         {isFailed && formState.editActivity ? (
@@ -749,7 +749,7 @@ const AddEditActivity = props => {
                       onChange={handleChange}
                       helperText={
                         hasError("activityname")
-                          ? formState.errors["activityname"].map(error => {
+                          ? formState.errors["activityname"].map((error) => {
                               return error + " ";
                             })
                           : null
@@ -774,7 +774,7 @@ const AddEditActivity = props => {
                             wrapperClassName="rdw-storybook-wrapper"
                             editorClassName="rdw-storybook-editor"
                             value={editorState}
-                            onEditorStateChange={data => {
+                            onEditorStateChange={(data) => {
                               setEditorState(data);
                             }}
                           />
@@ -794,17 +794,17 @@ const AddEditActivity = props => {
                       id="date-picker-inline"
                       label="Date & Time From"
                       value={selectedDateFrom}
-                      onChange={date => setSelectedDateFrom(date)}
+                      onChange={(date) => setSelectedDateFrom(date)}
                       error={hasError("datefrom")}
                       helperText={
                         hasError("datefrom")
-                          ? formState.errors["datefrom"].map(error => {
+                          ? formState.errors["datefrom"].map((error) => {
                               return error + " ";
                             })
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date"
+                        "aria-label": "change date",
                       }}
                     />
                   </Grid>
@@ -817,17 +817,17 @@ const AddEditActivity = props => {
                       id="date-picker-inline"
                       label="Date & Time To"
                       value={selectedDateTo}
-                      onChange={date => setSelectedDateTo(date)}
+                      onChange={(date) => setSelectedDateTo(date)}
                       error={hasError("dateto")}
                       helperText={
                         hasError("dateto")
-                          ? formState.errors["dateto"].map(error => {
+                          ? formState.errors["dateto"].map((error) => {
                               return error + " ";
                             })
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date"
+                        "aria-label": "change date",
                       }}
                     />
                   </Grid>
@@ -846,7 +846,7 @@ const AddEditActivity = props => {
                       error={hasError("address")}
                       helperText={
                         hasError("address")
-                          ? formState.errors["address"].map(error => {
+                          ? formState.errors["address"].map((error) => {
                               return error + " ";
                             })
                           : null
@@ -861,18 +861,18 @@ const AddEditActivity = props => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={collegelist}
-                      getOptionLabel={option => option.name}
+                      getOptionLabel={(option) => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("college", event, value);
                       }}
                       value={
                         collegelist[
-                          collegelist.findIndex(function(item, i) {
+                          collegelist.findIndex(function (item, i) {
                             return item.id === formState.values.college;
                           })
                         ] || null
                       }
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           error={hasError("college")}
@@ -882,7 +882,7 @@ const AddEditActivity = props => {
                           name="tester"
                           helperText={
                             hasError("college")
-                              ? formState.errors["college"].map(error => {
+                              ? formState.errors["college"].map((error) => {
                                   return error + " ";
                                 })
                               : null
@@ -896,18 +896,18 @@ const AddEditActivity = props => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={academicyearlist}
-                      getOptionLabel={option => option.name}
+                      getOptionLabel={(option) => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("academicyear", event, value);
                       }}
                       value={
                         academicyearlist[
-                          academicyearlist.findIndex(function(item, i) {
+                          academicyearlist.findIndex(function (item, i) {
                             return item.id === formState.values.academicyear;
                           })
                         ] || null
                       }
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           error={hasError("academicyear")}
@@ -916,9 +916,11 @@ const AddEditActivity = props => {
                           name="tester"
                           helperText={
                             hasError("academicyear")
-                              ? formState.errors["academicyear"].map(error => {
-                                  return error + " ";
-                                })
+                              ? formState.errors["academicyear"].map(
+                                  (error) => {
+                                    return error + " ";
+                                  }
+                                )
                               : null
                           }
                         />
@@ -933,13 +935,13 @@ const AddEditActivity = props => {
                       id="tags-outlined"
                       required
                       options={streamlist}
-                      getOptionLabel={option => option.name}
+                      getOptionLabel={(option) => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("stream", event, value);
                       }}
                       value={formState.values.stream}
                       filterSelectedOptions
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           error={hasError("stream")}
@@ -949,7 +951,7 @@ const AddEditActivity = props => {
                           name="tester"
                           helperText={
                             hasError("stream")
-                              ? formState.errors["stream"].map(error => {
+                              ? formState.errors["stream"].map((error) => {
                                   return error + " ";
                                 })
                               : null
@@ -988,18 +990,18 @@ const AddEditActivity = props => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={educationyearlist}
-                      getOptionLabel={option => option.name}
+                      getOptionLabel={(option) => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("educationyear", event, value);
                       }}
                       value={
                         educationyearlist[
-                          educationyearlist.findIndex(function(item, i) {
+                          educationyearlist.findIndex(function (item, i) {
                             return item.id === formState.values.educationyear;
                           })
                         ] || null
                       }
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           error={hasError("educationyear")}
@@ -1008,9 +1010,11 @@ const AddEditActivity = props => {
                           name="tester"
                           helperText={
                             hasError("educationyear")
-                              ? formState.errors["educationyear"].map(error => {
-                                  return error + " ";
-                                })
+                              ? formState.errors["educationyear"].map(
+                                  (error) => {
+                                    return error + " ";
+                                  }
+                                )
                               : null
                           }
                         />
@@ -1022,18 +1026,18 @@ const AddEditActivity = props => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={activitytypelist}
-                      getOptionLabel={option => option.name}
+                      getOptionLabel={(option) => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("activitytype", event, value);
                       }}
                       value={
                         activitytypelist[
-                          activitytypelist.findIndex(function(item, i) {
+                          activitytypelist.findIndex(function (item, i) {
                             return item.id === formState.values.activitytype;
                           })
                         ] || null
                       }
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           error={hasError("activitytype")}
@@ -1042,9 +1046,11 @@ const AddEditActivity = props => {
                           name="tester"
                           helperText={
                             hasError("activitytype")
-                              ? formState.errors["activitytype"].map(error => {
-                                  return error + " ";
-                                })
+                              ? formState.errors["activitytype"].map(
+                                  (error) => {
+                                    return error + " ";
+                                  }
+                                )
                               : null
                           }
                         />
@@ -1065,7 +1071,7 @@ const AddEditActivity = props => {
                       error={hasError("trainer")}
                       helperText={
                         hasError("trainer")
-                          ? formState.errors["trainer"].map(error => {
+                          ? formState.errors["trainer"].map((error) => {
                               return error + " ";
                             })
                           : null
@@ -1116,7 +1122,7 @@ const AddEditActivity = props => {
                       error={hasError("files")}
                       helperText={
                         hasError("files")
-                          ? formState.errors["files"].map(error => {
+                          ? formState.errors["files"].map((error) => {
                               return error + " ";
                             })
                           : null

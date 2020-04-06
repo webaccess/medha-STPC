@@ -33,4 +33,6 @@ export const STRAPI_MANAGE_ACTIVITY_BATCH_URL = "manage-activity-batch";
 export const STRAPI_DELETE_STUDENT_ACTIVITY_BATCH_URL = "remove-students";
 export const STRAPI_ADD_STUDENT_ACTIVITY_BATCH = "add-students";
 export const STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH = "validate-activity-batch";
+export const STRAPI_UNVALIDATE_STUDENT_ACTIVITY_BATCH =
+  "invalidate-activity-batch";
 export const STRAPI_EVENT_REGISTRATION = "event-registrations";
