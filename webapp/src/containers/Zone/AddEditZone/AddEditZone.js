@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { get } from "lodash";
-import useStyles from "./AddEditZoneStyles";
+import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import AddZoneForm from "../ZoneSchema";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Alert, GrayButton, YellowButton } from "../../../components";
+import { GrayButton, YellowButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 
@@ -164,7 +164,7 @@ const AddEditZone = props => {
         )
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_ZONES,
+            pathname: routeConstants.MANAGE_ZONES,
             fromEditZone: true,
             isDataEdited: true,
             editResponseMessage: "",
@@ -174,7 +174,7 @@ const AddEditZone = props => {
         .catch(error => {
           console.log(error);
           history.push({
-            pathname: routeConstants.VIEW_ZONES,
+            pathname: routeConstants.MANAGE_ZONES,
             fromEditZone: true,
             isDataEdited: false,
             editResponseMessage: "",
@@ -192,7 +192,7 @@ const AddEditZone = props => {
         .serviceProviderForPostRequest(ZONE_URL, postData)
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_ZONES,
+            pathname: routeConstants.MANAGE_ZONES,
             fromAddZone: true,
             isDataAdded: true,
             addResponseMessage: "",
@@ -202,7 +202,7 @@ const AddEditZone = props => {
         .catch(error => {
           console.log(error);
           history.push({
-            pathname: routeConstants.VIEW_ZONES,
+            pathname: routeConstants.MANAGE_ZONES,
             fromAddZone: true,
             isDataAdded: false,
             addResponseMessage: "",
@@ -305,7 +305,7 @@ const AddEditZone = props => {
                   type="submit"
                   color="primary"
                   variant="contained"
-                  to={routeConstants.VIEW_ZONES}
+                  to={routeConstants.MANAGE_ZONES}
                 >
                   {genericConstants.CANCEL_BUTTON_TEXT}
                 </GrayButton>

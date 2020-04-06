@@ -1,95 +1,73 @@
 import React, { useState } from "react";
-import {
-  Grid,
-  Typography,
-  IconButton,
-  Modal,
-  Backdrop,
-  Fade
-} from "@material-ui/core";
+import { Grid, Typography, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as genericConstants from "../../../constants/GenericConstants";
+import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
-const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-const EVENT_ID = "UserName";
+const EVENT_REG_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
+const EVENT_ID = "event";
+const STUDENT_ID = "student";
 
-const DeleteUser = props => {
+const RegisterEvent = props => {
   const [formState, setFormState] = useState({
-    isDeleteData: false,
+    isStudentRegistered: false,
     isValid: false,
-    stateCounter: 0,
     values: {},
-    username: ""
+    stateCounter: 0
   });
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
-    formState.values[EVENT_ID] = props.id;
-    formState.isDeleteData = false;
+    formState.values[EVENT_ID] = props.eventName;
+    formState.values[STUDENT_ID] = props.userRegistering;
+    formState.isStudentRegistered = false;
   }
+
+  const handleSubmit = async () => {
+    let postData = databaseUtilities.studentEventRegistration(
+      formState.values[EVENT_ID],
+      formState.values[STUDENT_ID]
+    );
+    serviceProviders
+      .serviceProviderForPostRequest(EVENT_REG_URL, postData)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          isValid: true
+        }));
+        formState.isStudentRegistered = true;
+        handleCloseModal();
+      })
+      .catch(error => {
+        console.log("error", error);
+        formState.isStudentRegistered = false;
+        handleCloseModal();
+      });
+  };
 
   const handleCloseModal = () => {
     setFormState(formState => ({
       ...formState,
       values: {},
-      isDeleteData: false,
-      isValid: false,
-      stateCounter: 0
+      isStudentRegistered: false
     }));
-
-    if (formState.isDeleteData) {
-      props.deleteEvent(true);
+    if (formState.isStudentRegistered) {
+      props.statusRegistartion(true);
+      props.registrationFailed(false);
     } else {
-      props.deleteEvent(false);
+      props.statusRegistartion(false);
+      props.registrationFailed(true);
     }
-    props.closeModal();
-  };
-
-  const handleSubmit = event => {
-    /** CALL Put FUNCTION */
-    deleteData();
-    event.preventDefault();
-  };
-
-  const deleteData = () => {
-    if (props.isMultiDelete) {
-      serviceProviders
-        .serviceProviderForAllDeleteRequest(EVENT_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
-          handleCloseModal();
-        })
-        .catch(error => {
-          console.log("error", error);
-          formState.isDeleteData = false;
-          handleCloseModal();
-        });
-    } else {
-      serviceProviders
-        .serviceProviderForDeleteRequest(EVENT_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
-          handleCloseModal();
-        })
-        .catch(error => {
-          console.log("error");
-          formState.isDeleteData = false;
-          handleCloseModal();
-        });
-    }
+    props.closeBlockModal();
   };
 
   const classes = useStyles();
@@ -110,7 +88,7 @@ const DeleteUser = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {genericConstants.DELETE_TEXT}
+              Confirmation
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -126,17 +104,10 @@ const DeleteUser = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isMultiDelete ? (
-                    <p>
-                      Are you sure you want to delete "{props.seletedUser}"
-                      Events?
-                    </p>
-                  ) : (
-                    <p>
-                      Are you sure you want to delete event "
-                      {props.dataToDelete["name"]}"?
-                    </p>
-                  )}
+                  <p>
+                    Are you sure you want to Register for Event "
+                    {props.eventTitle}" ?
+                  </p>
                 </Grid>
               </Grid>
             </Grid>
@@ -144,7 +115,7 @@ const DeleteUser = props => {
               <Grid
                 container
                 direction="row"
-                justify="flex-end"
+                justify="center"
                 alignItems="center"
                 spacing={2}
               >
@@ -155,7 +126,7 @@ const DeleteUser = props => {
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    Ok
+                    Yes
                   </YellowButton>
                 </Grid>
                 <Grid item>
@@ -165,7 +136,7 @@ const DeleteUser = props => {
                     variant="contained"
                     onClick={props.modalClose}
                   >
-                    Close
+                    No
                   </GrayButton>
                 </Grid>
               </Grid>
@@ -177,4 +148,4 @@ const DeleteUser = props => {
   );
 };
 
-export default DeleteUser;
+export default RegisterEvent;

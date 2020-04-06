@@ -3,25 +3,23 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress,
-  Backdrop,
-  Fade,
-  Modal
+  CircularProgress
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
 
-const COLLEGE_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
-const COLLEGE_ID = "id";
+const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
-const DeleteZone = props => {
+const DeleteRpc = props => {
   const [open, setOpen] = React.useState(false);
+  const classes = useStyles();
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
@@ -30,9 +28,9 @@ const DeleteZone = props => {
     dataToDelete: {}
   });
 
+  /** This is called when we open the modal */
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
-    formState.values[COLLEGE_ID] = props.id;
     formState.isDeleteData = false;
     formState.dataToDelete = props.dataToDelete;
   }
@@ -66,9 +64,9 @@ const DeleteZone = props => {
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
      and returns back an opbject with status and message*/
     if (props.isMultiDelete) {
-      status = await checkIfMultiCollegeCanBeDelete();
+      status = await checkIfMultiRPCCanBeDelete();
     } else {
-      status = await checkIfCollegeCanBeDelete(props.id);
+      status = await checkIfRPCCanBeDelete(props.id);
     }
     setOpen(false);
     if (status["status"]) {
@@ -81,42 +79,80 @@ const DeleteZone = props => {
     }
   };
 
-  const checkIfMultiCollegeCanBeDelete = async () => {
+  const checkIfMultiRPCCanBeDelete = async () => {
     let dataToSent = {};
     let isErrorCounter = 0;
     for (let i in props.id) {
-      let status = await checkIfCollegeCanBeDelete(props.id[i]);
+      let status = await checkIfRPCCanBeDelete(props.id[i]);
       if (!status["status"]) {
         isErrorCounter += 1;
         break;
       }
     }
     if (isErrorCounter > 0) {
-      dataToSent = {
-        status: false,
-        message: "Error deleting selected Colleges"
-      };
+      dataToSent = { status: false, message: "Error deleting selected RPC's" };
     } else {
       dataToSent = { status: true, message: "Success" };
     }
     return dataToSent;
   };
 
+  const deleteData = () => {
+    if (props.isMultiDelete) {
+      serviceProviders
+        .serviceProviderForAllDeleteRequest(RPC_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          console.log(res);
+          formState.isDeleteData = true;
+          handleCloseModal("RPC's successfully deleted");
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal("Error deleting selected RPC's");
+        });
+    } else {
+      serviceProviders
+        .serviceProviderForDeleteRequest(RPC_URL, props.id)
+        .then(res => {
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          formState.isDeleteData = true;
+          handleCloseModal(
+            "RPC " + formState.dataToDelete["name"] + " successfully deleted"
+          );
+        })
+        .catch(error => {
+          console.log("error");
+          formState.isDeleteData = false;
+          handleCloseModal(
+            "Error deleting RPC " + formState.dataToDelete["name"]
+          );
+        });
+    }
+  };
+
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfCollegeCanBeDelete = async id => {
+  const checkIfRPCCanBeDelete = async id => {
     let dataToReturn = {};
-    let studentsCheckUrl =
-      COLLEGE_URL + "/" + id + "/" + strapiConstants.STRAPI_STUDENT;
+    let collegesCheckUrl =
+      RPC_URL + "/" + id + "/" + strapiConstants.STRAPI_COLLEGES;
     await serviceProviders
-      .serviceProviderForGetRequest(studentsCheckUrl)
+      .serviceProviderForGetRequest(collegesCheckUrl)
       .then(res => {
         if (res.data.result.length) {
           dataToReturn = {
             status: false,
             message:
-              "Cannot delete College " +
+              "Cannot delete RPC " +
               formState.dataToDelete["name"] +
-              " as it is linked to other Students"
+              " as it is linked to other College's"
           };
         } else {
           dataToReturn = {
@@ -130,56 +166,12 @@ const DeleteZone = props => {
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting College " + formState.dataToDelete["name"]
+          message: "Error deleting RPC " + formState.dataToDelete["name"]
         };
       });
     return dataToReturn;
   };
 
-  const deleteData = () => {
-    if (props.isMultiDelete) {
-      serviceProviders
-        .serviceProviderForAllDeleteRequest(COLLEGE_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          console.log(res);
-          formState.isDeleteData = true;
-          handleCloseModal("Colleges successfully deleted");
-        })
-        .catch(error => {
-          console.log("error");
-          formState.isDeleteData = false;
-          handleCloseModal("Error deleting selected Colleges");
-        });
-    } else {
-      serviceProviders
-        .serviceProviderForDeleteRequest(COLLEGE_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
-          handleCloseModal(
-            "College " +
-              formState.dataToDelete["name"] +
-              " successfully deleted"
-          );
-        })
-        .catch(error => {
-          console.log("error");
-          formState.isDeleteData = false;
-          handleCloseModal(
-            "Error deleting College " + formState.dataToDelete["name"]
-          );
-        });
-    }
-  };
-
-  const classes = useStyles();
   return (
     <Modal
       aria-labelledby="transition-modal-title"
@@ -216,8 +208,8 @@ const DeleteZone = props => {
                   {props.isMultiDelete
                     ? "Are you sure you want to delete " +
                       props.id.length +
-                      " Colleges?"
-                    : "Are you sure you want to delete College " +
+                      " RPC's?"
+                    : "Are you sure you want to delete RPC " +
                       formState.dataToDelete["name"] +
                       "?"}
                 </Grid>
@@ -263,4 +255,4 @@ const DeleteZone = props => {
   );
 };
 
-export default DeleteZone;
+export default DeleteRpc;

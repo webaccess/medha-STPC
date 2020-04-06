@@ -29,7 +29,7 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "./Styles.css";
+import "./RichTextFieldStyles.css";
 import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
@@ -101,7 +101,7 @@ const AddEditEvent = props => {
     isSuccess: false,
     showPassword: false,
     isEditEvent: props["editEvent"] ? props["editEvent"] : false,
-  
+
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     files: {},
@@ -152,17 +152,23 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["address"]) {
         formState.values[address] = props["dataForEdit"]["address"];
       }
-      if ( props["dataForEdit"] &&
-      props["dataForEdit"]["rpc"] &&
-      props["dataForEdit"]["rpc"]["state"]
-    ) {
-      formState.values[state] = props["dataForEdit"]["rpc"]["state"];
-    }
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["rpc"] &&
+        props["dataForEdit"]["rpc"]["state"]
+      ) {
+        formState.values[state] = props["dataForEdit"]["rpc"]["state"];
+      }
 
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
-      if( props["dataForEdit"] && props["dataForEdit"]["colleges"] && props["dataForEdit"]["colleges"][0] && props["dataForEdit"]["colleges"][0]["zone"]){
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["colleges"] &&
+        props["dataForEdit"]["colleges"][0] &&
+        props["dataForEdit"]["colleges"][0]["zone"]
+      ) {
         formState.values[zone] = props["dataForEdit"]["colleges"][0]["zone"];
       }
       if (
@@ -182,7 +188,8 @@ const AddEditEvent = props => {
         props["dataForEdit"]["streams"].length
       ) {
         // formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
-        formState.dataToShowForStreamMultiSelect = props["dataForEdit"]["streams"];
+        formState.dataToShowForStreamMultiSelect =
+          props["dataForEdit"]["streams"];
         let finalDataStream = [];
         for (let i in props["dataForEdit"]["streams"]) {
           finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
@@ -192,13 +199,17 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["marks"]) {
         formState.values[marks] = props["dataForEdit"]["marks"];
       }
-      if(props["dataForEdit"] && props["dataForEdit"]["qualification"] && props["dataForEdit"]["qualification"]["id"]){
-        formState.values[qualification] = props["dataForEdit"]["qualification"]["id"];
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["qualification"] &&
+        props["dataForEdit"]["qualification"]["id"]
+      ) {
+        formState.values[qualification] =
+          props["dataForEdit"]["qualification"]["id"];
       }
-      if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"]){
-
-      //  formState.values[files] = props["dataForEdit"]["upload_logo"]["name"];
-       formState.files.name = props["dataForEdit"]["upload_logo"]["hash"];
+      if (props["dataForEdit"] && props["dataForEdit"]["upload_logo"]) {
+        //  formState.values[files] = props["dataForEdit"]["upload_logo"]["name"];
+        formState.files.name = props["dataForEdit"]["upload_logo"]["hash"];
       }
     }
     formState.counter += 1;
@@ -424,45 +435,48 @@ const AddEditEvent = props => {
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null
     );
-    if(formState.isEditEvent){
-
-      serviceProvider.serviceProviderForPutRequest(EVENTS_URL, formState.dataForEdit["id"], postData)
-      .then(res => {
-        if (formState.files.name) {
-          postImage(res.data.id);
-        } else {
-          history.push({
-            pathname: routeConstants.MANAGE_EVENT,
-            fromAddEvent: true,
-            isDataAdded: true,
-            addResponseMessage: "",
-            addedData: {}
-          });
-        }
-      })
-      .catch(error => {
-        console.log("puterror", error);
-      });
-
-    }else{
-    serviceProvider
-      .serviceProviderForPostRequest(EVENTS_URL, postData)
-      .then(res => {
-        if (formState.files.name) {
-          postImage(res.data.id);
-        } else {
-          history.push({
-            pathname: routeConstants.MANAGE_EVENT,
-            fromAddEvent: true,
-            isDataAdded: true,
-            addResponseMessage: "",
-            addedData: {}
-          });
-        }
-      })
-      .catch(error => {
-        console.log("posterror", error);
-      });
+    if (formState.isEditEvent) {
+      serviceProvider
+        .serviceProviderForPutRequest(
+          EVENTS_URL,
+          formState.dataForEdit["id"],
+          postData
+        )
+        .then(res => {
+          if (formState.files.name) {
+            postImage(res.data.id);
+          } else {
+            history.push({
+              pathname: routeConstants.MANAGE_EVENT,
+              fromAddEvent: true,
+              isDataAdded: true,
+              addResponseMessage: "",
+              addedData: {}
+            });
+          }
+        })
+        .catch(error => {
+          console.log("puterror", error);
+        });
+    } else {
+      serviceProvider
+        .serviceProviderForPostRequest(EVENTS_URL, postData)
+        .then(res => {
+          if (formState.files.name) {
+            postImage(res.data.id);
+          } else {
+            history.push({
+              pathname: routeConstants.MANAGE_EVENT,
+              fromAddEvent: true,
+              isDataAdded: true,
+              addResponseMessage: "",
+              addedData: {}
+            });
+          }
+        })
+        .catch(error => {
+          console.log("posterror", error);
+        });
     }
   };
 

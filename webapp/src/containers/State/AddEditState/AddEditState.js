@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { get } from "lodash";
-import useStyles from "./AddEditStateStyles";
+import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
@@ -110,7 +110,7 @@ const AddEditState = props => {
         )
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_STATES,
+            pathname: routeConstants.MANAGE_STATES,
             fromEditState: true,
             isDataEdited: true,
             editResponseMessage: "",
@@ -119,7 +119,7 @@ const AddEditState = props => {
         })
         .catch(error => {
           history.push({
-            pathname: routeConstants.VIEW_STATES,
+            pathname: routeConstants.MANAGE_STATES,
             fromEditState: true,
             isDataEdited: false,
             editResponseMessage: "",
@@ -139,7 +139,7 @@ const AddEditState = props => {
         )
         .then(res => {
           history.push({
-            pathname: routeConstants.VIEW_STATES,
+            pathname: routeConstants.MANAGE_STATES,
             fromAddState: true,
             isDataAdded: true,
             addResponseMessage: "",
@@ -148,7 +148,7 @@ const AddEditState = props => {
         })
         .catch(error => {
           history.push({
-            pathname: routeConstants.VIEW_STATES,
+            pathname: routeConstants.MANAGE_STATES,
             fromAddState: true,
             isDataAdded: false,
             addResponseMessage: "",
@@ -215,7 +215,7 @@ const AddEditState = props => {
                   type="submit"
                   color="primary"
                   variant="contained"
-                  to={routeConstants.VIEW_STATES}
+                  to={routeConstants.MANAGE_STATES}
                 >
                   {genericConstants.CANCEL_BUTTON_TEXT}
                 </GrayButton>

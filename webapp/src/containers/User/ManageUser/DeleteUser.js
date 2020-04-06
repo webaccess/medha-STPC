@@ -1,22 +1,18 @@
 import React, { useState } from "react";
-import {
-  Grid,
-  Typography,
-  IconButton,
-  Modal,
-  Backdrop,
-  Fade
-} from "@material-ui/core";
+import { Grid, Typography, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
-const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-const EVENT_ID = "UserName";
+const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_ID = "UserName";
 
 const DeleteUser = props => {
   const [formState, setFormState] = useState({
@@ -29,7 +25,7 @@ const DeleteUser = props => {
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
-    formState.values[EVENT_ID] = props.id;
+    formState.values[USER_ID] = props.id;
     formState.isDeleteData = false;
   }
 
@@ -59,7 +55,7 @@ const DeleteUser = props => {
   const deleteData = () => {
     if (props.isMultiDelete) {
       serviceProviders
-        .serviceProviderForAllDeleteRequest(EVENT_URL, props.id)
+        .serviceProviderForAllDeleteRequest(USER_URL, props.id)
         .then(res => {
           setFormState(formState => ({
             ...formState,
@@ -75,7 +71,7 @@ const DeleteUser = props => {
         });
     } else {
       serviceProviders
-        .serviceProviderForDeleteRequest(EVENT_URL, props.id)
+        .serviceProviderForDeleteRequest(USER_URL, props.id)
         .then(res => {
           setFormState(formState => ({
             ...formState,
@@ -129,12 +125,11 @@ const DeleteUser = props => {
                   {props.isMultiDelete ? (
                     <p>
                       Are you sure you want to delete "{props.seletedUser}"
-                      Events?
+                      users?
                     </p>
                   ) : (
                     <p>
-                      Are you sure you want to delete event "
-                      {props.dataToDelete["name"]}"?
+                      Are you sure you want to delete "{props.userName}" user?
                     </p>
                   )}
                 </Grid>
