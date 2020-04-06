@@ -497,14 +497,31 @@ module.exports = {
       result = result.filter((event) => {
         const { streams } = event;
         const streamIds = streams.map((s) => s.id);
-        if (streamIds.length == 0 || _.includes(streamIds, stream)) {
+        if (streamIds.length == 0 || _.includes(streamIds, stream.id)) {
           return event;
         }
       });
     }
 
-    /** TODOS */
-    /** FIltering qualifications */
+    /** Filtering qualifications */
+    // const educations = await strapi.query("education").find({ student: id });
+    // result = result.filter((event) => {
+    //   const { qualifications } = event;
+    //   let isEligible = false;
+    //   qualifications.forEach((q) => {
+    //     const isQualificationPresent = educations.find(
+    //       (e) => e.qualification == q.qualification && e.marks >= q.marks
+    //     );
+
+    //     if (!isQualificationPresent) {
+    //       isEligible = false;
+    //     }
+    //   });
+
+    //   if (isEligible) {
+    //     return event;
+    //   }
+    // });
 
     const response = utils.paginate(result, page, pageSize);
     return {
