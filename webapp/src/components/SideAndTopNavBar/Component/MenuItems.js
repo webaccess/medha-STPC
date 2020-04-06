@@ -145,7 +145,7 @@ const MenuItems = props => {
       },
       {
         name: "Activity",
-        link: "",
+        link: routeConstants.ELIGIBLE_ACTIVITY,
         Icon: <AssignmentOutlinedIcon />
       },
       {

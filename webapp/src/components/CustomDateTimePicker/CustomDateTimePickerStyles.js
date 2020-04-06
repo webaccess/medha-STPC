@@ -34,7 +34,8 @@ const customTheme = createMuiTheme({
         backgroundColor: "#000"
       }
     },
-    MuiPickersTabs: { backgroundColor: "#000" },
+
+    MuiPickerDTTabs: { tabs: { backgroundColor: "black" } },
     MuiPickersDay: {
       daySelected: {
         backgroundColor: "#000",

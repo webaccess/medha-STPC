@@ -74,3 +74,4 @@ export const EDIT_ACTIVITY = "/edit-activity";
 export const ADD_ACTIVITY = "/add-activity";
 export const MANAGE_ACTIVITY = "/manage-activity";
 export const VIEW_ACTIVITY = "/view-activity";
+export const ELIGIBLE_ACTIVITY = "/eligible-activity";

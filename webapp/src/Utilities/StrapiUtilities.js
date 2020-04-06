@@ -372,9 +372,12 @@ export const editActivity = (
     id: id
   };
   const formdata = new FormData();
-  formdata.append("files.upload_logo", files, files.name);
-  formdata.append("data", JSON.stringify(data));
-  return formdata;
+  console.log(Object.keys(files).length);
+  if (Object.keys(files).length) {
+    formdata.append("files.upload_logo", files, files.name);
+    formdata.append("data", JSON.stringify(data));
+    return formdata;
+  } else return data;
 };
 export const addAcademicHistory = (academicYear, educationYear) => {
   return {

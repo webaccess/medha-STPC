@@ -14,6 +14,7 @@ import {
   OutlinedInput,
   Collapse
 } from "@material-ui/core";
+import Spinner from "../../components/Spinner/Spinner.js";
 import Chip from "@material-ui/core/Chip";
 import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth } from "../../components";
@@ -36,23 +37,79 @@ import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
 //import registrationSchema from "./RegistrationSchema.js";
+import Img from "react-image";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
 import ActivityFormSchema from "./ActivityFormSchema";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import {
+  EditorState,
+  convertToRaw,
+  convertFromRaw,
+  ContentState
+} from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 
 const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300
+  },
+  chips: {
+    display: "flex",
+    flexWrap: "wrap"
+  },
+  chip: {
+    margin: 2
+  },
+  noLabel: {
+    marginTop: theme.spacing(3)
+  },
   root: {
-    maxWidth: "100%",
-    "& > * + *": {
-      marginTop: theme.spacing(3)
-    }
+    maxWidth: "100%"
+  },
+  btnspace: {
+    padding: "20px 18px 20px"
+  },
+  btnspaceadd: {
+    padding: "0px 15px 15px"
+  },
+  formgrid: {
+    marginTop: theme.spacing(0),
+    alignItems: "center"
   },
   divider: {
     marginTop: "15px",
     marginBottom: "15px"
   },
-  addcollegetextfield: {
-    padding: "25px"
+  add_more_btn: {
+    float: "right"
+  },
+  streamcard: {
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    padding: "15px !important",
+    position: "relative",
+    "& label": {
+      position: "absolute",
+      top: "-8px",
+      backgroundColor: "#fff"
+    }
+  },
+  streamoffer: {
+    paddingLeft: "15px",
+    paddingRight: "15px",
+    borderRadius: "0px",
+    boxShadow: "none !important"
+  },
+  streamcardcontent: {
+    boxShadow: "none",
+    borderBottom: "1px solid #ccc",
+    marginBottom: "15px",
+    borderRadius: "0px"
   },
   title: {
     display: "flex",
@@ -68,23 +125,18 @@ const useStyles = makeStyles(theme => ({
   MarginBottom: {
     marginBottom: "10px"
   },
-
-  btnspace: {
-    padding: "20px 18px 20px"
-  },
-  formgrid: {
-    marginTop: theme.spacing(0),
-    alignItems: "center",
-    marginBottom: "10px"
-  },
-  Datetime: {
-    marginBottom: "10px",
-    marginLeft: "30px"
+  toolbarMargin: {
+    marginTop: theme.spacing(2),
+    border: "1px solid"
   }
 }));
 
 const AddEditActivity = props => {
   let history = useHistory();
+
+  const [editorState, setEditorState] = React.useState(
+    EditorState.createEmpty()
+  );
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -174,8 +226,17 @@ const AddEditActivity = props => {
       }
 
       if (props.location["dataForEdit"]["description"]) {
-        formState.values["description"] =
-          props.location["dataForEdit"]["description"];
+        // formState.values["description"] = props["dataForEdit"]["description"];
+        const blocksFromHtml = htmlToDraft(
+          props.location["dataForEdit"]["description"]
+        );
+        const { contentBlocks, entityMap } = blocksFromHtml;
+        const contentState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        const editorState = EditorState.createWithContent(contentState);
+        setEditorState(editorState);
       }
       if (props.location["dataForEdit"]["trainer_name"]) {
         formState.values["trainer"] =
@@ -199,13 +260,14 @@ const AddEditActivity = props => {
           new Date(props.location["dataForEdit"]["end_date_time"])
         );
       }
-      // if (
-      //   props.location["dataForEdit"]["upload_logo"] &&
-      //   props.location["dataForEdit"]["upload_logo"]["id"]
-      // ) {
-      //   formState.values["files"] =
-      //     props.location["dataForEdit"]["upload_logo"]["name"];
-      // }
+      if (
+        props.location["dataForEdit"]["upload_logo"] &&
+        props.location["dataForEdit"]["upload_logo"]["id"]
+      ) {
+        formState.files = props.location["dataForEdit"]["upload_logo"];
+        //      formState.values["files"] =
+        //        props.location["dataForEdit"]["upload_logo"]["name"];
+      }
     }
     formState.counter += 1;
   }
@@ -321,7 +383,7 @@ const AddEditActivity = props => {
             : selectedDateTo.getMinutes()),
         formState.values["educationyear"],
         formState.values["address"],
-        formState.values["description"],
+        draftToHtml(convertToRaw(editorState.getCurrentContent())),
         formState.values["trainer"],
         formState["stream"],
         formState["dataForEdit"]["id"],
@@ -394,7 +456,7 @@ const AddEditActivity = props => {
             : selectedDateTo.getMinutes()),
         formState.values["educationyear"],
         formState.values["address"],
-        formState.values["description"],
+        draftToHtml(convertToRaw(editorState.getCurrentContent())),
         formState.values["trainer"],
         formState["stream"],
         formState.files
@@ -697,26 +759,31 @@ const AddEditActivity = props => {
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
-                    <TextField
-                      label="Description"
-                      name="description"
-                      value={formState.values["description"]}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      multiline
-                      error={hasError("description")}
-                      onChange={handleChange}
-                      helperText={
-                        hasError("description")
-                          ? formState.errors["description"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
+                    <Grid className={classes.streamcard}>
+                      <Card className={classes.streamoffer}>
+                        <InputLabel
+                          htmlFor="outlined-stream-card"
+                          fullwidth={true.toString()}
+                        >
+                          {genericConstants.DESCRIPTION}
+                        </InputLabel>
+                        <div className="rdw-storybook-root">
+                          <Editor
+                            editorState={editorState}
+                            toolbarClassName="rdw-storybook-toolbar"
+                            wrapperClassName="rdw-storybook-wrapper"
+                            editorClassName="rdw-storybook-editor"
+                            value={editorState}
+                            onEditorStateChange={data => {
+                              setEditorState(data);
+                            }}
+                          />
+                        </div>
+                      </Card>
+                    </Grid>
                   </Grid>
                 </Grid>
+
                 <Grid container spacing={3} className={classes.Datetime}>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
@@ -1010,6 +1077,31 @@ const AddEditActivity = props => {
               <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    {console.log(formState.values.files)}
+                    {formState.files !== null &&
+                    formState.files !== undefined &&
+                    formState.files !== {} ? (
+                      <Img
+                        src={
+                          formState.files["url"]
+                            ? strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                              formState.files["url"]
+                            : formState.values.files
+                        }
+                        loader={<Spinner />}
+                        width="50%"
+                        height="50%"
+                      />
+                    ) : (
+                      <Img
+                        src="/images/noImage.png"
+                        loader={<Spinner />}
+                        width="100%"
+                        height="100%"
+                      />
+                    )}
+                  </Grid>
                   <Grid item md={12} xs={12}>
                     <TextField
                       fullWidth

@@ -62,6 +62,7 @@ import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
 import ActivityRoute from "./containers/Activity/ActivityRoute.js";
 import ActivityDetails from "./containers/Activity/ActivityDetails";
+import EligibleActivity from "./containers/Activity/EligibleActivity";
 
 function App() {
   const [index, setIndex] = useState(0);
@@ -208,6 +209,13 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_ACTIVITY}
+              />
+              {/**Eligible Activity */}
+              <RouteWithLayout
+                component={EligibleActivity}
+                exact
+                layout={Layout}
+                path={routeConstants.ELIGIBLE_ACTIVITY}
               />
 
               {/**Student Academic history */}

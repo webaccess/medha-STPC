@@ -14,21 +14,6 @@ const ActivityFormSchema = {
       }
     }
   },
-  description: {
-    label: "Description",
-    id: "description",
-    autoComplete: "description",
-    required: true,
-    placeholder: "description",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Description is required"
-      }
-    }
-  },
   files: {
     label: "files",
     id: "files",

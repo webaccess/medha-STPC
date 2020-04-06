@@ -4,6 +4,16 @@ import * as strapiConstants from "../../constants/StrapiApiConstants";
 import { Auth as auth } from "../../components";
 import Spinner from "../../components/Spinner/Spinner.js";
 import GreenButton from "../../components/GreenButton/GreenButton.js";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import {
+  EditorState,
+  convertToRaw,
+  convertFromRaw,
+  ContentState
+} from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 import {
   Card,
   CardContent,
@@ -13,6 +23,11 @@ import {
   Icon,
   Typography
 } from "@material-ui/core";
+import ReactHtmlParser, {
+  processNodes,
+  convertNodeToElement,
+  htmlparser2
+} from "react-html-parser";
 import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../constants/RouteConstants";
@@ -58,11 +73,11 @@ const ActivityDetails = props => {
     } else {
       if (auth.getUserInfo().role.name === "Medha Admin") {
         history.push({
-          pathname: routeConstants.MANAGE_EVENT
+          pathname: routeConstants.MANAGE_ACTIVITY
         });
       } else if (auth.getUserInfo().role.name === "Student") {
         history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT
+          pathname: routeConstants.ELIGIBLE_ACTIVITY
         });
       } else {
         history.push({
@@ -75,7 +90,7 @@ const ActivityDetails = props => {
   const route = () => {
     if (auth.getUserInfo().role.name === "Student") {
       history.push({
-        pathname: routeConstants.ELIGIBLE_EVENT
+        pathname: routeConstants.ELIGIBLE_ACTIVITY
       });
     } else if (
       auth.getUserInfo().role.name === "Medha Admin" ||
@@ -132,6 +147,7 @@ const ActivityDetails = props => {
   };
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           Activity
@@ -221,9 +237,9 @@ const ActivityDetails = props => {
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
-                        <ReactMarkdown
-                          source={formState.activityDetails["description"]}
-                        />
+                        {ReactHtmlParser(
+                          formState.activityDetails["description"]
+                        )}
                       </Grid>
                     </Grid>
                     <Grid>
@@ -235,7 +251,7 @@ const ActivityDetails = props => {
                               color="primary"
                               disableElevation
                               onClick={register}
-                              to={routeConstants.MANAGE_EVENT}
+                              to={routeConstants.ELIGIBLE_ACTIVITY}
                               greenButtonChecker={formState.greenButtonChecker}
                             >
                               Register

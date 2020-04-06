@@ -135,6 +135,7 @@ const EventDetails = props => {
   const register = () => {};
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           Event
