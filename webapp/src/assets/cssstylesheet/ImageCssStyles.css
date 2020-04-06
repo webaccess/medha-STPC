@@ -1,0 +1,10 @@
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.image-center {
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
+}

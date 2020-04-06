@@ -9,7 +9,7 @@ import {
   ForgotPasswordRoute,
   RouteWithLayout,
   PrivateRoute,
-  DefaultRoute,
+  DefaultRoute
 } from "./authroute";
 
 import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
@@ -391,6 +391,7 @@ function App() {
                 layout={Layout}
                 path={routeConstants.ADD_EVENT}
               />
+              {/**Eligible Events */}
               <RouteWithLayout
                 component={EligibleEvents}
                 exact

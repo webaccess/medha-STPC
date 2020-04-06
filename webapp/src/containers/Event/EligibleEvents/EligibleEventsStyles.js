@@ -16,7 +16,10 @@ const useStyles = makeStyles(theme => ({
   },
   imageDiv: {
     width: "100%",
-    height: "200px"
+    height: "200px",
+    display: "flex",
+    backgroundColor: "white",
+    margin: "auto"
   },
   titleDiv: {
     width: "100%",

@@ -91,7 +91,7 @@ const MenuItems = props => {
           },
           {
             name: "Import Students",
-            link: ""
+            link: routeConstants.NOT_FOUND_URL
           }
         ]
       },
@@ -105,18 +105,18 @@ const MenuItems = props => {
           },
           {
             name: "Manage Students Group",
-            link: ""
+            link: routeConstants.NOT_FOUND_URL
           },
           {
             name: "Validate Student",
-            link: ""
+            link: routeConstants.NOT_FOUND_URL
           }
         ]
       },
       {
         name: "Events",
         Icon: <EmojiFlagsOutlinedIcon />,
-        link: ""
+        link: routeConstants.NOT_FOUND_URL
       }
     ],
     Student: [

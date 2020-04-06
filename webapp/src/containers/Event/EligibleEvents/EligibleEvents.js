@@ -4,6 +4,7 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { green } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
+import "../../../assets/cssstylesheet/ImageCssStyles.css";
 
 import {
   Auth as auth,
@@ -25,6 +26,7 @@ import useStyles from "./EligibleEventsStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as FormUtilities from "../../../Utilities/FormUtilities";
 import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
 import RegisterEvent from "../EventRegistration/EventRegistration";
@@ -36,66 +38,63 @@ const EligibleEvents = props => {
   const classes = useStyles();
   const [formState, setFormState] = useState({
     eventDetails: {},
-    galleryItems: [1, 2, 3, 4, 5],
     greenButtonChecker: true,
     showRegisterModel: false,
     registerUserId: "",
     eventtitle: "",
     isStudentRegister: false,
     registrationFail: false,
-    authUserRegistering: auth.getUserInfo().studentInfo.id
+    authUserRegistering: null
   });
   useEffect(() => {
     getEventDetails();
   }, []);
 
-  console.log("aurhUser", formState.authUserRegistering);
-
   async function getEventDetails() {
-    let paramsForCollege = null;
+    let studentId = null;
     if (
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === "Student" &&
-      auth.getUserInfo().college !== null
+      auth.getUserInfo().studentInfo !== null &&
+      auth.getUserInfo().studentInfo.id !== null
     ) {
-      paramsForCollege = auth.getUserInfo().college.id;
-    } else {
-      localStorage.clear();
-      history.push({
-        pathname: routeConstants.SIGN_IN_URL
-      });
-    }
-    if (paramsForCollege !== null && paramsForCollege !== undefined) {
-      const COLLEGES_URL =
-        strapiConstants.STRAPI_DB_URL +
-        "colleges/" +
-        paramsForCollege +
-        "/event";
-      let params = {
-        pageSize: -1
-      };
-      await serviceProviders
-        .serviceProviderForGetRequest(COLLEGES_URL, params)
-        .then(res => {
-          let viewData = res.data.result;
-          setFormState(formState => ({
-            ...formState,
-            eventDetails: viewData
-          }));
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    } else {
-      if (auth.getUserInfo().role.name === "Student") {
-        history.push({
-          pathname: routeConstants.VIEW_PROFILE
-        });
+      studentId = auth.getUserInfo().studentInfo.id;
+      formState.authUserRegistering = studentId;
+      if (studentId !== null && studentId !== undefined) {
+        const ELIGIBLE_EVENTS =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_STUDENTS +
+          "/" +
+          auth.getUserInfo().studentInfo.id +
+          "/" +
+          strapiConstants.STRAPI_EVENTS;
+        let params = {
+          pageSize: -1
+        };
+        await serviceProviders
+          .serviceProviderForGetRequest(ELIGIBLE_EVENTS, params)
+          .then(res => {
+            let viewData = res.data.result;
+            setFormState(formState => ({
+              ...formState,
+              eventDetails: viewData
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
       } else {
-        localStorage.clear();
+        auth.clearAppStorage();
         history.push({
           pathname: routeConstants.SIGN_IN_URL
         });
       }
+    } else {
+      auth.clearAppStorage();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
+      });
     }
   }
 
@@ -247,10 +246,10 @@ const EligibleEvents = props => {
                                   strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
                                   data["upload_logo"]["url"]
                                 }
+                                className="image-center"
                                 loader={<Spinner />}
                                 width="100%"
                                 height="100%"
-                                object-fit="contain"
                               />
                             </div>
                           </Grid>
@@ -265,6 +264,7 @@ const EligibleEvents = props => {
                           >
                             <div className={classes.imageDiv}>
                               <Img
+                                className="image-center"
                                 src="/images/noImage.png"
                                 loader={<Spinner />}
                                 width="100%"
