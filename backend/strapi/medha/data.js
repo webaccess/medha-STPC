@@ -452,7 +452,8 @@ const roles = {
           "edit",
           "document",
           "deletedocument",
-          "academicHistory"
+          "academicHistory",
+          "events"
         ]
       },
       {

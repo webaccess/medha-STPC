@@ -13,7 +13,6 @@ const sanitizeUser = user =>
 const _ = require("lodash");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
-
 module.exports = {
   /**
    * Retrieve authenticated student.
@@ -448,14 +447,74 @@ module.exports = {
 
     return utils.getFindOneResponse({});
   },
+
+  /**
+   * @param {id} ctx
+   * Get all events for student
+   */
+  async events(ctx) {
+    const { id } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const student = await strapi.query("student").findOne({ id });
+
+    if (!student) {
+      return ctx.response.notFound("Student does not exist");
+    }
+
+    const { college, rpc, stream } = student.user;
+
+    const events = await strapi.query("event").find();
+    let result;
+    /**Filtering college */
+    if (college) {
+      result = events.filter(event => {
+        const { colleges } = event;
+        const isExist = colleges.filter(c => c.id == college);
+        if (isExist && isExist.length > 0) {
+          return event;
+        }
+      });
+    } else {
+      result = events;
+    }
+
+    /**Filtering rpc */
+    if (rpc) {
+      result = result.filter(event => {
+        const eventRPC = event.rpc;
+        if (eventRPC == null || eventRPC.id == rpc) {
+          return event;
+        }
+      });
+    }
+
+    console.log(result);
+
+    /**Filtering stream */
+
+    if (stream) {
+      result = result.filter(event => {
+        const { streams } = event;
+        const streamIds = streams.map(s => s.id);
+        if (streamIds.length == 0 || _.includes(streamIds, stream)) {
+          return event;
+        }
+      });
+    }
+    /** TODOS */
+    /** FIltering qualifications */
+
+    const response = utils.paginate(result, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
+  },
   async activity(ctx) {
     const { id } = ctx.params;
     console.log(id);
 
     const student = await strapi.query("student").findOne({ id });
-    if (!student) {
-      return ctx.response.notFound("Student does not exist");
-    }
 
     const { stream } = student;
     console.log(student);

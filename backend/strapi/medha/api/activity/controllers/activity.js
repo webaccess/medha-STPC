@@ -172,12 +172,15 @@ module.exports = {
       return ctx.response.notFound("Activity does not exist");
     }
 
-    const { students } = ctx.request.body;
+    const { students, name } = ctx.request.body;
 
     if (!students) {
       return ctx.response.badRequest("Students field is missing");
     }
 
+    if (!name) {
+      return ctx.response.badRequest("Name field is missing");
+    }
     /**
      * Check whether students exists
      */
