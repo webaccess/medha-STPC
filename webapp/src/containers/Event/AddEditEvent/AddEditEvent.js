@@ -15,7 +15,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   YellowButton,
   CustomDateTimePicker,
-  GrayButton
+  GrayButton, Spinner
 } from "../../../components";
 import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
@@ -33,6 +33,7 @@ import "./RichTextFieldStyles.css";
 import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
+import Img from "react-image";
 
 const eventName = "eventName";
 const description = "description";
@@ -105,9 +106,15 @@ const AddEditEvent = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     files: {},
+    filess:{},
     descriptionError: false,
     dataToShowForMultiSelect: [],
-    dataToShowForStreamMultiSelect: []
+    dataToShowForStreamMultiSelect: [],
+    deleteImage: false,
+    previewFile:{},
+    showPreviewImage:false,
+    showPreviewEditImage:false,
+    showPreviewNoImage:false
   });
 
   const [states, setStates] = useState([]);
@@ -207,9 +214,11 @@ const AddEditEvent = props => {
         formState.values[qualification] =
           props["dataForEdit"]["qualification"]["id"];
       }
-      if (props["dataForEdit"] && props["dataForEdit"]["upload_logo"]) {
-        //  formState.values[files] = props["dataForEdit"]["upload_logo"]["name"];
-        formState.files.name = props["dataForEdit"]["upload_logo"]["hash"];
+      if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"]){
+        formState.showPreviewEditImage = true;
+      }
+      if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"] === null){
+        formState.showPreviewNoImage = true;
       }
     }
     formState.counter += 1;
@@ -515,7 +524,11 @@ const AddEditEvent = props => {
         ...formState.touched,
         [event.target.name]: true
       },
-      files: event.target.files[0]
+      files: event.target.files[0],
+      previewFile:  URL.createObjectURL(event.target.files[0]),
+      showPreviewEditImage:false,
+      showPreviewNoImage:false,
+      showPreviewImage:true
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -953,6 +966,32 @@ const AddEditEvent = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
+                  {formState.showPreviewImage ? <img src={formState.previewFile} alt="abc"/> : null }
+
+                    {formState.showPreviewEditImage && formState.dataForEdit["upload_logo"] !== null &&
+                      formState.dataForEdit["upload_logo"] !== undefined &&
+                      formState.dataForEdit["upload_logo"] !== {} ? (
+                        <Img
+                          src={
+                            strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                            formState.dataForEdit["upload_logo"]["url"]
+                          }
+                          loader={<Spinner />}
+                          width="100%"
+                          height="100%"
+                        />
+                      ) : (
+                        null
+                      )
+                    }
+                    {formState.showPreviewNoImage ? 
+                     <Img
+                        src="/images/noImage.png"
+                        loader={<Spinner />}
+                        width="100%"
+                        height="100%"
+                      /> : null
+                    }
                     <TextField
                       fullWidth
                       id={get(EventSchema[files], "id")}
@@ -973,6 +1012,8 @@ const AddEditEvent = props => {
                       variant="outlined"
                       className={classes.elementroot}
                     />
+                  
+                      
                   </Grid>
                 </Grid>
               </Grid>
