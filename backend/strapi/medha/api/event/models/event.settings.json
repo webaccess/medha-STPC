@@ -47,11 +47,13 @@
     "marks": {
       "type": "decimal"
     },
-    "qualification": {
-      "model": "qualifications"
-    },
     "question_set": {
       "model": "question-set"
+    },
+    "qualifications": {
+      "type": "component",
+      "repeatable": true,
+      "component": "qualifications.qualifications"
     }
   }
 }
