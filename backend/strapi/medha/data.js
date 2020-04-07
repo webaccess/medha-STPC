@@ -301,7 +301,7 @@ const roles = {
       },
       {
         name: "event-registration",
-        action: []
+        action: ["create"]
       },
       {
         name: "feedback",
@@ -397,7 +397,7 @@ const roles = {
       },
       {
         name: "event-registration",
-        action: []
+        action: ["create"]
       },
       {
         name: "feedback",
