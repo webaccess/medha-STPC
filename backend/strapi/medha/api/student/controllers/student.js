@@ -8,7 +8,7 @@ const bookshelf = require("../../../config/config.js");
 const { sanitizeEntity } = require("strapi-utils");
 const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model,
+    model: strapi.query("user", "users-permissions").model
   });
 const _ = require("lodash");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
@@ -86,7 +86,7 @@ module.exports = {
         role: studentRole.id,
         provider: "local",
         confirmed: false,
-        blocked: false,
+        blocked: false
       },
       _.omit(requestBody, [
         "stream",
@@ -99,7 +99,7 @@ module.exports = {
         "physicallyHandicapped",
         "address",
         "otp",
-        "college_id",
+        "college_id"
       ])
     );
 
@@ -114,7 +114,7 @@ module.exports = {
           .where({
             contact_number: contact_number,
             otp: otp,
-            is_verified: null,
+            is_verified: null
           })
           .fetch({ lock: "forUpdate", transacting: t, require: false })
           .then((otpModel) => {
@@ -152,7 +152,7 @@ module.exports = {
             "contact_number",
             "otp",
             "college_id",
-            "state",
+            "state"
           ])
         );
         return await bookshelf
@@ -189,7 +189,7 @@ module.exports = {
         "college",
         "verifiedByCollege",
         "documents",
-        "educations",
+        "educations"
       ])
     );
     const studentRequestData = Object.assign(
@@ -208,7 +208,7 @@ module.exports = {
         "provider",
         "confirmed",
         "blocked",
-        "role",
+        "role"
       ])
     );
     console.log(studentRequestData);
@@ -233,7 +233,7 @@ module.exports = {
               rpc: userRequestBody.rpc,
 
               confirmed: userRequestBody.confirmed,
-              blocked: userRequestBody.blocked,
+              blocked: userRequestBody.blocked
             },
             { patch: true, transacting: t }
           )
@@ -258,7 +258,7 @@ module.exports = {
               date_of_birth: studentRequestData.date_of_birth,
               gender: studentRequestData.gender,
               roll_number: studentRequestData.roll_number,
-              district: studentRequestData.district,
+              district: studentRequestData.district
             },
             { patch: true, transacting: t }
           )
@@ -291,14 +291,14 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["education"],
-          filters,
+          filters
         })
       )
       .where({ student: id })
       .fetchPage({
         page: page,
         pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize,
+          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
       })
       .then((res) => {
         return utils.getPaginatedResponse(res);
@@ -337,12 +337,12 @@ module.exports = {
       .store({
         environment: strapi.config.environment,
         type: "plugin",
-        name: "upload",
+        name: "upload"
       })
       .get({ key: "provider" });
 
     const file = await strapi.plugins["upload"].services.upload.fetch({
-      id: fileId,
+      id: fileId
     });
 
     if (!file) {
@@ -526,7 +526,7 @@ module.exports = {
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination,
+      ...response.pagination
     };
-  },
+  }
 };
