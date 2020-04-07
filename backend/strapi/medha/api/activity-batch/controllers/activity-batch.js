@@ -175,6 +175,51 @@ module.exports = {
       ctx
     );
   },
+  async inValidateActivityBatchStudents(ctx) {
+    const { id } = ctx.params;
+    const activityBatch = await strapi.query("activity-batch").findOne({ id });
+    if (!activityBatch) {
+      return ctx.response.notFound("Activity Batch does not exist");
+    }
+
+    const { students } = ctx.request.body;
+
+    if (!students) {
+      return ctx.response.badRequest("Students field is missing");
+    }
+
+    const studentsResponse = await Promise.all(
+      students.map(studentId =>
+        strapi.query("student").findOne({ id: studentId })
+      )
+    );
+
+    if (studentsResponse.some(s => s === null)) {
+      return ctx.response.badRequest("Invalid Student Ids");
+    }
+
+    /**
+     * Check whether student exist in activity batch
+     */
+
+    const areStudentPresentInActivityBatch = await Promise.all(
+      students.map(studentId =>
+        strapi
+          .query("activity-batch-attendance")
+          .findOne({ activity_batch: id, student: studentId })
+      )
+    );
+
+    if (areStudentPresentInActivityBatch.some(a => a === null)) {
+      return ctx.response.badRequest(
+        "Invalid Student Ids present in activity batch"
+      );
+    }
+
+    return strapi.services["activity-batch"].inValidateStudentForActivityBatch(
+      ctx
+    );
+  },
 
   async addStudentsToActivityBatch(ctx) {
     const { id } = ctx.params;
