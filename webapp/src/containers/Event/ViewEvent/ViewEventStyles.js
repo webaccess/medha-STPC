@@ -24,6 +24,10 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     backgroundColor: "white",
     margin: "auto"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 export default useStyles;
