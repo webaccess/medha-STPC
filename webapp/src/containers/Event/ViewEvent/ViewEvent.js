@@ -44,29 +44,31 @@ const ViewEvent = props => {
 
   /** Check if a student is registered for a event */
   const getRegisteredEvents = async () => {
-    const apiToCheckStudentRegistration =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_STUDENTS +
-      "/" +
-      auth.getUserInfo().studentInfo.id +
-      "/registeredevents";
-    await serviceProviders
-      .serviceProviderForGetRequest(apiToCheckStudentRegistration)
-      .then(res => {
-        let registeredEvents = [];
-        res.data.map(data => {
-          registeredEvents.push(data.event.id);
+    if (auth.getUserInfo().role.name === "Student") {
+      const apiToCheckStudentRegistration =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_STUDENTS +
+        "/" +
+        auth.getUserInfo().studentInfo.id +
+        "/registeredevents";
+      await serviceProviders
+        .serviceProviderForGetRequest(apiToCheckStudentRegistration)
+        .then(res => {
+          let registeredEvents = [];
+          res.data.map(data => {
+            registeredEvents.push(data.event.id);
+          });
+          let isEventRegistered = checkEventRegistered(registeredEvents);
+          setFormState(formState => ({
+            ...formState,
+            registeredEventsIds: registeredEvents,
+            registeredForEvent: isEventRegistered
+          }));
+        })
+        .catch(error => {
+          console.log("error", error);
         });
-        let isEventRegistered = checkEventRegistered(registeredEvents);
-        setFormState(formState => ({
-          ...formState,
-          registeredEventsIds: registeredEvents,
-          registeredForEvent: isEventRegistered
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    }
   };
 
   async function getEventDetails() {
