@@ -6,7 +6,7 @@
 
 const bookshelf = require("../../../config/config.js");
 const { sanitizeEntity } = require("strapi-utils");
-const sanitizeUser = user =>
+const sanitizeUser = (user) =>
   sanitizeEntity(user, {
     model: strapi.query("user", "users-permissions").model
   });
@@ -35,7 +35,7 @@ module.exports = {
       .model("college")
       .where({ id: collegeId })
       .fetch({ require: false })
-      .then(data => {
+      .then((data) => {
         return data ? data.toJSON() : null;
       });
 
@@ -46,7 +46,7 @@ module.exports = {
       .model("rpc")
       .where({ id: college.rpc })
       .fetch({ require: false })
-      .then(data => {
+      .then((data) => {
         return data ? data.toJSON() : null;
       });
 
@@ -58,7 +58,7 @@ module.exports = {
       .model("zone")
       .where({ id: college.zone })
       .fetch({ require: false })
-      .then(data => {
+      .then((data) => {
         return data ? data.toJSON() : null;
       });
 
@@ -108,7 +108,7 @@ module.exports = {
     ].services.user.hashPassword(userRequestBody);
 
     await bookshelf
-      .transaction(async t => {
+      .transaction(async (t) => {
         await bookshelf
           .model("otp")
           .where({
@@ -117,7 +117,7 @@ module.exports = {
             is_verified: null
           })
           .fetch({ lock: "forUpdate", transacting: t, require: false })
-          .then(otpModel => {
+          .then((otpModel) => {
             if (!otpModel) {
               return Promise.reject({ column: "Please request new OTP" });
             }
@@ -139,7 +139,7 @@ module.exports = {
           .model("user")
           .forge(userRequestBody)
           .save(null, { transacting: t })
-          .then(userModel => userModel.toJSON());
+          .then((userModel) => userModel.toJSON());
 
         const studentRequestData = Object.assign(
           { user: _user.id },
@@ -160,11 +160,11 @@ module.exports = {
           .forge(studentRequestData)
           .save(null, { transacting: t });
       })
-      .then(success => {
+      .then((success) => {
         console.log(success);
         return ctx.send(utils.getResponse(success));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         return ctx.response.badRequest(`Invalid ${error.detail}`);
       });
@@ -214,7 +214,7 @@ module.exports = {
     console.log(studentRequestData);
     //console.log(userRequestBody);
     await bookshelf
-      .transaction(async t => {
+      .transaction(async (t) => {
         const userModel = await bookshelf
           .model("user")
           .where({ id: userRequestBody.id })
@@ -237,7 +237,7 @@ module.exports = {
             },
             { patch: true, transacting: t }
           )
-          .catch(err => {
+          .catch((err) => {
             return Promise.reject({ Error: err });
           });
 
@@ -262,16 +262,16 @@ module.exports = {
             },
             { patch: true, transacting: t }
           )
-          .catch(err => {
+          .catch((err) => {
             return Promise.reject({ Error: err });
           });
       })
-      .then(success => {
+      .then((success) => {
         console.log("In then");
         console.log(success);
         return ctx.send(utils.getResponse(success));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         return ctx.response.badRequest(`Invalid ${error.column}`);
       });
@@ -300,7 +300,7 @@ module.exports = {
         pageSize:
           pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
       })
-      .then(res => {
+      .then((res) => {
         return utils.getPaginatedResponse(res);
       });
   },
@@ -316,7 +316,7 @@ module.exports = {
     const response = await strapi.query("student").findOne({ id });
     if (documentId && response.documents && response.documents.length > 0) {
       response.documents = response.documents.filter(
-        doc => doc.id === parseInt(documentId)
+        (doc) => doc.id === parseInt(documentId)
       );
     }
 
@@ -375,7 +375,7 @@ module.exports = {
       .find({ student: id }, ["academic_year"]);
 
     if (academicHistoryId && response && response.length > 0) {
-      response = response.filter(ah => ah.id === parseInt(academicHistoryId));
+      response = response.filter((ah) => ah.id === parseInt(academicHistoryId));
     }
     return utils.getFindOneResponse(response);
   },
@@ -406,7 +406,7 @@ module.exports = {
 
     await strapi
       .query("student")
-      .model.query(qb => {
+      .model.query((qb) => {
         qb.whereIn("id", idsToUnApprove);
       })
       .save({ verifiedByCollege: false }, { patch: true, require: false });
@@ -440,7 +440,7 @@ module.exports = {
 
     await strapi
       .query("student")
-      .model.query(qb => {
+      .model.query((qb) => {
         qb.whereIn("id", idsToApprove);
       })
       .save({ verifiedByCollege: true }, { patch: true, require: false });
@@ -461,15 +461,16 @@ module.exports = {
       return ctx.response.notFound("Student does not exist");
     }
 
-    const { college, rpc, stream } = student.user;
+    const { college, rpc } = student.user;
+    const { stream } = student;
 
     const events = await strapi.query("event").find();
     let result;
     /**Filtering college */
     if (college) {
-      result = events.filter(event => {
+      result = events.filter((event) => {
         const { colleges } = event;
-        const isExist = colleges.filter(c => c.id == college);
+        const isExist = colleges.filter((c) => c.id == college);
         if (isExist && isExist.length > 0) {
           return event;
         }
@@ -480,7 +481,7 @@ module.exports = {
 
     /**Filtering rpc */
     if (rpc) {
-      result = result.filter(event => {
+      result = result.filter((event) => {
         const eventRPC = event.rpc;
         if (eventRPC == null || eventRPC.id == rpc) {
           return event;
@@ -493,16 +494,34 @@ module.exports = {
     /**Filtering stream */
 
     if (stream) {
-      result = result.filter(event => {
+      result = result.filter((event) => {
         const { streams } = event;
-        const streamIds = streams.map(s => s.id);
-        if (streamIds.length == 0 || _.includes(streamIds, stream)) {
+        const streamIds = streams.map((s) => s.id);
+        if (streamIds.length == 0 || _.includes(streamIds, stream.id)) {
           return event;
         }
       });
     }
-    /** TODOS */
-    /** FIltering qualifications */
+
+    /** Filtering qualifications */
+    // const educations = await strapi.query("education").find({ student: id });
+    // result = result.filter((event) => {
+    //   const { qualifications } = event;
+    //   let isEligible = false;
+    //   qualifications.forEach((q) => {
+    //     const isQualificationPresent = educations.find(
+    //       (e) => e.qualification == q.qualification && e.marks >= q.marks
+    //     );
+
+    //     if (!isQualificationPresent) {
+    //       isEligible = false;
+    //     }
+    //   });
+
+    //   if (isEligible) {
+    //     return event;
+    //   }
+    // });
 
     const response = utils.paginate(result, page, pageSize);
     return {
@@ -541,9 +560,9 @@ module.exports = {
     });
 
     if (stream) {
-      data = data.filter(activity => {
+      data = data.filter((activity) => {
         const { streams } = activity;
-        const streamIds = streams.map(s => s.id);
+        const streamIds = streams.map((s) => s.id);
         if (_.includes(streamIds, stream.id)) {
           return activity;
         }
