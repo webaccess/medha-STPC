@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from "react";
 import {
   Card,
-  CardHeader,
   CardContent,
   Grid,
   TextField,
   Typography,
-  FormControl,
   Divider,
   InputLabel,
   IconButton,
-  InputAdornment,
-  OutlinedInput,
   Collapse,
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
-import Chip from "@material-ui/core/Chip";
 import CloseIcon from "@material-ui/icons/Close";
-import { Auth as auth } from "../../components";
+
 import * as routeConstants from "../../constants/RouteConstants";
-import * as _ from "lodash";
+
 import * as genericConstants from "../../constants/GenericConstants.js";
-import { Redirect } from "react-router-dom";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import axios from "axios";
+
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import DateFnsUtils from "@date-io/date-fns";
 import CustomDateTimePicker from "../../components/CustomDateTimePicker/CustomDateTimePicker.js";
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
@@ -36,19 +27,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
-//import registrationSchema from "./RegistrationSchema.js";
+
 import Img from "react-image";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
 import ActivityFormSchema from "./ActivityFormSchema";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {
-  EditorState,
-  convertToRaw,
-  convertFromRaw,
-  ContentState,
-} from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 
@@ -154,6 +140,14 @@ const AddEditActivity = (props) => {
     counter: 0,
     stream: [],
     files: {},
+    previewFile: {},
+    showPreview: false,
+    showEditPreview: props.location.editActivity
+      ? props.location.editActivity
+      : false,
+    showNoImage: props.location.editActivity
+      ? false
+      : props.location.editActivity,
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
@@ -170,25 +164,18 @@ const AddEditActivity = (props) => {
     { name: "Third", id: "Third" },
     { name: "Fourth", id: "Fourth" },
   ];
-  const [isSuccess, setIsSuccess] = useState(false);
+
   const [isFailed, setIsFailed] = useState(false);
 
-  const { layout: Layout } = props;
   const classes = useStyles();
 
-  const [statelist, setstatelist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
-  const [zonelist, setzonelist] = useState([]);
-  const [rpclist, setrpclist] = useState([]);
   const [academicyearlist, setacademicyearlist] = useState([]);
   useEffect(() => {
-    getStates();
-
     getColleges();
     getStreams();
-    getZones();
-    getRpc();
+
     getAcademicYear();
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
@@ -343,6 +330,7 @@ const AddEditActivity = (props) => {
     let postData;
     if (formState.editActivity) {
       postData = databaseUtilities.editActivity(
+        formState.showPreview,
         formState.values["activityname"],
         formState.values["activitytype"],
         formState.values["academicyear"],
@@ -389,8 +377,7 @@ const AddEditActivity = (props) => {
         formState["dataForEdit"]["id"],
         formState.files
       );
-      console.log(postData);
-      console.log(formState.dataForEdit.id);
+
       serviceProvider
         .serviceProviderForPutRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
@@ -398,19 +385,17 @@ const AddEditActivity = (props) => {
           postData
         )
         .then((response) => {
-          console.log(response);
           console.log("Success");
-          setIsSuccess(true);
+
           setFormState({ ...formState, isSuccess: true });
           history.push({
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataEdited: true,
             editedData: response.data,
+            fromEditActivity: true,
           });
         })
         .catch((err) => {
-          console.log(err);
-          console.log(err.response.data);
           console.log(JSON.stringify(err));
           setIsFailed(true);
         });
@@ -473,6 +458,7 @@ const AddEditActivity = (props) => {
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataAdded: true,
             addedData: response,
+            fromAddActivity: true,
           });
           // ImageUpload(response);
         })
@@ -484,29 +470,6 @@ const AddEditActivity = (props) => {
     }
   };
 
-  const ImageUpload = (response) => {
-    console.log(response);
-    let ImageData = databaseUtilities.uploadDocument(
-      formState.files,
-      "activity",
-      response.data.id,
-      "upload_logo"
-    );
-    console.log(ImageData);
-    serviceProvider
-      .serviceProviderForPostRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD,
-        ImageData
-      )
-      .then((res) => {
-        console.log(res);
-        //setIsSuccess(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        setIsFailed(true);
-      });
-  };
   const getAcademicYear = () => {
     serviceProvider
       .serviceProviderForGetRequest(
@@ -518,33 +481,6 @@ const AddEditActivity = (props) => {
         setacademicyearlist(
           response.data.result.map(({ id, name }) => ({ id, name }))
         );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  const getZones = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
-      )
-      .then((response) => {
-        console.log(response);
-        setzonelist(response.data.result.map(({ id, name }) => ({ id, name })));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getRpc = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS
-      )
-      .then((response) => {
-        console.log(response);
-        setrpclist(response.data.result.map(({ id, name }) => ({ id, name })));
       })
       .catch((err) => {
         console.log(err);
@@ -572,22 +508,6 @@ const AddEditActivity = (props) => {
       });
   };
 
-  const getStates = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
-      )
-      .then((res) => {
-        console.log(res);
-        //   const sanitzedOptions = res.data.map(state => {
-        //     return {
-        //       id: state.id,
-        //       name: state.name
-        //     };
-        //   });
-        setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
-  };
   const handleChangefile = (e) => {
     e.persist();
     setFormState((formState) => ({
@@ -595,14 +515,17 @@ const AddEditActivity = (props) => {
 
       values: {
         ...formState.values,
-        [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+        [e.target.name]: e.target.files[0].name,
       },
       touched: {
         ...formState.touched,
         [e.target.name]: true,
       },
       files: e.target.files[0],
+      previewFile: URL.createObjectURL(e.target.files[0]),
+      showPreview: true,
+      showEditPreview: false,
+      showNoImage: false,
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -676,9 +599,6 @@ const AddEditActivity = (props) => {
 
   return (
     <Grid>
-      {console.log(formState)}
-      {console.log(selectedDateFrom)}
-      {console.log(selectedDateTo)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editActivity
@@ -730,9 +650,6 @@ const AddEditActivity = (props) => {
       </Grid>
       <Grid spacing={3}>
         <Card>
-          {console.log(props)}
-          {console.log(formState)}
-          {console.log(statelist)}
           <form autoComplete="off">
             <CardContent>
               <Grid item xs={12} md={6} xl={3}>
@@ -1085,28 +1002,35 @@ const AddEditActivity = (props) => {
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
                     {console.log(formState.values.files)}
-                    {formState.files !== null &&
-                    formState.files !== undefined &&
-                    formState.files !== {} ? (
+                    {formState.showPreview ? (
+                      <img
+                        style={{ width: "50%", height: "50%" }}
+                        src={formState.previewFile}
+                        alt="abc"
+                      />
+                    ) : null}
+                    {formState.showEditPreview &&
+                    formState.dataForEdit["upload_logo"] !== null &&
+                    formState.dataForEdit["upload_logo"] !== undefined &&
+                    formState.dataForEdit["upload_logo"] !== {} ? (
                       <Img
                         src={
-                          formState.files["url"]
-                            ? strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                              formState.files["url"]
-                            : formState.values.files
+                          strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                          formState.dataForEdit["upload_logo"]["url"]
                         }
                         loader={<Spinner />}
                         width="50%"
                         height="50%"
                       />
-                    ) : (
+                    ) : null}
+                    {formState.showNoImage ? (
                       <Img
                         src="/images/noImage.png"
                         loader={<Spinner />}
                         width="100%"
                         height="100%"
                       />
-                    )}
+                    ) : null}
                   </Grid>
                   <Grid item md={12} xs={12}>
                     <TextField
@@ -1118,7 +1042,7 @@ const AddEditActivity = (props) => {
                       onChange={handleChangefile}
                       required
                       type="file"
-                      value={formState.values["files"] || ""}
+                      //value={formState.values["files"] || ""}
                       error={hasError("files")}
                       helperText={
                         hasError("files")

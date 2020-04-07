@@ -371,7 +371,6 @@ const ViewActivity = (props) => {
     });
   };
 
-  console.log(formState.dataToShow);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>

@@ -9,7 +9,7 @@ import {
   Button,
   CardContent,
   Card,
-  CardMedia
+  CardMedia,
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import { Redirect } from "../../../node_modules/react-router-dom";
@@ -25,7 +25,7 @@ import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import axios from "axios";
 import image from "../../assets/images/login-img.png";
 
-const VerifyOtp = props => {
+const VerifyOtp = (props) => {
   let history = useHistory();
 
   const [otp, setotp] = useState("");
@@ -45,14 +45,14 @@ const VerifyOtp = props => {
             strapiApiConstants.STRAPI_CHECK_OTP,
           { otp: otp, contact_number: props.location.state.contactNumber }
         )
-        .then(res => {
+        .then((res) => {
           console.log("IN then");
           history.push(routeConstants.NEW_REGISTRATION_URL, {
             otp: otp,
-            contactNumber: props.location.state.contactNumber
+            contactNumber: props.location.state.contactNumber,
           });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.response.status);
           if (err.response.status === 403) {
             history.push(routeConstants.REQUIRED_CONFORMATION);
@@ -68,11 +68,11 @@ const VerifyOtp = props => {
           strapiApiConstants.STRAPI_REQUEST_STUDENT_OTP,
         { contact_number: props.location.state.contactNumber }
       )
-      .then(res => {
+      .then((res) => {
         setclick(true);
         console.log(click);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -80,7 +80,7 @@ const VerifyOtp = props => {
     return (
       <Redirect
         to={{
-          pathname: routeConstants.SIGN_IN_URL
+          pathname: routeConstants.SIGN_IN_URL,
         }}
       />
     );
@@ -109,7 +109,7 @@ const VerifyOtp = props => {
                       variant="outlined"
                       fullWidth
                       helperText={error ? error : null}
-                      onChange={event => {
+                      onChange={(event) => {
                         if (otp.length > 0) setError("");
                         setotp(event.target.value);
                       }}
@@ -128,9 +128,7 @@ const VerifyOtp = props => {
                         requestOtpAgain();
                       }}
                     >
-                      <span style={{ margin: "10px" }}>
-                        {authPageConstants.RESEND_OTP_BUTTON}
-                      </span>
+                      {authPageConstants.RESEND_OTP_BUTTON}
                     </YellowButton>
                   </Grid>
 
@@ -146,9 +144,7 @@ const VerifyOtp = props => {
                         validate();
                       }}
                     >
-                      <span style={{ margin: "9px" }}>
-                        {authPageConstants.VERIFY_OTP_BUTTON}
-                      </span>
+                      {authPageConstants.VERIFY_OTP_BUTTON}
                     </GreenButton>
                   </Grid>
                 </Grid>
@@ -160,7 +156,7 @@ const VerifyOtp = props => {
                 height: "300px",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "flex-end"
+                justifyContent: "flex-end",
               }}
               image={image}
               title="Live from space album cover"
