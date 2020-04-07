@@ -342,7 +342,8 @@ const roles = {
           "delete",
           "edit",
           "approve",
-          "unapprove"
+          "unapprove",
+          "registeredevents"
         ]
       },
       {
@@ -437,7 +438,8 @@ const roles = {
           "document",
           "deletedocument",
           "academicHistory",
-          "events"
+          "events",
+          "registeredevents"
         ]
       },
       {
