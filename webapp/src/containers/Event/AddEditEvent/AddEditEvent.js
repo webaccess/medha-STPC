@@ -11,6 +11,7 @@ import {
   FormHelperText
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import FormControl from "@material-ui/core/FormControl";
 import {
   YellowButton,
   CustomDateTimePicker,
@@ -18,6 +19,7 @@ import {
 } from "../../../components";
 import useStyles from "./AddEditEventStyles";
 import * as serviceProvider from "../../../api/Axios";
+import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import EventSchema from "../EventSchema";
 import { get } from "lodash";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
@@ -68,7 +70,6 @@ const AddEditEvent = props => {
     EditorState.createEmpty()
   );
   const classes = useStyles();
-  // const theme = useTheme();
   const history = useHistory();
   const [formState, setFormState] = useState({
     isValid: false,
@@ -90,7 +91,9 @@ const AddEditEvent = props => {
     previewFile:{},
     showPreviewImage:false,
     showPreviewEditImage:false,
-    showPreviewNoImage:false
+    showPreviewNoImage:false,
+    dynamicBar: [{ index: Math.random() }],
+    dynamicBarError: []
   });
 
   const [states, setStates] = useState([]);
@@ -98,7 +101,10 @@ const AddEditEvent = props => {
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
+  const inputLabel = React.useRef(null);
   const [qualifications, setQualifications] = useState([]);
+  const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
+  const [labelWidth, setLabelWidth] = React.useState(0);
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
@@ -201,12 +207,13 @@ const AddEditEvent = props => {
   }
 
   useEffect(() => {
+    // setLabelWidth(inputLabel.current.offsetWidth);
     let paramsForPageSize = {
       pageSize: -1
     };
 
     serviceProvider
-      .serviceProviderForGetRequest(STATES_URL)
+      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
         setStates(res.data.result);
       })
@@ -217,7 +224,30 @@ const AddEditEvent = props => {
     serviceProvider
       .serviceProviderForGetRequest(QUALIFICATIONS_URL)
       .then(res => {
-        setQualifications(res.data);
+        
+        setQualificationsDataBackup(res.data);
+      })
+      .catch(error => {
+        console.log("errorQualifications", error);
+      });
+
+      serviceProvider
+      .serviceProviderForGetRequest(QUALIFICATIONS_URL)
+      .then(res => {
+        let dataForEditing = res.data;
+        if (formState.isEditEvent) {
+          let tempStreamData = dataForEditing;
+          let streamStrengthArray = props["dataForEdit"]["stream_strength"];
+          for (let i in streamStrengthArray) {
+            let id = streamStrengthArray[i]["stream"]["id"];
+            for (let j in tempStreamData) {
+              if (tempStreamData[j]["id"] === id) tempStreamData.splice(j, 1);
+            }
+          }
+          setQualifications(tempStreamData);
+        } else {
+          setQualifications(dataForEditing);
+        }
       })
       .catch(error => {
         console.log("errorQualifications", error);
@@ -232,6 +262,7 @@ const AddEditEvent = props => {
       .catch(error => {
         console.log("errorstream", error);
       });
+      console.log("qualifications",qualifications);
   }, []);
 
   useEffect(() => {
@@ -333,6 +364,167 @@ const AddEditEvent = props => {
       delete formState.errors[e.target.name];
     }
   };
+
+  const checkErrorInDynamicBar = (field, currentDynamicBarValue) => {
+    let errorData = { error: false, value: "" };
+    if (formState.dynamicBarError.length) {
+      formState.dynamicBarError.map(barErrorValue => {
+        if (barErrorValue["index"] === currentDynamicBarValue["index"]) {
+          if (barErrorValue.hasOwnProperty(field)) {
+            errorData.error = true;
+            errorData.value = barErrorValue[field];
+          }
+        }
+      });
+    }
+    return errorData;
+  };
+
+  const addNewRow = e => {
+    e.persist();
+    setFormState(formState => ({
+      ...formState,
+      dynamicBar: [...formState.dynamicBar, { index: Math.random() }]
+    }));
+  };
+  const clickOnDelete = (record, index) => {
+    setFormState(formState => ({
+      ...formState,
+      dynamicBar: formState.dynamicBar.filter(r => r !== record)
+    }));
+    if (record[qualification]) {
+      let streamsTempArray = [];
+      streamsTempArray = qualifications;
+      qualificationsDataBackup.map(streams => {
+        if (record["qualification"] === streams["id"]) {
+          streamsTempArray.push(streams);
+        }
+      });
+      setQualifications(streamsTempArray);
+    }
+  };
+
+  /** Handling multi select values for dynamic bar */
+  const handleChangeForDynamicGrid = (
+    eventName,
+    event,
+    selectedValueForAutoComplete,
+    dynamicGridValue,
+    isAutoComplete,
+    isTextBox
+  ) => {
+    event.persist();
+    /**TO SET VALUES OF AUTOCOMPLETE */
+    if (isAutoComplete) {
+      if (selectedValueForAutoComplete !== null) {
+        setFormState(formState => ({
+          ...formState,
+          dynamicBar: formState.dynamicBar.map(r => {
+            if (r["index"] === dynamicGridValue["index"]) {
+              let streamsTempArray = [];
+              qualifications.map(streams => {
+                if (streams["id"] !== selectedValueForAutoComplete["id"]) {
+                  streamsTempArray.push(streams);
+                }
+              });
+              setQualifications(streamsTempArray);
+              r[eventName] = selectedValueForAutoComplete["id"];
+              return r;
+            } else {
+              return r;
+            }
+          })
+        }));
+      } else {
+        /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
+        setFormState(formState => ({
+          ...formState,
+          dynamicBar: formState.dynamicBar.map(r => {
+            if (r["index"] === dynamicGridValue["index"]) {
+              let streamsTempArray = [];
+              streamsTempArray = qualifications;
+              qualificationsDataBackup.map(streams => {
+                if (r[eventName] === streams["id"]) {
+                  streamsTempArray.push(streams);
+                }
+              });
+              setQualifications(streamsTempArray);
+              delete r[eventName];
+              return r;
+            } else {
+              return r;
+            }
+          })
+        }));
+      }
+    }
+    if (isTextBox) {
+      setFormState(formState => ({
+        ...formState,
+        dynamicBar: formState.dynamicBar.map(r => {
+          if (r["index"] === dynamicGridValue["index"]) {
+            r[eventName] = event.target.value;
+            if (r[eventName] === "") {
+              delete r[eventName];
+            }
+            return r;
+          } else {
+            return r;
+          }
+        })
+      }));
+    }
+    /** Clear errors if any */
+    formState.dynamicBarError.map(errorValues => {
+      if (errorValues["index"] === dynamicGridValue["index"]) {
+        delete errorValues[eventName];
+      }
+    });
+  };
+
+  /** Validate DynamicGrid */
+  const validateDynamicGridValues = () => {
+    let validationCounter = 0;
+    /** Empty the error array of dynamic bar */
+    formState.dynamicBarError = [];
+    formState.dynamicBar.map(value => {
+      let valueToPutInDynmicBarError = {};
+      valueToPutInDynmicBarError["index"] = value["index"];
+      /** Validate dynamikc bar */
+      if (value.hasOwnProperty(streams) && !value.hasOwnProperty(marks)) {
+        valueToPutInDynmicBarError[marks] =
+          "Strength is required as Stream is present";
+        validationCounter += 1;
+      } else if (
+        value.hasOwnProperty(marks) &&
+        !value.hasOwnProperty(streams)
+      ) {
+        valueToPutInDynmicBarError[streams] =
+          "Stream is required as Strength is present";
+        validationCounter += 1;
+      }
+      formState.dynamicBarError.push(valueToPutInDynmicBarError);
+    });
+    if (validationCounter > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const getDynamicBarData = () => {
+    let streamStrengthArrayValues = [];
+    formState.dynamicBar.map(field => {
+      let streamStrengthValue = {};
+      if (field.hasOwnProperty(streams) && field.hasOwnProperty(marks)) {
+        streamStrengthValue["stream"] = field[streams];
+        streamStrengthValue["strength"] = parseInt(field[marks]);
+        streamStrengthArrayValues.push(streamStrengthValue);
+      }
+    });
+    return streamStrengthArrayValues;
+  };
+
 
   /** Handle change for autocomplete fields */
   const handleChangeAutoComplete = (eventName, event, value) => {
@@ -915,8 +1107,8 @@ const AddEditEvent = props => {
                         handleChangeAutoComplete(qualification, event, value);
                       }}
                       value={
-                        qualifications[
-                          qualifications.findIndex(function (item, i) {
+                        qualificationsDataBackup[
+                          qualificationsDataBackup.findIndex(function (item, i) {
                             return item.id === formState.values[qualification];
                           })
                         ] || null
@@ -948,7 +1140,16 @@ const AddEditEvent = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
-                  {formState.showPreviewImage ? <img src={formState.previewFile} alt="abc"/> : null }
+                  <div className={classes.imageDiv}>
+          
+                  {formState.showPreviewImage ? 
+                  <Img 
+                  src={formState.previewFile} 
+                  alt="abc"
+                  loader={<Spinner />}
+                  width="100%"
+                  height="100%"
+                  /> : null }
 
                     {formState.showPreviewEditImage && formState.dataForEdit["upload_logo"] !== null &&
                       formState.dataForEdit["upload_logo"] !== undefined &&
@@ -974,6 +1175,13 @@ const AddEditEvent = props => {
                         height="100%"
                       /> : null
                     }
+                    </div>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
                     <TextField
                       fullWidth
                       id={get(EventSchema[files], "id")}
@@ -993,12 +1201,189 @@ const AddEditEvent = props => {
                       }
                       variant="outlined"
                       className={classes.elementroot}
-                    />
-                  
-                      
+                    />   
                   </Grid>
                 </Grid>
               </Grid>
+
+
+              {/* <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={1} className={classes.formgrid}>
+                <Grid item md={12} xs={12} className={classes.streamcard}>
+                  <Card className={classes.streamoffer}>
+                    <InputLabel
+                      htmlFor="outlined-stream-card"
+                      fullwidth={true.toString()}
+                    >
+                      {genericConstants.STREAMS_OFFERED_TEXT}
+                    </InputLabel> */}
+
+                    {/* {formState.dynamicBar.map((val, idx) => {
+                            {console.log("resturn",val,idx)}
+                      let streamId = `stream-${idx}`,
+                        strengthId = `strength-${idx}`;
+                        {console.log("StreamId",streamId,strengthId)}
+                      return (
+                        <Card
+                          id="outlined-stream-card"
+                          fullwidth={true.toString()}
+                          className={classes.streamcardcontent}
+                          key={Math.random()}
+                        >
+                          <CardContent>
+                            <Grid container spacing={1}>
+                              <Grid item xs={5}>
+                                <FormControl
+                                  variant="outlined"
+                                  fullWidth
+                                  className={classes.formControl}
+                                >
+                                  <InputLabel
+                                    ref={inputLabel}
+                                    id="demo-simple-select-outlined-label"
+                                  >
+                                    {/* Streams */}
+                                  {/* </InputLabel>
+                                  <Autocomplete
+                                    id={streamId}
+                                    options={qualifications}
+                                    getOptionLabel={option => option.name}
+                                    onChange={(event, value) => {
+                                      handleChangeForDynamicGrid(
+                                        qualification,
+                                        event,
+                                        value,
+                                        val,
+                                        true,
+                                        false
+                                      );
+                                    }}
+                                    data-id={idx}
+                                    name={streamId}
+                                    value={
+                                      qualificationsDataBackup[
+                                        qualificationsDataBackup.findIndex(function(
+                                          item,
+                                          i
+                                        ) {
+                                          {console.log("resturnData-->>",item.id,formState.dynamicBar[idx][qualification])}
+                                          return (
+                                            
+                                            item.id ===
+                                            formState.dynamicBar[idx][qualification]
+                                          );
+                                        })
+                                      ] || null
+                                    }
+                                    renderInput={params => (
+                                      <TextField
+                                        {...params}
+                                        value={option => option.id}
+                                        name={streamId}
+                                        error={
+                                          checkErrorInDynamicBar(streams, val)[
+                                            "error"
+                                          ]
+                                        }
+                                        helperText={
+                                          checkErrorInDynamicBar(streams, val)[
+                                            "error"
+                                          ]
+                                            ? checkErrorInDynamicBar(
+                                                streams,
+                                                val
+                                              )["value"]
+                                            : null
+                                        }
+                                        placeholder={get(
+                                          EventSchema[qualification],
+                                          "placeholder"
+                                        )}
+                                        key={option => option.id}
+                                        label={get(
+                                          EventSchema[qualification],
+                                          "label"
+                                        )}
+                                        variant="outlined"
+                                      />
+                                    )}
+                                  /> */}
+                                {/* </FormControl>
+                              </Grid> */}
+                              {/** Need to map streams with strength */}
+                              {/* <Grid item xs={5}>
+                                <TextField
+                                  label="Strength"
+                                  name={strengthId}
+                                  variant="outlined"
+                                  fullWidth
+                                  data-id={idx}
+                                  id={strengthId}
+                                  value={
+                                    formState.dynamicBar[idx][marks] || ""
+                                  }
+                                  error={
+                                    checkErrorInDynamicBar(marks, val)[
+                                      "error"
+                                    ]
+                                  }
+                                  helperText={
+                                    checkErrorInDynamicBar(marks, val)[
+                                      "error"
+                                    ]
+                                      ? checkErrorInDynamicBar(marks, val)[
+                                          "value"
+                                        ]
+                                      : null
+                                  }
+                                  placeholder={get(
+                                    EventSchema[marks],
+                                    "placeholder"
+                                  )}
+                                  onChange={event => {
+                                    handleChangeForDynamicGrid(
+                                      marks,
+                                      event,
+                                      null,
+                                      val,
+                                      false,
+                                      true
+                                    );
+                                  }}
+                                />
+                              </Grid>
+                              <Grid item xs={2}>
+                                {idx >= 0 ? (
+                                  <DeleteForeverOutlinedIcon
+                                    onClick={e => clickOnDelete(val, idx)}
+                                    style={{ color: "red", fontSize: "24px" }}
+                                  />
+                                ) : (
+                                  ""
+                                )}
+                              </Grid>
+                            </Grid>
+                          </CardContent>
+                        </Card>
+                      ); */}
+                    {/* })} */} 
+                    {/* <div className={classes.btnspaceadd}>
+                      <YellowButton
+                        disabled={qualifications.length ? false : true}
+                        color="primary"
+                        variant="contained"
+                        className={classes.add_more_btn}
+                        onClick={addNewRow}
+                      >
+                        {genericConstants.ADD_MORE_TEXT}
+                      </YellowButton>
+                    </div>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Grid> */}
+
+
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
