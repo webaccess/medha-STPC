@@ -21,7 +21,12 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "white",
     margin: "auto"
   },
+
   titleDiv: {
+    width: "100%",
+    height: "50px"
+  },
+  successTickDiv: {
     width: "100%",
     height: "50px"
   },

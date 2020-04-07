@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  CircularProgress
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
@@ -11,6 +16,8 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
+import { useHistory } from "react-router-dom";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 const EVENT_REG_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
@@ -18,8 +25,9 @@ const EVENT_ID = "event";
 const STUDENT_ID = "student";
 
 const RegisterEvent = props => {
+  const [open, setOpen] = React.useState(false);
+  const history = useHistory();
   const [formState, setFormState] = useState({
-    isStudentRegistered: false,
     isValid: false,
     values: {},
     stateCounter: 0
@@ -27,12 +35,12 @@ const RegisterEvent = props => {
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
-    formState.values[EVENT_ID] = props.eventName;
-    formState.values[STUDENT_ID] = props.userRegistering;
-    formState.isStudentRegistered = false;
+    formState.values[EVENT_ID] = props.eventId;
+    formState.values[STUDENT_ID] = props.userId;
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
+    setOpen(true);
     let postData = databaseUtilities.studentEventRegistration(
       formState.values[EVENT_ID],
       formState.values[STUDENT_ID]
@@ -40,34 +48,27 @@ const RegisterEvent = props => {
     serviceProviders
       .serviceProviderForPostRequest(EVENT_REG_URL, postData)
       .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          isValid: true
-        }));
-        formState.isStudentRegistered = true;
-        handleCloseModal();
+        formState.stateCounter += 1;
+        setOpen(false);
+        history.push({
+          pathname: routeConstants.ELIGIBLE_EVENT,
+          fromAddEvent: true,
+          isRegistered: true,
+          registeredEventMessage:
+            "Successfully registered for event '" + props.eventTitle + "'"
+        });
       })
       .catch(error => {
-        console.log("error", error);
-        formState.isStudentRegistered = false;
-        handleCloseModal();
+        formState.stateCounter += 1;
+        setOpen(false);
+        history.push({
+          pathname: routeConstants.ELIGIBLE_EVENT,
+          fromAddEvent: true,
+          isRegistered: false,
+          registeredEventMessage:
+            "Error registering for event '" + props.eventTitle + "'"
+        });
       });
-  };
-
-  const handleCloseModal = () => {
-    setFormState(formState => ({
-      ...formState,
-      values: {},
-      isStudentRegistered: false
-    }));
-    if (formState.isStudentRegistered) {
-      props.statusRegistartion(true);
-      props.registrationFailed(false);
-    } else {
-      props.statusRegistartion(false);
-      props.registrationFailed(true);
-    }
-    props.closeBlockModal();
   };
 
   const classes = useStyles();
@@ -77,7 +78,7 @@ const RegisterEvent = props => {
       aria-describedby="transition-modal-description"
       className={classes.modal}
       open={props.showModal}
-      onClose={handleCloseModal}
+      onClose={props.modalClose}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
@@ -126,7 +127,7 @@ const RegisterEvent = props => {
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    Yes
+                    Ok
                   </YellowButton>
                 </Grid>
                 <Grid item>
@@ -136,16 +137,18 @@ const RegisterEvent = props => {
                     variant="contained"
                     onClick={props.modalClose}
                   >
-                    No
+                    Close
                   </GrayButton>
                 </Grid>
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>
   );
 };
-
 export default RegisterEvent;

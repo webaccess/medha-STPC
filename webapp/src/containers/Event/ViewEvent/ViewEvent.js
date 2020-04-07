@@ -9,15 +9,19 @@ import {
   Grid,
   Divider,
   Icon,
-  Typography
+  Typography,
+  Checkbox,
+  FormControlLabel
 } from "@material-ui/core";
 import useStyles from "./ViewEventStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import ReactHtmlParser from "react-html-parser";
 import "../../../assets/cssstylesheet/ImageCssStyles.css";
+import RegisterEvent from "../EventRegistration/EventRegistration";
 
 const EVENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
@@ -27,11 +31,43 @@ const ViewEvent = props => {
   const classes = useStyles();
   const [formState, setFormState] = useState({
     eventDetails: {},
-    greenButtonChecker: true
+    greenButtonChecker: true,
+    registeredEventsIds: [],
+    registeredForEvent: false,
+    isReadAllTerms: false,
+    showRegisterModel: false
   });
   useEffect(() => {
     getEventDetails();
+    getRegisteredEvents();
   }, []);
+
+  /** Check if a student is registered for a event */
+  const getRegisteredEvents = async () => {
+    const apiToCheckStudentRegistration =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_STUDENTS +
+      "/" +
+      auth.getUserInfo().studentInfo.id +
+      "/registeredevents";
+    await serviceProviders
+      .serviceProviderForGetRequest(apiToCheckStudentRegistration)
+      .then(res => {
+        let registeredEvents = [];
+        res.data.map(data => {
+          registeredEvents.push(data.event.id);
+        });
+        let isEventRegistered = checkEventRegistered(registeredEvents);
+        setFormState(formState => ({
+          ...formState,
+          registeredEventsIds: registeredEvents,
+          registeredForEvent: isEventRegistered
+        }));
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   async function getEventDetails() {
     let paramsForEvent = null;
@@ -98,6 +134,7 @@ const ViewEvent = props => {
     }
   };
 
+  /** Gives formatted time */
   const getTime = () => {
     let startTime = new Date(formState.eventDetails["start_date_time"]);
     if (
@@ -114,6 +151,7 @@ const ViewEvent = props => {
     }
   };
 
+  /** Gives formatted date */
   const getDate = () => {
     let startDate = new Date(formState.eventDetails["start_date_time"]);
     if (
@@ -128,14 +166,43 @@ const ViewEvent = props => {
     }
   };
 
+  /** Gets event venue */
   const getVenue = () => {
     return formState.eventDetails["address"];
   };
 
-  const register = () => {};
+  /** Registers a student for a particular event */
+  const register = event => {
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: true
+    }));
+  };
+
+  const checkEventRegistered = registeredEvents => {
+    if (registeredEvents.indexOf(props["location"]["dataForView"]) !== -1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const handleCheckBoxChange = () => {
+    setFormState(formState => ({
+      ...formState,
+      isReadAllTerms: !formState.isReadAllTerms
+    }));
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: false
+    }));
+  };
+
   return (
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           Event
@@ -230,12 +297,29 @@ const ViewEvent = props => {
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
-                        {/* <ReactMarkdown
-                          source={formState.eventDetails["description"]}
-                        /> */}
                         {ReactHtmlParser(formState.eventDetails["description"])}
                       </Grid>
                     </Grid>
+                    {auth.getUserInfo().role.name === "Student" ? (
+                      <Grid spacing={2} className={classes.defaultMargin}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              disabled={formState.registeredForEvent}
+                              checked={
+                                formState.registeredForEvent
+                                  ? true
+                                  : formState.isReadAllTerms
+                              }
+                              onChange={handleCheckBoxChange}
+                              name="checkedB"
+                              color="primary"
+                            />
+                          }
+                          label={genericConstants.EVENT_CONFIRMATION}
+                        />
+                      </Grid>
+                    ) : null}
                     <Grid>
                       {auth.getUserInfo().role.name === "Student" ? (
                         <Grid item md={12} xs={12}>
@@ -243,12 +327,15 @@ const ViewEvent = props => {
                             <GreenButton
                               variant="contained"
                               color="primary"
+                              buttonDisabled={!formState.isReadAllTerms}
                               disableElevation
                               onClick={register}
                               to={routeConstants.MANAGE_EVENT}
                               greenButtonChecker={formState.greenButtonChecker}
                             >
-                              Register
+                              {formState.registeredForEvent
+                                ? genericConstants.EVENT_REGISTERED
+                                : genericConstants.EVENT_REGISTRATION}
                             </GreenButton>
                           </CardActions>
                         </Grid>
@@ -263,6 +350,15 @@ const ViewEvent = props => {
           </CardContent>
         </Card>
       </Grid>
+      {auth.getUserInfo().role.name === "Student" ? (
+        <RegisterEvent
+          showModal={formState.showRegisterModel}
+          modalClose={modalClose}
+          eventId={props["location"]["dataForView"]}
+          eventTitle={formState.eventDetails["title"]}
+          userId={auth.getUserInfo().studentInfo.id}
+        />
+      ) : null}
     </Grid>
   );
 };
