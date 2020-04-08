@@ -8,7 +8,7 @@ import {
   Divider,
   InputLabel,
   IconButton,
-  Collapse,
+  Collapse
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
 import CloseIcon from "@material-ui/icons/Close";
@@ -42,37 +42,37 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
-    maxWidth: 300,
+    maxWidth: 300
   },
   chips: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   },
   chip: {
-    margin: 2,
+    margin: 2
   },
   noLabel: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(3)
   },
   root: {
-    maxWidth: "100%",
+    maxWidth: "100%"
   },
   btnspace: {
-    padding: "20px 18px 20px",
+    padding: "20px 18px 20px"
   },
   btnspaceadd: {
-    padding: "0px 15px 15px",
+    padding: "0px 15px 15px"
   },
   formgrid: {
     marginTop: theme.spacing(0),
-    alignItems: "center",
+    alignItems: "center"
   },
   divider: {
     marginTop: "15px",
-    marginBottom: "15px",
+    marginBottom: "15px"
   },
   add_more_btn: {
-    float: "right",
+    float: "right"
   },
   streamcard: {
     border: "1px solid #ccc",
@@ -82,39 +82,39 @@ const useStyles = makeStyles((theme) => ({
     "& label": {
       position: "absolute",
       top: "-8px",
-      backgroundColor: "#fff",
-    },
+      backgroundColor: "#fff"
+    }
   },
   streamoffer: {
     paddingLeft: "15px",
     paddingRight: "15px",
     borderRadius: "0px",
-    boxShadow: "none !important",
+    boxShadow: "none !important"
   },
   streamcardcontent: {
     boxShadow: "none",
     borderBottom: "1px solid #ccc",
     marginBottom: "15px",
-    borderRadius: "0px",
+    borderRadius: "0px"
   },
   title: {
     display: "flex",
     marginBottom: theme.spacing(1),
     "& h4": {
       flex: "1",
-      fontWeight: "700",
-    },
+      fontWeight: "700"
+    }
   },
   CardActionGrid: {
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#EEEEEE"
   },
   MarginBottom: {
-    marginBottom: "10px",
+    marginBottom: "10px"
   },
   toolbarMargin: {
     marginTop: theme.spacing(2),
-    border: "1px solid",
-  },
+    border: "1px solid"
+  }
 }));
 
 const AddEditActivity = (props) => {
@@ -147,7 +147,7 @@ const AddEditActivity = (props) => {
       : false,
     showNoImage: props.location.editActivity
       ? false
-      : props.location.editActivity,
+      : props.location.editActivity
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
@@ -155,14 +155,14 @@ const AddEditActivity = (props) => {
   const activitytypelist = [
     { name: "Workshop", id: "workshop" },
     { name: "Training", id: "training" },
-    { name: "Industrial Visit", id: "industrialVisit" },
+    { name: "Industrial Visit", id: "industrialVisit" }
   ];
 
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
     { name: "Third", id: "Third" },
-    { name: "Fourth", id: "Fourth" },
+    { name: "Fourth", id: "Fourth" }
   ];
 
   const [isFailed, setIsFailed] = useState(false);
@@ -316,12 +316,12 @@ const AddEditActivity = (props) => {
       /** Call axios from here */
       setFormState((formState) => ({
         ...formState,
-        isValid: true,
+        isValid: true
       }));
     } else {
       setFormState((formState) => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
     }
   };
@@ -392,7 +392,7 @@ const AddEditActivity = (props) => {
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataEdited: true,
             editedData: response.data,
-            fromEditActivity: true,
+            fromEditActivity: true
           });
         })
         .catch((err) => {
@@ -458,7 +458,7 @@ const AddEditActivity = (props) => {
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataAdded: true,
             addedData: response,
-            fromAddActivity: true,
+            fromAddActivity: true
           });
           // ImageUpload(response);
         })
@@ -515,17 +515,17 @@ const AddEditActivity = (props) => {
 
       values: {
         ...formState.values,
-        [e.target.name]: e.target.files[0].name,
+        [e.target.name]: e.target.files[0].name
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
+        [e.target.name]: true
       },
       files: e.target.files[0],
       previewFile: URL.createObjectURL(e.target.files[0]),
       showPreview: true,
       showEditPreview: false,
-      showNoImage: false,
+      showNoImage: false
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -540,12 +540,12 @@ const AddEditActivity = (props) => {
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+          e.target.type === "checkbox" ? e.target.checked : e.target.value
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
-      },
+        [e.target.name]: true
+      }
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -566,25 +566,25 @@ const AddEditActivity = (props) => {
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value,
+            [eventName]: value
           },
           touched: {
             ...formState.touched,
-            [eventName]: true,
+            [eventName]: true
           },
-          stream: id,
+          stream: id
         }));
       } else {
         setFormState((formState) => ({
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value.id,
+            [eventName]: value.id
           },
           touched: {
             ...formState.touched,
-            [eventName]: true,
-          },
+            [eventName]: true
+          }
         }));
       }
       if (formState.errors.hasOwnProperty(eventName)) {
@@ -721,7 +721,7 @@ const AddEditActivity = (props) => {
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date",
+                        "aria-label": "change date"
                       }}
                     />
                   </Grid>
@@ -744,7 +744,7 @@ const AddEditActivity = (props) => {
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date",
+                        "aria-label": "change date"
                       }}
                     />
                   </Grid>
@@ -1089,7 +1089,7 @@ const AddEditActivity = (props) => {
                       style={{ marginRight: "18px" }}
                       onClick={handleSubmit}
                     >
-                      <span>{authPageConstants.CREATE_ACTIVITY}</span>
+                      <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
                     </YellowButton>
                     <GrayButton
                       color="primary"

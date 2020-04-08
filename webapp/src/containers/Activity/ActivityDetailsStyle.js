@@ -79,7 +79,8 @@ const useStyles = makeStyles((theme) => ({
     margin: "2%"
   },
   cardHeight: {
-    height: "600px"
+    height: "600px",
+    maxWidth: "400px"
   },
   imageDiv: {
     width: "100%",

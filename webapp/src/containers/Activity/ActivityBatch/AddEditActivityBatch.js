@@ -9,7 +9,7 @@ import {
   Tooltip,
   Collapse,
   IconButton,
-  CardActions,
+  CardActions
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -26,7 +26,7 @@ import {
   YellowButton,
   GrayButton,
   GreenButton,
-  Alert,
+  Alert
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import { uniqBy, get } from "lodash";
@@ -72,7 +72,7 @@ const AddEditActivityBatches = (props) => {
     isValid: false,
     values: {},
     touched: {},
-    errors: {},
+    errors: {}
   });
 
   const [selectedStudents, setSeletedStudent] = useState([]);
@@ -124,10 +124,11 @@ const AddEditActivityBatches = (props) => {
     serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT)
       .then((res) => {
+        console.log(res);
         setFormState((formState) => ({
           ...formState,
           studentsFilter: res.data.result,
-          streams: getStreams(res.data.result),
+          streams: getStreams(res.data.result)
         }));
       })
       .catch((error) => {
@@ -142,7 +143,7 @@ const AddEditActivityBatches = (props) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
       Object.keys(params).map((key) => {
         defaultParams[key] = params[key];
@@ -151,12 +152,12 @@ const AddEditActivityBatches = (props) => {
     } else {
       params = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
     }
     setFormState((formState) => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
@@ -172,7 +173,7 @@ const AddEditActivityBatches = (props) => {
           page: res.data.page,
           pageCount: res.data.pageCount,
           isDataLoading: false,
-          streams: getStreams(res.data.result),
+          streams: getStreams(res.data.result)
         }));
       })
       .catch((error) => {
@@ -221,7 +222,7 @@ const AddEditActivityBatches = (props) => {
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -255,7 +256,7 @@ const AddEditActivityBatches = (props) => {
     setFormState((formState) => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
     setSeletedStudent([]);
     setClearSelectedRows((val) => ({ clearSelectedRows: !val }));
@@ -268,7 +269,7 @@ const AddEditActivityBatches = (props) => {
     setFormState((formState) => ({
       ...formState,
       dataToDelete: [student.id],
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
@@ -276,7 +277,7 @@ const AddEditActivityBatches = (props) => {
     setFormState((formState) => ({
       ...formState,
       dataToDelete: selectedStudents,
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
@@ -289,7 +290,7 @@ const AddEditActivityBatches = (props) => {
       strapiConstants.STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH;
 
     const postData = {
-      students: studentsToVerify,
+      students: studentsToVerify
     };
 
     serviceProviders
@@ -313,7 +314,7 @@ const AddEditActivityBatches = (props) => {
       strapiConstants.STRAPI_UNVALIDATE_STUDENT_ACTIVITY_BATCH;
 
     const postData = {
-      students: studentsToVerify,
+      students: studentsToVerify
     };
 
     serviceProviders
@@ -336,12 +337,12 @@ const AddEditActivityBatches = (props) => {
       ...formState,
       values: {
         ...formState.values,
-        [event.target.name]: event.target.value,
+        [event.target.name]: event.target.value
       },
       touched: {
         ...formState.touched,
-        [event.target.name]: true,
-      },
+        [event.target.name]: true
+      }
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -394,7 +395,7 @@ const AddEditActivityBatches = (props) => {
     } else {
       setFormState((formState) => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
     }
     event.preventDefault();
@@ -414,7 +415,7 @@ const AddEditActivityBatches = (props) => {
           fromAddActivityBatch: true,
           isDataAdded: true,
           addResponseMessage: "",
-          addedData: {},
+          addedData: {}
         });
       })
       .catch((error) => {
@@ -423,7 +424,7 @@ const AddEditActivityBatches = (props) => {
           fromAddActivityBatch: true,
           isDataAdded: false,
           addResponseMessage: "",
-          addedData: {},
+          addedData: {}
         });
       });
   };
@@ -433,10 +434,10 @@ const AddEditActivityBatches = (props) => {
     {
       name: "Student Name",
       sortable: true,
-      cell: (row) => `${row.user.first_name} ${row.user.last_name}`,
+      cell: (row) => `${row.user.first_name} ${row.user.last_name}`
     },
     { name: "Stream", sortable: true, selector: "stream.name" },
-    { name: "Mobile No.", sortable: true, selector: "user.contact_number" },
+    { name: "Mobile No.", sortable: true, selector: "user.contact_number" }
   ];
 
   if (formState.isEditActivityBatch) {
@@ -446,7 +447,7 @@ const AddEditActivityBatches = (props) => {
         <div style={{ display: "flex" }}>
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Verified Student" placement="top">
+              <Tooltip title="Mark attendance" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}
@@ -455,7 +456,7 @@ const AddEditActivityBatches = (props) => {
                   style={{
                     color: "green",
                     fontSize: "19px",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                 >
                   check
@@ -464,7 +465,7 @@ const AddEditActivityBatches = (props) => {
             </div>
           ) : (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Verified Student" placement="top">
+              <Tooltip title="Mark attendance" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}
@@ -473,7 +474,7 @@ const AddEditActivityBatches = (props) => {
                   style={{
                     color: "red",
                     fontSize: "19px",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                 >
                   check
@@ -483,7 +484,7 @@ const AddEditActivityBatches = (props) => {
           )}
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Un-Verify Student" placement="top">
+              <Tooltip title="Unmark attendance" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}
@@ -492,7 +493,7 @@ const AddEditActivityBatches = (props) => {
                   style={{
                     color: "red",
                     fontSize: "19px",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                 >
                   clear
@@ -511,7 +512,7 @@ const AddEditActivityBatches = (props) => {
                 style={{
                   color: "red",
                   fontSize: "19px",
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
               >
                 delete_outline
@@ -522,7 +523,7 @@ const AddEditActivityBatches = (props) => {
       ),
       button: true,
       conditionalCellStyles: [],
-      width: "200px",
+      width: "200px"
     });
   }
 
