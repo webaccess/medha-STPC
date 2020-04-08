@@ -17,7 +17,7 @@ import {
   CustomDateTimePicker,
   GrayButton, Spinner
 } from "../../../components";
-import useStyles from "./AddEditEventStyles";
+import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as serviceProvider from "../../../api/Axios";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import EventSchema from "../EventSchema";
@@ -46,7 +46,7 @@ const zone = "zone";
 const rpc = "rpc";
 const college = "college";
 const stream = "stream";
-const marks = "marks";
+const percentage = "percentage";
 const qualification = "qualification";
 const field = "upload_logo";
 const ref = "event";
@@ -176,7 +176,7 @@ const AddEditEvent = props => {
         props["dataForEdit"]["streams"] &&
         props["dataForEdit"]["streams"].length
       ) {
-        // formState.values[stream] = props["dataForEdit"]["streams"][0]["id"];
+     
         formState.dataToShowForStreamMultiSelect =
           props["dataForEdit"]["streams"];
         let finalDataStream = [];
@@ -186,7 +186,7 @@ const AddEditEvent = props => {
         formState.values[stream] = finalDataStream;
       }
       if (props["dataForEdit"]["marks"]) {
-        formState.values[marks] = props["dataForEdit"]["marks"];
+        formState.values[percentage] = props["dataForEdit"]["marks"];
       }
       if (
         props["dataForEdit"] &&
@@ -221,37 +221,23 @@ const AddEditEvent = props => {
         console.log("error", error);
       });
 
-    serviceProvider
-      .serviceProviderForGetRequest(QUALIFICATIONS_URL)
-      .then(res => {
-        
-        setQualificationsDataBackup(res.data);
-      })
-      .catch(error => {
-        console.log("errorQualifications", error);
-      });
-
-      serviceProvider
-      .serviceProviderForGetRequest(QUALIFICATIONS_URL)
-      .then(res => {
-        let dataForEditing = res.data;
+  
+    setQualificationsDataBackup(genericConstants.QUALIFICATIONS);
+    let dataForEditing = genericConstants.QUALIFICATIONS;
         if (formState.isEditEvent) {
-          let tempStreamData = dataForEditing;
-          let streamStrengthArray = props["dataForEdit"]["stream_strength"];
-          for (let i in streamStrengthArray) {
-            let id = streamStrengthArray[i]["stream"]["id"];
-            for (let j in tempStreamData) {
-              if (tempStreamData[j]["id"] === id) tempStreamData.splice(j, 1);
+          let tempQualificationData = dataForEditing;
+          let qualificationPercentageArray = props["dataForEdit"]["qualification_percentage"];
+          for (let i in qualificationPercentageArray) {
+            let id = qualificationPercentageArray[i]["qualification"]["id"];
+            for (let j in tempQualificationData) {
+              if (tempQualificationData[j]["id"] === id) tempQualificationData.splice(j, 1);
             }
           }
-          setQualifications(tempStreamData);
+          setQualifications(tempQualificationData);
         } else {
           setQualifications(dataForEditing);
         }
-      })
-      .catch(error => {
-        console.log("errorQualifications", error);
-      });
+   
 
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
@@ -262,7 +248,7 @@ const AddEditEvent = props => {
       .catch(error => {
         console.log("errorstream", error);
       });
-      console.log("qualifications",qualifications);
+
   }, []);
 
   useEffect(() => {
@@ -366,7 +352,9 @@ const AddEditEvent = props => {
   };
 
   const checkErrorInDynamicBar = (field, currentDynamicBarValue) => {
+
     let errorData = { error: false, value: "" };
+ 
     if (formState.dynamicBarError.length) {
       formState.dynamicBarError.map(barErrorValue => {
         if (barErrorValue["index"] === currentDynamicBarValue["index"]) {
@@ -393,14 +381,14 @@ const AddEditEvent = props => {
       dynamicBar: formState.dynamicBar.filter(r => r !== record)
     }));
     if (record[qualification]) {
-      let streamsTempArray = [];
-      streamsTempArray = qualifications;
-      qualificationsDataBackup.map(streams => {
-        if (record["qualification"] === streams["id"]) {
-          streamsTempArray.push(streams);
+      let qualificationsTempArray = [];
+      qualificationsTempArray = qualifications;
+      qualificationsDataBackup.map(qualificationData => {
+        if (record["qualification"] === qualificationData["id"]) {
+          qualificationsTempArray.push(qualificationData);
         }
       });
-      setQualifications(streamsTempArray);
+      setQualifications(qualificationsTempArray);
     }
   };
 
@@ -421,13 +409,13 @@ const AddEditEvent = props => {
           ...formState,
           dynamicBar: formState.dynamicBar.map(r => {
             if (r["index"] === dynamicGridValue["index"]) {
-              let streamsTempArray = [];
-              qualifications.map(streams => {
-                if (streams["id"] !== selectedValueForAutoComplete["id"]) {
-                  streamsTempArray.push(streams);
+              let qualificationsTempArray  = [];
+              qualifications.map(qualificationData => {
+                if (qualificationData["id"] !== selectedValueForAutoComplete["id"]) {
+                  qualificationsTempArray.push(qualificationData);
                 }
               });
-              setQualifications(streamsTempArray);
+              setQualifications(qualificationsTempArray);
               r[eventName] = selectedValueForAutoComplete["id"];
               return r;
             } else {
@@ -441,14 +429,14 @@ const AddEditEvent = props => {
           ...formState,
           dynamicBar: formState.dynamicBar.map(r => {
             if (r["index"] === dynamicGridValue["index"]) {
-              let streamsTempArray = [];
-              streamsTempArray = qualifications;
-              qualificationsDataBackup.map(streams => {
-                if (r[eventName] === streams["id"]) {
-                  streamsTempArray.push(streams);
+              let qualificationsTempArray = [];
+              qualificationsTempArray = qualifications;
+              qualificationsDataBackup.map(qualificationData => {
+                if (r[eventName] === qualificationData["id"]) {
+                  qualificationsTempArray.push(qualificationData);
                 }
               });
-              setQualifications(streamsTempArray);
+              setQualifications(qualificationsTempArray);
               delete r[eventName];
               return r;
             } else {
@@ -484,6 +472,7 @@ const AddEditEvent = props => {
 
   /** Validate DynamicGrid */
   const validateDynamicGridValues = () => {
+   
     let validationCounter = 0;
     /** Empty the error array of dynamic bar */
     formState.dynamicBarError = [];
@@ -491,16 +480,16 @@ const AddEditEvent = props => {
       let valueToPutInDynmicBarError = {};
       valueToPutInDynmicBarError["index"] = value["index"];
       /** Validate dynamikc bar */
-      if (value.hasOwnProperty(streams) && !value.hasOwnProperty(marks)) {
-        valueToPutInDynmicBarError[marks] =
-          "Strength is required as Stream is present";
+      if (value.hasOwnProperty(qualification) && !value.hasOwnProperty(percentage)) {
+        valueToPutInDynmicBarError[percentage] =
+          "Percentage is required as Qualification is present";
         validationCounter += 1;
       } else if (
-        value.hasOwnProperty(marks) &&
-        !value.hasOwnProperty(streams)
+        value.hasOwnProperty(percentage) &&
+        !value.hasOwnProperty(qualification)
       ) {
-        valueToPutInDynmicBarError[streams] =
-          "Stream is required as Strength is present";
+        valueToPutInDynmicBarError[qualification] =
+          "Qualification is required as percentage is present";
         validationCounter += 1;
       }
       formState.dynamicBarError.push(valueToPutInDynmicBarError);
@@ -513,16 +502,18 @@ const AddEditEvent = props => {
   };
 
   const getDynamicBarData = () => {
-    let streamStrengthArrayValues = [];
+    
+    let qualificationsPercentageArrayValues = [];
     formState.dynamicBar.map(field => {
-      let streamStrengthValue = {};
-      if (field.hasOwnProperty(streams) && field.hasOwnProperty(marks)) {
-        streamStrengthValue["stream"] = field[streams];
-        streamStrengthValue["strength"] = parseInt(field[marks]);
-        streamStrengthArrayValues.push(streamStrengthValue);
+      let qualificationPercentageValue = {};
+      if (field.hasOwnProperty(qualification) && field.hasOwnProperty(percentage)) {
+        qualificationPercentageValue["qualification"] = field[qualifications];
+        qualificationPercentageValue["percentage"] = parseInt(field[percentage]);
+        qualificationsPercentageArrayValues.push(qualificationPercentageValue);
       }
     });
-    return streamStrengthArrayValues;
+   
+    return qualificationsPercentageArrayValues;
   };
 
 
@@ -549,6 +540,9 @@ const AddEditEvent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
+      /** Validate DynamicGrid */
+      let isDynamicBarValid;
+      isDynamicBarValid = validateDynamicGridValues();
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
@@ -588,7 +582,7 @@ const AddEditEvent = props => {
         formState.descriptionError = true;
       }
     }
-    if (isValid && !formState.descriptionError) {
+    if (isValid && !formState.descriptionError && isDynamicBarValid) {
       /** CALL POST FUNCTION */
       postEventData();
       /** Call axios from here */
@@ -605,13 +599,15 @@ const AddEditEvent = props => {
   };
 
   const postEventData = () => {
+    let qualificationPercentageArray = [];
+    qualificationPercentageArray = getDynamicBarData();
     let postData = databaseUtilities.addEvent(
       formState.values[eventName],
       draftToHtml(convertToRaw(editorState.getCurrentContent())),
       formState.values[dateFrom],
       formState.values[dateTo],
       formState.values[address],
-      formState.values[marks],
+      formState.values[percentage],
       formState.values[qualification] ? formState.values[qualification] : null,
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
@@ -1000,7 +996,15 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <Autocomplete
+                   
+                  </Grid>
+                </Grid>
+              </Grid> 
+              <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                  <Autocomplete
                       id={get(EventSchema[college], "id")}
                       multiple
                       options={colleges}
@@ -1031,13 +1035,14 @@ const AddEditEvent = props => {
                         />
                       )}
                     />
+
                   </Grid>
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={12} xs={12}>
                     <Autocomplete
                       id={get(EventSchema[stream], "id")}
                       multiple
@@ -1070,71 +1075,9 @@ const AddEditEvent = props => {
                       )}
                     />
                   </Grid>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      label={get(EventSchema[marks], "label")}
-                      id={get(EventSchema[marks], "id")}
-                      name={marks}
-                      placeholder={get(EventSchema[marks], "placeholder")}
-                      value={formState.values[marks] || ""}
-                      error={hasError(marks)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      helperText={
-                        hasError(marks)
-                          ? formState.errors[marks].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
+              
                 </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={12} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={qualifications}
-                      placeholder={get(
-                        EventSchema[qualification],
-                        "placeholder"
-                      )}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(qualification, event, value);
-                      }}
-                      value={
-                        qualificationsDataBackup[
-                          qualificationsDataBackup.findIndex(function (item, i) {
-                            return item.id === formState.values[qualification];
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label={get(EventSchema[qualification], "label")}
-                          variant="outlined"
-                          placeholder={get(
-                            EventSchema[qualification],
-                            "placeholder"
-                          )}
-                          error={hasError(qualification)}
-                          helperText={
-                            hasError(qualification)
-                              ? formState.errors[qualification].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                </Grid>
+                
               </Grid>
               <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
@@ -1200,14 +1143,14 @@ const AddEditEvent = props => {
                           : null
                       }
                       variant="outlined"
-                      className={classes.elementroot}
+                      // className={classes.elementroot}
                     />   
                   </Grid>
                 </Grid>
               </Grid>
 
-
-              {/* <Grid item xs={12} md={6} xl={3}>
+              <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={1} className={classes.formgrid}>
                 <Grid item md={12} xs={12} className={classes.streamcard}>
                   <Card className={classes.streamoffer}>
@@ -1215,14 +1158,15 @@ const AddEditEvent = props => {
                       htmlFor="outlined-stream-card"
                       fullwidth={true.toString()}
                     >
-                      {genericConstants.STREAMS_OFFERED_TEXT}
-                    </InputLabel> */}
+                      Qualification and Percentage
+               
+                    </InputLabel>
 
-                    {/* {formState.dynamicBar.map((val, idx) => {
-                            {console.log("resturn",val,idx)}
-                      let streamId = `stream-${idx}`,
-                        strengthId = `strength-${idx}`;
-                        {console.log("StreamId",streamId,strengthId)}
+                    {formState.dynamicBar.map((val, idx) => {
+                       
+                      let qualificationId = `qualification-${idx}`,
+                        percentageId = `percentage-${idx}`;
+                  
                       return (
                         <Card
                           id="outlined-stream-card"
@@ -1242,12 +1186,12 @@ const AddEditEvent = props => {
                                     ref={inputLabel}
                                     id="demo-simple-select-outlined-label"
                                   >
-                                    {/* Streams */}
-                                  {/* </InputLabel>
+                               
+                                  </InputLabel>
                                   <Autocomplete
-                                    id={streamId}
+                                    id={qualificationId}
                                     options={qualifications}
-                                    getOptionLabel={option => option.name}
+                                    getOptionLabel={option => option.value}
                                     onChange={(event, value) => {
                                       handleChangeForDynamicGrid(
                                         qualification,
@@ -1259,14 +1203,14 @@ const AddEditEvent = props => {
                                       );
                                     }}
                                     data-id={idx}
-                                    name={streamId}
+                                    name={qualificationId}
                                     value={
                                       qualificationsDataBackup[
                                         qualificationsDataBackup.findIndex(function(
                                           item,
                                           i
                                         ) {
-                                          {console.log("resturnData-->>",item.id,formState.dynamicBar[idx][qualification])}
+                                       
                                           return (
                                             
                                             item.id ===
@@ -1279,18 +1223,18 @@ const AddEditEvent = props => {
                                       <TextField
                                         {...params}
                                         value={option => option.id}
-                                        name={streamId}
+                                        name={qualificationId}
                                         error={
-                                          checkErrorInDynamicBar(streams, val)[
+                                          checkErrorInDynamicBar(qualification, val)[
                                             "error"
                                           ]
                                         }
                                         helperText={
-                                          checkErrorInDynamicBar(streams, val)[
+                                          checkErrorInDynamicBar(qualification, val)[
                                             "error"
                                           ]
                                             ? checkErrorInDynamicBar(
-                                                streams,
+                                              qualification,
                                                 val
                                               )["value"]
                                             : null
@@ -1307,42 +1251,42 @@ const AddEditEvent = props => {
                                         variant="outlined"
                                       />
                                     )}
-                                  /> */}
-                                {/* </FormControl>
-                              </Grid> */}
-                              {/** Need to map streams with strength */}
-                              {/* <Grid item xs={5}>
+                                  />
+                                </FormControl>
+                              </Grid>
+                          
+                              <Grid item xs={5}>
                                 <TextField
-                                  label="Strength"
-                                  name={strengthId}
+                                  label="Percentage"
+                                  name={percentageId}
                                   variant="outlined"
                                   fullWidth
                                   data-id={idx}
-                                  id={strengthId}
+                                  id={percentageId}
                                   value={
-                                    formState.dynamicBar[idx][marks] || ""
+                                    formState.dynamicBar[idx][percentage] || ""
                                   }
                                   error={
-                                    checkErrorInDynamicBar(marks, val)[
+                                    checkErrorInDynamicBar(percentage, val)[
                                       "error"
                                     ]
                                   }
                                   helperText={
-                                    checkErrorInDynamicBar(marks, val)[
+                                    checkErrorInDynamicBar(percentage, val)[
                                       "error"
                                     ]
-                                      ? checkErrorInDynamicBar(marks, val)[
+                                      ? checkErrorInDynamicBar(percentage, val)[
                                           "value"
                                         ]
                                       : null
                                   }
                                   placeholder={get(
-                                    EventSchema[marks],
+                                    EventSchema[percentage],
                                     "placeholder"
                                   )}
                                   onChange={event => {
                                     handleChangeForDynamicGrid(
-                                      marks,
+                                      percentage,
                                       event,
                                       null,
                                       val,
@@ -1365,10 +1309,11 @@ const AddEditEvent = props => {
                             </Grid>
                           </CardContent>
                         </Card>
-                      ); */}
-                    {/* })} */} 
-                    {/* <div className={classes.btnspaceadd}>
-                      <YellowButton
+                      );
+                     })} 
+                    <div className={classes.btnspaceadd}>
+                      <YellowButton 
+                      type="button"
                         disabled={qualifications.length ? false : true}
                         color="primary"
                         variant="contained"
@@ -1381,7 +1326,7 @@ const AddEditEvent = props => {
                   </Card>
                 </Grid>
               </Grid>
-            </Grid> */}
+            </Grid>
 
 
             </CardContent>

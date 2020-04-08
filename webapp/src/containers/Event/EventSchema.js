@@ -126,20 +126,15 @@ const EventSchema = {
     type: "text",
     validations: {}
   },
-  marks: {
-    label: "Marks",
-    id: "marks",
-    autoComplete: "marks",
+  percentage: {
+    label: "Percentage",
+    id: "percentage",
+    autoComplete: "percentage",
     required: true,
-    placeholder: "Marks",
+    placeholder: "Percentage",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "percentage ( Min percentage through SSC, HSC, graduation ) 1-100"
-      }
-    }
+    validations: {}
   },
   qualification: {
     label: "Qualification",
