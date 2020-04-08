@@ -575,13 +575,13 @@
               "description": {
                 "type": "string"
               },
-              "marks": {
-                "type": "number"
-              },
               "question_set": {
                 "type": "string"
               },
               "qualifications": {
+                "type": "component"
+              },
+              "educations": {
                 "type": "component"
               }
             }

@@ -71,6 +71,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id/download",
+      "handler": "activity.download",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

@@ -439,7 +439,8 @@ const roles = {
           "deletedocument",
           "academicHistory",
           "events",
-          "registeredevents"
+          "registeredevents",
+          "activity"
         ]
       },
       {

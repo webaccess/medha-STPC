@@ -11,7 +11,7 @@ module.exports = {
    *
    * Get all student for given college id
    */
-  getUsers: async collegeId => {
+  getUsers: async (collegeId) => {
     const studentRole = await strapi
       .query("role", "users-permissions")
       .findOne({ name: "Student" });
@@ -20,7 +20,7 @@ module.exports = {
       .query("user", "users-permissions")
       .find({ college: collegeId, role: studentRole.id });
 
-    const userIds = response.map(user => user.id);
+    const userIds = response.map((user) => user.id);
     return userIds;
-  }
+  },
 };

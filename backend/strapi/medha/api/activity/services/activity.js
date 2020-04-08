@@ -14,7 +14,7 @@ module.exports = {
   createBatchForStudents: async (activityId, ctx) => {
     const { students, name } = ctx.request.body;
     await bookshelf
-      .transaction(async t => {
+      .transaction(async (t) => {
         /**
          * Creating Activity batch for given activity
          */
@@ -23,7 +23,7 @@ module.exports = {
           .query("activity-batch")
           .model.forge({ activity: activityId, name: name })
           .save(null, { transacting: t })
-          .then(model => model.toJSON());
+          .then((model) => model.toJSON());
 
         if (!activityBatch) {
           return Promise.reject({
@@ -37,7 +37,7 @@ module.exports = {
          */
 
         const createStudentActivityBatchAttendance = students.map(
-          async studentId => {
+          async (studentId) => {
             return await strapi
               .query("activity-batch-attendance")
               .model.forge({
@@ -47,7 +47,7 @@ module.exports = {
                 verified_by_college: false
               })
               .save(null, { transacting: t })
-              .then(model => model.toJSON())
+              .then((model) => model.toJSON())
               .catch(() => null);
           }
         );
@@ -56,20 +56,54 @@ module.exports = {
           createStudentActivityBatchAttendance
         );
 
-        if (response.some(r => r === null)) {
+        if (response.some((r) => r === null)) {
           return Promise.reject({
             detail:
               "Something went wrong while creating Student Activity Batch Attendance"
           });
         }
 
-        return new Promise(resolve => resolve("Success"));
+        return new Promise((resolve) => resolve("Success"));
       })
-      .then(success => {
+      .then((success) => {
         return ctx.send(utils.getFindOneResponse(success));
       })
-      .catch(error => {
+      .catch((error) => {
         return ctx.response.badRequest(`Invalid ${error.detail}`);
       });
+  },
+
+  /**
+   * Create batch wise students list
+   */
+  createBatchWiseStudentList: async (activityBatches) => {
+    let result = [];
+    await utils.asyncForEach(activityBatches, async (activityBatch) => {
+      const { id, name } = activityBatch;
+      const activityBatchAttendance = await strapi
+        .query("activity-batch-attendance")
+        .find({ activity_batch: id });
+
+      const studentIds = activityBatchAttendance.map((abt) => abt.student.id);
+      const students = await strapi
+        .query("student")
+        .find({ id_in: studentIds });
+
+      let studentData = students.map((student) => {
+        const { user, roll_number, stream } = student;
+        return {
+          "Roll Number": roll_number,
+          "Student Name": `${user.first_name} ${user.last_name}`,
+          "Student Stream": stream.name
+        };
+      });
+
+      result.push({
+        workSheetName: name,
+        workSheetData: studentData
+      });
+    });
+
+    return result;
   }
 };
