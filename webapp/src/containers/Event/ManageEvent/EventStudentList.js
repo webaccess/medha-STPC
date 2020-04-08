@@ -58,7 +58,6 @@ const StudentList = props => {
     isClearResetFilter: false,
     isFilterSearch: false,
     texttvalue: "",
-    selectedRowFilter: true,
 
     /*** Hire */
     dataToHire: {},
@@ -76,7 +75,6 @@ const StudentList = props => {
     sortAscending: true
   });
 
-  console.log("selectedRowFilter", formState.selectedRowFilter);
   useEffect(() => {
     getStudentList(10, 1);
   }, []);
@@ -306,22 +304,6 @@ const StudentList = props => {
     getStudentList(formState.pageSize, 1);
   };
 
-  const handleRowSelected = useCallback(state => {
-    console.log("state", state);
-    if (state.selectedCount >= 1) {
-      setFormState(formState => ({
-        ...formState,
-        selectedRowFilter: false
-      }));
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        selectedRowFilter: true
-      }));
-    }
-    setSelectedRows(state.selectedRows);
-  }, []);
-
   const handleYearChange = date => {
     //formState.filterDataParameters[date.target.name] = date.target.value;
     setFormState(formState => ({
@@ -424,18 +406,6 @@ const StudentList = props => {
         >
           Download List
         </GreenButton>
-
-        <GreenButton
-          variant="contained"
-          color="primary"
-          //onClick={clearFilter}
-          disableElevation
-          startIcon={<ThumbUpIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Mark as Hire
-        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Typography variant="h3" gutterBottom>
@@ -518,8 +488,6 @@ const StudentList = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                onSelectedRowsChange={handleRowSelected}
-                // deleteEvent={deleteCell}
                 //defaultSortField="username"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
