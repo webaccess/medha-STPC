@@ -1,19 +1,13 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-import ThumbIcon from "../../../components/ThumbGridIcon/ThumbGridIcon";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import { Link } from "react-router-dom";
 
 import {
   TextField,
   Card,
   CardContent,
-  Tooltip,
   Grid,
-  Collapse,
-  IconButton,
   Typography
 } from "@material-ui/core";
 import * as routeConstants from "../../../constants/RouteConstants";
@@ -25,7 +19,8 @@ import {
   YellowButton,
   GrayButton,
   Table,
-  YearMonthPicker
+  YearMonthPicker,
+  ThumbIcon
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -43,12 +38,12 @@ const STUDENT_FILTER = "student.id";
 
 const StudentList = props => {
   const history = useHistory();
-  const [selectedRows, setSelectedRows] = useState([]);
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
     students: [],
     registration: [],
+    hireColor: {},
     greenButtonChecker: true,
     dataToShow: [],
     tempData: [],
@@ -58,7 +53,6 @@ const StudentList = props => {
     isClearResetFilter: false,
     isFilterSearch: false,
     texttvalue: "",
-    selectedRowFilter: true,
 
     /*** Hire */
     dataToHire: {},
@@ -160,6 +154,9 @@ const StudentList = props => {
       for (let i in data) {
         var eventIndividualData = {};
         eventIndividualData["id"] = data[i]["id"];
+        eventIndividualData["studentid"] = data[i]["user"]
+          ? data[i]["user"]["id"]
+          : "";
         eventIndividualData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";
@@ -300,21 +297,6 @@ const StudentList = props => {
     getStudentList(formState.pageSize, 1);
   };
 
-  const handleRowSelected = useCallback(state => {
-    if (state.selectedCount >= 1) {
-      setFormState(formState => ({
-        ...formState,
-        selectedRowFilter: false
-      }));
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        selectedRowFilter: true
-      }));
-    }
-    setSelectedRows(state.selectedRows);
-  }, []);
-
   const handleYearChange = date => {
     //formState.filterDataParameters[date.target.name] = date.target.value;
     setFormState(formState => ({
@@ -349,14 +331,14 @@ const StudentList = props => {
   const CustomLink = ({ row }) => (
     <div>
       {}
-      <div id={row.id}>
-        <Link id={row.id} onClick={handleClick}>
+      <div>
+        {/* <Link to={"#"} id={row.id} onClick={handleClick}>
           {" "}
           {row.user}{" "}
-        </Link>
-        {/* <a href="#" id={row.id} onClick={handleClick}>
+        </Link> */}
+        <a href="#" id={row.studentid} onClick={handleClick}>
           {row.user}
-        </a> */}
+        </a>
       </div>
     </div>
   );
@@ -377,17 +359,6 @@ const StudentList = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            {/* <Tooltip title="Hire" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={hiredCell}
-                style={{ color: "green" }}
-              >
-                thumb_up
-              </i>
-            </Tooltip> */}
             <ThumbIcon id={cell.id} value={cell.name} onClick={hiredCell} />
           </div>
         </div>
@@ -415,18 +386,6 @@ const StudentList = props => {
           greenButtonChecker={formState.greenButtonChecker}
         >
           Download List
-        </GreenButton>
-
-        <GreenButton
-          variant="contained"
-          color="primary"
-          //onClick={clearFilter}
-          disableElevation
-          startIcon={<ThumbUpIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Mark as Hire
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
@@ -510,8 +469,6 @@ const StudentList = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                onSelectedRowsChange={handleRowSelected}
-                // deleteEvent={deleteCell}
                 //defaultSortField="username"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
