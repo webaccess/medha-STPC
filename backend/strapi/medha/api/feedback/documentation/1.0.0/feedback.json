@@ -617,9 +617,6 @@
               "description": {
                 "type": "string"
               },
-              "marks": {
-                "type": "number"
-              },
               "question_set": {
                 "type": "string"
               },

@@ -44,9 +44,6 @@
       "type": "richtext",
       "required": true
     },
-    "marks": {
-      "type": "decimal"
-    },
     "question_set": {
       "model": "question-set"
     },

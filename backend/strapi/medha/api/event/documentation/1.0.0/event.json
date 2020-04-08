@@ -815,9 +815,6 @@
           "description": {
             "type": "string"
           },
-          "marks": {
-            "type": "number"
-          },
           "question_set": {
             "required": [
               "id",
@@ -931,9 +928,6 @@
           },
           "description": {
             "type": "string"
-          },
-          "marks": {
-            "type": "number"
           },
           "question_set": {
             "type": "string"
