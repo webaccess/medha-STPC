@@ -116,7 +116,7 @@ const MenuItems = props => {
       {
         name: "Events",
         Icon: <EmojiFlagsOutlinedIcon />,
-        link: routeConstants.NOT_FOUND_URL
+        link: routeConstants.MANAGE_EVENT
       }
     ],
     Student: [

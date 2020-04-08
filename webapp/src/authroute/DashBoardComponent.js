@@ -13,7 +13,7 @@ import * as routeConstants from "../constants/RouteConstants";
 
 import auth from "../components/Auth/Auth";
 
-const defaultRoute = ({ component: Component, ...rest }) => (
+const DashBoardComponent = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
@@ -26,23 +26,26 @@ const defaultRoute = ({ component: Component, ...rest }) => (
             }}
           />
         ) : (
-          <Redirect
-            to={{
-              pathname: routeConstants.DASHBOARD_URL,
-              state: { from: props.location }
-            }}
-          />
-        )
+            <Redirect
+              to={{
+                pathname: routeConstants.DASHBOARD_URL,
+                state: { from: props.location }
+              }}
+            />
+          )
       ) : (
-        <Redirect
-          to={{
-            pathname: routeConstants.SIGN_IN_URL,
-            state: { from: props.location }
-          }}
-        />
-      )
+          <React.Fragment>
+            {auth.clearAppStorage()}
+            <Redirect
+              to={{
+                pathname: routeConstants.SIGN_IN_URL,
+                state: { from: props.location }
+              }}
+            />
+          </React.Fragment>
+        )
     }
   />
 );
 
-export default defaultRoute;
+export default DashBoardComponent;

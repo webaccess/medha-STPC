@@ -135,7 +135,6 @@ const StudentProfile = props => {
 
   useEffect(() => {
     handleSetDetails();
-    console.log(props);
     if (props.location.success && !formState.counter) {
       setSuccess(true);
       formState.counter += 1;
@@ -157,41 +156,48 @@ const StudentProfile = props => {
         paramsForEvent = props["location"]["dataForStudent"];
       } else if (auth.getUserInfo().role.name === "Student") {
         paramsForEvent = props.data ? props.data.id : auth.getUserInfo().id;
+      } else if (auth.getUserInfo().role.name === "College Admin") {
+        paramsForEvent = props["location"]["dataForStudent"];
       }
-      await serviceProvider
-        .serviceProviderForGetOneRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
-          paramsForEvent
-        )
-        .then(res => {
-          const data = res.data.result;
-          console.log(data);
-          setFormState({ ...formState, details: data });
-          setUser({
-            ...user,
-            firstname: data.first_name,
-            lastname: data.last_name,
-            username: data.username,
-            email: data.email,
-            state: data.state ? data.state.name : "",
-            college: data.college.name,
-            contact: data.contact_number,
-            fatherFirstName: data.studentInfo.father_first_name,
-            fatherLastName: data.studentInfo.father_last_name,
-            address: data.studentInfo.address,
-            rollnumber: data.studentInfo.roll_number.toString(),
-            gender: data.studentInfo.gender,
-            district: data.studentInfo.district
-              ? data.studentInfo.district.name
-              : "",
-            stream: data.studentInfo.stream.name,
-            physicallyHandicapped: data.studentInfo.physicallyHandicapped
+      if (paramsForEvent !== null && paramsForEvent !== undefined) {
+        await serviceProvider
+          .serviceProviderForGetOneRequest(
+            strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
+            paramsForEvent
+          )
+          .then(res => {
+            const data = res.data.result;
+            setFormState({ ...formState, details: data });
+            setUser({
+              ...user,
+              firstname: data.first_name,
+              lastname: data.last_name,
+              username: data.username,
+              email: data.email,
+              state: data.state ? data.state.name : "",
+              college: data.college.name,
+              contact: data.contact_number,
+              fatherFirstName: data.studentInfo.father_first_name,
+              fatherLastName: data.studentInfo.father_last_name,
+              address: data.studentInfo.address,
+              rollnumber: data.studentInfo.roll_number.toString(),
+              gender: data.studentInfo.gender,
+              district: data.studentInfo.district
+                ? data.studentInfo.district.name
+                : "",
+              stream: data.studentInfo.stream.name,
+              physicallyHandicapped: data.studentInfo.physicallyHandicapped
+            });
+            setSelectedDate(new Date(data.studentInfo.date_of_birth));
+          })
+          .catch(err => {
+            console.log(err);
           });
-          setSelectedDate(new Date(data.studentInfo.date_of_birth));
-        })
-        .catch(err => {
-          console.log(err);
+      } else {
+        history.push({
+          pathname: routeConstants.DASHBOARD_URL
         });
+      }
     }
   }
 
@@ -205,7 +211,6 @@ const StudentProfile = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       {success ? (
         <Collapse in={success}>
           <Alert

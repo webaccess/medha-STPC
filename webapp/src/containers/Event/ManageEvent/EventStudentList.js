@@ -106,9 +106,11 @@ const StudentList = props => {
     }));
     let EVENT_ID = null;
     let regStudent_url = null;
-    if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (
+      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === "College Admin"
+    ) {
       EVENT_ID = props["location"]["eventIdStudent"];
-      console.log("EVENT_ID", EVENT_ID);
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
     }
     if (EVENT_ID !== null && regStudent_url !== null) {
@@ -209,14 +211,9 @@ const StudentList = props => {
     serviceProvider
       .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
       .then(res => {
-        console.log("res.data.result[0]", res.data.result);
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
         if (registerData.hired_at_event) {
-          console.log(
-            "registerData.hired_at_event",
-            registerData.hired_at_event
-          );
           registerCellData(regUserID, false);
         } else {
           registerCellData(regUserID, true);
@@ -229,7 +226,6 @@ const StudentList = props => {
 
   const registerCellData = (id, isHired = false) => {
     if (isHired === true) {
-      console.log("hire", id);
       setFormState(formState => ({
         ...formState,
         dataToHire: id,
@@ -238,7 +234,6 @@ const StudentList = props => {
         showModalHire: true
       }));
     } else {
-      console.log("unhire", id);
       setFormState(formState => ({
         ...formState,
         dataToHire: id,
@@ -304,6 +299,24 @@ const StudentList = props => {
     getStudentList(formState.pageSize, 1);
   };
 
+<<<<<<< HEAD
+=======
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount >= 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
+
+>>>>>>> 3891e8d0e7ec6696173e22d7563155ce1b91fe60
   const handleYearChange = date => {
     //formState.filterDataParameters[date.target.name] = date.target.value;
     setFormState(formState => ({
@@ -329,9 +342,8 @@ const StudentList = props => {
   };
 
   const handleClick = event => {
-    console.log("get Profile id", event.target.id);
     history.push({
-      pathname: routeConstants.VIEW_PROFILE,
+      pathname: routeConstants.VIEW_STUDENT_PROFILE,
       dataForStudent: event.target.id
     });
   };

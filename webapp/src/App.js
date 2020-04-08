@@ -9,7 +9,8 @@ import {
   ForgotPasswordRoute,
   RouteWithLayout,
   PrivateRoute,
-  DefaultRoute
+  DashBoardComponent,
+  MedhaCollegeAdminRoute
 } from "./authroute";
 
 import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
@@ -79,7 +80,7 @@ function App() {
         <Router>
           <div>
             <Switch>
-              <DefaultRoute
+              <DashBoardComponent
                 path={routeConstants.DEFAULT_URL}
                 component={Dashboard}
                 exact
@@ -373,7 +374,7 @@ function App() {
                 path={routeConstants.MANAGE_STUDENT}
               />
               {/** Event */}
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={ViewEvents}
                 exact
                 layout={Layout}
@@ -405,6 +406,21 @@ function App() {
                 layout={Layout}
                 path={routeConstants.EDIT_EVENT}
               />
+              {/** Event Student List Route */}
+              <MedhaCollegeAdminRoute
+                component={StudentList}
+                exact
+                layout={Layout}
+                path={routeConstants.EVENT_STUDENT_LIST}
+              />
+              {/**View Student Profile  */}
+
+              <MedhaCollegeAdminRoute
+                component={StudentProfile}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_STUDENT_PROFILE}
+              />
 
               {/* Manage Activity Batch */}
               <RouteWithLayout
@@ -428,13 +444,6 @@ function App() {
                 path={routeConstants.ADD_ACTIVITY_BATCH}
               />
 
-              {/** Event Student List Route */}
-              <RouteWithLayout
-                component={StudentList}
-                exact
-                layout={Layout}
-                path={routeConstants.EVENT_STUDENT_LIST}
-              />
               <Route path="*" component={NotFoundPage} />
             </Switch>
           </div>
