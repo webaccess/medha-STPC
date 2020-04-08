@@ -8,14 +8,16 @@
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity,
+  sanitizeEntity
 } = require("strapi-utils");
 
 const utils = require("../../../config/utils.js");
 const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model,
+    model: strapi.query("user", "users-permissions").model
   });
+
+const fs = require("fs");
 
 module.exports = {
   async find(ctx) {
@@ -27,13 +29,13 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["activity"],
-          filters,
+          filters
         })
       )
       .fetchPage({
         page: page,
         pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize,
+          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize
       })
       .then((res) => {
         return utils.getPaginatedResponse(res);
@@ -119,7 +121,7 @@ module.exports = {
 
     if (stream_id) {
       responseData = responseData.filter(
-        (student) => (student.stream.id = stream_id)
+        (student) => student.stream.id == stream_id
       );
     }
 
@@ -157,7 +159,7 @@ module.exports = {
     const response = utils.paginate(activityBatches, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination,
+      ...response.pagination
     };
   },
 
@@ -202,4 +204,29 @@ module.exports = {
 
     return strapi.services.activity.createBatchForStudents(id, ctx);
   },
+
+  /**
+   * Download student list attending activity
+   */
+  async download(ctx) {
+    const { id } = ctx.params;
+
+    const activity = await strapi.query("activity").findOne({ id });
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+
+    const activityBatches = await strapi
+      .query("activity-batch")
+      .find({ activity: id });
+
+    if (!activityBatches.length) {
+      return ctx.response.badRequest("No student data found for Activity");
+    }
+
+    const batchWiseStudentList = await strapi.services.activity.createBatchWiseStudentList(
+      activityBatches
+    );
+    return utils.getFindOneResponse(batchWiseStudentList);
+  }
 };

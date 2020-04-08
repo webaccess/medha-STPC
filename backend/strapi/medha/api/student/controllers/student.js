@@ -536,23 +536,18 @@ module.exports = {
     const student = await strapi.query("student").findOne({ id });
 
     const { stream } = student;
-    console.log(student);
 
     let data = await strapi
       .query("academic-history")
       .find({ student: id, _sort: "created_at:desc" });
+
     if (!data.length)
       return ctx.response.badRequest(
         "Academic History of Student doesn't exist"
       );
-    //console.log(data);
 
     const educationYear = data[0].education_year;
-    // const stream = data[0].student.stream;
     const college = student.user.college;
-    console.log(stream);
-    console.log(educationYear);
-    console.log(college);
 
     data = await strapi.query("activity").find({
       education_year: educationYear,
