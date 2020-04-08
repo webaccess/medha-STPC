@@ -25,3 +25,4 @@ export { default as DeleteGridIcon } from "./DeleteGridIcon";
 export { default as BlockGridIcon } from "./BlockGridIcon";
 export { default as ViewStudentGridIcon } from "./ViewStudentGridIcon";
 export { default as YearMonthPicker } from "./YearMonthPicker";
+export { default as ThumbIcon } from "./ThumbGridIcon";
