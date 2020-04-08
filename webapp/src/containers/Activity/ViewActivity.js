@@ -32,6 +32,7 @@ import {
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import moment from "moment";
+import XLSX from "xlsx";
 
 const ACTIVITY_FILTER = "id";
 
@@ -276,8 +277,22 @@ const ViewActivity = (props) => {
       `/${activity.id}/download`;
     serviceProviders
       .serviceProviderForGetRequest(URL)
-      .then((response) => {
-        console.log(response);
+      .then(({ data }) => {
+        let wb = XLSX.utils.book_new();
+
+        /**
+         * Create worksheet for every batch
+         * Add students list for respective batch
+         */
+        const headers = ["Roll Number", "Student Name", "Stream"];
+        data.result.forEach((d) => {
+          const { workSheetName, workSheetData } = d;
+          let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
+          wb.SheetNames.push(workSheetName);
+          wb.Sheets[workSheetName] = ws;
+        });
+
+        XLSX.writeFile(wb, "students.xlsx");
       })
       .catch((error) => {
         console.log(error);
