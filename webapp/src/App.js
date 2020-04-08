@@ -406,6 +406,21 @@ function App() {
                 layout={Layout}
                 path={routeConstants.EDIT_EVENT}
               />
+              {/** Event Student List Route */}
+              <MedhaCollegeAdminRoute
+                component={StudentList}
+                exact
+                layout={Layout}
+                path={routeConstants.EVENT_STUDENT_LIST}
+              />
+              {/**View Student Profile  */}
+
+              <MedhaCollegeAdminRoute
+                component={StudentProfile}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_STUDENT_PROFILE}
+              />
 
               {/* Manage Activity Batch */}
               <RouteWithLayout
@@ -429,13 +444,6 @@ function App() {
                 path={routeConstants.ADD_ACTIVITY_BATCH}
               />
 
-              {/** Event Student List Route */}
-              <MedhaCollegeAdminRoute
-                component={StudentList}
-                exact
-                layout={Layout}
-                path={routeConstants.EVENT_STUDENT_LIST}
-              />
               <Route path="*" component={NotFoundPage} />
             </Switch>
           </div>

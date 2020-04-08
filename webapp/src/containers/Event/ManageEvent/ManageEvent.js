@@ -132,7 +132,6 @@ const ViewEvents = props => {
     }));
     if (auth.getUserInfo().role !== null) {
       if (auth.getUserInfo().role.name === "College Admin") {
-        console.log("paramsForevents", paramsForevents);
         const EVENTS_FOR_COLLEGE_ADMIN =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_COLLEGES +

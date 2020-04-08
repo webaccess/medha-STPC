@@ -1,13 +1,16 @@
-import React from "react";
-import { Route, Redirect } from "react-router-dom";
-import PropTypes from "prop-types";
+import React from "../../node_modules/react";
+import { Route, Redirect } from "../../node_modules/react-router-dom";
+import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
 import * as routeConstants from "../constants/RouteConstants";
 
 const MedhaCollegeAdminRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   if (auth.getToken() !== null) {
-    if (auth.getUserInfo().role.name === "Medha Admin" || auth.getUserInfo().role.name === "College Admin") {
+    if (
+      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === "College Admin"
+    ) {
       return (
         <Route
           {...rest}
@@ -28,7 +31,6 @@ const MedhaCollegeAdminRoute = props => {
         />
       );
     }
-
   } else {
     return (
       <React.Fragment>
