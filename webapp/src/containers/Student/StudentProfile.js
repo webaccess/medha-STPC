@@ -151,10 +151,6 @@ const StudentProfile = props => {
   }, [user]);
   async function handleSetDetails() {
     let paramsForEvent = null;
-    console.log(
-      "dataForStudent--Profile--",
-      props["location"]["dataForStudent"]
-    );
     if (auth.getUserInfo() && auth.getUserInfo().role) {
       if (auth.getUserInfo().role.name === "Medha Admin") {
         paramsForEvent = props["location"]["dataForStudent"];
