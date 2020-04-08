@@ -78,6 +78,8 @@ const ViewEvent = props => {
         paramsForEvent = props["location"]["dataForView"];
       } else if (auth.getUserInfo().role.name === "Student") {
         paramsForEvent = props["location"]["dataForView"];
+      } else if (auth.getUserInfo().role.name === "College Admin") {
+        paramsForEvent = props["location"]["dataForView"];
       }
       if (paramsForEvent !== null && paramsForEvent !== undefined) {
         await serviceProviders
