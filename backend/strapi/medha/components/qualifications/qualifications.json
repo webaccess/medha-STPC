@@ -1,4 +1,6 @@
 {
+  "connection": "default",
+  "collectionName": "components_qualifications_qualifications",
   "info": {
     "name": "qualifications",
     "icon": "asterisk"
@@ -15,10 +17,8 @@
         "BE"
       ]
     },
-    "marks": {
+    "percentage": {
       "type": "decimal"
     }
-  },
-  "connection": "default",
-  "collectionName": "components_qualifications_qualifications"
+  }
 }

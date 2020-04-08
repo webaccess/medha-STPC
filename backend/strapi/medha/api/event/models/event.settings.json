@@ -54,6 +54,11 @@
       "type": "component",
       "repeatable": true,
       "component": "qualifications.qualifications"
+    },
+    "educations": {
+      "type": "component",
+      "repeatable": true,
+      "component": "educations.educations"
     }
   }
 }

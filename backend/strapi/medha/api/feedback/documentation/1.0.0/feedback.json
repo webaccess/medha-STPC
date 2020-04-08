@@ -625,6 +625,9 @@
               },
               "qualifications": {
                 "type": "component"
+              },
+              "educations": {
+                "type": "component"
               }
             }
           },

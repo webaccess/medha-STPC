@@ -626,6 +626,9 @@
               "Third",
               "Fourth"
             ]
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       },
@@ -645,6 +648,9 @@
               "Third",
               "Fourth"
             ]
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       }

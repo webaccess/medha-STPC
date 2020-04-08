@@ -865,7 +865,33 @@
                     "BE"
                   ]
                 },
-                "marks": {
+                "percentage": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "educations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "education_year": {
+                  "type": "string",
+                  "enum": [
+                    "First",
+                    "Second",
+                    "Third",
+                    "Fourth"
+                  ]
+                },
+                "percentage": {
                   "type": "number"
                 }
               }
@@ -933,7 +959,33 @@
                     "BE"
                   ]
                 },
-                "marks": {
+                "percentage": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "educations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "education_year": {
+                  "type": "string",
+                  "enum": [
+                    "First",
+                    "Second",
+                    "Third",
+                    "Fourth"
+                  ]
+                },
+                "percentage": {
                   "type": "number"
                 }
               }
