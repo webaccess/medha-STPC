@@ -132,7 +132,7 @@ const HireStudent = props => {
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    Confirm
+                    Ok
                   </YellowButton>
                 </Grid>
                 <Grid item>
