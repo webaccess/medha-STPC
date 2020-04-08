@@ -185,16 +185,20 @@ const AddEditEvent = props => {
         }
         formState.values[stream] = finalDataStream;
       }
-      if (props["dataForEdit"]["marks"]) {
-        formState.values[percentage] = props["dataForEdit"]["marks"];
-      }
-      if (
-        props["dataForEdit"] &&
-        props["dataForEdit"]["qualification"] &&
-        props["dataForEdit"]["qualification"]["id"]
-      ) {
-        formState.values[qualification] =
-          props["dataForEdit"]["qualification"]["id"];
+      if(props["dataForEdit"] && props["dataForEdit"]["qualifications"]){
+  
+
+        let dynamicBar = [];
+        for(var i=0;i<props["dataForEdit"]["qualifications"].length; i++){
+          let tempDynamicBarValue = {};
+          tempDynamicBarValue["index"] = Math.random();
+          tempDynamicBarValue["id"] = props["dataForEdit"]["qualifications"][i]["id"];
+          tempDynamicBarValue[qualification] = props["dataForEdit"]["qualifications"][i]["qualification"];
+          tempDynamicBarValue[percentage] = props["dataForEdit"]["qualifications"][i]["marks"];
+          dynamicBar.push(tempDynamicBarValue);
+        }
+        formState.dynamicBar = dynamicBar;
+
       }
       if(props["dataForEdit"] && props["dataForEdit"]["upload_logo"]){
         formState.showPreviewEditImage = true;
@@ -402,6 +406,7 @@ const AddEditEvent = props => {
     isTextBox
   ) => {
     event.persist();
+   
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (isAutoComplete) {
       if (selectedValueForAutoComplete !== null) {
@@ -416,7 +421,8 @@ const AddEditEvent = props => {
                 }
               });
               setQualifications(qualificationsTempArray);
-              r[eventName] = selectedValueForAutoComplete["id"];
+              r["id"] = selectedValueForAutoComplete["id"];
+              r[eventName] = selectedValueForAutoComplete["value"];
               return r;
             } else {
               return r;
@@ -505,10 +511,13 @@ const AddEditEvent = props => {
     
     let qualificationsPercentageArrayValues = [];
     formState.dynamicBar.map(field => {
+  
       let qualificationPercentageValue = {};
       if (field.hasOwnProperty(qualification) && field.hasOwnProperty(percentage)) {
-        qualificationPercentageValue["qualification"] = field[qualifications];
-        qualificationPercentageValue["percentage"] = parseInt(field[percentage]);
+     
+        qualificationPercentageValue["id"] = field["id"];
+        qualificationPercentageValue["qualification"] = field[qualification];
+        qualificationPercentageValue["marks"] = parseInt(field[percentage]);
         qualificationsPercentageArrayValues.push(qualificationPercentageValue);
       }
     });
@@ -549,8 +558,10 @@ const AddEditEvent = props => {
       EventSchema
     );
     if (checkAllFieldsValid) {
+   
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(formState.values, EventSchema);
+   
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
@@ -601,19 +612,20 @@ const AddEditEvent = props => {
   const postEventData = () => {
     let qualificationPercentageArray = [];
     qualificationPercentageArray = getDynamicBarData();
+    
     let postData = databaseUtilities.addEvent(
       formState.values[eventName],
       draftToHtml(convertToRaw(editorState.getCurrentContent())),
       formState.values[dateFrom],
       formState.values[dateTo],
       formState.values[address],
-      formState.values[percentage],
-      formState.values[qualification] ? formState.values[qualification] : null,
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
+      qualificationPercentageArray,
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null
     );
+ 
     if (formState.isEditEvent) {
       serviceProvider
         .serviceProviderForPutRequest(
@@ -1213,7 +1225,7 @@ const AddEditEvent = props => {
                                        
                                           return (
                                             
-                                            item.id ===
+                                            item.value ===
                                             formState.dynamicBar[idx][qualification]
                                           );
                                         })

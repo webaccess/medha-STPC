@@ -98,9 +98,9 @@ export const EVENT_CONFIRMATION =
 /**Qualifications */
 
 export const QUALIFICATIONS = [
-  { id: "SSC", value: "SSC" },
-  { id: "HSC", value: "HSC" },
-  { id: "BSc", value: "BSc" },
-  { id: "MSc", value: "MSc" },
-  { id: "BE", value: "BE" }
+  { id: 1, value: "SSC" },
+  { id: 2, value: "HSC" },
+  { id: 3, value: "BSc" },
+  { id: 4, value: "MSc" },
+  { id: 5, value: "BE" }
 ];
