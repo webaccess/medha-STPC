@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import ThumbIcon from "../../../components/ThumbGridIcon/ThumbGridIcon";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import { Link } from "react-router-dom";
 
 import {
   TextField,
@@ -72,10 +76,9 @@ const StudentList = props => {
     sortAscending: true
   });
 
-  console.log("formstate.register", formState.registration);
+  console.log("selectedRowFilter", formState.selectedRowFilter);
   useEffect(() => {
     getStudentList(10, 1);
-    //getEventRegistrationData();
   }, []);
 
   const getStudentList = async (pageSize, page, paramsForevents = null) => {
@@ -104,14 +107,15 @@ const StudentList = props => {
       isDataLoading: true
     }));
     let EVENT_ID = null;
-    let zones_url = null;
+    let regStudent_url = null;
     if (auth.getUserInfo().role.name === "Medha Admin") {
       EVENT_ID = props["location"]["eventIdStudent"];
-      zones_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
+      console.log("EVENT_ID", EVENT_ID);
+      regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
     }
-    if (EVENT_ID !== null && zones_url !== null) {
+    if (EVENT_ID !== null && regStudent_url !== null) {
       await serviceProvider
-        .serviceProviderForGetRequest(zones_url, paramsForevents)
+        .serviceProviderForGetRequest(regStudent_url, paramsForevents)
         .then(res => {
           formState.dataToShow = [];
           formState.tempData = [];
@@ -201,14 +205,20 @@ const StudentList = props => {
 
   const getEventRegistrationData = async id => {
     let paramsForHire = {
-      "student.id": id
+      "student.id": id,
+      "event.id": props["location"]["eventIdStudent"]
     };
     serviceProvider
       .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
       .then(res => {
+        console.log("res.data.result[0]", res.data.result);
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
         if (registerData.hired_at_event) {
+          console.log(
+            "registerData.hired_at_event",
+            registerData.hired_at_event
+          );
           registerCellData(regUserID, false);
         } else {
           registerCellData(regUserID, true);
@@ -297,6 +307,7 @@ const StudentList = props => {
   };
 
   const handleRowSelected = useCallback(state => {
+    console.log("state", state);
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
@@ -335,9 +346,36 @@ const StudentList = props => {
     }
   };
 
+  const handleClick = event => {
+    console.log("get Profile id", event.target.id);
+    history.push({
+      pathname: routeConstants.VIEW_PROFILE,
+      dataForStudent: event.target.id
+    });
+  };
+
+  const CustomLink = ({ row }) => (
+    <div>
+      {}
+      <div id={row.id}>
+        <Link id={row.id} onClick={handleClick}>
+          {" "}
+          {row.user}{" "}
+        </Link>
+        {/* <a href="#" id={row.id} onClick={handleClick}>
+          {row.user}
+        </a> */}
+      </div>
+    </div>
+  );
+
   /** Table Data */
   const column = [
-    { name: "Students", sortable: true, selector: "user" },
+    {
+      name: "Students",
+      sortable: true,
+      cell: row => <CustomLink row={row} />
+    },
     { name: "Stream", sortable: true, selector: "stream" },
     { name: "Academic Year", sortable: true, selector: "educations" },
     { name: "Mobile", sortable: true, selector: "mobile" },
@@ -347,7 +385,7 @@ const StudentList = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            <Tooltip title="Hire" placement="top">
+            {/* <Tooltip title="Hire" placement="top">
               <i
                 className="material-icons"
                 id={cell.id}
@@ -357,20 +395,8 @@ const StudentList = props => {
               >
                 thumb_up
               </i>
-            </Tooltip>
-          </div>
-          <div className={classes.PaddingActionButton}>
-            <Tooltip title="View" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                //onClick={editCell}
-                style={{ color: "green" }}
-              >
-                view_list
-              </i>
-            </Tooltip>
+            </Tooltip> */}
+            <ThumbIcon id={cell.id} value={cell.name} onClick={hiredCell} />
           </div>
         </div>
       ),
@@ -393,7 +419,7 @@ const StudentList = props => {
           variant="contained"
           color="secondary"
           // onClick={() => deleteMulUserById()}
-          // startIcon={<DeleteIcon />}
+          startIcon={<GetAppIcon />}
           greenButtonChecker={formState.greenButtonChecker}
         >
           Download List
@@ -404,12 +430,11 @@ const StudentList = props => {
           color="primary"
           //onClick={clearFilter}
           disableElevation
-          //to={routeConstants.ADD_EVENT}
-          // startIcon={<AddCircleOutlineOutlinedIcon />}
+          startIcon={<ThumbUpIcon />}
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
-          Mark as Hired
+          Mark as Hire
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
