@@ -5,6 +5,13 @@ const useStyles = makeStyles(theme => ({
     minWidth: 120,
     maxWidth: 300
   },
+  imageDiv: {
+    width: "100%",
+    height: "100px",
+    display: "flex",
+    backgroundColor: "white",
+    margin: "auto"
+  },
   chips: {
     display: "flex",
     flexWrap: "wrap"

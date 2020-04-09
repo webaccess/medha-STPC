@@ -32,6 +32,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
+import auth from "../../../components/Auth";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
@@ -94,7 +95,14 @@ const ViewEvents = props => {
   });
 
   useEffect(() => {
-    getEventData(10, 1);
+    if (auth.getUserInfo() !== null) {
+      getEventData(10, 1);
+    } else {
+      auth.clearAppStorage();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
+      });
+    }
   }, []);
 
   const getEventData = async (pageSize, page, paramsForevents = null) => {
@@ -122,29 +130,69 @@ const ViewEvents = props => {
       ...formState,
       isDataLoading: true
     }));
-
-    await serviceProviders
-      .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
-      .then(res => {
-        formState.dataToShow = [];
-        formState.tempData = [];
-        let eventData = [];
-        eventData = convertEventData(res.data.result);
-        setFormState(formState => ({
-          ...formState,
-          events: res.data.result,
-          pageSize: res.data.pageSize,
-          totalRows: res.data.rowCount,
-          page: res.data.page,
-          pageCount: res.data.pageCount,
-          dataToShow: eventData,
-          tempData: eventData,
-          isDataLoading: false
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
+    if (auth.getUserInfo().role !== null) {
+      if (auth.getUserInfo().role.name === "College Admin") {
+        const EVENTS_FOR_COLLEGE_ADMIN =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_COLLEGES +
+          "/" +
+          auth.getUserInfo().college.id +
+          "/event";
+        await serviceProviders
+          .serviceProviderForGetRequest(
+            EVENTS_FOR_COLLEGE_ADMIN,
+            paramsForevents
+          )
+          .then(res => {
+            formState.dataToShow = [];
+            formState.tempData = [];
+            let eventData = [];
+            eventData = convertEventData(res.data.result);
+            setFormState(formState => ({
+              ...formState,
+              events: res.data.result,
+              pageSize: res.data.pageSize,
+              totalRows: res.data.rowCount,
+              page: res.data.page,
+              pageCount: res.data.pageCount,
+              dataToShow: eventData,
+              tempData: eventData,
+              isDataLoading: false
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+      } else if (auth.getUserInfo().role.name === "Medha Admin") {
+        await serviceProviders
+          .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
+          .then(res => {
+            formState.dataToShow = [];
+            formState.tempData = [];
+            let eventData = [];
+            eventData = convertEventData(res.data.result);
+            setFormState(formState => ({
+              ...formState,
+              events: res.data.result,
+              pageSize: res.data.pageSize,
+              totalRows: res.data.rowCount,
+              page: res.data.page,
+              pageCount: res.data.pageCount,
+              dataToShow: eventData,
+              tempData: eventData,
+              isDataLoading: false
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+      }
+    } else {
+      auth.clearAppStorage();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
       });
+    }
   };
 
   const convertEventData = data => {
@@ -347,19 +395,17 @@ const ViewEvents = props => {
   const viewStudentList = event => {
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
-      eventIdStudent: event.target.id
+      eventIdStudent: event.target.id,
+      eventTitle: event.target.getAttribute("value")
     });
   };
 
   /** Edit -------------------------------------------------------*/
   const getDataForEdit = async id => {
-    let paramsForUsers = {
-      id: id
-    };
     await serviceProviders
-      .serviceProviderForGetRequest(EVENT_URL, paramsForUsers)
+      .serviceProviderForGetOneRequest(EVENT_URL, id)
       .then(res => {
-        let editData = res.data.result[0];
+        let editData = res.data.result;
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_EVENT,
@@ -395,7 +441,7 @@ const ViewEvents = props => {
           <div className={classes.PaddingActionButton}>
             <ViewStudentGridIcon
               id={cell.id}
-              value={cell.name}
+              value={cell.title}
               onClick={viewStudentList}
             />
           </div>
@@ -498,9 +544,9 @@ const ViewEvents = props => {
                   placeholder="Event"
                   variant="outlined"
                   name={EVENT_FILTER}
-                  value={formState.texttvalue}
-                  //onChange={handleFilterChange}
-                  onChange={(event, value) => handleFilterChange(event, value)}
+                  onChange={event =>
+                    handleFilterChange(event, event.target.value)
+                  }
                 />
               </Grid>
               <Grid item>

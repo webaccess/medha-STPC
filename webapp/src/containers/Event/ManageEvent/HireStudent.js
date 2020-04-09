@@ -3,71 +3,79 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress
+  Modal,
+  Backdrop,
+  Fade
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
+import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
-import { useHistory } from "react-router-dom";
-import * as routeConstants from "../../../constants/RouteConstants";
 
-const EVENT_REG_URL =
+const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
-const EVENT_ID = "event";
-const STUDENT_ID = "student";
 
-const RegisterEvent = props => {
+const HireStudent = props => {
   const [open, setOpen] = React.useState(false);
-  const history = useHistory();
+
   const [formState, setFormState] = useState({
+    isStudentHired: false,
     isValid: false,
-    values: {},
-    stateCounter: 0
+    stateCounter: 0,
+    values: {}
   });
+  console.log("Hired Student id", props.id);
 
-  if (props.showModal && !formState.stateCounter) {
-    formState.stateCounter = 0;
-    formState.values[EVENT_ID] = props.eventId;
-    formState.values[STUDENT_ID] = props.userId;
-  }
+  const handleCloseModal = () => {
+    setOpen(false);
+    setFormState(formState => ({
+      ...formState,
+      values: {},
+      isStudentHired: false,
+      isValid: false,
+      stateCounter: 0
+    }));
 
-  const handleSubmit = () => {
+    if (formState.isStudentHired) {
+      props.hiredSuccessfully(true);
+    } else {
+      props.hiredSuccessfully(false);
+    }
+    props.closeHireModal();
+  };
+
+  const handleSubmit = event => {
     setOpen(true);
-    let postData = databaseUtilities.studentEventRegistration(
-      formState.values[EVENT_ID],
-      formState.values[STUDENT_ID]
-    );
+    /** CALL Put FUNCTION */
+    studentHired();
+    event.preventDefault();
+  };
+
+  const studentHired = () => {
+    var body;
+    if (props.isHired) {
+      body = {
+        hired_at_event: true
+      };
+    }
+    if (props.isUnHired) {
+      body = {
+        hired_at_event: false
+      };
+    }
     serviceProviders
-      .serviceProviderForPostRequest(EVENT_REG_URL, postData)
+      .serviceProviderForPutRequest(REGISTRATION_URL, props.id, body)
       .then(res => {
-        formState.stateCounter += 1;
-        setOpen(false);
-        history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT,
-          fromAddEvent: true,
-          isRegistered: true,
-          registeredEventMessage:
-            "Successfully registered for event '" + props.eventTitle + "'"
-        });
+        formState.isStudentHired = true;
+        handleCloseModal();
       })
       .catch(error => {
-        formState.stateCounter += 1;
-        setOpen(false);
-        history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT,
-          fromAddEvent: true,
-          isRegistered: false,
-          registeredEventMessage:
-            "Error registering for event '" + props.eventTitle + "'"
-        });
+        console.log("error---", error);
+        formState.isStudentHired = false;
+        handleCloseModal();
       });
   };
 
@@ -78,7 +86,7 @@ const RegisterEvent = props => {
       aria-describedby="transition-modal-description"
       className={classes.modal}
       open={props.showModal}
-      onClose={props.modalClose}
+      onClose={handleCloseModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
@@ -89,7 +97,7 @@ const RegisterEvent = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              Confirmation
+              {genericConstants.HIRE_BUTTON_TEXT}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -105,10 +113,7 @@ const RegisterEvent = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  <p>
-                    Are you sure you want to Register for Event "
-                    {props.eventTitle}" ?
-                  </p>
+                  <p>Are you sure you want Hire this Student?</p>
                 </Grid>
               </Grid>
             </Grid>
@@ -116,7 +121,7 @@ const RegisterEvent = props => {
               <Grid
                 container
                 direction="row"
-                justify="center"
+                justify="flex-end"
                 alignItems="center"
                 spacing={2}
               >
@@ -143,12 +148,9 @@ const RegisterEvent = props => {
               </Grid>
             </Grid>
           </div>
-          <Backdrop className={classes.backdrop} open={open}>
-            <CircularProgress color="inherit" />
-          </Backdrop>
         </div>
       </Fade>
     </Modal>
   );
 };
-export default RegisterEvent;
+export default HireStudent;

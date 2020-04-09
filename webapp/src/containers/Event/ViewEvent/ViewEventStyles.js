@@ -17,6 +17,17 @@ const useStyles = makeStyles(theme => ({
   },
   defaultMargin: {
     margin: "2%"
+  },
+  imageDiv: {
+    width: "100%",
+    height: "200px",
+    display: "flex",
+    backgroundColor: "white",
+    margin: "auto"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
 }));
 export default useStyles;

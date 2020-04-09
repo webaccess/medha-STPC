@@ -4,14 +4,9 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { green } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
+import "../../../assets/cssstylesheet/ImageCssStyles.css";
 
-import {
-  Auth as auth,
-  Spinner,
-  GreenButton,
-  YellowButton,
-  Alert
-} from "../../../components";
+import { Auth as auth, Spinner, GreenButton, Alert } from "../../../components";
 import {
   Card,
   CardContent,
@@ -19,15 +14,14 @@ import {
   Divider,
   Typography,
   IconButton,
-  Collapse
+  Collapse,
+  Tooltip
 } from "@material-ui/core";
 import useStyles from "./EligibleEventsStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
-import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
-import RegisterEvent from "../EventRegistration/EventRegistration";
 
 const EligibleEvents = props => {
   const history = useHistory();
@@ -35,69 +29,136 @@ const EligibleEvents = props => {
 
   const classes = useStyles();
   const [formState, setFormState] = useState({
-    eventDetails: {},
-    galleryItems: [1, 2, 3, 4, 5],
+    eventDetails: [],
     greenButtonChecker: true,
     showRegisterModel: false,
     registerUserId: "",
     eventtitle: "",
     isStudentRegister: false,
     registrationFail: false,
-    authUserRegistering: auth.getUserInfo().studentInfo.id
+    authUserRegistering: null,
+    NoEventsData: false,
+    registeredEventsIds: []
   });
+
+  /** This use effect is called at the very begining and only once */
   useEffect(() => {
-    getEventDetails();
-  }, []);
-
-  console.log("aurhUser", formState.authUserRegistering);
-
-  async function getEventDetails() {
-    let paramsForCollege = null;
     if (
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === "Student" &&
-      auth.getUserInfo().college !== null
+      auth.getUserInfo().studentInfo !== null &&
+      auth.getUserInfo().studentInfo.id !== null
     ) {
-      paramsForCollege = auth.getUserInfo().college.id;
+      getEventDetails();
+      getRegisteredEvents();
     } else {
-      localStorage.clear();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.NOT_FOUND_URL
       });
     }
-    if (paramsForCollege !== null && paramsForCollege !== undefined) {
-      const COLLEGES_URL =
-        strapiConstants.STRAPI_DB_URL +
-        "colleges/" +
-        paramsForCollege +
-        "/event";
-      let params = {
-        pageSize: -1
-      };
-      await serviceProviders
-        .serviceProviderForGetRequest(COLLEGES_URL, params)
-        .then(res => {
-          let viewData = res.data.result;
-          setFormState(formState => ({
-            ...formState,
-            eventDetails: viewData
-          }));
-        })
-        .catch(error => {
-          console.log("error", error);
+  }, []);
+
+  /** Check if a student is registered for a event */
+  const getRegisteredEvents = async () => {
+    const apiToCheckStudentRegistration =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_STUDENTS +
+      "/" +
+      auth.getUserInfo().studentInfo.id +
+      "/registeredevents";
+    await serviceProviders
+      .serviceProviderForGetRequest(apiToCheckStudentRegistration)
+      .then(res => {
+        let registeredEvents = [];
+        res.data.map(data => {
+          registeredEvents.push(data.event.id);
         });
+        formState.registeredEventsIds = registeredEvents;
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
+  /** Check if a student is registered for a event */
+  const checkEventRegistered = eventId => {
+    if (formState.registeredEventsIds.indexOf(eventId) !== -1) {
+      return true;
     } else {
-      if (auth.getUserInfo().role.name === "Student") {
-        history.push({
-          pathname: routeConstants.VIEW_PROFILE
-        });
+      return false;
+    }
+  };
+
+  /** This gets events details */
+  async function getEventDetails() {
+    let studentId = null;
+    if (
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
+      auth.getUserInfo().role.name === "Student" &&
+      auth.getUserInfo().studentInfo !== null &&
+      auth.getUserInfo().studentInfo.id !== null
+    ) {
+      studentId = auth.getUserInfo().studentInfo.id;
+      formState.authUserRegistering = studentId;
+      if (studentId !== null && studentId !== undefined) {
+        /** This will give all the eligible events for a student */
+        const ELIGIBLE_EVENTS =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_STUDENTS +
+          "/" +
+          auth.getUserInfo().studentInfo.id +
+          "/" +
+          strapiConstants.STRAPI_EVENTS;
+        let params = {
+          pageSize: -1
+        };
+        await serviceProviders
+          .serviceProviderForGetRequest(ELIGIBLE_EVENTS, params)
+          .then(res => {
+            let viewData = [];
+            if (res.data.result.length === 0) {
+              setFormState(formState => ({
+                ...formState,
+                NoEventsData: true
+              }));
+            } else {
+              viewData = convertDataAndGetRegisteredStatus(res.data.result);
+            }
+            setFormState(formState => ({
+              ...formState,
+              eventDetails: viewData
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
       } else {
-        localStorage.clear();
+        auth.clearAppStorage();
         history.push({
           pathname: routeConstants.SIGN_IN_URL
         });
       }
+    } else {
+      auth.clearAppStorage();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
+      });
     }
   }
+
+  /** Function which get stuatus of events as registered or not */
+  const convertDataAndGetRegisteredStatus = originalEventData => {
+    originalEventData.map(data => {
+      if (formState.registeredEventsIds.length === 0) {
+        data["isRegistered"] = false;
+      } else {
+        data["isRegistered"] = checkEventRegistered(data["id"]);
+      }
+    });
+    return originalEventData;
+  };
 
   const getTime = data => {
     let startTime = new Date(data["start_date_time"]);
@@ -134,42 +195,7 @@ const EligibleEvents = props => {
     });
   };
 
-  /** Show event registration model */
-  const registerUserForEvent = (event, id, title) => {
-    setFormState(formState => ({
-      ...formState,
-      showRegisterModel: true,
-      registerUserId: id,
-      eventtitle: title
-    }));
-  };
-
-  const isRegistrationCompleted = status => {
-    formState.isStudentRegister = status;
-  };
-
-  const isRegistrationFailed = status => {
-    formState.registrationFail = status;
-  };
-
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showRegisterModel: false
-    }));
-    // if (formState.isDataDeleted) {
-    //   getEventDetails();
-    // }
-  };
-
-  const handleCloseBlockModal = () => {
-    /** This restores all the data when we close the modal */
-    setFormState(formState => ({
-      ...formState,
-      showRegisterModel: false
-    }));
-  };
-
+  console.log(formState.eventDetails);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -178,7 +204,7 @@ const EligibleEvents = props => {
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        {formState.isStudentRegister ? (
+        {props.location.fromAddEvent && props.location.isRegistered ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -195,11 +221,11 @@ const EligibleEvents = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_STUDENT_REGISTRATION}
+              {props.location.registeredEventMessage}
             </Alert>
           </Collapse>
         ) : null}
-        {formState.registrationFail ? (
+        {props.location.fromAddEvent && !props.location.isRegistered ? (
           <Collapse in={open}>
             <Alert
               severity="error"
@@ -216,7 +242,7 @@ const EligibleEvents = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_STUDENT_REGISTRATION}
+              {props.location.registeredEventMessage}
             </Alert>
           </Collapse>
         ) : null}
@@ -226,11 +252,15 @@ const EligibleEvents = props => {
               return (
                 <Grid key={data.id} item md={4} xs={12}>
                   <Card className={classes.cardHeight}>
-                    {formState.isStudentRegister ? (
-                      <IconButton aria-label="add to favorites">
-                        <CheckCircleIcon style={{ color: green[500] }} />
-                      </IconButton>
-                    ) : null}
+                    {data["isRegistered"] ? (
+                      <Tooltip title={"Registered"} placement="top">
+                        <IconButton aria-label="is student registered">
+                          <CheckCircleIcon style={{ color: green[500] }} />
+                        </IconButton>
+                      </Tooltip>
+                    ) : (
+                      <div className={classes.successTickDiv}></div>
+                    )}
                     <CardContent>
                       {data["upload_logo"] !== null &&
                       data["upload_logo"] !== undefined &&
@@ -247,10 +277,10 @@ const EligibleEvents = props => {
                                   strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
                                   data["upload_logo"]["url"]
                                 }
+                                className="image-center"
                                 loader={<Spinner />}
                                 width="100%"
                                 height="100%"
-                                object-fit="contain"
                               />
                             </div>
                           </Grid>
@@ -265,11 +295,11 @@ const EligibleEvents = props => {
                           >
                             <div className={classes.imageDiv}>
                               <Img
+                                className="image-center"
                                 src="/images/noImage.png"
                                 loader={<Spinner />}
                                 width="100%"
                                 height="100%"
-                                object-fit="contain"
                               />
                             </div>
                           </Grid>
@@ -313,38 +343,21 @@ const EligibleEvents = props => {
                         <Grid container>
                           <Grid
                             item
-                            md={6}
-                            xs={6}
+                            md={12}
+                            xs={12}
                             className={classes.buttonAlign}
                           >
                             <GreenButton
                               variant="contained"
                               color="primary"
-                              disableElevation
                               greenButtonChecker={formState.greenButtonChecker}
-                              onClick={e =>
-                                registerUserForEvent(e, data.id, data.title)
-                              }
-                            >
-                              Register
-                            </GreenButton>
-                          </Grid>
-                          <Grid
-                            item
-                            md={6}
-                            xs={6}
-                            className={classes.buttonAlign}
-                          >
-                            <YellowButton
-                              variant="contained"
-                              color="primary"
                               disableElevation
                               onClick={() => {
                                 routeToDisplayEvent(data.id);
                               }}
                             >
                               Read More
-                            </YellowButton>
+                            </GreenButton>
                           </Grid>
                         </Grid>
                       </div>
@@ -355,21 +368,15 @@ const EligibleEvents = props => {
               );
             })
           ) : (
-            <Spinner />
+            <React.Fragment>
+              {formState.NoEventsData === true ? (
+                <p>No eligible events</p>
+              ) : (
+                <Spinner />
+              )}
+            </React.Fragment>
           )}
         </Grid>
-        <Card variant="outlined">
-          <RegisterEvent
-            showModal={formState.showRegisterModel}
-            modalClose={modalClose}
-            closeBlockModal={handleCloseBlockModal}
-            eventName={formState.registerUserId}
-            eventTitle={formState.eventtitle}
-            userRegistering={formState.authUserRegistering}
-            statusRegistartion={isRegistrationCompleted}
-            registrationFailed={isRegistrationFailed}
-          />
-        </Card>
       </Grid>
     </Grid>
   );
