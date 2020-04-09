@@ -119,7 +119,7 @@ module.exports = {
 
     if (stream_id) {
       responseData = responseData.filter(
-        (student) => (student.stream.id = stream_id)
+        (student) => student.stream.id == stream_id
       );
     }
 

@@ -8,7 +8,7 @@ const bookshelf = require("../../../config/config.js");
 const { sanitizeEntity } = require("strapi-utils");
 const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model
+    model: strapi.query("user", "users-permissions").model,
   });
 const _ = require("lodash");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
@@ -86,7 +86,7 @@ module.exports = {
         role: studentRole.id,
         provider: "local",
         confirmed: false,
-        blocked: false
+        blocked: false,
       },
       _.omit(requestBody, [
         "stream",
@@ -99,7 +99,7 @@ module.exports = {
         "physicallyHandicapped",
         "address",
         "otp",
-        "college_id"
+        "college_id",
       ])
     );
 
@@ -114,7 +114,7 @@ module.exports = {
           .where({
             contact_number: contact_number,
             otp: otp,
-            is_verified: null
+            is_verified: null,
           })
           .fetch({ lock: "forUpdate", transacting: t, require: false })
           .then((otpModel) => {
@@ -152,7 +152,7 @@ module.exports = {
             "contact_number",
             "otp",
             "college_id",
-            "state"
+            "state",
           ])
         );
         return await bookshelf
@@ -189,7 +189,7 @@ module.exports = {
         "college",
         "verifiedByCollege",
         "documents",
-        "educations"
+        "educations",
       ])
     );
     const studentRequestData = Object.assign(
@@ -208,7 +208,7 @@ module.exports = {
         "provider",
         "confirmed",
         "blocked",
-        "role"
+        "role",
       ])
     );
     console.log(studentRequestData);
@@ -233,7 +233,7 @@ module.exports = {
               rpc: userRequestBody.rpc,
 
               confirmed: userRequestBody.confirmed,
-              blocked: userRequestBody.blocked
+              blocked: userRequestBody.blocked,
             },
             { patch: true, transacting: t }
           )
@@ -258,7 +258,7 @@ module.exports = {
               date_of_birth: studentRequestData.date_of_birth,
               gender: studentRequestData.gender,
               roll_number: studentRequestData.roll_number,
-              district: studentRequestData.district
+              district: studentRequestData.district,
             },
             { patch: true, transacting: t }
           )
@@ -291,14 +291,14 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["education"],
-          filters
+          filters,
         })
       )
       .where({ student: id })
       .fetchPage({
         page: page,
         pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
+          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize,
       })
       .then((res) => {
         return utils.getPaginatedResponse(res);
@@ -337,12 +337,12 @@ module.exports = {
       .store({
         environment: strapi.config.environment,
         type: "plugin",
-        name: "upload"
+        name: "upload",
       })
       .get({ key: "provider" });
 
     const file = await strapi.plugins["upload"].services.upload.fetch({
-      id: fileId
+      id: fileId,
     });
 
     if (!file) {
@@ -526,51 +526,39 @@ module.exports = {
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination
+      ...response.pagination,
     };
   },
   async activity(ctx) {
     const { id } = ctx.params;
-    console.log(id);
 
     const student = await strapi.query("student").findOne({ id });
 
-    const { stream } = student;
-    console.log(student);
+    const activityBatch = await strapi
+      .query("activity-batch-attendance")
+      .find({ student: id });
 
-    let data = await strapi
-      .query("academic-history")
-      .find({ student: id, _sort: "created_at:desc" });
-    if (!data.length)
-      return ctx.response.badRequest(
-        "Academic History of Student doesn't exist"
+    if (!activityBatch.length)
+      return ctx.response.notFound("Student not Enrolled in any event");
+    if (activityBatch) {
+      const activityIds = activityBatch.map(
+        (activityBatch) => activityBatch.activity_batch.activity
       );
-    //console.log(data);
+      console.log(activityBatch);
+      const activity = await strapi.query("activity").find({ id: activityIds });
+      // console.log(activity);
 
-    const educationYear = data[0].education_year;
-    // const stream = data[0].student.stream;
-    const college = student.user.college;
-    console.log(stream);
-    console.log(educationYear);
-    console.log(college);
-
-    data = await strapi.query("activity").find({
-      education_year: educationYear,
-      college: college
-    });
-
-    if (stream) {
-      data = data.filter((activity) => {
-        const { streams } = activity;
-        const streamIds = streams.map((s) => s.id);
-        if (_.includes(streamIds, stream.id)) {
-          return activity;
+      const result = activity.map((activity) => {
+        for (let i = 0; i < activityBatch.length; i++) {
+          if (activity.id === activityBatch[i].activity_batch.activity) {
+            activity["activity_batch"] = activityBatch[i].activity_batch;
+            return activity;
+          }
         }
       });
+
+      console.log(result);
+      return utils.getFindOneResponse(result);
     }
-
-    console.log(data);
-
-    return utils.getFindOneResponse(data);
-  }
+  },
 };

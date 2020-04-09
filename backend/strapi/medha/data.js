@@ -372,7 +372,7 @@ const roles = {
       },
       {
         name: "activity",
-        action: [],
+        action: ["findone"],
       },
       {
         name: "activity-batch",

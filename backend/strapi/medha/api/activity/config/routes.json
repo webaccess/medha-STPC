@@ -29,7 +29,7 @@
       "path": "/activities",
       "handler": "activity.create",
       "config": {
-        "policies": []
+        "policies": ["create"]
       }
     },
     {
