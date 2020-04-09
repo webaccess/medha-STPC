@@ -311,8 +311,20 @@ module.exports = {
    */
   async event(ctx) {
     const { id } = ctx.params;
-    let { page, pageSize } = utils.getRequestParams(ctx.request.query);
-    const response = await strapi.query("event").find();
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const response = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters,
+        })
+      )
+      .fetchAll()
+      .then((model) => model.toJSON());
+
     const filtered = response.reduce((result, event) => {
       const { colleges } = event;
       const filterColleges = colleges

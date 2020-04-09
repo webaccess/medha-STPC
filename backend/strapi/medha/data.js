@@ -301,7 +301,7 @@ const roles = {
       },
       {
         name: "event-registration",
-        action: [],
+        action: ["create"],
       },
       {
         name: "feedback",
@@ -343,6 +343,7 @@ const roles = {
           "edit",
           "approve",
           "unapprove",
+          "registeredevents",
         ],
       },
       {
@@ -396,7 +397,7 @@ const roles = {
       },
       {
         name: "event-registration",
-        action: [],
+        action: ["create"],
       },
       {
         name: "feedback",
@@ -438,6 +439,7 @@ const roles = {
           "deletedocument",
           "academicHistory",
           "events",
+          "registeredevents",
           "activity",
         ],
       },

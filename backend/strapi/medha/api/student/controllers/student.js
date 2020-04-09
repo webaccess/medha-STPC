@@ -561,4 +561,13 @@ module.exports = {
       return utils.getFindOneResponse(result);
     }
   },
+  /**
+   * Registered events info
+   *
+   */
+  async registeredEvents(ctx) {
+    const { id } = ctx.params;
+
+    return await strapi.query("event-registration").find({ student: id });
+  },
 };

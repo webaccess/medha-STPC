@@ -815,9 +815,6 @@
           "description": {
             "type": "string"
           },
-          "marks": {
-            "type": "number"
-          },
           "question_set": {
             "required": [
               "id",
@@ -865,7 +862,33 @@
                     "BE"
                   ]
                 },
-                "marks": {
+                "percentage": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "educations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "education_year": {
+                  "type": "string",
+                  "enum": [
+                    "First",
+                    "Second",
+                    "Third",
+                    "Fourth"
+                  ]
+                },
+                "percentage": {
                   "type": "number"
                 }
               }
@@ -906,9 +929,6 @@
           "description": {
             "type": "string"
           },
-          "marks": {
-            "type": "number"
-          },
           "question_set": {
             "type": "string"
           },
@@ -933,7 +953,33 @@
                     "BE"
                   ]
                 },
-                "marks": {
+                "percentage": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "educations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "education_year": {
+                  "type": "string",
+                  "enum": [
+                    "First",
+                    "Second",
+                    "Third",
+                    "Fourth"
+                  ]
+                },
+                "percentage": {
                   "type": "number"
                 }
               }
