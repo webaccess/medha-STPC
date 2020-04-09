@@ -211,7 +211,7 @@ const AddEditEvent = props => {
   }
 
   useEffect(() => {
-    // setLabelWidth(inputLabel.current.offsetWidth);
+    setLabelWidth(inputLabel.current.offsetWidth);
     let paramsForPageSize = {
       pageSize: -1
     };
@@ -514,8 +514,6 @@ const AddEditEvent = props => {
   
       let qualificationPercentageValue = {};
       if (field.hasOwnProperty(qualification) && field.hasOwnProperty(percentage)) {
-     
-        qualificationPercentageValue["id"] = field["id"];
         qualificationPercentageValue["qualification"] = field[qualification];
         qualificationPercentageValue["marks"] = parseInt(field[percentage]);
         qualificationsPercentageArrayValues.push(qualificationPercentageValue);
@@ -625,7 +623,6 @@ const AddEditEvent = props => {
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null
     );
- 
     if (formState.isEditEvent) {
       serviceProvider
         .serviceProviderForPutRequest(
@@ -1155,7 +1152,6 @@ const AddEditEvent = props => {
                           : null
                       }
                       variant="outlined"
-                      // className={classes.elementroot}
                     />   
                   </Grid>
                 </Grid>
@@ -1170,7 +1166,7 @@ const AddEditEvent = props => {
                       htmlFor="outlined-stream-card"
                       fullwidth={true.toString()}
                     >
-                      Qualification and Percentage
+                      {genericConstants.QUALIFICATIONANDPERCENTAGE}
                
                     </InputLabel>
 
@@ -1348,7 +1344,7 @@ const AddEditEvent = props => {
                   {genericConstants.SAVE_BUTTON_TEXT}
                 </YellowButton>
                 <GrayButton
-                  type="submit"
+                  type="button"
                   color="primary"
                   variant="contained"
                   to={routeConstants.MANAGE_EVENT}

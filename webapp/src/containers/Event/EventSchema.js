@@ -14,21 +14,16 @@ const EventSchema = {
       }
     }
   },
-  // description: {
-  //   label: "description Name",
-  //   id: "description name",
-  //   autoComplete: "description name",
-  //   required: true,
-  //   placeholder: "description Name",
-  //   autoFocus: true,
-  //   type: "text",
-  //   validations: {
-  //     required: {
-  //       value: "true",
-  //       message: "description Name is required"
-  //     }
-  //   }
-  // },
+  description: {
+    label: "description Name",
+    id: "description name",
+    autoComplete: "description name",
+    required: false,
+    placeholder: "description Name",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
   dateFrom: {
     label: "Start Date",
     id: "dateFrom",

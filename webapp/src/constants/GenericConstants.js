@@ -97,6 +97,8 @@ export const EVENT_CONFIRMATION =
 
 /**Qualifications */
 
+export const QUALIFICATIONANDPERCENTAGE = "Qualification and Percentage";
+
 export const QUALIFICATIONS = [
   { id: 1, value: "SSC" },
   { id: 2, value: "HSC" },
