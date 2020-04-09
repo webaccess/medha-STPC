@@ -17,6 +17,8 @@ const sanitizeUser = (user) =>
     model: strapi.query("user", "users-permissions").model
   });
 
+const _ = require("lodash");
+
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
@@ -78,9 +80,14 @@ module.exports = {
           filters
         })
       )
-      .where("id", "in", studentIds)
       .fetchAll()
       .then((model) => model.toJSON());
+
+    students = students.filter((s) => {
+      if (_.includes(studentIds, s.id)) {
+        return s;
+      }
+    });
 
     await utils.asyncForEach(students, async (student) => {
       const activityBatch = await strapi

@@ -9,14 +9,16 @@ const bookshelf = require("../../../config/config.js");
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity,
+  sanitizeEntity
 } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 
 const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model,
+    model: strapi.query("user", "users-permissions").model
   });
+
+const _ = require("lodash");
 
 module.exports = {
   async find(ctx) {
@@ -28,13 +30,12 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["event"],
-          filters,
+          filters
         })
       )
       .fetchPage({
         page: page,
-        pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("event") : pageSize,
+        pageSize: pageSize < 0 ? await utils.getTotalRecords("event") : pageSize
       })
       .then((res) => {
         return utils.getPaginatedResponse(res);
@@ -52,21 +53,61 @@ module.exports = {
    * get student using event id
    */
   async students(ctx) {
+    // const { id } = ctx.params;
+    // const { page, pageSize } = utils.getRequestParams(ctx.request.query);
+    // const registrations = await strapi
+    //   .query("event-registration")
+    //   .find({ event: id });
+    // const studentIds = registrations.map((r) => r.student.id);
+    // let students = await strapi.query("student").find({ id_in: studentIds });
+    // students = students.map((student) => {
+    //   student.user = sanitizeUser(student.user);
+    //   return student;
+    // });
+    // const response = utils.paginate(students, page, pageSize);
+    // return {
+    //   result: response.result,
+    //   ...response.pagination
+    // };
+
     const { id } = ctx.params;
-    const { page, pageSize } = utils.getRequestParams(ctx.request.query);
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const event = await strapi.query("event").findOne({ id });
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+
     const registrations = await strapi
       .query("event-registration")
-      .find({ event: id });
+      .find({ event: event.id });
+
     const studentIds = registrations.map((r) => r.student.id);
-    let students = await strapi.query("student").find({ id_in: studentIds });
-    students = students.map((student) => {
-      student.user = sanitizeUser(student.user);
-      return student;
-    });
+    let students = await strapi
+      .query("student")
+      .model.query(
+        buildQuery({
+          model: strapi.models["student"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then((model) => model.toJSON());
+
+    students = students
+      .map((student) => {
+        if (_.includes(studentIds, student.id)) {
+          student.user = sanitizeUser(student.user);
+          return student;
+        }
+      })
+      .filter((a) => a);
+
     const response = utils.paginate(students, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination,
+      ...response.pagination
     };
   },
 
@@ -84,12 +125,12 @@ module.exports = {
       .store({
         environment: strapi.config.environment,
         type: "plugin",
-        name: "upload",
+        name: "upload"
       })
       .get({ key: "provider" });
 
     const file = await strapi.plugins["upload"].services.upload.fetch({
-      id: imageId,
+      id: imageId
     });
 
     if (!file) {
@@ -108,5 +149,5 @@ module.exports = {
     await strapi.plugins["upload"].services.upload.remove(file, config);
 
     ctx.send(file);
-  },
+  }
 };
