@@ -223,7 +223,7 @@ const EligibleActivity = (props) => {
                                 }
                                 loader={<Spinner />}
                                 width="100%"
-                                height="100%"
+                                height="100px"
                                 object-fit="contain"
                               />
                             </div>
@@ -242,7 +242,7 @@ const EligibleActivity = (props) => {
                                 src="/images/noImage.png"
                                 loader={<Spinner />}
                                 width="100%"
-                                height="100%"
+                                height="100px"
                                 object-fit="contain"
                               />
                             </div>

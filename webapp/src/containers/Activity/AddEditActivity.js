@@ -948,10 +948,12 @@ const AddEditActivity = (props) => {
                   <Grid item md={12} xs={12}>
                     {console.log(formState.values.files)}
                     {formState.showPreview ? (
-                      <img
-                        style={{ width: "50%", height: "50%" }}
-                        src={formState.previewFile}
+                      <Img
                         alt="abc"
+                        loader={<Spinner />}
+                        width="100%"
+                        height="100%"
+                        src={formState.previewFile}
                       />
                     ) : null}
                     {formState.showEditPreview &&
@@ -964,8 +966,8 @@ const AddEditActivity = (props) => {
                           formState.dataForEdit["upload_logo"]["url"]
                         }
                         loader={<Spinner />}
-                        width="50%"
-                        height="50%"
+                        width="100%"
+                        height="100%"
                       />
                     ) : null}
                     {formState.showNoImage ? (
