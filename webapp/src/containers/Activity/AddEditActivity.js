@@ -176,7 +176,6 @@ const AddEditActivity = (props) => {
     getColleges();
     getStreams();
 
-    getAcademicYear();
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
@@ -333,40 +332,39 @@ const AddEditActivity = (props) => {
         formState.showPreview,
         formState.values["activityname"],
         formState.values["activitytype"],
-        formState.values["academicyear"],
         formState.values["college"],
         selectedDateFrom.getFullYear() +
           "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
+          (selectedDateFrom.getMonth() + 1 < 10
             ? "0" + (selectedDateFrom.getMonth() + 1)
             : selectedDateFrom.getMonth() + 1) +
           "-" +
-          (selectedDateFrom.getDate() < 9
+          (selectedDateFrom.getDate() < 10
             ? "0" + selectedDateFrom.getDate()
             : selectedDateFrom.getDate()) +
           "T" +
-          (selectedDateFrom.getHours() < 9
+          (selectedDateFrom.getHours() < 10
             ? "0" + selectedDateFrom.getHours()
             : selectedDateFrom.getHours()) +
           ":" +
-          (selectedDateFrom.getMinutes() < 9
+          (selectedDateFrom.getMinutes() < 10
             ? "0" + selectedDateFrom.getMinutes()
             : selectedDateFrom.getMinutes()),
         selectedDateTo.getFullYear() +
           "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
+          (selectedDateFrom.getMonth() + 1 < 10
             ? "0" + (selectedDateFrom.getMonth() + 1)
             : selectedDateFrom.getMonth() + 1) +
           "-" +
-          (selectedDateTo.getDate() < 9
+          (selectedDateTo.getDate() < 10
             ? "0" + selectedDateTo.getDate()
             : selectedDateTo.getDate()) +
           "T" +
-          (selectedDateTo.getHours() < 9
+          (selectedDateTo.getHours() < 10
             ? "0" + selectedDateTo.getHours()
             : selectedDateTo.getHours()) +
           ":" +
-          (selectedDateTo.getMinutes() < 9
+          (selectedDateTo.getMinutes() < 10
             ? "0" + selectedDateTo.getMinutes()
             : selectedDateTo.getMinutes()),
         formState.values["educationyear"],
@@ -403,40 +401,39 @@ const AddEditActivity = (props) => {
       postData = databaseUtilities.addActivity(
         formState.values["activityname"],
         formState.values["activitytype"],
-        formState.values["academicyear"],
         formState.values["college"],
         selectedDateFrom.getFullYear() +
           "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
+          (selectedDateFrom.getMonth() + 1 < 10
             ? "0" + (selectedDateFrom.getMonth() + 1)
             : selectedDateFrom.getMonth() + 1) +
           "-" +
-          (selectedDateFrom.getDate() < 9
+          (selectedDateFrom.getDate() < 10
             ? "0" + selectedDateFrom.getDate()
             : selectedDateFrom.getDate()) +
           "T" +
-          (selectedDateFrom.getHours() < 9
+          (selectedDateFrom.getHours() < 10
             ? "0" + selectedDateFrom.getHours()
             : selectedDateFrom.getHours()) +
           ":" +
-          (selectedDateFrom.getMinutes() < 9
+          (selectedDateFrom.getMinutes() < 10
             ? "0" + selectedDateFrom.getMinutes()
             : selectedDateFrom.getMinutes()),
         selectedDateTo.getFullYear() +
           "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
+          (selectedDateFrom.getMonth() + 1 < 10
             ? "0" + (selectedDateFrom.getMonth() + 1)
             : selectedDateFrom.getMonth() + 1) +
           "-" +
-          (selectedDateTo.getDate() < 9
+          (selectedDateTo.getDate() < 10
             ? "0" + selectedDateTo.getDate()
             : selectedDateTo.getDate()) +
           "T" +
-          (selectedDateTo.getHours() < 9
+          (selectedDateTo.getHours() < 10
             ? "0" + selectedDateTo.getHours()
             : selectedDateTo.getHours()) +
           ":" +
-          (selectedDateTo.getMinutes() < 9
+          (selectedDateTo.getMinutes() < 10
             ? "0" + selectedDateTo.getMinutes()
             : selectedDateTo.getMinutes()),
         formState.values["educationyear"],
@@ -470,22 +467,6 @@ const AddEditActivity = (props) => {
     }
   };
 
-  const getAcademicYear = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL +
-          strapiApiConstants.STRAPI_ACADEMIC_YEARS
-      )
-      .then((response) => {
-        console.log(response);
-        setacademicyearlist(
-          response.data.result.map(({ id, name }) => ({ id, name }))
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
   const getStreams = () => {
     serviceProvider
       .serviceProviderForGetRequest(
@@ -773,7 +754,7 @@ const AddEditActivity = (props) => {
                 </Grid>
 
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={12} xs={12}>
                     <Autocomplete
                       id="combo-box-demo"
                       className={classes.root}
@@ -802,42 +783,6 @@ const AddEditActivity = (props) => {
                               ? formState.errors["college"].map((error) => {
                                   return error + " ";
                                 })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={academicyearlist}
-                      getOptionLabel={(option) => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete("academicyear", event, value);
-                      }}
-                      value={
-                        academicyearlist[
-                          academicyearlist.findIndex(function (item, i) {
-                            return item.id === formState.values.academicyear;
-                          })
-                        ] || null
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          error={hasError("academicyear")}
-                          label="Academic Year"
-                          variant="outlined"
-                          name="tester"
-                          helperText={
-                            hasError("academicyear")
-                              ? formState.errors["academicyear"].map(
-                                  (error) => {
-                                    return error + " ";
-                                  }
-                                )
                               : null
                           }
                         />
@@ -1089,7 +1034,7 @@ const AddEditActivity = (props) => {
                       style={{ marginRight: "18px" }}
                       onClick={handleSubmit}
                     >
-                      <span>{authPageConstants.CREATE_ACTIVITY}</span>
+                      <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
                     </YellowButton>
                     <GrayButton
                       color="primary"

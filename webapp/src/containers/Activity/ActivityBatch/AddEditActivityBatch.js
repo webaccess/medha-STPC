@@ -446,7 +446,7 @@ const AddEditActivityBatches = (props) => {
         <div style={{ display: "flex" }}>
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Verified Student" placement="top">
+              <Tooltip title="Marked Student" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}
@@ -464,7 +464,7 @@ const AddEditActivityBatches = (props) => {
             </div>
           ) : (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Verified Student" placement="top">
+              <Tooltip title="Un-Marked Student" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}
@@ -483,7 +483,7 @@ const AddEditActivityBatches = (props) => {
           )}
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Un-Verify Student" placement="top">
+              <Tooltip title="Un-Mark Student" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}

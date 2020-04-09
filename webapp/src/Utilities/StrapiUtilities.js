@@ -314,7 +314,6 @@ export const uploadDocument = (files, ref, refId, field) => {
 export const addActivity = (
   title,
   activity_type,
-  academic_year,
   college,
   start_date_time,
   end_date_time,
@@ -328,7 +327,6 @@ export const addActivity = (
   const data = {
     title: title,
     activity_type: activity_type,
-    academic_year: academic_year,
     college: college,
     start_date_time: start_date_time,
     end_date_time: end_date_time,
@@ -348,7 +346,6 @@ export const editActivity = (
   showPreview,
   title,
   activity_type,
-  academic_year,
   college,
   start_date_time,
   end_date_time,
@@ -363,7 +360,6 @@ export const editActivity = (
   const data = {
     title: title,
     activity_type: activity_type,
-    academic_year: academic_year,
     college: college,
     start_date_time: start_date_time,
     end_date_time: end_date_time,
