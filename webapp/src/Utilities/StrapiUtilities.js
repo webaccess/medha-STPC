@@ -149,10 +149,9 @@ export const addEvent = (
   start_date_time,
   end_date_time,
   address,
-  marks,
-  qualification = null,
   zone = null,
   rpc = null,
+  qualifications = [],
   colleges = null,
   streams = null
 ) => {
@@ -162,10 +161,9 @@ export const addEvent = (
     start_date_time: start_date_time,
     end_date_time: end_date_time,
     address: address,
-    marks: marks,
-    qualification: qualification,
     zone: zone,
     rpc: rpc,
+    qualifications: qualifications,
     colleges: colleges,
     streams: streams
   };
