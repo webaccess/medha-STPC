@@ -12,7 +12,7 @@ module.exports = {
    * Create Activity batch for students
    */
   createBatchForStudents: async (activityId, ctx) => {
-    const { students, name } = ctx.request.body;
+    const { students, name, start_date_time, end_date_time } = ctx.request.body;
     await bookshelf
       .transaction(async (t) => {
         /**
@@ -21,7 +21,12 @@ module.exports = {
 
         const activityBatch = await strapi
           .query("activity-batch")
-          .model.forge({ activity: activityId, name: name })
+          .model.forge({
+            activity: activityId,
+            name: name,
+            start_date_time: start_date_time,
+            end_date_time: end_date_time
+          })
           .save(null, { transacting: t })
           .then((model) => model.toJSON());
 
