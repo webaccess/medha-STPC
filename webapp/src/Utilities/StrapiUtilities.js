@@ -390,10 +390,12 @@ export const addAcademicHistory = (academicYear, educationYear, percentage) => {
   };
 };
 
-export const addActivityBatch = (name, students) => {
+export const addActivityBatch = (name, students, dateFrom, dateTo) => {
   return {
     name,
-    students
+    students,
+    start_date_time: dateFrom,
+    end_date_time: dateTo
   };
 };
 

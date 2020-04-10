@@ -91,6 +91,7 @@ const ViewActivityBatches = props => {
     strapiConstants.STRAPI_ACTIVITY +
     `/${activity}/` +
     strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
+
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_URL)
@@ -119,6 +120,12 @@ const ViewActivityBatches = props => {
 
     getActivityBatches(10, 1);
   }, []);
+
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    message: "",
+    severity: ""
+  });
 
   /** This seperate function is used to get the Activity Batches data*/
   const getActivityBatches = async (pageSize, page, params = null) => {
@@ -268,6 +275,28 @@ const ViewActivityBatches = props => {
     });
   };
 
+  const handleDeleteActivityBatch = activityBatch => {
+    const url =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
+    const activityBatchId = activityBatch.id;
+    serviceProviders
+      .serviceProviderForDeleteRequest(url, activityBatchId)
+      .then(() => {
+        setAlert(() => ({
+          isOpen: true,
+          message: "Success",
+          severity: "success"
+        }));
+        getActivityBatches(10, 1);
+      })
+      .catch(({ response }) => {
+        setAlert(() => ({
+          isOpen: true,
+          message: response.data.message,
+          severity: "error"
+        }));
+      });
+  };
   /** Columns to show in table */
   const column = [
     { name: "Batch", sortable: true, selector: "name" },
@@ -292,6 +321,23 @@ const ViewActivityBatches = props => {
               </i>
             </Tooltip>
           </div>
+          <div style={{ marginLeft: "8px" }}>
+            <Tooltip title="Delete Activity Batch" placement="top">
+              <i
+                className="material-icons"
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleDeleteActivityBatch(cell)}
+                style={{
+                  color: "red",
+                  fontSize: "19px",
+                  cursor: "pointer"
+                }}
+              >
+                delete_outline
+              </i>
+            </Tooltip>
+          </div>
         </div>
       ),
       button: true,
@@ -309,7 +355,30 @@ const ViewActivityBatches = props => {
     });
   };
 
-  console.log(formState.isActivityExist);
+  const AlertAPIResponseMessage = () => {
+    return (
+      <Collapse in={alert.isOpen}>
+        <Alert
+          severity={alert.severity || "warning"}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlert(() => ({ isOpen: false }));
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alert.message}
+        </Alert>
+      </Collapse>
+    );
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -418,6 +487,8 @@ const ViewActivityBatches = props => {
           </Collapse>
         ) : null}
 
+        {/* If there is error from any api show here */}
+        <AlertAPIResponseMessage />
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>

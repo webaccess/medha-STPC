@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     // padding: theme.spacing(4)
     maxWidth: "100%"
@@ -53,6 +53,12 @@ const useStyles = makeStyles(theme => ({
   },
   Cardtheming: {
     paddingBottom: "16px !important"
+  },
+  elementroot: {
+    width: "30% !important"
+  },
+  marginTop: {
+    marginTop: "8px"
   }
 }));
 
