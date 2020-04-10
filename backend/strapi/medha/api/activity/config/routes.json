@@ -45,7 +45,7 @@
       "path": "/activities/:id",
       "handler": "activity.delete",
       "config": {
-        "policies": []
+        "policies": ["checkIfBatchExist"]
       }
     },
     {
