@@ -45,7 +45,7 @@
       "path": "/activity-batches/:id",
       "handler": "activity-batch.delete",
       "config": {
-        "policies": []
+        "policies": ["checkIfStudentExist"]
       }
     },
     {

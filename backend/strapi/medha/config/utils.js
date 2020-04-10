@@ -95,6 +95,14 @@ function s2ab(s) {
   return buf;
 }
 
+function getErrorResponse(response) {
+  return {
+    result: {
+      message: response
+    }
+  };
+}
+
 module.exports = {
   getRequestParams,
   getPaginatedResponse,
@@ -102,5 +110,6 @@ module.exports = {
   getFindOneResponse,
   getTotalRecords,
   asyncForEach,
-  paginate
+  paginate,
+  getErrorResponse
 };
