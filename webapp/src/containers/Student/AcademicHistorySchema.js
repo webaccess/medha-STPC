@@ -28,6 +28,21 @@ const AcademicYearSchema = {
         message: "Education year is required"
       }
     }
+  },
+  percentage: {
+    label: "Percentage",
+    id: "percentage",
+    autoComplete: "percentage",
+    required: true,
+    placeholder: "Percentage",
+    autoFocus: true,
+    type: "number",
+    validations: {
+      required: {
+        value: "true",
+        message: "Percentage is required"
+      }
+    }
   }
 };
 export default AcademicYearSchema;

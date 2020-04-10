@@ -10,7 +10,7 @@ import {
   EditorState,
   convertToRaw,
   convertFromRaw,
-  ContentState
+  ContentState,
 } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
@@ -21,12 +21,12 @@ import {
   Grid,
   Divider,
   Icon,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import ReactHtmlParser, {
   processNodes,
   convertNodeToElement,
-  htmlparser2
+  htmlparser2,
 } from "react-html-parser";
 import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
@@ -39,12 +39,12 @@ const ReactMarkdown = require("react-markdown");
 const ACTIVITIES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
 
-const ActivityDetails = props => {
+const ActivityDetails = (props) => {
   const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
     activityDetails: {},
-    greenButtonChecker: true
+    greenButtonChecker: true,
   });
   useEffect(() => {
     getactivityDetails();
@@ -57,31 +57,44 @@ const ActivityDetails = props => {
     } else if (auth.getUserInfo().role.name === "Student") {
       paramsForEvent = props["location"]["dataForView"];
     }
-    if (paramsForEvent !== null && paramsForEvent !== undefined) {
+    if (
+      paramsForEvent !== null &&
+      paramsForEvent !== undefined &&
+      auth.getUserInfo().role.name === "Medha Admin"
+    ) {
       await serviceProviders
         .serviceProviderForGetOneRequest(ACTIVITIES_URL, paramsForEvent)
-        .then(res => {
+        .then((res) => {
           let viewData = res.data.result;
-          setFormState(formState => ({
+          setFormState((formState) => ({
             ...formState,
-            activityDetails: viewData
+            activityDetails: viewData,
           }));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
         });
+    } else if (
+      paramsForEvent !== null &&
+      paramsForEvent !== undefined &&
+      auth.getUserInfo().role.name === "Student"
+    ) {
+      setFormState((formState) => ({
+        ...formState,
+        activityDetails: props["location"]["dataForView"],
+      }));
     } else {
       if (auth.getUserInfo().role.name === "Medha Admin") {
         history.push({
-          pathname: routeConstants.MANAGE_ACTIVITY
+          pathname: routeConstants.MANAGE_ACTIVITY,
         });
       } else if (auth.getUserInfo().role.name === "Student") {
         history.push({
-          pathname: routeConstants.ELIGIBLE_ACTIVITY
+          pathname: routeConstants.ELIGIBLE_ACTIVITY,
         });
       } else {
         history.push({
-          pathname: routeConstants.DASHBOARD_URL
+          pathname: routeConstants.DASHBOARD_URL,
         });
       }
     }
@@ -90,20 +103,20 @@ const ActivityDetails = props => {
   const route = () => {
     if (auth.getUserInfo().role.name === "Student") {
       history.push({
-        pathname: routeConstants.ELIGIBLE_ACTIVITY
+        pathname: routeConstants.ELIGIBLE_ACTIVITY,
       });
     } else if (
       auth.getUserInfo().role.name === "Medha Admin" ||
       auth.getUserInfo().role.name === "College Admin"
     ) {
       history.push({
-        pathname: routeConstants.MANAGE_ACTIVITY
+        pathname: routeConstants.MANAGE_ACTIVITY,
       });
     } else {
       auth.clearToken();
       auth.clearUserInfo();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.SIGN_IN_URL,
       });
     }
   };
@@ -138,13 +151,33 @@ const ActivityDetails = props => {
     }
   };
 
+  const getBatch = () => {
+    return formState.activityDetails.activity_batch.name;
+  };
+
+  const getBatchTime = () => {
+    if (
+      formState.activityDetails.activity_batch.start_date_time &&
+      formState.activityDetails.activity_batch.end_date_time
+    ) {
+      let startTime = new Date(
+        formState.activityDetails.activity_batch["start_date_time"]
+      );
+      let endTime = new Date(
+        formState.activityDetails.activity_batch["end_date_time"]
+      );
+      return (
+        startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
+      );
+    } else {
+      return null;
+    }
+  };
+
   const getVenue = () => {
     return formState.activityDetails["address"];
   };
 
-  const register = () => {
-    console.log("Register");
-  };
   return (
     <Grid>
       {console.log(formState)}
@@ -218,14 +251,16 @@ const ActivityDetails = props => {
                             {getDate()}
                           </Grid>
                         </Grid>
-                        <Grid container className={classes.defaultMargin}>
-                          <Grid item md={3} xs={3}>
-                            <b>Time :-</b>
+                        {auth.getUserInfo().role.name === "Medha Admin" ? (
+                          <Grid container className={classes.defaultMargin}>
+                            <Grid item md={3} xs={3}>
+                              <b>Time :-</b>
+                            </Grid>
+                            <Grid item md={9} xs={9}>
+                              {getTime()}
+                            </Grid>
                           </Grid>
-                          <Grid item md={9} xs={9}>
-                            {getTime()}
-                          </Grid>
-                        </Grid>
+                        ) : null}
                         <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
                             <b>Venue :-</b>
@@ -234,6 +269,26 @@ const ActivityDetails = props => {
                             {getVenue()}
                           </Grid>
                         </Grid>
+                        {auth.getUserInfo().role.name === "Student" ? (
+                          <Grid container className={classes.defaultMargin}>
+                            <Grid item md={3} xs={3}>
+                              <b>Batch :-</b>
+                            </Grid>
+                            <Grid item md={9} xs={9}>
+                              {getBatch()}
+                            </Grid>
+                          </Grid>
+                        ) : null}
+                        {auth.getUserInfo().role.name === "Student" ? (
+                          <Grid container className={classes.defaultMargin}>
+                            <Grid item md={3} xs={3}>
+                              <b>Timing :-</b>
+                            </Grid>
+                            <Grid item md={9} xs={9}>
+                              {getBatchTime()}
+                            </Grid>
+                          </Grid>
+                        ) : null}
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
@@ -242,24 +297,7 @@ const ActivityDetails = props => {
                         )}
                       </Grid>
                     </Grid>
-                    <Grid>
-                      {auth.getUserInfo().role.name === "Student" ? (
-                        <Grid item md={12} xs={12}>
-                          <CardActions className={classes.btnspace}>
-                            <GreenButton
-                              variant="contained"
-                              color="primary"
-                              disableElevation
-                              onClick={register}
-                              to={routeConstants.ELIGIBLE_ACTIVITY}
-                              greenButtonChecker={formState.greenButtonChecker}
-                            >
-                              Register
-                            </GreenButton>
-                          </CardActions>
-                        </Grid>
-                      ) : null}
-                    </Grid>
+                    <Grid></Grid>
                   </React.Fragment>
                 ) : (
                   <Spinner />

@@ -124,6 +124,7 @@ const AddEditActivityBatches = (props) => {
     serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT)
       .then((res) => {
+        console.log(res);
         setFormState((formState) => ({
           ...formState,
           studentsFilter: res.data.result,
@@ -446,7 +447,7 @@ const AddEditActivityBatches = (props) => {
         <div style={{ display: "flex" }}>
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Marked Student" placement="top">
+              <Tooltip title="Mark attendance" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}
@@ -464,7 +465,7 @@ const AddEditActivityBatches = (props) => {
             </div>
           ) : (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Un-Marked Student" placement="top">
+              <Tooltip title="Mark attendance" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}
@@ -483,7 +484,7 @@ const AddEditActivityBatches = (props) => {
           )}
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Un-Mark Student" placement="top">
+              <Tooltip title="Unmark attendance" placement="top">
                 <i
                   className="material-icons"
                   id={cell.id}

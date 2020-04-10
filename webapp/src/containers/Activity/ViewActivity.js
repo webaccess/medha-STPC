@@ -8,7 +8,7 @@ import {
   Typography,
   Tooltip,
   Collapse,
-  IconButton,
+  IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -26,12 +26,13 @@ import {
   YellowButton,
   GrayButton,
   Alert,
-  Auth,
+  Auth
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import moment from "moment";
+import XLSX from "xlsx";
 
 const ACTIVITY_FILTER = "id";
 
@@ -97,7 +98,7 @@ const ViewActivity = (props) => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true,
+    sortAscending: true
   });
 
   useEffect(() => {
@@ -107,7 +108,7 @@ const ViewActivity = (props) => {
       .then((res) => {
         setFormState((formState) => ({
           ...formState,
-          activityFilter: res.data.result,
+          activityFilter: res.data.result
         }));
       })
       .catch((error) => {
@@ -123,7 +124,7 @@ const ViewActivity = (props) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
       Object.keys(params).map((key) => {
         defaultParams[key] = params[key];
@@ -132,12 +133,12 @@ const ViewActivity = (props) => {
     } else {
       params = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
     }
     setFormState((formState) => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
@@ -152,7 +153,7 @@ const ViewActivity = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
       .catch((error) => {
@@ -201,7 +202,7 @@ const ViewActivity = (props) => {
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -215,7 +216,7 @@ const ViewActivity = (props) => {
     history.push({
       pathname: routeConstants.EDIT_ACTIVITY,
       editActivity: true,
-      dataForEdit: data,
+      dataForEdit: data
     });
   };
 
@@ -227,14 +228,14 @@ const ViewActivity = (props) => {
     setFormState((formState) => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
   const viewCell = (data) => {
     history.push({
       pathname: routeConstants.VIEW_ACTIVITY,
-      dataForView: data.id,
+      dataForView: data.id
     });
   };
 
@@ -254,7 +255,7 @@ const ViewActivity = (props) => {
     setFormState((formState) => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
     if (formState.isDataDeleted) {
       getActivityData(formState.pageSize, formState.page);
@@ -269,6 +270,35 @@ const ViewActivity = (props) => {
     history.push(manageActivityBatchURL);
   };
 
+  const handleClickDownloadStudents = (activity) => {
+    const URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_ACTIVITY +
+      `/${activity.id}/download`;
+    serviceProviders
+      .serviceProviderForGetRequest(URL)
+      .then(({ data }) => {
+        let wb = XLSX.utils.book_new();
+
+        /**
+         * Create worksheet for every batch
+         * Add students list for respective batch
+         */
+        const headers = ["Roll Number", "Student Name", "Stream"];
+        data.result.forEach((d) => {
+          const { workSheetName, workSheetData } = d;
+          let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
+          wb.SheetNames.push(workSheetName);
+          wb.Sheets[workSheetName] = ws;
+        });
+
+        XLSX.writeFile(wb, "students.xlsx");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Training and Activities", sortable: true, selector: "title" },
@@ -276,13 +306,13 @@ const ViewActivity = (props) => {
     {
       name: "Streams",
       sortable: true,
-      selector: (row) => `${row.streams.map((s) => ` ${s.name}`)}`,
+      selector: (row) => `${row.streams.map((s) => ` ${s.name}`)}`
     },
     { name: "College", sortable: true, selector: "college.name" },
     {
       name: "Date",
       sortable: true,
-      selector: (row) => `${moment(row.start_date_time).format("DD MMM YYYY")}`,
+      selector: (row) => `${moment(row.start_date_time).format("DD MMM YYYY")}`
     },
     {
       name: "Action",
@@ -298,7 +328,7 @@ const ViewActivity = (props) => {
                 style={{
                   color: "green",
                   fontSize: "19px",
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
               >
                 group
@@ -315,7 +345,7 @@ const ViewActivity = (props) => {
                 style={{
                   color: "green",
                   fontSize: "19px",
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
               >
                 edit
@@ -332,7 +362,7 @@ const ViewActivity = (props) => {
                 style={{
                   color: "green",
                   fontSize: "19px",
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
               >
                 view_headline
@@ -345,11 +375,11 @@ const ViewActivity = (props) => {
                 className="material-icons"
                 id={cell.id}
                 value={cell.name}
-                // onClick={() => editCell(cell)}
+                onClick={() => handleClickDownloadStudents(cell)}
                 style={{
                   color: "green",
                   fontSize: "19px",
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
               >
                 get_app
@@ -360,14 +390,14 @@ const ViewActivity = (props) => {
       ),
       button: true,
       conditionalCellStyles: [],
-      width: "20%",
-    },
+      width: "20%"
+    }
   ];
 
   const handleAddActivityClick = () => {
     history.push({
       pathname: routeConstants.ADD_ACTIVITY,
-      addActivity: true,
+      addActivity: true
     });
   };
 

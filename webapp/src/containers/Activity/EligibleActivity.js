@@ -125,11 +125,29 @@ const EligibleActivity = (props) => {
   const getVenue = (data) => {
     return data["address"];
   };
+  const getBatch = (data) => {
+    return data.activity_batch.name;
+  };
 
-  const routeToDisplayActivity = (id) => {
+  const getBatchTime = (data) => {
+    if (
+      data.activity_batch.start_date_time &&
+      data.activity_batch.end_date_time
+    ) {
+      let startTime = new Date(data.activity_batch["start_date_time"]);
+      let endTime = new Date(data.activity_batch["end_date_time"]);
+      return (
+        startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const routeToDisplayActivity = (data) => {
     history.push({
       pathname: routeConstants.VIEW_ACTIVITY,
-      dataForView: id,
+      dataForView: data,
     });
   };
 
@@ -164,7 +182,7 @@ const EligibleActivity = (props) => {
       showRegisterModel: false,
     }));
   };
-
+  console.log(formState);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -223,7 +241,7 @@ const EligibleActivity = (props) => {
                                 }
                                 loader={<Spinner />}
                                 width="100%"
-                                height="100px"
+                                height="100%"
                                 object-fit="contain"
                               />
                             </div>
@@ -242,7 +260,7 @@ const EligibleActivity = (props) => {
                                 src="/images/noImage.png"
                                 loader={<Spinner />}
                                 width="100%"
-                                height="100px"
+                                height="100%"
                                 object-fit="contain"
                               />
                             </div>
@@ -266,20 +284,36 @@ const EligibleActivity = (props) => {
                             {getDate(data)}
                           </Grid>
                         </Grid>
-                        <Grid container className={classes.defaultMargin}>
+                        {/* <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
                             <b>Time :-</b>
                           </Grid>
                           <Grid item md={9} xs={9}>
                             {getTime(data)}
                           </Grid>
-                        </Grid>
+                        </Grid> */}
                         <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
                             <b>Venue :-</b>
                           </Grid>
                           <Grid item md={9} xs={9}>
                             {getVenue(data)}
+                          </Grid>
+                        </Grid>
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Batch :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getBatch(data)}
+                          </Grid>
+                        </Grid>
+                        <Grid container className={classes.defaultMargin}>
+                          <Grid item md={3} xs={3}>
+                            <b>Timing :-</b>
+                          </Grid>
+                          <Grid item md={9} xs={9}>
+                            {getBatchTime(data)}
                           </Grid>
                         </Grid>
                       </div>
@@ -314,7 +348,7 @@ const EligibleActivity = (props) => {
                               color="primary"
                               disableElevation
                               onClick={() => {
-                                routeToDisplayActivity(data.id);
+                                routeToDisplayActivity(data);
                               }}
                             >
                               Read More
