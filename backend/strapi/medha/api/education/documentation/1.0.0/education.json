@@ -519,8 +519,7 @@
           "id",
           "qualification",
           "board",
-          "year_of_passing",
-          "marks"
+          "year_of_passing"
         ],
         "properties": {
           "id": {
@@ -534,9 +533,6 @@
           },
           "year_of_passing": {
             "type": "integer"
-          },
-          "marks": {
-            "type": "number"
           },
           "student": {
             "required": [
@@ -598,6 +594,9 @@
                 "type": "string"
               }
             }
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       },
@@ -605,8 +604,7 @@
         "required": [
           "qualification",
           "board",
-          "year_of_passing",
-          "marks"
+          "year_of_passing"
         ],
         "properties": {
           "qualification": {
@@ -618,11 +616,11 @@
           "year_of_passing": {
             "type": "integer"
           },
-          "marks": {
-            "type": "number"
-          },
           "student": {
             "type": "string"
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       }

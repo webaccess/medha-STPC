@@ -1319,8 +1319,7 @@
                 "id",
                 "qualification",
                 "board",
-                "year_of_passing",
-                "marks"
+                "year_of_passing"
               ],
               "properties": {
                 "id": {
@@ -1335,11 +1334,11 @@
                 "year_of_passing": {
                   "type": "integer"
                 },
-                "marks": {
-                  "type": "number"
-                },
                 "student": {
                   "type": "string"
+                },
+                "percentage": {
+                  "type": "number"
                 }
               }
             }
