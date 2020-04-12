@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import moment from "moment";
 import {
   TextField,
   Card,
   CardContent,
-  Tooltip,
   Grid,
   Collapse,
   IconButton,
@@ -22,11 +22,11 @@ import {
   ViewGridIcon,
   EditGridIcon,
   ViewStudentGridIcon,
-  DeleteGridIcon
+  DeleteGridIcon,
+  InlineDatePickerDemo
 } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
-import DatePickers from "../../../components/Date/Date";
 import DeleteUser from "./DeleteEvent";
 import * as genericConstants from "../../../constants/GenericConstants";
 import CloseIcon from "@material-ui/icons/Close";
@@ -238,6 +238,10 @@ const ViewEvents = props => {
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    console.log(
+      "formState.filterDataParameters",
+      formState.filterDataParameters
+    );
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getEventData(perPage, page, formState.filterDataParameters);
@@ -254,16 +258,14 @@ const ViewEvents = props => {
       /** Turns on the spinner */
       isClearResetFilter: true,
       isDataLoading: true,
-      texttvalue: ""
+      texttvalue: "",
+      startDate: moment(),
+      endDate: moment()
     }));
 
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
-
-  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
-   * i.e the nested zones data and also resets the data to []
-   */
 
   const restoreData = () => {
     getEventData(formState.pageSize, 1);
@@ -300,31 +302,22 @@ const ViewEvents = props => {
     }
   };
 
-  const handleStartDateChange = date => {
-    formState.filterDataParameters[date.target.name] = date.target.value;
+  const handleStartDateChange = (START_DATE_FILTER, event) => {
+    let startDate = moment(event).format("YYYY-MM-DD");
+    formState.filterDataParameters[START_DATE_FILTER] = startDate;
     setFormState(formState => ({
       ...formState,
-      startDate: date.target.value
+      startDate: event
     }));
   };
 
-  const handleEndDateChange = date => {
-    formState.filterDataParameters[date.target.name] = date.target.value;
+  const handleEndDateChange = (END_DATE_FILTER, event) => {
+    let endDate = moment(event).format("YYYY-MM-DD");
+    formState.filterDataParameters[END_DATE_FILTER] = endDate;
     setFormState(formState => ({
       ...formState,
-      endDate: date.target.value
+      endDate: event
     }));
-  };
-
-  const focousOut = date => {
-    let clearDate = (date.target.value = null);
-    if (formState.isClearResetFilter) {
-      setFormState(formState => ({
-        ...formState,
-        startDate: clearDate,
-        endDate: clearDate
-      }));
-    }
   };
 
   /** This is used to handle the close modal event */
@@ -544,31 +537,32 @@ const ViewEvents = props => {
                   placeholder="Event"
                   variant="outlined"
                   name={EVENT_FILTER}
+                  value={formState.texttvalue}
                   onChange={event =>
                     handleFilterChange(event, event.target.value)
                   }
                 />
               </Grid>
               <Grid item>
-                <DatePickers
+                <InlineDatePickerDemo
                   id="date"
                   label="Start Date"
-                  placeholder="dd-mm-yyyy"
                   value={formState.startDate}
                   name={START_DATE_FILTER}
-                  onChange={handleStartDateChange}
-                  //onBlur={focousOut}
+                  onChange={event =>
+                    handleStartDateChange(START_DATE_FILTER, event)
+                  }
                 />
               </Grid>
               <Grid item>
-                <DatePickers
+                <InlineDatePickerDemo
                   id="date"
                   label="End Date"
-                  placeholder="dd-mm-yyyy"
                   value={formState.endDate}
                   name={END_DATE_FILTER}
-                  onChange={handleEndDateChange}
-                  // onBlur={focousOut}
+                  onChange={event =>
+                    handleEndDateChange(END_DATE_FILTER, event)
+                  }
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
