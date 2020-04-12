@@ -22,3 +22,9 @@
 .makeStyles-streamcard-75:hover {
   border: 1px solid black;
 }
+.rdw-option-wrapper {
+  min-width: 0px;
+}
+.rdw-editor-toolbar {
+  font-size: 13px;
+}
