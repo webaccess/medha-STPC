@@ -107,8 +107,15 @@ const StudentList = props => {
     ) {
       EVENT_ID = props["location"]["eventIdStudent"];
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
+      if (auth.getUserInfo().role.name === "College Admin") {
+        paramsForevents["user.college"] = auth.getUserInfo()["college"]["id"];
+      }
     }
-    if (EVENT_ID !== null && regStudent_url !== null) {
+    if (
+      EVENT_ID !== undefined &&
+      EVENT_ID !== null &&
+      regStudent_url !== null
+    ) {
       await serviceProvider
         .serviceProviderForGetRequest(regStudent_url, paramsForevents)
         .then(res => {
@@ -132,13 +139,12 @@ const StudentList = props => {
           console.log("error", error);
         });
     } else {
-      if (auth.getUserInfo().role.name === "Medha Admin") {
+      if (
+        auth.getUserInfo().role.name === "Medha Admin" ||
+        auth.getUserInfo().role.name === "College Admin"
+      ) {
         history.push({
           pathname: routeConstants.MANAGE_EVENT
-        });
-      } else if (auth.getUserInfo().role.name === "Student") {
-        history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT
         });
       } else {
         history.push({
