@@ -40,7 +40,7 @@ const START_DATE_FILTER = "start_date_time_gte";
 const END_DATE_FILTER = "end_date_time_lte";
 const SORT_FIELD_KEY = "_sort";
 
-const ViewEvents = props => {
+const ManageEvent = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
@@ -640,4 +640,4 @@ const ViewEvents = props => {
   );
 };
 
-export default ViewEvents;
+export default ManageEvent;
