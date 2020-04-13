@@ -26,6 +26,8 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import HireStudent from "./HireStudent";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const REGISTRATION_URL =
@@ -349,6 +351,12 @@ const StudentList = props => {
     </div>
   );
 
+  const backToManageEvent = () => {
+    history.push({
+      pathname: routeConstants.MANAGE_EVENT
+    });
+  };
+
   /** Table Data */
   const column = [
     {
@@ -383,11 +391,29 @@ const StudentList = props => {
         <Typography variant="h4" gutterBottom>
           Event Students List
         </Typography>
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => backToManageEvent()}
+          startIcon={<ArrowBackIosIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+        >
+          Back
+        </GreenButton>
+        {auth.getUserInfo().role.name === "College Admin" ? (
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            startIcon={<PersonAddIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+          >
+            Add Student
+          </GreenButton>
+        ) : null}
 
         <GreenButton
           variant="contained"
           color="secondary"
-          // onClick={() => deleteMulUserById()}
           startIcon={<GetAppIcon />}
           greenButtonChecker={formState.greenButtonChecker}
         >
