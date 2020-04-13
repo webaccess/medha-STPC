@@ -13,7 +13,7 @@ const {
 } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 
-const sanitizeUser = (user) =>
+const sanitizeUser = user =>
   sanitizeEntity(user, {
     model: strapi.query("user", "users-permissions").model
   });
@@ -37,7 +37,7 @@ module.exports = {
         page: page,
         pageSize: pageSize < 0 ? await utils.getTotalRecords("event") : pageSize
       })
-      .then((res) => {
+      .then(res => {
         return utils.getPaginatedResponse(res);
       });
   },
@@ -83,7 +83,7 @@ module.exports = {
       .query("event-registration")
       .find({ event: event.id });
 
-    const studentIds = registrations.map((r) => r.student.id);
+    const studentIds = registrations.map(r => r.student.id);
     let students = await strapi
       .query("student")
       .model.query(
@@ -93,16 +93,16 @@ module.exports = {
         })
       )
       .fetchAll()
-      .then((model) => model.toJSON());
+      .then(model => model.toJSON());
 
     students = students
-      .map((student) => {
+      .map(student => {
         if (_.includes(studentIds, student.id)) {
           student.user = sanitizeUser(student.user);
           return student;
         }
       })
-      .filter((a) => a);
+      .filter(a => a);
 
     const response = utils.paginate(students, page, pageSize);
     return {

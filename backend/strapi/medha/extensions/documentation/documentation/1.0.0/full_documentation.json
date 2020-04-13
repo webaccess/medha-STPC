@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "04/08/2020 5:45:28 PM"
+    "x-generation-date": "04/10/2020 4:19:00 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -15843,13 +15843,7 @@
         }
       },
       "Education": {
-        "required": [
-          "id",
-          "qualification",
-          "board",
-          "year_of_passing",
-          "marks"
-        ],
+        "required": ["id", "qualification", "board", "year_of_passing"],
         "properties": {
           "id": {
             "type": "string"
@@ -15862,9 +15856,6 @@
           },
           "year_of_passing": {
             "type": "integer"
-          },
-          "marks": {
-            "type": "number"
           },
           "student": {
             "required": [
@@ -15926,11 +15917,14 @@
                 "type": "string"
               }
             }
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       },
       "NewEducation": {
-        "required": ["qualification", "board", "year_of_passing", "marks"],
+        "required": ["qualification", "board", "year_of_passing"],
         "properties": {
           "qualification": {
             "type": "string"
@@ -15941,11 +15935,11 @@
           "year_of_passing": {
             "type": "integer"
           },
-          "marks": {
-            "type": "number"
-          },
           "student": {
             "type": "string"
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       },
@@ -17162,13 +17156,7 @@
           "educations": {
             "type": "array",
             "items": {
-              "required": [
-                "id",
-                "qualification",
-                "board",
-                "year_of_passing",
-                "marks"
-              ],
+              "required": ["id", "qualification", "board", "year_of_passing"],
               "properties": {
                 "id": {
                   "type": "string"
@@ -17182,11 +17170,11 @@
                 "year_of_passing": {
                   "type": "integer"
                 },
-                "marks": {
-                  "type": "number"
-                },
                 "student": {
                   "type": "string"
+                },
+                "percentage": {
+                  "type": "number"
                 }
               }
             }

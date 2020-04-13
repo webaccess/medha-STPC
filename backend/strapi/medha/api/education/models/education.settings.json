@@ -21,13 +21,12 @@
       "type": "integer",
       "required": true
     },
-    "marks": {
-      "type": "decimal",
-      "required": true
-    },
     "student": {
-      "via": "educations",
-      "model": "student"
+      "model": "student",
+      "via": "educations"
+    },
+    "percentage": {
+      "type": "decimal"
     }
   }
 }

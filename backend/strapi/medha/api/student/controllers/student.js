@@ -454,42 +454,62 @@ module.exports = {
    */
   async events(ctx) {
     const { id } = ctx.params;
-    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const student = await strapi.query("student").findOne({ id });
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const student = await strapi
+      .query("student")
+      .findOne({ id }, ["user.college", "stream"]);
 
     if (!student) {
       return ctx.response.notFound("Student does not exist");
     }
 
-    const { college, rpc } = student.user;
+    const { college } = student.user;
     const { stream } = student;
 
-    const events = await strapi.query("event").find();
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters,
+        })
+      )
+      .fetchAll()
+      .then((model) => model.toJSON());
+
     let result;
     /**Filtering college */
     if (college) {
       result = events.filter((event) => {
-        const { colleges } = event;
-        const isExist = colleges.filter((c) => c.id == college);
-        if (isExist && isExist.length > 0) {
-          return event;
+        const { colleges, rpc, zone } = event;
+
+        /**
+         * Since colleges might be empty array
+         * If Event has particular colleges then filter by colleges
+         * If Event has RPC and Zone then get student college's RPC and Zone
+         * If Event has either RPC or Zone then get student college's RPC or Zone
+         */
+
+        const isCollegesExist = colleges.length > 0 ? true : false;
+        const isRPCExist = rpc && Object.keys(rpc).length > 0 ? true : false;
+        const isZoneExist = zone && Object.keys(zone).length > 0 ? true : false;
+
+        if (isRPCExist && isZoneExist && !isCollegesExist) {
+          if (rpc.id == college.rpc && zone.id == college.zone) return event;
+        } else if (isRPCExist && !isCollegesExist) {
+          if (rpc.id == college.rpc) return event;
+        } else if (isZoneExist && !isCollegesExist) {
+          if (zone.id == college.zone) return event;
+        } else {
+          const isExist = colleges.filter((c) => c.id == college.id);
+          if (isExist && isExist.length > 0) return event;
         }
       });
     } else {
       result = events;
     }
-
-    /**Filtering rpc */
-    if (rpc) {
-      result = result.filter((event) => {
-        const eventRPC = event.rpc;
-        if (eventRPC == null || eventRPC.id == rpc) {
-          return event;
-        }
-      });
-    }
-
-    console.log(result);
 
     /**Filtering stream */
 
@@ -504,24 +524,54 @@ module.exports = {
     }
 
     /** Filtering qualifications */
-    // const educations = await strapi.query("education").find({ student: id });
-    // result = result.filter((event) => {
-    //   const { qualifications } = event;
-    //   let isEligible = false;
-    //   qualifications.forEach((q) => {
-    //     const isQualificationPresent = educations.find(
-    //       (e) => e.qualification == q.qualification && e.marks >= q.marks
-    //     );
+    const studentEducations = await strapi
+      .query("education")
+      .find({ student: id });
+    result = result.filter((event) => {
+      const { qualifications } = event;
+      let isEligible = true;
+      qualifications.forEach((q) => {
+        const isQualificationPresent = studentEducations.find(
+          (e) =>
+            e.qualification == q.qualification && e.percentage >= q.percentage
+        );
 
-    //     if (!isQualificationPresent) {
-    //       isEligible = false;
-    //     }
-    //   });
+        if (!isQualificationPresent) {
+          isEligible = false;
+        }
+      });
 
-    //   if (isEligible) {
-    //     return event;
-    //   }
-    // });
+      if (isEligible) {
+        return event;
+      }
+    });
+
+    /**Filtering educations */
+    const academicHistory = await strapi
+      .query("academic-history")
+      .find({ student: id });
+
+    result = result.filter((event) => {
+      const { educations } = event;
+
+      let isEligible = true;
+
+      educations.forEach((edu) => {
+        const isEducationPresent = academicHistory.find(
+          (ah) =>
+            ah.education_year == edu.education_year &&
+            ah.percentage >= edu.percentage
+        );
+
+        if (!isEducationPresent) {
+          isEligible = false;
+        }
+      });
+
+      if (isEligible) {
+        return event;
+      }
+    });
 
     const response = utils.paginate(result, page, pageSize);
     return {
@@ -529,6 +579,7 @@ module.exports = {
       ...response.pagination,
     };
   },
+
   async activity(ctx) {
     const { id } = ctx.params;
 
