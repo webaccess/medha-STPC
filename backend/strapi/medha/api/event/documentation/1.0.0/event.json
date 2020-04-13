@@ -893,6 +893,23 @@
                 }
               }
             }
+          },
+          "zone": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            }
           }
         }
       },
@@ -984,6 +1001,9 @@
                 }
               }
             }
+          },
+          "zone": {
+            "type": "string"
           }
         }
       }
