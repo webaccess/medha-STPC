@@ -70,6 +70,7 @@ const COLLEGE_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
 
 const AddEditEvent = (props) => {
+ 
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
@@ -108,7 +109,7 @@ const AddEditEvent = (props) => {
   const inputLabel = React.useRef(null);
   const [qualifications, setQualifications] = useState([]);
   const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
-  const [labelWidth, setLabelWidth] = React.useState(0);
+ 
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
@@ -202,7 +203,7 @@ const AddEditEvent = (props) => {
           tempDynamicBarValue[qualification] =
             props["dataForEdit"]["qualifications"][i]["qualification"];
           tempDynamicBarValue[percentage] =
-            props["dataForEdit"]["qualifications"][i]["marks"];
+            props["dataForEdit"]["qualifications"][i]["percentage"];
           dynamicBar.push(tempDynamicBarValue);
         }
         formState.dynamicBar = dynamicBar;
@@ -221,7 +222,7 @@ const AddEditEvent = (props) => {
   }
 
   useEffect(() => {
-    setLabelWidth(inputLabel.current.offsetWidth);
+  
     let paramsForPageSize = {
       pageSize: -1,
     };
