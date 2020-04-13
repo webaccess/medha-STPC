@@ -8,13 +8,13 @@
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity,
+  sanitizeEntity
 } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
 
-const sanitizeUser = (user) =>
+const sanitizeUser = user =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model,
+    model: strapi.query("user", "users-permissions").model
   });
 
 const _ = require("lodash");
@@ -33,16 +33,16 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters,
+            filters
           })
         )
         .fetchPage({
           page: page,
           pageSize:
             pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
-          columns: ["id", "name"],
+          columns: ["id", "name"]
         })
-        .then((res) => {
+        .then(res => {
           return utils.getPaginatedResponse(res);
         });
     }
@@ -59,25 +59,25 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters,
+            filters
           })
         )
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
-        .then((res) => {
+        .then(res => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map((college) => {
+      response.result = response.result.map(college => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find((s) => s.id === stateId);
+        const state = states.find(s => s.id === stateId);
         return {
           ...college,
-          state,
+          state
         };
       });
       return response;
@@ -89,26 +89,26 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters,
+            filters
           })
         )
         .where({ zone: zone })
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
-        .then((res) => {
+        .then(res => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map((college) => {
+      response.result = response.result.map(college => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find((s) => s.id === stateId);
+        const state = states.find(s => s.id === stateId);
         return {
           ...college,
-          state,
+          state
         };
       });
       return response;
@@ -120,26 +120,26 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters,
+            filters
           })
         )
         .where({ rpc: rpc })
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
-        .then((res) => {
+        .then(res => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map((college) => {
+      response.result = response.result.map(college => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find((s) => s.id === stateId);
+        const state = states.find(s => s.id === stateId);
         return {
           ...college,
-          state,
+          state
         };
       });
       return response;
@@ -151,26 +151,26 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters,
+            filters
           })
         )
         .where({ id: college })
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
         })
-        .then((res) => {
+        .then(res => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map((college) => {
+      response.result = response.result.map(college => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find((s) => s.id === stateId);
+        const state = states.find(s => s.id === stateId);
         return {
           ...college,
-          state,
+          state
         };
       });
       return response;
@@ -182,7 +182,7 @@ module.exports = {
     const states = await strapi.query("state").find();
     const response = await strapi.query("college").findOne({ id });
     const stateId = response.rpc.state || response.zone.state;
-    response.state = states.find((s) => s.id === stateId);
+    response.state = states.find(s => s.id === stateId);
     return utils.getFindOneResponse(response);
   },
 
@@ -227,7 +227,7 @@ module.exports = {
     const userIds = await strapi.services.college.getUsers(id);
 
     let students = await strapi.query("student").find({ user_in: userIds });
-    students = students.map((student) => {
+    students = students.map(student => {
       student.user = sanitizeUser(student.user);
       return student;
     });
@@ -263,7 +263,7 @@ module.exports = {
 
     await strapi
       .query("college")
-      .model.query((qb) => {
+      .model.query(qb => {
         qb.whereIn("id", idsToBlock);
       })
       .save({ blocked: true }, { patch: true, require: false });
@@ -297,7 +297,7 @@ module.exports = {
 
     await strapi
       .query("college")
-      .model.query((qb) => {
+      .model.query(qb => {
         qb.whereIn("id", idsToBlock);
       })
       .save({ blocked: false }, { patch: true, require: false });
@@ -314,33 +314,26 @@ module.exports = {
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    const response = await strapi
+    const college = await strapi.query("college").findOne({ id }, []);
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    const events = await strapi
       .query("event")
       .model.query(
         buildQuery({
           model: strapi.models["event"],
-          filters,
+          filters
         })
       )
       .fetchAll()
-      .then((model) => model.toJSON());
+      .then(model => model.toJSON());
 
-    const filtered = response.reduce((result, event) => {
-      const { colleges } = event;
-      const filterColleges = colleges
-        .map((college) => {
-          if (college.id == id) {
-            return college;
-          }
-        })
-        .filter((c) => c);
-
-      if (filterColleges.length) {
-        event.colleges = filterColleges;
-        result.push(event);
-      }
-      return result;
-    }, []);
+    /**
+     * Get all events for specific college
+     */
+    const filtered = await strapi.services.college.getEvents(college, events);
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
     return { result, ...pagination };
   },
@@ -370,12 +363,12 @@ module.exports = {
     let activity = await strapi.query("activity").find({ college: id });
 
     if (stream) {
-      activity = activity.filter((activity) => {
+      activity = activity.filter(activity => {
         const { streams } = activity;
 
-        const streamIds = streams.map((s) => s.id);
+        const streamIds = streams.map(s => s.id);
 
-        if (stream.every((val) => streamIds.includes(val))) {
+        if (stream.every(val => streamIds.includes(val))) {
           return activity;
         }
       });
@@ -399,5 +392,5 @@ module.exports = {
     //   .then(res => {
     //     return utils.getPaginatedResponse(res);
     //   });
-  },
+  }
 };
