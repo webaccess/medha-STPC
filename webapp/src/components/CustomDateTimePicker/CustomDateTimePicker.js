@@ -4,7 +4,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import customTheme from "./CustomDateTimePickerStyles";
 
-const CustomDateTimePicker = (props) => {
+const CustomDateTimePicker = props => {
   return (
     <MuiThemeProvider theme={customTheme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -15,6 +15,7 @@ const CustomDateTimePicker = (props) => {
           onChange={props.onChange}
           helperText={props.helperText}
           {...props}
+          fullWidth
         />
       </MuiPickersUtilsProvider>
     </MuiThemeProvider>

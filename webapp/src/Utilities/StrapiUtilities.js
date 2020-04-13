@@ -44,25 +44,25 @@
  */
 
 /**  Setters */
-export const setState = (id) => {
+export const setState = id => {
   return {
     id: id
   };
 };
 
-export const setUser = (id) => {
+export const setUser = id => {
   return {
     id: id
   };
 };
 
-export const setAdmins = (id) => {
+export const setAdmins = id => {
   return {
     id: id
   };
 };
 
-export const setZone = (id) => {
+export const setZone = id => {
   return {
     id: id
   };
@@ -75,31 +75,31 @@ export const setRpc = (id, main_college = null) => {
   };
 };
 
-export const setMainCollege = (id) => {
+export const setMainCollege = id => {
   return {
     id: id
   };
 };
 
-export const setRole = (id) => {
+export const setRole = id => {
   return {
     id: id
   };
 };
 
-export const setStreams = (id) => {
+export const setStreams = id => {
   return {
     id: id
   };
 };
 
-export const setCollege = (id) => {
+export const setCollege = id => {
   return {
     id: id
   };
 };
 
-export const setQualification = (id) => {
+export const setQualification = id => {
   return {
     id: id
   };
@@ -168,7 +168,7 @@ export const addEvent = (
     streams: streams
   };
 };
-export const addState = (name) => {
+export const addState = name => {
   return {
     name: name
   };
@@ -291,12 +291,17 @@ export const editStudent = (
     id: id
   };
 };
-export const addEducation = (qualification, board, yearOfPassing, marks) => {
+export const addEducation = (
+  qualification,
+  board,
+  yearOfPassing,
+  percentage
+) => {
   return {
     qualification,
     board,
     year_of_passing: parseInt(yearOfPassing),
-    marks: parseFloat(marks)
+    percentage: parseFloat(percentage)
   };
 };
 

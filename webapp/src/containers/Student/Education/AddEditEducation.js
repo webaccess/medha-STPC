@@ -24,7 +24,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 const qualification = "qualification";
 const yearOfPassing = "yearOfPassing";
 const board = "board";
-const marks = "marks";
+const percentage = "percentage";
 
 const AddEditEducation = props => {
   const history = useHistory();
@@ -62,8 +62,8 @@ const AddEditEducation = props => {
       if (props["dataForEdit"]["board"]) {
         formState.values[board] = props["dataForEdit"]["board"];
       }
-      if (props["dataForEdit"]["marks"]) {
-        formState.values[marks] = props["dataForEdit"]["marks"];
+      if (props["dataForEdit"]["percentage"]) {
+        formState.values[percentage] = props["dataForEdit"]["percentage"];
       }
 
       formState.counter += 1;
@@ -144,7 +144,7 @@ const AddEditEducation = props => {
       formState.values[qualification],
       formState.values[board],
       formState.values[yearOfPassing],
-      formState.values[marks]
+      formState.values[percentage]
     );
     console.log(postData);
     // Adding student id to post data
@@ -249,7 +249,7 @@ const AddEditEducation = props => {
                     }}
                     value={
                       genericConstants.QUALIFICATIONS[
-                        genericConstants.QUALIFICATIONS.findIndex(function(
+                        genericConstants.QUALIFICATIONS.findIndex(function (
                           item
                         ) {
                           return item.value === formState.values[qualification];
@@ -324,18 +324,18 @@ const AddEditEducation = props => {
                 <Grid item md={12} xs={12}>
                   <TextField
                     fullWidth
-                    id={get(EducationSchema[marks], "id")}
-                    label={get(EducationSchema[marks], "label")}
+                    id={get(EducationSchema[percentage], "id")}
+                    label={get(EducationSchema[percentage], "label")}
                     margin="normal"
-                    name={marks}
+                    name={percentage}
                     onChange={handleChange}
                     required
-                    type={get(EducationSchema[marks], "type")}
-                    value={formState.values[marks] || ""}
-                    error={hasError(marks)}
+                    type={get(EducationSchema[percentage], "type")}
+                    value={formState.values[percentage] || ""}
+                    error={hasError(percentage)}
                     helperText={
-                      hasError(marks)
-                        ? formState.errors[marks].map(error => {
+                      hasError(percentage)
+                        ? formState.errors[percentage].map(error => {
                             return error + " ";
                           })
                         : null
