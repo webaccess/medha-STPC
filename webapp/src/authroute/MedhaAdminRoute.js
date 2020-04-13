@@ -4,19 +4,30 @@ import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
 import * as routeConstants from "../constants/RouteConstants";
 
-const RouteWithLayout = props => {
+const MedhaAdminRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   if (auth.getToken() !== null) {
-    return (
-      <Route
-        {...rest}
-        render={matchProps => (
-          <Layout>
-            <Component {...matchProps} />
-          </Layout>
-        )}
-      />
-    );
+    if (auth.getUserInfo().role.name === "Medha Admin") {
+      return (
+        <Route
+          {...rest}
+          render={matchProps => (
+            <Layout>
+              <Component {...matchProps} />
+            </Layout>
+          )}
+        />
+      );
+    } else {
+      return (
+        <Redirect
+          to={{
+            pathname: routeConstants.NOT_FOUND_URL,
+            state: { from: props.location }
+          }}
+        />
+      );
+    }
   } else {
     return (
       <Redirect
@@ -29,10 +40,10 @@ const RouteWithLayout = props => {
   }
 };
 
-RouteWithLayout.propTypes = {
+MedhaAdminRoute.propTypes = {
   component: PropTypes.any.isRequired,
   layout: PropTypes.any.isRequired,
   path: PropTypes.string
 };
 
-export default RouteWithLayout;
+export default MedhaAdminRoute;

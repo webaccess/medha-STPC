@@ -17,6 +17,7 @@ export const NO_DATA_TO_SHOW_TEXT = "No data to show";
 export const ADD_MORE_TEXT = "Add More";
 export const BLOCK_BUTTON_TEXT = "Block";
 export const UNBLOCK_BUTTON_TEXT = "Unblock";
+export const HIRE_BUTTON_TEXT = "Hire";
 
 /**Student
  */
@@ -86,18 +87,22 @@ export const ADD_STUDENT_TO_ACTIVITY_BATCH = "Add Students";
 export const DELETE_STUDENT_TO_ACTIVITY_BATCH = "Delete Students";
 export const VERIFY_STUDENT_TO_ACTIVITY_BATCH = "Verify Students";
 
-/**MANAGE EVENTS*/
-export const ADD_EVENT_TEXT = "Add Event";
-
 /** Events */
+export const ADD_EVENT_TEXT = "Add Event";
 export const DESCRIPTION = "Description";
+export const EVENT_REGISTRATION = "Register";
+export const EVENT_REGISTERED = "Registered";
+export const EVENT_CONFIRMATION =
+  "I have read the above mentioned criteria and description";
 
 /**Qualifications */
 
+export const QUALIFICATIONANDPERCENTAGE = "Qualification and Percentage";
+
 export const QUALIFICATIONS = [
-  { id: "SSC", value: "SSC" },
-  { id: "HSC", value: "HSC" },
-  { id: "BSc", value: "BSc" },
-  { id: "MSc", value: "MSc" },
-  { id: "BE", value: "BE" }
+  { id: 1, value: "SSC" },
+  { id: 2, value: "HSC" },
+  { id: 3, value: "BSc" },
+  { id: 4, value: "MSc" },
+  { id: 5, value: "BE" }
 ];

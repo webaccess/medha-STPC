@@ -18,16 +18,11 @@ const EventSchema = {
     label: "description Name",
     id: "description name",
     autoComplete: "description name",
-    required: true,
+    required: false,
     placeholder: "description Name",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "description Name is required"
-      }
-    }
+    validations: {}
   },
   dateFrom: {
     label: "Start Date",
@@ -126,20 +121,15 @@ const EventSchema = {
     type: "text",
     validations: {}
   },
-  marks: {
-    label: "Marks",
-    id: "marks",
-    autoComplete: "marks",
-    required: true,
-    placeholder: "Marks",
+  percentage: {
+    label: "Percentage",
+    id: "percentage",
+    autoComplete: "percentage",
+    required: false,
+    placeholder: "Percentage",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "percentage ( Min percentage through SSC, HSC, graduation ) 1-100"
-      }
-    }
+    validations: {}
   },
   qualification: {
     label: "Qualification",

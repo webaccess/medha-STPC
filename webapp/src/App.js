@@ -9,7 +9,9 @@ import {
   ForgotPasswordRoute,
   RouteWithLayout,
   PrivateRoute,
-  DefaultRoute
+  DashBoardComponent,
+  MedhaCollegeAdminRoute,
+  MedhaAdminRoute
 } from "./authroute";
 
 import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
@@ -79,7 +81,7 @@ function App() {
         <Router>
           <div>
             <Switch>
-              <DefaultRoute
+              <DashBoardComponent
                 path={routeConstants.DEFAULT_URL}
                 component={Dashboard}
                 exact
@@ -249,28 +251,28 @@ function App() {
 
               {/** User */}
               {/** Add User **/}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={AddUser}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_USER}
               />
               {/** View User */}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={ManageUser}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_USER}
               />
               {/** Edit User Route*/}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={EditUserRoute}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_USER}
               />
               {/** View User Data*/}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={ViewUser}
                 exact
                 layout={Layout}
@@ -278,39 +280,39 @@ function App() {
               />
               {/** State */}
               {/** Add Edit State */}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={AddEditState}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_STATES}
               />
               {/** Edit State Route */}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={EditStateRoute}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_STATE}
               />
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={ManageState}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_STATES}
               />
               {/** Rpc */}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={AddEditRpc}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_RPC}
               />
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={ManageRpc}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_RPC}
               />
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={EditRpcRoute}
                 exact
                 layout={Layout}
@@ -318,19 +320,19 @@ function App() {
               />
 
               {/** Zone */}
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={AddZone}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ZONES}
               />
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={ManageZone}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_ZONES}
               />
-              <RouteWithLayout
+              <MedhaAdminRoute
                 component={EditZoneRoute}
                 exact
                 layout={Layout}
@@ -339,41 +341,41 @@ function App() {
 
               {/** College */}
               {/** Add College */}
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={ViewCollege}
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_COLLEGE}
               />
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={AddEditCollege}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_COLLEGE}
               />
               {/** Edit College Route */}
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={EditCollegeRoute}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_COLLEGE}
               />
               {/** View College */}
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={ManageCollege}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_COLLEGE}
               />
               {/** Manage Student */}
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={ManageStudents}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_STUDENT}
               />
               {/** Event */}
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={ViewEvents}
                 exact
                 layout={Layout}
@@ -385,7 +387,7 @@ function App() {
                 layout={Layout}
                 path={routeConstants.VIEW_EVENT}
               />
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={AddEditEvent}
                 exact
                 layout={Layout}
@@ -399,14 +401,29 @@ function App() {
                 path={routeConstants.ELIGIBLE_EVENT}
               />
               {/** Edit Event Route */}
-              <RouteWithLayout
+              <MedhaCollegeAdminRoute
                 component={EditEventRoute}
                 exact
                 layout={Layout}
                 path={routeConstants.EDIT_EVENT}
               />
+              {/** Event Student List Route */}
+              <MedhaCollegeAdminRoute
+                component={StudentList}
+                exact
+                layout={Layout}
+                path={routeConstants.EVENT_STUDENT_LIST}
+              />
+              {/**View Student Profile  */}
 
-              {/* Manage Activity Batch */}
+              <MedhaCollegeAdminRoute
+                component={StudentProfile}
+                exact
+                layout={Layout}
+                path={routeConstants.VIEW_STUDENT_PROFILE}
+              />
+
+              {/* Activities */}
               <RouteWithLayout
                 component={ViewActivityBatches}
                 exact
@@ -426,14 +443,6 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_ACTIVITY_BATCH}
-              />
-
-              {/** Event Student List Route */}
-              <RouteWithLayout
-                component={StudentList}
-                exact
-                layout={Layout}
-                path={routeConstants.EVENT_STUDENT_LIST}
               />
               <Route path="*" component={NotFoundPage} />
             </Switch>

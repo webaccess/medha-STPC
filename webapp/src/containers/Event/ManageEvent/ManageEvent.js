@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import moment from "moment";
 import {
   TextField,
   Card,
   CardContent,
-  Tooltip,
   Grid,
   Collapse,
   IconButton,
@@ -22,16 +22,17 @@ import {
   ViewGridIcon,
   EditGridIcon,
   ViewStudentGridIcon,
-  DeleteGridIcon
+  DeleteGridIcon,
+  InlineDatePickerDemo
 } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
-import DatePickers from "../../../components/Date/Date";
 import DeleteUser from "./DeleteEvent";
 import * as genericConstants from "../../../constants/GenericConstants";
 import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
+import auth from "../../../components/Auth";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
@@ -94,7 +95,14 @@ const ViewEvents = props => {
   });
 
   useEffect(() => {
-    getEventData(10, 1);
+    if (auth.getUserInfo() !== null) {
+      getEventData(10, 1);
+    } else {
+      auth.clearAppStorage();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
+      });
+    }
   }, []);
 
   const getEventData = async (pageSize, page, paramsForevents = null) => {
@@ -122,29 +130,69 @@ const ViewEvents = props => {
       ...formState,
       isDataLoading: true
     }));
-
-    await serviceProviders
-      .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
-      .then(res => {
-        formState.dataToShow = [];
-        formState.tempData = [];
-        let eventData = [];
-        eventData = convertEventData(res.data.result);
-        setFormState(formState => ({
-          ...formState,
-          events: res.data.result,
-          pageSize: res.data.pageSize,
-          totalRows: res.data.rowCount,
-          page: res.data.page,
-          pageCount: res.data.pageCount,
-          dataToShow: eventData,
-          tempData: eventData,
-          isDataLoading: false
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
+    if (auth.getUserInfo().role !== null) {
+      if (auth.getUserInfo().role.name === "College Admin") {
+        const EVENTS_FOR_COLLEGE_ADMIN =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_COLLEGES +
+          "/" +
+          auth.getUserInfo().college.id +
+          "/event";
+        await serviceProviders
+          .serviceProviderForGetRequest(
+            EVENTS_FOR_COLLEGE_ADMIN,
+            paramsForevents
+          )
+          .then(res => {
+            formState.dataToShow = [];
+            formState.tempData = [];
+            let eventData = [];
+            eventData = convertEventData(res.data.result);
+            setFormState(formState => ({
+              ...formState,
+              events: res.data.result,
+              pageSize: res.data.pageSize,
+              totalRows: res.data.rowCount,
+              page: res.data.page,
+              pageCount: res.data.pageCount,
+              dataToShow: eventData,
+              tempData: eventData,
+              isDataLoading: false
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+      } else if (auth.getUserInfo().role.name === "Medha Admin") {
+        await serviceProviders
+          .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
+          .then(res => {
+            formState.dataToShow = [];
+            formState.tempData = [];
+            let eventData = [];
+            eventData = convertEventData(res.data.result);
+            setFormState(formState => ({
+              ...formState,
+              events: res.data.result,
+              pageSize: res.data.pageSize,
+              totalRows: res.data.rowCount,
+              page: res.data.page,
+              pageCount: res.data.pageCount,
+              dataToShow: eventData,
+              tempData: eventData,
+              isDataLoading: false
+            }));
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+      }
+    } else {
+      auth.clearAppStorage();
+      history.push({
+        pathname: routeConstants.SIGN_IN_URL
       });
+    }
   };
 
   const convertEventData = data => {
@@ -190,6 +238,10 @@ const ViewEvents = props => {
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    console.log(
+      "formState.filterDataParameters",
+      formState.filterDataParameters
+    );
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getEventData(perPage, page, formState.filterDataParameters);
@@ -206,16 +258,14 @@ const ViewEvents = props => {
       /** Turns on the spinner */
       isClearResetFilter: true,
       isDataLoading: true,
-      texttvalue: ""
+      texttvalue: "",
+      startDate: moment(),
+      endDate: moment()
     }));
 
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
-
-  /** Restoring the data basically resets all te data i.e it gets all the data in view zones
-   * i.e the nested zones data and also resets the data to []
-   */
 
   const restoreData = () => {
     getEventData(formState.pageSize, 1);
@@ -252,31 +302,22 @@ const ViewEvents = props => {
     }
   };
 
-  const handleStartDateChange = date => {
-    formState.filterDataParameters[date.target.name] = date.target.value;
+  const handleStartDateChange = (START_DATE_FILTER, event) => {
+    let startDate = moment(event).format("YYYY-MM-DD");
+    formState.filterDataParameters[START_DATE_FILTER] = startDate;
     setFormState(formState => ({
       ...formState,
-      startDate: date.target.value
+      startDate: event
     }));
   };
 
-  const handleEndDateChange = date => {
-    formState.filterDataParameters[date.target.name] = date.target.value;
+  const handleEndDateChange = (END_DATE_FILTER, event) => {
+    let endDate = moment(event).format("YYYY-MM-DD");
+    formState.filterDataParameters[END_DATE_FILTER] = endDate;
     setFormState(formState => ({
       ...formState,
-      endDate: date.target.value
+      endDate: event
     }));
-  };
-
-  const focousOut = date => {
-    let clearDate = (date.target.value = null);
-    if (formState.isClearResetFilter) {
-      setFormState(formState => ({
-        ...formState,
-        startDate: clearDate,
-        endDate: clearDate
-      }));
-    }
   };
 
   /** This is used to handle the close modal event */
@@ -347,19 +388,17 @@ const ViewEvents = props => {
   const viewStudentList = event => {
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
-      eventIdStudent: event.target.id
+      eventIdStudent: event.target.id,
+      eventTitle: event.target.getAttribute("value")
     });
   };
 
   /** Edit -------------------------------------------------------*/
   const getDataForEdit = async id => {
-    let paramsForUsers = {
-      id: id
-    };
     await serviceProviders
-      .serviceProviderForGetRequest(EVENT_URL, paramsForUsers)
+      .serviceProviderForGetOneRequest(EVENT_URL, id)
       .then(res => {
-        let editData = res.data.result[0];
+        let editData = res.data.result;
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_EVENT,
@@ -395,7 +434,7 @@ const ViewEvents = props => {
           <div className={classes.PaddingActionButton}>
             <ViewStudentGridIcon
               id={cell.id}
-              value={cell.name}
+              value={cell.title}
               onClick={viewStudentList}
             />
           </div>
@@ -499,30 +538,31 @@ const ViewEvents = props => {
                   variant="outlined"
                   name={EVENT_FILTER}
                   value={formState.texttvalue}
-                  //onChange={handleFilterChange}
-                  onChange={(event, value) => handleFilterChange(event, value)}
+                  onChange={event =>
+                    handleFilterChange(event, event.target.value)
+                  }
                 />
               </Grid>
               <Grid item>
-                <DatePickers
+                <InlineDatePickerDemo
                   id="date"
                   label="Start Date"
-                  placeholder="dd-mm-yyyy"
                   value={formState.startDate}
                   name={START_DATE_FILTER}
-                  onChange={handleStartDateChange}
-                  //onBlur={focousOut}
+                  onChange={event =>
+                    handleStartDateChange(START_DATE_FILTER, event)
+                  }
                 />
               </Grid>
               <Grid item>
-                <DatePickers
+                <InlineDatePickerDemo
                   id="date"
                   label="End Date"
-                  placeholder="dd-mm-yyyy"
                   value={formState.endDate}
                   name={END_DATE_FILTER}
-                  onChange={handleEndDateChange}
-                  // onBlur={focousOut}
+                  onChange={event =>
+                    handleEndDateChange(END_DATE_FILTER, event)
+                  }
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
