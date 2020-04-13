@@ -29,6 +29,9 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
+const STREAM_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
+
 const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
 const STUDENT_URL = strapiConstants.STRAPI_STUDENTS;
@@ -37,6 +40,7 @@ const NAME_FILTER = "username_contains";
 const EVENT_FILTER = "event.id";
 const STUDENT_FILTER = "student.id";
 const educationYear = "educationYear";
+const STREAM_FILTER = "stream.id";
 
 const educationYearList = [
   { name: "First", id: "First" },
@@ -48,6 +52,7 @@ const educationYearList = [
 const StudentList = props => {
   const history = useHistory();
   const classes = useStyles();
+  const [streams, setStreams] = useState([]);
 
   const [formState, setFormState] = useState({
     students: [],
@@ -82,6 +87,7 @@ const StudentList = props => {
 
   useEffect(() => {
     getStudentList(10, 1);
+    getFilterData();
   }, []);
 
   const getStudentList = async (pageSize, page, paramsForevents = null) => {
@@ -209,6 +215,21 @@ const StudentList = props => {
     }
   };
 
+  const getFilterData = () => {
+    let params = {
+      pageSize: -1
+    };
+
+    serviceProvider
+      .serviceProviderForGetRequest(STREAM_URL, params)
+      .then(res => {
+        setStreams(res.data.result);
+      })
+      .catch(error => {
+        console.log("error");
+      });
+  };
+
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
@@ -319,6 +340,7 @@ const StudentList = props => {
       filterDataParameters: {},
       /** Turns on the spinner */
       isClearResetFilter: true,
+      isStateClearFilter: true,
       isDataLoading: true,
       texttvalue: ""
     }));
@@ -331,12 +353,17 @@ const StudentList = props => {
     getStudentList(formState.pageSize, 1);
   };
 
-  const handleYearChange = date => {
-    //formState.filterDataParameters[date.target.name] = date.target.value;
-    setFormState(formState => ({
-      ...formState,
-      year: date
-    }));
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false
+      }));
+    }
   };
 
   const handleFilterChange = (event, value) => {
@@ -366,10 +393,6 @@ const StudentList = props => {
     <div>
       {}
       <div>
-        {/* <Link to={"#"} id={row.id} onClick={handleClick}>
-          {" "}
-          {row.user}{" "}
-        </Link> */}
         <a href="#" id={row.studentid} onClick={handleClick}>
           {row.user}
         </a>
@@ -474,13 +497,25 @@ const StudentList = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  //name={ROLE_FILTER}
-                  options={[]}
+                  //name={STREAM_FILTER}
+                  options={streams}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
-                  // onChange={(event, value) =>
-                  //   handleChangeAutoComplete(ROLE_FILTER, event, value)
-                  // }
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(STREAM_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : streams[
+                          streams.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STREAM_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -534,7 +569,7 @@ const StudentList = props => {
                 <GrayButton
                   variant="contained"
                   color="primary"
-                  //onClick={clearFilter}
+                  onClick={clearFilter}
                   disableElevation
                 >
                   Reset
