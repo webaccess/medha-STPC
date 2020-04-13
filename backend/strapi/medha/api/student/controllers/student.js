@@ -572,7 +572,6 @@ module.exports = {
         return event;
       }
     });
-
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
