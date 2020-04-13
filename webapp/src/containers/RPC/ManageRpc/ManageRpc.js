@@ -42,7 +42,6 @@ const SORT_FIELD_KEY = "_sort";
 const ViewRpc = props => {
   /** Value to set for Rpc filter */
   const [value, setValue] = React.useState(null);
-  const filter = createFilterOptions();
 
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -400,7 +399,7 @@ const ViewRpc = props => {
         strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
       serviceProviders
-        .serviceProviderForGetRequest(FilterRpcURL, params)
+        .serviceProviderForGetAsyncRequest(FilterRpcURL, params)
         .then(res => {
           if (res.data.result.length !== 0) {
           }
