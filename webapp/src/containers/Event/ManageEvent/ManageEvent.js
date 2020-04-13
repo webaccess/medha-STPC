@@ -384,7 +384,7 @@ const ManageEvent = props => {
   const viewStudentList = event => {
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
-      eventIdStudent: event.target.id,
+      eventId: event.target.id,
       eventTitle: event.target.getAttribute("value")
     });
   };

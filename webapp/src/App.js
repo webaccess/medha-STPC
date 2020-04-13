@@ -58,6 +58,7 @@ import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
 import StudentList from "./containers/Event/ManageEvent/EventStudentList";
 import ViewEvent from "./containers/Event/ViewEvent/ViewEvent";
 import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
+import AddStudentToRecruitmentDrive from "./containers/Event/ManageEvent/AddStudentToRecruitmentDrive";
 
 /** OTP */
 import RequestOtp from "./containers/OTP/Requestotp";
@@ -442,7 +443,7 @@ function App() {
               />
               {/** Add student to recruitment drive */}
               <CollegeAdminRoute
-                component={StudentProfile}
+                component={AddStudentToRecruitmentDrive}
                 exact
                 layout={Layout}
                 path={routeConstants.ADD_STUDENT_DRIVE}

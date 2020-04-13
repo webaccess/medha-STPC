@@ -13,54 +13,36 @@ import {
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import {
-  Auth as auth,
   Spinner,
   GreenButton,
   YellowButton,
   GrayButton,
   Table,
-  ThumbIcon
+  YearMonthPicker
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
-import HireStudent from "./HireStudent";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-
-const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-const STREAM_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 
 const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
-const STUDENT_URL = strapiConstants.STRAPI_STUDENTS;
+const STREAMS_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const SORT_FIELD_KEY = "_sort";
 const NAME_FILTER = "username_contains";
-const EVENT_FILTER = "event.id";
-const STUDENT_FILTER = "student.id";
-const educationYear = "educationYear";
-const STREAM_FILTER = "stream.id";
+const STREAMS_FILTER = "stream.id";
 
-const educationYearList = [
-  { name: "First", id: "First" },
-  { name: "Second", id: "Second" },
-  { name: "Third", id: "Third" },
-  { name: "Fourth", id: "Fourth" }
-];
-
-const StudentList = props => {
+const AddStudentToRecruitmentDrive = props => {
   const history = useHistory();
   const classes = useStyles();
   const [streams, setStreams] = useState([]);
 
   const [formState, setFormState] = useState({
+    streams: [],
     students: [],
-    registration: [],
-    hireColor: {},
     greenButtonChecker: true,
     dataToShow: [],
-    tempData: [],
     eventTitle: props["location"]["eventTitle"],
     eventId: props["location"]["eventId"],
     year: new Date(),
@@ -68,7 +50,6 @@ const StudentList = props => {
     isClearResetFilter: false,
     isFilterSearch: false,
     texttvalue: "",
-    hireStudentData: [],
 
     /*** Hire */
     dataToHire: {},
@@ -91,22 +72,35 @@ const StudentList = props => {
     getFilterData();
   }, []);
 
-  const getStudentList = async (pageSize, page, paramsForevents = null) => {
+  const getFilterData = () => {
+    let params = {
+      pageSize: -1
+    };
+    serviceProvider
+      .serviceProviderForGetRequest(STREAMS_URL, params)
+      .then(res => {
+        setStreams(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+  const getStudentList = async (pageSize, page, paramsForStudent = null) => {
     if (
-      paramsForevents !== null &&
-      !formUtilities.checkEmpty(paramsForevents)
+      paramsForStudent !== null &&
+      !formUtilities.checkEmpty(paramsForStudent)
     ) {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
         [SORT_FIELD_KEY]: "father_first_name:asc"
       };
-      Object.keys(paramsForevents).map(key => {
-        defaultParams[key] = paramsForevents[key];
+      Object.keys(paramsForStudent).map(key => {
+        defaultParams[key] = paramsForStudent[key];
       });
-      paramsForevents = defaultParams;
+      paramsForStudent = defaultParams;
     } else {
-      paramsForevents = {
+      paramsForStudent = {
         page: page,
         pageSize: pageSize,
         [SORT_FIELD_KEY]: "father_first_name:asc"
@@ -116,31 +110,20 @@ const StudentList = props => {
       ...formState,
       isDataLoading: true
     }));
-    let EVENT_ID = null;
-    let regStudent_url = null;
-    if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
-      auth.getUserInfo().role.name === "College Admin"
-    ) {
-      EVENT_ID = formState.eventId;
-      console.log("Event_ID", EVENT_ID);
-      regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
-      if (auth.getUserInfo().role.name === "College Admin") {
-        paramsForevents["user.college"] = auth.getUserInfo()["college"]["id"];
-      }
-    }
-    if (
-      EVENT_ID !== undefined &&
-      EVENT_ID !== null &&
-      regStudent_url !== null
-    ) {
+    let Get_student_list =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_COLLEGES +
+      "/" +
+      formState.eventId +
+      "/" +
+      strapiConstants.STRAPI_STUDENTS;
+    if (formState.eventId !== undefined && formState.eventId !== null) {
       await serviceProvider
-        .serviceProviderForGetRequest(regStudent_url, paramsForevents)
+        .serviceProviderForGetRequest(Get_student_list, paramsForStudent)
         .then(res => {
           formState.dataToShow = [];
-          formState.tempData = [];
           let eventData = [];
-          eventData = convertEventData(res.data.result);
+          eventData = convertStudentData(res.data.result);
           setFormState(formState => ({
             ...formState,
             students: res.data.result,
@@ -149,7 +132,6 @@ const StudentList = props => {
             page: res.data.page,
             pageCount: res.data.pageCount,
             dataToShow: eventData,
-            tempData: eventData,
             isDataLoading: false
           }));
         })
@@ -157,152 +139,43 @@ const StudentList = props => {
           console.log("error", error);
         });
     } else {
-      if (
-        auth.getUserInfo().role.name === "Medha Admin" ||
-        auth.getUserInfo().role.name === "College Admin"
-      ) {
-        history.push({
-          pathname: routeConstants.MANAGE_EVENT
-        });
-      } else {
-        history.push({
-          pathname: routeConstants.DASHBOARD_URL
-        });
-      }
+      history.push({
+        pathname: routeConstants.MANAGE_EVENT
+      });
     }
   };
 
-  const convertEventData = data => {
+  const convertStudentData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
-        console.log("eventid", props["location"]["eventIdStudent"]);
-        var eventIndividualData = {};
-        eventIndividualData["id"] = data[i]["id"];
-        eventIndividualData["studentid"] = data[i]["user"]
+        var individualStudentData = {};
+        individualStudentData["id"] = data[i]["id"];
+        individualStudentData["studentid"] = data[i]["user"]
           ? data[i]["user"]["id"]
           : "";
-        eventIndividualData["user"] = data[i]["user"]
+        individualStudentData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";
-        eventIndividualData["name"] = data[i]["user"]
+        individualStudentData["name"] = data[i]["user"]
           ? data[i]["user"]["first_name"] +
             " " +
             data[i]["father_first_name"] +
             " " +
             data[i]["user"]["last_name"]
           : "";
-        eventIndividualData["stream"] = data[i]["stream"]
+        individualStudentData["stream"] = data[i]["stream"]
           ? data[i]["stream"]["name"]
           : "";
-        eventIndividualData["educations"] = data[i]["educations"][0]
+        individualStudentData["educations"] = data[i]["educations"][0]
           ? data[i]["educations"][0]["year_of_passing"]
           : "";
-        eventIndividualData["mobile"] = data[i]["user"]
+        individualStudentData["mobile"] = data[i]["user"]
           ? data[i]["user"]["contact_number"]
           : "";
-
-        let paramsForHire = {
-          "event.id": props["location"]["eventIdStudent"],
-          "student.user": data[i]["user"]["id"]
-        };
-        let isHired = false;
-        serviceProvider
-          .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-          .then(res => {
-            let hireData = res.data.result[0];
-            isHired = hireData.hired_at_event;
-          })
-          .catch(error => {
-            console.log("error", error);
-          });
-        eventIndividualData["hired"] = isHired;
-
-        x.push(eventIndividualData);
+        x.push(individualStudentData);
       }
       return x;
-    }
-  };
-
-  const getFilterData = () => {
-    let params = {
-      pageSize: -1
-    };
-
-    serviceProvider
-      .serviceProviderForGetRequest(STREAM_URL, params)
-      .then(res => {
-        setStreams(res.data.result);
-      })
-      .catch(error => {
-        console.log("error");
-      });
-  };
-
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showModalHire: false
-    }));
-  };
-
-  const handleCloseHireModal = () => {
-    /** This restores all the data when we close the modal */
-    setFormState(formState => ({
-      ...formState,
-      showModalHire: false
-    }));
-    if (formState.isStudentHired) {
-      restoreData();
-    }
-  };
-
-  const isStudentHiredCompleted = status => {
-    formState.isStudentHired = status;
-  };
-
-  const hiredCell = event => {
-    getEventRegistrationData(event.target.id);
-  };
-
-  const getEventRegistrationData = async id => {
-    let paramsForHire = {
-      "student.id": id,
-      "event.id": formState.eventId
-    };
-    serviceProvider
-      .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-      .then(res => {
-        let registerData = res.data.result[0];
-        let regUserID = registerData.id;
-        if (registerData.hired_at_event) {
-          registerCellData(regUserID, false);
-        } else {
-          registerCellData(regUserID, true);
-        }
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-  };
-
-  const registerCellData = (id, isHired = false) => {
-    if (isHired === true) {
-      setFormState(formState => ({
-        ...formState,
-        dataToHire: id,
-        isHired: true,
-        isUnHired: false,
-        showModalHire: true
-      }));
-    } else {
-      setFormState(formState => ({
-        ...formState,
-        dataToHire: id,
-        isHired: false,
-        isUnHired: true,
-        showModalHire: true
-      }));
     }
   };
 
@@ -337,6 +210,8 @@ const StudentList = props => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getStudentList(perPage, page, formState.filterDataParameters);
+    } else {
+      await getStudentList(perPage, page);
     }
   };
   /** This restores all the data when we clear the filters*/
@@ -349,7 +224,6 @@ const StudentList = props => {
       filterDataParameters: {},
       /** Turns on the spinner */
       isClearResetFilter: true,
-      isStateClearFilter: true,
       isDataLoading: true,
       texttvalue: ""
     }));
@@ -362,17 +236,12 @@ const StudentList = props => {
     getStudentList(formState.pageSize, 1);
   };
 
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-      setFormState(formState => ({
-        ...formState,
-        isClearResetFilter: false
-      }));
-    }
+  const handleYearChange = date => {
+    //formState.filterDataParameters[date.target.name] = date.target.value;
+    setFormState(formState => ({
+      ...formState,
+      year: date
+    }));
   };
 
   const handleFilterChange = (event, value) => {
@@ -395,8 +264,8 @@ const StudentList = props => {
     history.push({
       pathname: routeConstants.VIEW_STUDENT_PROFILE,
       dataForStudent: event.target.id,
-      fromAddStudentToRecruitmentDrive: false,
-      fromEventStudentList: true,
+      fromAddStudentToRecruitmentDrive: true,
+      fromEventStudentList: false,
       eventId: formState.eventId,
       eventTitle: formState.eventTitle
     });
@@ -413,16 +282,10 @@ const StudentList = props => {
     </div>
   );
 
-  const backToManageEvent = () => {
+  const backToStudentList = () => {
     history.push({
-      pathname: routeConstants.MANAGE_EVENT
-    });
-  };
-
-  const toAddStudents = () => {
-    history.push({
-      pathname: routeConstants.ADD_STUDENT_DRIVE,
-      eventId: formState.eventId,
+      pathname: routeConstants.EVENT_STUDENT_LIST,
+      eventIdStudent: formState.eventId,
       eventTitle: formState.eventTitle
     });
   };
@@ -430,70 +293,29 @@ const StudentList = props => {
   /** Table Data */
   const column = [
     {
-      name: "Students",
+      name: "Student Name",
       sortable: true,
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
-    { name: "Academic Year", sortable: true, selector: "educations" },
-    { name: "Mobile", sortable: true, selector: "mobile" },
-
-    {
-      name: "Actions",
-      cell: cell => (
-        <div className={classes.DisplayFlex}>
-          <div className={classes.PaddingFirstActionButton}>
-            <ThumbIcon
-              id={cell.id}
-              value={cell.name}
-              onClick={hiredCell}
-              style={cell.isHired}
-            />
-          </div>
-        </div>
-      ),
-      width: "18%",
-      cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
-      }
-    }
+    { name: "Academic Year", sortable: true, selector: "educations" }
   ];
 
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Event Students List
+          Add Student
         </Typography>
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => backToManageEvent()}
-          startIcon={<ArrowBackIosIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-        >
-          Back
-        </GreenButton>
-        {auth.getUserInfo().role.name === "College Admin" ? (
-          <GreenButton
-            variant="contained"
-            color="secondary"
-            startIcon={<PersonAddIcon />}
-            onClick={() => toAddStudents()}
-            greenButtonChecker={formState.greenButtonChecker}
-          >
-            Add Student
-          </GreenButton>
-        ) : null}
 
         <GreenButton
           variant="contained"
           color="secondary"
-          startIcon={<GetAppIcon />}
+          onClick={() => backToStudentList()}
+          startIcon={<ArrowBackIosIcon />}
           greenButtonChecker={formState.greenButtonChecker}
         >
-          Download List
+          Back
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
@@ -508,8 +330,8 @@ const StudentList = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label={"Students"}
-                  placeholder="Search Students"
+                  label={"Student Name"}
+                  placeholder="Search by student's name"
                   variant="outlined"
                   name={NAME_FILTER}
                   value={formState.texttvalue}
@@ -519,25 +341,7 @@ const StudentList = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  //name={STREAM_FILTER}
-                  options={streams}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(STREAM_FILTER, event, value)
-                  }
-                  value={
-                    formState.isClearResetFilter
-                      ? null
-                      : streams[
-                          streams.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[STREAM_FILTER]
-                            );
-                          })
-                        ] || null
-                  }
+                  name={STREAMS_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
@@ -553,27 +357,10 @@ const StudentList = props => {
                 />
               </Grid>
               <Grid item>
-                {/* <YearMonthPicker
+                <YearMonthPicker
                   label="Academic Year"
                   value={formState.year}
                   onChange={handleYearChange}
-                /> */}
-                <Autocomplete
-                  id="education-year-list"
-                  options={educationYearList}
-                  getOptionLabel={option => option.name}
-                  // onChange={(event, value) => {
-                  //   handleChangeAutoComplete(educationYear, event, value);
-                  // }}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Academic Year"
-                      variant="outlined"
-                      name="tester"
-                      className={classes.autoCompleteField}
-                    />
-                  )}
                 />
               </Grid>
 
@@ -609,7 +396,6 @@ const StudentList = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                //defaultSortField="username"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
@@ -623,19 +409,10 @@ const StudentList = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}
-          <HireStudent
-            id={formState.dataToHire}
-            showModal={formState.showModalHire}
-            isHired={formState.isHired}
-            isUnHired={formState.isUnHired}
-            hiredSuccessfully={isStudentHiredCompleted}
-            closeHireModal={handleCloseHireModal}
-            modalClose={modalClose}
-          />
         </Card>
       </Grid>
     </Grid>
   );
 };
 
-export default StudentList;
+export default AddStudentToRecruitmentDrive;
