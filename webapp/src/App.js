@@ -27,7 +27,7 @@ import AddEditState from "./containers/State/AddEditState/AddEditState";
 import ManageState from "./containers/State/ManageState/ManageState";
 import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
 import ManageZone from "./containers/Zone/ManageZone/ManageZone";
-import ViewEvents from "./containers/Event/ManageEvent/ManageEvent";
+import ManageEvent from "./containers/Event/ManageEvent/ManageEvent";
 import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
 import StudentList from "./containers/Event/ManageEvent/EventStudentList";
 import Layout from "./hoc/Layout/Layout";
@@ -376,7 +376,7 @@ function App() {
               />
               {/** Event */}
               <MedhaCollegeAdminRoute
-                component={ViewEvents}
+                component={ManageEvent}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_EVENT}
