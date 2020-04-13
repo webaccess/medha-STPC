@@ -19,7 +19,6 @@ import {
   YellowButton,
   GrayButton,
   Table,
-  YearMonthPicker,
   ThumbIcon
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -35,6 +34,14 @@ const SORT_FIELD_KEY = "_sort";
 const NAME_FILTER = "username_contains";
 const EVENT_FILTER = "event.id";
 const STUDENT_FILTER = "student.id";
+const educationYear = "educationYear";
+
+const educationYearList = [
+  { name: "First", id: "First" },
+  { name: "Second", id: "Second" },
+  { name: "Third", id: "Third" },
+  { name: "Fourth", id: "Fourth" }
+];
 
 const StudentList = props => {
   const history = useHistory();
@@ -53,6 +60,7 @@ const StudentList = props => {
     isClearResetFilter: false,
     isFilterSearch: false,
     texttvalue: "",
+    hireStudentData: [],
 
     /*** Hire */
     dataToHire: {},
@@ -152,6 +160,7 @@ const StudentList = props => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
+        console.log("eventid", props["location"]["eventIdStudent"]);
         var eventIndividualData = {};
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["studentid"] = data[i]["user"]
@@ -169,6 +178,23 @@ const StudentList = props => {
         eventIndividualData["mobile"] = data[i]["user"]
           ? data[i]["user"]["contact_number"]
           : "";
+
+        let paramsForHire = {
+          "event.id": props["location"]["eventIdStudent"],
+          "student.user": data[i]["user"]["id"]
+        };
+        let isHired = false;
+        serviceProvider
+          .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
+          .then(res => {
+            let hireData = res.data.result[0];
+            isHired = hireData.hired_at_event;
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+        eventIndividualData["hired"] = isHired;
+
         x.push(eventIndividualData);
       }
       return x;
@@ -359,7 +385,12 @@ const StudentList = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            <ThumbIcon id={cell.id} value={cell.name} onClick={hiredCell} />
+            <ThumbIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={hiredCell}
+              style={cell.isHired}
+            />
           </div>
         </div>
       ),
@@ -430,10 +461,27 @@ const StudentList = props => {
                 />
               </Grid>
               <Grid item>
-                <YearMonthPicker
+                {/* <YearMonthPicker
                   label="Academic Year"
                   value={formState.year}
                   onChange={handleYearChange}
+                /> */}
+                <Autocomplete
+                  id="education-year-list"
+                  options={educationYearList}
+                  getOptionLabel={option => option.name}
+                  // onChange={(event, value) => {
+                  //   handleChangeAutoComplete(educationYear, event, value);
+                  // }}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Academic Year"
+                      variant="outlined"
+                      name="tester"
+                      className={classes.autoCompleteField}
+                    />
+                  )}
                 />
               </Grid>
 
