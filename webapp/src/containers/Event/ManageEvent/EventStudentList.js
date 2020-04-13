@@ -25,6 +25,8 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import HireStudent from "./HireStudent";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const REGISTRATION_URL =
@@ -115,8 +117,15 @@ const StudentList = props => {
     ) {
       EVENT_ID = props["location"]["eventIdStudent"];
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
+      if (auth.getUserInfo().role.name === "College Admin") {
+        paramsForevents["user.college"] = auth.getUserInfo()["college"]["id"];
+      }
     }
-    if (EVENT_ID !== null && regStudent_url !== null) {
+    if (
+      EVENT_ID !== undefined &&
+      EVENT_ID !== null &&
+      regStudent_url !== null
+    ) {
       await serviceProvider
         .serviceProviderForGetRequest(regStudent_url, paramsForevents)
         .then(res => {
@@ -140,13 +149,12 @@ const StudentList = props => {
           console.log("error", error);
         });
     } else {
-      if (auth.getUserInfo().role.name === "Medha Admin") {
+      if (
+        auth.getUserInfo().role.name === "Medha Admin" ||
+        auth.getUserInfo().role.name === "College Admin"
+      ) {
         history.push({
           pathname: routeConstants.MANAGE_EVENT
-        });
-      } else if (auth.getUserInfo().role.name === "Student") {
-        history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT
         });
       } else {
         history.push({
@@ -369,6 +377,12 @@ const StudentList = props => {
     </div>
   );
 
+  const backToManageEvent = () => {
+    history.push({
+      pathname: routeConstants.MANAGE_EVENT
+    });
+  };
+
   /** Table Data */
   const column = [
     {
@@ -408,11 +422,29 @@ const StudentList = props => {
         <Typography variant="h4" gutterBottom>
           Event Students List
         </Typography>
+        <GreenButton
+          variant="contained"
+          color="secondary"
+          onClick={() => backToManageEvent()}
+          startIcon={<ArrowBackIosIcon />}
+          greenButtonChecker={formState.greenButtonChecker}
+        >
+          Back
+        </GreenButton>
+        {auth.getUserInfo().role.name === "College Admin" ? (
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            startIcon={<PersonAddIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+          >
+            Add Student
+          </GreenButton>
+        ) : null}
 
         <GreenButton
           variant="contained"
           color="secondary"
-          // onClick={() => deleteMulUserById()}
           startIcon={<GetAppIcon />}
           greenButtonChecker={formState.greenButtonChecker}
         >

@@ -88,11 +88,11 @@ const AddEditCollege = props => {
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
-  const [labelWidth, setLabelWidth] = React.useState(0);
+ 
   const [backDropOpen, setBackDropOpen] = React.useState(false);
 
   React.useEffect(() => {
-    setLabelWidth(inputLabel.current.offsetWidth);
+  
 
     if (auth.getUserInfo().role.name === "Medha Admin") {
       setFormState(formState => ({
@@ -782,7 +782,7 @@ const AddEditCollege = props => {
                       /** This is used to set the default value to the auto complete */
                       value={
                         states[
-                          states.findIndex(function(item, i) {
+                          states.findIndex(function (item, i) {
                             return item.id === formState.values[state];
                           })
                         ] || null
@@ -836,7 +836,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : zones[
-                              zones.findIndex(function(item, i) {
+                              zones.findIndex(function (item, i) {
                                 return item.id === formState.values[zone];
                               })
                             ] ||
@@ -894,7 +894,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : rpcs[
-                              rpcs.findIndex(function(item, i) {
+                              rpcs.findIndex(function (item, i) {
                                 return item.id === formState.values[rpc];
                               })
                             ] ||
@@ -949,7 +949,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : districts[
-                              districts.findIndex(function(item, i) {
+                              districts.findIndex(function (item, i) {
                                 return item.id === formState.values[district];
                               })
                             ] ||
@@ -1051,7 +1051,7 @@ const AddEditCollege = props => {
                         /** This is used to set the default value to the auto complete */
                         value={
                           user[
-                            user.findIndex(function(item, i) {
+                            user.findIndex(function (item, i) {
                               return item.id === formState.values[principal];
                             })
                           ] || null /** Please give a default " " blank value */
@@ -1214,7 +1214,7 @@ const AddEditCollege = props => {
                                     name={streamId}
                                     value={
                                       streamsDataBackup[
-                                        streamsDataBackup.findIndex(function(
+                                        streamsDataBackup.findIndex(function (
                                           item,
                                           i
                                         ) {

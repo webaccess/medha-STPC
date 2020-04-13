@@ -14,6 +14,7 @@ const CustomDateTimePicker = props => {
           value={props.value}
           onChange={props.onChange}
           helperText={props.helperText}
+          fullWidth
         />
       </MuiPickersUtilsProvider>
     </MuiThemeProvider>

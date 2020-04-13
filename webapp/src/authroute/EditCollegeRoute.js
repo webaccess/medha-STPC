@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { auth as Auth } from "../components";
 import auth from "../components/Auth";
 import AddEditCollege from "../containers/College/AddEditCollege/AddEditCollege";
