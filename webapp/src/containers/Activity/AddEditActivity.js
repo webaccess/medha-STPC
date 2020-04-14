@@ -8,7 +8,8 @@ import {
   Divider,
   InputLabel,
   IconButton,
-  Collapse
+  Collapse,
+  Button,
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
 import CloseIcon from "@material-ui/icons/Close";
@@ -16,7 +17,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import * as routeConstants from "../../constants/RouteConstants";
 
 import * as genericConstants from "../../constants/GenericConstants.js";
-
+import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CustomDateTimePicker from "../../components/CustomDateTimePicker/CustomDateTimePicker.js";
 import Alert from "../../components/Alert/Alert.js";
@@ -37,85 +38,8 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300
-  },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap"
-  },
-  chip: {
-    margin: 2
-  },
-  noLabel: {
-    marginTop: theme.spacing(3)
-  },
-  root: {
-    maxWidth: "100%"
-  },
-  btnspace: {
-    padding: "20px 18px 20px"
-  },
-  btnspaceadd: {
-    padding: "0px 15px 15px"
-  },
-  formgrid: {
-    marginTop: theme.spacing(0),
-    alignItems: "center"
-  },
-  divider: {
-    marginTop: "15px",
-    marginBottom: "15px"
-  },
-  add_more_btn: {
-    float: "right"
-  },
-  streamcard: {
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    padding: "15px !important",
-    position: "relative",
-    "& label": {
-      position: "absolute",
-      top: "-8px",
-      backgroundColor: "#fff"
-    }
-  },
-  streamoffer: {
-    paddingLeft: "15px",
-    paddingRight: "15px",
-    borderRadius: "0px",
-    boxShadow: "none !important"
-  },
-  streamcardcontent: {
-    boxShadow: "none",
-    borderBottom: "1px solid #ccc",
-    marginBottom: "15px",
-    borderRadius: "0px"
-  },
-  title: {
-    display: "flex",
-    marginBottom: theme.spacing(1),
-    "& h4": {
-      flex: "1",
-      fontWeight: "700"
-    }
-  },
-  CardActionGrid: {
-    backgroundColor: "#EEEEEE"
-  },
-  MarginBottom: {
-    marginBottom: "10px"
-  },
-  toolbarMargin: {
-    marginTop: theme.spacing(2),
-    border: "1px solid"
-  }
-}));
+import useStyles from "../../containers/ContainerStyles/AddEditPageStyles.js";
+import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 
 const AddEditActivity = (props) => {
   let history = useHistory();
@@ -147,7 +71,7 @@ const AddEditActivity = (props) => {
       : false,
     showNoImage: props.location.editActivity
       ? false
-      : props.location.editActivity
+      : props.location.editActivity,
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
@@ -155,14 +79,14 @@ const AddEditActivity = (props) => {
   const activitytypelist = [
     { name: "Workshop", id: "workshop" },
     { name: "Training", id: "training" },
-    { name: "Industrial Visit", id: "industrialVisit" }
+    { name: "Industrial Visit", id: "industrialVisit" },
   ];
 
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
     { name: "Third", id: "Third" },
-    { name: "Fourth", id: "Fourth" }
+    { name: "Fourth", id: "Fourth" },
   ];
 
   const [isFailed, setIsFailed] = useState(false);
@@ -315,12 +239,12 @@ const AddEditActivity = (props) => {
       /** Call axios from here */
       setFormState((formState) => ({
         ...formState,
-        isValid: true
+        isValid: true,
       }));
     } else {
       setFormState((formState) => ({
         ...formState,
-        isValid: false
+        isValid: false,
       }));
     }
   };
@@ -390,7 +314,7 @@ const AddEditActivity = (props) => {
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataEdited: true,
             editedData: response.data,
-            fromEditActivity: true
+            fromEditActivity: true,
           });
         })
         .catch((err) => {
@@ -455,7 +379,7 @@ const AddEditActivity = (props) => {
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataAdded: true,
             addedData: response,
-            fromAddActivity: true
+            fromAddActivity: true,
           });
           // ImageUpload(response);
         })
@@ -496,17 +420,17 @@ const AddEditActivity = (props) => {
 
       values: {
         ...formState.values,
-        [e.target.name]: e.target.files[0].name
+        [e.target.name]: e.target.files[0].name,
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true
+        [e.target.name]: true,
       },
       files: e.target.files[0],
       previewFile: URL.createObjectURL(e.target.files[0]),
       showPreview: true,
       showEditPreview: false,
-      showNoImage: false
+      showNoImage: false,
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -521,12 +445,12 @@ const AddEditActivity = (props) => {
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value
+          e.target.type === "checkbox" ? e.target.checked : e.target.value,
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true
-      }
+        [e.target.name]: true,
+      },
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -547,25 +471,25 @@ const AddEditActivity = (props) => {
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value
+            [eventName]: value,
           },
           touched: {
             ...formState.touched,
-            [eventName]: true
+            [eventName]: true,
           },
-          stream: id
+          stream: id,
         }));
       } else {
         setFormState((formState) => ({
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value.id
+            [eventName]: value.id,
           },
           touched: {
             ...formState.touched,
-            [eventName]: true
-          }
+            [eventName]: true,
+          },
         }));
       }
       if (formState.errors.hasOwnProperty(eventName)) {
@@ -580,6 +504,7 @@ const AddEditActivity = (props) => {
 
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editActivity
@@ -631,8 +556,86 @@ const AddEditActivity = (props) => {
       </Grid>
       <Grid spacing={3}>
         <Card>
-          <form autoComplete="off">
+          <form autoComplete="off" noValidate>
             <CardContent>
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container className={classes.formgridInputFile}>
+                  <Grid item md={10} xs={12}>
+                    <div className={classes.imageDiv}>
+                      {formState.showPreview ? (
+                        <Img
+                          alt="abc"
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                          src={formState.previewFile}
+                        />
+                      ) : null}
+                      {!formState.showPreview && !formState.showEditPreview ? (
+                        <div class={classes.DefaultNoImage}></div>
+                      ) : null}
+                      {formState.showEditPreview &&
+                      formState.dataForEdit["upload_logo"] !== null &&
+                      formState.dataForEdit["upload_logo"] !== undefined &&
+                      formState.dataForEdit["upload_logo"] !== {} ? (
+                        <Img
+                          src={
+                            strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                            formState.dataForEdit["upload_logo"]["url"]
+                          }
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                        />
+                      ) : null}
+                      {formState.showNoImage ? (
+                        <Img
+                          src="/images/noImage.png"
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                        />
+                      ) : null}
+                    </div>
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.MarginBottom}>
+                  <Grid item md={10} xs={12}>
+                    <TextField
+                      fullWidth
+                      id="files"
+                      margin="normal"
+                      name="files"
+                      placeholder="Upload Logo"
+                      onChange={handleChangefile}
+                      required
+                      type="file"
+                      inputProps={{ accept: "image/*" }}
+                      //value={formState.values["files"] || ""}
+                      error={hasError("files")}
+                      helperText={
+                        hasError("files")
+                          ? formState.errors["files"].map((error) => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                      className={classes.inputFile}
+                    />
+                    <label htmlFor={get(ActivityFormSchema["files"], "id")}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        fullWidth
+                        className={classes.InputFileButton}
+                        startIcon={<AddOutlinedIcon />}
+                      >
+                        ADD NEW FILE
+                      </Button>
+                    </label>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
@@ -656,7 +659,7 @@ const AddEditActivity = (props) => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={12} xs={12}>
+                  <Grid item md={12} xs={12} className={"descriptionBox"}>
                     <Grid className={classes.streamcard}>
                       <Card className={classes.streamoffer}>
                         <InputLabel
@@ -665,12 +668,12 @@ const AddEditActivity = (props) => {
                         >
                           {genericConstants.DESCRIPTION}
                         </InputLabel>
-                        <div className="rdw-storybook-root">
+                        <div className="rdw-root">
                           <Editor
                             editorState={editorState}
-                            toolbarClassName="rdw-storybook-toolbar"
-                            wrapperClassName="rdw-storybook-wrapper"
-                            editorClassName="rdw-storybook-editor"
+                            toolbarClassName="rdw-toolbar"
+                            wrapperClassName="rdw-wrapper"
+                            editorClassName="rdw-editor"
                             value={editorState}
                             onEditorStateChange={(data) => {
                               setEditorState(data);
@@ -682,7 +685,7 @@ const AddEditActivity = (props) => {
                   </Grid>
                 </Grid>
 
-                <Grid container spacing={3} className={classes.Datetime}>
+                <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
                       variant="inline"
@@ -702,7 +705,7 @@ const AddEditActivity = (props) => {
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date"
+                        "aria-label": "change date",
                       }}
                     />
                   </Grid>
@@ -725,7 +728,7 @@ const AddEditActivity = (props) => {
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date"
+                        "aria-label": "change date",
                       }}
                     />
                   </Grid>
@@ -942,66 +945,7 @@ const AddEditActivity = (props) => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
-                <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={12} xs={12}>
-                    {console.log(formState.values.files)}
-                    {formState.showPreview ? (
-                      <Img
-                        alt="abc"
-                        loader={<Spinner />}
-                        width="100%"
-                        height="100%"
-                        src={formState.previewFile}
-                      />
-                    ) : null}
-                    {formState.showEditPreview &&
-                    formState.dataForEdit["upload_logo"] !== null &&
-                    formState.dataForEdit["upload_logo"] !== undefined &&
-                    formState.dataForEdit["upload_logo"] !== {} ? (
-                      <Img
-                        src={
-                          strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                          formState.dataForEdit["upload_logo"]["url"]
-                        }
-                        loader={<Spinner />}
-                        width="100%"
-                        height="100%"
-                      />
-                    ) : null}
-                    {formState.showNoImage ? (
-                      <Img
-                        src="/images/noImage.png"
-                        loader={<Spinner />}
-                        width="100%"
-                        height="100%"
-                      />
-                    ) : null}
-                  </Grid>
-                  <Grid item md={12} xs={12}>
-                    <TextField
-                      fullWidth
-                      id="files"
-                      margin="normal"
-                      name="files"
-                      placeholder="Upload Logo"
-                      onChange={handleChangefile}
-                      required
-                      type="file"
-                      //value={formState.values["files"] || ""}
-                      error={hasError("files")}
-                      helperText={
-                        hasError("files")
-                          ? formState.errors["files"].map((error) => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      variant="outlined"
-                    />
-                  </Grid>
-                </Grid>
                 {formState.editActivity ? (
                   <Grid item md={12} xs={12} className={classes.btnspace}>
                     <YellowButton
