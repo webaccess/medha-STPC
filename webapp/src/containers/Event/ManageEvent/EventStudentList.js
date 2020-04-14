@@ -8,7 +8,8 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Icon,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import * as routeConstants from "../../../constants/RouteConstants";
@@ -21,7 +22,7 @@ import {
   GrayButton,
   Table,
   ThumbIcon,
-  Alert
+  Alert,
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -49,10 +50,10 @@ const educationYearList = [
   { name: "First", id: "First" },
   { name: "Second", id: "Second" },
   { name: "Third", id: "Third" },
-  { name: "Fourth", id: "Fourth" }
+  { name: "Fourth", id: "Fourth" },
 ];
 
-const StudentList = props => {
+const StudentList = (props) => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
@@ -88,7 +89,7 @@ const StudentList = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
   });
 
   useEffect(() => {
@@ -104,9 +105,9 @@ const StudentList = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "father_first_name:asc"
+        [SORT_FIELD_KEY]: "father_first_name:asc",
       };
-      Object.keys(paramsForevents).map(key => {
+      Object.keys(paramsForevents).map((key) => {
         defaultParams[key] = paramsForevents[key];
       });
       paramsForevents = defaultParams;
@@ -114,12 +115,12 @@ const StudentList = props => {
       paramsForevents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "father_first_name:asc"
+        [SORT_FIELD_KEY]: "father_first_name:asc",
       };
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
     let EVENT_ID = null;
     let regStudent_url = null;
@@ -140,16 +141,16 @@ const StudentList = props => {
     ) {
       await serviceProvider
         .serviceProviderForGetRequest(regStudent_url, paramsForevents)
-        .then(res => {
+        .then((res) => {
           formState.dataToShow = [];
           formState.tempData = [];
           let eventData = [];
           getHiredIds(res.data.result)
-            .then(res1 => {
+            .then((res1) => {
               console.log("res1", res1);
               eventData = convertEventData(res.data.result, res1);
               console.log("eventData", eventData);
-              setFormState(formState => ({
+              setFormState((formState) => ({
                 ...formState,
                 students: res.data.result,
                 pageSize: res.data.pageSize,
@@ -158,12 +159,12 @@ const StudentList = props => {
                 pageCount: res.data.pageCount,
                 dataToShow: eventData,
                 tempData: eventData,
-                isDataLoading: false
+                isDataLoading: false,
               }));
             })
-            .catch(error => {});
+            .catch((error) => {});
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
         });
     } else {
@@ -172,32 +173,32 @@ const StudentList = props => {
         auth.getUserInfo().role.name === "College Admin"
       ) {
         history.push({
-          pathname: routeConstants.MANAGE_EVENT
+          pathname: routeConstants.MANAGE_EVENT,
         });
       } else {
         history.push({
-          pathname: routeConstants.DASHBOARD_URL
+          pathname: routeConstants.DASHBOARD_URL,
         });
       }
     }
   };
 
-  const getHiredIds = async studentData => {
+  const getHiredIds = async (studentData) => {
     let ids = [];
     for (let data in studentData) {
       let paramsForHire = {
         "event.id": props["location"]["eventId"],
         "student.id": studentData[data]["id"],
-        hired_at_event: true
+        hired_at_event: true,
       };
       await serviceProvider
         .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-        .then(res => {
+        .then((res) => {
           if (res.data.result.length !== 0) {
             ids.push(studentData[data]["id"]);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
         });
     }
@@ -245,31 +246,31 @@ const StudentList = props => {
 
   const getFilterData = () => {
     let params = {
-      pageSize: -1
+      pageSize: -1,
     };
 
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, params)
-      .then(res => {
+      .then((res) => {
         setStreams(res.data.result);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error");
       });
   };
 
   const modalClose = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      showModalHire: false
+      showModalHire: false,
     }));
   };
 
   const handleCloseHireModal = () => {
     /** This restores all the data when we close the modal */
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      showModalHire: false
+      showModalHire: false,
     }));
     if (formState.isStudentHired) {
       restoreData();
@@ -286,18 +287,18 @@ const StudentList = props => {
     formState.fromHiredModal = fromHiredModal;
   };
 
-  const hiredCell = event => {
+  const hiredCell = (event) => {
     getEventRegistrationData(event.target.id);
   };
 
-  const getEventRegistrationData = async id => {
+  const getEventRegistrationData = async (id) => {
     let paramsForHire = {
       "student.id": id,
-      "event.id": formState.eventId
+      "event.id": formState.eventId,
     };
     serviceProvider
       .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-      .then(res => {
+      .then((res) => {
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
         if (registerData.hired_at_event) {
@@ -306,29 +307,29 @@ const StudentList = props => {
           registerCellData(regUserID, true, "");
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
 
   const registerCellData = (id, isHired = false, studentName) => {
     if (isHired === true) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToHire: id,
         isHired: true,
         isUnHired: false,
         showModalHire: true,
-        studentName: studentName
+        studentName: studentName,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToHire: id,
         isHired: false,
         isUnHired: true,
         showModalHire: true,
-        studentName: studentName
+        studentName: studentName,
       }));
     }
   };
@@ -347,7 +348,7 @@ const StudentList = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStudentList(formState.pageSize, page);
     } else {
@@ -369,7 +370,7 @@ const StudentList = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
@@ -378,7 +379,7 @@ const StudentList = props => {
       isClearResetFilter: true,
       isStateClearFilter: true,
       isDataLoading: true,
-      texttvalue: ""
+      texttvalue: "",
     }));
 
     /**Need to confirm this thing for resetting the data */
@@ -395,9 +396,9 @@ const StudentList = props => {
       //restoreData();
     } else {
       formState.filterDataParameters[filterName] = value["id"];
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isClearResetFilter: false
+        isClearResetFilter: false,
       }));
     }
   };
@@ -406,27 +407,27 @@ const StudentList = props => {
     if (value != null) {
       formState.filterDataParameters[event.target.name] = event.target.value;
 
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        texttvalue: event.target.value
+        texttvalue: event.target.value,
       }));
     } else {
       formState.filterDataParameters[event.target.name] = event.target.value;
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        texttvalue: null
+        texttvalue: null,
       }));
     }
   };
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     history.push({
       pathname: routeConstants.VIEW_STUDENT_PROFILE,
       dataForStudent: event.target.id,
       fromAddStudentToRecruitmentDrive: false,
       fromEventStudentList: true,
       eventId: formState.eventId,
-      eventTitle: formState.eventTitle
+      eventTitle: formState.eventTitle,
     });
   };
 
@@ -444,7 +445,7 @@ const StudentList = props => {
 
   const backToManageEvent = () => {
     history.push({
-      pathname: routeConstants.MANAGE_EVENT
+      pathname: routeConstants.MANAGE_EVENT,
     });
   };
 
@@ -452,12 +453,12 @@ const StudentList = props => {
     history.push({
       pathname: routeConstants.ADD_STUDENT_DRIVE,
       eventId: formState.eventId,
-      eventTitle: formState.eventTitle
+      eventTitle: formState.eventTitle,
     });
   };
 
   /** Data Export Functionality */
-  const handleClickDownloadStudents = value => {
+  const handleClickDownloadStudents = (value) => {
     let data = [];
     for (let i in value) {
       var eventIndividualData = {};
@@ -476,7 +477,7 @@ const StudentList = props => {
     {
       name: "Students",
       sortable: true,
-      cell: row => <CustomLink row={row} />
+      cell: (row) => <CustomLink row={row} />,
     },
     { name: "Stream", sortable: true, selector: "stream" },
     { name: "Academic Year", sortable: true, selector: "educations" },
@@ -484,7 +485,7 @@ const StudentList = props => {
 
     {
       name: "Actions",
-      cell: cell => (
+      cell: (cell) => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <ThumbIcon
@@ -499,9 +500,9 @@ const StudentList = props => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%"
-      }
-    }
+        maxWidth: "18%",
+      },
+    },
   ];
 
   console.log(formState);
@@ -511,14 +512,6 @@ const StudentList = props => {
         <Typography variant="h4" gutterBottom>
           Event Students List
         </Typography>
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => backToManageEvent()}
-          greenButtonChecker={formState.greenButtonChecker}
-        >
-          Back
-        </GreenButton>
         {auth.getUserInfo().role.name === "College Admin" ? (
           <GreenButton
             variant="contained"
@@ -535,6 +528,16 @@ const StudentList = props => {
           csvData={handleClickDownloadStudents(formState.dataToShow)}
           fileName="StudentList"
         />
+        <GreenButton
+          variant="contained"
+          color="primary"
+          disableElevation
+          onClick={() => backToManageEvent()}
+          startIcon={<Icon>keyboard_arrow_left</Icon>}
+          greenButtonChecker={formState.greenButtonChecker}
+        >
+          Back to listing
+        </GreenButton>
       </Grid>
 
       {/** Error/Success messages to be shown for add */}
@@ -611,7 +614,7 @@ const StudentList = props => {
                   name={STREAM_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(STREAM_FILTER, event, value)
                   }
@@ -627,7 +630,7 @@ const StudentList = props => {
                           })
                         ] || null
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Stream"
@@ -642,11 +645,11 @@ const StudentList = props => {
                 <Autocomplete
                   id="education-year-list"
                   options={educationYearList}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   // onChange={(event, value) => {
                   //   handleChangeAutoComplete(educationYear, event, value);
                   // }}
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Academic Year"
@@ -663,7 +666,7 @@ const StudentList = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     searchFilter();
                   }}
