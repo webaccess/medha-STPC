@@ -99,6 +99,7 @@ const AddEditEvent = (props) => {
     showPreviewImage: false,
     showPreviewEditImage: false,
     showPreviewNoImage: false,
+    showAddPreviewNoImage:true,
     dynamicBar: [{ index: Math.random() }],
     dynamicBarError: [],
     dynamicEducationBar: [{ index: Math.random() }],
@@ -195,13 +196,9 @@ const AddEditEvent = (props) => {
         }
         formState.values[stream] = finalDataStream;
       }
-      if (props["dataForEdit"] && props["dataForEdit"]["educations"]) {
+      if (props["dataForEdit"] && props["dataForEdit"]["educations"] && props["dataForEdit"]["educations"].length) {
         let dynamicEducationBar = [];
-        for (
-          var i = 0;
-          i < props["dataForEdit"]["educations"].length;
-          i++
-        ) {
+        for (let i in props["dataForEdit"]["educations"]) {
           let tempEducationDynamicBarValue = {};
           tempEducationDynamicBarValue["index"] = Math.random();
           tempEducationDynamicBarValue["id"] =
@@ -215,13 +212,9 @@ const AddEditEvent = (props) => {
         formState.dynamicEducationBar = dynamicEducationBar;
       }
 
-      if (props["dataForEdit"] && props["dataForEdit"]["qualifications"]) {
+      if (props["dataForEdit"] && props["dataForEdit"]["qualifications"] && props["dataForEdit"]["qualifications"].length ) {
         let dynamicBar = [];
-        for (
-          var i = 0;
-          i < props["dataForEdit"]["qualifications"].length;
-          i++
-        ) {
+        for (let i in props["dataForEdit"]["qualifications"]) {
           let tempDynamicBarValue = {};
           tempDynamicBarValue["index"] = Math.random();
           tempDynamicBarValue["id"] =
@@ -236,12 +229,14 @@ const AddEditEvent = (props) => {
       }
       if (props["dataForEdit"] && props["dataForEdit"]["upload_logo"]) {
         formState.showPreviewEditImage = true;
+        formState.showAddPreviewNoImage = false;
       }
       if (
         props["dataForEdit"] &&
         props["dataForEdit"]["upload_logo"] === null
       ) {
         formState.showPreviewNoImage = true;
+        formState.showAddPreviewNoImage = true;
       }
     }
     formState.counter += 1;
@@ -710,7 +705,7 @@ const AddEditEvent = (props) => {
         field.hasOwnProperty(percentage)
       ) {
         qualificationPercentageValue["qualification"] = field[qualification];
-        qualificationPercentageValue["marks"] = parseInt(field[percentage]);
+        qualificationPercentageValue["percentage"] = parseInt(field[percentage]);
         qualificationsPercentageArrayValues.push(qualificationPercentageValue);
       }
     });
@@ -923,6 +918,7 @@ const AddEditEvent = (props) => {
       showPreviewEditImage: false,
       showPreviewNoImage: false,
       showPreviewImage: true,
+      showAddPreviewNoImage: false,
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -998,7 +994,8 @@ const AddEditEvent = (props) => {
                           className={classes.UploadImage}
                         />
                       ) : (
-                        <div class={classes.DefaultNoImage}></div>
+                        null
+                        // <div class={classes.DefaultNoImage}></div>
                       )}
 
                       {formState.showPreviewEditImage &&
@@ -1020,6 +1017,9 @@ const AddEditEvent = (props) => {
                           loader={<Spinner />}
                           className={classes.UploadImage}
                         />
+                      ) : null}
+                        {formState.showAddPreviewNoImage ? (
+                        <div class={classes.DefaultNoImage}></div>
                       ) : null}
                     </div>
                   </Grid>
