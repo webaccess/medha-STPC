@@ -15,18 +15,22 @@ import {
 import {
   Card,
   CardContent,
+  Box,
   Grid,
   Divider,
   Typography,
   IconButton,
   Collapse,
+  Button,
+  CardMedia,
 } from "@material-ui/core";
-import useStyles from "./ActivityDetailsStyle.js";
+import useStyles from "./EligibleActivityStyles.js";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as genericConstants from "../../constants/GenericConstants";
 import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
+import noImage from "../../assets/images/no-image-icon.png";
 //import RegisterEvent from "./EventRegistration";
 
 const EligibleActivity = (props) => {
@@ -216,148 +220,122 @@ const EligibleActivity = (props) => {
           {formState.activityDetails.length ? (
             formState.activityDetails.map((data) => {
               return (
-                <Grid key={data.id} item md={4} xs={12}>
-                  <Card className={classes.cardHeight}>
-                    {formState.isStudentRegister ? (
-                      <IconButton aria-label="add to favorites">
-                        <CheckCircleIcon style={{ color: green[500] }} />
-                      </IconButton>
-                    ) : null}
-                    <CardContent>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card>
+                    {/* <CardHeader className={classes.CardHeaderFooter}> */}
+                    {/* <Grid
+                      container
+                      direction="row"
+                      justify="flex-end"
+                      alignItems="center"
+                      className={classes.CardHeaderFooter}
+                    >
+                      {data["isRegistered"] ? (
+                        <React.Fragment>
+                          <Grid item xs={2}>
+                            <IconButton aria-label="is student registered">
+                              <CheckCircleIcon style={{ color: green[500] }} />
+                            </IconButton>
+                          </Grid>
+                          <Grid item xs={10}>
+                            <Typography style={{ color: green[500] }}>
+                              Registered
+                            </Typography>
+                          </Grid>
+                        </React.Fragment>
+                      ) : (
+                        <div className={classes.successTickDiv}></div>
+                      )}
+                    </Grid> */}
+                    {/* </CardHeader> */}
+                    <Box className={classes.BoxPadding}>
                       {data["upload_logo"] !== null &&
                       data["upload_logo"] !== undefined &&
                       data["upload_logo"] !== {} ? (
-                        <React.Fragment>
-                          <Grid
-                            item
-                            className={classes.defaultMargin}
-                            spacing={4}
-                          >
-                            <div className={classes.imageDiv}>
-                              <Img
-                                src={
-                                  strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                                  data["upload_logo"]["url"]
-                                }
-                                loader={<Spinner />}
-                                width="100%"
-                                height="100%"
-                                object-fit="contain"
-                              />
-                            </div>
-                          </Grid>
-                          <Divider className={classes.defaultMargin} />
-                        </React.Fragment>
+                        <CardMedia
+                          image={
+                            strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                            data["upload_logo"]["url"]
+                          }
+                          className={classes.EligibleEventsStyling}
+                        />
                       ) : (
-                        <React.Fragment>
-                          <Grid
-                            item
-                            className={classes.defaultMargin}
-                            spacing={4}
-                          >
-                            <div className={classes.imageDiv}>
-                              <Img
-                                src="/images/noImage.png"
-                                loader={<Spinner />}
-                                width="100%"
-                                height="100%"
-                                object-fit="contain"
-                              />
-                            </div>
-                          </Grid>
-                          <Divider className={classes.defaultMargin} />
-                        </React.Fragment>
+                        <CardMedia
+                          image={noImage}
+                          className={classes.NoEventsStyling}
+                        />
                       )}
-                      <div className={classes.titleDiv}>
-                        <Grid item xs={12}>
-                          <Typography variant="h5" gutterBottom>
-                            <b>{data.title}</b>
-                          </Typography>
-                        </Grid>
-                      </div>
-                      <div className={classes.contentDiv}>
-                        <Grid container className={classes.defaultMargin}>
+                      <Box className={classes.DivHeight}>
+                        <Typography
+                          variant="h5"
+                          className={classes.TextAlign}
+                          color="textPrimary"
+                        >
+                          {data.title}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Grid container spacing={1} justify="center">
                           <Grid item md={3} xs={3}>
-                            <b>Date :-</b>
+                            <Typography variant="h5" color="textPrimary">
+                              Date
+                            </Typography>
                           </Grid>
                           <Grid item md={9} xs={9}>
-                            {getDate(data)}
+                            <Typography color="textSecondary">
+                              {getDate(data)}
+                            </Typography>
                           </Grid>
-                        </Grid>
-                        {/* <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
-                            <b>Time :-</b>
+                            <Typography variant="h5" color="textPrimary">
+                              Venue
+                            </Typography>
                           </Grid>
                           <Grid item md={9} xs={9}>
-                            {getTime(data)}
+                            <Typography color="textSecondary">
+                              {getVenue(data)}
+                            </Typography>
                           </Grid>
-                        </Grid> */}
-                        <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
-                            <b>Venue :-</b>
+                            <Typography variant="h5" color="textPrimary">
+                              Batch
+                            </Typography>
                           </Grid>
                           <Grid item md={9} xs={9}>
-                            {getVenue(data)}
+                            <Typography color="textSecondary">
+                              {getBatch(data)}
+                            </Typography>
                           </Grid>
-                        </Grid>
-                        <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
-                            <b>Batch :-</b>
+                            <Typography variant="h5" color="textPrimary">
+                              Time
+                            </Typography>
                           </Grid>
                           <Grid item md={9} xs={9}>
-                            {getBatch(data)}
+                            <Typography color="textSecondary">
+                              {getBatchTime(data)}
+                            </Typography>
                           </Grid>
                         </Grid>
-                        <Grid container className={classes.defaultMargin}>
-                          <Grid item md={3} xs={3}>
-                            <b>Timing :-</b>
-                          </Grid>
-                          <Grid item md={9} xs={9}>
-                            {getBatchTime(data)}
-                          </Grid>
-                        </Grid>
-                      </div>
-                      <div className={classes.buttonsDiv}>
-                        <Grid container>
-                          {/* <Grid
-                            item
-                            md={6}
-                            xs={6}
-                            className={classes.buttonAlign}
-                          >
-                            <GreenButton
-                              variant="contained"
-                              color="primary"
-                              disableElevation
-                              greenButtonChecker={formState.greenButtonChecker}
-                              onClick={e =>
-                                registerUserForEvent(e, data.id, data.title)
-                              }
-                            >
-                              Register
-                            </GreenButton>
-                          </Grid> */}
-                          <Grid
-                            item
-                            md={6}
-                            xs={6}
-                            className={classes.buttonAlign}
-                          >
-                            <YellowButton
-                              variant="contained"
-                              color="primary"
-                              disableElevation
-                              onClick={() => {
-                                routeToDisplayActivity(data);
-                              }}
-                            >
-                              Read More
-                            </YellowButton>
-                          </Grid>
-                        </Grid>
-                      </div>
-                      <Divider className={classes.defaultMargin} />
-                    </CardContent>
+                      </Box>
+                    </Box>
+                    <Divider />
+                    <Box className={classes.CardHeaderFooter}>
+                      <Grid item xs={12} md={11} justify="center">
+                        <Button
+                          variant="contained"
+                          greenButtonChecker={formState.greenButtonChecker}
+                          disableElevation
+                          onClick={() => {
+                            routeToDisplayActivity(data);
+                          }}
+                          fullWidth
+                          className={classes.ReadMoreButton}
+                        >
+                          Read More
+                        </Button>
+                      </Grid>
+                    </Box>
                   </Card>
                 </Grid>
               );

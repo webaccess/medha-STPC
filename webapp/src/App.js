@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
 import { NotFoundPage, Logout } from "./components";
-
 import * as routeConstants from "./constants/RouteConstants";
 import {
   LoginRoute,
@@ -11,67 +9,88 @@ import {
   PrivateRoute,
   DashBoardComponent,
   MedhaCollegeAdminRoute,
-  MedhaAdminRoute
+  MedhaAdminRoute,
+  CollegeAdminRoute,
+  EditEventRoute,
+  EditCollegeRoute,
+  EditStateRoute,
+  EditZoneRoute,
+  EditRpcRoute,
+  EditUserRoute,
+  EditEducation,
+  RouteWithTabLayout,
+  EditAcademicHistoryRoute,
+  EditActivityBatchRoute
 } from "./authroute";
 
-import RouteWithTabLayout from "./authroute/RouteWithTabLayout.js";
-
+/** General */
 import Dashboard from "./containers/Dashboard/Dashboard";
-import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
-import ManageCollege from "./containers/College/ManageCollege/ManageCollege";
-import AddUser from "./containers/User/AddEditUser/AddEditUser";
-import ManageUser from "./containers/User/ManageUser/ManageUser";
-import AddEditRpc from "./containers/RPC/AddEditRpc/AddEditRpc";
-import ManageRpc from "./containers/RPC/ManageRpc/ManageRpc";
-import AddEditState from "./containers/State/AddEditState/AddEditState";
-import ManageState from "./containers/State/ManageState/ManageState";
-import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
-import ManageZone from "./containers/Zone/ManageZone/ManageZone";
-import ViewEvents from "./containers/Event/ManageEvent/ManageEvent";
-import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
-import StudentList from "./containers/Event/ManageEvent/EventStudentList";
 import Layout from "./hoc/Layout/Layout";
-
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "./theme";
+import SetIndexContext from "./context/SetIndexContext";
+
+/** College routes */
+import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
+import ManageCollege from "./containers/College/ManageCollege/ManageCollege";
+import ViewCollege from "./containers/College/ManageCollege/ViewCollege";
+
+/** College route */
+import AddUser from "./containers/User/AddEditUser/AddEditUser";
+import ManageUser from "./containers/User/ManageUser/ManageUser";
+import ViewUser from "./containers/User/ManageUser/ViewUser";
+
+/** RPC */
+import AddEditRpc from "./containers/RPC/AddEditRpc/AddEditRpc";
+import ManageRpc from "./containers/RPC/ManageRpc/ManageRpc";
+
+/** State */
+import AddEditState from "./containers/State/AddEditState/AddEditState";
+import ManageState from "./containers/State/ManageState/ManageState";
+
+/** Zone */
+import AddZone from "./containers/Zone/AddEditZone/AddEditZone";
+import ManageZone from "./containers/Zone/ManageZone/ManageZone";
+
+/** Events */
+import ManageEvent from "./containers/Event/ManageEvent/ManageEvent";
+import AddEditEvent from "./containers/Event/AddEditEvent/AddEditEvent";
+import StudentList from "./containers/Event/ManageEvent/EventStudentList";
+import ViewEvent from "./containers/Event/ViewEvent/ViewEvent";
+import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
+import AddStudentToRecruitmentDrive from "./containers/Event/ManageEvent/AddStudentToRecruitmentDrive";
+
+/** OTP */
 import RequestOtp from "./containers/OTP/Requestotp";
 import VerifyOtp from "./containers/OTP/Verifyotp";
-import EditCollegeRoute from "./authroute/EditCollegeRoute";
+
+/** Registration */
 import Registered from "../src/containers/Registration/Registered.js";
 import RegistrationRoute from "./containers/Registration/RegistrationRoute";
+import AddEditStudent from "./containers/Registration/AddEditStudent";
+
+/** RequiredConformation */
 import RequiredConformation from "./components/RequiredConformation/RequiredConformation.js";
 
-import EditStateRoute from "./authroute/EditStateRoute";
-import EditZoneRoute from "./authroute/EditZoneRoute";
-import EditRpcRoute from "./authroute/EditRpcRoute";
-import EditUserRoute from "./authroute/EditUserRoute";
-import ViewCollege from "./containers/College/ManageCollege/ViewCollege";
+/** Student */
 import StudentProfile from "./containers/Student/StudentProfile";
 import ViewEducation from "./containers/Student/Education/ViewEducation";
 import AddEducation from "./containers/Student/Education/AddEditEducation";
-import EditEducation from "./authroute/EditEducationRoute";
 import ViewDocument from "./containers/Student/Document/ViewDocument";
 import AddDocument from "./containers/Student/Document/AddEditDocument";
-import SetIndexContext from "./context/SetIndexContext";
-import ViewUser from "./containers/User/ManageUser/ViewUser";
 import ManageStudents from "./containers/Student/ManageStudents";
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
-import EditAcademicHistoryRoute from "./authroute/EditAcademicHistoryRoute";
-import ViewEvent from "./containers/Event/ViewEvent/ViewEvent";
-import EditEventRoute from "./authroute/EditEventRoutes";
-import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
 
+/** Activity */
 import ViewActivity from "./containers/Activity/ViewActivity.js";
 import AddEditActivity from "./containers/Activity/AddEditActivity";
 import ActivityRoute from "./containers/Activity/ActivityRoute.js";
 import ActivityDetails from "./containers/Activity/ActivityDetails";
 import EligibleActivity from "./containers/Activity/EligibleActivity";
-
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
-import EditActivityBatchRoute from "./authroute/EditActivityBatchRoute";
-import AddEditStudent from "./containers/Registration/AddEditStudent";
+
 function App() {
   const [index, setIndex] = useState(0);
 
@@ -376,7 +395,7 @@ function App() {
               />
               {/** Event */}
               <MedhaCollegeAdminRoute
-                component={ViewEvents}
+                component={ManageEvent}
                 exact
                 layout={Layout}
                 path={routeConstants.MANAGE_EVENT}
@@ -421,6 +440,13 @@ function App() {
                 exact
                 layout={Layout}
                 path={routeConstants.VIEW_STUDENT_PROFILE}
+              />
+              {/** Add student to recruitment drive */}
+              <CollegeAdminRoute
+                component={AddStudentToRecruitmentDrive}
+                exact
+                layout={Layout}
+                path={routeConstants.ADD_STUDENT_DRIVE}
               />
 
               {/* Activities */}
