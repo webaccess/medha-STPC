@@ -106,3 +106,13 @@ export const QUALIFICATIONS = [
   { id: 4, value: "MSc" },
   { id: 5, value: "BE" }
 ];
+
+export const EDUCATIONANDPERCENTAGE = "Education and Percentage";
+
+export const EDUCATIONS = [
+  { id: 1, value: "First" },
+  { id: 2, value: "Second" },
+  { id: 3, value: "Third" },
+  { id: 4, value: "Fourth" }
+];
+
