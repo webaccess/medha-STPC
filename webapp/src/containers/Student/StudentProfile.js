@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Auth as auth, Typography } from "../../components";
+import { Auth as auth, Typography, GrayButton } from "../../components";
 import {
   Card,
   CardContent,
@@ -124,7 +124,12 @@ const StudentProfile = props => {
     isSuccess: false,
     editable: false,
     showPassword: false,
-    counter: 0
+    counter: 0,
+    fromAddStudentToRecruitmentDrive:
+      props["location"]["fromAddStudentToRecruitmentDrive"],
+    fromEventStudentList: props["location"]["fromEventStudentList"],
+    eventId: props["location"]["eventId"],
+    eventTitle: props["location"]["eventTitle"]
   });
   const [selectedDate, setSelectedDate] = React.useState(
     new Date("2000-01-01T21:11:54")
@@ -207,6 +212,23 @@ const StudentProfile = props => {
       editStudent: true,
       dataForEdit: formState.details
     });
+  };
+
+  const handleClickCancel = event => {
+    event.preventDefault();
+    if (formState.fromAddStudentToRecruitmentDrive) {
+      history.push({
+        pathname: routeConstants.ADD_STUDENT_DRIVE,
+        eventId: formState.eventId,
+        eventTitle: formState.eventTitle
+      });
+    } else if (formState.fromEventStudentList) {
+      history.push({
+        pathname: routeConstants.EVENT_STUDENT_LIST,
+        eventId: formState.eventId,
+        eventTitle: formState.eventTitle
+      });
+    }
   };
 
   return (
@@ -447,14 +469,16 @@ const StudentProfile = props => {
                           >
                             {genericConstants.EDIT_TEXT}
                           </YellowButton>
-                          {/* <GrayButton
-                          color="primary"
-                          variant="contained"
-                          to={routeConstants.VIEW_COLLEGE}
-                          className={classes.resetbtn}
-                        >
-                          {genericConstants.CANCEL_BUTTON_TEXT}
-                        </GrayButton> */}
+                          {auth.getUserInfo().role.name === "College Admin" ? (
+                            <GrayButton
+                              color="primary"
+                              variant="contained"
+                              onClick={handleClickCancel}
+                              className={classes.resetbtn}
+                            >
+                              {genericConstants.CANCEL_BUTTON_TEXT}
+                            </GrayButton>
+                          ) : null}
                         </CardActions>
                       </Card>
                     </form>

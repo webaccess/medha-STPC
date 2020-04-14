@@ -88,11 +88,11 @@ const AddEditCollege = props => {
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
-  const [labelWidth, setLabelWidth] = React.useState(0);
+ 
   const [backDropOpen, setBackDropOpen] = React.useState(false);
 
   React.useEffect(() => {
-    setLabelWidth(inputLabel.current.offsetWidth);
+  
 
     if (auth.getUserInfo().role.name === "Medha Admin") {
       setFormState(formState => ({

@@ -69,6 +69,7 @@ export const EDIT_EVENT = "/edit-event";
 export const ELIGIBLE_EVENT = "/eligible-event";
 export const EVENT_STUDENT_LIST = "/event-student-list";
 export const VIEW_STUDENT_PROFILE = "/view-student-profile";
+export const ADD_STUDENT_DRIVE = "/add-student-recruitment-drive";
 
 /**Training and Activity */
 export const EDIT_ACTIVITY = "/edit-activity";

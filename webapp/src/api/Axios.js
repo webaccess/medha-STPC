@@ -26,6 +26,26 @@ export const serviceProviderForGetRequest = async (
     });
 };
 
+export const serviceProviderForGetAsyncRequest = (
+  url,
+  payload = {},
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
+) => {
+  const URL = url;
+  return axios(URL, {
+    method: "GET",
+    headers: headers,
+    params: payload
+  })
+    .then(response => response)
+    .catch(error => {
+      throw error;
+    });
+};
+
 export const serviceProviderForGetOneRequest = async (
   url,
   id,

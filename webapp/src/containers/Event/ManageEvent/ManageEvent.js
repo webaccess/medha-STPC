@@ -40,7 +40,7 @@ const START_DATE_FILTER = "start_date_time_gte";
 const END_DATE_FILTER = "end_date_time_lte";
 const SORT_FIELD_KEY = "_sort";
 
-const ViewEvents = props => {
+const ManageEvent = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
@@ -238,10 +238,6 @@ const ViewEvents = props => {
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
-    console.log(
-      "formState.filterDataParameters",
-      formState.filterDataParameters
-    );
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getEventData(perPage, page, formState.filterDataParameters);
@@ -388,7 +384,7 @@ const ViewEvents = props => {
   const viewStudentList = event => {
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
-      eventIdStudent: event.target.id,
+      eventId: event.target.id,
       eventTitle: event.target.getAttribute("value")
     });
   };
@@ -640,4 +636,4 @@ const ViewEvents = props => {
   );
 };
 
-export default ViewEvents;
+export default ManageEvent;
