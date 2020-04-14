@@ -48,16 +48,7 @@ const MenuItems = props => {
       {
         name: "Activity",
         Icon: <AssignmentOutlinedIcon />,
-        items: [
-          {
-            name: "Manage Activity",
-            link: routeConstants.MANAGE_ACTIVITY
-          },
-          {
-            name: "Validate Student",
-            link: routeConstants.VALIDATE_STUDENT
-          }
-        ]
+        link: routeConstants.MANAGE_ACTIVITY
       },
       {
         name: "Events",
@@ -98,20 +89,7 @@ const MenuItems = props => {
       {
         name: "Activity",
         Icon: <AssignmentOutlinedIcon />,
-        items: [
-          {
-            name: "Manage Activity",
-            link: routeConstants.MANAGE_ACTIVITY
-          },
-          {
-            name: "Manage Students Group",
-            link: routeConstants.NOT_FOUND_URL
-          },
-          {
-            name: "Validate Student",
-            link: routeConstants.NOT_FOUND_URL
-          }
-        ]
+        link: routeConstants.MANAGE_ACTIVITY
       },
       {
         name: "Events",

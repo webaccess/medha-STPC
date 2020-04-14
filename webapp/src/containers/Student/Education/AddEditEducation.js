@@ -6,8 +6,7 @@ import {
   CardContent,
   CardActions,
   Grid,
-  TextField,
-  Typography,
+  TextField
 } from "@material-ui/core";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
@@ -26,7 +25,7 @@ const yearOfPassing = "yearOfPassing";
 const board = "board";
 const percentage = "percentage";
 
-const AddEditEducation = (props) => {
+const AddEditEducation = props => {
   const history = useHistory();
   const classes = useStyles();
   const studentInfo = auth.getUserInfo()
@@ -46,7 +45,7 @@ const AddEditEducation = (props) => {
     isSuccess: false,
     isEditEducation: props["editEducation"] ? props["editEducation"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0,
+    counter: 0
   });
 
   /** Part for editing Education */
@@ -71,19 +70,19 @@ const AddEditEducation = (props) => {
   }
 
   /** This handle change is used to handle changes to text field */
-  const handleChange = (event) => {
+  const handleChange = event => {
     /** TO SET VALUES IN FORMSTATE */
     event.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [event.target.name]: event.target.value,
+        [event.target.name]: event.target.value
       },
       touched: {
         ...formState.touched,
-        [event.target.name]: true,
-      },
+        [event.target.name]: true
+      }
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -93,10 +92,10 @@ const AddEditEducation = (props) => {
   };
 
   /** This checks if the corresponding field has errors */
-  const hasError = (field) => (formState.errors[field] ? true : false);
+  const hasError = field => (formState.errors[field] ? true : false);
 
   /** Handle submit handles the submit and performs all the validations */
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -129,9 +128,9 @@ const AddEditEducation = (props) => {
       /** CALL POST FUNCTION */
       postEducationData();
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
     }
     event.preventDefault();
@@ -156,29 +155,29 @@ const AddEditEducation = (props) => {
           formState.dataForEdit["id"],
           postData
         )
-        .then((res) => {
+        .then(res => {
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,
             fromEditEducation: true,
             isDataEdited: true,
             editResponseMessage: "",
-            editedData: {},
+            editedData: {}
           });
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,
             fromEditEducation: true,
             isDataEdited: false,
             editResponseMessage: "",
-            editedData: {},
+            editedData: {}
           });
         });
     } else {
       serviceProviders
         .serviceProviderForPostRequest(EDUCATION_URL, postData)
-        .then((res) => {
+        .then(res => {
           console.log(res);
           setIsSuccess(true);
           history.push({
@@ -186,16 +185,16 @@ const AddEditEducation = (props) => {
             fromAddEducation: true,
             isDataAdded: true,
             addResponseMessage: "",
-            addedData: {},
+            addedData: {}
           });
         })
-        .catch((error) => {
+        .catch(error => {
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,
             fromAddEducation: true,
             isDataAdded: false,
             addResponseMessage: "",
-            addedData: {},
+            addedData: {}
           });
         });
     }
@@ -203,16 +202,16 @@ const AddEditEducation = (props) => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [eventName]: value ? value.value : "",
+        [eventName]: value ? value.value : ""
       },
       touched: {
         ...formState.touched,
-        [eventName]: true,
-      },
+        [eventName]: true
+      }
     }));
     if (formState.errors.hasOwnProperty(eventName)) {
       delete formState.errors[eventName];
@@ -243,7 +242,7 @@ const AddEditEducation = (props) => {
                     id="qualification-list"
                     className={classes.elementroot}
                     options={genericConstants.QUALIFICATIONS}
-                    getOptionLabel={(option) => option.value}
+                    getOptionLabel={option => option.value}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(qualification, event, value);
                     }}
@@ -256,7 +255,7 @@ const AddEditEducation = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError(qualification)}
@@ -266,7 +265,7 @@ const AddEditEducation = (props) => {
                         name="tester"
                         helperText={
                           hasError(qualification)
-                            ? formState.errors[qualification].map((error) => {
+                            ? formState.errors[qualification].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -289,7 +288,7 @@ const AddEditEducation = (props) => {
                     error={hasError(yearOfPassing)}
                     helperText={
                       hasError(yearOfPassing)
-                        ? formState.errors[yearOfPassing].map((error) => {
+                        ? formState.errors[yearOfPassing].map(error => {
                             return error + " ";
                           })
                         : null
@@ -312,7 +311,7 @@ const AddEditEducation = (props) => {
                     error={hasError(board)}
                     helperText={
                       hasError(board)
-                        ? formState.errors[board].map((error) => {
+                        ? formState.errors[board].map(error => {
                             return error + " ";
                           })
                         : null
@@ -335,7 +334,7 @@ const AddEditEducation = (props) => {
                     error={hasError(percentage)}
                     helperText={
                       hasError(percentage)
-                        ? formState.errors[percentage].map((error) => {
+                        ? formState.errors[percentage].map(error => {
                             return error + " ";
                           })
                         : null
