@@ -36,7 +36,7 @@ const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
 const STUDENT_URL = strapiConstants.STRAPI_STUDENTS;
 const SORT_FIELD_KEY = "_sort";
-const NAME_FILTER = "username_contains";
+const NAME_FILTER = "user.first_name_contains";
 const EVENT_FILTER = "event.id";
 const STUDENT_FILTER = "student.id";
 const educationYear = "educationYear";
@@ -123,7 +123,6 @@ const StudentList = props => {
       auth.getUserInfo().role.name === "College Admin"
     ) {
       EVENT_ID = formState.eventId;
-      console.log("Event_ID", EVENT_ID);
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
       if (auth.getUserInfo().role.name === "College Admin") {
         paramsForevents["user.college"] = auth.getUserInfo()["college"]["id"];
@@ -176,7 +175,6 @@ const StudentList = props => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
-        console.log("eventid", props["location"]["eventIdStudent"]);
         var eventIndividualData = {};
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["studentid"] = data[i]["user"]
@@ -497,7 +495,7 @@ const StudentList = props => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h5" gutterBottom color="textSecondary">
           {formState.eventTitle}
         </Typography>
       </Grid>
@@ -519,7 +517,7 @@ const StudentList = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
-                  //name={STREAM_FILTER}
+                  name={STREAM_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
@@ -538,9 +536,6 @@ const StudentList = props => {
                           })
                         ] || null
                   }
-                  options={streams}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
                   renderInput={params => (
                     <TextField
                       {...params}
