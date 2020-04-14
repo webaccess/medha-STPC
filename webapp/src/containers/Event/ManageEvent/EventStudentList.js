@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import GetAppIcon from "@material-ui/icons/GetApp";
-
 import {
   TextField,
   Card,
@@ -10,6 +8,7 @@ import {
   Grid,
   Typography
 } from "@material-ui/core";
+
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import {
@@ -27,6 +26,7 @@ import useStyles from "../../ContainerStyles/ManagePageStyles";
 import HireStudent from "./HireStudent";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ExportCSV from "./ExportCSV";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const STREAM_URL =
@@ -376,6 +376,7 @@ const StudentList = props => {
   const handleFilterChange = (event, value) => {
     if (value != null) {
       formState.filterDataParameters[event.target.name] = event.target.value;
+
       setFormState(formState => ({
         ...formState,
         texttvalue: event.target.value
@@ -400,6 +401,7 @@ const StudentList = props => {
     });
   };
 
+  /** To make cell data hypertext */
   const CustomLink = ({ row }) => (
     <div>
       {}
@@ -423,6 +425,21 @@ const StudentList = props => {
       eventId: formState.eventId,
       eventTitle: formState.eventTitle
     });
+  };
+
+  /** Data Export Functionality */
+  const handleClickDownloadStudents = value => {
+    let data = [];
+    for (let i in value) {
+      var eventIndividualData = {};
+      eventIndividualData["Name"] = value[i]["name"];
+      eventIndividualData["Stream"] = value[i]["stream"];
+      eventIndividualData["Academic Year"] = value[i]["educations"];
+      eventIndividualData["Mobile"] = value[i]["mobile"];
+
+      data.push(eventIndividualData);
+    }
+    return data;
   };
 
   /** Table Data */
@@ -485,14 +502,10 @@ const StudentList = props => {
           </GreenButton>
         ) : null}
 
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          startIcon={<GetAppIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-        >
-          Download List
-        </GreenButton>
+        <ExportCSV
+          csvData={handleClickDownloadStudents(formState.dataToShow)}
+          fileName="StudentList"
+        />
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Typography variant="h5" gutterBottom color="textSecondary">
@@ -511,7 +524,9 @@ const StudentList = props => {
                   variant="outlined"
                   name={NAME_FILTER}
                   value={formState.texttvalue}
-                  onChange={(event, value) => handleFilterChange(event, value)}
+                  onChange={(event, value) =>
+                    handleFilterChange(event, event.target.value)
+                  }
                 />
               </Grid>
               <Grid item>
@@ -548,11 +563,6 @@ const StudentList = props => {
                 />
               </Grid>
               <Grid item>
-                {/* <YearMonthPicker
-                  label="Academic Year"
-                  value={formState.year}
-                  onChange={handleYearChange}
-                /> */}
                 <Autocomplete
                   id="education-year-list"
                   options={educationYearList}

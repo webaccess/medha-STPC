@@ -16,6 +16,7 @@
     "draft-js": "^0.11.5",
     "draftjs-to-html": "^0.9.1",
     "draftjs-to-markdown": "^0.6.0",
+    "file-saver": "^2.0.2",
     "html-to-draftjs": "^1.5.0",
     "lodash": "^4.17.15",
     "markdown-draft-js": "^2.2.0",
@@ -36,7 +37,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
     "styled-components": "^5.0.1",
-    "validate.js": "^0.13.1"
+    "validate.js": "^0.13.1",
+    "xlsx": "^0.15.6"
   },
   "scripts": {
     "start": "react-scripts start",
