@@ -3,7 +3,7 @@ import { Tooltip } from "@material-ui/core";
 
 const ThumbIcon = (props) => {
   return (
-    <Tooltip title={props.title ? "Dehire" : "Hire"} placement="top">
+    <Tooltip title={props.style ? "Dehire" : "Hire"} placement="top">
       <i
         className="material-icons"
         id={props.id}
