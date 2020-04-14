@@ -51,7 +51,9 @@ const rpc = "rpc";
 const college = "college";
 const stream = "stream";
 const percentage = "percentage";
+const educationpercentage= "educationpercentage";
 const qualification = "qualification";
+const education = "education";
 const field = "upload_logo";
 const ref = "event";
 const files = "files";
@@ -99,6 +101,8 @@ const AddEditEvent = (props) => {
     showPreviewNoImage: false,
     dynamicBar: [{ index: Math.random() }],
     dynamicBarError: [],
+    dynamicEducationBar: [{ index: Math.random() }],
+    dynamicEducationBarError: []
   });
 
   const [states, setStates] = useState([]);
@@ -109,6 +113,8 @@ const AddEditEvent = (props) => {
   const inputLabel = React.useRef(null);
   const [qualifications, setQualifications] = useState([]);
   const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
+  const [educations, setEducations] = useState([]);
+  const [educationsDataBackup, setEducationsDataBackup] = useState([]);
  
 
   /** Part for editing state */
@@ -189,6 +195,26 @@ const AddEditEvent = (props) => {
         }
         formState.values[stream] = finalDataStream;
       }
+      if (props["dataForEdit"] && props["dataForEdit"]["educations"]) {
+        let dynamicEducationBar = [];
+        for (
+          var i = 0;
+          i < props["dataForEdit"]["educations"].length;
+          i++
+        ) {
+          let tempEducationDynamicBarValue = {};
+          tempEducationDynamicBarValue["index"] = Math.random();
+          tempEducationDynamicBarValue["id"] =
+            props["dataForEdit"]["educations"][i]["id"];
+            tempEducationDynamicBarValue[education] =
+            props["dataForEdit"]["educations"][i]["education_year"];
+            tempEducationDynamicBarValue[educationpercentage] =
+            props["dataForEdit"]["educations"][i]["percentage"];
+            dynamicEducationBar.push(tempEducationDynamicBarValue);
+        }
+        formState.dynamicEducationBar = dynamicEducationBar;
+      }
+
       if (props["dataForEdit"] && props["dataForEdit"]["qualifications"]) {
         let dynamicBar = [];
         for (
@@ -236,23 +262,43 @@ const AddEditEvent = (props) => {
         console.log("error", error);
       });
 
-    setQualificationsDataBackup(genericConstants.QUALIFICATIONS);
-    let dataForEditing = genericConstants.QUALIFICATIONS;
-    if (formState.isEditEvent) {
-      let tempQualificationData = dataForEditing;
-      let qualificationPercentageArray =
-        props["dataForEdit"]["qualification_percentage"];
-      for (let i in qualificationPercentageArray) {
-        let id = qualificationPercentageArray[i]["qualification"]["id"];
-        for (let j in tempQualificationData) {
-          if (tempQualificationData[j]["id"] === id)
-            tempQualificationData.splice(j, 1);
+      setEducationsDataBackup(genericConstants.EDUCATIONS);
+      let educationDataForEdit = genericConstants.EDUCATIONS;
+
+      if (formState.isEditEvent) {
+        let tempQualificationData = educationDataForEdit;
+        let qualificationPercentageArray =
+          props["dataForEdit"]["qualification_percentage"];
+       
+        for (let i in qualificationPercentageArray) {
+          let id = qualificationPercentageArray[i]["qualification"]["id"];
+          for (let j in tempQualificationData) {
+            if (tempQualificationData[j]["id"] === id)
+              tempQualificationData.splice(j, 1);
+          }
         }
+        setEducations(tempQualificationData);
+      } else {
+        setEducations(educationDataForEdit);
       }
-      setQualifications(tempQualificationData);
-    } else {
-      setQualifications(dataForEditing);
-    }
+
+      setQualificationsDataBackup(genericConstants.QUALIFICATIONS);
+      let dataForEditing = genericConstants.QUALIFICATIONS;
+      if (formState.isEditEvent) {
+        let tempQualificationData = dataForEditing;
+        let qualificationPercentageArray =
+          props["dataForEdit"]["qualification_percentage"];
+        for (let i in qualificationPercentageArray) {
+          let id = qualificationPercentageArray[i]["qualification"]["id"];
+          for (let j in tempQualificationData) {
+            if (tempQualificationData[j]["id"] === id)
+              tempQualificationData.splice(j, 1);
+          }
+        }
+        setQualifications(tempQualificationData);
+      } else {
+        setQualifications(dataForEditing);
+      }
 
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
@@ -366,6 +412,7 @@ const AddEditEvent = (props) => {
   };
 
   const checkErrorInDynamicBar = (field, currentDynamicBarValue) => {
+    if(field == "qualification" || field == "percentage"){
     let errorData = { error: false, value: "" };
 
     if (formState.dynamicBarError.length) {
@@ -379,20 +426,49 @@ const AddEditEvent = (props) => {
       });
     }
     return errorData;
-  };
+  } else if (field == "education" || field == "educationpercentage"){
+    let errorEducationData = { error: false, value: "" };
 
-  const addNewRow = (e) => {
+    if (formState.dynamicEducationBarError.length) {
+      formState.dynamicEducationBarError.map((barErrorValue) => {
+        if (barErrorValue["index"] === currentDynamicBarValue["index"]) {
+          if (barErrorValue.hasOwnProperty(field)) {
+            errorEducationData.error = true;
+            errorEducationData.value = barErrorValue[field];
+          }
+        }
+      });
+    }
+    return errorEducationData;
+  }
+  };
+  const addNewRow = (e, extendBarName) => {
+ 
     e.persist();
+    if(extendBarName == "qualification"){
     setFormState((formState) => ({
       ...formState,
       dynamicBar: [...formState.dynamicBar, { index: Math.random() }],
     }));
+  }else if (extendBarName == "education"){
+    setFormState((formState) => ({
+      ...formState,
+      dynamicEducationBar: [...formState.dynamicEducationBar, { index: Math.random() }],
+    }));
+  }
   };
   const clickOnDelete = (record, index) => {
+  
     setFormState((formState) => ({
       ...formState,
       dynamicBar: formState.dynamicBar.filter((r) => r !== record),
     }));
+    setFormState((formState) => ({
+      ...formState,
+      dynamicEducationBar: formState.dynamicEducationBar.filter((r) => r !== record),
+    }));
+  
+
     if (record[qualification]) {
       let qualificationsTempArray = [];
       qualificationsTempArray = qualifications;
@@ -402,6 +478,16 @@ const AddEditEvent = (props) => {
         }
       });
       setQualifications(qualificationsTempArray);
+    }
+    if (record[education]) {
+      let qualificationsTempArray = [];
+      qualificationsTempArray = educations;
+      educationsDataBackup.map((qualificationData) => {
+        if (record["education"] === qualificationData["id"]) {
+          qualificationsTempArray.push(qualificationData);
+        }
+      });
+      setEducations(qualificationsTempArray);
     }
   };
 
@@ -415,7 +501,7 @@ const AddEditEvent = (props) => {
     isTextBox
   ) => {
     event.persist();
-
+    if(eventName == "qualification" || eventName == "percentage"){
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (isAutoComplete) {
       if (selectedValueForAutoComplete !== null) {
@@ -485,6 +571,78 @@ const AddEditEvent = (props) => {
         delete errorValues[eventName];
       }
     });
+  } else if (eventName == "education" || eventName == "educationpercentage"){
+    if (isAutoComplete) {
+      if (selectedValueForAutoComplete !== null) {
+        setFormState((formState) => ({
+          ...formState,
+          dynamicEducationBar: formState.dynamicEducationBar.map((r) => {
+          
+            if (r["index"] === dynamicGridValue["index"]) {
+              let educationsTempArray = [];
+              educations.map((educationData) => {
+            
+                if (
+                  educationData["id"] !== selectedValueForAutoComplete["id"]
+                ) {
+                  educationsTempArray.push(educationData);
+                }
+              });
+              setEducations(educationsTempArray);
+              r["id"] = selectedValueForAutoComplete["id"];
+              r[eventName] = selectedValueForAutoComplete["value"];
+              return r;
+            } else {
+              return r;
+            }
+          }),
+        }));
+      } else {
+        /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
+        setFormState((formState) => ({
+          ...formState,
+          dynamicEducationBar: formState.dynamicEducationBar.map((r) => {
+            if (r["index"] === dynamicGridValue["index"]) {
+              let educationsTempArray = [];
+              educationsTempArray = educations;
+              educationsDataBackup.map((educationData) => {
+                if (r[eventName] === educationData["id"]) {
+                  educationsTempArray.push(educationData);
+                }
+              });
+              setQualifications(educationsTempArray);
+              delete r[eventName];
+              return r;
+            } else {
+              return r;
+            }
+          }),
+        }));
+      }
+    }
+    if (isTextBox) {
+      setFormState((formState) => ({
+        ...formState,
+        dynamicEducationBar: formState.dynamicEducationBar.map((r) => {
+          if (r["index"] === dynamicGridValue["index"]) {
+            r[eventName] = event.target.value;
+            if (r[eventName] === "") {
+              delete r[eventName];
+            }
+            return r;
+          } else {
+            return r;
+          }
+        }),
+      }));
+    }
+    /** Clear errors if any */
+    formState.dynamicBarError.map((errorValues) => {
+      if (errorValues["index"] === dynamicGridValue["index"]) {
+        delete errorValues[eventName];
+      }
+    });
+    }
   };
 
   /** Validate DynamicGrid */
@@ -492,6 +650,7 @@ const AddEditEvent = (props) => {
     let validationCounter = 0;
     /** Empty the error array of dynamic bar */
     formState.dynamicBarError = [];
+  
     formState.dynamicBar.map((value) => {
       let valueToPutInDynmicBarError = {};
       valueToPutInDynmicBarError["index"] = value["index"];
@@ -512,6 +671,28 @@ const AddEditEvent = (props) => {
         validationCounter += 1;
       }
       formState.dynamicBarError.push(valueToPutInDynmicBarError);
+    });
+    formState.dynamicEducationBarError = [];
+    formState.dynamicEducationBar.map((value) => {
+      let valueToPutInDynmicBarError = {};
+      valueToPutInDynmicBarError["index"] = value["index"];
+      /** Validate dynamikc bar */
+      if (
+        value.hasOwnProperty(education) &&
+        !value.hasOwnProperty(educationpercentage)
+      ) {
+        valueToPutInDynmicBarError[educationpercentage] =
+          "Percentage is required as Education is present";
+        validationCounter += 1;
+      } else if (
+        value.hasOwnProperty(educationpercentage) &&
+        !value.hasOwnProperty(education)
+      ) {
+        valueToPutInDynmicBarError[education] =
+          "Education is required as percentage is present";
+        validationCounter += 1;
+      }
+      formState.dynamicEducationBarError.push(valueToPutInDynmicBarError);
     });
     if (validationCounter > 0) {
       return false;
@@ -536,6 +717,25 @@ const AddEditEvent = (props) => {
 
     return qualificationsPercentageArrayValues;
   };
+
+  const getDynamicEducationData = () => {
+    let educationsPercentageArrayValues = [];
+    formState.dynamicEducationBar.map((field) => {
+      let educationPercentageValue = {};
+      if (
+        field.hasOwnProperty(education) &&
+        field.hasOwnProperty(educationpercentage)
+      ) {
+        educationPercentageValue["education_year"] = field[education];
+        educationPercentageValue["percentage"] = parseInt(field[educationpercentage]);
+        educationsPercentageArrayValues.push(educationPercentageValue);
+      }
+    });
+
+    return educationsPercentageArrayValues;
+  }
+
+
 
   /** Handle change for autocomplete fields */
   const handleChangeAutoComplete = (eventName, event, value) => {
@@ -622,6 +822,8 @@ const AddEditEvent = (props) => {
   const postEventData = () => {
     let qualificationPercentageArray = [];
     qualificationPercentageArray = getDynamicBarData();
+    let educationPercentageArray = [];
+    educationPercentageArray = getDynamicEducationData();
 
     let postData = databaseUtilities.addEvent(
       formState.values[eventName],
@@ -632,6 +834,7 @@ const AddEditEvent = (props) => {
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
       qualificationPercentageArray,
+      educationPercentageArray,
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null
     );
@@ -1313,7 +1516,7 @@ const AddEditEvent = (props) => {
                                   />
                                 </Grid>
                                 <Grid item xs={2}>
-                                  {idx >= 0 ? (
+                                  {idx > 0 ? (
                                     <DeleteForeverOutlinedIcon
                                       onClick={(e) => clickOnDelete(val, idx)}
                                       style={{ color: "red", fontSize: "24px" }}
@@ -1334,7 +1537,189 @@ const AddEditEvent = (props) => {
                           color="primary"
                           variant="contained"
                           className={classes.add_more_btn}
-                          onClick={addNewRow}
+                          onClick={(e) => {
+                            addNewRow(e, qualification);
+                          }}
+                        >
+                          {genericConstants.ADD_MORE_TEXT}
+                        </YellowButton>
+                      </div>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
+
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={1} className={classes.formgrid}>
+                  <Grid item md={12} xs={12} className={classes.streamcard}>
+                    <Card className={classes.streamoffer}>
+                      <InputLabel
+                        htmlFor="outlined-stream-card"
+                        fullwidth={true.toString()}
+                      >
+                        {genericConstants.EDUCATIONANDPERCENTAGE}
+                      </InputLabel>
+
+                      {formState.dynamicEducationBar.map((val, idx) => {
+                        let qualificationId = `education-${idx}`,
+                          percentageId = `percentage-${idx}`;
+
+                        return (
+                          <Card
+                            id="outlined-stream-card"
+                            fullwidth={true.toString()}
+                            className={classes.streamcardcontent}
+                            key={Math.random()}
+                          >
+                            <CardContent>
+                              <Grid container spacing={1}>
+                                <Grid item xs={5}>
+                                  <FormControl
+                                    variant="outlined"
+                                    fullWidth
+                                    className={classes.formControl}
+                                  >
+                                    <InputLabel
+                                      ref={inputLabel}
+                                      id="demo-simple-select-outlined-label"
+                                    ></InputLabel>
+                                    <Autocomplete
+                                      id={qualificationId}
+                                      options={educations}
+                                      getOptionLabel={(option) => option.value}
+                                      onChange={(event, value) => {
+                                        handleChangeForDynamicGrid(
+                                          education,
+                                          event,
+                                          value,
+                                          val,
+                                          true,
+                                          false
+                                        );
+                                      }}
+                                      data-id={idx}
+                                      name={qualificationId}
+                                      value={
+                                        educationsDataBackup[
+                                          educationsDataBackup.findIndex(
+                                            function (item, i) {
+                                              return (
+                                                item.value ===
+                                                formState.dynamicEducationBar[idx][
+                                                  education
+                                                ]
+                                              );
+                                            }
+                                          )
+                                        ] || null
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          value={(option) => option.id}
+                                          name={qualificationId}
+                                          error={
+                                            checkErrorInDynamicBar(
+                                              education,
+                                              val
+                                            )["error"]
+                                          }
+                                          helperText={
+                                            checkErrorInDynamicBar(
+                                              education,
+                                              val
+                                            )["error"]
+                                              ? checkErrorInDynamicBar(
+                                                education,
+                                                  val
+                                                )["value"]
+                                              : null
+                                          }
+                                          placeholder={get(
+                                            EventSchema[education],
+                                            "placeholder"
+                                          )}
+                                          key={(option) => option.id}
+                                          label={get(
+                                            EventSchema[education],
+                                            "label"
+                                          )}
+                                          variant="outlined"
+                                        />
+                                      )}
+                                    />
+                                  </FormControl>
+                                </Grid>
+
+                                <Grid item xs={5}>
+                                  <TextField
+                                    label="Percentage"
+                                    name={percentageId}
+                                    variant="outlined"
+                                    fullWidth
+                                    data-id={idx}
+                                    id={percentageId}
+                                    value={
+                                      formState.dynamicEducationBar[idx][educationpercentage] ||
+                                      ""
+                                    }
+                                    error={
+                                      checkErrorInDynamicBar(educationpercentage, val)[
+                                        "error"
+                                      ]
+                                    }
+                                    helperText={
+                                      checkErrorInDynamicBar(educationpercentage, val)[
+                                        "error"
+                                      ]
+                                        ? checkErrorInDynamicBar(
+                                            educationpercentage,
+                                            val
+                                          )["value"]
+                                        : null
+                                    }
+                                    placeholder={get(
+                                      EventSchema[educationpercentage],
+                                      "placeholder"
+                                    )}
+                                    onChange={(event) => {
+                                      handleChangeForDynamicGrid(
+                                        educationpercentage,
+                                        event,
+                                        null,
+                                        val,
+                                        false,
+                                        true
+                                      );
+                                    }}
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  {idx > 0 ? (
+                                    <DeleteForeverOutlinedIcon
+                                      onClick={(e) => clickOnDelete(val, idx)}
+                                      style={{ color: "red", fontSize: "24px" }}
+                                    />
+                                  ) : (
+                                    ""
+                                  )}
+                                </Grid>
+                              </Grid>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                      <div className={classes.btnspaceadd}>
+                        <YellowButton
+                          type="button"
+                          disabled={educations.length ? false : true}
+                          color="primary"
+                          variant="contained"
+                          className={classes.add_more_btn}
+                          onClick={(e) => {
+                            addNewRow(e, education);
+                          }}
                         >
                           {genericConstants.ADD_MORE_TEXT}
                         </YellowButton>

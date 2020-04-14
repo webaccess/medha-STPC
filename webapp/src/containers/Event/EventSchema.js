@@ -131,12 +131,32 @@ const EventSchema = {
     type: "text",
     validations: {}
   },
+  educationpercentage: {
+    label: "Percentage",
+    id: "percentage",
+    autoComplete: "percentage",
+    required: false,
+    placeholder: "Percentage",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
   qualification: {
     label: "Qualification",
     id: "qualification",
     autoComplete: "Qualification",
     required: false,
     placeholder: "Qualification",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  education: {
+    label: "Education",
+    id: "education",
+    autoComplete: "Education",
+    required: false,
+    placeholder: "Education",
     autoFocus: true,
     type: "text",
     validations: {}

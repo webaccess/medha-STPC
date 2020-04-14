@@ -152,6 +152,7 @@ export const addEvent = (
   zone = null,
   rpc = null,
   qualifications = [],
+  educations = [],
   colleges = null,
   streams = null
 ) => {
@@ -164,6 +165,7 @@ export const addEvent = (
     zone: zone,
     rpc: rpc,
     qualifications: qualifications,
+    educations: educations,
     colleges: colleges,
     streams: streams
   };
