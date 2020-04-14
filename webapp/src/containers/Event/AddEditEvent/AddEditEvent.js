@@ -10,7 +10,7 @@ import {
   Typography,
   FormHelperText,
   Button,
-  Box,
+  Box
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
@@ -18,7 +18,7 @@ import {
   YellowButton,
   CustomDateTimePicker,
   GrayButton,
-  Spinner,
+  Spinner
 } from "../../../components";
 import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as serviceProvider from "../../../api/Axios";
@@ -51,7 +51,7 @@ const rpc = "rpc";
 const college = "college";
 const stream = "stream";
 const percentage = "percentage";
-const educationpercentage= "educationpercentage";
+const educationpercentage = "educationpercentage";
 const qualification = "qualification";
 const education = "education";
 const field = "upload_logo";
@@ -71,8 +71,7 @@ const DOCUMENT_URL =
 const COLLEGE_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
 
-const AddEditEvent = (props) => {
- 
+const AddEditEvent = props => {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
@@ -99,6 +98,7 @@ const AddEditEvent = (props) => {
     showPreviewImage: false,
     showPreviewEditImage: false,
     showPreviewNoImage: false,
+    showAddPreviewNoImage: true,
     dynamicBar: [{ index: Math.random() }],
     dynamicBarError: [],
     dynamicEducationBar: [{ index: Math.random() }],
@@ -115,7 +115,6 @@ const AddEditEvent = (props) => {
   const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
   const [educations, setEducations] = useState([]);
   const [educationsDataBackup, setEducationsDataBackup] = useState([]);
- 
 
   /** Part for editing state */
   if (formState.dataForEdit && !formState.counter) {
@@ -195,33 +194,33 @@ const AddEditEvent = (props) => {
         }
         formState.values[stream] = finalDataStream;
       }
-      if (props["dataForEdit"] && props["dataForEdit"]["educations"]) {
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["educations"] &&
+        props["dataForEdit"]["educations"].length
+      ) {
         let dynamicEducationBar = [];
-        for (
-          var i = 0;
-          i < props["dataForEdit"]["educations"].length;
-          i++
-        ) {
+        for (let i in props["dataForEdit"]["educations"]) {
           let tempEducationDynamicBarValue = {};
           tempEducationDynamicBarValue["index"] = Math.random();
           tempEducationDynamicBarValue["id"] =
             props["dataForEdit"]["educations"][i]["id"];
-            tempEducationDynamicBarValue[education] =
+          tempEducationDynamicBarValue[education] =
             props["dataForEdit"]["educations"][i]["education_year"];
-            tempEducationDynamicBarValue[educationpercentage] =
+          tempEducationDynamicBarValue[educationpercentage] =
             props["dataForEdit"]["educations"][i]["percentage"];
-            dynamicEducationBar.push(tempEducationDynamicBarValue);
+          dynamicEducationBar.push(tempEducationDynamicBarValue);
         }
         formState.dynamicEducationBar = dynamicEducationBar;
       }
 
-      if (props["dataForEdit"] && props["dataForEdit"]["qualifications"]) {
+      if (
+        props["dataForEdit"] &&
+        props["dataForEdit"]["qualifications"] &&
+        props["dataForEdit"]["qualifications"].length
+      ) {
         let dynamicBar = [];
-        for (
-          var i = 0;
-          i < props["dataForEdit"]["qualifications"].length;
-          i++
-        ) {
+        for (let i in props["dataForEdit"]["qualifications"]) {
           let tempDynamicBarValue = {};
           tempDynamicBarValue["index"] = Math.random();
           tempDynamicBarValue["id"] =
@@ -236,77 +235,78 @@ const AddEditEvent = (props) => {
       }
       if (props["dataForEdit"] && props["dataForEdit"]["upload_logo"]) {
         formState.showPreviewEditImage = true;
+        formState.showAddPreviewNoImage = false;
       }
       if (
         props["dataForEdit"] &&
         props["dataForEdit"]["upload_logo"] === null
       ) {
         formState.showPreviewNoImage = true;
+        formState.showAddPreviewNoImage = true;
       }
     }
     formState.counter += 1;
   }
 
   useEffect(() => {
-  
     let paramsForPageSize = {
-      pageSize: -1,
+      pageSize: -1
     };
 
     serviceProvider
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
-      .then((res) => {
+      .then(res => {
         setStates(res.data.result);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
 
-      setEducationsDataBackup(genericConstants.EDUCATIONS);
-      let educationDataForEdit = genericConstants.EDUCATIONS;
+    setEducationsDataBackup(genericConstants.EDUCATIONS);
+    let educationDataForEdit = genericConstants.EDUCATIONS;
 
-      if (formState.isEditEvent) {
-        let tempQualificationData = educationDataForEdit;
-        let qualificationPercentageArray =
-          props["dataForEdit"]["qualification_percentage"];
-       
-        for (let i in qualificationPercentageArray) {
-          let id = qualificationPercentageArray[i]["qualification"]["id"];
-          for (let j in tempQualificationData) {
-            if (tempQualificationData[j]["id"] === id)
-              tempQualificationData.splice(j, 1);
-          }
-        }
-        setEducations(tempQualificationData);
-      } else {
-        setEducations(educationDataForEdit);
-      }
+    if (formState.isEditEvent) {
+      let tempQualificationData = educationDataForEdit;
+      let qualificationPercentageArray =
+        props["dataForEdit"]["qualification_percentage"];
 
-      setQualificationsDataBackup(genericConstants.QUALIFICATIONS);
-      let dataForEditing = genericConstants.QUALIFICATIONS;
-      if (formState.isEditEvent) {
-        let tempQualificationData = dataForEditing;
-        let qualificationPercentageArray =
-          props["dataForEdit"]["qualification_percentage"];
-        for (let i in qualificationPercentageArray) {
-          let id = qualificationPercentageArray[i]["qualification"]["id"];
-          for (let j in tempQualificationData) {
-            if (tempQualificationData[j]["id"] === id)
-              tempQualificationData.splice(j, 1);
-          }
+      for (let i in qualificationPercentageArray) {
+        let id = qualificationPercentageArray[i]["qualification"]["id"];
+        for (let j in tempQualificationData) {
+          if (tempQualificationData[j]["id"] === id)
+            tempQualificationData.splice(j, 1);
         }
-        setQualifications(tempQualificationData);
-      } else {
-        setQualifications(dataForEditing);
       }
+      setEducations(tempQualificationData);
+    } else {
+      setEducations(educationDataForEdit);
+    }
+
+    setQualificationsDataBackup(genericConstants.QUALIFICATIONS);
+    let dataForEditing = genericConstants.QUALIFICATIONS;
+    if (formState.isEditEvent) {
+      let tempQualificationData = dataForEditing;
+      let qualificationPercentageArray =
+        props["dataForEdit"]["qualification_percentage"];
+      for (let i in qualificationPercentageArray) {
+        let id = qualificationPercentageArray[i]["qualification"]["id"];
+        for (let j in tempQualificationData) {
+          if (tempQualificationData[j]["id"] === id)
+            tempQualificationData.splice(j, 1);
+        }
+      }
+      setQualifications(tempQualificationData);
+    } else {
+      setQualifications(dataForEditing);
+    }
 
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
-      .then((res) => {
+      .then(res => {
         setStreams(res.data.result);
       })
 
-      .catch((error) => {
+      .catch(error => {
         console.log("errorstream", error);
       });
   }, []);
@@ -338,10 +338,10 @@ const AddEditEvent = (props) => {
 
       await serviceProvider
         .serviceProviderForGetRequest(zones_url)
-        .then((res) => {
+        .then(res => {
           setZones(res.data.result);
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
         });
 
@@ -354,14 +354,14 @@ const AddEditEvent = (props) => {
 
       await serviceProvider
         .serviceProviderForGetRequest(rpcs_url)
-        .then((res) => {
+        .then(res => {
           if (Array.isArray(res.data)) {
             setRpcs(res.data[0].result);
           } else {
             setRpcs(res.data.result);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
         });
     }
@@ -378,33 +378,33 @@ const AddEditEvent = (props) => {
     let params = {
       "zone.id": formState.values[zone],
       "rpc.id": formState.values[rpc],
-      pageSize: -1,
+      pageSize: -1
     };
 
     await serviceProvider
       .serviceProviderForGetRequest(COLLEGE_URL, params)
-      .then((res) => {
+      .then(res => {
         setColleges(res.data.result);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   }
 
-  const hasError = (field) => (formState.errors[field] ? true : false);
-  const handleChange = (e) => {
+  const hasError = field => (formState.errors[field] ? true : false);
+  const handleChange = e => {
     e.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+          e.target.type === "checkbox" ? e.target.checked : e.target.value
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
-      },
+        [e.target.name]: true
+      }
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -412,67 +412,69 @@ const AddEditEvent = (props) => {
   };
 
   const checkErrorInDynamicBar = (field, currentDynamicBarValue) => {
-    if(field == "qualification" || field == "percentage"){
-    let errorData = { error: false, value: "" };
+    if (field == "qualification" || field == "percentage") {
+      let errorData = { error: false, value: "" };
 
-    if (formState.dynamicBarError.length) {
-      formState.dynamicBarError.map((barErrorValue) => {
-        if (barErrorValue["index"] === currentDynamicBarValue["index"]) {
-          if (barErrorValue.hasOwnProperty(field)) {
-            errorData.error = true;
-            errorData.value = barErrorValue[field];
+      if (formState.dynamicBarError.length) {
+        formState.dynamicBarError.map(barErrorValue => {
+          if (barErrorValue["index"] === currentDynamicBarValue["index"]) {
+            if (barErrorValue.hasOwnProperty(field)) {
+              errorData.error = true;
+              errorData.value = barErrorValue[field];
+            }
           }
-        }
-      });
-    }
-    return errorData;
-  } else if (field == "education" || field == "educationpercentage"){
-    let errorEducationData = { error: false, value: "" };
+        });
+      }
+      return errorData;
+    } else if (field == "education" || field == "educationpercentage") {
+      let errorEducationData = { error: false, value: "" };
 
-    if (formState.dynamicEducationBarError.length) {
-      formState.dynamicEducationBarError.map((barErrorValue) => {
-        if (barErrorValue["index"] === currentDynamicBarValue["index"]) {
-          if (barErrorValue.hasOwnProperty(field)) {
-            errorEducationData.error = true;
-            errorEducationData.value = barErrorValue[field];
+      if (formState.dynamicEducationBarError.length) {
+        formState.dynamicEducationBarError.map(barErrorValue => {
+          if (barErrorValue["index"] === currentDynamicBarValue["index"]) {
+            if (barErrorValue.hasOwnProperty(field)) {
+              errorEducationData.error = true;
+              errorEducationData.value = barErrorValue[field];
+            }
           }
-        }
-      });
+        });
+      }
+      return errorEducationData;
     }
-    return errorEducationData;
-  }
   };
   const addNewRow = (e, extendBarName) => {
- 
     e.persist();
-    if(extendBarName == "qualification"){
-    setFormState((formState) => ({
-      ...formState,
-      dynamicBar: [...formState.dynamicBar, { index: Math.random() }],
-    }));
-  }else if (extendBarName == "education"){
-    setFormState((formState) => ({
-      ...formState,
-      dynamicEducationBar: [...formState.dynamicEducationBar, { index: Math.random() }],
-    }));
-  }
+    if (extendBarName == "qualification") {
+      setFormState(formState => ({
+        ...formState,
+        dynamicBar: [...formState.dynamicBar, { index: Math.random() }]
+      }));
+    } else if (extendBarName == "education") {
+      setFormState(formState => ({
+        ...formState,
+        dynamicEducationBar: [
+          ...formState.dynamicEducationBar,
+          { index: Math.random() }
+        ]
+      }));
+    }
   };
   const clickOnDelete = (record, index) => {
-  
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      dynamicBar: formState.dynamicBar.filter((r) => r !== record),
+      dynamicBar: formState.dynamicBar.filter(r => r !== record)
     }));
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      dynamicEducationBar: formState.dynamicEducationBar.filter((r) => r !== record),
+      dynamicEducationBar: formState.dynamicEducationBar.filter(
+        r => r !== record
+      )
     }));
-  
 
     if (record[qualification]) {
       let qualificationsTempArray = [];
       qualificationsTempArray = qualifications;
-      qualificationsDataBackup.map((qualificationData) => {
+      qualificationsDataBackup.map(qualificationData => {
         if (record["qualification"] === qualificationData["id"]) {
           qualificationsTempArray.push(qualificationData);
         }
@@ -482,7 +484,7 @@ const AddEditEvent = (props) => {
     if (record[education]) {
       let qualificationsTempArray = [];
       qualificationsTempArray = educations;
-      educationsDataBackup.map((qualificationData) => {
+      educationsDataBackup.map(qualificationData => {
         if (record["education"] === qualificationData["id"]) {
           qualificationsTempArray.push(qualificationData);
         }
@@ -501,147 +503,146 @@ const AddEditEvent = (props) => {
     isTextBox
   ) => {
     event.persist();
-    if(eventName == "qualification" || eventName == "percentage"){
-    /**TO SET VALUES OF AUTOCOMPLETE */
-    if (isAutoComplete) {
-      if (selectedValueForAutoComplete !== null) {
-        setFormState((formState) => ({
+    if (eventName == "qualification" || eventName == "percentage") {
+      /**TO SET VALUES OF AUTOCOMPLETE */
+      if (isAutoComplete) {
+        if (selectedValueForAutoComplete !== null) {
+          setFormState(formState => ({
+            ...formState,
+            dynamicBar: formState.dynamicBar.map(r => {
+              if (r["index"] === dynamicGridValue["index"]) {
+                let qualificationsTempArray = [];
+                qualifications.map(qualificationData => {
+                  if (
+                    qualificationData["id"] !==
+                    selectedValueForAutoComplete["id"]
+                  ) {
+                    qualificationsTempArray.push(qualificationData);
+                  }
+                });
+                setQualifications(qualificationsTempArray);
+                r["id"] = selectedValueForAutoComplete["id"];
+                r[eventName] = selectedValueForAutoComplete["value"];
+                return r;
+              } else {
+                return r;
+              }
+            })
+          }));
+        } else {
+          /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
+          setFormState(formState => ({
+            ...formState,
+            dynamicBar: formState.dynamicBar.map(r => {
+              if (r["index"] === dynamicGridValue["index"]) {
+                let qualificationsTempArray = [];
+                qualificationsTempArray = qualifications;
+                qualificationsDataBackup.map(qualificationData => {
+                  if (r[eventName] === qualificationData["id"]) {
+                    qualificationsTempArray.push(qualificationData);
+                  }
+                });
+                setQualifications(qualificationsTempArray);
+                delete r[eventName];
+                return r;
+              } else {
+                return r;
+              }
+            })
+          }));
+        }
+      }
+      if (isTextBox) {
+        setFormState(formState => ({
           ...formState,
-          dynamicBar: formState.dynamicBar.map((r) => {
+          dynamicBar: formState.dynamicBar.map(r => {
             if (r["index"] === dynamicGridValue["index"]) {
-              let qualificationsTempArray = [];
-              qualifications.map((qualificationData) => {
-                if (
-                  qualificationData["id"] !== selectedValueForAutoComplete["id"]
-                ) {
-                  qualificationsTempArray.push(qualificationData);
-                }
-              });
-              setQualifications(qualificationsTempArray);
-              r["id"] = selectedValueForAutoComplete["id"];
-              r[eventName] = selectedValueForAutoComplete["value"];
+              r[eventName] = event.target.value;
+              if (r[eventName] === "") {
+                delete r[eventName];
+              }
               return r;
             } else {
               return r;
             }
-          }),
+          })
         }));
-      } else {
-        /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
-        setFormState((formState) => ({
+      }
+      /** Clear errors if any */
+      formState.dynamicBarError.map(errorValues => {
+        if (errorValues["index"] === dynamicGridValue["index"]) {
+          delete errorValues[eventName];
+        }
+      });
+    } else if (eventName == "education" || eventName == "educationpercentage") {
+      if (isAutoComplete) {
+        if (selectedValueForAutoComplete !== null) {
+          setFormState(formState => ({
+            ...formState,
+            dynamicEducationBar: formState.dynamicEducationBar.map(r => {
+              if (r["index"] === dynamicGridValue["index"]) {
+                let educationsTempArray = [];
+                educations.map(educationData => {
+                  if (
+                    educationData["id"] !== selectedValueForAutoComplete["id"]
+                  ) {
+                    educationsTempArray.push(educationData);
+                  }
+                });
+                setEducations(educationsTempArray);
+                r["id"] = selectedValueForAutoComplete["id"];
+                r[eventName] = selectedValueForAutoComplete["value"];
+                return r;
+              } else {
+                return r;
+              }
+            })
+          }));
+        } else {
+          /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
+          setFormState(formState => ({
+            ...formState,
+            dynamicEducationBar: formState.dynamicEducationBar.map(r => {
+              if (r["index"] === dynamicGridValue["index"]) {
+                let educationsTempArray = [];
+                educationsTempArray = educations;
+                educationsDataBackup.map(educationData => {
+                  if (r[eventName] === educationData["id"]) {
+                    educationsTempArray.push(educationData);
+                  }
+                });
+                setQualifications(educationsTempArray);
+                delete r[eventName];
+                return r;
+              } else {
+                return r;
+              }
+            })
+          }));
+        }
+      }
+      if (isTextBox) {
+        setFormState(formState => ({
           ...formState,
-          dynamicBar: formState.dynamicBar.map((r) => {
+          dynamicEducationBar: formState.dynamicEducationBar.map(r => {
             if (r["index"] === dynamicGridValue["index"]) {
-              let qualificationsTempArray = [];
-              qualificationsTempArray = qualifications;
-              qualificationsDataBackup.map((qualificationData) => {
-                if (r[eventName] === qualificationData["id"]) {
-                  qualificationsTempArray.push(qualificationData);
-                }
-              });
-              setQualifications(qualificationsTempArray);
-              delete r[eventName];
+              r[eventName] = event.target.value;
+              if (r[eventName] === "") {
+                delete r[eventName];
+              }
               return r;
             } else {
               return r;
             }
-          }),
+          })
         }));
       }
-    }
-    if (isTextBox) {
-      setFormState((formState) => ({
-        ...formState,
-        dynamicBar: formState.dynamicBar.map((r) => {
-          if (r["index"] === dynamicGridValue["index"]) {
-            r[eventName] = event.target.value;
-            if (r[eventName] === "") {
-              delete r[eventName];
-            }
-            return r;
-          } else {
-            return r;
-          }
-        }),
-      }));
-    }
-    /** Clear errors if any */
-    formState.dynamicBarError.map((errorValues) => {
-      if (errorValues["index"] === dynamicGridValue["index"]) {
-        delete errorValues[eventName];
-      }
-    });
-  } else if (eventName == "education" || eventName == "educationpercentage"){
-    if (isAutoComplete) {
-      if (selectedValueForAutoComplete !== null) {
-        setFormState((formState) => ({
-          ...formState,
-          dynamicEducationBar: formState.dynamicEducationBar.map((r) => {
-          
-            if (r["index"] === dynamicGridValue["index"]) {
-              let educationsTempArray = [];
-              educations.map((educationData) => {
-            
-                if (
-                  educationData["id"] !== selectedValueForAutoComplete["id"]
-                ) {
-                  educationsTempArray.push(educationData);
-                }
-              });
-              setEducations(educationsTempArray);
-              r["id"] = selectedValueForAutoComplete["id"];
-              r[eventName] = selectedValueForAutoComplete["value"];
-              return r;
-            } else {
-              return r;
-            }
-          }),
-        }));
-      } else {
-        /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
-        setFormState((formState) => ({
-          ...formState,
-          dynamicEducationBar: formState.dynamicEducationBar.map((r) => {
-            if (r["index"] === dynamicGridValue["index"]) {
-              let educationsTempArray = [];
-              educationsTempArray = educations;
-              educationsDataBackup.map((educationData) => {
-                if (r[eventName] === educationData["id"]) {
-                  educationsTempArray.push(educationData);
-                }
-              });
-              setQualifications(educationsTempArray);
-              delete r[eventName];
-              return r;
-            } else {
-              return r;
-            }
-          }),
-        }));
-      }
-    }
-    if (isTextBox) {
-      setFormState((formState) => ({
-        ...formState,
-        dynamicEducationBar: formState.dynamicEducationBar.map((r) => {
-          if (r["index"] === dynamicGridValue["index"]) {
-            r[eventName] = event.target.value;
-            if (r[eventName] === "") {
-              delete r[eventName];
-            }
-            return r;
-          } else {
-            return r;
-          }
-        }),
-      }));
-    }
-    /** Clear errors if any */
-    formState.dynamicBarError.map((errorValues) => {
-      if (errorValues["index"] === dynamicGridValue["index"]) {
-        delete errorValues[eventName];
-      }
-    });
+      /** Clear errors if any */
+      formState.dynamicBarError.map(errorValues => {
+        if (errorValues["index"] === dynamicGridValue["index"]) {
+          delete errorValues[eventName];
+        }
+      });
     }
   };
 
@@ -650,8 +651,8 @@ const AddEditEvent = (props) => {
     let validationCounter = 0;
     /** Empty the error array of dynamic bar */
     formState.dynamicBarError = [];
-  
-    formState.dynamicBar.map((value) => {
+
+    formState.dynamicBar.map(value => {
       let valueToPutInDynmicBarError = {};
       valueToPutInDynmicBarError["index"] = value["index"];
       /** Validate dynamikc bar */
@@ -673,7 +674,7 @@ const AddEditEvent = (props) => {
       formState.dynamicBarError.push(valueToPutInDynmicBarError);
     });
     formState.dynamicEducationBarError = [];
-    formState.dynamicEducationBar.map((value) => {
+    formState.dynamicEducationBar.map(value => {
       let valueToPutInDynmicBarError = {};
       valueToPutInDynmicBarError["index"] = value["index"];
       /** Validate dynamikc bar */
@@ -703,14 +704,16 @@ const AddEditEvent = (props) => {
 
   const getDynamicBarData = () => {
     let qualificationsPercentageArrayValues = [];
-    formState.dynamicBar.map((field) => {
+    formState.dynamicBar.map(field => {
       let qualificationPercentageValue = {};
       if (
         field.hasOwnProperty(qualification) &&
         field.hasOwnProperty(percentage)
       ) {
         qualificationPercentageValue["qualification"] = field[qualification];
-        qualificationPercentageValue["marks"] = parseInt(field[percentage]);
+        qualificationPercentageValue["percentage"] = parseInt(
+          field[percentage]
+        );
         qualificationsPercentageArrayValues.push(qualificationPercentageValue);
       }
     });
@@ -720,45 +723,45 @@ const AddEditEvent = (props) => {
 
   const getDynamicEducationData = () => {
     let educationsPercentageArrayValues = [];
-    formState.dynamicEducationBar.map((field) => {
+    formState.dynamicEducationBar.map(field => {
       let educationPercentageValue = {};
       if (
         field.hasOwnProperty(education) &&
         field.hasOwnProperty(educationpercentage)
       ) {
         educationPercentageValue["education_year"] = field[education];
-        educationPercentageValue["percentage"] = parseInt(field[educationpercentage]);
+        educationPercentageValue["percentage"] = parseInt(
+          field[educationpercentage]
+        );
         educationsPercentageArrayValues.push(educationPercentageValue);
       }
     });
 
     return educationsPercentageArrayValues;
-  }
-
-
+  };
 
   /** Handle change for autocomplete fields */
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (value !== null) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         values: {
           ...formState.values,
-          [eventName]: value.id,
+          [eventName]: value.id
         },
         touched: {
           ...formState.touched,
-          [eventName]: true,
+          [eventName]: true
         },
-        isStateClearFilter: false,
+        isStateClearFilter: false
       }));
     } else {
       delete formState.values[eventName];
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
     /** Validate DynamicGrid */
     let isDynamicBarValid;
@@ -807,14 +810,14 @@ const AddEditEvent = (props) => {
       /** CALL POST FUNCTION */
       postEventData();
       /** Call axios from here */
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: true,
+        isValid: true
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
     }
   };
@@ -845,7 +848,7 @@ const AddEditEvent = (props) => {
           formState.dataForEdit["id"],
           postData
         )
-        .then((res) => {
+        .then(res => {
           if (formState.files.name) {
             postImage(res.data.id);
           } else {
@@ -854,17 +857,17 @@ const AddEditEvent = (props) => {
               fromAddEvent: true,
               isDataAdded: true,
               addResponseMessage: "",
-              addedData: {},
+              addedData: {}
             });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("puterror", error);
         });
     } else {
       serviceProvider
         .serviceProviderForPostRequest(EVENTS_URL, postData)
-        .then((res) => {
+        .then(res => {
           if (formState.files.name) {
             postImage(res.data.id);
           } else {
@@ -873,17 +876,17 @@ const AddEditEvent = (props) => {
               fromAddEvent: true,
               isDataAdded: true,
               addResponseMessage: "",
-              addedData: {},
+              addedData: {}
             });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("posterror", error);
         });
     }
   };
 
-  const postImage = (id) => {
+  const postImage = id => {
     let postImageData = databaseUtilities.uploadDocument(
       formState.files,
       ref,
@@ -892,37 +895,38 @@ const AddEditEvent = (props) => {
     );
     serviceProvider
       .serviceProviderForPostRequest(DOCUMENT_URL, postImageData)
-      .then((res) => {
+      .then(res => {
         history.push({
           pathname: routeConstants.MANAGE_EVENT,
           fromAddEvent: true,
           isDataAdded: true,
           addResponseMessage: "",
-          addedData: {},
+          addedData: {}
         });
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("error", err);
       });
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = event => {
     event.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [event.target.name]: event.target.value,
+        [event.target.name]: event.target.value
       },
       touched: {
         ...formState.touched,
-        [event.target.name]: true,
+        [event.target.name]: true
       },
       files: event.target.files[0],
       previewFile: URL.createObjectURL(event.target.files[0]),
       showPreviewEditImage: false,
       showPreviewNoImage: false,
       showPreviewImage: true,
+      showAddPreviewNoImage: false
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -932,17 +936,17 @@ const AddEditEvent = (props) => {
   };
 
   const handleDateChange = (datefrom, event) => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [datefrom]: event,
+        [datefrom]: event
       },
       touched: {
         ...formState.touched,
-        [datefrom]: true,
+        [datefrom]: true
       },
-      isStateClearFilter: false,
+      isStateClearFilter: false
     }));
   };
 
@@ -958,17 +962,17 @@ const AddEditEvent = (props) => {
       multiarray.push(value[i].id);
     }
     if (value !== null) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         values: {
           ...formState.values,
-          [eventName]: multiarray,
+          [eventName]: multiarray
         },
         touched: {
           ...formState.touched,
-          [eventName]: true,
+          [eventName]: true
         },
-        isStateClearFilter: false,
+        isStateClearFilter: false
       }));
     } else {
       delete formState.values[eventName];
@@ -990,16 +994,17 @@ const AddEditEvent = (props) => {
                 <Grid container className={classes.formgridInputFile}>
                   <Grid item md={10} xs={12}>
                     <div className={classes.imageDiv}>
-                      {formState.showPreviewImage ? (
-                        <Img
-                          src={formState.previewFile}
-                          alt="abc"
-                          loader={<Spinner />}
-                          className={classes.UploadImage}
-                        />
-                      ) : (
-                        <div class={classes.DefaultNoImage}></div>
-                      )}
+                      {
+                        formState.showPreviewImage ? (
+                          <Img
+                            src={formState.previewFile}
+                            alt="abc"
+                            loader={<Spinner />}
+                            className={classes.UploadImage}
+                          />
+                        ) : null
+                        // <div class={classes.DefaultNoImage}></div>
+                      }
 
                       {formState.showPreviewEditImage &&
                       formState.dataForEdit["upload_logo"] !== null &&
@@ -1021,6 +1026,9 @@ const AddEditEvent = (props) => {
                           className={classes.UploadImage}
                         />
                       ) : null}
+                      {formState.showAddPreviewNoImage ? (
+                        <div class={classes.DefaultNoImage}></div>
+                      ) : null}
                     </div>
                   </Grid>
                 </Grid>
@@ -1038,7 +1046,7 @@ const AddEditEvent = (props) => {
                       inputProps={{ accept: "image/*" }}
                       helperText={
                         hasError(files)
-                          ? formState.errors[files].map((error) => {
+                          ? formState.errors[files].map(error => {
                               return error + " ";
                             })
                           : null
@@ -1078,7 +1086,7 @@ const AddEditEvent = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError(eventName)
-                          ? formState.errors[eventName].map((error) => {
+                          ? formState.errors[eventName].map(error => {
                               return error + " ";
                             })
                           : null
@@ -1109,7 +1117,7 @@ const AddEditEvent = (props) => {
                             toolbarClassName="rdw-toolbar"
                             wrapperClassName="rdw-wrapper"
                             editorClassName="rdw-editor"
-                            onEditorStateChange={(data) => {
+                            onEditorStateChange={data => {
                               formState.descriptionError = false;
                               setEditorState(data);
                             }}
@@ -1127,7 +1135,7 @@ const AddEditEvent = (props) => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
-                      onChange={(event) => {
+                      onChange={event => {
                         handleDateChange(dateFrom, event);
                       }}
                       value={formState.values[dateFrom]}
@@ -1137,7 +1145,7 @@ const AddEditEvent = (props) => {
                       error={hasError(dateFrom)}
                       helperText={
                         hasError(dateFrom)
-                          ? formState.errors[dateFrom].map((error) => {
+                          ? formState.errors[dateFrom].map(error => {
                               return error + " ";
                             })
                           : null
@@ -1146,7 +1154,7 @@ const AddEditEvent = (props) => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
-                      onChange={(event) => {
+                      onChange={event => {
                         handleDateChange(dateTo, event);
                       }}
                       value={formState.values[dateTo]}
@@ -1156,7 +1164,7 @@ const AddEditEvent = (props) => {
                       error={hasError(dateTo)}
                       helperText={
                         hasError(dateTo)
-                          ? formState.errors[dateTo].map((error) => {
+                          ? formState.errors[dateTo].map(error => {
                               return error + " ";
                             })
                           : null
@@ -1181,7 +1189,7 @@ const AddEditEvent = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError(address)
-                          ? formState.errors[address].map((error) => {
+                          ? formState.errors[address].map(error => {
                               return error + " ";
                             })
                           : null
@@ -1195,7 +1203,7 @@ const AddEditEvent = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={states}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(state, event, value);
                       }}
@@ -1206,7 +1214,7 @@ const AddEditEvent = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label={get(EventSchema[state], "label")}
@@ -1215,7 +1223,7 @@ const AddEditEvent = (props) => {
                           error={hasError(state)}
                           helperText={
                             hasError(state)
-                              ? formState.errors[state].map((error) => {
+                              ? formState.errors[state].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -1229,7 +1237,7 @@ const AddEditEvent = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={zones}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(zone, event, value);
                       }}
@@ -1240,7 +1248,7 @@ const AddEditEvent = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label={get(EventSchema[zone], "label")}
@@ -1249,7 +1257,7 @@ const AddEditEvent = (props) => {
                           error={hasError(zone)}
                           helperText={
                             hasError(zone)
-                              ? formState.errors[zone].map((error) => {
+                              ? formState.errors[zone].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -1266,7 +1274,7 @@ const AddEditEvent = (props) => {
                       className={classes.root}
                       options={rpcs}
                       placeholder={get(EventSchema[rpcs], "placeholder")}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(rpc, event, value);
                       }}
@@ -1277,7 +1285,7 @@ const AddEditEvent = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label={get(EventSchema[rpc], "label")}
@@ -1286,7 +1294,7 @@ const AddEditEvent = (props) => {
                           error={hasError(rpc)}
                           helperText={
                             hasError(rpc)
-                              ? formState.errors[rpc].map((error) => {
+                              ? formState.errors[rpc].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -1303,28 +1311,28 @@ const AddEditEvent = (props) => {
                       id={get(EventSchema[college], "id")}
                       multiple
                       options={colleges}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleMultiSelectChange(college, event, value);
                       }}
                       filterSelectedOptions
                       name={college}
                       value={formState.dataToShowForMultiSelect || null}
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           error={hasError(college)}
                           helperText={
                             hasError(college)
-                              ? formState.errors[college].map((error) => {
+                              ? formState.errors[college].map(error => {
                                   return error + " ";
                                 })
                               : null
                           }
                           placeholder={get(EventSchema[college], "placeholder")}
-                          value={(option) => option.id}
+                          value={option => option.id}
                           name={college}
-                          key={(option) => option.id}
+                          key={option => option.id}
                           label={get(EventSchema[college], "label")}
                           variant="outlined"
                         />
@@ -1338,28 +1346,28 @@ const AddEditEvent = (props) => {
                       id={get(EventSchema[stream], "id")}
                       multiple
                       options={streams}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleMultiSelectChange(stream, event, value);
                       }}
                       filterSelectedOptions
                       name={stream}
                       value={formState.dataToShowForStreamMultiSelect || null}
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           error={hasError(stream)}
                           helperText={
                             hasError(stream)
-                              ? formState.errors[stream].map((error) => {
+                              ? formState.errors[stream].map(error => {
                                   return error + " ";
                                 })
                               : null
                           }
                           placeholder={get(EventSchema[stream], "placeholder")}
-                          value={(option) => option.id}
+                          value={option => option.id}
                           name={stream}
-                          key={(option) => option.id}
+                          key={option => option.id}
                           label={get(EventSchema[stream], "label")}
                           variant="outlined"
                         />
@@ -1407,7 +1415,7 @@ const AddEditEvent = (props) => {
                                     <Autocomplete
                                       id={qualificationId}
                                       options={qualifications}
-                                      getOptionLabel={(option) => option.value}
+                                      getOptionLabel={option => option.value}
                                       onChange={(event, value) => {
                                         handleChangeForDynamicGrid(
                                           qualification,
@@ -1434,10 +1442,10 @@ const AddEditEvent = (props) => {
                                           )
                                         ] || null
                                       }
-                                      renderInput={(params) => (
+                                      renderInput={params => (
                                         <TextField
                                           {...params}
-                                          value={(option) => option.id}
+                                          value={option => option.id}
                                           name={qualificationId}
                                           error={
                                             checkErrorInDynamicBar(
@@ -1460,7 +1468,7 @@ const AddEditEvent = (props) => {
                                             EventSchema[qualification],
                                             "placeholder"
                                           )}
-                                          key={(option) => option.id}
+                                          key={option => option.id}
                                           label={get(
                                             EventSchema[qualification],
                                             "label"
@@ -1503,7 +1511,7 @@ const AddEditEvent = (props) => {
                                       EventSchema[percentage],
                                       "placeholder"
                                     )}
-                                    onChange={(event) => {
+                                    onChange={event => {
                                       handleChangeForDynamicGrid(
                                         percentage,
                                         event,
@@ -1518,7 +1526,7 @@ const AddEditEvent = (props) => {
                                 <Grid item xs={2}>
                                   {idx > 0 ? (
                                     <DeleteForeverOutlinedIcon
-                                      onClick={(e) => clickOnDelete(val, idx)}
+                                      onClick={e => clickOnDelete(val, idx)}
                                       style={{ color: "red", fontSize: "24px" }}
                                     />
                                   ) : (
@@ -1537,7 +1545,7 @@ const AddEditEvent = (props) => {
                           color="primary"
                           variant="contained"
                           className={classes.add_more_btn}
-                          onClick={(e) => {
+                          onClick={e => {
                             addNewRow(e, qualification);
                           }}
                         >
@@ -1587,7 +1595,7 @@ const AddEditEvent = (props) => {
                                     <Autocomplete
                                       id={qualificationId}
                                       options={educations}
-                                      getOptionLabel={(option) => option.value}
+                                      getOptionLabel={option => option.value}
                                       onChange={(event, value) => {
                                         handleChangeForDynamicGrid(
                                           education,
@@ -1606,18 +1614,18 @@ const AddEditEvent = (props) => {
                                             function (item, i) {
                                               return (
                                                 item.value ===
-                                                formState.dynamicEducationBar[idx][
-                                                  education
-                                                ]
+                                                formState.dynamicEducationBar[
+                                                  idx
+                                                ][education]
                                               );
                                             }
                                           )
                                         ] || null
                                       }
-                                      renderInput={(params) => (
+                                      renderInput={params => (
                                         <TextField
                                           {...params}
-                                          value={(option) => option.id}
+                                          value={option => option.id}
                                           name={qualificationId}
                                           error={
                                             checkErrorInDynamicBar(
@@ -1631,7 +1639,7 @@ const AddEditEvent = (props) => {
                                               val
                                             )["error"]
                                               ? checkErrorInDynamicBar(
-                                                education,
+                                                  education,
                                                   val
                                                 )["value"]
                                               : null
@@ -1640,7 +1648,7 @@ const AddEditEvent = (props) => {
                                             EventSchema[education],
                                             "placeholder"
                                           )}
-                                          key={(option) => option.id}
+                                          key={option => option.id}
                                           label={get(
                                             EventSchema[education],
                                             "label"
@@ -1661,18 +1669,21 @@ const AddEditEvent = (props) => {
                                     data-id={idx}
                                     id={percentageId}
                                     value={
-                                      formState.dynamicEducationBar[idx][educationpercentage] ||
-                                      ""
+                                      formState.dynamicEducationBar[idx][
+                                        educationpercentage
+                                      ] || ""
                                     }
                                     error={
-                                      checkErrorInDynamicBar(educationpercentage, val)[
-                                        "error"
-                                      ]
+                                      checkErrorInDynamicBar(
+                                        educationpercentage,
+                                        val
+                                      )["error"]
                                     }
                                     helperText={
-                                      checkErrorInDynamicBar(educationpercentage, val)[
-                                        "error"
-                                      ]
+                                      checkErrorInDynamicBar(
+                                        educationpercentage,
+                                        val
+                                      )["error"]
                                         ? checkErrorInDynamicBar(
                                             educationpercentage,
                                             val
@@ -1683,7 +1694,7 @@ const AddEditEvent = (props) => {
                                       EventSchema[educationpercentage],
                                       "placeholder"
                                     )}
-                                    onChange={(event) => {
+                                    onChange={event => {
                                       handleChangeForDynamicGrid(
                                         educationpercentage,
                                         event,
@@ -1698,7 +1709,7 @@ const AddEditEvent = (props) => {
                                 <Grid item xs={2}>
                                   {idx > 0 ? (
                                     <DeleteForeverOutlinedIcon
-                                      onClick={(e) => clickOnDelete(val, idx)}
+                                      onClick={e => clickOnDelete(val, idx)}
                                       style={{ color: "red", fontSize: "24px" }}
                                     />
                                   ) : (
@@ -1717,7 +1728,7 @@ const AddEditEvent = (props) => {
                           color="primary"
                           variant="contained"
                           className={classes.add_more_btn}
-                          onClick={(e) => {
+                          onClick={e => {
                             addNewRow(e, education);
                           }}
                         >
