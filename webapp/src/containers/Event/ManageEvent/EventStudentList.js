@@ -19,7 +19,6 @@ import {
   YellowButton,
   GrayButton,
   Table,
-  YearMonthPicker,
   ThumbIcon
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -30,19 +29,31 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
+const STREAM_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
+
 const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
 const STUDENT_URL = strapiConstants.STRAPI_STUDENTS;
 const SORT_FIELD_KEY = "_sort";
-const NAME_FILTER = "username_contains";
-const STREAMS_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
+const NAME_FILTER = "user.first_name_contains";
+const EVENT_FILTER = "event.id";
+const STUDENT_FILTER = "student.id";
+const educationYear = "educationYear";
+const STREAM_FILTER = "stream.id";
+
+const educationYearList = [
+  { name: "First", id: "First" },
+  { name: "Second", id: "Second" },
+  { name: "Third", id: "Third" },
+  { name: "Fourth", id: "Fourth" }
+];
 
 const StudentList = props => {
   const history = useHistory();
   const classes = useStyles();
   const [streams, setStreams] = useState([]);
-  console.log("props24123", props);
+
   const [formState, setFormState] = useState({
     students: [],
     registration: [],
@@ -57,6 +68,7 @@ const StudentList = props => {
     isClearResetFilter: false,
     isFilterSearch: false,
     texttvalue: "",
+    hireStudentData: [],
 
     /*** Hire */
     dataToHire: {},
@@ -78,20 +90,6 @@ const StudentList = props => {
     getStudentList(10, 1);
     getFilterData();
   }, []);
-
-  const getFilterData = () => {
-    let params = {
-      pageSize: -1
-    };
-    serviceProvider
-      .serviceProviderForGetRequest(STREAMS_URL, params)
-      .then(res => {
-        setStreams(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-  };
 
   const getStudentList = async (pageSize, page, paramsForevents = null) => {
     if (
@@ -125,7 +123,6 @@ const StudentList = props => {
       auth.getUserInfo().role.name === "College Admin"
     ) {
       EVENT_ID = formState.eventId;
-      console.log("Event_ID", EVENT_ID);
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
       if (auth.getUserInfo().role.name === "College Admin") {
         paramsForevents["user.college"] = auth.getUserInfo()["college"]["id"];
@@ -202,10 +199,42 @@ const StudentList = props => {
         eventIndividualData["mobile"] = data[i]["user"]
           ? data[i]["user"]["contact_number"]
           : "";
+
+        let paramsForHire = {
+          "event.id": props["location"]["eventIdStudent"],
+          "student.user": data[i]["user"]["id"]
+        };
+        let isHired = false;
+        serviceProvider
+          .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
+          .then(res => {
+            let hireData = res.data.result[0];
+            isHired = hireData.hired_at_event;
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+        eventIndividualData["hired"] = isHired;
+
         x.push(eventIndividualData);
       }
       return x;
     }
+  };
+
+  const getFilterData = () => {
+    let params = {
+      pageSize: -1
+    };
+
+    serviceProvider
+      .serviceProviderForGetRequest(STREAM_URL, params)
+      .then(res => {
+        setStreams(res.data.result);
+      })
+      .catch(error => {
+        console.log("error");
+      });
   };
 
   const modalClose = () => {
@@ -318,6 +347,7 @@ const StudentList = props => {
       filterDataParameters: {},
       /** Turns on the spinner */
       isClearResetFilter: true,
+      isStateClearFilter: true,
       isDataLoading: true,
       texttvalue: ""
     }));
@@ -330,12 +360,17 @@ const StudentList = props => {
     getStudentList(formState.pageSize, 1);
   };
 
-  const handleYearChange = date => {
-    //formState.filterDataParameters[date.target.name] = date.target.value;
-    setFormState(formState => ({
-      ...formState,
-      year: date
-    }));
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false
+      }));
+    }
   };
 
   const handleFilterChange = (event, value) => {
@@ -369,10 +404,6 @@ const StudentList = props => {
     <div>
       {}
       <div>
-        {/* <Link to={"#"} id={row.id} onClick={handleClick}>
-          {" "}
-          {row.user}{" "}
-        </Link> */}
         <a href="#" id={row.studentid} onClick={handleClick}>
           {row.name}
         </a>
@@ -410,7 +441,12 @@ const StudentList = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            <ThumbIcon id={cell.id} value={cell.name} onClick={hiredCell} />
+            <ThumbIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={hiredCell}
+              style={cell.isHired}
+            />
           </div>
         </div>
       ),
@@ -459,7 +495,7 @@ const StudentList = props => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h5" gutterBottom color="textSecondary">
           {formState.eventTitle}
         </Typography>
       </Grid>
@@ -481,9 +517,25 @@ const StudentList = props => {
               <Grid item>
                 <Autocomplete
                   id="combo-box-demo"
+                  name={STREAM_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(STREAM_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : streams[
+                          streams.findIndex(function(item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STREAM_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -496,10 +548,27 @@ const StudentList = props => {
                 />
               </Grid>
               <Grid item>
-                <YearMonthPicker
+                {/* <YearMonthPicker
                   label="Academic Year"
                   value={formState.year}
                   onChange={handleYearChange}
+                /> */}
+                <Autocomplete
+                  id="education-year-list"
+                  options={educationYearList}
+                  getOptionLabel={option => option.name}
+                  // onChange={(event, value) => {
+                  //   handleChangeAutoComplete(educationYear, event, value);
+                  // }}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Academic Year"
+                      variant="outlined"
+                      name="tester"
+                      className={classes.autoCompleteField}
+                    />
+                  )}
                 />
               </Grid>
 
@@ -520,7 +589,7 @@ const StudentList = props => {
                 <GrayButton
                   variant="contained"
                   color="primary"
-                  //onClick={clearFilter}
+                  onClick={clearFilter}
                   disableElevation
                 >
                   Reset

@@ -238,10 +238,6 @@ const ManageEvent = props => {
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
-    console.log(
-      "formState.filterDataParameters",
-      formState.filterDataParameters
-    );
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getEventData(perPage, page, formState.filterDataParameters);

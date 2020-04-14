@@ -27,7 +27,6 @@ const HireStudent = props => {
     stateCounter: 0,
     values: {}
   });
-  console.log("Hired Student id", props.id);
 
   const handleCloseModal = () => {
     setOpen(false);
