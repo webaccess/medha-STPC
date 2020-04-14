@@ -26,4 +26,4 @@ export { default as BlockGridIcon } from "./BlockGridIcon";
 export { default as ViewStudentGridIcon } from "./ViewStudentGridIcon";
 export { default as YearMonthPicker } from "./YearMonthPicker";
 export { default as ThumbIcon } from "./ThumbGridIcon";
-export { default as InlineDatePickerDemo } from "./InlineDatePicker";
+export { default as InlineDatePicker } from "./InlineDatePicker";
