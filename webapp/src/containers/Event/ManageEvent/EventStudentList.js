@@ -6,9 +6,11 @@ import {
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
-
+import CloseIcon from "@material-ui/icons/Close";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import {
@@ -18,7 +20,8 @@ import {
   YellowButton,
   GrayButton,
   Table,
-  ThumbIcon
+  ThumbIcon,
+  Alert
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -50,6 +53,7 @@ const educationYearList = [
 ];
 
 const StudentList = props => {
+  const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
   const [streams, setStreams] = useState([]);
@@ -75,6 +79,8 @@ const StudentList = props => {
     isUnHired: false,
     showModalHire: false,
     isStudentHired: false,
+    studentName: "",
+    fromHiredModal: false,
 
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -138,18 +144,24 @@ const StudentList = props => {
           formState.dataToShow = [];
           formState.tempData = [];
           let eventData = [];
-          eventData = convertEventData(res.data.result);
-          setFormState(formState => ({
-            ...formState,
-            students: res.data.result,
-            pageSize: res.data.pageSize,
-            totalRows: res.data.rowCount,
-            page: res.data.page,
-            pageCount: res.data.pageCount,
-            dataToShow: eventData,
-            tempData: eventData,
-            isDataLoading: false
-          }));
+          getHiredIds(res.data.result)
+            .then(res1 => {
+              console.log("res1", res1);
+              eventData = convertEventData(res.data.result, res1);
+              console.log("eventData", eventData);
+              setFormState(formState => ({
+                ...formState,
+                students: res.data.result,
+                pageSize: res.data.pageSize,
+                totalRows: res.data.rowCount,
+                page: res.data.page,
+                pageCount: res.data.pageCount,
+                dataToShow: eventData,
+                tempData: eventData,
+                isDataLoading: false
+              }));
+            })
+            .catch(error => {});
         })
         .catch(error => {
           console.log("error", error);
@@ -170,7 +182,29 @@ const StudentList = props => {
     }
   };
 
-  const convertEventData = data => {
+  const getHiredIds = async studentData => {
+    let ids = [];
+    for (let data in studentData) {
+      let paramsForHire = {
+        "event.id": props["location"]["eventId"],
+        "student.id": studentData[data]["id"],
+        hired_at_event: true
+      };
+      await serviceProvider
+        .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
+        .then(res => {
+          if (res.data.result.length !== 0) {
+            ids.push(studentData[data]["id"]);
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
+    return ids;
+  };
+
+  const convertEventData = (data, hiredIds) => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -198,23 +232,11 @@ const StudentList = props => {
         eventIndividualData["mobile"] = data[i]["user"]
           ? data[i]["user"]["contact_number"]
           : "";
-
-        let paramsForHire = {
-          "event.id": props["location"]["eventIdStudent"],
-          "student.user": data[i]["user"]["id"]
-        };
-        let isHired = false;
-        serviceProvider
-          .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-          .then(res => {
-            let hireData = res.data.result[0];
-            isHired = hireData.hired_at_event;
-          })
-          .catch(error => {
-            console.log("error", error);
-          });
-        eventIndividualData["hired"] = isHired;
-
+        if (hiredIds.includes(data[i]["id"])) {
+          eventIndividualData["hired"] = true;
+        } else {
+          eventIndividualData["hired"] = false;
+        }
         x.push(eventIndividualData);
       }
       return x;
@@ -254,8 +276,14 @@ const StudentList = props => {
     }
   };
 
-  const isStudentHiredCompleted = status => {
+  const isStudentHiredCompleted = (
+    status,
+    fromHiredModal,
+    isHired,
+    isUnHired
+  ) => {
     formState.isStudentHired = status;
+    formState.fromHiredModal = fromHiredModal;
   };
 
   const hiredCell = event => {
@@ -273,9 +301,9 @@ const StudentList = props => {
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
         if (registerData.hired_at_event) {
-          registerCellData(regUserID, false);
+          registerCellData(regUserID, false, "");
         } else {
-          registerCellData(regUserID, true);
+          registerCellData(regUserID, true, "");
         }
       })
       .catch(error => {
@@ -283,14 +311,15 @@ const StudentList = props => {
       });
   };
 
-  const registerCellData = (id, isHired = false) => {
+  const registerCellData = (id, isHired = false, studentName) => {
     if (isHired === true) {
       setFormState(formState => ({
         ...formState,
         dataToHire: id,
         isHired: true,
         isUnHired: false,
-        showModalHire: true
+        showModalHire: true,
+        studentName: studentName
       }));
     } else {
       setFormState(formState => ({
@@ -298,7 +327,8 @@ const StudentList = props => {
         dataToHire: id,
         isHired: false,
         isUnHired: true,
-        showModalHire: true
+        showModalHire: true,
+        studentName: studentName
       }));
     }
   };
@@ -461,7 +491,7 @@ const StudentList = props => {
               id={cell.id}
               value={cell.name}
               onClick={hiredCell}
-              style={cell.isHired}
+              style={cell.hired}
             />
           </div>
         </div>
@@ -474,6 +504,7 @@ const StudentList = props => {
     }
   ];
 
+  console.log(formState);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -505,6 +536,53 @@ const StudentList = props => {
           fileName="StudentList"
         />
       </Grid>
+
+      {/** Error/Success messages to be shown for add */}
+      {formState.fromHiredModal && formState.isStudentHired ? (
+        <Collapse in={open}>
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {formState.isHired
+              ? "Student hired successfully"
+              : "Student DeHired successfully"}
+          </Alert>
+        </Collapse>
+      ) : null}
+      {formState.fromHiredModal && !formState.isStudentHired ? (
+        <Collapse in={open}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Error hiring student
+          </Alert>
+        </Collapse>
+      ) : null}
+
       <Grid item xs={12} className={classes.formgrid}>
         <Typography variant="h5" gutterBottom color="textSecondary">
           {formState.eventTitle}

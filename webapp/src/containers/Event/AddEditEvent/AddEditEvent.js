@@ -18,7 +18,8 @@ import {
   YellowButton,
   CustomDateTimePicker,
   GrayButton,
-  Spinner
+  Spinner,
+  Auth as auth
 } from "../../../components";
 import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as serviceProvider from "../../../api/Axios";
@@ -85,7 +86,6 @@ const AddEditEvent = props => {
     isSuccess: false,
     showPassword: false,
     isEditEvent: props["editEvent"] ? props["editEvent"] : false,
-
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     files: {},
@@ -102,7 +102,8 @@ const AddEditEvent = props => {
     dynamicBar: [{ index: Math.random() }],
     dynamicBarError: [],
     dynamicEducationBar: [{ index: Math.random() }],
-    dynamicEducationBarError: []
+    dynamicEducationBarError: [],
+    isCollegeAdmin: false
   });
 
   const [states, setStates] = useState([]);
@@ -115,9 +116,25 @@ const AddEditEvent = props => {
   const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
   const [educations, setEducations] = useState([]);
   const [educationsDataBackup, setEducationsDataBackup] = useState([]);
+  const [collegeInfo, setCollegeInfo] = useState({
+    college: {},
+    state: {},
+    rpc: {},
+    zone: {}
+  });
 
-  /** Part for editing state */
+  // if (auth.getUserInfo().role.name === "College Admin") {
+  //   formState.isCollegeAdmin = auth.getUserInfo().college.id;
+  //   setCollegeInfo(collegeInfo => ({
+  //     ...collegeInfo,
+  //     college: auth.getUserInfo().college,
+  //     state: auth.getUserInfo().state,
+  //     rpc: auth.getUserInfo().rpc,
+  //     zone: auth.getUserInfo().zone
+  //   }));
+  // }
   if (formState.dataForEdit && !formState.counter) {
+    /** Part for editing state */
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
         formState.values[eventName] = props["dataForEdit"]["title"];
