@@ -226,13 +226,32 @@ module.exports = {
     // Get all users Ids belongs to college
     const userIds = await strapi.services.college.getUsers(id);
 
-    let students = await strapi.query("student").find({ user_in: userIds });
-    students = students.map((student) => {
-      student.user = sanitizeUser(student.user);
-      return student;
-    });
+    let students = await strapi
+      .query("student")
+      .model.query(
+        buildQuery({
+          model: strapi.models.student,
+          filters,
+        })
+      )
+      .fetchAll()
+      .then((model) => model.toJSON());
+    // user_in: userIds
+    // students = students.map((student) => {
+    //   student.user = sanitizeUser(student.user);
+    //   return student;
+    // });
 
-    const response = utils.paginate(students, page, pageSize);
+    const filtered = students.reduce((acc, student) => {
+      const user = student.user;
+      if (_.includes(userIds, student.user.id)) {
+        student.user = sanitizeUser(user);
+        acc.push(student);
+      }
+      return acc;
+    }, []);
+
+    const response = utils.paginate(filtered, page, pageSize);
 
     return { result: response.result, ...response.pagination };
   },
