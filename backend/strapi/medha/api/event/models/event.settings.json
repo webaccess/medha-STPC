@@ -56,6 +56,9 @@
       "type": "component",
       "repeatable": true,
       "component": "educations.educations"
+    },
+    "zone": {
+      "model": "zone"
     }
   }
 }

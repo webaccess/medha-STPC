@@ -12,8 +12,8 @@ module.exports = async (ctx, next) => {
     const {
       student: studentId,
       qualification,
-      marks,
-      year_of_passing: yearOfPassing
+      percentage,
+      year_of_passing: yearOfPassing,
     } = ctx.request.body;
 
     if (!studentId) {
@@ -22,8 +22,8 @@ module.exports = async (ctx, next) => {
     if (!qualification) {
       return ctx.response.badRequest("Qualification is compulsory");
     }
-    if (!marks) {
-      return ctx.response.badRequest("Marks is compulsory");
+    if (!percentage) {
+      return ctx.response.badRequest("Percentage is compulsory");
     }
     if (!yearOfPassing) {
       return ctx.response.badRequest("Year Of Passing is compulsory");

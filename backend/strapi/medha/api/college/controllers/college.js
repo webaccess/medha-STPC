@@ -333,7 +333,12 @@ module.exports = {
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    const response = await strapi
+    const college = await strapi.query("college").findOne({ id }, []);
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    const events = await strapi
       .query("event")
       .model.query(
         buildQuery({
@@ -344,22 +349,10 @@ module.exports = {
       .fetchAll()
       .then((model) => model.toJSON());
 
-    const filtered = response.reduce((result, event) => {
-      const { colleges } = event;
-      const filterColleges = colleges
-        .map((college) => {
-          if (college.id == id) {
-            return college;
-          }
-        })
-        .filter((c) => c);
-
-      if (filterColleges.length) {
-        event.colleges = filterColleges;
-        result.push(event);
-      }
-      return result;
-    }, []);
+    /**
+     * Get all events for specific college
+     */
+    const filtered = await strapi.services.college.getEvents(college, events);
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
     return { result, ...pagination };
   },
