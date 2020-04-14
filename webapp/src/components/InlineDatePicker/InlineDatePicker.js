@@ -13,7 +13,7 @@ function InlineDatePickerDemo(props) {
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDatePicker
           autoOk
-          disableToolbar
+          // disableToolbar
           variant="inline"
           inputVariant="outlined"
           format="dd/MM/yyyy"
