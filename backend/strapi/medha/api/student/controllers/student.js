@@ -584,6 +584,8 @@ module.exports = {
 
     const student = await strapi.query("student").findOne({ id });
 
+    if (!student) return ctx.response.notFound("Student does not exist");
+
     const activityBatch = await strapi
       .query("activity-batch-attendance")
       .find({ student: id });
@@ -594,20 +596,25 @@ module.exports = {
       const activityIds = activityBatch.map(
         (activityBatch) => activityBatch.activity_batch.activity
       );
-      console.log(activityBatch);
+
       const activity = await strapi.query("activity").find({ id: activityIds });
       // console.log(activity);
 
-      const result = activity.map((activity) => {
-        for (let i = 0; i < activityBatch.length; i++) {
-          if (activity.id === activityBatch[i].activity_batch.activity) {
-            activity["activity_batch"] = activityBatch[i].activity_batch;
-            return activity;
-          }
-        }
-      });
+      const result = activity
+        .map((activity) => {
+          let flag = 0;
+          // for (let i = 0; i < activityBatch.length; i++) {
+          activityBatch.forEach((activityBatch) => {
+            if (activity.id === activityBatch.activity_batch.activity) {
+              activity["activity_batch"] = activityBatch.activity_batch;
+              flag = 1;
+            }
+          });
 
-      console.log(result);
+          if (flag) return activity;
+        })
+        .filter((activity) => activity);
+
       return utils.getFindOneResponse(result);
     }
   },
