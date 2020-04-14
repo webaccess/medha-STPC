@@ -10,7 +10,7 @@ import {
   EditorState,
   convertToRaw,
   convertFromRaw,
-  ContentState,
+  ContentState
 } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
@@ -21,12 +21,12 @@ import {
   Grid,
   Divider,
   Icon,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import ReactHtmlParser, {
   processNodes,
   convertNodeToElement,
-  htmlparser2,
+  htmlparser2
 } from "react-html-parser";
 import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
@@ -39,12 +39,12 @@ const ReactMarkdown = require("react-markdown");
 const ACTIVITIES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
 
-const ActivityDetails = (props) => {
+const ActivityDetails = props => {
   const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
     activityDetails: {},
-    greenButtonChecker: true,
+    greenButtonChecker: true
   });
   useEffect(() => {
     getactivityDetails();
@@ -64,14 +64,14 @@ const ActivityDetails = (props) => {
     ) {
       await serviceProviders
         .serviceProviderForGetOneRequest(ACTIVITIES_URL, paramsForEvent)
-        .then((res) => {
+        .then(res => {
           let viewData = res.data.result;
-          setFormState((formState) => ({
+          setFormState(formState => ({
             ...formState,
-            activityDetails: viewData,
+            activityDetails: viewData
           }));
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
         });
     } else if (
@@ -79,22 +79,22 @@ const ActivityDetails = (props) => {
       paramsForEvent !== undefined &&
       auth.getUserInfo().role.name === "Student"
     ) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        activityDetails: props["location"]["dataForView"],
+        activityDetails: props["location"]["dataForView"]
       }));
     } else {
       if (auth.getUserInfo().role.name === "Medha Admin") {
         history.push({
-          pathname: routeConstants.MANAGE_ACTIVITY,
+          pathname: routeConstants.MANAGE_ACTIVITY
         });
       } else if (auth.getUserInfo().role.name === "Student") {
         history.push({
-          pathname: routeConstants.ELIGIBLE_ACTIVITY,
+          pathname: routeConstants.ELIGIBLE_ACTIVITY
         });
       } else {
         history.push({
-          pathname: routeConstants.DASHBOARD_URL,
+          pathname: routeConstants.DASHBOARD_URL
         });
       }
     }
@@ -103,20 +103,20 @@ const ActivityDetails = (props) => {
   const route = () => {
     if (auth.getUserInfo().role.name === "Student") {
       history.push({
-        pathname: routeConstants.ELIGIBLE_ACTIVITY,
+        pathname: routeConstants.ELIGIBLE_ACTIVITY
       });
     } else if (
       auth.getUserInfo().role.name === "Medha Admin" ||
       auth.getUserInfo().role.name === "College Admin"
     ) {
       history.push({
-        pathname: routeConstants.MANAGE_ACTIVITY,
+        pathname: routeConstants.MANAGE_ACTIVITY
       });
     } else {
       auth.clearToken();
       auth.clearUserInfo();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL,
+        pathname: routeConstants.SIGN_IN_URL
       });
     }
   };

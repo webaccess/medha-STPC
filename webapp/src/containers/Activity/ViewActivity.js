@@ -8,7 +8,7 @@ import {
   Typography,
   Tooltip,
   Collapse,
-  IconButton,
+  IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -27,6 +27,11 @@ import {
   GrayButton,
   Alert,
   Auth,
+  ViewGridIcon,
+  EditGridIcon,
+  ViewStudentGridIcon,
+  DeleteGridIcon,
+  DownloadIcon
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -35,11 +40,11 @@ import moment from "moment";
 import XLSX from "xlsx";
 
 const ACTIVITY_FILTER = "id";
+const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
+const role = user ? user.role : null;
+const roleName = role ? role.name : null;
 
 const url = () => {
-  const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
-  const role = user ? user.role : null;
-  const roleName = role ? role.name : null;
   let url;
   if (roleName === "Medha Admin") {
     url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
@@ -57,7 +62,7 @@ const url = () => {
   return url;
 };
 
-const ViewActivity = (props) => {
+const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
@@ -98,26 +103,26 @@ const ViewActivity = (props) => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true,
+    sortAscending: true
   });
 
   const [alert, setAlert] = useState({
     isOpen: false,
     message: "",
-    severity: "",
+    severity: ""
   });
 
   useEffect(() => {
     const URL = url();
     serviceProviders
       .serviceProviderForGetRequest(URL)
-      .then((res) => {
-        setFormState((formState) => ({
+      .then(res => {
+        setFormState(formState => ({
           ...formState,
-          activityFilter: res.data.result,
+          activityFilter: res.data.result
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
 
@@ -130,28 +135,28 @@ const ViewActivity = (props) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
-      Object.keys(params).map((key) => {
+      Object.keys(params).map(key => {
         defaultParams[key] = params[key];
       });
       params = defaultParams;
     } else {
       params = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(URL, params)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           activities: res.data.result,
           dataToShow: res.data.result,
@@ -159,10 +164,10 @@ const ViewActivity = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
@@ -181,7 +186,7 @@ const ViewActivity = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getActivityData(formState.pageSize, page);
     } else {
@@ -202,13 +207,13 @@ const ViewActivity = (props) => {
   };
 
   const clearFilter = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -218,30 +223,30 @@ const ViewActivity = (props) => {
     getActivityData(formState.pageSize, 1);
   };
 
-  const editCell = (data) => {
+  const editCell = data => {
     history.push({
       pathname: routeConstants.EDIT_ACTIVITY,
       editActivity: true,
-      dataForEdit: data,
+      dataForEdit: data
     });
   };
 
-  const isDeleteCellCompleted = (status) => {
+  const isDeleteCellCompleted = status => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = (event) => {
-    setFormState((formState) => ({
+  const deleteCell = event => {
+    setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
-  const viewCell = (data) => {
+  const viewCell = data => {
     history.push({
       pathname: routeConstants.VIEW_ACTIVITY,
-      dataForView: data.id,
+      dataForView: data.id
     });
   };
 
@@ -258,10 +263,10 @@ const ViewActivity = (props) => {
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
     if (formState.isDataDeleted) {
       getActivityData(formState.pageSize, formState.page);
@@ -271,12 +276,12 @@ const ViewActivity = (props) => {
   /**
    * Redirect to Activity batch UI for given activity
    */
-  const handleManageActivityBatchClick = (activity) => {
+  const handleManageActivityBatchClick = activity => {
     const manageActivityBatchURL = `/manage-activity-batch/${activity.id}`;
     history.push(manageActivityBatchURL);
   };
 
-  const handleClickDownloadStudents = (activity) => {
+  const handleClickDownloadStudents = activity => {
     const URL =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_ACTIVITY +
@@ -291,7 +296,7 @@ const ViewActivity = (props) => {
          * Add students list for respective batch
          */
         const headers = ["Roll Number", "Student Name", "Stream"];
-        data.result.forEach((d) => {
+        data.result.forEach(d => {
           const { workSheetName, workSheetData } = d;
           let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
           wb.SheetNames.push(workSheetName);
@@ -300,12 +305,12 @@ const ViewActivity = (props) => {
 
         XLSX.writeFile(wb, "students.xlsx");
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
   };
 
-  const handleDeleteActivity = (activity) => {
+  const handleDeleteActivity = activity => {
     const url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
     const activityId = activity.id;
     serviceProviders
@@ -314,7 +319,7 @@ const ViewActivity = (props) => {
         setAlert(() => ({
           isOpen: true,
           message: "Success",
-          severity: "success",
+          severity: "success"
         }));
         getActivityData(10, 1);
       })
@@ -322,7 +327,7 @@ const ViewActivity = (props) => {
         setAlert(() => ({
           isOpen: true,
           message: response.data.message,
-          severity: "error",
+          severity: "error"
         }));
       });
   };
@@ -334,115 +339,73 @@ const ViewActivity = (props) => {
     {
       name: "Streams",
       sortable: true,
-      selector: (row) => `${row.streams.map((s) => ` ${s.name}`)}`,
+      selector: row => `${row.streams.map(s => ` ${s.name}`)}`
     },
     { name: "College", sortable: true, selector: "college.name" },
     {
       name: "Date",
       sortable: true,
-      selector: (row) => `${moment(row.start_date_time).format("DD MMM YYYY")}`,
+      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`
     },
     {
-      name: "Action",
-      cell: (cell) => (
-        <div style={{ display: "flex", direction: "flex-row" }}>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Manage Activity Batch" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleManageActivityBatchClick(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                group
-              </i>
-            </Tooltip>
+      name: "Actions",
+      cell: cell => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <ViewStudentGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => handleManageActivityBatchClick(cell)}
+            />
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Edit" placement="top">
-              <i
-                className="material-icons"
+          {roleName === "Medha Admin" ? (
+            <div className={classes.PaddingActionButton}>
+              <EditGridIcon
                 id={cell.id}
                 value={cell.name}
                 onClick={() => editCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                edit
-              </i>
-            </Tooltip>
+              />
+            </div>
+          ) : null}
+
+          <div className={classes.PaddingActionButton}>
+            <ViewGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => viewCell(cell)}
+            />
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="View" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => viewCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                view_headline
-              </i>
-            </Tooltip>
+          <div className={classes.PaddingActionButton}>
+            <DownloadIcon
+              id={cell.id}
+              value={cell.name}
+              title="Download Students"
+              onClick={() => handleClickDownloadStudents(cell)}
+            />
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Download Students" placement="top">
-              <i
-                className="material-icons"
+          {roleName === "Medha Admin" ? (
+            <div className={classes.PaddingActionButton}>
+              <DeleteGridIcon
                 id={cell.id}
-                value={cell.name}
-                onClick={() => handleClickDownloadStudents(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                get_app
-              </i>
-            </Tooltip>
-          </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Delete" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
+                value={cell.title}
                 onClick={() => handleDeleteActivity(cell)}
-                style={{
-                  color: "red",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                delete_outline
-              </i>
-            </Tooltip>
-          </div>
+              />
+            </div>
+          ) : null}
         </div>
       ),
-      button: true,
-      conditionalCellStyles: [],
-      width: "20%",
-    },
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
+    }
   ];
 
   const handleAddActivityClick = () => {
     history.push({
       pathname: routeConstants.ADD_ACTIVITY,
-      addActivity: true,
+      addActivity: true
     });
   };
 
@@ -587,11 +550,11 @@ const ViewActivity = (props) => {
                   id="combo-box-demo"
                   options={formState.activityFilter}
                   className={classes.autoCompleteField}
-                  getOptionLabel={(option) => option.title}
+                  getOptionLabel={option => option.title}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ACTIVITY_FILTER, event, value)
                   }
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       label="Activity Title"
@@ -606,7 +569,7 @@ const ViewActivity = (props) => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={(event) => {
+                  onClick={event => {
                     event.persist();
                     searchFilter();
                   }}

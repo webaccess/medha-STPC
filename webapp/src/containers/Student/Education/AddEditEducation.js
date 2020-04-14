@@ -6,8 +6,7 @@ import {
   CardContent,
   CardActions,
   Grid,
-  TextField,
-  Typography
+  TextField
 } from "@material-ui/core";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
@@ -207,7 +206,7 @@ const AddEditEducation = props => {
       ...formState,
       values: {
         ...formState.values,
-        [eventName]: value ? value.id : ""
+        [eventName]: value ? value.value : ""
       },
       touched: {
         ...formState.touched,
