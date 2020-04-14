@@ -188,36 +188,9 @@ module.exports = {
 
   async showStudents(ctx) {
     const { id } = ctx.params;
-    const { page, pageSize } = utils.getRequestParams(ctx.request.query);
-    // const filters = convertRestQueryParams(query);
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
 
-    // const studentRole = await strapi
-    //   .query("role", "users-permissions")
-    //   .findOne({ name: "Student" });
-
-    // const response = await strapi
-    //   .query("user", "users-permissions")
-    //   .model.query(
-    //     buildQuery({
-    //       model: strapi.models.student,
-    //       filters
-    //     })
-    //   )
-    //   .where({ college: id, role: studentRole.id })
-    //   .fetchPage({
-    //     page: page,
-    //     pageSize:
-    //       pageSize < 0
-    //         ? await strapi.query("user", "users-permissions").count()
-    //         : pageSize
-    //   })
-    //   .then(res => {
-    //     const data = utils.getPaginatedResponse(res);
-    //     data.result = data.result.map(sanitizeUser);
-    //     return data;
-    //   });
-
-    // const userIds = response.result.map(user => user.id);
     const college = await strapi.query("college").findOne({ id });
     if (!college) {
       return ctx.response.notFound("College does not exist");
@@ -226,13 +199,27 @@ module.exports = {
     // Get all users Ids belongs to college
     const userIds = await strapi.services.college.getUsers(id);
 
-    let students = await strapi.query("student").find({ user_in: userIds });
-    students = students.map(student => {
-      student.user = sanitizeUser(student.user);
-      return student;
-    });
+    let students = await strapi
+      .query("student")
+      .model.query(
+        buildQuery({
+          model: strapi.models.student,
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
 
-    const response = utils.paginate(students, page, pageSize);
+    const filtered = students.reduce((acc, student) => {
+      const user = student.user;
+      if (_.includes(userIds, student.user.id)) {
+        student.user = sanitizeUser(user);
+        acc.push(student);
+      }
+      return acc;
+    }, []);
+
+    const response = utils.paginate(filtered, page, pageSize);
 
     return { result: response.result, ...response.pagination };
   },
