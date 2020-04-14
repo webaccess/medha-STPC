@@ -30,45 +30,90 @@ const RegisterEvent = props => {
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
-    stateCounter: 0
+    stateCounter: 0,
+    isMultipleAdding: false,
+    isErrorAddingStudentToEvent: false
   });
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[EVENT_ID] = props.eventId;
     formState.values[STUDENT_ID] = props.userId;
+    formState.isMultipleAdding = props.multipleUserIds
+      ? props.multipleUserIds
+      : false;
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async event => {
+    event.persist();
     setOpen(true);
-    let postData = databaseUtilities.studentEventRegistration(
-      formState.values[EVENT_ID],
-      formState.values[STUDENT_ID]
-    );
-    serviceProviders
-      .serviceProviderForPostRequest(EVENT_REG_URL, postData)
-      .then(res => {
-        formState.stateCounter += 1;
-        setOpen(false);
-        history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT,
-          fromAddEvent: true,
-          isRegistered: true,
-          registeredEventMessage:
-            "Successfully registered for event '" + props.eventTitle + "'"
+    if (formState.isMultipleAdding) {
+      for (let studentData in formState.values[STUDENT_ID]) {
+        let postData = databaseUtilities.studentEventRegistration(
+          formState.values[EVENT_ID],
+          formState.values[STUDENT_ID][studentData]["id"]
+        );
+        await serviceProviders
+          .serviceProviderForPostRequest(EVENT_REG_URL, postData)
+          .then(res => {
+            formState.stateCounter += 1;
+          })
+          .catch(error => {
+            formState.isErrorAddingStudentToEvent = true;
+            formState.stateCounter += 1;
+          });
+      }
+      if (formState.isErrorAddingStudentToEvent) {
+        props.setStatusDataWhileClosingModal(
+          false,
+          "Error registering students to the event '" + props.eventTitle + "'",
+          true
+        );
+        props.modalClose();
+      } else {
+        props.setStatusDataWhileClosingModal(
+          true,
+          "Successfully registered " +
+            props.userCount +
+            " students to the event '" +
+            props.eventTitle +
+            "'",
+          true
+        );
+        props.modalClose();
+      }
+      setOpen(false);
+    } else {
+      setOpen(true);
+      let postData = databaseUtilities.studentEventRegistration(
+        formState.values[EVENT_ID],
+        formState.values[STUDENT_ID]
+      );
+      serviceProviders
+        .serviceProviderForPostRequest(EVENT_REG_URL, postData)
+        .then(res => {
+          formState.stateCounter += 1;
+          setOpen(false);
+          history.push({
+            pathname: routeConstants.ELIGIBLE_EVENT,
+            fromAddEvent: true,
+            isRegistered: true,
+            registeredEventMessage:
+              "Successfully registered for event '" + props.eventTitle + "'"
+          });
+        })
+        .catch(error => {
+          formState.stateCounter += 1;
+          setOpen(false);
+          history.push({
+            pathname: routeConstants.ELIGIBLE_EVENT,
+            fromAddEvent: true,
+            isRegistered: false,
+            registeredEventMessage:
+              "Error registering for event '" + props.eventTitle + "'"
+          });
         });
-      })
-      .catch(error => {
-        formState.stateCounter += 1;
-        setOpen(false);
-        history.push({
-          pathname: routeConstants.ELIGIBLE_EVENT,
-          fromAddEvent: true,
-          isRegistered: false,
-          registeredEventMessage:
-            "Error registering for event '" + props.eventTitle + "'"
-        });
-      });
+    }
   };
 
   const classes = useStyles();
@@ -105,10 +150,17 @@ const RegisterEvent = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  <p>
-                    Are you sure you want to Register for Event "
-                    {props.eventTitle}" ?
-                  </p>
+                  {formState.isMultipleAdding ? (
+                    <p>
+                      Are you sure you want to register selected students for
+                      the event "{props.eventTitle}" ?
+                    </p>
+                  ) : (
+                    <p>
+                      Are you sure you want to register for the event "
+                      {props.eventTitle}" ?
+                    </p>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
