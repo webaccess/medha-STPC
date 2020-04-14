@@ -625,6 +625,9 @@
               },
               "educations": {
                 "type": "component"
+              },
+              "zone": {
+                "type": "string"
               }
             }
           },
