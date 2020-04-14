@@ -13,7 +13,7 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 
 import styles from "./Activity.module.css";
-import useStyles from "./ViewActivityStyles.js";
+import useStyles from "../ContainerStyles/ManagePageStyles.js";
 import * as serviceProviders from "../../api/Axios";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
@@ -27,6 +27,10 @@ import {
   GrayButton,
   Alert,
   Auth,
+  ViewGridIcon,
+  EditGridIcon,
+  ViewStudentGridIcon,
+  DeleteGridIcon,
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -345,57 +349,31 @@ const ViewActivity = (props) => {
     {
       name: "Action",
       cell: (cell) => (
-        <div style={{ display: "flex", direction: "flex-row" }}>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Manage Activity Batch" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleManageActivityBatchClick(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                group
-              </i>
-            </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <ViewStudentGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={() => handleManageActivityBatchClick(cell)}
+            />
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Edit" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => editCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                edit
-              </i>
-            </Tooltip>
+          <div className={classes.PaddingActionButton}>
+            <EditGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => {
+                editCell(cell);
+              }}
+            />
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="View" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => viewCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                view_headline
-              </i>
-            </Tooltip>
+          <div className={classes.PaddingActionButton}>
+            <ViewGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => {
+                viewCell(cell);
+              }}
+            />
           </div>
           <div style={{ marginLeft: "8px" }}>
             <Tooltip title="Download Students" placement="top">
@@ -414,22 +392,12 @@ const ViewActivity = (props) => {
               </i>
             </Tooltip>
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Delete" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleDeleteActivity(cell)}
-                style={{
-                  color: "red",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                delete_outline
-              </i>
-            </Tooltip>
+          <div className={classes.PaddingActionButton}>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={() => handleDeleteActivity(cell)}
+            />
           </div>
         </div>
       ),
