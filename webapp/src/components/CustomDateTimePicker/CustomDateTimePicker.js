@@ -1,7 +1,7 @@
 import React from "react";
 import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
+import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import customTheme from "./CustomDateTimePickerStyles";
 
 const CustomDateTimePicker = props => {

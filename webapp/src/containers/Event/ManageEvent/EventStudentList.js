@@ -53,7 +53,6 @@ const StudentList = props => {
   const history = useHistory();
   const classes = useStyles();
   const [streams, setStreams] = useState([]);
-
   const [formState, setFormState] = useState({
     students: [],
     registration: [],
@@ -468,7 +467,6 @@ const StudentList = props => {
           variant="contained"
           color="secondary"
           onClick={() => backToManageEvent()}
-          startIcon={<ArrowBackIosIcon />}
           greenButtonChecker={formState.greenButtonChecker}
         >
           Back
@@ -528,7 +526,7 @@ const StudentList = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function(item, i) {
+                          streams.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]
