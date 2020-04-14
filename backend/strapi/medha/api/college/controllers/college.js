@@ -349,7 +349,7 @@ module.exports = {
     let { stream_id } = query;
     let stream = [];
 
-    if (stream_id.length) {
+    if (stream_id && stream_id.length) {
       for (let i = 0; i < stream_id.length; i++) {
         stream[i] = parseInt(stream_id[i]);
       }
