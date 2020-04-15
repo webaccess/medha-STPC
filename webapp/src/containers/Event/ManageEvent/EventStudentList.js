@@ -80,6 +80,7 @@ const StudentList = props => {
     showModalHire: false,
     isStudentHired: false,
     studentName: "",
+    hireStudent: "",
     fromHiredModal: false,
 
     /** Pagination and sortinig data */
@@ -285,6 +286,10 @@ const StudentList = props => {
   };
 
   const hiredCell = event => {
+    setFormState(formState => ({
+      ...formState,
+      hireStudent: event.target.getAttribute("value")
+    }));
     getEventRegistrationData(event.target.id);
   };
 
@@ -716,6 +721,7 @@ const StudentList = props => {
             hiredSuccessfully={isStudentHiredCompleted}
             closeHireModal={handleCloseHireModal}
             modalClose={modalClose}
+            studentName={formState.hireStudent}
           />
         </Card>
       </Grid>
