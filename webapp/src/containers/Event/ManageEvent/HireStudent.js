@@ -39,9 +39,9 @@ const HireStudent = props => {
     }));
 
     if (formState.isStudentHired) {
-      props.hiredSuccessfully(true);
+      props.hiredSuccessfully(true, true, props.isHired, props.isUnHired);
     } else {
-      props.hiredSuccessfully(false);
+      props.hiredSuccessfully(false, true, props.isHired, props.isUnHired);
     }
     props.closeHireModal();
   };
@@ -78,6 +78,7 @@ const HireStudent = props => {
       });
   };
 
+  console.log(props);
   const classes = useStyles();
   return (
     <Modal
@@ -112,7 +113,11 @@ const HireStudent = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  <p>Are you sure you want Hire this Student?</p>
+                  {props.isHired ? (
+                    <p>Are you sure you want Hire this Student?</p>
+                  ) : (
+                    <p>Are you sure you want DeHire this Student?</p>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
