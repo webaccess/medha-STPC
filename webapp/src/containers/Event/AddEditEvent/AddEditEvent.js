@@ -9,8 +9,7 @@ import {
   TextField,
   Typography,
   FormHelperText,
-  Button,
-  Box
+  Button
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
@@ -433,7 +432,7 @@ const AddEditEvent = props => {
   };
 
   const checkErrorInDynamicBar = (field, currentDynamicBarValue) => {
-    if (field == "qualification" || field == "percentage") {
+    if (field === "qualification" || field === "percentage") {
       let errorData = { error: false, value: "" };
 
       if (formState.dynamicBarError.length) {
@@ -447,7 +446,7 @@ const AddEditEvent = props => {
         });
       }
       return errorData;
-    } else if (field == "education" || field == "educationpercentage") {
+    } else if (field === "education" || field === "educationpercentage") {
       let errorEducationData = { error: false, value: "" };
 
       if (formState.dynamicEducationBarError.length) {
@@ -465,12 +464,12 @@ const AddEditEvent = props => {
   };
   const addNewRow = (e, extendBarName) => {
     e.persist();
-    if (extendBarName == "qualification") {
+    if (extendBarName === "qualification") {
       setFormState(formState => ({
         ...formState,
         dynamicBar: [...formState.dynamicBar, { index: Math.random() }]
       }));
-    } else if (extendBarName == "education") {
+    } else if (extendBarName === "education") {
       setFormState(formState => ({
         ...formState,
         dynamicEducationBar: [
@@ -524,7 +523,7 @@ const AddEditEvent = props => {
     isTextBox
   ) => {
     event.persist();
-    if (eventName == "qualification" || eventName == "percentage") {
+    if (eventName === "qualification" || eventName === "percentage") {
       /**TO SET VALUES OF AUTOCOMPLETE */
       if (isAutoComplete) {
         if (selectedValueForAutoComplete !== null) {
@@ -595,7 +594,10 @@ const AddEditEvent = props => {
           delete errorValues[eventName];
         }
       });
-    } else if (eventName == "education" || eventName == "educationpercentage") {
+    } else if (
+      eventName === "education" ||
+      eventName === "educationpercentage"
+    ) {
       if (isAutoComplete) {
         if (selectedValueForAutoComplete !== null) {
           setFormState(formState => ({
@@ -783,6 +785,7 @@ const AddEditEvent = props => {
   };
 
   const handleSubmit = event => {
+    console.log(formState.values);
     event.preventDefault();
     /** Validate DynamicGrid */
     let isDynamicBarValid;
