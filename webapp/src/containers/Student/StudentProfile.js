@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Auth as auth, Typography, GrayButton } from "../../components";
+import {
+  Auth as auth,
+  Typography,
+  YellowButton,
+  GrayButton,
+  ReadOnlyTextField
+} from "../../components";
 import {
   Card,
   CardContent,
   CardActions,
   Grid,
   Collapse,
-  IconButton
+  IconButton,
+  Divider,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 
@@ -14,88 +23,11 @@ import * as genericConstants from "../../constants/GenericConstants.js";
 
 import * as serviceProvider from "../../api/Axios.js";
 import CloseIcon from "@material-ui/icons/Close";
-import YellowButton from "../../components/YellowButton/YellowButton.js";
-import { makeStyles } from "@material-ui/core/styles";
+
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import { useHistory } from "react-router-dom";
 import Alert from "../../components/Alert/Alert.js";
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    maxWidth: "100%"
-  },
-  btnspace: {
-    padding: "15px 18px 50px"
-  },
-  btnspaceadd: {
-    padding: "0px 15px 15px"
-  },
-  labelside: {
-    padding: "0px 0px 15px 0px",
-    fontWeight: "600",
-    paddingBottom: "3px",
-    marginRight: "25px"
-  },
-  formgrid: {
-    marginTop: theme.spacing(0),
-    alignItems: "center"
-  },
-  divider: {
-    marginTop: "15px",
-    marginBottom: "15px"
-  },
-  add_more_btn: {
-    float: "right"
-  },
-  streamcard: {
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    padding: "15px !important",
-    margin: "15px",
-    position: "relative",
-    "& label": {
-      position: "absolute",
-      top: "-8px",
-      backgroundColor: "#fff"
-    }
-  },
-  streamoffer: {
-    paddingLeft: "15px",
-    paddingRight: "15px",
-    borderRadius: "0px",
-    boxShadow: "none !important"
-  },
-  streamcardcontent: {
-    boxShadow: "none",
-    borderBottom: "1px solid #ccc",
-    marginBottom: "15px",
-    borderRadius: "0px"
-  },
-  labelside: {
-    paddingBottom: "10px",
-    fontWeight: "600",
-    // backgroundColor: "#ccc",
-    marginRight: "15px",
-    fontWeight: "700",
-    borderBottom: "1px solid #ccc"
-  },
-  Cardtheming: {
-    paddingBottom: "16px !important"
-  },
-  Cardthemingstream: {
-    paddingLeft: "0px"
-  },
-  labelcontent: {
-    paddingBottom: "10px",
-    borderBottom: "1px solid #f6c80a",
-    marginRight: "15px",
-    maxWidth: "100% !important"
-  },
-  padding: {
-    padding: "0px !important"
-  }
-}));
-
+import useStyles from "../ContainerStyles/ViewPageStyles.js";
 const StudentProfile = props => {
   let history = useHistory();
   const [user, setUser] = useState({
@@ -254,7 +186,179 @@ const StudentProfile = props => {
           </Alert>
         </Collapse>
       ) : null}
-      <Grid item xs={12} className={classes.formgrid}>
+      <Grid spacing={3}>
+        <Card>
+          <CardContent>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="firstname"
+                    label="First Name"
+                    defaultValue={formState.values.firstname}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="lastname"
+                    label="Last Name"
+                    defaultValue={formState.values.lastname}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="fathersFirstName"
+                    label="Father's First Name"
+                    defaultValue={formState.values.fatherFirstName}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="fathersLastName"
+                    label="Father's Last Name"
+                    defaultValue={formState.values.fatherLastName}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="address"
+                    label="Address"
+                    defaultValue={formState.values.address}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="state"
+                    label="State"
+                    defaultValue={formState.values.state}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="district"
+                    label="District"
+                    defaultValue={formState.values.district}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="email"
+                    label="Email"
+                    defaultValue={formState.values.email}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="contact"
+                    label="Contact"
+                    defaultValue={formState.values.contact}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="dateOfBirth"
+                    label="Date Of Birth"
+                    defaultValue={
+                      selectedDate.getFullYear() +
+                      "-" +
+                      (selectedDate.getMonth() + 1) +
+                      "-" +
+                      selectedDate.getDate()
+                    }
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="gender"
+                    label="Gender"
+                    defaultValue={formState.values.gender}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="college"
+                    label="College"
+                    defaultValue={formState.values.college}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="stream"
+                    label="Stream"
+                    defaultValue={formState.values.stream}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="rollNumber"
+                    label="Roll Number"
+                    defaultValue={formState.values.rollnumber}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="physicallyHandicapped"
+                    label="Physically Handicapped"
+                    defaultValue={
+                      formState.values.physicallyHandicapped ? "Yes" : "No"
+                    }
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="username"
+                    label="Username"
+                    defaultValue={formState.values.username}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}></Grid>
+              </Grid>
+            </Grid>
+            {/* <Backdrop className={classes.backdrop} open={open}>
+              <CircularProgress color="inherit" />
+            </Backdrop> */}
+          </CardContent>
+          <Grid item xs={12} className={classes.CardActionGrid}>
+            <CardActions className={classes.btnspace}>
+              <YellowButton
+                type="submit"
+                color="primary"
+                variant="contained"
+                onClick={editData}
+              >
+                Edit
+              </YellowButton>
+            </CardActions>
+          </Grid>
+        </Card>
+      </Grid>
+
+      {/* <Grid item xs={12} className={classes.formgrid}>
         <Grid className={classes.root} variant="outlined">
           <Card>
             <CardContent>
@@ -491,7 +595,7 @@ const StudentProfile = props => {
             </CardContent>
           </Card>
         </Grid>
-      </Grid>
+                          </Grid>*/}
     </Grid>
   );
 };
