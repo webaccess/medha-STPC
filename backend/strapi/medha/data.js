@@ -270,7 +270,7 @@ const roles = {
       },
       {
         name: "activity-batch",
-        action: ["student"]
+        action: ["student", "delete"]
       },
       {
         name: "activity-batch-attendance",

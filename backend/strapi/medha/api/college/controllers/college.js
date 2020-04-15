@@ -204,11 +204,11 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models.student,
-          filters,
+          filters
         })
       )
       .fetchAll()
-      .then((model) => model.toJSON());
+      .then(model => model.toJSON());
 
     const filtered = students.reduce((acc, student) => {
       const user = student.user;
@@ -351,34 +351,5 @@ module.exports = {
       .then(res => {
         return utils.getPaginatedResponse(res);
       });
-
-    // let { stream_id } = query;
-    // let stream = [];
-    // console.log(stream_id);
-    // if (stream_id) {
-    //   for (let i = 0; i < stream_id.length; i++) {
-    //     stream[i] = parseInt(stream_id[i]);
-    //   }
-    // }
-
-    // const college = await strapi.query("college").findOne({ id: id });
-
-    // if (!college) {
-    //   return ctx.response.notFound("College does not exist");
-    // }
-    // let activity = await strapi.query("activity").find({ college: id });
-
-    // if (stream) {
-    //   activity = activity.filter((activity) => {
-    //     const { streams } = activity;
-
-    //     const streamIds = streams.map((s) => s.id);
-
-    //     if (stream.every((val) => streamIds.includes(val))) {
-    //       return activity;
-    //     }
-    //   });
-    // }
-    // return utils.paginate(activity, page, pageSize);
   }
 };
