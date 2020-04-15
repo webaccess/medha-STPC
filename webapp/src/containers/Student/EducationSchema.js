@@ -44,18 +44,18 @@ const EducationSchema = {
       }
     }
   },
-  marks: {
-    label: "Marks",
-    id: "marks",
-    autoComplete: "marks",
+  percentage: {
+    label: "Percentage",
+    id: "percentage",
+    autoComplete: "percentage",
     required: true,
-    placeholder: "Marks",
+    placeholder: "Percentage",
     autoFocus: true,
     type: "number",
     validations: {
       required: {
         value: "true",
-        message: "Marks is required"
+        message: "Percentage is required"
       }
     }
   }

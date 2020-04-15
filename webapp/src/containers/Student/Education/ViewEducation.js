@@ -240,7 +240,7 @@ const ViewEducation = props => {
   const column = [
     { name: "Qualification", sortable: true, selector: "qualification" },
     { name: "Board", sortable: true, selector: "board" },
-    { name: "Marks", sortable: true, selector: "marks" },
+    { name: "Percentage", sortable: true, selector: "percentage" },
     { name: "Year Of Passing", sortable: true, selector: "year_of_passing" },
     /** Columns for edit and delete */
     {
@@ -284,7 +284,6 @@ const ViewEducation = props => {
     });
   };
 
-  console.log(formState.dataToShow);
   return (
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>

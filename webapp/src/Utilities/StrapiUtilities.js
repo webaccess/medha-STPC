@@ -298,7 +298,7 @@ export const addEducation = (qualification, board, yearOfPassing, marks) => {
     qualification,
     board,
     year_of_passing: parseInt(yearOfPassing),
-    marks: parseFloat(marks)
+    percentage: parseFloat(marks)
   };
 };
 
