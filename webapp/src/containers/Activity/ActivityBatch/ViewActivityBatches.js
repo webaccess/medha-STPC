@@ -305,8 +305,8 @@ const ViewActivityBatches = (props) => {
     { name: "Activity", sortable: true, selector: "activity.title" },
     {
       cell: (cell) => (
-        <div style={{ display: "flex" }}>
-          <div style={{ marginLeft: "8px" }}>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
             <EditGridIcon
               id={cell.id}
               value={cell.name}
@@ -315,7 +315,7 @@ const ViewActivityBatches = (props) => {
               }}
             />
           </div>
-          <div style={{ marginLeft: "8px" }}>
+          <div className={classes.PaddingActionButton}>
             <DeleteGridIcon
               id={cell.id}
               value={cell.title}
