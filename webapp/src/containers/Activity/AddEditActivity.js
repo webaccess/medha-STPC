@@ -1,32 +1,24 @@
 import React, { useState, useEffect } from "react";
 import {
   Card,
-  CardHeader,
   CardContent,
   Grid,
   TextField,
   Typography,
-  FormControl,
   Divider,
   InputLabel,
   IconButton,
-  InputAdornment,
-  OutlinedInput,
   Collapse,
+  Button
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
-import Chip from "@material-ui/core/Chip";
 import CloseIcon from "@material-ui/icons/Close";
-import { Auth as auth } from "../../components";
+
 import * as routeConstants from "../../constants/RouteConstants";
-import * as _ from "lodash";
+
 import * as genericConstants from "../../constants/GenericConstants.js";
-import { Redirect } from "react-router-dom";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import axios from "axios";
+import { get } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import DateFnsUtils from "@date-io/date-fns";
 import CustomDateTimePicker from "../../components/CustomDateTimePicker/CustomDateTimePicker.js";
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
@@ -36,102 +28,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
-//import registrationSchema from "./RegistrationSchema.js";
+
 import Img from "react-image";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
 import ActivityFormSchema from "./ActivityFormSchema";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {
-  EditorState,
-  convertToRaw,
-  convertFromRaw,
-  ContentState,
-} from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
+import useStyles from "../../containers/ContainerStyles/AddEditPageStyles.js";
+import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  chip: {
-    margin: 2,
-  },
-  noLabel: {
-    marginTop: theme.spacing(3),
-  },
-  root: {
-    maxWidth: "100%",
-  },
-  btnspace: {
-    padding: "20px 18px 20px",
-  },
-  btnspaceadd: {
-    padding: "0px 15px 15px",
-  },
-  formgrid: {
-    marginTop: theme.spacing(0),
-    alignItems: "center",
-  },
-  divider: {
-    marginTop: "15px",
-    marginBottom: "15px",
-  },
-  add_more_btn: {
-    float: "right",
-  },
-  streamcard: {
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    padding: "15px !important",
-    position: "relative",
-    "& label": {
-      position: "absolute",
-      top: "-8px",
-      backgroundColor: "#fff",
-    },
-  },
-  streamoffer: {
-    paddingLeft: "15px",
-    paddingRight: "15px",
-    borderRadius: "0px",
-    boxShadow: "none !important",
-  },
-  streamcardcontent: {
-    boxShadow: "none",
-    borderBottom: "1px solid #ccc",
-    marginBottom: "15px",
-    borderRadius: "0px",
-  },
-  title: {
-    display: "flex",
-    marginBottom: theme.spacing(1),
-    "& h4": {
-      flex: "1",
-      fontWeight: "700",
-    },
-  },
-  CardActionGrid: {
-    backgroundColor: "#EEEEEE",
-  },
-  MarginBottom: {
-    marginBottom: "10px",
-  },
-  toolbarMargin: {
-    marginTop: theme.spacing(2),
-    border: "1px solid",
-  },
-}));
-
-const AddEditActivity = (props) => {
+const AddEditActivity = props => {
   let history = useHistory();
 
   const [editorState, setEditorState] = React.useState(
@@ -153,7 +63,17 @@ const AddEditActivity = (props) => {
       : false,
     counter: 0,
     stream: [],
-    files: {},
+    files: null,
+    previewFile: {},
+    showPreview: false,
+    showEditPreview: props.location.editActivity
+      ? props.location.dataForEdit.upload_logo
+        ? true
+        : false
+      : false,
+    showNoImage: props.location.editActivity
+      ? false
+      : props.location.editActivity
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
@@ -161,35 +81,27 @@ const AddEditActivity = (props) => {
   const activitytypelist = [
     { name: "Workshop", id: "workshop" },
     { name: "Training", id: "training" },
-    { name: "Industrial Visit", id: "industrialVisit" },
+    { name: "Industrial Visit", id: "industrialVisit" }
   ];
 
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
     { name: "Third", id: "Third" },
-    { name: "Fourth", id: "Fourth" },
+    { name: "Fourth", id: "Fourth" }
   ];
-  const [isSuccess, setIsSuccess] = useState(false);
+
   const [isFailed, setIsFailed] = useState(false);
 
-  const { layout: Layout } = props;
   const classes = useStyles();
 
-  const [statelist, setstatelist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
-  const [zonelist, setzonelist] = useState([]);
-  const [rpclist, setrpclist] = useState([]);
   const [academicyearlist, setacademicyearlist] = useState([]);
   useEffect(() => {
-    getStates();
-
     getColleges();
     getStreams();
-    getZones();
-    getRpc();
-    getAcademicYear();
+
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
@@ -212,7 +124,7 @@ const AddEditActivity = (props) => {
       }
       if (props.location["dataForEdit"]["streams"]) {
         formState.values["stream"] = props.location["dataForEdit"]["streams"];
-        const id = props.location["dataForEdit"]["streams"].map((stream) => {
+        const id = props.location["dataForEdit"]["streams"].map(stream => {
           return stream.id;
         });
         formState["stream"] = id;
@@ -280,10 +192,8 @@ const AddEditActivity = (props) => {
     formState.counter += 1;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
-
-    let schema;
     // if (formState.editActivity) {
     //   schema = Object.assign(
     //     {},
@@ -292,7 +202,6 @@ const AddEditActivity = (props) => {
     // } else {
     //   schema = registrationSchema;
     // }
-    console.log(schema);
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
@@ -327,14 +236,14 @@ const AddEditActivity = (props) => {
       postActivityData();
 
       /** Call axios from here */
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: true,
+        isValid: true
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
     }
   };
@@ -343,44 +252,12 @@ const AddEditActivity = (props) => {
     let postData;
     if (formState.editActivity) {
       postData = databaseUtilities.editActivity(
+        formState.showPreview,
         formState.values["activityname"],
         formState.values["activitytype"],
-        formState.values["academicyear"],
         formState.values["college"],
-        selectedDateFrom.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateFrom.getDate() < 9
-            ? "0" + selectedDateFrom.getDate()
-            : selectedDateFrom.getDate()) +
-          "T" +
-          (selectedDateFrom.getHours() < 9
-            ? "0" + selectedDateFrom.getHours()
-            : selectedDateFrom.getHours()) +
-          ":" +
-          (selectedDateFrom.getMinutes() < 9
-            ? "0" + selectedDateFrom.getMinutes()
-            : selectedDateFrom.getMinutes()),
-        selectedDateTo.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateTo.getDate() < 9
-            ? "0" + selectedDateTo.getDate()
-            : selectedDateTo.getDate()) +
-          "T" +
-          (selectedDateTo.getHours() < 9
-            ? "0" + selectedDateTo.getHours()
-            : selectedDateTo.getHours()) +
-          ":" +
-          (selectedDateTo.getMinutes() < 9
-            ? "0" + selectedDateTo.getMinutes()
-            : selectedDateTo.getMinutes()),
+        selectedDateFrom,
+        selectedDateTo,
         formState.values["educationyear"],
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -389,28 +266,25 @@ const AddEditActivity = (props) => {
         formState["dataForEdit"]["id"],
         formState.files
       );
-      console.log(postData);
-      console.log(formState.dataForEdit.id);
+
       serviceProvider
         .serviceProviderForPutRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
           formState.dataForEdit.id,
           postData
         )
-        .then((response) => {
-          console.log(response);
+        .then(response => {
           console.log("Success");
-          setIsSuccess(true);
+
           setFormState({ ...formState, isSuccess: true });
           history.push({
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataEdited: true,
             editedData: response.data,
+            fromEditActivity: true
           });
         })
-        .catch((err) => {
-          console.log(err);
-          console.log(err.response.data);
+        .catch(err => {
           console.log(JSON.stringify(err));
           setIsFailed(true);
         });
@@ -418,42 +292,9 @@ const AddEditActivity = (props) => {
       postData = databaseUtilities.addActivity(
         formState.values["activityname"],
         formState.values["activitytype"],
-        formState.values["academicyear"],
         formState.values["college"],
-        selectedDateFrom.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateFrom.getDate() < 9
-            ? "0" + selectedDateFrom.getDate()
-            : selectedDateFrom.getDate()) +
-          "T" +
-          (selectedDateFrom.getHours() < 9
-            ? "0" + selectedDateFrom.getHours()
-            : selectedDateFrom.getHours()) +
-          ":" +
-          (selectedDateFrom.getMinutes() < 9
-            ? "0" + selectedDateFrom.getMinutes()
-            : selectedDateFrom.getMinutes()),
-        selectedDateTo.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 9
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateTo.getDate() < 9
-            ? "0" + selectedDateTo.getDate()
-            : selectedDateTo.getDate()) +
-          "T" +
-          (selectedDateTo.getHours() < 9
-            ? "0" + selectedDateTo.getHours()
-            : selectedDateTo.getHours()) +
-          ":" +
-          (selectedDateTo.getMinutes() < 9
-            ? "0" + selectedDateTo.getMinutes()
-            : selectedDateTo.getMinutes()),
+        selectedDateFrom,
+        selectedDateTo,
         formState.values["educationyear"],
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -467,95 +308,28 @@ const AddEditActivity = (props) => {
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
           postData
         )
-        .then((response) => {
+        .then(response => {
           console.log(response);
           history.push({
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataAdded: true,
             addedData: response,
+            fromAddActivity: true
           });
-          // ImageUpload(response);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
           setIsFailed(true);
         });
-      console.log(postData);
     }
   };
 
-  const ImageUpload = (response) => {
-    console.log(response);
-    let ImageData = databaseUtilities.uploadDocument(
-      formState.files,
-      "activity",
-      response.data.id,
-      "upload_logo"
-    );
-    console.log(ImageData);
-    serviceProvider
-      .serviceProviderForPostRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD,
-        ImageData
-      )
-      .then((res) => {
-        console.log(res);
-        //setIsSuccess(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        setIsFailed(true);
-      });
-  };
-  const getAcademicYear = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL +
-          strapiApiConstants.STRAPI_ACADEMIC_YEARS
-      )
-      .then((response) => {
-        console.log(response);
-        setacademicyearlist(
-          response.data.result.map(({ id, name }) => ({ id, name }))
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  const getZones = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES
-      )
-      .then((response) => {
-        console.log(response);
-        setzonelist(response.data.result.map(({ id, name }) => ({ id, name })));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getRpc = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS
-      )
-      .then((response) => {
-        console.log(response);
-        setrpclist(response.data.result.map(({ id, name }) => ({ id, name })));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
   const getStreams = () => {
     serviceProvider
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS
       )
-      .then((res) => {
+      .then(res => {
         console.log(res);
         setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
@@ -566,63 +340,50 @@ const AddEditActivity = (props) => {
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
-      .then((res) => {
+      .then(res => {
         console.log(res);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
 
-  const getStates = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES
-      )
-      .then((res) => {
-        console.log(res);
-        //   const sanitzedOptions = res.data.map(state => {
-        //     return {
-        //       id: state.id,
-        //       name: state.name
-        //     };
-        //   });
-        setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
-  };
-  const handleChangefile = (e) => {
+  const handleChangefile = e => {
     e.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
 
       values: {
         ...formState.values,
-        [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+        [e.target.name]: e.target.files[0].name
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
+        [e.target.name]: true
       },
       files: e.target.files[0],
+      previewFile: URL.createObjectURL(e.target.files[0]),
+      showPreview: true,
+      showEditPreview: false,
+      showNoImage: false
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
     }
   };
-  const handleChange = (e) => {
+  const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
     e.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
 
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+          e.target.type === "checkbox" ? e.target.checked : e.target.value
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
-      },
+        [e.target.name]: true
+      }
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -636,32 +397,32 @@ const AddEditActivity = (props) => {
 
     if (value !== null) {
       if (eventName === "stream") {
-        const id = value.map((stream) => {
+        const id = value.map(stream => {
           return stream.id;
         });
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value,
+            [eventName]: value
           },
           touched: {
             ...formState.touched,
-            [eventName]: true,
+            [eventName]: true
           },
-          stream: id,
+          stream: id
         }));
       } else {
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value.id,
+            [eventName]: value.id
           },
           touched: {
             ...formState.touched,
-            [eventName]: true,
-          },
+            [eventName]: true
+          }
         }));
       }
       if (formState.errors.hasOwnProperty(eventName)) {
@@ -672,13 +433,11 @@ const AddEditActivity = (props) => {
     }
   };
 
-  const hasError = (field) => (formState.errors[field] ? true : false);
+  const hasError = field => (formState.errors[field] ? true : false);
 
   return (
     <Grid>
       {console.log(formState)}
-      {console.log(selectedDateFrom)}
-      {console.log(selectedDateTo)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editActivity
@@ -730,11 +489,87 @@ const AddEditActivity = (props) => {
       </Grid>
       <Grid spacing={3}>
         <Card>
-          {console.log(props)}
-          {console.log(formState)}
-          {console.log(statelist)}
-          <form autoComplete="off">
+          <form autoComplete="off" noValidate>
             <CardContent>
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container className={classes.formgridInputFile}>
+                  <Grid item md={10} xs={12}>
+                    <div className={classes.imageDiv}>
+                      {formState.showPreview ? (
+                        <Img
+                          alt="abc"
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                          src={formState.previewFile}
+                        />
+                      ) : null}
+                      {!formState.showPreview && !formState.showEditPreview ? (
+                        <div class={classes.DefaultNoImage}></div>
+                      ) : null}
+                      {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
+                      {formState.showEditPreview &&
+                      formState.dataForEdit["upload_logo"] !== null &&
+                      formState.dataForEdit["upload_logo"] !== undefined &&
+                      formState.dataForEdit["upload_logo"] !== {} ? (
+                        <Img
+                          src={
+                            strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                            formState.dataForEdit["upload_logo"]["url"]
+                          }
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                        />
+                      ) : null}
+                      {formState.showNoImage ? (
+                        <Img
+                          src="/images/noImage.png"
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                        />
+                      ) : null}
+                    </div>
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.MarginBottom}>
+                  <Grid item md={10} xs={12}>
+                    <TextField
+                      fullWidth
+                      id="files"
+                      margin="normal"
+                      name="files"
+                      placeholder="Upload Logo"
+                      onChange={handleChangefile}
+                      required
+                      type="file"
+                      inputProps={{ accept: "image/*" }}
+                      //value={formState.values["files"] || ""}
+                      error={hasError("files")}
+                      helperText={
+                        hasError("files")
+                          ? formState.errors["files"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                      className={classes.inputFile}
+                    />
+                    <label htmlFor={get(ActivityFormSchema["files"], "id")}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        fullWidth
+                        className={classes.InputFileButton}
+                        startIcon={<AddOutlinedIcon />}
+                      >
+                        ADD NEW FILE
+                      </Button>
+                    </label>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
@@ -749,7 +584,7 @@ const AddEditActivity = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError("activityname")
-                          ? formState.errors["activityname"].map((error) => {
+                          ? formState.errors["activityname"].map(error => {
                               return error + " ";
                             })
                           : null
@@ -758,8 +593,8 @@ const AddEditActivity = (props) => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={12} xs={12}>
-                    <Grid className={classes.streamcard}>
+                  <Grid item md={12} xs={12} className={"descriptionBox"}>
+                    <Grid className={classes.descriptionBox}>
                       <Card className={classes.streamoffer}>
                         <InputLabel
                           htmlFor="outlined-stream-card"
@@ -767,14 +602,14 @@ const AddEditActivity = (props) => {
                         >
                           {genericConstants.DESCRIPTION}
                         </InputLabel>
-                        <div className="rdw-storybook-root">
+                        <div className="rdw-root">
                           <Editor
                             editorState={editorState}
-                            toolbarClassName="rdw-storybook-toolbar"
-                            wrapperClassName="rdw-storybook-wrapper"
-                            editorClassName="rdw-storybook-editor"
+                            toolbarClassName="rdw-toolbar"
+                            wrapperClassName="rdw-wrapper"
+                            editorClassName="rdw-editor"
                             value={editorState}
-                            onEditorStateChange={(data) => {
+                            onEditorStateChange={data => {
                               setEditorState(data);
                             }}
                           />
@@ -784,7 +619,7 @@ const AddEditActivity = (props) => {
                   </Grid>
                 </Grid>
 
-                <Grid container spacing={3} className={classes.Datetime}>
+                <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
                       variant="inline"
@@ -794,17 +629,17 @@ const AddEditActivity = (props) => {
                       id="date-picker-inline"
                       label="Date & Time From"
                       value={selectedDateFrom}
-                      onChange={(date) => setSelectedDateFrom(date)}
+                      onChange={date => setSelectedDateFrom(date)}
                       error={hasError("datefrom")}
                       helperText={
                         hasError("datefrom")
-                          ? formState.errors["datefrom"].map((error) => {
+                          ? formState.errors["datefrom"].map(error => {
                               return error + " ";
                             })
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date",
+                        "aria-label": "change date"
                       }}
                     />
                   </Grid>
@@ -817,17 +652,17 @@ const AddEditActivity = (props) => {
                       id="date-picker-inline"
                       label="Date & Time To"
                       value={selectedDateTo}
-                      onChange={(date) => setSelectedDateTo(date)}
+                      onChange={date => setSelectedDateTo(date)}
                       error={hasError("dateto")}
                       helperText={
                         hasError("dateto")
-                          ? formState.errors["dateto"].map((error) => {
+                          ? formState.errors["dateto"].map(error => {
                               return error + " ";
                             })
                           : null
                       }
                       KeyboardButtonProps={{
-                        "aria-label": "change date",
+                        "aria-label": "change date"
                       }}
                     />
                   </Grid>
@@ -846,7 +681,7 @@ const AddEditActivity = (props) => {
                       error={hasError("address")}
                       helperText={
                         hasError("address")
-                          ? formState.errors["address"].map((error) => {
+                          ? formState.errors["address"].map(error => {
                               return error + " ";
                             })
                           : null
@@ -856,12 +691,12 @@ const AddEditActivity = (props) => {
                 </Grid>
 
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={12} xs={12}>
                     <Autocomplete
                       id="combo-box-demo"
                       className={classes.root}
                       options={collegelist}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("college", event, value);
                       }}
@@ -872,7 +707,7 @@ const AddEditActivity = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           error={hasError("college")}
@@ -882,45 +717,9 @@ const AddEditActivity = (props) => {
                           name="tester"
                           helperText={
                             hasError("college")
-                              ? formState.errors["college"].map((error) => {
+                              ? formState.errors["college"].map(error => {
                                   return error + " ";
                                 })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={academicyearlist}
-                      getOptionLabel={(option) => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete("academicyear", event, value);
-                      }}
-                      value={
-                        academicyearlist[
-                          academicyearlist.findIndex(function (item, i) {
-                            return item.id === formState.values.academicyear;
-                          })
-                        ] || null
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          error={hasError("academicyear")}
-                          label="Academic Year"
-                          variant="outlined"
-                          name="tester"
-                          helperText={
-                            hasError("academicyear")
-                              ? formState.errors["academicyear"].map(
-                                  (error) => {
-                                    return error + " ";
-                                  }
-                                )
                               : null
                           }
                         />
@@ -935,13 +734,13 @@ const AddEditActivity = (props) => {
                       id="tags-outlined"
                       required
                       options={streamlist}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("stream", event, value);
                       }}
                       value={formState.values.stream}
                       filterSelectedOptions
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           error={hasError("stream")}
@@ -951,7 +750,7 @@ const AddEditActivity = (props) => {
                           name="tester"
                           helperText={
                             hasError("stream")
-                              ? formState.errors["stream"].map((error) => {
+                              ? formState.errors["stream"].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -990,7 +789,7 @@ const AddEditActivity = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={educationyearlist}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("educationyear", event, value);
                       }}
@@ -1001,7 +800,7 @@ const AddEditActivity = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           error={hasError("educationyear")}
@@ -1010,11 +809,9 @@ const AddEditActivity = (props) => {
                           name="tester"
                           helperText={
                             hasError("educationyear")
-                              ? formState.errors["educationyear"].map(
-                                  (error) => {
-                                    return error + " ";
-                                  }
-                                )
+                              ? formState.errors["educationyear"].map(error => {
+                                  return error + " ";
+                                })
                               : null
                           }
                         />
@@ -1026,7 +823,7 @@ const AddEditActivity = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={activitytypelist}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("activitytype", event, value);
                       }}
@@ -1037,7 +834,7 @@ const AddEditActivity = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           error={hasError("activitytype")}
@@ -1046,11 +843,9 @@ const AddEditActivity = (props) => {
                           name="tester"
                           helperText={
                             hasError("activitytype")
-                              ? formState.errors["activitytype"].map(
-                                  (error) => {
-                                    return error + " ";
-                                  }
-                                )
+                              ? formState.errors["activitytype"].map(error => {
+                                  return error + " ";
+                                })
                               : null
                           }
                         />
@@ -1071,7 +866,7 @@ const AddEditActivity = (props) => {
                       error={hasError("trainer")}
                       helperText={
                         hasError("trainer")
-                          ? formState.errors["trainer"].map((error) => {
+                          ? formState.errors["trainer"].map(error => {
                               return error + " ";
                             })
                           : null
@@ -1080,57 +875,7 @@ const AddEditActivity = (props) => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Divider className={classes.divider} />
               <Grid item xs={12} md={6} xl={3}>
-                <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={12} xs={12}>
-                    {console.log(formState.values.files)}
-                    {formState.files !== null &&
-                    formState.files !== undefined &&
-                    formState.files !== {} ? (
-                      <Img
-                        src={
-                          formState.files["url"]
-                            ? strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                              formState.files["url"]
-                            : formState.values.files
-                        }
-                        loader={<Spinner />}
-                        width="50%"
-                        height="50%"
-                      />
-                    ) : (
-                      <Img
-                        src="/images/noImage.png"
-                        loader={<Spinner />}
-                        width="100%"
-                        height="100%"
-                      />
-                    )}
-                  </Grid>
-                  <Grid item md={12} xs={12}>
-                    <TextField
-                      fullWidth
-                      id="files"
-                      margin="normal"
-                      name="files"
-                      placeholder="Upload Logo"
-                      onChange={handleChangefile}
-                      required
-                      type="file"
-                      value={formState.values["files"] || ""}
-                      error={hasError("files")}
-                      helperText={
-                        hasError("files")
-                          ? formState.errors["files"].map((error) => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      variant="outlined"
-                    />
-                  </Grid>
-                </Grid>
                 {formState.editActivity ? (
                   <Grid item md={12} xs={12} className={classes.btnspace}>
                     <YellowButton
@@ -1165,7 +910,7 @@ const AddEditActivity = (props) => {
                       style={{ marginRight: "18px" }}
                       onClick={handleSubmit}
                     >
-                      <span>{authPageConstants.CREATE_ACTIVITY}</span>
+                      <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
                     </YellowButton>
                     <GrayButton
                       color="primary"

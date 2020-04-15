@@ -11,7 +11,7 @@ import {
   Card,
   CardContent,
   Hidden,
-  CardMedia
+  CardMedia,
 } from "@material-ui/core";
 import Logo from "../../components/Logo/Logo.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
@@ -22,7 +22,7 @@ import * as serviceProvider from "../../api/Axios.js";
 import axios from "axios";
 import image from "../../assets/images/login-img.png";
 
-const RequestOtp = props => {
+const RequestOtp = (props) => {
   let history = useHistory();
 
   const [contactNumber, setContactNumber] = useState("");
@@ -52,10 +52,10 @@ const RequestOtp = props => {
           strapiApiConstants.STRAPI_REQUEST_STUDENT_OTP,
         { contact_number: contactNumber }
       )
-      .then(res => {
+      .then((res) => {
         history.push("/verifyotp", { contactNumber: contactNumber });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -86,7 +86,7 @@ const RequestOtp = props => {
                     error={error[0] ? true : false}
                     required
                     helperText={error ? error : null}
-                    onChange={event => {
+                    onChange={(event) => {
                       if (contactNumber.length === 9) setError("");
                       setContactNumber(event.target.value);
                     }}
@@ -94,7 +94,7 @@ const RequestOtp = props => {
                 </Grid>
               </Grid>
               <Grid container spacing={3}>
-                <Grid item style={{ padding: "14px" }}>
+                <Grid item style={{ marginLeft: "-15px" }}>
                   <Button
                     color="primary"
                     mfullWidth
@@ -105,9 +105,7 @@ const RequestOtp = props => {
                       validate();
                     }}
                   >
-                    <span style={{ margin: "10px" }}>
-                      {authPageConstants.SEND_OTP_BUTTON}
-                    </span>
+                    {authPageConstants.SEND_OTP_BUTTON}
                   </Button>
                 </Grid>
               </Grid>
@@ -119,7 +117,7 @@ const RequestOtp = props => {
               height: "300px",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "flex-end"
+              justifyContent: "flex-end",
             }}
             image={image}
             title="Live from space album cover"

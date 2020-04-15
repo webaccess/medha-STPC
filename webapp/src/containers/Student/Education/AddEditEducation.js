@@ -6,8 +6,7 @@ import {
   CardContent,
   CardActions,
   Grid,
-  TextField,
-  Typography
+  TextField
 } from "@material-ui/core";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";

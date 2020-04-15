@@ -13,7 +13,7 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 
 import styles from "./Activity.module.css";
-import useStyles from "./ViewActivityStyles.js";
+import useStyles from "../ContainerStyles/ManagePageStyles.js";
 import * as serviceProviders from "../../api/Axios";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
@@ -27,18 +27,24 @@ import {
   GrayButton,
   Alert,
   Auth,
+  ViewGridIcon,
+  EditGridIcon,
+  ViewStudentGridIcon,
+  DeleteGridIcon,
+  DownloadIcon,
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import moment from "moment";
+import XLSX from "xlsx";
 
 const ACTIVITY_FILTER = "id";
+const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
+const role = user ? user.role : null;
+const roleName = role ? role.name : null;
 
 const url = () => {
-  const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
-  const role = user ? user.role : null;
-  const roleName = role ? role.name : null;
   let url;
   if (roleName === "Medha Admin") {
     url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
@@ -98,6 +104,12 @@ const ViewActivity = (props) => {
     page: "",
     pageCount: "",
     sortAscending: true,
+  });
+
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    message: "",
+    severity: "",
   });
 
   useEffect(() => {
@@ -269,6 +281,57 @@ const ViewActivity = (props) => {
     history.push(manageActivityBatchURL);
   };
 
+  const handleClickDownloadStudents = (activity) => {
+    const URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_ACTIVITY +
+      `/${activity.id}/download`;
+    serviceProviders
+      .serviceProviderForGetRequest(URL)
+      .then(({ data }) => {
+        let wb = XLSX.utils.book_new();
+
+        /**
+         * Create worksheet for every batch
+         * Add students list for respective batch
+         */
+        const headers = ["Roll Number", "Student Name", "Stream"];
+        data.result.forEach((d) => {
+          const { workSheetName, workSheetData } = d;
+          let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
+          wb.SheetNames.push(workSheetName);
+          wb.Sheets[workSheetName] = ws;
+        });
+
+        XLSX.writeFile(wb, "students.xlsx");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleDeleteActivity = (activity) => {
+    const url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
+    const activityId = activity.id;
+    serviceProviders
+      .serviceProviderForDeleteRequest(url, activityId)
+      .then(() => {
+        setAlert(() => ({
+          isOpen: true,
+          message: "Success",
+          severity: "success",
+        }));
+        getActivityData(10, 1);
+      })
+      .catch(({ response }) => {
+        setAlert(() => ({
+          isOpen: true,
+          message: response.data.message,
+          severity: "error",
+        }));
+      });
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Training and Activities", sortable: true, selector: "title" },
@@ -285,82 +348,57 @@ const ViewActivity = (props) => {
       selector: (row) => `${moment(row.start_date_time).format("DD MMM YYYY")}`,
     },
     {
-      name: "Action",
+      name: "Actions",
       cell: (cell) => (
-        <div style={{ display: "flex", direction: "flex-row" }}>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Manage Activity Batch" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleManageActivityBatchClick(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                group
-              </i>
-            </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <ViewStudentGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => handleManageActivityBatchClick(cell)}
+            />
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Edit" placement="top">
-              <i
-                className="material-icons"
+          {roleName === "Medha Admin" ? (
+            <div className={classes.PaddingActionButton}>
+              <EditGridIcon
                 id={cell.id}
                 value={cell.name}
                 onClick={() => editCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                edit
-              </i>
-            </Tooltip>
+              />
+            </div>
+          ) : null}
+
+          <div className={classes.PaddingActionButton}>
+            <ViewGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => viewCell(cell)}
+            />
           </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="View" placement="top">
-              <i
-                className="material-icons"
+          <div className={classes.PaddingActionButton}>
+            <DownloadIcon
+              id={cell.id}
+              value={cell.name}
+              title="Download Students"
+              onClick={() => handleClickDownloadStudents(cell)}
+            />
+          </div>
+          {roleName === "Medha Admin" ? (
+            <div className={classes.PaddingActionButton}>
+              <DeleteGridIcon
                 id={cell.id}
-                value={cell.name}
-                onClick={() => viewCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                view_headline
-              </i>
-            </Tooltip>
-          </div>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Download Students" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                // onClick={() => editCell(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                get_app
-              </i>
-            </Tooltip>
-          </div>
+                value={cell.title}
+                onClick={() => handleDeleteActivity(cell)}
+              />
+            </div>
+          ) : null}
         </div>
       ),
-      button: true,
-      conditionalCellStyles: [],
-      width: "20%",
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%",
+      },
     },
   ];
 
@@ -371,7 +409,30 @@ const ViewActivity = (props) => {
     });
   };
 
-  console.log(formState.dataToShow);
+  const AlertAPIResponseMessage = () => {
+    return (
+      <Collapse in={alert.isOpen}>
+        <Alert
+          severity={alert.severity || "warning"}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlert(() => ({ isOpen: false }));
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alert.message}
+        </Alert>
+      </Collapse>
+    );
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -480,7 +541,7 @@ const ViewActivity = (props) => {
             </Alert>
           </Collapse>
         ) : null}
-
+        <AlertAPIResponseMessage />
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
