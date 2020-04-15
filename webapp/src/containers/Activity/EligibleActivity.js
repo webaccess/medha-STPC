@@ -324,8 +324,8 @@ const EligibleActivity = props => {
             <Spinner />
           )}
         </Grid>
-        <Card variant="outlined">
-          {/* <RegisterEvent
+        {/* <Card variant="outlined">
+          <RegisterEvent
             showModal={formState.showRegisterModel}
             modalClose={modalClose}
             closeBlockModal={handleCloseBlockModal}
@@ -333,8 +333,8 @@ const EligibleActivity = props => {
             eventTitle={formState.eventtitle}
             userRegistering={formState.authUserRegistering}
             statusRegistartion={isRegistrationCompleted}
-          /> */}
-        </Card>
+          />
+        </Card> */}
       </Grid>
     </Grid>
   );
