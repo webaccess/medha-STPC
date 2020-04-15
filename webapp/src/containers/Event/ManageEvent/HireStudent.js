@@ -5,7 +5,8 @@ import {
   IconButton,
   Modal,
   Backdrop,
-  Fade
+  Fade,
+  CircularProgress
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -78,7 +79,6 @@ const HireStudent = props => {
       });
   };
 
-  console.log(props);
   const classes = useStyles();
   return (
     <Modal
@@ -152,6 +152,9 @@ const HireStudent = props => {
               </Grid>
             </Grid>
           </div>
+          <Backdrop className={classes.backdrop} open={open}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </Fade>
     </Modal>
