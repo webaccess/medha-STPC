@@ -154,7 +154,8 @@ export const addEvent = (
   qualifications = [],
   educations = [],
   colleges = null,
-  streams = null
+  streams = null,
+  state = null
 ) => {
   return {
     title: title,
@@ -167,7 +168,8 @@ export const addEvent = (
     qualifications: qualifications,
     educations: educations,
     colleges: colleges,
-    streams: streams
+    streams: streams,
+    state
   };
 };
 export const addState = name => {
@@ -293,12 +295,17 @@ export const editStudent = (
     id: id
   };
 };
-export const addEducation = (qualification, board, yearOfPassing, marks) => {
+export const addEducation = (
+  qualification,
+  board,
+  yearOfPassing,
+  percentage
+) => {
   return {
     qualification,
     board,
     year_of_passing: parseInt(yearOfPassing),
-    percentage: parseFloat(marks)
+    percentage: parseFloat(percentage)
   };
 };
 
@@ -314,7 +321,6 @@ export const uploadDocument = (files, ref, refId, field) => {
 export const addActivity = (
   title,
   activity_type,
-  academic_year,
   college,
   start_date_time,
   end_date_time,
@@ -328,7 +334,6 @@ export const addActivity = (
   const data = {
     title: title,
     activity_type: activity_type,
-    academic_year: academic_year,
     college: college,
     start_date_time: start_date_time,
     end_date_time: end_date_time,
@@ -338,16 +343,19 @@ export const addActivity = (
     trainer_name: trainer_name,
     streams: streams
   };
-  const formdata = new FormData();
-  formdata.append("files.upload_logo", files, files.name);
-  formdata.append("data", JSON.stringify(data));
-  return formdata;
+
+  if (files) {
+    const formdata = new FormData();
+    formdata.append("files.upload_logo", files, files.name);
+    formdata.append("data", JSON.stringify(data));
+    return formdata;
+  } else return data;
 };
 
 export const editActivity = (
+  showPreview,
   title,
   activity_type,
-  academic_year,
   college,
   start_date_time,
   end_date_time,
@@ -362,7 +370,6 @@ export const editActivity = (
   const data = {
     title: title,
     activity_type: activity_type,
-    academic_year: academic_year,
     college: college,
     start_date_time: start_date_time,
     end_date_time: end_date_time,
@@ -374,24 +381,27 @@ export const editActivity = (
     id: id
   };
   const formdata = new FormData();
-  console.log(Object.keys(files).length);
-  if (Object.keys(files).length) {
+  //console.log(files);
+  if (showPreview) {
     formdata.append("files.upload_logo", files, files.name);
     formdata.append("data", JSON.stringify(data));
     return formdata;
   } else return data;
 };
-export const addAcademicHistory = (academicYear, educationYear) => {
+export const addAcademicHistory = (academicYear, educationYear, percentage) => {
   return {
     academic_year: academicYear,
-    education_year: educationYear
+    education_year: educationYear,
+    percentage
   };
 };
 
-export const addActivityBatch = (name, students) => {
+export const addActivityBatch = (name, students, dateFrom, dateTo) => {
   return {
     name,
-    students
+    students,
+    start_date_time: dateFrom,
+    end_date_time: dateTo
   };
 };
 

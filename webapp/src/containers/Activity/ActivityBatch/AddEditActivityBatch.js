@@ -27,6 +27,8 @@ import {
   GrayButton,
   GreenButton,
   Alert,
+  CustomDateTimePicker,
+  DeleteGridIcon,
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import { uniqBy, get } from "lodash";
@@ -35,6 +37,8 @@ import AddStudentToActivityBatch from "./AddStudentToActivityBatch.js";
 import DeleteActivityBatchStudents from "./DeleteActivityBatchStudents.js";
 import DeleteIcon from "@material-ui/icons/Delete";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
+import TickGridIcon from "../../../components/TickGridIcon";
+import CrossGridIcon from "../../../components/CrossGridIcon";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
@@ -45,6 +49,8 @@ const AddEditActivityBatches = (props) => {
   let history = useHistory();
 
   const activityBatchName = "name";
+  const dateFrom = "dateFrom";
+  const dateTo = "dateTo";
   const [formState, setFormState] = useState({
     dataToShow: [],
     students: [],
@@ -75,9 +81,29 @@ const AddEditActivityBatches = (props) => {
     errors: {},
   });
 
+  if (formState.isEditActivityBatch) {
+    if (formState.dataForEdit && formState.dataForEdit[activityBatchName]) {
+      formState.values[activityBatchName] =
+        formState.dataForEdit[activityBatchName];
+    }
+
+    if (formState.dataForEdit && formState.dataForEdit["start_date_time"]) {
+      formState.values[dateFrom] = new Date(
+        formState.dataForEdit["start_date_time"]
+      );
+    }
+
+    if (formState.dataForEdit && formState.dataForEdit["end_date_time"]) {
+      formState.values[dateTo] = new Date(
+        formState.dataForEdit["end_date_time"]
+      );
+    }
+  }
+
   const [selectedStudents, setSeletedStudent] = useState([]);
   const [showStudentModal, setShowStudentModal] = useState(false);
   const [clearSelectedRows, setClearSelectedRows] = useState(false);
+  const [activityDetails, setActivityDetails] = useState({});
 
   const { activity } = props.activity ? props : props.match.params;
   const ACTIVITY_URL =
@@ -114,6 +140,7 @@ const AddEditActivityBatches = (props) => {
         if (data.result == null) {
           history.push("/404");
         }
+        setActivityDetails(data.result);
       })
       .catch(() => {
         history.push("/404");
@@ -124,6 +151,7 @@ const AddEditActivityBatches = (props) => {
     serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT)
       .then((res) => {
+        console.log(res);
         setFormState((formState) => ({
           ...formState,
           studentsFilter: res.data.result,
@@ -400,32 +428,76 @@ const AddEditActivityBatches = (props) => {
     event.preventDefault();
   };
 
+  const handleDateChange = (datefrom, event) => {
+    setFormState((formState) => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [datefrom]: event,
+      },
+      touched: {
+        ...formState.touched,
+        [datefrom]: true,
+      },
+    }));
+  };
+
   const postActivityBatchData = async () => {
     let postData = databaseUtilities.addActivityBatch(
       formState.values[activityBatchName],
-      selectedStudents
+      selectedStudents,
+      formState.values[dateFrom],
+      formState.values[dateTo]
     );
 
-    serviceProviders
-      .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
-      .then((res) => {
-        history.push({
-          pathname: `/manage-activity-batch/${activity}`,
-          fromAddActivityBatch: true,
-          isDataAdded: true,
-          addResponseMessage: "",
-          addedData: {},
+    if (formState.isEditActivityBatch) {
+      const activityBatchId = formState.dataForEdit.id;
+      const URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
+
+      serviceProviders
+        .serviceProviderForPutRequest(URL, activityBatchId, postData)
+        .then(() => {
+          history.push({
+            pathname: `/manage-activity-batch/${activity}`,
+            fromEditActivityBatch: true,
+            isDataEdited: true,
+            addResponseMessage: "",
+            editedData: {},
+          });
+        })
+        .catch((error) => {
+          history.push({
+            pathname: `/manage-activity-batch/${activity}`,
+            fromEditActivityBatch: true,
+            isDataEdited: false,
+            addResponseMessage: "",
+            editedData: {},
+          });
         });
-      })
-      .catch((error) => {
-        history.push({
-          pathname: `/manage-activity-batch/${activity}`,
-          fromAddActivityBatch: true,
-          isDataAdded: false,
-          addResponseMessage: "",
-          addedData: {},
+    } else {
+      serviceProviders
+        .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
+        .then((res) => {
+          history.push({
+            pathname: `/manage-activity-batch/${activity}`,
+            fromAddActivityBatch: true,
+            isDataAdded: true,
+            addResponseMessage: "",
+            addedData: {},
+          });
+        })
+        .catch((error) => {
+          history.push({
+            pathname: `/manage-activity-batch/${activity}`,
+            fromAddActivityBatch: true,
+            isDataAdded: false,
+            addResponseMessage: "",
+            addedData: {},
+          });
         });
-      });
+    }
   };
 
   /** Columns to show in table */
@@ -446,77 +518,39 @@ const AddEditActivityBatches = (props) => {
         <div style={{ display: "flex" }}>
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Verified Student" placement="top">
-                <i
-                  className="material-icons"
-                  id={cell.id}
-                  value={cell.name}
-                  onClick={() => handleVerifyMultipleStudents([cell.id])}
-                  style={{
-                    color: "green",
-                    fontSize: "19px",
-                    cursor: "pointer",
-                  }}
-                >
-                  check
-                </i>
-              </Tooltip>
+              <TickGridIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleVerifyMultipleStudents([cell.id])}
+                style={{ color: "green" }}
+              />
             </div>
           ) : (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Verified Student" placement="top">
-                <i
-                  className="material-icons"
-                  id={cell.id}
-                  value={cell.name}
-                  onClick={() => handleVerifyMultipleStudents([cell.id])}
-                  style={{
-                    color: "red",
-                    fontSize: "19px",
-                    cursor: "pointer",
-                  }}
-                >
-                  check
-                </i>
-              </Tooltip>
+              <TickGridIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleVerifyMultipleStudents([cell.id])}
+                style={{ color: "red" }}
+              />
             </div>
           )}
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Un-Verify Student" placement="top">
-                <i
-                  className="material-icons"
-                  id={cell.id}
-                  value={cell.name}
-                  onClick={() => handleUnVerifyMultipleStudents([cell.id])}
-                  style={{
-                    color: "red",
-                    fontSize: "19px",
-                    cursor: "pointer",
-                  }}
-                >
-                  clear
-                </i>
-              </Tooltip>
+              <CrossGridIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleUnVerifyMultipleStudents([cell.id])}
+              />
             </div>
           ) : null}
 
           <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Remove Student" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleDeleteActivityBatchStudent(cell)}
-                style={{
-                  color: "red",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                delete_outline
-              </i>
-            </Tooltip>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => handleDeleteActivityBatchStudent(cell)}
+            />
           </div>
         </div>
       ),
@@ -525,41 +559,6 @@ const AddEditActivityBatches = (props) => {
       width: "200px",
     });
   }
-
-  const AddStudentButton = () => {
-    return (
-      <div>
-        {formState.isEditActivityBatch ? (
-          <Card className={styles.noBorderNoShadow}>
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item className={classes.filterButtonsMargin}>
-                  <YellowButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    onClick={() => setShowStudentModal(true)}
-                  >
-                    {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
-                  </YellowButton>
-                </Grid>
-                <Grid item className={classes.filterButtonsMargin}>
-                  <GrayButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    to={`/manage-activity-batch/${activity}`}
-                  >
-                    {genericConstants.CANCEL_BUTTON_TEXT}
-                  </GrayButton>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        ) : null}
-      </div>
-    );
-  };
 
   const MultiDeleteStudentButton = () => {
     return (
@@ -746,6 +745,7 @@ const AddEditActivityBatches = (props) => {
                   )}
                 />
               </Grid>
+
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
@@ -772,78 +772,119 @@ const AddEditActivityBatches = (props) => {
             </Grid>
           </CardContent>
         </Card>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <div>
-              <Table
-                data={formState.dataToShow}
-                column={column}
-                defaultSortField="name"
-                defaultSortAsc={formState.sortAscending}
-                progressPending={formState.isDataLoading}
-                paginationTotalRows={formState.totalRows}
-                paginationRowsPerPageOptions={[10, 20, 50]}
-                onChangeRowsPerPage={handlePerRowsChange}
-                onChangePage={handlePageChange}
-                onSelectedRowsChange={handleRowChange}
-                noDataComponent="No Student Details found"
-                clearSelectedRows={clearSelectedRows}
-              />
-            </div>
-          ) : (
-            <div className={classes.noDataMargin}>No Student details found</div>
-          )
-        ) : (
-          <Spinner />
-        )}
-
-        {/* 
-          Create Activity Batch UI
-        */}
-        {!formState.isEditActivityBatch ? (
+        <>
+          <Table
+            data={formState.dataToShow}
+            column={column}
+            defaultSortField="name"
+            defaultSortAsc={formState.sortAscending}
+            progressPending={formState.isDataLoading}
+            paginationTotalRows={formState.totalRows}
+            paginationRowsPerPageOptions={[10, 20, 50]}
+            onChangeRowsPerPage={handlePerRowsChange}
+            onChangePage={handlePageChange}
+            onSelectedRowsChange={handleRowChange}
+            noDataComponent="No Student Details found"
+            clearSelectedRows={clearSelectedRows}
+          />
           <Card className={styles.noBorderNoShadow}>
-            <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-              <CardContent>
-                <Grid container spacing={2}>
-                  <Grid item md={3} xs={4}>
-                    <TextField
-                      fullWidth
-                      id={get(AddActivityBatchSchema[activityBatchName], "id")}
-                      label={get(
-                        AddActivityBatchSchema[activityBatchName],
-                        "label"
-                      )}
-                      margin="normal"
-                      name={activityBatchName}
-                      onChange={handleChange}
-                      required
-                      type={get(
-                        AddActivityBatchSchema[activityBatchName],
-                        "type"
-                      )}
-                      value={formState.values[activityBatchName] || ""}
-                      error={hasError(activityBatchName)}
-                      helperText={
-                        hasError(activityBatchName)
-                          ? formState.errors[activityBatchName].map((error) => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      variant="outlined"
-                      className={classes.elementroot}
-                    />
-                  </Grid>
-                  <Grid item className={classes.filterButtonsMargin}>
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    fullWidth
+                    id={get(AddActivityBatchSchema[activityBatchName], "id")}
+                    label={get(
+                      AddActivityBatchSchema[activityBatchName],
+                      "label"
+                    )}
+                    margin="normal"
+                    name={activityBatchName}
+                    onChange={handleChange}
+                    required
+                    type={get(
+                      AddActivityBatchSchema[activityBatchName],
+                      "type"
+                    )}
+                    value={formState.values[activityBatchName] || ""}
+                    error={hasError(activityBatchName)}
+                    helperText={
+                      hasError(activityBatchName)
+                        ? formState.errors[activityBatchName].map((error) => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    variant="outlined"
+                    className={classes.elementroot}
+                  />
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <CustomDateTimePicker
+                    onChange={(event) => {
+                      handleDateChange(dateFrom, event);
+                    }}
+                    value={formState.values[dateFrom]}
+                    name={dateFrom}
+                    label={get(AddActivityBatchSchema[dateFrom], "label")}
+                    minDate={new Date(activityDetails.start_date_time)}
+                    maxDate={new Date(activityDetails.end_date_time)}
+                    error={hasError(dateFrom)}
+                    helperText={
+                      hasError(dateFrom)
+                        ? formState.errors[dateFrom].map((error) => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    className={classes.elementroot}
+                  />
+                </Grid>
+                <Grid item md={12} xs={12} className={classes.marginTop}>
+                  <CustomDateTimePicker
+                    onChange={(event) => {
+                      handleDateChange(dateTo, event);
+                    }}
+                    value={formState.values[dateTo]}
+                    name={dateTo}
+                    label={get(AddActivityBatchSchema[dateTo], "label")}
+                    minDate={
+                      formState.values[dateTo] ? formState.values[dateTo] : {}
+                    }
+                    maxDate={new Date(activityDetails.end_date_time)}
+                    error={hasError(dateTo)}
+                    helperText={
+                      hasError(dateTo)
+                        ? formState.errors[dateTo].map((error) => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    className={classes.elementroot}
+                  />
+                </Grid>
+                <Grid container spacing={2} style={{ marginLeft: "2px" }}>
+                  <Grid item className={classes.marginTop}>
                     <YellowButton
                       type="submit"
                       color="primary"
                       variant="contained"
+                      onClick={handleSubmit}
                     >
                       {genericConstants.SAVE_BUTTON_TEXT}
                     </YellowButton>
                   </Grid>
-                  <Grid item className={classes.filterButtonsMargin}>
+                  <Grid item className={classes.marginTop}>
+                    <YellowButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      onClick={() => setShowStudentModal(true)}
+                    >
+                      {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
+                    </YellowButton>
+                  </Grid>
+                  <Grid item className={classes.marginTop}>
                     <GrayButton
                       type="submit"
                       color="primary"
@@ -854,15 +895,10 @@ const AddEditActivityBatches = (props) => {
                     </GrayButton>
                   </Grid>
                 </Grid>
-              </CardContent>
-            </form>
+              </Grid>
+            </CardContent>
           </Card>
-        ) : null}
-
-        {/* 
-          Add Student Button for edit activity batch
-         */}
-        <AddStudentButton />
+        </>
         {showStudentModal ? (
           <AddStudentToActivityBatch
             showModal={showStudentModal}

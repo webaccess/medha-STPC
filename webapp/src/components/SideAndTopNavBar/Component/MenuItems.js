@@ -10,13 +10,13 @@ import LocalLibraryOutlinedIcon from "@material-ui/icons/LocalLibraryOutlined";
 
 import * as routeConstants from "../../../constants/RouteConstants";
 
-const MenuItems = (props) => {
+const MenuItems = props => {
   const menuItems = {
     "Medha Admin": [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
-        Icon: <DashboardIcon />,
+        Icon: <DashboardIcon />
       },
       {
         name: "Masters",
@@ -24,57 +24,48 @@ const MenuItems = (props) => {
         items: [
           {
             name: "State",
-            link: routeConstants.MANAGE_STATES,
+            link: routeConstants.MANAGE_STATES
           },
           {
             name: "Zone",
-            link: routeConstants.MANAGE_ZONES,
+            link: routeConstants.MANAGE_ZONES
           },
           {
             name: "RPC",
-            link: routeConstants.MANAGE_RPC,
+            link: routeConstants.MANAGE_RPC
           },
           {
             name: "College",
-            link: routeConstants.MANAGE_COLLEGE,
-          },
-        ],
+            link: routeConstants.MANAGE_COLLEGE
+          }
+        ]
       },
       {
         name: "User Management",
         link: routeConstants.MANAGE_USER,
-        Icon: <PeopleOutlineOutlinedIcon />,
+        Icon: <PeopleOutlineOutlinedIcon />
       },
       {
         name: "Activity",
         Icon: <AssignmentOutlinedIcon />,
-        items: [
-          {
-            name: "Manage Activity",
-            link: routeConstants.MANAGE_ACTIVITY,
-          },
-          {
-            name: "Validate Student",
-            link: routeConstants.VALIDATE_STUDENT,
-          },
-        ],
+        link: routeConstants.MANAGE_ACTIVITY
       },
       {
         name: "Events",
         link: routeConstants.MANAGE_EVENT,
-        Icon: <EmojiFlagsOutlinedIcon />,
-      },
+        Icon: <EmojiFlagsOutlinedIcon />
+      }
     ],
     "College Admin": [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
-        Icon: <DashboardIcon />,
+        Icon: <DashboardIcon />
       },
       {
         name: "College Profile",
         link: routeConstants.VIEW_COLLEGE,
-        Icon: <LocalLibraryOutlinedIcon />,
+        Icon: <LocalLibraryOutlinedIcon />
       },
       {
         name: "Students",
@@ -82,37 +73,24 @@ const MenuItems = (props) => {
         items: [
           {
             name: "Manage Students",
-            link: routeConstants.MANAGE_STUDENT,
+            link: routeConstants.MANAGE_STUDENT
           },
           {
             name: "Import Students",
-            link: routeConstants.NOT_FOUND_URL,
-          },
-        ],
+            link: routeConstants.NOT_FOUND_URL
+          }
+        ]
       },
       {
         name: "Activity",
         Icon: <AssignmentOutlinedIcon />,
-        items: [
-          {
-            name: "Manage Activity",
-            link: routeConstants.MANAGE_ACTIVITY,
-          },
-          {
-            name: "Manage Students Group",
-            link: routeConstants.NOT_FOUND_URL,
-          },
-          {
-            name: "Validate Student",
-            link: routeConstants.NOT_FOUND_URL,
-          },
-        ],
+        link: routeConstants.MANAGE_ACTIVITY
       },
       {
         name: "Events",
         Icon: <EmojiFlagsOutlinedIcon />,
-        link: routeConstants.MANAGE_EVENT,
-      },
+        link: routeConstants.MANAGE_EVENT
+      }
     ],
     Student: [
       {
@@ -122,33 +100,33 @@ const MenuItems = (props) => {
         tabItems: [
           {
             name: "Education",
-            link: routeConstants.VIEW_EDUCATION,
+            link: routeConstants.VIEW_EDUCATION
           },
           {
             name: "Documents",
-            link: routeConstants.VIEW_DOCUMENTS,
+            link: routeConstants.VIEW_DOCUMENTS
           },
           {
             name: "Academic History",
-            link: routeConstants.VIEW_ACADEMIC_HISTORY,
+            link: routeConstants.VIEW_ACADEMIC_HISTORY
           },
           {
             name: "Personal Details",
-            link: routeConstants.VIEW_PROFILE,
-          },
-        ],
+            link: routeConstants.VIEW_PROFILE
+          }
+        ]
       },
       {
         name: "Activity",
         link: routeConstants.ELIGIBLE_ACTIVITY,
-        Icon: <AssignmentOutlinedIcon />,
+        Icon: <AssignmentOutlinedIcon />
       },
       {
         name: "Events",
         link: routeConstants.ELIGIBLE_EVENT,
-        Icon: <EmojiFlagsOutlinedIcon />,
-      },
-    ],
+        Icon: <EmojiFlagsOutlinedIcon />
+      }
+    ]
   };
 
   return menuItems;

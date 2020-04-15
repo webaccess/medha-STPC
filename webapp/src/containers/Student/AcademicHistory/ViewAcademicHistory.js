@@ -7,7 +7,7 @@ import {
   Grid,
   Tooltip,
   Collapse,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -25,7 +25,7 @@ import {
   YellowButton,
   GrayButton,
   Alert,
-  Auth
+  Auth,
 } from "../../../components";
 import DeleteAcademicHistory from "./DeleteAcademicHistory";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -33,14 +33,13 @@ import { useHistory } from "react-router-dom";
 
 const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
 const studentId = studentInfo ? studentInfo.id : null;
-
 const STUDENT_ACADEMIC_YEAR_URL =
   strapiConstants.STRAPI_DB_URL +
   strapiConstants.STRAPI_STUDENTS +
   `/${studentId}/academic-history`;
 const ACADEMIC_YEAR_FILTER = "id";
 
-const ViewAcademicHistory = props => {
+const ViewAcademicHistory = (props) => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
@@ -77,19 +76,19 @@ const ViewAcademicHistory = props => {
     showModalDelete: false,
     /** Pagination and sortinig data */
     isDataLoading: false,
-    sortAscending: true
+    sortAscending: true,
   });
 
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACADEMIC_YEAR_URL)
-      .then(res => {
-        setFormState(formState => ({
+      .then((res) => {
+        setFormState((formState) => ({
           ...formState,
-          academicHistoryFilters: res.data.result
+          academicHistoryFilters: res.data.result,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
 
@@ -98,23 +97,23 @@ const ViewAcademicHistory = props => {
 
   /** This seperate function is used to get the Academic history data*/
   const getAcademicHistory = async (params = null) => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACADEMIC_YEAR_URL, params)
-      .then(res => {
+      .then((res) => {
         formState.dataToShow = [];
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
           academicHistory: res.data.result,
           dataToShow: res.data.result,
-          isDataLoading: false
+          isDataLoading: false,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
@@ -128,13 +127,13 @@ const ViewAcademicHistory = props => {
   };
 
   const clearFilter = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true
+      isDataLoading: true,
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -144,23 +143,23 @@ const ViewAcademicHistory = props => {
     getAcademicHistory();
   };
 
-  const editCell = data => {
+  const editCell = (data) => {
     history.push({
       pathname: routeConstants.EDIT_ACADEMIC_HISTORY,
       editAcademicHistory: true,
-      dataForEdit: data
+      dataForEdit: data,
     });
   };
 
-  const isDeleteCellCompleted = status => {
+  const isDeleteCellCompleted = (status) => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = event => {
-    setFormState(formState => ({
+  const deleteCell = (event) => {
+    setFormState((formState) => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showModalDelete: true
+      showModalDelete: true,
     }));
   };
 
@@ -178,10 +177,10 @@ const ViewAcademicHistory = props => {
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false
+      showModalDelete: false,
     }));
     if (formState.isDataDeleted) {
       getAcademicHistory();
@@ -193,7 +192,7 @@ const ViewAcademicHistory = props => {
     { name: "Academic Year", sortable: true, selector: "academic_year.name" },
     { name: "Education Year", sortable: true, selector: "education_year" },
     {
-      cell: cell => (
+      cell: (cell) => (
         <Tooltip title="Edit" placement="top">
           <i
             className="material-icons"
@@ -207,10 +206,10 @@ const ViewAcademicHistory = props => {
         </Tooltip>
       ),
       button: true,
-      conditionalCellStyles: []
+      conditionalCellStyles: [],
     },
     {
-      cell: cell => (
+      cell: (cell) => (
         <Tooltip title="Delete" placement="top">
           <i
             className="material-icons"
@@ -223,13 +222,13 @@ const ViewAcademicHistory = props => {
         </Tooltip>
       ),
       button: true,
-      conditionalCellStyles: []
-    }
+      conditionalCellStyles: [],
+    },
   ];
 
   const handleAddAcademicHistoryClick = () => {
     history.push({
-      pathname: routeConstants.ADD_ACADEMIC_HISTORY
+      pathname: routeConstants.ADD_ACADEMIC_HISTORY,
     });
   };
 
@@ -347,7 +346,7 @@ const ViewAcademicHistory = props => {
                       id="combo-box-demo"
                       options={formState.academicHistoryFilters}
                       className={classes.autoCompleteField}
-                      getOptionLabel={option => option.academic_year.name}
+                      getOptionLabel={(option) => option.academic_year.name}
                       onChange={(event, value) =>
                         handleChangeAutoComplete(
                           ACADEMIC_YEAR_FILTER,
@@ -355,7 +354,7 @@ const ViewAcademicHistory = props => {
                           value
                         )
                       }
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           label="Academic Year"
@@ -370,7 +369,7 @@ const ViewAcademicHistory = props => {
                       variant="contained"
                       color="primary"
                       disableElevation
-                      onClick={event => {
+                      onClick={(event) => {
                         event.persist();
                         searchFilter();
                       }}

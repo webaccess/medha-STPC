@@ -8,7 +8,7 @@ import {
   Typography,
   Tooltip,
   Collapse,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -25,7 +25,9 @@ import {
   GreenButton,
   YellowButton,
   GrayButton,
-  Alert
+  Alert,
+  DeleteGridIcon,
+  EditGridIcon,
 } from "../../../components";
 // import DeleteActivityBatch from "./DeleteActivityBatch";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -33,7 +35,7 @@ import { useHistory } from "react-router-dom";
 
 const ACTIVITY_BATCH_FILTER = "activity_batch_id";
 
-const ViewActivityBatches = props => {
+const ViewActivityBatches = (props) => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
@@ -76,7 +78,7 @@ const ViewActivityBatches = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
-    isActivityExist: true
+    isActivityExist: true,
   });
 
   const { activity } = props.match.params;
@@ -91,6 +93,7 @@ const ViewActivityBatches = props => {
     strapiConstants.STRAPI_ACTIVITY +
     `/${activity}/` +
     strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
+
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_URL)
@@ -107,46 +110,52 @@ const ViewActivityBatches = props => {
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_URL)
-      .then(res => {
-        setFormState(formState => ({
+      .then((res) => {
+        setFormState((formState) => ({
           ...formState,
-          batchesFilter: res.data.result
+          batchesFilter: res.data.result,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
 
     getActivityBatches(10, 1);
   }, []);
 
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    message: "",
+    severity: "",
+  });
+
   /** This seperate function is used to get the Activity Batches data*/
   const getActivityBatches = async (pageSize, page, params = null) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
       };
-      Object.keys(params).map(key => {
+      Object.keys(params).map((key) => {
         defaultParams[key] = params[key];
       });
       params = defaultParams;
     } else {
       params = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
       };
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_URL, params)
-      .then(res => {
+      .then((res) => {
         formState.dataToShow = [];
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
           batches: res.data.result,
           dataToShow: res.data.result,
@@ -154,10 +163,10 @@ const ViewActivityBatches = props => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false
+          isDataLoading: false,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
@@ -176,7 +185,7 @@ const ViewActivityBatches = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getActivityBatches(formState.pageSize, page);
     } else {
@@ -197,13 +206,13 @@ const ViewActivityBatches = props => {
   };
 
   const clearFilter = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true
+      isDataLoading: true,
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -213,23 +222,23 @@ const ViewActivityBatches = props => {
     getActivityBatches(formState.pageSize, 1);
   };
 
-  const editCell = data => {
+  const editCell = (data) => {
     history.push({
       pathname: routeConstants.EDIT_ACTIVITY,
       editActivity: true,
-      dataForEdit: data
+      dataForEdit: data,
     });
   };
 
-  const isDeleteCellCompleted = status => {
+  const isDeleteCellCompleted = (status) => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = event => {
-    setFormState(formState => ({
+  const deleteCell = (event) => {
+    setFormState((formState) => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showModalDelete: true
+      showModalDelete: true,
     }));
   };
 
@@ -246,10 +255,10 @@ const ViewActivityBatches = props => {
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false
+      showModalDelete: false,
     }));
     if (formState.isDataDeleted) {
       getActivityBatches(formState.pageSize, formState.page);
@@ -259,45 +268,66 @@ const ViewActivityBatches = props => {
   /**
    * Redirect to Activity batch UI for given activity
    */
-  const handleEditActivityBatch = activityBatch => {
+  const handleEditActivityBatch = (activityBatch) => {
     const url = `/edit-activity-batch/${activity}`;
     history.push({
       pathname: url,
       editActivityBatch: true,
-      dataForEdit: activityBatch
+      dataForEdit: activityBatch,
     });
   };
 
+  const handleDeleteActivityBatch = (activityBatch) => {
+    const url =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
+    const activityBatchId = activityBatch.id;
+    serviceProviders
+      .serviceProviderForDeleteRequest(url, activityBatchId)
+      .then(() => {
+        setAlert(() => ({
+          isOpen: true,
+          message: "Success",
+          severity: "success",
+        }));
+        getActivityBatches(10, 1);
+      })
+      .catch(({ response }) => {
+        setAlert(() => ({
+          isOpen: true,
+          message: response.data.message,
+          severity: "error",
+        }));
+      });
+  };
   /** Columns to show in table */
   const column = [
     { name: "Batch", sortable: true, selector: "name" },
     { name: "Activity", sortable: true, selector: "activity.title" },
     {
-      cell: cell => (
-        <div style={{ display: "flex" }}>
-          <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Edit Activity Batch" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleEditActivityBatch(cell)}
-                style={{
-                  color: "green",
-                  fontSize: "19px",
-                  cursor: "pointer"
-                }}
-              >
-                edit
-              </i>
-            </Tooltip>
+      cell: (cell) => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <EditGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => {
+                handleEditActivityBatch(cell);
+              }}
+            />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={() => handleDeleteActivityBatch(cell)}
+            />
           </div>
         </div>
       ),
       button: true,
       conditionalCellStyles: [],
-      width: "200px"
-    }
+      width: "200px",
+    },
   ];
 
   const handleAddActivityClick = () => {
@@ -305,11 +335,34 @@ const ViewActivityBatches = props => {
     history.push({
       pathname: addActivityBatchURL,
       editActivityBatch: false,
-      dataForEdit: null
+      dataForEdit: null,
     });
   };
 
-  console.log(formState.isActivityExist);
+  const AlertAPIResponseMessage = () => {
+    return (
+      <Collapse in={alert.isOpen}>
+        <Alert
+          severity={alert.severity || "warning"}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlert(() => ({ isOpen: false }));
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alert.message}
+        </Alert>
+      </Collapse>
+    );
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -418,6 +471,8 @@ const ViewActivityBatches = props => {
           </Collapse>
         ) : null}
 
+        {/* If there is error from any api show here */}
+        <AlertAPIResponseMessage />
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -426,7 +481,7 @@ const ViewActivityBatches = props => {
                   id="combo-box-demo"
                   options={formState.batchesFilter}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(
                       ACTIVITY_BATCH_FILTER,
@@ -434,7 +489,7 @@ const ViewActivityBatches = props => {
                       value
                     )
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Batch Name"
@@ -449,7 +504,7 @@ const ViewActivityBatches = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     searchFilter();
                   }}

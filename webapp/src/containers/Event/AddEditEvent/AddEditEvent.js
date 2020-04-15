@@ -860,7 +860,8 @@ const AddEditEvent = props => {
       qualificationPercentageArray,
       educationPercentageArray,
       formState.values[college] ? formState.values[college] : null,
-      formState.values[stream] ? formState.values[stream] : null
+      formState.values[stream] ? formState.values[stream] : null,
+      formState.values[state] ? formState.values[state] : null
     );
     if (formState.isEditEvent) {
       serviceProvider
