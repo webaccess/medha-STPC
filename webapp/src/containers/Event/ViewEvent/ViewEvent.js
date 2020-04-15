@@ -11,7 +11,9 @@ import {
   Icon,
   Typography,
   Checkbox,
-  FormControlLabel
+  FormControlLabel,
+  CardMedia,
+  Box,
 } from "@material-ui/core";
 import useStyles from "./ViewEventStyles";
 import { useHistory } from "react-router-dom";
@@ -22,11 +24,12 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import ReactHtmlParser from "react-html-parser";
 import "../../../assets/cssstylesheet/ImageCssStyles.css";
 import RegisterEvent from "../EventRegistration/EventRegistration";
+import noImage from "../../../assets/images/no-image-icon.png";
 
 const EVENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 
-const ViewEvent = props => {
+const ViewEvent = (props) => {
   const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
@@ -35,7 +38,7 @@ const ViewEvent = props => {
     registeredEventsIds: [],
     registeredForEvent: false,
     isReadAllTerms: false,
-    showRegisterModel: false
+    showRegisterModel: false,
   });
   useEffect(() => {
     getEventDetails();
@@ -53,19 +56,19 @@ const ViewEvent = props => {
         "/registeredevents";
       await serviceProviders
         .serviceProviderForGetRequest(apiToCheckStudentRegistration)
-        .then(res => {
+        .then((res) => {
           let registeredEvents = [];
-          res.data.map(data => {
+          res.data.map((data) => {
             registeredEvents.push(data.event.id);
           });
           let isEventRegistered = checkEventRegistered(registeredEvents);
-          setFormState(formState => ({
+          setFormState((formState) => ({
             ...formState,
             registeredEventsIds: registeredEvents,
-            registeredForEvent: isEventRegistered
+            registeredForEvent: isEventRegistered,
           }));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
         });
     }
@@ -84,35 +87,35 @@ const ViewEvent = props => {
       if (paramsForEvent !== null && paramsForEvent !== undefined) {
         await serviceProviders
           .serviceProviderForGetOneRequest(EVENTS_URL, paramsForEvent)
-          .then(res => {
+          .then((res) => {
             let viewData = res.data.result;
-            setFormState(formState => ({
+            setFormState((formState) => ({
               ...formState,
-              eventDetails: viewData
+              eventDetails: viewData,
             }));
           })
-          .catch(error => {
+          .catch((error) => {
             console.log("error", error);
           });
       } else {
         if (auth.getUserInfo().role.name === "Medha Admin") {
           history.push({
-            pathname: routeConstants.MANAGE_EVENT
+            pathname: routeConstants.MANAGE_EVENT,
           });
         } else if (auth.getUserInfo().role.name === "Student") {
           history.push({
-            pathname: routeConstants.ELIGIBLE_EVENT
+            pathname: routeConstants.ELIGIBLE_EVENT,
           });
         } else {
           history.push({
-            pathname: routeConstants.DASHBOARD_URL
+            pathname: routeConstants.DASHBOARD_URL,
           });
         }
       }
     } else {
       auth.clearAppStorage();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.SIGN_IN_URL,
       });
     }
   }
@@ -120,20 +123,20 @@ const ViewEvent = props => {
   const route = () => {
     if (auth.getUserInfo().role.name === "Student") {
       history.push({
-        pathname: routeConstants.ELIGIBLE_EVENT
+        pathname: routeConstants.ELIGIBLE_EVENT,
       });
     } else if (
       auth.getUserInfo().role.name === "Medha Admin" ||
       auth.getUserInfo().role.name === "College Admin"
     ) {
       history.push({
-        pathname: routeConstants.MANAGE_EVENT
+        pathname: routeConstants.MANAGE_EVENT,
       });
     } else {
       auth.clearToken();
       auth.clearUserInfo();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.SIGN_IN_URL,
       });
     }
   };
@@ -176,14 +179,14 @@ const ViewEvent = props => {
   };
 
   /** Registers a student for a particular event */
-  const register = event => {
-    setFormState(formState => ({
+  const register = (event) => {
+    setFormState((formState) => ({
       ...formState,
-      showRegisterModel: true
+      showRegisterModel: true,
     }));
   };
 
-  const checkEventRegistered = registeredEvents => {
+  const checkEventRegistered = (registeredEvents) => {
     if (registeredEvents.indexOf(props["location"]["dataForView"]) !== -1) {
       return true;
     } else {
@@ -192,16 +195,16 @@ const ViewEvent = props => {
   };
 
   const handleCheckBoxChange = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isReadAllTerms: !formState.isReadAllTerms
+      isReadAllTerms: !formState.isReadAllTerms,
     }));
   };
 
   const modalClose = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      showRegisterModel: false
+      showRegisterModel: false,
     }));
   };
 
@@ -231,7 +234,11 @@ const ViewEvent = props => {
                 {!formUtilities.checkEmpty(formState.eventDetails) ? (
                   <React.Fragment>
                     <Grid item md={12} xs={12} className={classes.title}>
-                      <Typography variant="h4" gutterBottom>
+                      <Typography
+                        variant="h4"
+                        gutterBottom
+                        color="textSecondary"
+                      >
                         {formState.eventDetails["title"]}
                       </Typography>
                     </Grid>
@@ -247,57 +254,62 @@ const ViewEvent = props => {
                           className={classes.defaultMargin}
                           spacing={4}
                         >
-                          {formState.eventDetails["upload_logo"] !== null &&
-                          formState.eventDetails["upload_logo"] !== undefined &&
-                          formState.eventDetails["upload_logo"] !== {} ? (
-                            <div className={classes.imageDiv}>
-                              <Img
-                                src={
+                          <Box>
+                            {formState.eventDetails["upload_logo"] !== null &&
+                            formState.eventDetails["upload_logo"] !==
+                              undefined &&
+                            formState.eventDetails["upload_logo"] !== {} ? (
+                              <CardMedia
+                                image={
                                   strapiConstants.STRAPI_DB_URL_WITHOUT_HASH +
                                   formState.eventDetails["upload_logo"]["url"]
                                 }
-                                className="image-center"
-                                loader={<Spinner />}
-                                width="100%"
-                                height="100%"
+                                className={classes.ViewEventImageStyling}
                               />
-                            </div>
-                          ) : (
-                            <div className={classes.imageDiv}>
-                              <Img
-                                className="image-center"
-                                src="/images/noImage.png"
-                                loader={<Spinner />}
-                                width="100%"
-                                height="100%"
+                            ) : (
+                              <CardMedia
+                                image={noImage}
+                                className={classes.NoEventsStyling}
                               />
-                            </div>
-                          )}
+                            )}
+
+                            <Box className={classes.MarginTop}>
+                              <Grid container spacing={1} justify="center">
+                                <Grid item md={3} xs={3}>
+                                  <Typography variant="h5" color="textPrimary">
+                                    Date
+                                  </Typography>
+                                </Grid>
+                                <Grid item md={9} xs={9}>
+                                  <Typography color="textSecondary">
+                                    {getDate()}
+                                  </Typography>
+                                </Grid>
+                                <Grid item md={3} xs={3}>
+                                  <Typography variant="h5" color="textPrimary">
+                                    Time
+                                  </Typography>
+                                </Grid>
+                                <Grid item md={9} xs={9}>
+                                  <Typography color="textSecondary">
+                                    {getTime()}
+                                  </Typography>
+                                </Grid>
+                                <Grid item md={3} xs={3}>
+                                  <Typography variant="h5" color="textPrimary">
+                                    Venue
+                                  </Typography>
+                                </Grid>
+                                <Grid item md={9} xs={9}>
+                                  <Typography color="textSecondary">
+                                    {getVenue()}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Box>
+                          </Box>
                         </Grid>
-                        <Grid container className={classes.defaultMargin}>
-                          <Grid item md={3} xs={3}>
-                            <b>Date :-</b>
-                          </Grid>
-                          <Grid item md={9} xs={9}>
-                            {getDate()}
-                          </Grid>
-                        </Grid>
-                        <Grid container className={classes.defaultMargin}>
-                          <Grid item md={3} xs={3}>
-                            <b>Time :-</b>
-                          </Grid>
-                          <Grid item md={9} xs={9}>
-                            {getTime()}
-                          </Grid>
-                        </Grid>
-                        <Grid container className={classes.defaultMargin}>
-                          <Grid item md={3} xs={3}>
-                            <b>Venue :-</b>
-                          </Grid>
-                          <Grid item md={9} xs={9}>
-                            {getVenue()}
-                          </Grid>
-                        </Grid>
+
                         <Divider />
                       </Grid>
                       <Grid item md={6} xs={12}>
