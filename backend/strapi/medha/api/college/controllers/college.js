@@ -204,11 +204,11 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models.student,
-          filters
+          filters,
         })
       )
       .fetchAll()
-      .then(model => model.toJSON());
+      .then((model) => model.toJSON());
 
     const filtered = students.reduce((acc, student) => {
       const user = student.user;
