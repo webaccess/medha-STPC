@@ -910,6 +910,20 @@
                 "type": "string"
               }
             }
+          },
+          "state": {
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
           }
         }
       },
@@ -1003,6 +1017,9 @@
             }
           },
           "zone": {
+            "type": "string"
+          },
+          "state": {
             "type": "string"
           }
         }

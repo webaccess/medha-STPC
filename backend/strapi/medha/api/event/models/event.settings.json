@@ -59,6 +59,9 @@
     },
     "zone": {
       "model": "zone"
+    },
+    "state": {
+      "model": "state"
     }
   }
 }
