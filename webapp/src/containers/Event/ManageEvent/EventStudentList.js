@@ -464,16 +464,15 @@ const StudentList = props => {
       eventIndividualData["Academic Year"] = value[i]["educations"];
       eventIndividualData["Mobile"] = value[i]["mobile"];
       if (value[i]["hired"]) {
-        eventIndividualData["Hired/Dehired"] = "Hired";
+        eventIndividualData["Hired"] = "Yes";
       } else {
-        eventIndividualData["Hired/Dehired"] = "Dehired";
+        eventIndividualData["Hired"] = "No";
       }
 
       data.push(eventIndividualData);
     }
     return data;
   };
-
   /** Table Data */
   const column = [
     {
@@ -623,7 +622,7 @@ const StudentList = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function(item, i) {
+                          streams.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]
