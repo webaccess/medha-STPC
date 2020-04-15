@@ -28,3 +28,4 @@ export { default as YearMonthPicker } from "./YearMonthPicker";
 export { default as ThumbIcon } from "./ThumbGridIcon";
 export { default as InlineDatePickerDemo } from "./InlineDatePicker";
 export { default as DownloadIcon } from "./DownloadIcon";
+export { default as InlineDatePicker } from "./InlineDatePicker";

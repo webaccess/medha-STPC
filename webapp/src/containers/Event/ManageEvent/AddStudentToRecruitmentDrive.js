@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import GetAppIcon from "@material-ui/icons/GetApp";
-
 import {
   TextField,
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
@@ -18,12 +18,15 @@ import {
   YellowButton,
   GrayButton,
   Table,
-  YearMonthPicker
+  YearMonthPicker,
+  Auth as auth,
+  Alert
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import RegisterEvent from "../EventRegistration/EventRegistration";
+import CloseIcon from "@material-ui/icons/Close";
 
 const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
@@ -37,10 +40,16 @@ const AddStudentToRecruitmentDrive = props => {
   const history = useHistory();
   const classes = useStyles();
   const [streams, setStreams] = useState([]);
+  const [open, setOpen] = React.useState(true);
 
+  const [selectedRows, setSelectedRows] = useState({
+    selectedRows: [],
+    selectedRowsCount: null,
+    selectedRowsIds: []
+  });
   const [formState, setFormState] = useState({
     streams: [],
-    students: [],
+    alreadyRegisteredStudentsId: [],
     greenButtonChecker: true,
     dataToShow: [],
     eventTitle: props["location"]["eventTitle"],
@@ -50,7 +59,7 @@ const AddStudentToRecruitmentDrive = props => {
     isClearResetFilter: false,
     isFilterSearch: false,
     texttvalue: "",
-
+    collegeId: auth.getUserInfo()["college"]["id"],
     /*** Hire */
     dataToHire: {},
     isHired: false,
@@ -64,7 +73,14 @@ const AddStudentToRecruitmentDrive = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** Selected rows */
+    selectedRowFilter: true,
+    /** Registration */
+    showRegisterModel: false,
+    fromModal: false,
+    message: "",
+    status: null
   });
 
   useEffect(() => {
@@ -110,34 +126,53 @@ const AddStudentToRecruitmentDrive = props => {
       ...formState,
       isDataLoading: true
     }));
-    let Get_student_list =
+    let get_student_list =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_COLLEGES +
+      "/" +
+      formState.collegeId +
+      "/" +
+      strapiConstants.STRAPI_STUDENTS;
+    let url_for_check_registration =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
       "/" +
       formState.eventId +
       "/" +
       strapiConstants.STRAPI_STUDENTS;
     if (formState.eventId !== undefined && formState.eventId !== null) {
+      let params = {
+        pageSize: -1
+      };
       await serviceProvider
-        .serviceProviderForGetRequest(Get_student_list, paramsForStudent)
-        .then(res => {
-          formState.dataToShow = [];
-          let eventData = [];
-          eventData = convertStudentData(res.data.result);
-          setFormState(formState => ({
-            ...formState,
-            students: res.data.result,
-            pageSize: res.data.pageSize,
-            totalRows: res.data.rowCount,
-            page: res.data.page,
-            pageCount: res.data.pageCount,
-            dataToShow: eventData,
-            isDataLoading: false
-          }));
+        .serviceProviderForGetRequest(url_for_check_registration, params)
+        .then(async res => {
+          let alreadyRegisteredStudentsId = [];
+          res.data.result.map(data => {
+            alreadyRegisteredStudentsId.push(data["id"]);
+          });
+          paramsForStudent["id_nin"] = alreadyRegisteredStudentsId;
+          await serviceProvider
+            .serviceProviderForGetRequest(get_student_list, paramsForStudent)
+            .then(res => {
+              formState.dataToShow = [];
+              let eventData = [];
+              eventData = convertStudentData(res.data.result);
+              setFormState(formState => ({
+                ...formState,
+                pageSize: res.data.pageSize,
+                totalRows: res.data.rowCount,
+                page: res.data.page,
+                pageCount: res.data.pageCount,
+                dataToShow: eventData,
+                isDataLoading: false
+              }));
+            })
+            .catch(error => {
+              console.log("error", error);
+            });
         })
-        .catch(error => {
-          console.log("error", error);
-        });
+        .catch(error => {});
     } else {
       history.push({
         pathname: routeConstants.MANAGE_EVENT
@@ -285,9 +320,49 @@ const AddStudentToRecruitmentDrive = props => {
   const backToStudentList = () => {
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
-      eventIdStudent: formState.eventId,
+      eventId: formState.eventId,
       eventTitle: formState.eventTitle
     });
+  };
+
+  const handleRowSelected = useCallback(state => {
+    setSelectedRows(selectedRows => ({
+      ...selectedRows,
+      selectedRows: state.selectedRows,
+      selectedRowsCount: state.selectedCount
+    }));
+    if (state.selectedCount >= 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+  }, []);
+
+  const addStudentsToEvent = async () => {
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: true
+    }));
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: false
+    }));
+  };
+
+  const setStatusDataWhileClosingModal = (status, messsage, fromModal) => {
+    formState.status = status;
+    formState.message = messsage;
+    formState.fromModal = fromModal;
+    getStudentList(formState.pageSize, 1);
   };
 
   /** Table Data */
@@ -311,18 +386,70 @@ const AddStudentToRecruitmentDrive = props => {
         <GreenButton
           variant="contained"
           color="secondary"
+          onClick={() => addStudentsToEvent()}
+          buttonDisabled={formState.selectedRowFilter}
+          greenButtonChecker={formState.greenButtonChecker}
+        >
+          Add
+        </GreenButton>
+        <GreenButton
+          variant="contained"
+          color="secondary"
           onClick={() => backToStudentList()}
-          startIcon={<ArrowBackIosIcon />}
           greenButtonChecker={formState.greenButtonChecker}
         >
           Back
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           {formState.eventTitle}
         </Typography>
       </Grid>
+
+      {/** Error/Success messages to be shown for add */}
+      {formState.fromModal && formState.status ? (
+        <Collapse in={open}>
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {formState.message}
+          </Alert>
+        </Collapse>
+      ) : null}
+      {formState.fromModal && !formState.status ? (
+        <Collapse in={open}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {formState.message}
+          </Alert>
+        </Collapse>
+      ) : null}
 
       <Grid item xs={12} className={classes.formgrid}>
         <Card>
@@ -396,6 +523,7 @@ const AddStudentToRecruitmentDrive = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
+                onSelectedRowsChange={handleRowSelected}
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
@@ -411,6 +539,16 @@ const AddStudentToRecruitmentDrive = props => {
           )}
         </Card>
       </Grid>
+      <RegisterEvent
+        showModal={formState.showRegisterModel}
+        modalClose={modalClose}
+        eventId={formState.eventId}
+        multipleUserIds={true}
+        userCount={selectedRows.selectedRowsCount}
+        userId={selectedRows.selectedRows}
+        eventTitle={formState.eventTitle}
+        setStatusDataWhileClosingModal={setStatusDataWhileClosingModal}
+      />
     </Grid>
   );
 };

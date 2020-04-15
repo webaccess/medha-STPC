@@ -460,16 +460,19 @@ const StudentProfile = props => {
                         </CardContent>
 
                         <CardActions className={classes.btnspace}>
-                          <YellowButton
-                            type="submit"
-                            color="primary"
-                            variant="contained"
-                            onClick={editData}
-                            className={classes.submitbtn}
-                          >
-                            {genericConstants.EDIT_TEXT}
-                          </YellowButton>
-                          {auth.getUserInfo().role.name === "College Admin" ? (
+                          {auth.getUserInfo().role.name === "Student" ? (
+                            <YellowButton
+                              type="submit"
+                              color="primary"
+                              variant="contained"
+                              onClick={editData}
+                              className={classes.submitbtn}
+                            >
+                              {genericConstants.EDIT_TEXT}
+                            </YellowButton>
+                          ) : null}
+                          {auth.getUserInfo().role.name === "Medha Admin" ||
+                          auth.getUserInfo().role.name === "College Admin" ? (
                             <GrayButton
                               color="primary"
                               variant="contained"

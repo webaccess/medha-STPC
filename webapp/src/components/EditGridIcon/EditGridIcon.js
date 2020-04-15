@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "@material-ui/core";
 
-const EditGridIcon = props => {
+const EditGridIcon = (props) => {
   return (
     <Tooltip title="Edit" placement="top">
       <i
@@ -9,7 +9,7 @@ const EditGridIcon = props => {
         id={props.id}
         value={props.value}
         onClick={props.onClick}
-        style={{ color: "green", fontSize: "21px" }}
+        style={{ color: "green", fontSize: "20px" }}
       >
         edit
       </i>

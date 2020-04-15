@@ -23,7 +23,7 @@ import {
   EditGridIcon,
   ViewStudentGridIcon,
   DeleteGridIcon,
-  InlineDatePickerDemo
+  InlineDatePicker
 } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
@@ -540,7 +540,7 @@ const ManageEvent = props => {
                 />
               </Grid>
               <Grid item>
-                <InlineDatePickerDemo
+                <InlineDatePicker
                   id="date"
                   label="Start Date"
                   value={formState.startDate}
@@ -551,7 +551,7 @@ const ManageEvent = props => {
                 />
               </Grid>
               <Grid item>
-                <InlineDatePickerDemo
+                <InlineDatePicker
                   id="date"
                   label="End Date"
                   value={formState.endDate}
@@ -595,7 +595,7 @@ const ManageEvent = props => {
                 column={column}
                 onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
-                defaultSortField="title"
+                defaultSortField="start_date_time"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}

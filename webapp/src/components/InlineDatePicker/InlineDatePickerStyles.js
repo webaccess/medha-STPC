@@ -4,13 +4,13 @@ const customTheme = createMuiTheme({
   overrides: {
     MuiPickersToolbar: {
       toolbar: {
-        backgroundColor: "black"
-      }
+        backgroundColor: "black",
+      },
     },
     MuiButton: {
       textPrimary: {
-        color: "#000"
-      }
+        color: "#000",
+      },
     },
     MuiPickersDay: {
       daySelected: {
@@ -18,22 +18,32 @@ const customTheme = createMuiTheme({
         color: "#fff",
         "&:hover": {
           backgroundColor: "#8E8E8E",
-          color: "#FFF"
-        }
+          color: "#FFF",
+        },
       },
       dayDisabled: {
-        color: "light-gray"
+        color: "light-gray",
       },
       current: {
-        color: ""
-      }
+        color: "",
+      },
     },
     MuiOutlinedInput: {
       input: {
-        padding: "17.5px 14px"
-      }
-    }
-  }
+        padding: "17.5px 14px",
+      },
+    },
+    MuiInputBase: {
+      root: {
+        fontSize: "14px",
+      },
+    },
+    MuiSvgIcon: {
+      root: {
+        fontSize: "20px",
+      },
+    },
+  },
 });
 
 export default customTheme;

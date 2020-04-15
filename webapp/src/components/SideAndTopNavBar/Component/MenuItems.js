@@ -54,11 +54,6 @@ const MenuItems = props => {
         name: "Events",
         link: routeConstants.MANAGE_EVENT,
         Icon: <EmojiFlagsOutlinedIcon />
-      },
-      {
-        name: "Profile",
-        link: routeConstants.PROFILE,
-        Icon: <PersonOutlineOutlinedIcon />
       }
     ],
     "College Admin": [
