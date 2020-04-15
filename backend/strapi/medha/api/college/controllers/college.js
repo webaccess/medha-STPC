@@ -332,52 +332,53 @@ module.exports = {
   async activity(ctx) {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    // const filters = convertRestQueryParams(query);
-    let { stream_id } = query;
-    let stream = [];
+    const filters = convertRestQueryParams(query);
 
-    if (stream_id && stream_id.length) {
-      for (let i = 0; i < stream_id.length; i++) {
-        stream[i] = parseInt(stream_id[i]);
-      }
-    }
-
-    const college = await strapi.query("college").findOne({ id: id });
-
-    if (!college) {
-      return ctx.response.notFound("College does not exist");
-    }
-    let activity = await strapi.query("activity").find({ college: id });
-
-    if (stream) {
-      activity = activity.filter(activity => {
-        const { streams } = activity;
-
-        const streamIds = streams.map(s => s.id);
-
-        if (stream.every(val => streamIds.includes(val))) {
-          return activity;
-        }
+    return strapi
+      .query("activity")
+      .model.query(
+        buildQuery({
+          model: strapi.models.activity,
+          filters
+        })
+      )
+      .where({ college: id })
+      .fetchPage({
+        page: page,
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize
+      })
+      .then(res => {
+        return utils.getPaginatedResponse(res);
       });
-    }
-    return utils.paginate(activity, page, pageSize);
 
-    // return strapi
-    //   .query("activity")
-    //   .model.query(
-    //     buildQuery({
-    //       model: strapi.models.activity,
-    //       filters
-    //     })
-    //   )
-    //   .where({ college: id })
-    //   .fetchPage({
-    //     page: page,
-    //     pageSize:
-    //       pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize
-    //   })
-    //   .then(res => {
-    //     return utils.getPaginatedResponse(res);
+    // let { stream_id } = query;
+    // let stream = [];
+    // console.log(stream_id);
+    // if (stream_id) {
+    //   for (let i = 0; i < stream_id.length; i++) {
+    //     stream[i] = parseInt(stream_id[i]);
+    //   }
+    // }
+
+    // const college = await strapi.query("college").findOne({ id: id });
+
+    // if (!college) {
+    //   return ctx.response.notFound("College does not exist");
+    // }
+    // let activity = await strapi.query("activity").find({ college: id });
+
+    // if (stream) {
+    //   activity = activity.filter((activity) => {
+    //     const { streams } = activity;
+
+    //     const streamIds = streams.map((s) => s.id);
+
+    //     if (stream.every((val) => streamIds.includes(val))) {
+    //       return activity;
+    //     }
     //   });
+    // }
+    // return utils.paginate(activity, page, pageSize);
   }
 };

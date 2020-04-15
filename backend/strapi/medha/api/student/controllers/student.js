@@ -6,9 +6,9 @@
 
 const bookshelf = require("../../../config/config.js");
 const { sanitizeEntity } = require("strapi-utils");
-const sanitizeUser = user =>
+const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model
+    model: strapi.query("user", "users-permissions").model,
   });
 const _ = require("lodash");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
@@ -35,7 +35,7 @@ module.exports = {
       .model("college")
       .where({ id: collegeId })
       .fetch({ require: false })
-      .then(data => {
+      .then((data) => {
         return data ? data.toJSON() : null;
       });
 
@@ -46,7 +46,7 @@ module.exports = {
       .model("rpc")
       .where({ id: college.rpc })
       .fetch({ require: false })
-      .then(data => {
+      .then((data) => {
         return data ? data.toJSON() : null;
       });
 
@@ -58,7 +58,7 @@ module.exports = {
       .model("zone")
       .where({ id: college.zone })
       .fetch({ require: false })
-      .then(data => {
+      .then((data) => {
         return data ? data.toJSON() : null;
       });
 
@@ -86,7 +86,7 @@ module.exports = {
         role: studentRole.id,
         provider: "local",
         confirmed: false,
-        blocked: false
+        blocked: false,
       },
       _.omit(requestBody, [
         "stream",
@@ -99,7 +99,7 @@ module.exports = {
         "physicallyHandicapped",
         "address",
         "otp",
-        "college_id"
+        "college_id",
       ])
     );
 
@@ -108,16 +108,16 @@ module.exports = {
     ].services.user.hashPassword(userRequestBody);
 
     await bookshelf
-      .transaction(async t => {
+      .transaction(async (t) => {
         await bookshelf
           .model("otp")
           .where({
             contact_number: contact_number,
             otp: otp,
-            is_verified: null
+            is_verified: null,
           })
           .fetch({ lock: "forUpdate", transacting: t, require: false })
-          .then(otpModel => {
+          .then((otpModel) => {
             if (!otpModel) {
               return Promise.reject({ column: "Please request new OTP" });
             }
@@ -139,7 +139,7 @@ module.exports = {
           .model("user")
           .forge(userRequestBody)
           .save(null, { transacting: t })
-          .then(userModel => userModel.toJSON());
+          .then((userModel) => userModel.toJSON());
 
         const studentRequestData = Object.assign(
           { user: _user.id },
@@ -152,7 +152,7 @@ module.exports = {
             "contact_number",
             "otp",
             "college_id",
-            "state"
+            "state",
           ])
         );
         return await bookshelf
@@ -160,11 +160,11 @@ module.exports = {
           .forge(studentRequestData)
           .save(null, { transacting: t });
       })
-      .then(success => {
+      .then((success) => {
         console.log(success);
         return ctx.send(utils.getResponse(success));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         return ctx.response.badRequest(`Invalid ${error.detail}`);
       });
@@ -189,7 +189,7 @@ module.exports = {
         "college",
         "verifiedByCollege",
         "documents",
-        "educations"
+        "educations",
       ])
     );
     const studentRequestData = Object.assign(
@@ -208,13 +208,13 @@ module.exports = {
         "provider",
         "confirmed",
         "blocked",
-        "role"
+        "role",
       ])
     );
     console.log(studentRequestData);
     //console.log(userRequestBody);
     await bookshelf
-      .transaction(async t => {
+      .transaction(async (t) => {
         const userModel = await bookshelf
           .model("user")
           .where({ id: userRequestBody.id })
@@ -233,11 +233,11 @@ module.exports = {
               rpc: userRequestBody.rpc,
 
               confirmed: userRequestBody.confirmed,
-              blocked: userRequestBody.blocked
+              blocked: userRequestBody.blocked,
             },
             { patch: true, transacting: t }
           )
-          .catch(err => {
+          .catch((err) => {
             return Promise.reject({ Error: err });
           });
 
@@ -258,20 +258,20 @@ module.exports = {
               date_of_birth: studentRequestData.date_of_birth,
               gender: studentRequestData.gender,
               roll_number: studentRequestData.roll_number,
-              district: studentRequestData.district
+              district: studentRequestData.district,
             },
             { patch: true, transacting: t }
           )
-          .catch(err => {
+          .catch((err) => {
             return Promise.reject({ Error: err });
           });
       })
-      .then(success => {
+      .then((success) => {
         console.log("In then");
         console.log(success);
         return ctx.send(utils.getResponse(success));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         return ctx.response.badRequest(`Invalid ${error.column}`);
       });
@@ -291,16 +291,16 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["education"],
-          filters
+          filters,
         })
       )
       .where({ student: id })
       .fetchPage({
         page: page,
         pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
+          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize,
       })
-      .then(res => {
+      .then((res) => {
         return utils.getPaginatedResponse(res);
       });
   },
@@ -316,7 +316,7 @@ module.exports = {
     const response = await strapi.query("student").findOne({ id });
     if (documentId && response.documents && response.documents.length > 0) {
       response.documents = response.documents.filter(
-        doc => doc.id === parseInt(documentId)
+        (doc) => doc.id === parseInt(documentId)
       );
     }
 
@@ -337,12 +337,12 @@ module.exports = {
       .store({
         environment: strapi.config.environment,
         type: "plugin",
-        name: "upload"
+        name: "upload",
       })
       .get({ key: "provider" });
 
     const file = await strapi.plugins["upload"].services.upload.fetch({
-      id: fileId
+      id: fileId,
     });
 
     if (!file) {
@@ -375,7 +375,7 @@ module.exports = {
       .find({ student: id }, ["academic_year"]);
 
     if (academicHistoryId && response && response.length > 0) {
-      response = response.filter(ah => ah.id === parseInt(academicHistoryId));
+      response = response.filter((ah) => ah.id === parseInt(academicHistoryId));
     }
     return utils.getFindOneResponse(response);
   },
@@ -406,7 +406,7 @@ module.exports = {
 
     await strapi
       .query("student")
-      .model.query(qb => {
+      .model.query((qb) => {
         qb.whereIn("id", idsToUnApprove);
       })
       .save({ verifiedByCollege: false }, { patch: true, require: false });
@@ -440,7 +440,7 @@ module.exports = {
 
     await strapi
       .query("student")
-      .model.query(qb => {
+      .model.query((qb) => {
         qb.whereIn("id", idsToApprove);
       })
       .save({ verifiedByCollege: true }, { patch: true, require: false });
@@ -473,11 +473,11 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["event"],
-          filters
+          filters,
         })
       )
       .fetchAll()
-      .then(model => model.toJSON());
+      .then((model) => model.toJSON());
 
     let result;
     /**Filtering college */
@@ -491,9 +491,9 @@ module.exports = {
     /**Filtering stream */
 
     if (stream) {
-      result = result.filter(event => {
+      result = result.filter((event) => {
         const { streams } = event;
-        const streamIds = streams.map(s => s.id);
+        const streamIds = streams.map((s) => s.id);
         if (streamIds.length == 0 || _.includes(streamIds, stream.id)) {
           return event;
         }
@@ -504,12 +504,12 @@ module.exports = {
     const studentEducations = await strapi
       .query("education")
       .find({ student: id });
-    result = result.filter(event => {
+    result = result.filter((event) => {
       const { qualifications } = event;
       let isEligible = true;
-      qualifications.forEach(q => {
+      qualifications.forEach((q) => {
         const isQualificationPresent = studentEducations.find(
-          e =>
+          (e) =>
             e.qualification == q.qualification && e.percentage >= q.percentage
         );
 
@@ -528,14 +528,14 @@ module.exports = {
       .query("academic-history")
       .find({ student: id });
 
-    result = result.filter(event => {
+    result = result.filter((event) => {
       const { educations } = event;
 
       let isEligible = true;
 
-      educations.forEach(edu => {
+      educations.forEach((edu) => {
         const isEducationPresent = academicHistory.find(
-          ah =>
+          (ah) =>
             ah.education_year == edu.education_year &&
             ah.percentage >= edu.percentage
         );
@@ -552,7 +552,7 @@ module.exports = {
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination
+      ...response.pagination,
     };
   },
 
@@ -560,6 +560,8 @@ module.exports = {
     const { id } = ctx.params;
 
     const student = await strapi.query("student").findOne({ id });
+
+    if (!student) return ctx.response.notFound("Student does not exist");
 
     const activityBatch = await strapi
       .query("activity-batch-attendance")
@@ -569,22 +571,27 @@ module.exports = {
       return ctx.response.notFound("Student not Enrolled in any event");
     if (activityBatch) {
       const activityIds = activityBatch.map(
-        activityBatch => activityBatch.activity_batch.activity
+        (activityBatch) => activityBatch.activity_batch.activity
       );
-      console.log(activityBatch);
+
       const activity = await strapi.query("activity").find({ id: activityIds });
       // console.log(activity);
 
-      const result = activity.map(activity => {
-        for (let i = 0; i < activityBatch.length; i++) {
-          if (activity.id === activityBatch[i].activity_batch.activity) {
-            activity["activity_batch"] = activityBatch[i].activity_batch;
-            return activity;
-          }
-        }
-      });
+      const result = activity
+        .map((activity) => {
+          let flag = 0;
+          // for (let i = 0; i < activityBatch.length; i++) {
+          activityBatch.forEach((activityBatch) => {
+            if (activity.id === activityBatch.activity_batch.activity) {
+              activity["activity_batch"] = activityBatch.activity_batch;
+              flag = 1;
+            }
+          });
 
-      console.log(result);
+          if (flag) return activity;
+        })
+        .filter((activity) => activity);
+
       return utils.getFindOneResponse(result);
     }
   },
@@ -596,5 +603,5 @@ module.exports = {
     const { id } = ctx.params;
 
     return await strapi.query("event-registration").find({ student: id });
-  }
+  },
 };
