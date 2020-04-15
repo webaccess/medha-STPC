@@ -28,6 +28,7 @@ import {
   GreenButton,
   Alert,
   CustomDateTimePicker,
+  DeleteGridIcon,
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import { uniqBy, get } from "lodash";
@@ -36,6 +37,8 @@ import AddStudentToActivityBatch from "./AddStudentToActivityBatch.js";
 import DeleteActivityBatchStudents from "./DeleteActivityBatchStudents.js";
 import DeleteIcon from "@material-ui/icons/Delete";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
+import TickGridIcon from "../../../components/TickGridIcon";
+import CrossGridIcon from "../../../components/CrossGridIcon";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
@@ -515,77 +518,39 @@ const AddEditActivityBatches = (props) => {
         <div style={{ display: "flex" }}>
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Mark attendance" placement="top">
-                <i
-                  className="material-icons"
-                  id={cell.id}
-                  value={cell.name}
-                  onClick={() => handleVerifyMultipleStudents([cell.id])}
-                  style={{
-                    color: "green",
-                    fontSize: "19px",
-                    cursor: "pointer",
-                  }}
-                >
-                  check
-                </i>
-              </Tooltip>
+              <TickGridIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleVerifyMultipleStudents([cell.id])}
+                style={{ color: "green" }}
+              />
             </div>
           ) : (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Mark attendance" placement="top">
-                <i
-                  className="material-icons"
-                  id={cell.id}
-                  value={cell.name}
-                  onClick={() => handleVerifyMultipleStudents([cell.id])}
-                  style={{
-                    color: "red",
-                    fontSize: "19px",
-                    cursor: "pointer",
-                  }}
-                >
-                  check
-                </i>
-              </Tooltip>
+              <TickGridIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleVerifyMultipleStudents([cell.id])}
+                style={{ color: "red" }}
+              />
             </div>
           )}
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
-              <Tooltip title="Unmark attendance" placement="top">
-                <i
-                  className="material-icons"
-                  id={cell.id}
-                  value={cell.name}
-                  onClick={() => handleUnVerifyMultipleStudents([cell.id])}
-                  style={{
-                    color: "red",
-                    fontSize: "19px",
-                    cursor: "pointer",
-                  }}
-                >
-                  clear
-                </i>
-              </Tooltip>
+              <CrossGridIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={() => handleUnVerifyMultipleStudents([cell.id])}
+              />
             </div>
           ) : null}
 
           <div style={{ marginLeft: "8px" }}>
-            <Tooltip title="Remove Student" placement="top">
-              <i
-                className="material-icons"
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleDeleteActivityBatchStudent(cell)}
-                style={{
-                  color: "red",
-                  fontSize: "19px",
-                  cursor: "pointer",
-                }}
-              >
-                delete_outline
-              </i>
-            </Tooltip>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => handleDeleteActivityBatchStudent(cell)}
+            />
           </div>
         </div>
       ),

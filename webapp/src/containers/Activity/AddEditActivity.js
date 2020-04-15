@@ -63,11 +63,13 @@ const AddEditActivity = props => {
       : false,
     counter: 0,
     stream: [],
-    files: {},
+    files: null,
     previewFile: {},
     showPreview: false,
     showEditPreview: props.location.editActivity
-      ? props.location.editActivity
+      ? props.location.dataForEdit.upload_logo
+        ? true
+        : false
       : false,
     showNoImage: props.location.editActivity
       ? false
@@ -192,8 +194,6 @@ const AddEditActivity = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-
-    let schema;
     // if (formState.editActivity) {
     //   schema = Object.assign(
     //     {},
@@ -202,7 +202,6 @@ const AddEditActivity = props => {
     // } else {
     //   schema = registrationSchema;
     // }
-    console.log(schema);
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
@@ -257,40 +256,8 @@ const AddEditActivity = props => {
         formState.values["activityname"],
         formState.values["activitytype"],
         formState.values["college"],
-        selectedDateFrom.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 10
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateFrom.getDate() < 10
-            ? "0" + selectedDateFrom.getDate()
-            : selectedDateFrom.getDate()) +
-          "T" +
-          (selectedDateFrom.getHours() < 10
-            ? "0" + selectedDateFrom.getHours()
-            : selectedDateFrom.getHours()) +
-          ":" +
-          (selectedDateFrom.getMinutes() < 10
-            ? "0" + selectedDateFrom.getMinutes()
-            : selectedDateFrom.getMinutes()),
-        selectedDateTo.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 10
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateTo.getDate() < 10
-            ? "0" + selectedDateTo.getDate()
-            : selectedDateTo.getDate()) +
-          "T" +
-          (selectedDateTo.getHours() < 10
-            ? "0" + selectedDateTo.getHours()
-            : selectedDateTo.getHours()) +
-          ":" +
-          (selectedDateTo.getMinutes() < 10
-            ? "0" + selectedDateTo.getMinutes()
-            : selectedDateTo.getMinutes()),
+        selectedDateFrom,
+        selectedDateTo,
         formState.values["educationyear"],
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -326,40 +293,8 @@ const AddEditActivity = props => {
         formState.values["activityname"],
         formState.values["activitytype"],
         formState.values["college"],
-        selectedDateFrom.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 10
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateFrom.getDate() < 10
-            ? "0" + selectedDateFrom.getDate()
-            : selectedDateFrom.getDate()) +
-          "T" +
-          (selectedDateFrom.getHours() < 10
-            ? "0" + selectedDateFrom.getHours()
-            : selectedDateFrom.getHours()) +
-          ":" +
-          (selectedDateFrom.getMinutes() < 10
-            ? "0" + selectedDateFrom.getMinutes()
-            : selectedDateFrom.getMinutes()),
-        selectedDateTo.getFullYear() +
-          "-" +
-          (selectedDateFrom.getMonth() + 1 < 10
-            ? "0" + (selectedDateFrom.getMonth() + 1)
-            : selectedDateFrom.getMonth() + 1) +
-          "-" +
-          (selectedDateTo.getDate() < 10
-            ? "0" + selectedDateTo.getDate()
-            : selectedDateTo.getDate()) +
-          "T" +
-          (selectedDateTo.getHours() < 10
-            ? "0" + selectedDateTo.getHours()
-            : selectedDateTo.getHours()) +
-          ":" +
-          (selectedDateTo.getMinutes() < 10
-            ? "0" + selectedDateTo.getMinutes()
-            : selectedDateTo.getMinutes()),
+        selectedDateFrom,
+        selectedDateTo,
         formState.values["educationyear"],
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -381,13 +316,11 @@ const AddEditActivity = props => {
             addedData: response,
             fromAddActivity: true
           });
-          // ImageUpload(response);
         })
         .catch(err => {
           console.log(err);
           setIsFailed(true);
         });
-      console.log(postData);
     }
   };
 
@@ -573,6 +506,7 @@ const AddEditActivity = props => {
                       {!formState.showPreview && !formState.showEditPreview ? (
                         <div class={classes.DefaultNoImage}></div>
                       ) : null}
+                      {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
                       {formState.showEditPreview &&
                       formState.dataForEdit["upload_logo"] !== null &&
                       formState.dataForEdit["upload_logo"] !== undefined &&

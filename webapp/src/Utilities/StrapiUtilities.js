@@ -341,12 +341,13 @@ export const addActivity = (
     trainer_name: trainer_name,
     streams: streams
   };
-  const formdata = new FormData();
-  if (Object.keys(files).length) {
+
+  if (files) {
+    const formdata = new FormData();
     formdata.append("files.upload_logo", files, files.name);
-  }
-  formdata.append("data", JSON.stringify(data));
-  return formdata;
+    formdata.append("data", JSON.stringify(data));
+    return formdata;
+  } else return data;
 };
 
 export const editActivity = (

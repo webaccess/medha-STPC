@@ -1,9 +1,9 @@
 import React from "react";
 import { Tooltip } from "@material-ui/core";
 
-const ThumbIcon = (props) => {
+const ThumbIcon = props => {
   return (
-    <Tooltip title={props.style ? "Dehire" : "Hire"} placement="top">
+    <Tooltip title={props.style ? "Hire" : "Dehire"} placement="top">
       <i
         className="material-icons"
         id={props.id}
@@ -11,8 +11,8 @@ const ThumbIcon = (props) => {
         onClick={props.onClick}
         style={
           props.style
-            ? { color: "red", fontSize: "20px" }
-            : { color: "green", fontSize: "20px" }
+            ? { color: "green", fontSize: "20px" }
+            : { color: "red", fontSize: "20px" }
         }
       >
         thumb_up
