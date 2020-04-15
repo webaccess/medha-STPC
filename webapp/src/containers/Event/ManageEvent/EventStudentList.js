@@ -146,9 +146,7 @@ const StudentList = props => {
           let eventData = [];
           getHiredIds(res.data.result)
             .then(res1 => {
-              console.log("res1", res1);
               eventData = convertEventData(res.data.result, res1);
-              console.log("eventData", eventData);
               setFormState(formState => ({
                 ...formState,
                 students: res.data.result,
@@ -465,6 +463,11 @@ const StudentList = props => {
       eventIndividualData["Stream"] = value[i]["stream"];
       eventIndividualData["Academic Year"] = value[i]["educations"];
       eventIndividualData["Mobile"] = value[i]["mobile"];
+      if (value[i]["hired"]) {
+        eventIndividualData["Hired/Dehired"] = "Hired";
+      } else {
+        eventIndividualData["Hired/Dehired"] = "Dehired";
+      }
 
       data.push(eventIndividualData);
     }
@@ -504,7 +507,6 @@ const StudentList = props => {
     }
   ];
 
-  console.log(formState);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
