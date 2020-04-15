@@ -97,7 +97,9 @@ const HireStudent = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {genericConstants.HIRE_BUTTON_TEXT}
+              {props.isHired
+                ? genericConstants.HIRE_BUTTON_TEXT
+                : genericConstants.DEHIRE_BUTTON_TEXT}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -114,9 +116,9 @@ const HireStudent = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isHired ? (
-                    <p>Are you sure you want Hire this Student?</p>
+                    <p>Are you sure you want Hire {props.studentName}?</p>
                   ) : (
-                    <p>Are you sure you want DeHire this Student?</p>
+                    <p>Are you sure you want Dehire {props.studentName}?</p>
                   )}
                 </Grid>
               </Grid>
