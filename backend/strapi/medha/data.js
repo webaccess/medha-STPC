@@ -266,11 +266,11 @@ const roles = {
       },
       {
         name: "activity",
-        action: ["findOne"]
+        action: ["findOne", "activitybatch", "download", "student"]
       },
       {
         name: "activity-batch",
-        action: []
+        action: ["student"]
       },
       {
         name: "activity-batch-attendance",
