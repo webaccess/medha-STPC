@@ -4,37 +4,21 @@ import * as strapiConstants from "../../constants/StrapiApiConstants";
 import { Auth as auth } from "../../components";
 import Spinner from "../../components/Spinner/Spinner.js";
 import GreenButton from "../../components/GreenButton/GreenButton.js";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {
-  EditorState,
-  convertToRaw,
-  convertFromRaw,
-  ContentState
-} from "draft-js";
-import draftToHtml from "draftjs-to-html";
-import htmlToDraft from "html-to-draftjs";
 import {
   Card,
   CardContent,
-  CardActions,
   Grid,
   Divider,
   Icon,
   Typography
 } from "@material-ui/core";
-import ReactHtmlParser, {
-  processNodes,
-  convertNodeToElement,
-  htmlparser2
-} from "react-html-parser";
+import ReactHtmlParser from "react-html-parser";
 import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../constants/RouteConstants";
-import * as genericConstants from "../../constants/GenericConstants";
 import Img from "react-image";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
-const ReactMarkdown = require("react-markdown");
 
 const ACTIVITIES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
@@ -52,7 +36,10 @@ const ActivityDetails = props => {
 
   async function getactivityDetails() {
     let paramsForEvent = null;
-    if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (
+      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === "College Admin"
+    ) {
       paramsForEvent = props["location"]["dataForView"];
     } else if (auth.getUserInfo().role.name === "Student") {
       paramsForEvent = props["location"]["dataForView"];
@@ -60,7 +47,8 @@ const ActivityDetails = props => {
     if (
       paramsForEvent !== null &&
       paramsForEvent !== undefined &&
-      auth.getUserInfo().role.name === "Medha Admin"
+      (auth.getUserInfo().role.name === "Medha Admin" ||
+        auth.getUserInfo().role.name === "College Admin")
     ) {
       await serviceProviders
         .serviceProviderForGetOneRequest(ACTIVITIES_URL, paramsForEvent)
@@ -84,7 +72,10 @@ const ActivityDetails = props => {
         activityDetails: props["location"]["dataForView"]
       }));
     } else {
-      if (auth.getUserInfo().role.name === "Medha Admin") {
+      if (
+        auth.getUserInfo().role.name === "Medha Admin" ||
+        auth.getUserInfo().role.name === "College Admin"
+      ) {
         history.push({
           pathname: routeConstants.MANAGE_ACTIVITY
         });

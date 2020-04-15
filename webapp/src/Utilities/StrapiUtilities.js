@@ -342,7 +342,9 @@ export const addActivity = (
     streams: streams
   };
   const formdata = new FormData();
-  formdata.append("files.upload_logo", files, files.name);
+  if (Object.keys(files).length) {
+    formdata.append("files.upload_logo", files, files.name);
+  }
   formdata.append("data", JSON.stringify(data));
   return formdata;
 };
