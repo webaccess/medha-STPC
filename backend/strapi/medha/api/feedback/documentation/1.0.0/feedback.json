@@ -628,6 +628,9 @@
               },
               "zone": {
                 "type": "string"
+              },
+              "state": {
+                "type": "string"
               }
             }
           },
