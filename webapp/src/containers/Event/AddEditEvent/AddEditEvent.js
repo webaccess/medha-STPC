@@ -171,24 +171,18 @@ const AddEditEvent = props => {
       if (props["dataForEdit"]["address"]) {
         formState.values[address] = props["dataForEdit"]["address"];
       }
-      if (
-        props["dataForEdit"] &&
-        props["dataForEdit"]["rpc"] &&
-        props["dataForEdit"]["rpc"]["state"]
-      ) {
-        formState.values[state] = props["dataForEdit"]["rpc"]["state"];
-      }
 
       if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
         formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
       }
+      if (props["dataForEdit"]["zone"] && props["dataForEdit"]["zone"]["id"]) {
+        formState.values[zone] = props["dataForEdit"]["zone"]["id"];
+      }
       if (
-        props["dataForEdit"] &&
-        props["dataForEdit"]["colleges"] &&
-        props["dataForEdit"]["colleges"][0] &&
-        props["dataForEdit"]["colleges"][0]["zone"]
+        props["dataForEdit"]["state"] &&
+        props["dataForEdit"]["state"]["id"]
       ) {
-        formState.values[zone] = props["dataForEdit"]["colleges"][0]["zone"];
+        formState.values[state] = props["dataForEdit"]["state"]["id"];
       }
       if (
         props["dataForEdit"]["colleges"] &&
@@ -273,14 +267,18 @@ const AddEditEvent = props => {
       pageSize: -1
     };
 
-    serviceProvider
-      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
-      .then(res => {
-        setStates(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    if (formState.isCollegeAdmin) {
+      setStates([collegeInfo.state]);
+    } else {
+      serviceProvider
+        .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
+        .then(res => {
+          setStates(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
 
     setEducationsDataBackup(genericConstants.EDUCATIONS);
     let educationDataForEdit = genericConstants.EDUCATIONS;
@@ -356,14 +354,18 @@ const AddEditEvent = props => {
         "/" +
         strapiApiConstants.STRAPI_ZONES;
 
-      await serviceProvider
-        .serviceProviderForGetRequest(zones_url)
-        .then(res => {
-          setZones(res.data.result);
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
+      if (formState.isCollegeAdmin) {
+        setZones([collegeInfo.zone]);
+      } else {
+        await serviceProvider
+          .serviceProviderForGetRequest(zones_url)
+          .then(res => {
+            setZones(res.data.result);
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+      }
 
       let rpcs_url =
         STATES_URL +
@@ -372,18 +374,22 @@ const AddEditEvent = props => {
         "/" +
         strapiApiConstants.STRAPI_RPCS;
 
-      await serviceProvider
-        .serviceProviderForGetRequest(rpcs_url)
-        .then(res => {
-          if (Array.isArray(res.data)) {
-            setRpcs(res.data[0].result);
-          } else {
-            setRpcs(res.data.result);
-          }
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
+      if (formState.isCollegeAdmin) {
+        setRpcs([collegeInfo.rpc]);
+      } else {
+        await serviceProvider
+          .serviceProviderForGetRequest(rpcs_url)
+          .then(res => {
+            if (Array.isArray(res.data)) {
+              setRpcs(res.data[0].result);
+            } else {
+              setRpcs(res.data.result);
+            }
+          })
+          .catch(error => {
+            console.log("error", error);
+          });
+      }
     }
   }
 
@@ -401,14 +407,18 @@ const AddEditEvent = props => {
       pageSize: -1
     };
 
-    await serviceProvider
-      .serviceProviderForGetRequest(COLLEGE_URL, params)
-      .then(res => {
-        setColleges(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    if (formState.isCollegeAdmin) {
+      setColleges([collegeInfo.college]);
+    } else {
+      await serviceProvider
+        .serviceProviderForGetRequest(COLLEGE_URL, params)
+        .then(res => {
+          setColleges(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
   }
 
   const hasError = field => (formState.errors[field] ? true : false);
@@ -785,8 +795,10 @@ const AddEditEvent = props => {
   };
 
   const handleSubmit = event => {
-    console.log(formState.values);
     event.preventDefault();
+    if (formState.isCollegeAdmin && !formState.isEditEvent) {
+      setDataForCollegeAdmin();
+    }
     /** Validate DynamicGrid */
     let isDynamicBarValid;
     isDynamicBarValid = validateDynamicGridValues();
@@ -846,12 +858,18 @@ const AddEditEvent = props => {
     }
   };
 
+  const setDataForCollegeAdmin = () => {
+    formState.values[zone] = collegeInfo.zone.id;
+    formState.values[rpc] = collegeInfo.rpc.id;
+    formState.values[college] = collegeInfo.college.id;
+    formState.values[state] = collegeInfo.state.id;
+  };
+
   const postEventData = () => {
     let qualificationPercentageArray = [];
     qualificationPercentageArray = getDynamicBarData();
     let educationPercentageArray = [];
     educationPercentageArray = getDynamicEducationData();
-
     let postData = databaseUtilities.addEvent(
       formState.values[eventName],
       draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -1003,7 +1021,6 @@ const AddEditEvent = props => {
       delete formState.values[eventName];
     }
   };
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>

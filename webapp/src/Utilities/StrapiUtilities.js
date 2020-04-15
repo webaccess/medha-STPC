@@ -169,7 +169,7 @@ export const addEvent = (
     educations: educations,
     colleges: colleges,
     streams: streams,
-    state
+    state: state
   };
 };
 export const addState = name => {
