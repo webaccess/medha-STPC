@@ -3,278 +3,278 @@ const roles = {
     controllers: [
       {
         name: "academic-history",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "academic-year",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "activity",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "activity-batch",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "activity-batch-attendance",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "college",
-        action: ["find", "findone", "showStudents"],
+        action: ["find", "findone", "showStudents"]
       },
       {
         name: "education",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "event",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "event-registration",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "feedback",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "question",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "question-set",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "response",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "rpc",
-        action: ["find", "findone", "colleges"],
+        action: ["find", "findone", "colleges"]
       },
       {
         name: "state",
-        action: ["find", "findone", "zones", "rpcs"],
+        action: ["find", "findone", "zones", "rpcs"]
       },
       {
         name: "stream",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "student",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "user",
-        action: ["find", "findone", "me"],
+        action: ["find", "findone", "me"]
       },
       {
         name: "zone",
-        action: ["find", "findone", "colleges"],
+        action: ["find", "findone", "colleges"]
       },
       {
         name: "district",
-        action: ["find", "findone"],
-      },
+        action: ["find", "findone"]
+      }
     ],
-    grantAllPermissions: false,
+    grantAllPermissions: false
   },
   "Zonal Admin": {
     controllers: [
       {
         name: "academic-history",
-        action: [],
+        action: []
       },
       {
         name: "academic-year",
-        action: [],
+        action: []
       },
       {
         name: "activity",
-        action: [],
+        action: []
       },
       {
         name: "activity-batch",
-        action: [],
+        action: []
       },
       {
         name: "activity-batch-attendance",
-        action: [],
+        action: []
       },
       {
         name: "college",
-        action: ["find", "findone", "showStudents"],
+        action: ["find", "findone", "showStudents"]
       },
       {
         name: "education",
-        action: [],
+        action: []
       },
       {
         name: "event",
-        action: [],
+        action: []
       },
       {
         name: "event-registration",
-        action: [],
+        action: []
       },
       {
         name: "feedback",
-        action: [],
+        action: []
       },
       {
         name: "question",
-        action: [],
+        action: []
       },
       {
         name: "question-set",
-        action: [],
+        action: []
       },
       {
         name: "response",
-        action: [],
+        action: []
       },
       {
         name: "rpc",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "state",
-        action: [],
+        action: []
       },
       {
         name: "stream",
-        action: [],
+        action: []
       },
       {
         name: "student",
-        action: [],
+        action: []
       },
       {
         name: "user",
-        action: ["me", "findOne"],
+        action: ["me", "findOne"]
       },
       {
         name: "zone",
-        action: ["find", "findone", "colleges"],
+        action: ["find", "findone", "colleges"]
       },
       {
         name: "district",
-        action: ["find", "findone"],
-      },
+        action: ["find", "findone"]
+      }
     ],
-    grantAllPermissions: false,
+    grantAllPermissions: false
   },
   "RPC Admin": {
     controllers: [
       {
         name: "academic-history",
-        action: [],
+        action: []
       },
       {
         name: "academic-year",
-        action: [],
+        action: []
       },
       {
         name: "activity",
-        action: [],
+        action: []
       },
       {
         name: "activity-batch",
-        action: [],
+        action: []
       },
       {
         name: "activity-batch-attendance",
-        action: [],
+        action: []
       },
       {
         name: "college",
-        action: ["find", "findone", "showStudents"],
+        action: ["find", "findone", "showStudents"]
       },
       {
         name: "education",
-        action: [],
+        action: []
       },
       {
         name: "event",
-        action: [],
+        action: []
       },
       {
         name: "event-registration",
-        action: [],
+        action: []
       },
       {
         name: "feedback",
-        action: [],
+        action: []
       },
       {
         name: "question",
-        action: [],
+        action: []
       },
       {
         name: "question-set",
-        action: [],
+        action: []
       },
       {
         name: "response",
-        action: [],
+        action: []
       },
       {
         name: "rpc",
-        action: ["find", "findone", "colleges"],
+        action: ["find", "findone", "colleges"]
       },
       {
         name: "state",
-        action: [],
+        action: []
       },
       {
         name: "stream",
-        action: [],
+        action: []
       },
       {
         name: "student",
-        action: [],
+        action: []
       },
       {
         name: "user",
-        action: ["me", "findOne"],
+        action: ["me", "findOne"]
       },
       {
         name: "zone",
-        action: [],
+        action: []
       },
       {
         name: "district",
-        action: ["find", "findone"],
-      },
+        action: ["find", "findone"]
+      }
     ],
-    grantAllPermissions: false,
+    grantAllPermissions: false
   },
   "College Admin": {
     controllers: [
       {
         name: "academic-history",
-        action: [],
+        action: []
       },
       {
         name: "academic-year",
-        action: [],
+        action: []
       },
       {
         name: "activity",
-        action: [],
+        action: ["findOne", "activitybatch", "download", "student"]
       },
       {
         name: "activity-batch",
-        action: [],
+        action: ["student", "delete"]
       },
       {
         name: "activity-batch-attendance",
-        action: [],
+        action: []
       },
       {
         name: "college",
@@ -288,48 +288,48 @@ const roles = {
           "delete",
           "update",
           "activity",
-          "event",
-        ],
+          "event"
+        ]
       },
       {
         name: "education",
-        action: [],
+        action: []
       },
       {
         name: "event",
-        action: ["findone", "students"],
+        action: ["findone", "students"]
       },
       {
         name: "event-registration",
-        action: ["create"],
+        action: ["find", "create", "update"]
       },
       {
         name: "feedback",
-        action: [],
+        action: []
       },
       {
         name: "question",
-        action: [],
+        action: []
       },
       {
         name: "question-set",
-        action: [],
+        action: []
       },
       {
         name: "response",
-        action: [],
+        action: []
       },
       {
         name: "rpc",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "state",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "stream",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "student",
@@ -343,89 +343,89 @@ const roles = {
           "edit",
           "approve",
           "unapprove",
-          "registeredevents",
-        ],
+          "registeredevents"
+        ]
       },
       {
         name: "user",
-        action: ["me", "findOne"],
+        action: ["me", "findOne"]
       },
       {
         name: "zone",
-        action: ["find", "findone"],
+        action: ["find", "findone"]
       },
       {
         name: "district",
-        action: ["find", "findone"],
-      },
+        action: ["find", "findone"]
+      }
     ],
-    grantAllPermissions: false,
+    grantAllPermissions: false
   },
   Student: {
     controllers: [
       {
         name: "academic-history",
-        action: ["create", "update", "delete"],
+        action: ["create", "update", "delete"]
       },
       {
         name: "academic-year",
-        action: ["find", "findOne"],
+        action: ["find", "findOne"]
       },
       {
         name: "activity",
-        action: ["findone"],
+        action: ["findone"]
       },
       {
         name: "activity-batch",
-        action: [],
+        action: []
       },
       {
         name: "activity-batch-attendance",
-        action: [],
+        action: []
       },
       {
         name: "college",
-        action: ["event", "activity"],
+        action: ["event", "activity"]
       },
       {
         name: "education",
-        action: ["create", "update", "delete"],
+        action: ["create", "update", "delete"]
       },
       {
         name: "event",
-        action: ["findone"],
+        action: ["findone"]
       },
       {
         name: "event-registration",
-        action: ["create"],
+        action: ["create"]
       },
       {
         name: "feedback",
-        action: [],
+        action: []
       },
       {
         name: "question",
-        action: [],
+        action: []
       },
       {
         name: "question-set",
-        action: [],
+        action: []
       },
       {
         name: "response",
-        action: [],
+        action: []
       },
       {
         name: "rpc",
-        action: [],
+        action: []
       },
       {
         name: "state",
-        action: [],
+        action: []
       },
       {
         name: "stream",
-        action: [],
+        action: []
       },
       {
         name: "student",
@@ -440,109 +440,109 @@ const roles = {
           "academicHistory",
           "events",
           "registeredevents",
-          "activity",
-        ],
+          "activity"
+        ]
       },
       {
         name: "user",
-        action: ["me", "findOne"],
+        action: ["me", "findOne"]
       },
       {
         name: "zone",
-        action: [],
+        action: []
       },
       {
         name: "district",
-        action: [],
-      },
+        action: []
+      }
     ],
-    grantAllPermissions: false,
+    grantAllPermissions: false
   },
   "Medha Admin": {
     controllers: [
       {
         name: "academic-history",
-        action: [],
+        action: []
       },
       {
         name: "academic-year",
-        action: [],
+        action: []
       },
       {
         name: "activity",
-        action: [],
+        action: []
       },
       {
         name: "activity-batch",
-        action: [],
+        action: []
       },
       {
         name: "activity-batch-attendance",
-        action: [],
+        action: []
       },
       {
         name: "college",
-        action: [],
+        action: []
       },
       {
         name: "education",
-        action: [],
+        action: []
       },
       {
         name: "event",
-        action: [],
+        action: []
       },
       {
         name: "event-registration",
-        action: [],
+        action: []
       },
       {
         name: "feedback",
-        action: [],
+        action: []
       },
       {
         name: "question",
-        action: [],
+        action: []
       },
       {
         name: "question-set",
-        action: [],
+        action: []
       },
       {
         name: "response",
-        action: [],
+        action: []
       },
       {
         name: "rpc",
-        action: [],
+        action: []
       },
       {
         name: "state",
-        action: [],
+        action: []
       },
       {
         name: "stream",
-        action: [],
+        action: []
       },
       {
         name: "student",
-        action: [],
+        action: []
       },
       {
         name: "user",
-        action: [],
+        action: []
       },
       {
         name: "zone",
-        action: [],
+        action: []
       },
       {
         name: "district",
-        action: [],
-      },
+        action: []
+      }
     ],
-    grantAllPermissions: true,
-  },
+    grantAllPermissions: true
+  }
 };
 
 /**
@@ -555,7 +555,7 @@ const states = {
       "West Zone - Daurala (Meerut)",
       "Bundelkhand Zone - Jhansi",
       "Central Zone - Lucknow",
-      "East Zone - Varanasi",
+      "East Zone - Varanasi"
     ],
     districts: [
       "Agra",
@@ -632,7 +632,7 @@ const states = {
       "Varanasi",
       "Amethi",
       "Baghpat",
-      "Allahabad",
+      "Allahabad"
     ],
     rpcs: [
       "Agra",
@@ -644,9 +644,9 @@ const states = {
       "Lucknow",
       "Moradabad",
       "Prayagraj",
-      "Varanasi",
-    ],
-  },
+      "Varanasi"
+    ]
+  }
 };
 
 const allowedMedhaAdminRoutes = ["getroles", "getrole"];
@@ -667,44 +667,44 @@ const academicYears = [
   { name: "AY 21-22", start_date: "2021-06-01", end_date: "2022-05-31" },
   { name: "AY 22-23", start_date: "2022-06-01", end_date: "2023-05-31" },
   { name: "AY 23-24", start_date: "2023-06-01", end_date: "2024-05-31" },
-  { name: "AY 24-25", start_date: "2024-06-01", end_date: "2025-05-31" },
+  { name: "AY 24-25", start_date: "2024-06-01", end_date: "2025-05-31" }
 ];
 
 const publicRoutes = {
   controllers: [
     {
       name: "otp",
-      action: ["requestotp", "validateotp", "requestotpforstudent", "checkotp"],
+      action: ["requestotp", "validateotp", "requestotpforstudent", "checkotp"]
     },
     {
       name: "state",
-      action: ["find"],
+      action: ["find"]
     },
     {
       name: "zone",
-      action: ["find"],
+      action: ["find"]
     },
     {
       name: "rpc",
-      action: ["find"],
+      action: ["find"]
     },
     {
       name: "college",
-      action: ["find"],
+      action: ["find"]
     },
     {
       name: "student",
-      action: ["register"],
+      action: ["register"]
     },
     {
       name: "district",
-      action: ["find"],
+      action: ["find"]
     },
     {
       name: "stream",
-      action: ["find"],
-    },
-  ],
+      action: ["find"]
+    }
+  ]
 };
 
 const uploadPermissions = ["upload"];
@@ -716,5 +716,5 @@ module.exports = Object.freeze({
   streams,
   publicRoutes,
   uploadPermissions,
-  academicYears,
+  academicYears
 });
