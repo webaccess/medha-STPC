@@ -44,7 +44,7 @@ const EligibleActivity = props => {
     greenButtonChecker: true,
     showRegisterModel: false,
     registerUserId: "",
-    eventtitle: "",
+    NoActivityData: false,
     isStudentRegister: false,
     authUserRegistering: auth.getUserInfo().id
   });
@@ -80,10 +80,18 @@ const EligibleActivity = props => {
         .serviceProviderForGetRequest(COLLEGES_URL, params)
         .then(res => {
           let viewData = res.data.result;
-          setFormState(formState => ({
-            ...formState,
-            activityDetails: viewData
-          }));
+          if (res.data.result.length === 0) {
+            setFormState(formState => ({
+              ...formState,
+              activityDetails: viewData,
+              NoActivityData: true
+            }));
+          } else {
+            setFormState(formState => ({
+              ...formState,
+              activityDetails: viewData
+            }));
+          }
         })
         .catch(error => {
           console.log("error", error);
@@ -160,8 +168,7 @@ const EligibleActivity = props => {
     setFormState(formState => ({
       ...formState,
       showRegisterModel: true,
-      registerUserId: id,
-      eventtitle: title
+      registerUserId: id
     }));
   };
 
@@ -321,7 +328,13 @@ const EligibleActivity = props => {
               );
             })
           ) : (
-            <Spinner />
+            <React.Fragment>
+              {formState.NoActivityData === true ? (
+                <p>No eligible Activity</p>
+              ) : (
+                <Spinner />
+              )}
+            </React.Fragment>
           )}
         </Grid>
         {/* <Card variant="outlined">
