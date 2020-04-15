@@ -250,10 +250,6 @@ const RegistrationSchema = {
       required: {
         value: "true",
         message: "Password is required"
-      },
-      validatePasswordRegex: {
-        value: "true",
-        message: "Invalid Password"
       }
     }
   },

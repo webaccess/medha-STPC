@@ -80,6 +80,7 @@ const StudentList = props => {
     showModalHire: false,
     isStudentHired: false,
     studentName: "",
+    hireStudent: "",
     fromHiredModal: false,
 
     /** Pagination and sortinig data */
@@ -285,6 +286,10 @@ const StudentList = props => {
   };
 
   const hiredCell = event => {
+    setFormState(formState => ({
+      ...formState,
+      hireStudent: event.target.getAttribute("value")
+    }));
     getEventRegistrationData(event.target.id);
   };
 
@@ -464,16 +469,15 @@ const StudentList = props => {
       eventIndividualData["Academic Year"] = value[i]["educations"];
       eventIndividualData["Mobile"] = value[i]["mobile"];
       if (value[i]["hired"]) {
-        eventIndividualData["Hired/Dehired"] = "Hired";
+        eventIndividualData["Hired"] = "Yes";
       } else {
-        eventIndividualData["Hired/Dehired"] = "Dehired";
+        eventIndividualData["Hired"] = "No";
       }
 
       data.push(eventIndividualData);
     }
     return data;
   };
-
   /** Table Data */
   const column = [
     {
@@ -623,7 +627,7 @@ const StudentList = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function(item, i) {
+                          streams.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]
@@ -716,6 +720,7 @@ const StudentList = props => {
             hiredSuccessfully={isStudentHiredCompleted}
             closeHireModal={handleCloseHireModal}
             modalClose={modalClose}
+            studentName={formState.hireStudent}
           />
         </Card>
       </Grid>

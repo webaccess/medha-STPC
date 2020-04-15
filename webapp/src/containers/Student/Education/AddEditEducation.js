@@ -145,7 +145,6 @@ const AddEditEducation = props => {
       formState.values[yearOfPassing],
       formState.values[percentage]
     );
-    console.log(postData);
     // Adding student id to post data
     postData.student = id;
     if (formState.isEditEducation) {
@@ -178,7 +177,6 @@ const AddEditEducation = props => {
       serviceProviders
         .serviceProviderForPostRequest(EDUCATION_URL, postData)
         .then(res => {
-          console.log(res);
           setIsSuccess(true);
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,

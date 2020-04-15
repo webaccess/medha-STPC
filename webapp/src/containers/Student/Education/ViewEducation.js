@@ -284,7 +284,6 @@ const ViewEducation = (props) => {
     });
   };
 
-  console.log(formState.dataToShow);
   return (
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>

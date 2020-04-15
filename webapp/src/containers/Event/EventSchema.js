@@ -54,7 +54,7 @@ const EventSchema = {
       }
     }
   },
-  
+
   address: {
     label: "Address",
     id: "address",
@@ -74,11 +74,16 @@ const EventSchema = {
     label: "State",
     id: "state",
     autoComplete: "state",
-    required: false,
+    required: true,
     placeholder: "State",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "State is required"
+      }
+    }
   },
 
   zone: {

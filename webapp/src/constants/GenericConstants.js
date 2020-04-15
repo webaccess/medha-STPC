@@ -18,6 +18,7 @@ export const ADD_MORE_TEXT = "Add More";
 export const BLOCK_BUTTON_TEXT = "Block";
 export const UNBLOCK_BUTTON_TEXT = "Unblock";
 export const HIRE_BUTTON_TEXT = "Hire";
+export const DEHIRE_BUTTON_TEXT = "Dehire";
 
 /**Student
  */
@@ -115,4 +116,3 @@ export const EDUCATIONS = [
   { id: 3, value: "Third" },
   { id: 4, value: "Fourth" }
 ];
-

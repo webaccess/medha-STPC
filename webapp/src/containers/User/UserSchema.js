@@ -26,11 +26,6 @@ const UserSchema = {
       required: {
         value: "true",
         message: "password is required"
-      },
-      validatePasswordRegex: {
-        value: "true",
-        message:
-          "Password must contain numbers and letters and should be atleast 6 characters long"
       }
     }
   },
