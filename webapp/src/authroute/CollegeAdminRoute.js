@@ -7,7 +7,11 @@ import * as routeConstants from "../constants/RouteConstants";
 const CollegeAdminRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   if (auth.getToken() !== null) {
-    if (auth.getUserInfo().role.name === "College Admin" && auth.getUserInfo().college !== null && auth.getUserInfo().college.id !== null) {
+    if (
+      auth.getUserInfo().role.name === "College Admin" &&
+      auth.getUserInfo().college !== null &&
+      auth.getUserInfo().college.id !== null
+    ) {
       return (
         <Route
           {...rest}

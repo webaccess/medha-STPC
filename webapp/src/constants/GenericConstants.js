@@ -116,3 +116,10 @@ export const EDUCATIONS = [
   { id: 3, value: "Third" },
   { id: 4, value: "Fourth" }
 ];
+
+export const EDUCATIONYEARLIST = [
+  { name: "First", id: "First" },
+  { name: "Second", id: "Second" },
+  { name: "Third", id: "Third" },
+  { name: "Fourth", id: "Fourth" }
+];
