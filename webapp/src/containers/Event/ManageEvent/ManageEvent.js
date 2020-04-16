@@ -50,7 +50,6 @@ const ManageEvent = props => {
   const [isLoading, setIsLoading] = useState(false);
   /** Value to set for event filter */
   const [value, setValue] = React.useState(null);
-  const [typingTimeout, setTypingTimeout] = React.useState(null);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -519,14 +518,6 @@ const ManageEvent = props => {
     } else {
       await getEventData(perPage, page);
     }
-  };
-
-  const clearEventFilter = () => {
-    delete formState.filterDataParameters[EVENT_FILTER];
-    setFormState(formState => ({
-      ...formState,
-      eventFilterData: []
-    }));
   };
 
   return (
