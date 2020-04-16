@@ -11,6 +11,7 @@ import * as formUtilities from "../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as genericConstants from "../../constants/GenericConstants";
 
+import CloseIcon from "@material-ui/icons/Close";
 import {
   TextField,
   Card,
@@ -22,16 +23,23 @@ import {
   Tooltip
 } from "@material-ui/core";
 import { serviceProviderForGetRequest } from "../../api/Axios";
+import auth from "../../components/Auth";
 
 const STUDENTS_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES + "/" + auth.getUserInfo().college.id + "/" + strapiConstants.STRAPI_STUDENTS;
+  // const STUDENTS_URL =
+  // strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES  + strapiConstants.STRAPI_STUDENTS;
+const STREAMS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const USER_FILTER = "user.username_contains";
 const STREAM_FILTER = "stream.id";
 const SORT_FIELD_KEY = "_sort";
+const COLLEGEID = "college.id";
 
 const ManageStudents = props => {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [streams, setStreams] = useState([]);
   const [formState, setFormState] = useState({
     student: [],
     approvedId: 0,
@@ -46,6 +54,7 @@ const ManageStudents = props => {
     isMulUnBlocked: false,
     MultiBlockUser: {},
     isUserBlocked: false,
+    blockedName: "",
     bottonBlockUnblock: "Approve Selected User",
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -53,36 +62,72 @@ const ManageStudents = props => {
     totalRows: "",
     page: "",
     pageCount: "",
+    messageToShow: "",
     sortAscending: true
   });
 
   useEffect(() => {
     getStudentData(10, 1);
+
+    getStreamData();
   }, []);
   const getStudentData = async (pageSize, page, paramsForUsers = null) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
-        // page: page,
-        // pageSize: pageSize
+        // "user.college": auth.getUserInfo().college.id,
+        page: page,
+        pageSize: pageSize
         // [SORT_FIELD_KEY]: "username:asc"
       };
       Object.keys(paramsForUsers).map(key => {
         defaultParams[key] = paramsForUsers[key];
       });
       paramsForUsers = defaultParams;
+
+
+       
+    serviceProviders
+    .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
+    .then(res => {
+   
+      if (res.data.result.length) {
+        let tempStudentData = [];
+        let student_data = res.data.result;
+        tempStudentData = convertStudentData(student_data);
+        setFormState(formState => ({
+          ...formState,
+          student: tempStudentData
+        }));
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          student: res.data.length
+        }));
+      }
+    })
+    .catch(error => {
+      console.log("error", error);
+    });
+
+
+
     } else {
       paramsForUsers = {
-        // page: page,
-        // pageSize: pageSize
+        // "user.college": auth.getUserInfo().college.id,
+        page: page,
+        pageSize: pageSize
         // [SORT_FIELD_KEY]: "username:asc"
       };
     }
+  
+   
     serviceProviders
       .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
       .then(res => {
-        if (res.data.length) {
+        
+        if (res.data.result.length) {
           let tempStudentData = [];
-          let student_data = res.data;
+          let student_data = res.data.result;
           tempStudentData = convertStudentData(student_data);
           setFormState(formState => ({
             ...formState,
@@ -100,26 +145,45 @@ const ManageStudents = props => {
       });
   };
 
+
+
+  const getStreamData = () => {
+    serviceProviders.serviceProviderForGetRequest(STREAMS_URL).then(res => {
+     
+      setStreams(res.data.result);
+    })
+    .catch(error => {
+      console.log("streamError",error);
+    })
+  }
+
   const convertStudentData = data => {
     let studentDataArray = [];
     if (data) {
       for (let i in data) {
+ 
         var tempIndividualStudentData = {};
         tempIndividualStudentData["id"] = data[i]["id"];
         tempIndividualStudentData["userId"] = data[i]["user"]["id"];
-        tempIndividualStudentData["name"] = data[i]["user"]["username"];
+        tempIndividualStudentData["name"] = data[i]["user"]["first_name"] + " " + data[i]["father_first_name"] + " " + data[i]["user"]["last_name"];
         tempIndividualStudentData["streamId"] = data[i]["stream"]["id"];
         tempIndividualStudentData["stream"] = data[i]["stream"]["name"];
-        // tempIndividualStudentData["year_of_passing"] =
-        //   data[i]["educations"][i]["year_of_passing"];
         studentDataArray.push(tempIndividualStudentData);
         tempIndividualStudentData["Approved"] = data[i]["verifiedByCollege"];
       }
+    
       return studentDataArray;
     }
   };
 
   const blockedCell = event => {
+  
+
+    setFormState(formState => ({
+      ...formState,
+      blockedName: event.target.getAttribute("value")
+    }));
+
     formState.approvedId = event.target.id;
     for (var k = 0; k < formState.student.length; k++) {
       if (parseInt(event.target.id) === parseInt(formState.student[k]["id"])) {
@@ -133,16 +197,18 @@ const ManageStudents = props => {
   };
 
   const blockedCellData = (id, isApproved = false) => {
+    
     if (isApproved === true) {
       setFormState(formState => ({
         ...formState,
-        approvedId: id,
+        approvedId: id, 
         approvedData: true,
         MultiBlockUser: {},
         isUnBlocked: false,
         showModalBlock: true,
         isMulBlocked: false,
-        isMulUnBlocked: false
+        isMulUnBlocked: false,
+        message: ""
       }));
     } else {
       setFormState(formState => ({
@@ -153,7 +219,8 @@ const ManageStudents = props => {
         isUnBlocked: true,
         showModalBlock: true,
         isMulBlocked: false,
-        isMulUnBlocked: false
+        isMulUnBlocked: false,
+        message: ""
       }));
     }
   };
@@ -183,7 +250,31 @@ const ManageStudents = props => {
     }
   };
 
-  const isUserBlockCompleted = status => {
+  const isUserBlockCompleted = (status, statusToShow = "") => {
+    
+   
+    if(status){
+     
+      formState.showAlert = status;
+    }else{
+     
+      formState.showAlert = status;
+    }
+
+
+    setOpen(true);
+    setFormState(formState => ({
+      ...formState,
+      isDataBlockUnblock: status,
+      showModalBlock: false,
+      // fromBlockModal: true,
+      isMulBlocked: false,
+      isMulUnBlocked: false,
+      // multiBlockCollegeIds: [],
+      MultiBlockUser: {},
+      messageToShow: statusToShow
+    }));
+
     formState.isUserBlocked = status;
   };
   const modalClose = () => {
@@ -196,11 +287,15 @@ const ManageStudents = props => {
 
   const deleteCell = event => {
     let dataId = event.target.id;
+   
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: dataId },
+      dataToDelete: { id: dataId,
+        name: event.target.getAttribute("value")
+       },
       showEditModal: false,
-      showModalDelete: true
+      showModalDelete: true,
+      message: ""
     }));
   };
 
@@ -219,8 +314,23 @@ const ManageStudents = props => {
     }
   };
 
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
+  const isDeleteCellCompleted = (status, statusToShow = "") => {
+    if(status){
+      formState.showDeleteAlert = status;
+    }else{
+      formState.showDeleteAlert = status;
+    }
+    // formState.isDataDeleted = status;
+
+    setOpen(true);
+    setFormState(formState => ({
+      ...formState,
+      isDataDeleted: status,
+      showModalDelete: false,
+      // fromDeleteModal: true,
+      // isMultiDelete: false,
+      messageToShow: statusToShow
+    }));
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
@@ -233,11 +343,12 @@ const ManageStudents = props => {
   };
 
   const handleChangeAutoCompleteStream = (filterName, event, value) => {
+  
     if (value === null) {
       delete formState.filterDataParameters[filterName];
       //restoreData();
     } else {
-      formState.filterDataParameters[filterName] = value["streamId"];
+      formState.filterDataParameters[filterName] = value["id"];
     }
   };
 
@@ -251,6 +362,33 @@ const ManageStudents = props => {
       await getStudentData(perPage, page, formState.filterDataParameters);
     }
   };
+
+
+    /** Pagination */
+    const handlePerRowsChange = async (perPage, page) => {
+      /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+      if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+        await getStudentData(perPage, page);
+      } else {
+        if (formState.isFilterSearch) {
+          await searchFilter(perPage, page);
+        } else {
+          await getStudentData(perPage, page);
+        }
+      }
+    };
+  
+    const handlePageChange = async page => {
+      if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+        await getStudentData(formState.pageSize, page);
+      } else {
+        if (formState.isFilterSearch) {
+          await searchFilter(formState.pageSize, page);
+        } else {
+          await getStudentData(formState.pageSize, page);
+        }
+      }
+    };
 
   /** To reset search filter */
   const refreshPage = () => {
@@ -345,12 +483,13 @@ const ManageStudents = props => {
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <Tooltip
-              title={cell.Approved ? "Approve" : "Unapprove"}
+              title={cell.Approved ? "UNapprove" : "Approve"}
               placement="top"
             >
               <i
                 className="material-icons"
                 id={cell.id}
+                value={cell.name}
                 onClick={blockedCell}
                 style={cell.Approved ? { color: "green" } : { color: "red" }}
               >
@@ -388,6 +527,7 @@ const ManageStudents = props => {
               <i
                 className="material-icons"
                 id={cell.id}
+                value={cell.name}
                 onClick={deleteCell}
                 style={{ color: "red", fontSize: "23px" }}
               >
@@ -406,12 +546,13 @@ const ManageStudents = props => {
   ];
 
   return (
+    
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {genericConstants.MANAGE_STUDENTS}
         </Typography>
-
+       
         <GreenButton
           variant="contained"
           color="secondary"
@@ -449,6 +590,56 @@ const ManageStudents = props => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/* //error success ManageStudents */}
+
+     
+
+        {formState.showAlert && formState.messageToShow !== "" ?
+        <Collapse in={open}>
+        <Alert
+          severity="success"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {formState.messageToShow }
+          {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
+        </Alert>
+      </Collapse>
+       : null }
+
+{formState.showAlert === false && formState.messageToShow !== "" ?
+        <Collapse in={open}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {formState.messageToShow }
+      
+        </Alert>
+      </Collapse>
+       : null }
+
+
       </Grid>
 
       <Card>
@@ -456,38 +647,21 @@ const ManageStudents = props => {
           <Grid className={classes.filterOptions} container spacing={1}>
             <Grid item>
               <TextField
-                label={"User Name"}
-                placeholder="User Name"
+                label={"Name"}
+                placeholder="Name"
                 variant="outlined"
                 name={USER_FILTER}
                 onChange={handleFilterChange}
               />
-              {/* <Autocomplete
-                id="combo-box-demo"
-                name={USER_FILTER}
-                options={formState.student}
-                className={classes.autoCompleteField}
-                getOptionLabel={option => option.name}
-                onChange={(event, value) =>
-                  handleChangeAutoComplete(USER_FILTER, event, value)
-                }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label="Student"
-                    className={classes.autoCompleteField}
-                    variant="outlined"
-                  />
-                )}
-              /> */}
+              
             </Grid>
             <Grid item>
               <Autocomplete
                 id="combo-box-demo"
                 name={STREAM_FILTER}
-                options={formState.student}
+                options={streams}
                 className={classes.autoCompleteField}
-                getOptionLabel={option => option.stream}
+                getOptionLabel={option => option.name}
                 onChange={(event, value) =>
                   handleChangeAutoCompleteStream(STREAM_FILTER, event, value)
                 }
@@ -543,8 +717,8 @@ const ManageStudents = props => {
               progressPending={formState.isDataLoading}
               paginationTotalRows={formState.totalRows}
               paginationRowsPerPageOptions={[10, 20, 50]}
-              // onChangeRowsPerPage={handlePerRowsChange}
-              // onChangePage={handlePageChange}
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
             />
           ) : (
             <Spinner />
@@ -569,6 +743,7 @@ const ManageStudents = props => {
             closeModal={handleCloseDeleteModal}
             id={formState.dataToDelete["id"]}
             deleteEvent={isDeleteCellCompleted}
+            dataToDelete={formState.dataToDelete}
           />
         )}
         {formState.isMulBlocked || formState.isMulUnBlocked ? (
@@ -584,6 +759,7 @@ const ManageStudents = props => {
         ) : (
           <ApprovedStudents
             id={formState.approvedId}
+            blockedDataName={formState.blockedName}
             Data={formState.approvedData}
             getModel={formState.showModalBlock}
             closeBlockModal={handleCloseBlockModal}

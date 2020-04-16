@@ -21,6 +21,7 @@ const STUDENTS_URL =
 const USER_ID = "UserName";
 
 const DeleteStudents = props => {
+
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
@@ -29,7 +30,10 @@ const DeleteStudents = props => {
     values: {}
   });
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (message = "") => {
+    if (typeof message !== "string") {
+      message = "";
+    }
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -39,9 +43,9 @@ const DeleteStudents = props => {
     }));
 
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.deleteEvent(true, message);
     } else {
-      props.deleteEvent(false);
+      props.deleteEvent(false, message);
     }
     props.closeModal();
   };
@@ -62,22 +66,23 @@ const DeleteStudents = props => {
             isValid: true
           }));
           formState.isDeleteData = true;
-          handleCloseModal();
+          handleCloseModal("selected " + props.id.length + "students are succesfully deleted");
         })
         .catch(error => {
           console.log("error", error);
           formState.isDeleteData = false;
-          handleCloseModal();
+          handleCloseModal("Error in Deleting " + props.id.length + " selected students");
         });
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(STUDENTS_URL, props.id)
         .then(res => {
           formState.isDeleteData = true;
-          handleCloseModal();
+          handleCloseModal("Successfully deleted selected student " + props.dataToDelete["name"]);
         })
         .catch(error => {
           console.log("error", error);
+          handleCloseModal("Error in deleting selected student " + props.dataToDelete["name"]);
         });
     }
   };
@@ -116,7 +121,13 @@ const DeleteStudents = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.id ? "Are you sure you want to delete?" : null}
+                {props.isMultiDelete ? (
+                     "Are you sure you want to delete " +  props.id.length + " students ?"
+                  ) : (
+                    "  Are you sure you want to delete student " +
+                     props.dataToDelete["name"] + " ?"
+                    
+                  )}
                 </Grid>
               </Grid>
             </Grid>
