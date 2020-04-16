@@ -387,7 +387,7 @@ function App() {
                 path={routeConstants.MANAGE_COLLEGE}
               />
               {/** Manage Student */}
-              <MedhaCollegeAdminRoute
+              <CollegeAdminRoute
                 component={ManageStudents}
                 exact
                 layout={Layout}

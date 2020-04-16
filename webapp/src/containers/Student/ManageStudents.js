@@ -25,10 +25,7 @@ import {
 import { serviceProviderForGetRequest } from "../../api/Axios";
 import auth from "../../components/Auth";
 
-const STUDENTS_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES + "/" + auth.getUserInfo().college.id + "/" + strapiConstants.STRAPI_STUDENTS;
-  // const STUDENTS_URL =
-  // strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES  + strapiConstants.STRAPI_STUDENTS;
+const STUDENTS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES + "/" + auth.getUserInfo().college.id + "/" + strapiConstants.STRAPI_STUDENTS;
 const STREAMS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const USER_FILTER = "user.username_contains";
 const STREAM_FILTER = "stream.id";
@@ -36,6 +33,7 @@ const SORT_FIELD_KEY = "_sort";
 const COLLEGEID = "college.id";
 
 const ManageStudents = props => {
+  
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -72,55 +70,24 @@ const ManageStudents = props => {
     getStreamData();
   }, []);
   const getStudentData = async (pageSize, page, paramsForUsers = null) => {
+    
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
-        // "user.college": auth.getUserInfo().college.id,
         page: page,
         pageSize: pageSize
-        // [SORT_FIELD_KEY]: "username:asc"
       };
       Object.keys(paramsForUsers).map(key => {
         defaultParams[key] = paramsForUsers[key];
       });
       paramsForUsers = defaultParams;
 
-
-       
-    serviceProviders
-    .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
-    .then(res => {
-   
-      if (res.data.result.length) {
-        let tempStudentData = [];
-        let student_data = res.data.result;
-        tempStudentData = convertStudentData(student_data);
-        setFormState(formState => ({
-          ...formState,
-          student: tempStudentData
-        }));
-      } else {
-        setFormState(formState => ({
-          ...formState,
-          student: res.data.length
-        }));
-      }
-    })
-    .catch(error => {
-      console.log("error", error);
-    });
-
-
-
     } else {
       paramsForUsers = {
-        // "user.college": auth.getUserInfo().college.id,
         page: page,
         pageSize: pageSize
-        // [SORT_FIELD_KEY]: "username:asc"
       };
     }
   
-   
     serviceProviders
       .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
       .then(res => {
