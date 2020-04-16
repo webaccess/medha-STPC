@@ -20,6 +20,7 @@ const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
 
 const ApprovedStudents = props => {
+
   const [open, setOpen] = React.useState(false);
   const[username, setUsername] = useState([]);
   const [formState, setFormState] = useState({
@@ -39,7 +40,11 @@ const ApprovedStudents = props => {
   }
 
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (message = "") => {
+    setOpen(false);
+    if (typeof message !== "string") {
+      message = "";
+    }
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -49,9 +54,9 @@ const ApprovedStudents = props => {
     }));
 
     if (formState.isDataBlock) {
-      props.blockEvent(true);
+      props.blockEvent(true, message);
     } else {
-      props.blockEvent(false);
+      props.blockEvent(false, message);
     }
     props.closeBlockModal();
   };
@@ -66,6 +71,7 @@ const ApprovedStudents = props => {
     var approve_url;
     var paramsId ;
     if (props.Data === true ) {
+    
       approve_url =  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT + "/unapprove"  ;
       paramsId = {
         ids: parseInt(props.id) 
@@ -86,11 +92,11 @@ const ApprovedStudents = props => {
         serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
         .then(res => {
           formState.isDataBlock = true;
-          handleCloseModal();
+          handleCloseModal("Students successfully approved");
         })
         .catch(error => {
           formState.isDataBlock = false;
-          handleCloseModal();
+          handleCloseModal("Error approving students");
         });
       }
    
@@ -104,12 +110,12 @@ const ApprovedStudents = props => {
         serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
         .then(res => {
           formState.isDataBlock = true;
-          handleCloseModal();
+          handleCloseModal("Students successfully Unapproved");
         })
         .catch(error => {
           console.log("error---", error);
           formState.isDataBlock = false;
-          handleCloseModal();
+          handleCloseModal("Error Unapproving students");
         });
       }
     }
@@ -117,12 +123,21 @@ const ApprovedStudents = props => {
     serviceProviders.serviceProviderForPostRequest(approve_url, paramsId)
     .then(res => {
       formState.isDataBlock = true;
-      handleCloseModal();
+      if(props.Data === true){
+      handleCloseModal("Successfully Unapproved selected student");
+      }else{
+      
+        handleCloseModal("Successfully approved selected student");
+      }
     })
     .catch(error => {
       console.log("error---", error);
       formState.isDataBlock = false;
-      handleCloseModal();
+      if(props.Data === true){
+        handleCloseModal("Error approving selected student");
+        }else{
+          handleCloseModal("Error Unapproving selected student");
+        }
     });
   
   };
@@ -173,15 +188,15 @@ const ApprovedStudents = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.Data === false
-                    ? "Are you sure you want to approve student " + username + "  ?" 
+                    ? "Are you sure you want to approve student " + props["blockedDataName"] + "  ?" 
                     : null}
                   {props.Data === true
-                    ? "Are you sure you want to unapprove student " + username + "  ?"
+                    ? "Are you sure you want to unapprove student " + props["blockedDataName"] + "  ?"
                     : null}
-                    {props.isMulBlocked === true ? "Are you sure you want to approve selected student?"
+                    {props.isMulBlocked === true ? "Are you sure you want to approve selected "  + props.id.length + " student?"
                     : null}
                     {props.isUnMulBlocked === true
-                    ? "Are you sure you want to unapprove selected student?"
+                    ? "Are you sure you want to unapprove selected " + props.id.length +  " student?"
                     : null}
                 </Grid>
               </Grid>
