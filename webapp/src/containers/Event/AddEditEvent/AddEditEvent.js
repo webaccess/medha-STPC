@@ -40,7 +40,9 @@ import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import Img from "react-image";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
+import moment from "moment";
 
+/** Event names initialization */
 const eventName = "eventName";
 const description = "description";
 const dateFrom = "dateFrom";
@@ -61,8 +63,6 @@ const files = "files";
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
-const QUALIFICATIONS_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUALIFICATIONS;
 const STREAM_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS;
 const EVENTS_URL =
@@ -78,9 +78,10 @@ const AddEditEvent = props => {
   );
   const classes = useStyles();
   const history = useHistory();
+  /** Initializiing form state value */
   const [formState, setFormState] = useState({
     isValid: false,
-    values: {},
+    values: { dateFrom: moment(), dateTo: moment() },
     touched: {},
     errors: {},
     isSuccess: false,
@@ -91,8 +92,11 @@ const AddEditEvent = props => {
     files: {},
     filess: {},
     descriptionError: false,
-    dataToShowForMultiSelect: [],
+    dataToShowForCollegeMultiSelect: [],
+    eventCollegeIds: [],
     dataToShowForStreamMultiSelect: [],
+    eventStreamsIds: [],
+    isStreamQualificationsEducationsDisabled: false,
     deleteImage: false,
     previewFile: {},
     showPreviewImage: false,
@@ -104,19 +108,10 @@ const AddEditEvent = props => {
     dynamicEducationBar: [{ index: Math.random() }],
     dynamicEducationBarError: [],
     isCollegeAdmin:
-      auth.getUserInfo().role.name === "College Admin" ? true : false
+      auth.getUserInfo().role.name === "College Admin" ? true : false,
+    isStateClearFilter: false
   });
 
-  const [states, setStates] = useState([]);
-  const [zones, setZones] = useState([]);
-  const [rpcs, setRpcs] = useState([]);
-  const [colleges, setColleges] = useState([]);
-  const [streams, setStreams] = useState([]);
-  const inputLabel = React.useRef(null);
-  const [qualifications, setQualifications] = useState([]);
-  const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
-  const [educations, setEducations] = useState([]);
-  const [educationsDataBackup, setEducationsDataBackup] = useState([]);
   const [collegeInfo, setCollegeInfo] = useState({
     college:
       auth.getUserInfo().role.name === "College Admin"
@@ -136,6 +131,17 @@ const AddEditEvent = props => {
         : {}
   });
 
+  const [states, setStates] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [rpcs, setRpcs] = useState([]);
+  const [colleges, setColleges] = useState([]);
+  const [streams, setStreams] = useState([]);
+  const inputLabel = React.useRef(null);
+  const [qualifications, setQualifications] = useState([]);
+  const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
+  const [educations, setEducations] = useState([]);
+  const [educationsDataBackup, setEducationsDataBackup] = useState([]);
+
   if (formState.dataForEdit && !formState.counter) {
     /** Part for editing state */
     if (props["dataForEdit"]) {
@@ -154,14 +160,6 @@ const AddEditEvent = props => {
         setEditorState(editorState);
       }
       if (props["dataForEdit"]["start_date_time"]) {
-        let today = new Date(props["dataForEdit"]["start_date_time"]);
-        let date =
-          today.getDate() +
-          "-" +
-          parseInt(today.getMonth() + 1) +
-          "-" +
-          today.getFullYear();
-
         formState.values[dateFrom] = props["dataForEdit"]["start_date_time"];
         //formState.defaultDate = date;
       }
@@ -188,8 +186,8 @@ const AddEditEvent = props => {
         props["dataForEdit"]["colleges"] &&
         props["dataForEdit"]["colleges"].length
       ) {
-        // formState.values[college] = props["dataForEdit"]["colleges"][0]["id"];
-        formState.dataToShowForMultiSelect = props["dataForEdit"]["colleges"];
+        formState.dataToShowForCollegeMultiSelect =
+          props["dataForEdit"]["colleges"];
         let finalData = [];
         for (let i in props["dataForEdit"]["colleges"]) {
           finalData.push(props["dataForEdit"]["colleges"][i]["id"]);
@@ -258,10 +256,25 @@ const AddEditEvent = props => {
         formState.showPreviewNoImage = true;
         formState.showAddPreviewNoImage = true;
       }
+
+      if (
+        formState.isCollegeAdmin &&
+        formState.values[state] &&
+        formState.values[rpc] &&
+        formState.values[zone] &&
+        formState.values.hasOwnProperty(college) &&
+        formState.values[college].length === 1 &&
+        formState.values[college].indexOf(collegeInfo.college.id) !== -1
+      ) {
+        formState.isStreamQualificationsEducationsDisabled = false;
+      } else {
+        formState.isStreamQualificationsEducationsDisabled = true;
+      }
     }
     formState.counter += 1;
   }
 
+  /** Setting educations and qualifications */
   useEffect(() => {
     let paramsForPageSize = {
       pageSize: -1
@@ -317,30 +330,38 @@ const AddEditEvent = props => {
     } else {
       setQualifications(dataForEditing);
     }
+    if (!formState.isCollegeAdmin) {
+      serviceProvider
+        .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
+        .then(res => {
+          setStreams(res.data.result);
+        })
 
-    serviceProvider
-      .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
-      .then(res => {
-        setStreams(res.data.result);
-      })
-
-      .catch(error => {
-        console.log("errorstream", error);
+        .catch(error => {
+          console.log("errorstream", error);
+        });
+    } else if (formState.isCollegeAdmin) {
+      let streamData = [];
+      auth.getUserInfo().college.stream_strength.map(data => {
+        streamData.push(data["stream"]);
       });
+      setStreams(streamData);
+    }
   }, []);
 
+  /** Setting rpc, zone on state change */
   useEffect(() => {
     if (
       formState.values.hasOwnProperty(state) &&
       formState.values[state] !== null &&
       formState.values[state] !== undefined
     ) {
-      fetchZoneRpcDistrictData();
+      fetchZoneRpcData();
     }
   }, [formState.values[state]]);
 
   /** Common function to get zones, rpcs after changing state */
-  async function fetchZoneRpcDistrictData() {
+  async function fetchZoneRpcData() {
     if (
       formState.values.hasOwnProperty(state) &&
       formState.values[state] !== null &&
@@ -354,9 +375,7 @@ const AddEditEvent = props => {
         "/" +
         strapiApiConstants.STRAPI_ZONES;
 
-      if (formState.isCollegeAdmin) {
-        setZones([collegeInfo.zone]);
-      } else {
+      if (!formState.isCollegeAdmin) {
         await serviceProvider
           .serviceProviderForGetRequest(zones_url)
           .then(res => {
@@ -365,6 +384,8 @@ const AddEditEvent = props => {
           .catch(error => {
             console.log("error", error);
           });
+      } else if (formState.isCollegeAdmin) {
+        setZones([collegeInfo.zone]);
       }
 
       let rpcs_url =
@@ -374,9 +395,7 @@ const AddEditEvent = props => {
         "/" +
         strapiApiConstants.STRAPI_RPCS;
 
-      if (formState.isCollegeAdmin) {
-        setRpcs([collegeInfo.rpc]);
-      } else {
+      if (!formState.isCollegeAdmin) {
         await serviceProvider
           .serviceProviderForGetRequest(rpcs_url)
           .then(res => {
@@ -389,10 +408,11 @@ const AddEditEvent = props => {
           .catch(error => {
             console.log("error", error);
           });
+      } else if (formState.isCollegeAdmin) {
+        setRpcs([collegeInfo.rpc]);
       }
     }
   }
-
   useEffect(() => {
     if (formState.values[zone] && formState.values[rpc]) {
       fetchCollegeData();
@@ -406,10 +426,7 @@ const AddEditEvent = props => {
       "rpc.id": formState.values[rpc],
       pageSize: -1
     };
-
-    if (formState.isCollegeAdmin) {
-      setColleges([collegeInfo.college]);
-    } else {
+    if (!formState.isCollegeAdmin) {
       await serviceProvider
         .serviceProviderForGetRequest(COLLEGE_URL, params)
         .then(res => {
@@ -418,10 +435,13 @@ const AddEditEvent = props => {
         .catch(error => {
           console.log("error", error);
         });
+    } else if (formState.isCollegeAdmin) {
+      setColleges([collegeInfo.college]);
     }
   }
 
   const hasError = field => (formState.errors[field] ? true : false);
+
   const handleChange = e => {
     e.persist();
     setFormState(formState => ({
@@ -472,6 +492,8 @@ const AddEditEvent = props => {
       return errorEducationData;
     }
   };
+
+  /** Adding a new row in dynamic bar */
   const addNewRow = (e, extendBarName) => {
     e.persist();
     if (extendBarName === "qualification") {
@@ -489,6 +511,8 @@ const AddEditEvent = props => {
       }));
     }
   };
+
+  /** To delete a value from dynamic bar */
   const clickOnDelete = (record, index) => {
     setFormState(formState => ({
       ...formState,
@@ -790,6 +814,33 @@ const AddEditEvent = props => {
         isStateClearFilter: false
       }));
     } else {
+      let setStateFilterValue = false;
+      /** If we click cross for state the zone and rpc should clear off! */
+      if (eventName === state) {
+        /** 
+        This flag is used to determine that state is cleared which clears 
+        off zone and rpc by setting their value to null 
+        */
+        setStateFilterValue = true;
+        /** 
+        When state is cleared then clear rpc and zone 
+        */
+        setRpcs([]);
+        setZones([]);
+        setColleges([]);
+        // setStreams([]);
+        delete formState.values[zone];
+        delete formState.values[rpc];
+        formState.dataToShowForCollegeMultiSelect = [];
+      } else if (eventName === rpc || eventName === zone) {
+        setColleges([]);
+        formState.dataToShowForCollegeMultiSelect = [];
+      }
+      setFormState(formState => ({
+        ...formState,
+        isStateClearFilter: setStateFilterValue
+      }));
+      /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
   };
@@ -995,7 +1046,7 @@ const AddEditEvent = props => {
 
   const handleMultiSelectChange = (eventName, event, value) => {
     if (eventName === college) {
-      formState.dataToShowForMultiSelect = value;
+      formState.dataToShowForCollegeMultiSelect = value;
     }
     if (eventName === stream) {
       formState.dataToShowForStreamMultiSelect = value;
@@ -1105,7 +1156,7 @@ const AddEditEvent = props => {
                         className={classes.InputFileButton}
                         startIcon={<AddOutlinedIcon />}
                       >
-                        ADD NEW FILE
+                        ADD NEW EVENT LOGO
                       </Button>
                     </label>
                   </Grid>
@@ -1180,9 +1231,10 @@ const AddEditEvent = props => {
                       onChange={event => {
                         handleDateChange(dateFrom, event);
                       }}
-                      value={formState.values[dateFrom]}
+                      value={formState.values[dateFrom] || null}
                       name={dateFrom}
                       label={get(EventSchema[dateFrom], "label")}
+                      placeholder={get(EventSchema[dateFrom], "placeholder")}
                       fullWidth
                       error={hasError(dateFrom)}
                       helperText={
@@ -1199,9 +1251,10 @@ const AddEditEvent = props => {
                       onChange={event => {
                         handleDateChange(dateTo, event);
                       }}
-                      value={formState.values[dateTo]}
+                      value={formState.values[dateTo] || null}
                       name={dateTo}
                       label={get(EventSchema[dateTo], "label")}
+                      placeholder={get(EventSchema[dateTo], "placeholder")}
                       fullWidth
                       error={hasError(dateTo)}
                       helperText={
@@ -1256,6 +1309,11 @@ const AddEditEvent = props => {
                         onChange={(event, value) => {
                           handleChangeAutoComplete(state, event, value);
                         }}
+                        disabled={
+                          formState.isCollegeAdmin && formState.isEditEvent
+                            ? true
+                            : false
+                        }
                         value={
                           states[
                             states.findIndex(function (item, i) {
@@ -1298,6 +1356,11 @@ const AddEditEvent = props => {
                         onChange={(event, value) => {
                           handleChangeAutoComplete(zone, event, value);
                         }}
+                        disabled={
+                          formState.isCollegeAdmin && formState.isEditEvent
+                            ? true
+                            : false
+                        }
                         value={
                           zones[
                             zones.findIndex(function (item, i) {
@@ -1329,13 +1392,13 @@ const AddEditEvent = props => {
                   <Grid item md={6} xs={12}>
                     {formState.isCollegeAdmin && !formState.isEditEvent ? (
                       <ReadOnlyTextField
-                        id="RPCName"
+                        id={get(EventSchema[rpcs], "id")}
                         label={get(EventSchema[rpc], "label")}
                         defaultValue={collegeInfo.rpc.name}
                       />
                     ) : (
                       <Autocomplete
-                        id="combo-box-demo"
+                        id={get(EventSchema[rpcs], "id")}
                         className={classes.root}
                         options={rpcs}
                         placeholder={get(EventSchema[rpcs], "placeholder")}
@@ -1343,6 +1406,11 @@ const AddEditEvent = props => {
                         onChange={(event, value) => {
                           handleChangeAutoComplete(rpc, event, value);
                         }}
+                        disabled={
+                          formState.isCollegeAdmin && formState.isEditEvent
+                            ? true
+                            : false
+                        }
                         value={
                           rpcs[
                             rpcs.findIndex(function (item, i) {
@@ -1375,7 +1443,7 @@ const AddEditEvent = props => {
                   <Grid item md={12} xs={12}>
                     {formState.isCollegeAdmin && !formState.isEditEvent ? (
                       <ReadOnlyTextField
-                        id="RPCName"
+                        id={get(EventSchema[college], "id")}
                         label={get(EventSchema[college], "label")}
                         defaultValue={collegeInfo.college.name}
                       />
@@ -1390,7 +1458,14 @@ const AddEditEvent = props => {
                         }}
                         filterSelectedOptions
                         name={college}
-                        value={formState.dataToShowForMultiSelect || null}
+                        disabled={
+                          formState.isCollegeAdmin && formState.isEditEvent
+                            ? true
+                            : false
+                        }
+                        value={
+                          formState.dataToShowForCollegeMultiSelect || null
+                        }
                         renderInput={params => (
                           <TextField
                             {...params}
@@ -1427,6 +1502,13 @@ const AddEditEvent = props => {
                       onChange={(event, value) => {
                         handleMultiSelectChange(stream, event, value);
                       }}
+                      disabled={
+                        formState.isCollegeAdmin &&
+                        formState.isEditEvent &&
+                        formState.isStreamQualificationsEducationsDisabled
+                          ? true
+                          : false
+                      }
                       filterSelectedOptions
                       name={stream}
                       value={formState.dataToShowForStreamMultiSelect || null}

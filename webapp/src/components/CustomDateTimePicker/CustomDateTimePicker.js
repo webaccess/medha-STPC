@@ -12,6 +12,7 @@ const CustomDateTimePicker = props => {
           label={props.label}
           inputVariant="outlined"
           value={props.value}
+          placeholder={props.placeholder}
           onChange={props.onChange}
           helperText={props.helperText}
           {...props}
