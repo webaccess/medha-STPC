@@ -10,6 +10,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as formUtilities from "../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as genericConstants from "../../constants/GenericConstants";
+import * as routeConstants from "../../constants/RouteConstants";
 
 import CloseIcon from "@material-ui/icons/Close";
 import {
@@ -22,16 +23,9 @@ import {
   IconButton,
   Tooltip
 } from "@material-ui/core";
-import { serviceProviderForGetRequest } from "../../api/Axios";
 import auth from "../../components/Auth";
+import { useHistory } from "react-router-dom";
 
-const STUDENTS_URL =
-  strapiConstants.STRAPI_DB_URL +
-  strapiConstants.STRAPI_COLLEGES +
-  "/" +
-  1 +
-  "/" +
-  strapiConstants.STRAPI_STUDENTS;
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const USER_FILTER = "user.username_contains";
@@ -40,6 +34,7 @@ const SORT_FIELD_KEY = "_sort";
 const COLLEGEID = "college.id";
 
 const ManageStudents = props => {
+  const history = useHistory();
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -92,27 +87,45 @@ const ManageStudents = props => {
       };
     }
 
-    serviceProviders
-      .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
-      .then(res => {
-        if (res.data.result.length) {
-          let tempStudentData = [];
-          let student_data = res.data.result;
-          tempStudentData = convertStudentData(student_data);
-          setFormState(formState => ({
-            ...formState,
-            student: tempStudentData
-          }));
-        } else {
-          setFormState(formState => ({
-            ...formState,
-            student: res.data.length
-          }));
-        }
-      })
-      .catch(error => {
-        console.log("error", error);
+    if (
+      auth.getUserInfo().role.name === "College Admin" &&
+      auth.getUserInfo().college !== null &&
+      auth.getUserInfo().college.id !== null
+    ) {
+      const STUDENTS_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_COLLEGES +
+        "/" +
+        auth.getUserInfo().college.id +
+        "/" +
+        strapiConstants.STRAPI_STUDENTS;
+
+      serviceProviders
+        .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
+        .then(res => {
+          if (res.data.result.length) {
+            let tempStudentData = [];
+            let student_data = res.data.result;
+            tempStudentData = convertStudentData(student_data);
+            setFormState(formState => ({
+              ...formState,
+              student: tempStudentData
+            }));
+          } else {
+            setFormState(formState => ({
+              ...formState,
+              student: res.data.length
+            }));
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    } else {
+      history.push({
+        pathname: routeConstants.NOT_FOUND_URL
       });
+    }
   };
 
   const getStreamData = () => {

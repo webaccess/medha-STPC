@@ -8,7 +8,8 @@ import {
   Grid,
   Collapse,
   IconButton,
-  Typography
+  Typography,
+  CircularProgress
 } from "@material-ui/core";
 import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -33,6 +34,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import auth from "../../../components/Auth";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
@@ -45,6 +47,9 @@ const ManageEvent = props => {
   const history = useHistory();
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  /** Value to set for event filter */
+  const [value, setValue] = React.useState(null);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -57,16 +62,18 @@ const ManageEvent = props => {
     showEditModal: false,
     showModalDelete: false,
     isMultiDelete: false,
-    selectedRowFilter: true,
     MultiDeleteID: [],
+    /** Filters */
+    eventFilterData: [],
+    selectedRowFilter: true,
     filterDataParameters: {},
     isClearResetFilter: false,
     isFilterSearch: false,
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: null,
+    endDate: null,
     texttvalue: "",
     toggleCleared: false,
-
+    isEventCleared: "",
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -239,37 +246,6 @@ const ManageEvent = props => {
     }
   };
 
-  /** Search filter is called when we select filters and click on search button */
-  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
-    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
-      formState.isFilterSearch = true;
-      await getEventData(perPage, page, formState.filterDataParameters);
-    }
-  };
-  /** This restores all the data when we clear the filters*/
-
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      isFilterSearch: false,
-      /** Clear all filters */
-      filterDataParameters: {},
-      /** Turns on the spinner */
-      isClearResetFilter: true,
-      isDataLoading: true,
-      texttvalue: "",
-      startDate: moment(),
-      endDate: moment()
-    }));
-
-    /**Need to confirm this thing for resetting the data */
-    restoreData();
-  };
-
-  const restoreData = () => {
-    getEventData(formState.pageSize, 1);
-  };
-
   const handleRowSelected = useCallback(state => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
@@ -285,40 +261,6 @@ const ManageEvent = props => {
     }
     setSelectedRows(state.selectedRows);
   }, []);
-
-  const handleFilterChange = (event, value) => {
-    if (value != null) {
-      formState.filterDataParameters[event.target.name] = event.target.value;
-      setFormState(formState => ({
-        ...formState,
-        texttvalue: event.target.value
-      }));
-    } else {
-      formState.filterDataParameters[event.target.name] = event.target.value;
-      setFormState(formState => ({
-        ...formState,
-        texttvalue: null
-      }));
-    }
-  };
-
-  const handleStartDateChange = (START_DATE_FILTER, event) => {
-    let startDate = moment(event).format("YYYY-MM-DD");
-    formState.filterDataParameters[START_DATE_FILTER] = startDate;
-    setFormState(formState => ({
-      ...formState,
-      startDate: event
-    }));
-  };
-
-  const handleEndDateChange = (END_DATE_FILTER, event) => {
-    let endDate = moment(event).format("YYYY-MM-DD");
-    formState.filterDataParameters[END_DATE_FILTER] = endDate;
-    setFormState(formState => ({
-      ...formState,
-      endDate: event
-    }));
-  };
 
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
@@ -459,6 +401,132 @@ const ManageEvent = props => {
     }
   ];
 
+  /** Used for restoring data */
+  const restoreData = () => {
+    getEventData(formState.pageSize, 1);
+  };
+
+  /** Filter methods and functions */
+  /** This restores all the data when we clear the filters*/
+
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      isFilterSearch: false,
+      /** Clear all filters */
+      filterDataParameters: {},
+      /** Turns on the spinner */
+      isClearResetFilter: true,
+      isDataLoading: true,
+      texttvalue: "",
+      startDate: null,
+      endDate: null
+    }));
+
+    restoreData();
+  };
+
+  /** Handle Start Date filter change */
+  const handleStartDateChange = (START_DATE_FILTER, event) => {
+    let startDate = moment(event).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    if (startDate === "Invalid date") {
+      startDate = null;
+    }
+    formState.filterDataParameters[START_DATE_FILTER] = startDate;
+    setFormState(formState => ({
+      ...formState,
+      startDate: event
+    }));
+  };
+
+  /** Handle End Date filter change */
+  const handleEndDateChange = (END_DATE_FILTER, event) => {
+    let endDate = moment(event).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    if (endDate === "Invalid date") {
+      endDate = null;
+    }
+    formState.filterDataParameters[END_DATE_FILTER] = endDate;
+    setFormState(formState => ({
+      ...formState,
+      endDate: event
+    }));
+  };
+
+  const handleFilterChangeForEventField = event => {
+    getFilteredEventDataValueInDropDown(event.target.value);
+    event.persist();
+    // setRpcsFilter(event.target.value);
+  };
+
+  const getFilteredEventDataValueInDropDown = eventValue => {
+    setIsLoading(true);
+    setValue({
+      title: eventValue
+    });
+    if (eventValue && eventValue !== null && eventValue !== "") {
+      formState.filterDataParameters[EVENT_FILTER] = eventValue;
+      let params = {
+        [EVENT_FILTER]: eventValue
+      };
+      let filterEvents =
+        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
+      if (auth.getUserInfo().role.name === "College Admin") {
+        filterEvents =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_COLLEGES +
+          "/" +
+          auth.getUserInfo().college.id +
+          "/event";
+      }
+      serviceProviders
+        .serviceProviderForGetAsyncRequest(filterEvents, params)
+        .then(res => {
+          if (res.data.result.length !== 0) {
+          }
+          setIsLoading(false);
+          setFormState(formState => ({
+            ...formState,
+            eventFilterData: res.data.result,
+            isClearResetFilter: false,
+            isEventCleared: eventValue
+          }));
+        })
+        .catch(error => {
+          setIsLoading(false);
+          console.log("error", error);
+        });
+    } else {
+      delete formState.filterDataParameters[EVENT_FILTER];
+      setIsLoading(false);
+      setFormState(formState => ({
+        ...formState,
+        eventFilterData: [],
+        isClearResetFilter: false,
+        isEventCleared: ""
+      }));
+    }
+  };
+
+  const getEventSelectedValue = (event, value) => {
+    if (value === null) {
+      getFilteredEventDataValueInDropDown(null);
+    } else {
+      getFilteredEventDataValueInDropDown(
+        value.title
+      ); /** value.title will give you name of the event */
+    }
+  };
+
+  /** Search filter is called when we select filters and click on search button */
+  const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
+      formState.isFilterSearch = true;
+      await getEventData(perPage, page, formState.filterDataParameters);
+    } else {
+      await getEventData(perPage, page);
+    }
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -536,18 +604,51 @@ const ManageEvent = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <TextField
-                  label={"Event"}
-                  placeholder="Event"
-                  variant="outlined"
-                  name={EVENT_FILTER}
-                  value={formState.texttvalue}
-                  onChange={event =>
-                    handleFilterChange(event, event.target.value)
-                  }
+                <Autocomplete
+                  id="event-text-filter"
+                  freeSolo
+                  autoHighlight
+                  autoComplete
+                  loading={isLoading}
+                  options={formState.eventFilterData}
+                  includeInputInList
+                  getOptionLabel={option => {
+                    if (typeof option === "string") {
+                      return option;
+                    }
+                    if (option.inputValue) {
+                      return option.inputValue;
+                    }
+                    return option.title;
+                  }}
+                  renderOption={option => option.title}
+                  onChange={getEventSelectedValue}
+                  value={formState.isClearResetFilter ? null : value}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Event Name"
+                      margin="normal"
+                      variant="outlined"
+                      placeholder="Search Event's"
+                      className={classes.autoCompleteField}
+                      onChange={handleFilterChangeForEventField}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <React.Fragment>
+                            {isLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </React.Fragment>
+                        )
+                      }}
+                    />
+                  )}
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <InlineDatePicker
                   id="date"
                   label="Start Date"
@@ -558,7 +659,7 @@ const ManageEvent = props => {
                   }
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <InlineDatePicker
                   id="date"
                   label="End Date"
