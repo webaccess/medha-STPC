@@ -25,15 +25,21 @@ import {
 import { serviceProviderForGetRequest } from "../../api/Axios";
 import auth from "../../components/Auth";
 
-const STUDENTS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES + "/" + auth.getUserInfo().college.id + "/" + strapiConstants.STRAPI_STUDENTS;
-const STREAMS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
+const STUDENTS_URL =
+  strapiConstants.STRAPI_DB_URL +
+  strapiConstants.STRAPI_COLLEGES +
+  "/" +
+  1 +
+  "/" +
+  strapiConstants.STRAPI_STUDENTS;
+const STREAMS_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const USER_FILTER = "user.username_contains";
 const STREAM_FILTER = "stream.id";
 const SORT_FIELD_KEY = "_sort";
 const COLLEGEID = "college.id";
 
 const ManageStudents = props => {
-  
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -70,7 +76,6 @@ const ManageStudents = props => {
     getStreamData();
   }, []);
   const getStudentData = async (pageSize, page, paramsForUsers = null) => {
-    
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
         page: page,
@@ -80,18 +85,16 @@ const ManageStudents = props => {
         defaultParams[key] = paramsForUsers[key];
       });
       paramsForUsers = defaultParams;
-
     } else {
       paramsForUsers = {
         page: page,
         pageSize: pageSize
       };
     }
-  
+
     serviceProviders
       .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
       .then(res => {
-        
         if (res.data.result.length) {
           let tempStudentData = [];
           let student_data = res.data.result;
@@ -112,40 +115,41 @@ const ManageStudents = props => {
       });
   };
 
-
-
   const getStreamData = () => {
-    serviceProviders.serviceProviderForGetRequest(STREAMS_URL).then(res => {
-     
-      setStreams(res.data.result);
-    })
-    .catch(error => {
-      console.log("streamError",error);
-    })
-  }
+    serviceProviders
+      .serviceProviderForGetRequest(STREAMS_URL)
+      .then(res => {
+        setStreams(res.data.result);
+      })
+      .catch(error => {
+        console.log("streamError", error);
+      });
+  };
 
   const convertStudentData = data => {
     let studentDataArray = [];
     if (data) {
       for (let i in data) {
- 
         var tempIndividualStudentData = {};
         tempIndividualStudentData["id"] = data[i]["id"];
         tempIndividualStudentData["userId"] = data[i]["user"]["id"];
-        tempIndividualStudentData["name"] = data[i]["user"]["first_name"] + " " + data[i]["father_first_name"] + " " + data[i]["user"]["last_name"];
+        tempIndividualStudentData["name"] =
+          data[i]["user"]["first_name"] +
+          " " +
+          data[i]["father_first_name"] +
+          " " +
+          data[i]["user"]["last_name"];
         tempIndividualStudentData["streamId"] = data[i]["stream"]["id"];
         tempIndividualStudentData["stream"] = data[i]["stream"]["name"];
         studentDataArray.push(tempIndividualStudentData);
         tempIndividualStudentData["Approved"] = data[i]["verifiedByCollege"];
       }
-    
+
       return studentDataArray;
     }
   };
 
   const blockedCell = event => {
-  
-
     setFormState(formState => ({
       ...formState,
       blockedName: event.target.getAttribute("value")
@@ -164,11 +168,10 @@ const ManageStudents = props => {
   };
 
   const blockedCellData = (id, isApproved = false) => {
-    
     if (isApproved === true) {
       setFormState(formState => ({
         ...formState,
-        approvedId: id, 
+        approvedId: id,
         approvedData: true,
         MultiBlockUser: {},
         isUnBlocked: false,
@@ -218,16 +221,11 @@ const ManageStudents = props => {
   };
 
   const isUserBlockCompleted = (status, statusToShow = "") => {
-    
-   
-    if(status){
-     
+    if (status) {
       formState.showAlert = status;
-    }else{
-     
+    } else {
       formState.showAlert = status;
     }
-
 
     setOpen(true);
     setFormState(formState => ({
@@ -254,12 +252,10 @@ const ManageStudents = props => {
 
   const deleteCell = event => {
     let dataId = event.target.id;
-   
+
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: dataId,
-        name: event.target.getAttribute("value")
-       },
+      dataToDelete: { id: dataId, name: event.target.getAttribute("value") },
       showEditModal: false,
       showModalDelete: true,
       message: ""
@@ -282,9 +278,9 @@ const ManageStudents = props => {
   };
 
   const isDeleteCellCompleted = (status, statusToShow = "") => {
-    if(status){
+    if (status) {
       formState.showDeleteAlert = status;
-    }else{
+    } else {
       formState.showDeleteAlert = status;
     }
     // formState.isDataDeleted = status;
@@ -310,7 +306,6 @@ const ManageStudents = props => {
   };
 
   const handleChangeAutoCompleteStream = (filterName, event, value) => {
-  
     if (value === null) {
       delete formState.filterDataParameters[filterName];
       //restoreData();
@@ -330,32 +325,31 @@ const ManageStudents = props => {
     }
   };
 
-
-    /** Pagination */
-    const handlePerRowsChange = async (perPage, page) => {
-      /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
-      if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+  /** Pagination */
+  const handlePerRowsChange = async (perPage, page) => {
+    /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStudentData(perPage, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(perPage, page);
+      } else {
         await getStudentData(perPage, page);
-      } else {
-        if (formState.isFilterSearch) {
-          await searchFilter(perPage, page);
-        } else {
-          await getStudentData(perPage, page);
-        }
       }
-    };
-  
-    const handlePageChange = async page => {
-      if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+    }
+  };
+
+  const handlePageChange = async page => {
+    if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      await getStudentData(formState.pageSize, page);
+    } else {
+      if (formState.isFilterSearch) {
+        await searchFilter(formState.pageSize, page);
+      } else {
         await getStudentData(formState.pageSize, page);
-      } else {
-        if (formState.isFilterSearch) {
-          await searchFilter(formState.pageSize, page);
-        } else {
-          await getStudentData(formState.pageSize, page);
-        }
       }
-    };
+    }
+  };
 
   /** To reset search filter */
   const refreshPage = () => {
@@ -513,13 +507,12 @@ const ManageStudents = props => {
   ];
 
   return (
-    
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {genericConstants.MANAGE_STUDENTS}
         </Typography>
-       
+
         <GreenButton
           variant="contained"
           color="secondary"
@@ -558,55 +551,50 @@ const ManageStudents = props => {
       <Grid item xs={12} className={classes.formgrid}>
         {/* //error success ManageStudents */}
 
-     
-
-        {formState.showAlert && formState.messageToShow !== "" ?
-        <Collapse in={open}>
-        <Alert
-          severity="success"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpen(false);
-              }}
+        {formState.showAlert && formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
             >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {formState.messageToShow }
-          {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
-        </Alert>
-      </Collapse>
-       : null }
+              {formState.messageToShow}
+              {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
+            </Alert>
+          </Collapse>
+        ) : null}
 
-{formState.showAlert === false && formState.messageToShow !== "" ?
-        <Collapse in={open}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpen(false);
-              }}
+        {formState.showAlert === false && formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
             >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {formState.messageToShow }
-      
-        </Alert>
-      </Collapse>
-       : null }
-
-
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
       </Grid>
 
       <Card>
@@ -620,7 +608,6 @@ const ManageStudents = props => {
                 name={USER_FILTER}
                 onChange={handleFilterChange}
               />
-              
             </Grid>
             <Grid item>
               <Autocomplete

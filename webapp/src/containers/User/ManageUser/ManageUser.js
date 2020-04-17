@@ -122,7 +122,8 @@ const ManageUser = props => {
     filterDataParameters: {},
     isFilterSearch: false,
     isClearResetFilter: false,
-    isStateClearFilter: false
+    isStateClearFilter: false,
+    toggleCleared: false
   });
 
   const getFilterData = () => {
@@ -347,11 +348,15 @@ const ManageUser = props => {
   };
 
   const deleteCell = event => {
+    console.log("event", event.target);
     let dataId = event.target.id;
 
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: dataId },
+      dataToDelete: {
+        id: event.target.id,
+        name: event.target.getAttribute("value")
+      },
       showEditModal: false,
       showModalDelete: true
     }));
@@ -556,6 +561,10 @@ const ManageUser = props => {
     }
   };
 
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+  };
+
   const isUserBlockCompleted = status => {
     formState.isUserBlocked = status;
   };
@@ -578,7 +587,8 @@ const ManageUser = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -691,7 +701,11 @@ const ManageUser = props => {
             />
           </div>
           <div className={classes.PaddingActionButton}>
-            <DeleteGridIcon id={cell.id} onClick={deleteCell} />
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.username}
+              onClick={deleteCell}
+            />
           </div>
         </div>
       ),
@@ -1051,6 +1065,7 @@ const ManageUser = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -1068,6 +1083,7 @@ const ManageUser = props => {
               isMultiDelete={formState.isMultiDelete}
               modalClose={modalClose}
               seletedUser={selectedRows.length}
+              clearSelectedRow={selectedRowCleared}
             />
           ) : (
             <DeleteUser
@@ -1077,6 +1093,7 @@ const ManageUser = props => {
               deleteEvent={isDeleteCellCompleted}
               modalClose={modalClose}
               userName={formState.userNameDelete}
+              clearSelectedRow={selectedRowCleared}
             />
           )}
           {formState.isMulBlocked || formState.isMulUnBlocked ? (
@@ -1088,6 +1105,7 @@ const ManageUser = props => {
               closeBlockModal={handleCloseBlockModal}
               blockEvent={isUserBlockCompleted}
               modalClose={modalClose}
+              clearSelectedRow={selectedRowCleared}
             />
           ) : (
             <BlockUser
@@ -1098,6 +1116,7 @@ const ManageUser = props => {
               isBlocked={formState.isBlocked}
               isUnBlocked={formState.isUnBlocked}
               modalClose={modalClose}
+              clearSelectedRow={selectedRowCleared}
             />
           )}
         </Card>

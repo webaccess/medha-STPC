@@ -30,6 +30,8 @@ const DeleteZone = props => {
     dataToDelete: {}
   });
 
+  console.log("deletecollege", props);
+
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[COLLEGE_ID] = props.id;
@@ -62,6 +64,7 @@ const DeleteZone = props => {
     setOpen(true);
     event.preventDefault();
     event.persist();
+    props.clearSelectedRow(true);
     let status = {};
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
      and returns back an opbject with status and message*/

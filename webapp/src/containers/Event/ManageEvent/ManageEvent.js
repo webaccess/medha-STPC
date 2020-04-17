@@ -65,6 +65,8 @@ const ManageEvent = props => {
     startDate: new Date(),
     endDate: new Date(),
     texttvalue: "",
+    toggleCleared: false,
+
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -72,6 +74,7 @@ const ManageEvent = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
+
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromeditEvent"]
       ? props["location"]["isDataEdited"]
@@ -271,7 +274,8 @@ const ManageEvent = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -409,6 +413,10 @@ const ManageEvent = props => {
 
   const editCell = event => {
     getDataForEdit(event.target.id);
+  };
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
   };
 
   /** ------ */
@@ -602,6 +610,7 @@ const ManageEvent = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -618,6 +627,7 @@ const ManageEvent = props => {
               isMultiDelete={formState.isMultiDelete}
               modalClose={modalClose}
               seletedUser={selectedRows.length}
+              clearSelectedRow={selectedRowCleared}
             />
           ) : (
             <DeleteUser
@@ -628,6 +638,7 @@ const ManageEvent = props => {
               modalClose={modalClose}
               userName={formState.userNameDelete}
               dataToDelete={formState.dataToDelete}
+              clearSelectedRow={selectedRowCleared}
             />
           )}
         </Card>

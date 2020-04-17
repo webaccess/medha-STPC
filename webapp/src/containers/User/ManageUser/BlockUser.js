@@ -26,6 +26,8 @@ const BlockUser = props => {
     values: {}
   });
 
+  console.log("blockProps", props);
+
   const handleCloseModal = () => {
     setOpen(false);
     setFormState(formState => ({
@@ -48,6 +50,7 @@ const BlockUser = props => {
     setOpen(true);
     /** CALL Put FUNCTION */
     blockUser();
+    props.clearSelectedRow(true);
     event.preventDefault();
   };
 

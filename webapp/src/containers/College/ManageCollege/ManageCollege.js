@@ -94,6 +94,7 @@ const ManageCollege = props => {
     MultiDeleteID: [],
     selectedRowFilter: true,
     greenButtonChecker: true,
+    toggleCleared: false,
     /** View  */
     isView: false,
     /** Filters */
@@ -569,7 +570,8 @@ const ManageCollege = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -598,6 +600,10 @@ const ManageCollege = props => {
     });
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+  };
 
   /** Columns to show in table */
   const column = [
@@ -1012,6 +1018,7 @@ const ManageCollege = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -1032,6 +1039,7 @@ const ManageCollege = props => {
             modalClose={modalClose}
             isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
           />
           <BlockUnblockCollege
             showModal={formState.showModalBlock}
@@ -1042,6 +1050,7 @@ const ManageCollege = props => {
             isMultiUnblock={formState.isMulUnBlocked ? true : false}
             multiBlockCollegeIds={formState.multiBlockCollegeIds}
             modalClose={modalClose}
+            clearSelectedRow={selectedRowCleared}
           />
         </Card>
       </Grid>
