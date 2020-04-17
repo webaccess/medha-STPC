@@ -93,5 +93,8 @@ const useStyles = makeStyles((theme) => ({
   DivHeight: {
     height: "75px",
   },
+  GridHeight: {
+    height: "50px",
+  },
 }));
 export default useStyles;
