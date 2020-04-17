@@ -258,10 +258,13 @@ const AddEditEvent = props => {
       }
 
       if (
+        formState.isCollegeAdmin &&
         formState.values[state] &&
         formState.values[rpc] &&
         formState.values[zone] &&
-        formState.values[college]
+        formState.values.hasOwnProperty(college) &&
+        formState.values[college].length === 1 &&
+        formState.values[college].indexOf(collegeInfo.college.id) !== -1
       ) {
         formState.isStreamQualificationsEducationsDisabled = false;
       } else {
@@ -1500,7 +1503,9 @@ const AddEditEvent = props => {
                         handleMultiSelectChange(stream, event, value);
                       }}
                       disabled={
-                        formState.isCollegeAdmin && formState.isEditEvent
+                        formState.isCollegeAdmin &&
+                        formState.isEditEvent &&
+                        formState.isStreamQualificationsEducationsDisabled
                           ? true
                           : false
                       }
