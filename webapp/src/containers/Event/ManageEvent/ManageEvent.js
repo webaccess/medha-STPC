@@ -413,7 +413,8 @@ const ManageEvent = props => {
       isDataLoading: true,
       texttvalue: "",
       startDate: null,
-      endDate: null
+      endDate: null,
+      eventFilterData: []
     }));
 
     restoreData();
