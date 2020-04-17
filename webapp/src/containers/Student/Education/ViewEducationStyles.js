@@ -55,7 +55,24 @@ const useStyles = makeStyles(theme => ({
   },
   Cardtheming: {
     paddingBottom: "16px !important"
+  },
+  /**css for datatable action buttons */
+  DisplayFlex: {
+    display: "flex"
+  },
+  PaddingActionButton: {
+    padding: "2px 8px 0px 8px",
+    cursor: "pointer"
+  },
+  PaddingFirstActionButton: {
+    padding: "3px 8px 0px 0px",
+    cursor: "pointer"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff"
   }
+  /** */
 }));
 
 export default useStyles;
