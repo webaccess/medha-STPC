@@ -210,14 +210,20 @@ module.exports = {
       .fetchAll()
       .then(model => model.toJSON());
 
-    const filtered = students.reduce((acc, student) => {
+    let filtered = [];
+    await utils.asyncForEach(students, async student => {
       const user = student.user;
+
       if (_.includes(userIds, student.user.id)) {
+        const qualifications = await strapi
+          .query("academic-history")
+          .find({ student: student.id }, []);
+
+        student.qualifications = qualifications;
         student.user = sanitizeUser(user);
-        acc.push(student);
+        filtered.push(student);
       }
-      return acc;
-    }, []);
+    });
 
     const response = utils.paginate(filtered, page, pageSize);
 

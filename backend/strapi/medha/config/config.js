@@ -3,10 +3,10 @@ const knex = require("knex")({
   connection: {
     host: "127.0.0.1",
     port: "5432",
-    user: "postgres",
-    password: "root",
-    database: "medha",
-  },
+    user: "medha",
+    password: "medha",
+    database: "medha"
+  }
 });
 
 const bookshelf = require("bookshelf")(knex);
@@ -17,7 +17,7 @@ const bookshelf = require("bookshelf")(knex);
 
 bookshelf.model("uploadMorph", {
   requireFetch: false,
-  tableName: "upload_file_morph",
+  tableName: "upload_file_morph"
 });
 
 bookshelf.model("state", {
@@ -25,7 +25,7 @@ bookshelf.model("state", {
   tableName: "states",
   zones() {
     return this.hasMany("zone", "state", "id");
-  },
+  }
 });
 
 bookshelf.model("zone", {
@@ -36,7 +36,7 @@ bookshelf.model("zone", {
   },
   rpcs() {
     return this.hasMany("rpc", "zone", "id");
-  },
+  }
 });
 
 bookshelf.model("rpc", {
@@ -47,12 +47,12 @@ bookshelf.model("rpc", {
   },
   colleges() {
     return this.hasMany("college", "rpc", "id");
-  },
+  }
 });
 
 bookshelf.model("stream", {
   requireFetch: false,
-  tableName: "streams",
+  tableName: "streams"
 });
 
 // bookshelf.model("collegeStreams", {
@@ -69,14 +69,14 @@ bookshelf.model("colleges_component", {
   tableName: "colleges_components",
   streams() {
     return this.belongsTo("college_stream_strength", "component_id", "id");
-  },
+  }
 });
 
 bookshelf.model("college_stream_strength", {
   tableName: "college_stream_strengths",
   stream() {
     return this.belongsTo("stream", "stream", "id");
-  },
+  }
 });
 
 bookshelf.model("college", {
@@ -99,19 +99,19 @@ bookshelf.model("college", {
   },
   district() {
     return this.belongsTo("district", "district", "id");
-  },
+  }
 });
 
 bookshelf.model("education", {
   tableName: "educations",
   student() {
     return this.belongsTo("student", "student", "id");
-  },
+  }
 });
 
 bookshelf.model("role", {
   requireFetch: false,
-  tableName: "users-permissions_role",
+  tableName: "users-permissions_role"
 });
 
 bookshelf.model("permission", {
@@ -119,7 +119,7 @@ bookshelf.model("permission", {
   tableName: "users-permissions_permission",
   role() {
     return this.belongsTo("role", "role", "id");
-  },
+  }
 });
 
 bookshelf.model("user", {
@@ -142,7 +142,7 @@ bookshelf.model("user", {
   },
   student() {
     return this.hasOne("student", "user", "id");
-  },
+  }
 });
 
 bookshelf.model("student", {
@@ -155,12 +155,12 @@ bookshelf.model("student", {
   },
   educations() {
     return this.hasMany("education", "student", "id");
-  },
+  }
 });
 
 bookshelf.model("academic_year", {
   requireFetch: false,
-  tableName: "academic_years",
+  tableName: "academic_years"
 });
 
 bookshelf.model("academic_history", {
@@ -170,19 +170,19 @@ bookshelf.model("academic_history", {
   },
   academic_year() {
     return this.belongsTo("academic_year", "academic_year", "id");
-  },
+  }
 });
 
 bookshelf.model("question", {
-  tableName: "questions",
+  tableName: "questions"
 });
 
 bookshelf.model("question_set", {
-  tableName: "question_sets",
+  tableName: "question_sets"
 });
 
 bookshelf.model("activity_stream", {
-  tableName: "activities__streams",
+  tableName: "activities__streams"
 });
 
 bookshelf.model("activity", {
@@ -202,25 +202,25 @@ bookshelf.model("activity", {
   },
   question_set() {
     return this.belongsTo("question_set", "question_set", "id");
-  },
+  }
 });
 bookshelf.model("district", {
   requireFetch: false,
   tableName: "districts",
   state() {
     return this.belongsTo("state", "state", "id");
-  },
+  }
 });
 
 bookshelf.model("otp", {
-  tableName: "otps",
+  tableName: "otps"
 });
 
 bookshelf.model("activity_batch", {
   tableName: "activity_batches",
   activity() {
     return this.belongsTo("activity", "activity", "id");
-  },
+  }
 });
 
 bookshelf.model("activity_batch_attendance", {
@@ -230,15 +230,15 @@ bookshelf.model("activity_batch_attendance", {
   },
   activity_batch() {
     return this.belongsTo("activity_batch", "activity_batch", "id");
-  },
+  }
 });
 
 bookshelf.model("event_college", {
-  tableName: "events__colleges",
+  tableName: "events__colleges"
 });
 
 bookshelf.model("event_stream", {
-  tableName: "events__streams",
+  tableName: "events__streams"
 });
 
 bookshelf.model("event", {
@@ -262,7 +262,7 @@ bookshelf.model("event", {
   },
   question_set() {
     return this.belongsTo("question_set", "question_set", "id");
-  },
+  }
 });
 
 bookshelf.model("event_registration", {
@@ -272,7 +272,7 @@ bookshelf.model("event_registration", {
   },
   event() {
     return this.belongsTo("event", "event", "id");
-  },
+  }
 });
 
 bookshelf.model("feedback", {
@@ -288,11 +288,11 @@ bookshelf.model("feedback", {
   },
   question_set() {
     return this.belongsTo("question_set", "question_set", "id");
-  },
+  }
 });
 
 bookshelf.model("response", {
-  tableName: "responses",
+  tableName: "responses"
 });
 
 module.exports = bookshelf;

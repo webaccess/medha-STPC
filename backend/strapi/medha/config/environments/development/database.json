@@ -8,8 +8,8 @@
         "database": "medha",
         "host": "127.0.0.1",
         "port": 5432,
-        "username": "postgres",
-        "password": "root",
+        "username": "medha",
+        "password": "medha",
         "ssl": false
       },
       "options": {}
