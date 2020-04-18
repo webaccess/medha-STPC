@@ -478,7 +478,8 @@ const StudentList = props => {
       /** Turns on the spinner */
       isClearResetFilter: true,
       isStateClearFilter: true,
-      isDataLoading: true
+      isDataLoading: true,
+      studentFilterData: []
     }));
 
     /**Need to confirm this thing for resetting the data */
