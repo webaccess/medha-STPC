@@ -150,12 +150,14 @@ const DeleteZone = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("Colleges successfully deleted");
+          handleCloseModal("Colleges has been deleted successfully");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error deleting selected Colleges");
+          handleCloseModal(
+            "An error has occured while deleting colleges. Kindly, try again"
+          );
         });
     } else {
       serviceProviders
@@ -169,14 +171,16 @@ const DeleteZone = props => {
           handleCloseModal(
             "College " +
               formState.dataToDelete["name"] +
-              " successfully deleted"
+              " has been deleted successfully"
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error deleting College " + formState.dataToDelete["name"]
+            "An error has occured while deleting college" +
+              formState.dataToDelete["name"] +
+              ". Kindly, try again"
           );
         });
     }

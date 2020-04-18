@@ -81,6 +81,9 @@ const ManageUser = props => {
     fromeditUser: props["location"]["fromeditUser"]
       ? props["location"]["fromeditUser"]
       : false,
+    editedUserName: props["location"]["editedUserName"]
+      ? props["location"]["editedUserName"]["username"]
+      : "",
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddUser"]
       ? props["location"]["isDataAdded"]
@@ -100,6 +103,8 @@ const ManageUser = props => {
     MultiDeleteID: [],
     isBlocked: false,
     isUnBlocked: false,
+    dataToBlockUnblock: {},
+    fromBlockModal: false,
     isDelete: false,
     dataToBlock: {},
     showModalBlock: false,
@@ -343,12 +348,11 @@ const ManageUser = props => {
     getUserData(formState.pageSize, 1);
   };
 
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
-  };
+  // const isDeleteCellCompleted = status => {
+  //   formState.isDataDeleted = status;
+  // };
 
   const deleteCell = event => {
-    console.log("event", event.target);
     let dataId = event.target.id;
 
     setFormState(formState => ({
@@ -358,7 +362,13 @@ const ManageUser = props => {
         name: event.target.getAttribute("value")
       },
       showEditModal: false,
-      showModalDelete: true
+      showModalDelete: true,
+      isDataDeleted: false,
+      messageToShow: "",
+      fromDeleteModal: false,
+      fromAddCollege: false,
+      fromeditCollege: false,
+      fromBlockModal: false
     }));
     let url_user = USER_URL + "/" + dataId;
     serviceProviders
@@ -375,17 +385,20 @@ const ManageUser = props => {
   };
 
   /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = () => {
+  const handleCloseDeleteModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
     //restoreData();
+    setOpen(true);
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
-      isDataDeleted: false,
-      showModalDelete: false
+      isDataDeleted: status,
+      showModalDelete: false,
+      fromDeleteModal: true,
+      isMultiDelete: false,
+      messageToShow: statusToShow
     }));
-    if (formState.isDataDeleted) {
-      restoreData();
+    if (status) {
+      getUserData(formState.pageSize, 1);
     }
   };
 
@@ -533,19 +546,31 @@ const ManageUser = props => {
         parseInt(event.target.id) === parseInt(formState.dataToShow[k]["id"])
       ) {
         if (formState.dataToShow[k]["blocked"] === true) {
-          blockedCellData(event.target.id, false);
+          blockedCellData(
+            event.target.id,
+            event.target.getAttribute("value"),
+            false
+          );
         } else {
-          blockedCellData(event.target.id, true);
+          blockedCellData(
+            event.target.id,
+            event.target.getAttribute("value"),
+            true
+          );
         }
       }
     }
   };
 
-  const blockedCellData = (id, isBlocked = false) => {
+  const blockedCellData = (id, user, isBlocked = false) => {
     if (isBlocked === true) {
       setFormState(formState => ({
         ...formState,
         dataToBlock: id,
+        dataToBlockUnblock: {
+          isUserBlock: isBlocked,
+          name: user
+        },
         isBlocked: true,
         isUnBlocked: false,
         showModalBlock: true
@@ -554,6 +579,10 @@ const ManageUser = props => {
       setFormState(formState => ({
         ...formState,
         dataToBlock: id,
+        dataToBlockUnblock: {
+          isUserBlock: isBlocked,
+          name: user
+        },
         isBlocked: false,
         isUnBlocked: true,
         showModalBlock: true
@@ -565,18 +594,28 @@ const ManageUser = props => {
     formState.toggleCleared = data;
   };
 
-  const isUserBlockCompleted = status => {
-    formState.isUserBlocked = status;
-  };
+  // const isUserBlockCompleted = status => {
+  //   formState.isUserBlocked = status;
+  // };
 
-  const handleCloseBlockModal = () => {
+  /** This is used to handle the close modal event */
+  const handleCloseBlockUnblockModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
+    //restoreData();
+    setOpen(true);
     setFormState(formState => ({
       ...formState,
-      showModalBlock: false
+      isDataBlockUnblock: status,
+      showModalBlock: false,
+      isMulBlocked: false,
+      isMulUnBlocked: false,
+      fromBlockModal: true,
+      dataToBlockUnblock: {},
+      dataToBlock: {},
+      messageToShow: statusToShow
     }));
-    if (formState.isUserBlocked) {
-      restoreData();
+    if (status) {
+      getUserData(formState.pageSize, 1);
     }
   };
 
@@ -695,7 +734,7 @@ const ManageUser = props => {
             <BlockGridIcon
               title={cell.blocked}
               id={cell.id}
-              value={cell.name}
+              value={cell.username}
               onClick={blockedCell}
               style={cell.blocked}
             />
@@ -776,7 +815,7 @@ const ManageUser = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              User {formState.editedUserName} has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -797,7 +836,7 @@ const ManageUser = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating user. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -824,6 +863,7 @@ const ManageUser = props => {
             </Alert>
           </Collapse>
         ) : null}
+
         {formState.fromAddUser && !formState.isDataAdded ? (
           <Collapse in={open}>
             <Alert
@@ -845,6 +885,103 @@ const ManageUser = props => {
             </Alert>
           </Collapse>
         ) : null}
+
+        {formState.fromDeleteModal &&
+        formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        !formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromBlockModal &&
+        formState.isDataBlockUnblock &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromBlockModal &&
+        !formState.isDataBlockUnblock &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
@@ -1078,20 +1215,20 @@ const ManageUser = props => {
             <DeleteUser
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}
-              deleteEvent={isDeleteCellCompleted}
               id={formState.MultiDeleteID}
               isMultiDelete={formState.isMultiDelete}
               modalClose={modalClose}
               seletedUser={selectedRows.length}
               clearSelectedRow={selectedRowCleared}
+              dataToDelete={formState.dataToDelete}
             />
           ) : (
             <DeleteUser
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}
               id={formState.dataToDelete["id"]}
-              deleteEvent={isDeleteCellCompleted}
               modalClose={modalClose}
+              dataToDelete={formState.dataToDelete}
               userName={formState.userNameDelete}
               clearSelectedRow={selectedRowCleared}
             />
@@ -1100,19 +1237,20 @@ const ManageUser = props => {
             <BlockUser
               id={formState.MultiBlockUser}
               isMulBlocked={formState.isMulBlocked}
-              isUnMulBlocked={formState.isMulUnBlocked}
+              isMultiUnblock={formState.isMulUnBlocked}
               getModel={formState.showModalBlock}
-              closeBlockModal={handleCloseBlockModal}
-              blockEvent={isUserBlockCompleted}
+              closeModal={handleCloseBlockUnblockModal}
+              // blockEvent={isUserBlockCompleted}
               modalClose={modalClose}
               clearSelectedRow={selectedRowCleared}
             />
           ) : (
             <BlockUser
               id={formState.dataToBlock}
+              dataToBlockUnblock={formState.dataToBlockUnblock}
               getModel={formState.showModalBlock}
-              closeBlockModal={handleCloseBlockModal}
-              blockEvent={isUserBlockCompleted}
+              closeModal={handleCloseBlockUnblockModal}
+              // blockEvent={isUserBlockCompleted}
               isBlocked={formState.isBlocked}
               isUnBlocked={formState.isUnBlocked}
               modalClose={modalClose}
