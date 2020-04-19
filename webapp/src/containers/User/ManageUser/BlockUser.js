@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Modal,
   Backdrop,
-  Fade
+  Fade,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -17,23 +17,23 @@ import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
-const BlockUser = props => {
+const BlockUser = (props) => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDataBlock: false,
     isValid: false,
     stateCounter: 0,
-    values: {}
+    values: {},
   });
 
   const handleCloseModal = () => {
     setOpen(false);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDataBlock: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
 
     if (formState.isDataBlock) {
@@ -44,34 +44,33 @@ const BlockUser = props => {
     props.closeBlockModal();
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     setOpen(true);
     /** CALL Put FUNCTION */
     blockUser();
     event.preventDefault();
   };
-
   const blockUser = () => {
     var body;
     if (props.isUnBlocked || props.isUnMulBlocked) {
       body = {
-        blocked: false
+        blocked: false,
       };
     }
     if (props.isBlocked || props.isMulBlocked) {
       body = {
-        blocked: true
+        blocked: true,
       };
     }
 
     if (props.isMulBlocked || props.isUnMulBlocked) {
       serviceProviders
         .serviceProviderForAllBlockRequest(USER_URL, props.id, body)
-        .then(res => {
+        .then((res) => {
           formState.isDataBlock = true;
           handleCloseModal();
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error---", error);
           formState.isDataBlock = false;
           handleCloseModal();
@@ -79,11 +78,11 @@ const BlockUser = props => {
     } else {
       serviceProviders
         .serviceProviderForPutRequest(USER_URL, props.id, body)
-        .then(res => {
+        .then((res) => {
           formState.isDataBlock = true;
           handleCloseModal();
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
           formState.isDataBlock = false;
           handleCloseModal();
@@ -102,7 +101,7 @@ const BlockUser = props => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500
+        timeout: 500,
       }}
     >
       <Fade in={props.getModel}>
@@ -131,11 +130,19 @@ const BlockUser = props => {
                 justifyContent="center"
               >
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isUnBlocked || props.isUnMulBlocked
-                    ? "Are you sure you want to unblock this user"
+                  {props.isUnBlocked
+                    ? "Are you sure you want to unblock " +
+                      props.dataToBlockUserName
                     : null}
-                  {props.isBlocked || props.isMulBlocked
-                    ? "Are you sure you want to block this user"
+                  {props.isUnMulBlocked
+                    ? "Are you sure you want to unblock all the selected users"
+                    : null}
+                  {props.isBlocked
+                    ? "Are you sure you want to block " +
+                      props.dataToBlockUserName
+                    : null}
+                  {props.isMulBlocked
+                    ? "Are you sure you want to block all the selected users"
                     : null}
                 </Grid>
               </Grid>

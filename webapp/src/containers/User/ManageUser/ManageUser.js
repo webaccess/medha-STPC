@@ -12,7 +12,7 @@ import {
   Grid,
   Collapse,
   IconButton,
-  Typography
+  Typography,
 } from "@material-ui/core";
 
 import { Table, Spinner, Alert } from "../../../components";
@@ -25,7 +25,7 @@ import {
   ViewGridIcon,
   EditGridIcon,
   BlockGridIcon,
-  DeleteGridIcon
+  DeleteGridIcon,
 } from "../../../components";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
@@ -52,7 +52,7 @@ const ROLE_FILTER = "role.id";
 
 const SORT_FIELD_KEY = "_sort";
 
-const ManageUser = props => {
+const ManageUser = (props) => {
   const [open, setOpen] = useState(true);
   const classes = useStyles();
   const history = useHistory();
@@ -111,6 +111,7 @@ const ManageUser = props => {
     MultiBlockUser: {},
     bottonBlockUnblock: "Block Selected User",
     greenButtonChecker: true,
+    dataToBlockUserName: "",
     /** Pagination and sortinig data */
     isDataLoading: false,
     pageSize: "",
@@ -124,26 +125,26 @@ const ManageUser = props => {
     filterDataParameters: {},
     isFilterSearch: false,
     isClearResetFilter: false,
-    isStateClearFilter: false
+    isStateClearFilter: false,
   });
 
   const getFilterData = () => {
     let params = {
-      pageSize: -1
+      pageSize: -1,
     };
 
     serviceProviders
       .serviceProviderForGetRequest(STATE_URL, params)
-      .then(res => {
+      .then((res) => {
         setStates(res.data.result);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error");
       });
 
     serviceProviders
       .serviceProviderForGetRequest(ROLE_URL, params)
-      .then(res => {
+      .then((res) => {
         let rolesArray = [];
         for (let i in res.data.roles) {
           if (
@@ -156,7 +157,7 @@ const ManageUser = props => {
         }
         setRoles(rolesArray);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error");
       });
   };
@@ -176,22 +177,22 @@ const ManageUser = props => {
 
     let params = {
       pageSize: -1,
-      "state.id": formState.filterDataParameters[STATE_FILTER]
+      "state.id": formState.filterDataParameters[STATE_FILTER],
     };
     serviceProviders
       .serviceProviderForGetRequest(RPCS_URL, params)
-      .then(res => {
+      .then((res) => {
         setRpcs(res.data.result);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
     serviceProviders
       .serviceProviderForGetRequest(ZONES_URL, params)
-      .then(res => {
+      .then((res) => {
         setZones(res.data.result);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
@@ -200,14 +201,14 @@ const ManageUser = props => {
     let params = {
       pageSize: -1,
       "zone.id": formState.filterDataParameters[ZONE_FILTER],
-      "rpc.id": formState.filterDataParameters[RPC_FILTER]
+      "rpc.id": formState.filterDataParameters[RPC_FILTER],
     };
     serviceProviders
       .serviceProviderForGetRequest(IPC_URL, params)
-      .then(res => {
+      .then((res) => {
         setIpcs(res.data.result);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
@@ -217,9 +218,9 @@ const ManageUser = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "username:asc"
+        [SORT_FIELD_KEY]: "username:asc",
       };
-      Object.keys(paramsForUsers).map(key => {
+      Object.keys(paramsForUsers).map((key) => {
         defaultParams[key] = paramsForUsers[key];
       });
       paramsForUsers = defaultParams;
@@ -227,21 +228,21 @@ const ManageUser = props => {
       paramsForUsers = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "username:asc"
+        [SORT_FIELD_KEY]: "username:asc",
       };
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
-      .then(res => {
+      .then((res) => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
         temp = convertUserData(res.data.result);
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
           users: res.data.result,
           pageSize: res.data.pageSize,
@@ -250,14 +251,14 @@ const ManageUser = props => {
           pageCount: res.data.pageCount,
           dataToShow: temp,
           tempData: temp,
-          isDataLoading: false
+          isDataLoading: false,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
-  const convertUserData = data => {
+  const convertUserData = (data) => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -291,7 +292,7 @@ const ManageUser = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getUserData(formState.pageSize, page);
     } else {
@@ -318,7 +319,7 @@ const ManageUser = props => {
   const clearFilter = () => {
     formState.filterDataParameters = {};
     // formState.filterDataParameters["name_contains"] = "";
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       isClearResetFilter: true,
@@ -326,7 +327,7 @@ const ManageUser = props => {
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true
+      isDataLoading: true,
     }));
     setRpcs([]);
     setZones([]);
@@ -344,32 +345,21 @@ const ManageUser = props => {
     getUserData(formState.pageSize, 1);
   };
 
-  const isDeleteCellCompleted = status => {
+  const isDeleteCellCompleted = (status) => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = event => {
+  const deleteCell = (event) => {
     setLoaderStatus(true);
     let dataId = event.target.id;
 
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       dataToDelete: { id: dataId },
       showEditModal: false,
-      showModalDelete: true
+      showModalDelete: true,
+      userNameDelete: event.target.getAttribute("value"),
     }));
-    let url_user = USER_URL + "/" + dataId;
-    serviceProviders
-      .serviceProviderForGetRequest(url_user)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          userNameDelete: res.data.result.username
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
     setLoaderStatus(false);
   };
 
@@ -377,11 +367,11 @@ const ManageUser = props => {
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showEditModal: false,
       isDataDeleted: false,
-      showModalDelete: false
+      showModalDelete: false,
     }));
     if (formState.isDataDeleted) {
       restoreData();
@@ -389,10 +379,14 @@ const ManageUser = props => {
   };
 
   const modalClose = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showModalBlock: false,
-      showModalDelete: false
+      showModalDelete: false,
+      isMulBlocked: false,
+      isMulUnBlocked: false,
+      isBlocked: false,
+      isUnBlocked: false,
     }));
   };
   /** This restores all the data when we clear the filters*/
@@ -400,7 +394,7 @@ const ManageUser = props => {
   const refreshPage = () => {
     formState.filterDataParameters = {};
     // formState.filterDataParameters["name_contains"] = "";
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       isClearResetFilter: true,
@@ -408,7 +402,7 @@ const ManageUser = props => {
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true
+      isDataLoading: true,
     }));
     clearData();
     // window.location.reload();
@@ -453,10 +447,10 @@ const ManageUser = props => {
         delete formState.filterDataParameters[IPC_FILTER];
       }
       delete formState.filterDataParameters[filterName];
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         isClearResetFilter: false,
-        isStateClearFilter: setStateFilterValue
+        isStateClearFilter: setStateFilterValue,
       }));
       //restoreData();
     } else {
@@ -467,10 +461,10 @@ const ManageUser = props => {
       if (filterName === ZONE_FILTER || filterName === RPC_FILTER) {
         getCollegesOnStateAndZone();
       }
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         isClearResetFilter: false,
-        isStateClearFilter: false
+        isStateClearFilter: false,
       }));
     }
   };
@@ -514,102 +508,112 @@ const ManageUser = props => {
     setLoaderStatus(true);
     let arrayId = [];
 
-    selectedRows.forEach(d => {
+    selectedRows.forEach((d) => {
       arrayId.push(d.id);
     });
 
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
       isMultiDelete: true,
-      MultiDeleteID: arrayId
+      MultiDeleteID: arrayId,
     }));
     setLoaderStatus(false);
   };
 
-  const blockedCell = event => {
+  const blockedCell = (event) => {
     for (var k = 0; k < formState.dataToShow.length; k++) {
       if (
         parseInt(event.target.id) === parseInt(formState.dataToShow[k]["id"])
       ) {
         if (formState.dataToShow[k]["blocked"] === true) {
-          blockedCellData(event.target.id, false);
+          blockedCellData(
+            event.target.id,
+            false,
+            event.target.getAttribute("value")
+          );
         } else {
-          blockedCellData(event.target.id, true);
+          blockedCellData(
+            event.target.id,
+            true,
+            event.target.getAttribute("value")
+          );
         }
       }
     }
   };
 
-  const blockedCellData = (id, isBlocked = false) => {
+  const blockedCellData = (id, isBlocked = false, name) => {
     setLoaderStatus(true);
     if (isBlocked === true) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToBlock: id,
         isBlocked: true,
         isUnBlocked: false,
-        showModalBlock: true
+        showModalBlock: true,
+        dataToBlockUserName: name,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToBlock: id,
         isBlocked: false,
         isUnBlocked: true,
-        showModalBlock: true
+        showModalBlock: true,
+        dataToBlockUserName: name,
       }));
     }
     setLoaderStatus(false);
   };
 
-  const isUserBlockCompleted = status => {
+  const isUserBlockCompleted = (status) => {
     formState.isUserBlocked = status;
   };
 
   const handleCloseBlockModal = () => {
     /** This restores all the data when we close the modal */
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      showModalBlock: false
+      showModalBlock: false,
     }));
     if (formState.isUserBlocked) {
       restoreData();
     }
   };
 
-  const handleRowSelected = useCallback(state => {
+  const handleRowSelected = useCallback((state) => {
     let blockData = [];
     let unblockData = [];
 
     if (state.selectedCount >= 1) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        selectedRowFilter: true
+        selectedRowFilter: true,
       }));
     }
 
-    state.selectedRows.forEach(data => {
+    state.selectedRows.forEach((data) => {
       if (data.blocked === false) {
         blockData.push(data);
       } else {
         unblockData.push(data);
       }
       if (blockData.length > 0) {
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
-          bottonBlockUnblock: "Block Selected User"
+          bottonBlockUnblock: "Block Selected User",
         }));
       } else {
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
-          bottonBlockUnblock: "Unblock Selected User"
+          bottonBlockUnblock: "Unblock Selected User",
         }));
       }
     });
@@ -623,56 +627,56 @@ const ManageUser = props => {
       arrayId.push(selectedRows[k]["id"]);
     }
     if (formState.bottonBlockUnblock === "Block Selected User") {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         isMulBlocked: true,
         isMulUnBlocked: false,
         showModalBlock: true,
-        MultiBlockUser: arrayId
+        MultiBlockUser: arrayId,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         isMulBlocked: false,
         isMulUnBlocked: true,
         showModalBlock: true,
-        MultiBlockUser: arrayId
+        MultiBlockUser: arrayId,
       }));
     }
     setLoaderStatus(false);
   };
 
-  const getDataForEdit = async id => {
+  const getDataForEdit = async (id) => {
     setLoaderStatus(true);
     let paramsForUsers = {
-      id: id
+      id: id,
     };
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
-      .then(res => {
+      .then((res) => {
         let editData = res.data.result[0];
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_USER,
           editUser: true,
-          dataForEdit: editData
+          dataForEdit: editData,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error");
       });
     setLoaderStatus(false);
   };
 
-  const editCell = event => {
+  const editCell = (event) => {
     getDataForEdit(event.target.id);
   };
 
-  const viewCell = event => {
+  const viewCell = (event) => {
     setLoaderStatus(true);
     history.push({
       pathname: routeConstants.DETAIL_USER,
-      dataForEdit: event.target.id
+      dataForEdit: event.target.id,
     });
     setLoaderStatus(false);
   };
@@ -687,7 +691,7 @@ const ManageUser = props => {
     { name: "IPC", sortable: true, selector: "college" },
     {
       name: "Actions",
-      cell: cell => (
+      cell: (cell) => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <ViewGridIcon id={cell.id} onClick={viewCell} />
@@ -699,22 +703,26 @@ const ManageUser = props => {
             <BlockGridIcon
               title={cell.blocked}
               id={cell.id}
-              value={cell.name}
+              value={cell.username}
               onClick={blockedCell}
               style={cell.blocked}
             />
           </div>
           <div className={classes.PaddingActionButton}>
-            <DeleteGridIcon id={cell.id} onClick={deleteCell} />
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.username}
+              onClick={deleteCell}
+            />
           </div>
         </div>
       ),
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%"
-      }
-    }
+        maxWidth: "18%",
+      },
+    },
   ];
 
   return (
@@ -855,7 +863,7 @@ const ManageUser = props => {
                   variant="outlined"
                   value={formState.filterDataParameters[USER_FILTER]}
                   name={USER_FILTER}
-                  onChange={event => {
+                  onChange={(event) => {
                     handleFilterChange(event, USER_FILTER);
                   }}
                 />
@@ -866,7 +874,7 @@ const ManageUser = props => {
                   name={ROLE_FILTER}
                   options={roles}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ROLE_FILTER, event, value)
                   }
@@ -882,7 +890,7 @@ const ManageUser = props => {
                           })
                         ] || null
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Role"
@@ -899,7 +907,7 @@ const ManageUser = props => {
                   name={STATE_FILTER}
                   options={states}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(STATE_FILTER, event, value)
                   }
@@ -915,7 +923,7 @@ const ManageUser = props => {
                           })
                         ] || null
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="State"
@@ -931,7 +939,7 @@ const ManageUser = props => {
                   id="zone_filter"
                   options={zones}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ZONE_FILTER, event, value)
                   }
@@ -947,7 +955,7 @@ const ManageUser = props => {
                           })
                         ] || null
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Zone"
@@ -964,7 +972,7 @@ const ManageUser = props => {
                   name={RPC_FILTER}
                   options={rpcs}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(RPC_FILTER, event, value)
                   }
@@ -980,7 +988,7 @@ const ManageUser = props => {
                           })
                         ] || null
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="RPC"
@@ -997,7 +1005,7 @@ const ManageUser = props => {
                   name={IPC_FILTER}
                   options={ipcs}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(IPC_FILTER, event, value)
                   }
@@ -1013,7 +1021,7 @@ const ManageUser = props => {
                           })
                         ] || null
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="IPC"
@@ -1029,7 +1037,7 @@ const ManageUser = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     searchFilter();
                   }}
@@ -1106,6 +1114,7 @@ const ManageUser = props => {
           ) : (
             <BlockUser
               id={formState.dataToBlock}
+              dataToBlockUserName={formState.dataToBlockUserName}
               getModel={formState.showModalBlock}
               closeBlockModal={handleCloseBlockModal}
               blockEvent={isUserBlockCompleted}
