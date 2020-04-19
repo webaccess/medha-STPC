@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
@@ -32,6 +32,7 @@ import useStyles from "../../ContainerStyles/ManagePageStyles";
 import HireStudent from "./HireStudent";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ExportCSV from "./ExportCSV";
+import LoaderContext from "../../../context/LoaderContext";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const STREAM_URL =
@@ -50,6 +51,7 @@ const StudentList = props => {
   const classes = useStyles();
   const [streams, setStreams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
   /** Value to set for event filter */
   const [value, setValue] = React.useState(null);
 
@@ -284,6 +286,7 @@ const StudentList = props => {
   };
 
   const hiredCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       hireStudent: event.target.getAttribute("value")
@@ -332,6 +335,7 @@ const StudentList = props => {
         studentName: studentName
       }));
     }
+    setLoaderStatus(false);
   };
 
   /** Pagination */

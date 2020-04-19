@@ -1,28 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import clsx from "clsx";
 import SideAndTopNavBar from "../../components/SideAndTopNavBar/SideAndTopNavBar";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery, Backdrop, CircularProgress } from "@material-ui/core";
 import auth from "../../components/Auth/Auth";
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingTop: 56,
-    height: "100%",
-    [theme.breakpoints.up("sm")]: {
-      paddingTop: 64
-    }
-  },
-  shiftContent: {
-    paddingLeft: 240
-  },
-  content: {
-    height: "100%",
-    backgroundColor: "#f4f6f8",
-    padding: "25px",
-    minHeight: "640px"
-  }
-}));
+import LoaderContext from "../../context/LoaderContext";
+import useStyles from "./LayoutStyles";
 
 const Layout = props => {
   const { children } = props;
@@ -32,30 +15,42 @@ const Layout = props => {
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"), {
     defaultMatches: true
   });
-
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  console.log("loaderStatus", loaderStatus);
   if (auth.getToken() != null && isDesktop) {
     return (
-      <div
-        className={clsx({
-          [classes.root]: true,
-          [classes.shiftContent]: isDesktop
-        })}
-      >
-        <SideAndTopNavBar />
-        <main className={classes.content}>{children}</main>
-      </div>
+      <React.Fragment>
+        <div
+          className={clsx({
+            [classes.root]: true,
+            [classes.shiftContent]: isDesktop
+          })}
+        >
+          <SideAndTopNavBar />
+          <main className={classes.content}>{children}</main>
+        </div>
+        xakhbjac
+        <Backdrop className={classes.backdrop} open={loaderStatus}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      </React.Fragment>
     );
   } else {
     return (
-      <div
-        className={clsx({
-          [classes.root]: true,
-          [classes.shiftContent]: false
-        })}
-      >
-        <SideAndTopNavBar />
-        <main className={classes.content}>{children}</main>
-      </div>
+      <React.Fragment>
+        <div
+          className={clsx({
+            [classes.root]: true,
+            [classes.shiftContent]: false
+          })}
+        >
+          <SideAndTopNavBar />
+          <main className={classes.content}>{children}</main>
+        </div>
+        <Backdrop className={classes.backdrop} open={loaderStatus}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      </React.Fragment>
     );
   }
 };
