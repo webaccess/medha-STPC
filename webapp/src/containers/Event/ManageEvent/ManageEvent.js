@@ -75,6 +75,7 @@ const ManageEvent = props => {
     startDate: null,
     endDate: null,
     texttvalue: "",
+    toggleCleared: false,
     isEventCleared: "",
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -83,6 +84,7 @@ const ManageEvent = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
+
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromeditEvent"]
       ? props["location"]["isDataEdited"]
@@ -93,6 +95,9 @@ const ManageEvent = props => {
     fromeditEvent: props["location"]["fromeditEvent"]
       ? props["location"]["fromeditEvent"]
       : false,
+    editedEventName: props["location"]["editedEventData"]
+      ? props["location"]["editedEventData"]["title"]
+      : "",
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddEvent"]
       ? props["location"]["isDataAdded"]
@@ -102,7 +107,10 @@ const ManageEvent = props => {
       : {},
     fromAddEvent: props["location"]["fromAddEvent"]
       ? props["location"]["fromAddEvent"]
-      : false
+      : false,
+    addedEventName: props["location"]["addedEventData"]
+      ? props["location"]["addedEventData"]["title"]
+      : ""
   });
 
   useEffect(() => {
@@ -251,7 +259,8 @@ const ManageEvent = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -263,23 +272,27 @@ const ManageEvent = props => {
   }, []);
 
   /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = () => {
+  const handleCloseDeleteModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
     //restoreData();
+    setOpen(true);
     setFormState(formState => ({
       ...formState,
-      showEditModal: false,
-      isDataDeleted: false,
-      showModalDelete: false
+      isDataDeleted: status,
+      showModalDelete: false,
+      fromDeleteModal: true,
+      isMultiDelete: false,
+      fromAddEvent: false,
+      messageToShow: statusToShow
     }));
-    if (formState.isDataDeleted) {
-      getEventData();
+    if (status) {
+      getEventData(formState.pageSize, 1);
     }
   };
 
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
-  };
+  // const isDeleteCellCompleted = status => {
+  //   formState.isDataDeleted = status;
+  // };
 
   const modalClose = () => {
     setFormState(formState => ({
@@ -298,7 +311,13 @@ const ManageEvent = props => {
         name: event.target.getAttribute("value")
       },
       showEditModal: false,
-      showModalDelete: true
+      showModalDelete: true,
+      messageToShow: "",
+      fromDeleteModal: false,
+      fromeditCollege: false,
+      fromBlockModal: false,
+      fromAddEvent: false,
+      fromeditEvent: false
     }));
     setLoaderStatus(false);
   };
@@ -316,7 +335,9 @@ const ManageEvent = props => {
       showEditModal: false,
       showModalDelete: true,
       isMultiDelete: true,
-      MultiDeleteID: arrayId
+      MultiDeleteID: arrayId,
+      fromAddEvent: false,
+      fromeditEvent: false
     }));
   };
 
@@ -361,6 +382,10 @@ const ManageEvent = props => {
 
   const editCell = event => {
     getDataForEdit(event.target.id);
+  };
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
   };
 
   /** ------ */
@@ -560,50 +585,7 @@ const ManageEvent = props => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        {/** Error/Success messages to be shown for add */}
-        {formState.fromAddEvent && formState.isDataAdded ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-        {formState.fromAddEvent && !formState.isDataAdded ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
-            </Alert>
-          </Collapse>
-        ) : null}
-
+        {/** Error/Success messages to be shown for event */}
         {formState.fromeditEvent && formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
@@ -621,7 +603,7 @@ const ManageEvent = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              Event {formState.editedEventName} has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -642,7 +624,98 @@ const ManageEvent = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating event. Kindly, try again.
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromAddEvent && formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              Event {formState.addedEventName} has been added successfully.
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromAddEvent && !formState.isDataAdded ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              An error has occured while adding event. Kindly, try again.
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        !formState.isDataDeleted &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
             </Alert>
           </Collapse>
         ) : null}
@@ -758,6 +831,7 @@ const ManageEvent = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -769,21 +843,23 @@ const ManageEvent = props => {
             <DeleteUser
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}
-              deleteEvent={isDeleteCellCompleted}
+              //deleteEvent={isDeleteCellCompleted}
               id={formState.MultiDeleteID}
               isMultiDelete={formState.isMultiDelete}
               modalClose={modalClose}
               seletedUser={selectedRows.length}
+              clearSelectedRow={selectedRowCleared}
             />
           ) : (
             <DeleteUser
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}
               id={formState.dataToDelete["id"]}
-              deleteEvent={isDeleteCellCompleted}
+              //deleteEvent={isDeleteCellCompleted}
               modalClose={modalClose}
               userName={formState.userNameDelete}
               dataToDelete={formState.dataToDelete}
+              clearSelectedRow={selectedRowCleared}
             />
           )}
         </Card>

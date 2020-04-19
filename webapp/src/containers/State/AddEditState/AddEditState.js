@@ -113,6 +113,7 @@ const AddEditState = props => {
             pathname: routeConstants.MANAGE_STATES,
             fromEditState: true,
             isDataEdited: true,
+            stateDataEdited: res.data,
             editResponseMessage: "",
             editedData: {}
           });
@@ -141,6 +142,7 @@ const AddEditState = props => {
           history.push({
             pathname: routeConstants.MANAGE_STATES,
             fromAddState: true,
+            addedStateData: res.data,
             isDataAdded: true,
             addResponseMessage: "",
             addedData: {}

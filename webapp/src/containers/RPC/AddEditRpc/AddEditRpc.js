@@ -203,6 +203,7 @@ const AddEditRpc = props => {
             pathname: routeConstants.MANAGE_RPC,
             fromEditRpc: true,
             isDataEdited: true,
+            editedRPCData: res.data,
             editResponseMessage: "",
             editedData: {}
           });
@@ -225,6 +226,7 @@ const AddEditRpc = props => {
             pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
             isDataAdded: true,
+            addedRPCData: res.data,
             addResponseMessage: "",
             addedData: {}
           });

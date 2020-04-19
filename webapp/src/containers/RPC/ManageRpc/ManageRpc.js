@@ -69,6 +69,9 @@ const ViewRpc = props => {
     fromEditRpc: props["location"]["fromEditRpc"]
       ? props["location"]["fromEditRpc"]
       : false,
+    editedRPCName: props["location"]["editedRPCData"]
+      ? props["location"]["editedRPCData"]["name"]
+      : "",
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddRpc"]
       ? props["location"]["isDataAdded"]
@@ -79,6 +82,9 @@ const ViewRpc = props => {
     fromAddRpc: props["location"]["fromAddRpc"]
       ? props["location"]["fromAddRpc"]
       : false,
+    addedRPCName: props["location"]["addedRPCData"]
+      ? props["location"]["addedRPCData"]["name"]
+      : "",
     isClearResetFilter: false,
     /** This is for delete */
     isDataDeleted: false,
@@ -523,7 +529,7 @@ const ViewRpc = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              RPC {formState.editedRPCName} has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -544,7 +550,7 @@ const ViewRpc = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating RPC. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -567,7 +573,7 @@ const ViewRpc = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              RPC {formState.addedRPCName} has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -588,7 +594,7 @@ const ViewRpc = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding RPC. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}

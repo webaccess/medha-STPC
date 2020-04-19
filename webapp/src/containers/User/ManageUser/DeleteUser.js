@@ -14,41 +14,46 @@ import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_ID = "UserName";
 
-const DeleteUser = (props) => {
+const DeleteUser = props => {
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
     values: {},
-    username: "",
+    dataToDelete: {}
   });
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[USER_ID] = props.id;
     formState.isDeleteData = false;
+    formState.dataToDelete = props.dataToDelete;
   }
 
-  const handleCloseModal = () => {
-    setFormState((formState) => ({
+  const handleCloseModal = (message = "") => {
+    /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
+    to ensure that only string value is passed to message variable */
+    if (typeof message !== "string") {
+      message = "";
+    }
+    setFormState(formState => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0,
+      stateCounter: 0
     }));
-
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.closeModal(true, message);
     } else {
-      props.deleteEvent(false);
+      props.closeModal(false, message);
     }
-    props.closeModal();
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     /** CALL Put FUNCTION */
     deleteData();
+    props.clearSelectedRow(true);
     event.preventDefault();
   };
 
@@ -56,34 +61,44 @@ const DeleteUser = (props) => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(USER_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDeleteData = true;
-          handleCloseModal();
+          handleCloseModal("Users has been deleted successfully");
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
           formState.isDeleteData = false;
-          handleCloseModal();
+          handleCloseModal(
+            "An error has occured while deleting users. Kindly, try again"
+          );
         });
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(USER_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDeleteData = true;
-          handleCloseModal();
+          handleCloseModal(
+            "User " +
+              formState.dataToDelete["name"] +
+              " has been deleted successfully"
+          );
         })
-        .catch((error) => {
-          console.log("error");
+        .catch(error => {
+          console.log("errorDelete", error);
           formState.isDeleteData = false;
-          handleCloseModal();
+          handleCloseModal(
+            "An error has occured while deleting user" +
+              formState.dataToDelete["name"] +
+              ". Kindly, try again"
+          );
         });
     }
   };
@@ -99,7 +114,7 @@ const DeleteUser = (props) => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500,
+        timeout: 500
       }}
     >
       <Fade in={props.showModal}>
@@ -129,7 +144,8 @@ const DeleteUser = (props) => {
                     </p>
                   ) : (
                     <p>
-                      Are you sure you want to delete "{props.userName}" user?
+                      Are you sure you want to delete user "
+                      {formState.dataToDelete["name"]}"?
                     </p>
                   )}
                 </Grid>

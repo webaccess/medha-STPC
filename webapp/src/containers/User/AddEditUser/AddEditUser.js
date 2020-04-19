@@ -469,12 +469,14 @@ const AddEditUser = props => {
             pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
             isDataEdited: true,
+            editedUserName: res.data.result,
             editResponseMessage: "",
             editedData: {}
           });
           setLoaderStatus(false);
         })
         .catch(error => {
+          console.log("error", error);
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
@@ -492,6 +494,7 @@ const AddEditUser = props => {
             pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: true,
+            addedUserName: res.data.user,
             addResponseMessage: "",
             addedData: {}
           });
@@ -519,6 +522,7 @@ const AddEditUser = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -629,7 +633,7 @@ const AddEditUser = props => {
                       }}
                       value={
                         roles[
-                          roles.findIndex(function (item, i) {
+                          roles.findIndex(function(item, i) {
                             return item.id === formState.values[role];
                           })
                         ] || null
@@ -744,7 +748,7 @@ const AddEditUser = props => {
                       }}
                       value={
                         states[
-                          states.findIndex(function (item, i) {
+                          states.findIndex(function(item, i) {
                             return item.id === formState.values[state];
                           })
                         ] || null
@@ -778,7 +782,7 @@ const AddEditUser = props => {
                       }}
                       value={
                         zones[
-                          zones.findIndex(function (item, i) {
+                          zones.findIndex(function(item, i) {
                             return item.id === formState.values[zone];
                           })
                         ] || null
@@ -814,7 +818,7 @@ const AddEditUser = props => {
                       }}
                       value={
                         rpcs[
-                          rpcs.findIndex(function (item, i) {
+                          rpcs.findIndex(function(item, i) {
                             return item.id === formState.values[rpc];
                           })
                         ] || null
@@ -848,7 +852,7 @@ const AddEditUser = props => {
                       }}
                       value={
                         colleges[
-                          colleges.findIndex(function (item, i) {
+                          colleges.findIndex(function(item, i) {
                             return item.id === formState.values[college];
                           })
                         ] || null
