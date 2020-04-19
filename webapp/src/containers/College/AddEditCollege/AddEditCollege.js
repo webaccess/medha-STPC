@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
@@ -9,7 +9,11 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";
-import { YellowButton, GrayButton } from "../../../components";
+import {
+  YellowButton,
+  GrayButton,
+  ReadOnlyTextField
+} from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
@@ -32,6 +36,7 @@ import {
   Chip
 } from "@material-ui/core";
 import PropTypes from "prop-types";
+import LoaderContext from "../../../context/LoaderContext";
 
 const collegeName = "collegeName";
 const collegeCode = "collegeCode";
@@ -63,6 +68,8 @@ const DISTRICTS_URL =
 const AddEditCollege = props => {
   const history = useHistory();
   const classes = useStyles();
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -77,7 +84,9 @@ const AddEditCollege = props => {
     counter: 0,
     isStateClearFilter: false,
     showing: false,
-    dataToShowForMultiSelect: []
+    dataToShowForMultiSelect: [],
+    isCollegeAdmin:
+      auth.getUserInfo().role.name === "College Admin" ? true : false
   });
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
@@ -88,12 +97,27 @@ const AddEditCollege = props => {
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
- 
-  const [backDropOpen, setBackDropOpen] = React.useState(false);
+
+  const [collegeInfo, setCollegeInfo] = useState({
+    college:
+      auth.getUserInfo().role.name === "College Admin"
+        ? auth.getUserInfo().college
+        : {},
+    state:
+      auth.getUserInfo().role.name === "College Admin"
+        ? auth.getUserInfo().state
+        : {},
+    rpc:
+      auth.getUserInfo().role.name === "College Admin"
+        ? auth.getUserInfo().rpc
+        : {},
+    zone:
+      auth.getUserInfo().role.name === "College Admin"
+        ? auth.getUserInfo().zone
+        : {}
+  });
 
   React.useEffect(() => {
-  
-
     if (auth.getUserInfo().role.name === "Medha Admin") {
       setFormState(formState => ({
         ...formState,
@@ -109,6 +133,7 @@ const AddEditCollege = props => {
 
   /** Part for editing college */
   if (formState.isEditCollege && !formState.counter) {
+    setLoaderStatus(true);
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["name"]) {
         formState.values[collegeName] = props["dataForEdit"]["name"];
@@ -181,6 +206,7 @@ const AddEditCollege = props => {
 
   /** Here we initialize our data and bring users, states and streams*/
   useEffect(() => {
+    setLoaderStatus(true);
     let paramsForPageSize = {
       pageSize: -1
     };
@@ -230,6 +256,7 @@ const AddEditCollege = props => {
       .catch(error => {
         console.log("error", error);
       });
+    setLoaderStatus(false);
   }, []);
 
   /** This gets data into zones, rpcs and districts when we change the state */
@@ -605,7 +632,7 @@ const AddEditCollege = props => {
       streamStrengthArray,
       formState.values[tpos] ? formState.values[tpos] : []
     );
-    setBackDropOpen(true);
+    setLoaderStatus(true);
     if (formState.isEditCollege) {
       serviceProviders
         .serviceProviderForPutRequest(
@@ -621,7 +648,7 @@ const AddEditCollege = props => {
             editResponseMessage: "",
             editedData: {}
           });
-          setBackDropOpen(false);
+          setLoaderStatus(false);
         })
         .catch(error => {
           console.log(error.response);
@@ -632,7 +659,7 @@ const AddEditCollege = props => {
             editResponseMessage: "",
             editedData: {}
           });
-          setBackDropOpen(false);
+          setLoaderStatus(false);
         });
     } else {
       serviceProviders
@@ -645,7 +672,7 @@ const AddEditCollege = props => {
             addResponseMessage: "",
             addedData: {}
           });
-          setBackDropOpen(false);
+          setLoaderStatus(false);
         })
         .catch(error => {
           history.push({
@@ -655,7 +682,7 @@ const AddEditCollege = props => {
             addResponseMessage: "",
             addedData: {}
           });
-          setBackDropOpen(false);
+          setLoaderStatus(false);
         });
     }
   };
@@ -764,167 +791,191 @@ const AddEditCollege = props => {
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel ref={inputLabel} id="state-label">
-                      {/* State */}
-                    </InputLabel>
-                    <Autocomplete
-                      id={get(CollegeFormSchema[state], "id")}
-                      options={states}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(state, event, value);
-                      }}
-                      /** This is used to set the default value to the auto complete */
-                      value={
-                        states[
-                          states.findIndex(function (item, i) {
-                            return item.id === formState.values[state];
-                          })
-                        ] || null
-                      }
-                      name={state}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(state)}
-                          required
-                          helperText={
-                            hasError(state)
-                              ? formState.errors[state].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          placeholder={get(
-                            CollegeFormSchema[state],
-                            "placeholder"
-                          )}
-                          value={option => option.id}
-                          name={state}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[state], "label")}
-                          variant="outlined"
-                        />
-                      )}
+                  {formState.isCollegeAdmin ? (
+                    <ReadOnlyTextField
+                      id="StateName"
+                      label={get(CollegeFormSchema[state], "label")}
+                      defaultValue={collegeInfo.state.name}
                     />
-                  </FormControl>
+                  ) : (
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <InputLabel ref={inputLabel} id="state-label">
+                        {/* State */}
+                      </InputLabel>
+                      <Autocomplete
+                        id={get(CollegeFormSchema[state], "id")}
+                        options={states}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(state, event, value);
+                        }}
+                        /** This is used to set the default value to the auto complete */
+                        value={
+                          states[
+                            states.findIndex(function (item, i) {
+                              return item.id === formState.values[state];
+                            })
+                          ] || null
+                        }
+                        name={state}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError(state)}
+                            required
+                            helperText={
+                              hasError(state)
+                                ? formState.errors[state].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            placeholder={get(
+                              CollegeFormSchema[state],
+                              "placeholder"
+                            )}
+                            value={option => option.id}
+                            name={state}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[state], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  )}
                 </Grid>
                 <Grid item md={6} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel ref={inputLabel} id="zone-label">
-                      {/* Zone */}
-                    </InputLabel>
-
-                    <Autocomplete
-                      id={get(CollegeFormSchema[zone], "id")}
-                      options={zones ? zones : <CircularProgress />}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(zone, event, value);
-                      }}
-                      /** This is used to set the default value to the auto complete */
-                      value={
-                        formState.isStateClearFilter
-                          ? null
-                          : zones[
-                              zones.findIndex(function (item, i) {
-                                return item.id === formState.values[zone];
-                              })
-                            ] ||
-                            null /** Please give a default " " blank value */
-                      }
-                      name={zone}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          required
-                          error={hasError(zone)}
-                          helperText={
-                            hasError(zone)
-                              ? formState.errors[zone].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          placeholder={get(
-                            CollegeFormSchema[zone],
-                            "placeholder"
-                          )}
-                          value={option => option.id}
-                          name={rpc}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[zone], "label")}
-                          variant="outlined"
-                        />
-                      )}
+                  {formState.isCollegeAdmin ? (
+                    <ReadOnlyTextField
+                      id="ZoneName"
+                      label={get(CollegeFormSchema[zone], "label")}
+                      defaultValue={collegeInfo.zone.name}
                     />
-                  </FormControl>
+                  ) : (
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <InputLabel ref={inputLabel} id="zone-label">
+                        {/* Zone */}
+                      </InputLabel>
+
+                      <Autocomplete
+                        id={get(CollegeFormSchema[zone], "id")}
+                        options={zones ? zones : <CircularProgress />}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(zone, event, value);
+                        }}
+                        /** This is used to set the default value to the auto complete */
+                        value={
+                          formState.isStateClearFilter
+                            ? null
+                            : zones[
+                                zones.findIndex(function (item, i) {
+                                  return item.id === formState.values[zone];
+                                })
+                              ] ||
+                              null /** Please give a default " " blank value */
+                        }
+                        name={zone}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            required
+                            error={hasError(zone)}
+                            helperText={
+                              hasError(zone)
+                                ? formState.errors[zone].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            placeholder={get(
+                              CollegeFormSchema[zone],
+                              "placeholder"
+                            )}
+                            value={option => option.id}
+                            name={rpc}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[zone], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  )}
                 </Grid>
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel ref={inputLabel} id="rpcs-label">
-                      {/* RPCs */}
-                    </InputLabel>
-
-                    <Autocomplete
-                      id={get(CollegeFormSchema[rpc], "id")}
-                      options={rpcs}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(rpc, event, value);
-                      }}
-                      name={rpc}
-                      /** This is used to set the default value to the auto complete */
-                      value={
-                        formState.isStateClearFilter
-                          ? null
-                          : rpcs[
-                              rpcs.findIndex(function (item, i) {
-                                return item.id === formState.values[rpc];
-                              })
-                            ] ||
-                            null /** Please give a default " " blank value */
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          required
-                          error={hasError(rpc)}
-                          helperText={
-                            hasError(rpc)
-                              ? formState.errors[rpc].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          placeholder={get(
-                            CollegeFormSchema[rpc],
-                            "placeholder"
-                          )}
-                          value={option => option.id}
-                          name={rpc}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[rpc], "label")}
-                          variant="outlined"
-                        />
-                      )}
+                  {formState.isCollegeAdmin ? (
+                    <ReadOnlyTextField
+                      id={get(CollegeFormSchema[rpcs], "id")}
+                      label={get(CollegeFormSchema[rpc], "label")}
+                      defaultValue={collegeInfo.rpc.name}
                     />
-                  </FormControl>
+                  ) : (
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <InputLabel ref={inputLabel} id="rpcs-label">
+                        {/* RPCs */}
+                      </InputLabel>
+
+                      <Autocomplete
+                        id={get(CollegeFormSchema[rpc], "id")}
+                        options={rpcs}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(rpc, event, value);
+                        }}
+                        name={rpc}
+                        /** This is used to set the default value to the auto complete */
+                        value={
+                          formState.isStateClearFilter
+                            ? null
+                            : rpcs[
+                                rpcs.findIndex(function (item, i) {
+                                  return item.id === formState.values[rpc];
+                                })
+                              ] ||
+                              null /** Please give a default " " blank value */
+                        }
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            required
+                            error={hasError(rpc)}
+                            helperText={
+                              hasError(rpc)
+                                ? formState.errors[rpc].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            placeholder={get(
+                              CollegeFormSchema[rpc],
+                              "placeholder"
+                            )}
+                            value={option => option.id}
+                            name={rpc}
+                            key={option => option.id}
+                            label={get(CollegeFormSchema[rpc], "label")}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  )}
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <FormControl
@@ -1354,9 +1405,6 @@ const AddEditCollege = props => {
               </GrayButton>
             </CardActions>
           </Grid>
-          <Backdrop className={classes.backdrop} open={backDropOpen}>
-            <CircularProgress color="inherit" />
-          </Backdrop>
         </Card>
       </Grid>
     </Grid>

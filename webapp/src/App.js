@@ -29,6 +29,7 @@ import Layout from "./hoc/Layout/Layout";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "./theme";
 import SetIndexContext from "./context/SetIndexContext";
+import LoaderContext from "./context/LoaderContext";
 
 /** College routes */
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
@@ -93,389 +94,392 @@ import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditAct
 
 function App() {
   const [index, setIndex] = useState(0);
+  const [loaderStatus, setLoaderStatus] = useState(false);
 
   return (
-    <SetIndexContext.Provider value={{ index, setIndex }}>
-      <ThemeProvider theme={theme}>
-        <Router>
-          <div>
-            <Switch>
-              <DashBoardComponent
-                path={routeConstants.DEFAULT_URL}
-                component={Dashboard}
-                exact
-              />
-              <PrivateRoute
-                path={routeConstants.DASHBOARD_URL}
-                component={Dashboard}
-                exact
-              />
-              <LoginRoute
-                path={routeConstants.SIGN_IN_URL}
-                exact
-                type={"login"}
-                layout={Layout}
-              />
-              <RequiredConformation
-                path={routeConstants.REQUIRED_CONFORMATION}
-                exact
-              />
-              <Route
-                path={routeConstants.LOGOUT_URL}
-                component={Logout}
-                exact
-              />
-              <Registered
-                path={routeConstants.REGISTERED}
-                layout={Layout}
-                exact
-              />
-              {/**Student Registration route */}
-              <RegistrationRoute
-                path={routeConstants.NEW_REGISTRATION_URL}
-                layout={Layout}
-                exact
-              />
-              {/**Edit Student Profile */}
-              <RouteWithTabLayout
-                path={routeConstants.EDIT_PROFILE}
-                layout={Layout}
-                exact
-                component={AddEditStudent}
-              />
+    <LoaderContext.Provider value={{ loaderStatus, setLoaderStatus }}>
+      <SetIndexContext.Provider value={{ index, setIndex }}>
+        <ThemeProvider theme={theme}>
+          <Router>
+            <div>
+              <Switch>
+                <DashBoardComponent
+                  path={routeConstants.DEFAULT_URL}
+                  component={Dashboard}
+                  exact
+                />
+                <PrivateRoute
+                  path={routeConstants.DASHBOARD_URL}
+                  component={Dashboard}
+                  exact
+                />
+                <LoginRoute
+                  path={routeConstants.SIGN_IN_URL}
+                  exact
+                  type={"login"}
+                  layout={Layout}
+                />
+                <RequiredConformation
+                  path={routeConstants.REQUIRED_CONFORMATION}
+                  exact
+                />
+                <Route
+                  path={routeConstants.LOGOUT_URL}
+                  component={Logout}
+                  exact
+                />
+                <Registered
+                  path={routeConstants.REGISTERED}
+                  layout={Layout}
+                  exact
+                />
+                {/**Student Registration route */}
+                <RegistrationRoute
+                  path={routeConstants.NEW_REGISTRATION_URL}
+                  layout={Layout}
+                  exact
+                />
+                {/**Edit Student Profile */}
+                <RouteWithTabLayout
+                  path={routeConstants.EDIT_PROFILE}
+                  layout={Layout}
+                  exact
+                  component={AddEditStudent}
+                />
 
-              <RequestOtp
-                path={routeConstants.REQUEST_OTP}
-                layout={Layout}
-                exact
-              />
+                <RequestOtp
+                  path={routeConstants.REQUEST_OTP}
+                  layout={Layout}
+                  exact
+                />
 
-              <VerifyOtp
-                path={routeConstants.VERIFY_OTP}
-                layout={Layout}
-                exact
-              />
+                <VerifyOtp
+                  path={routeConstants.VERIFY_OTP}
+                  layout={Layout}
+                  exact
+                />
 
-              <ForgotPasswordRoute
-                path={routeConstants.FORGOT_PASSWORD_URL}
-                exact
-                type={"forgot-password"}
-                layout={Layout}
-              />
-              <Route
-                path={routeConstants.NOT_FOUND_URL}
-                component={NotFoundPage}
-                exact
-              />
-              {/**View Student Profile  */}
+                <ForgotPasswordRoute
+                  path={routeConstants.FORGOT_PASSWORD_URL}
+                  exact
+                  type={"forgot-password"}
+                  layout={Layout}
+                />
+                <Route
+                  path={routeConstants.NOT_FOUND_URL}
+                  component={NotFoundPage}
+                  exact
+                />
+                {/**View Student Profile  */}
 
-              <RouteWithTabLayout
-                component={StudentProfile}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_PROFILE}
-              />
-              {/**Education */}
-              <RouteWithTabLayout
-                component={ViewEducation}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_EDUCATION}
-              />
+                <RouteWithTabLayout
+                  component={StudentProfile}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_PROFILE}
+                />
+                {/**Education */}
+                <RouteWithTabLayout
+                  component={ViewEducation}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_EDUCATION}
+                />
 
-              <RouteWithTabLayout
-                component={AddEducation}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_EDUCATION}
-              />
+                <RouteWithTabLayout
+                  component={AddEducation}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_EDUCATION}
+                />
 
-              <RouteWithTabLayout
-                component={EditEducation}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_EDUCATION}
-              />
-              {/**Student document */}
-              <RouteWithTabLayout
-                component={ViewDocument}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_DOCUMENTS}
-              />
+                <RouteWithTabLayout
+                  component={EditEducation}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_EDUCATION}
+                />
+                {/**Student document */}
+                <RouteWithTabLayout
+                  component={ViewDocument}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_DOCUMENTS}
+                />
 
-              <RouteWithTabLayout
-                component={AddDocument}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_DOCUMENTS}
-              />
-              {/** Activity List*/}
-              <RouteWithLayout
-                component={ViewActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_ACTIVITY}
-              />
-              {/**Activity Details */}
-              <RouteWithLayout
-                component={ActivityDetails}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_ACTIVITY}
-              />
-              {/**Add  Activity */}
-              <ActivityRoute
-                component={AddEditActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_ACTIVITY}
-              />
-              {/**Edit Activity */}
-              <ActivityRoute
-                component={AddEditActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_ACTIVITY}
-              />
-              {/**Eligible Activity */}
-              <RouteWithLayout
-                component={EligibleActivity}
-                exact
-                layout={Layout}
-                path={routeConstants.ELIGIBLE_ACTIVITY}
-              />
+                <RouteWithTabLayout
+                  component={AddDocument}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_DOCUMENTS}
+                />
+                {/** Activity List*/}
+                <RouteWithLayout
+                  component={ViewActivity}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_ACTIVITY}
+                />
+                {/**Activity Details */}
+                <RouteWithLayout
+                  component={ActivityDetails}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_ACTIVITY}
+                />
+                {/**Add  Activity */}
+                <ActivityRoute
+                  component={AddEditActivity}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_ACTIVITY}
+                />
+                {/**Edit Activity */}
+                <ActivityRoute
+                  component={AddEditActivity}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_ACTIVITY}
+                />
+                {/**Eligible Activity */}
+                <RouteWithLayout
+                  component={EligibleActivity}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ELIGIBLE_ACTIVITY}
+                />
 
-              {/**Student Academic history */}
-              <RouteWithTabLayout
-                component={ViewAcademicHistory}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_ACADEMIC_HISTORY}
-              />
+                {/**Student Academic history */}
+                <RouteWithTabLayout
+                  component={ViewAcademicHistory}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_ACADEMIC_HISTORY}
+                />
 
-              <RouteWithTabLayout
-                component={AddEditAcademicHistory}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_ACADEMIC_HISTORY}
-              />
+                <RouteWithTabLayout
+                  component={AddEditAcademicHistory}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_ACADEMIC_HISTORY}
+                />
 
-              <RouteWithTabLayout
-                component={EditAcademicHistoryRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_ACADEMIC_HISTORY}
-              />
+                <RouteWithTabLayout
+                  component={EditAcademicHistoryRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_ACADEMIC_HISTORY}
+                />
 
-              {/** User */}
-              {/** Add User **/}
-              <MedhaAdminRoute
-                component={AddUser}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_USER}
-              />
-              {/** View User */}
-              <MedhaAdminRoute
-                component={ManageUser}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_USER}
-              />
-              {/** Edit User Route*/}
-              <MedhaAdminRoute
-                component={EditUserRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_USER}
-              />
-              {/** View User Data*/}
-              <MedhaAdminRoute
-                component={ViewUser}
-                exact
-                layout={Layout}
-                path={routeConstants.DETAIL_USER}
-              />
-              {/** State */}
-              {/** Add Edit State */}
-              <MedhaAdminRoute
-                component={AddEditState}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_STATES}
-              />
-              {/** Edit State Route */}
-              <MedhaAdminRoute
-                component={EditStateRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_STATE}
-              />
-              <MedhaAdminRoute
-                component={ManageState}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_STATES}
-              />
-              {/** Rpc */}
-              <MedhaAdminRoute
-                component={AddEditRpc}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_RPC}
-              />
-              <MedhaAdminRoute
-                component={ManageRpc}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_RPC}
-              />
-              <MedhaAdminRoute
-                component={EditRpcRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_RPC}
-              />
+                {/** User */}
+                {/** Add User **/}
+                <MedhaAdminRoute
+                  component={AddUser}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_USER}
+                />
+                {/** View User */}
+                <MedhaAdminRoute
+                  component={ManageUser}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_USER}
+                />
+                {/** Edit User Route*/}
+                <MedhaAdminRoute
+                  component={EditUserRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_USER}
+                />
+                {/** View User Data*/}
+                <MedhaAdminRoute
+                  component={ViewUser}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.DETAIL_USER}
+                />
+                {/** State */}
+                {/** Add Edit State */}
+                <MedhaAdminRoute
+                  component={AddEditState}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_STATES}
+                />
+                {/** Edit State Route */}
+                <MedhaAdminRoute
+                  component={EditStateRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_STATE}
+                />
+                <MedhaAdminRoute
+                  component={ManageState}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_STATES}
+                />
+                {/** Rpc */}
+                <MedhaAdminRoute
+                  component={AddEditRpc}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_RPC}
+                />
+                <MedhaAdminRoute
+                  component={ManageRpc}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_RPC}
+                />
+                <MedhaAdminRoute
+                  component={EditRpcRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_RPC}
+                />
 
-              {/** Zone */}
-              <MedhaAdminRoute
-                component={AddZone}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_ZONES}
-              />
-              <MedhaAdminRoute
-                component={ManageZone}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_ZONES}
-              />
-              <MedhaAdminRoute
-                component={EditZoneRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_ZONES}
-              />
+                {/** Zone */}
+                <MedhaAdminRoute
+                  component={AddZone}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_ZONES}
+                />
+                <MedhaAdminRoute
+                  component={ManageZone}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_ZONES}
+                />
+                <MedhaAdminRoute
+                  component={EditZoneRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_ZONES}
+                />
 
-              {/** College */}
-              {/** Add College */}
-              <MedhaCollegeAdminRoute
-                component={ViewCollege}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_COLLEGE}
-              />
-              <MedhaCollegeAdminRoute
-                component={AddEditCollege}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_COLLEGE}
-              />
-              {/** Edit College Route */}
-              <MedhaCollegeAdminRoute
-                component={EditCollegeRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_COLLEGE}
-              />
-              {/** View College */}
-              <MedhaCollegeAdminRoute
-                component={ManageCollege}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_COLLEGE}
-              />
-              {/** Manage Student */}
-              <CollegeAdminRoute
-                component={ManageStudents}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_STUDENT}
-              />
-              {/** Event */}
-              <MedhaCollegeAdminRoute
-                component={ManageEvent}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_EVENT}
-              />
-              <RouteWithLayout
-                component={ViewEvent}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_EVENT}
-              />
-              <MedhaCollegeAdminRoute
-                component={AddEditEvent}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_EVENT}
-              />
-              {/**Eligible Events */}
-              <RouteWithLayout
-                component={EligibleEvents}
-                exact
-                layout={Layout}
-                path={routeConstants.ELIGIBLE_EVENT}
-              />
-              {/** Edit Event Route */}
-              <MedhaCollegeAdminRoute
-                component={EditEventRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_EVENT}
-              />
-              {/** Event Student List Route */}
-              <MedhaCollegeAdminRoute
-                component={StudentList}
-                exact
-                layout={Layout}
-                path={routeConstants.EVENT_STUDENT_LIST}
-              />
-              {/**View Student Profile  */}
+                {/** College */}
+                {/** Add College */}
+                <MedhaCollegeAdminRoute
+                  component={ViewCollege}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_COLLEGE}
+                />
+                <MedhaCollegeAdminRoute
+                  component={AddEditCollege}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_COLLEGE}
+                />
+                {/** Edit College Route */}
+                <MedhaCollegeAdminRoute
+                  component={EditCollegeRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_COLLEGE}
+                />
+                {/** View College */}
+                <MedhaAdminRoute
+                  component={ManageCollege}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_COLLEGE}
+                />
+                {/** Manage Student */}
+                <CollegeAdminRoute
+                  component={ManageStudents}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_STUDENT}
+                />
+                {/** Event */}
+                <MedhaCollegeAdminRoute
+                  component={ManageEvent}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_EVENT}
+                />
+                <RouteWithLayout
+                  component={ViewEvent}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_EVENT}
+                />
+                <MedhaCollegeAdminRoute
+                  component={AddEditEvent}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_EVENT}
+                />
+                {/**Eligible Events */}
+                <RouteWithLayout
+                  component={EligibleEvents}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ELIGIBLE_EVENT}
+                />
+                {/** Edit Event Route */}
+                <MedhaCollegeAdminRoute
+                  component={EditEventRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_EVENT}
+                />
+                {/** Event Student List Route */}
+                <MedhaCollegeAdminRoute
+                  component={StudentList}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EVENT_STUDENT_LIST}
+                />
+                {/**View Student Profile  */}
 
-              <MedhaCollegeAdminRoute
-                component={StudentProfile}
-                exact
-                layout={Layout}
-                path={routeConstants.VIEW_STUDENT_PROFILE}
-              />
-              {/** Add student to recruitment drive */}
-              <CollegeAdminRoute
-                component={AddStudentToRecruitmentDrive}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_STUDENT_DRIVE}
-              />
+                <MedhaCollegeAdminRoute
+                  component={StudentProfile}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.VIEW_STUDENT_PROFILE}
+                />
+                {/** Add student to recruitment drive */}
+                <CollegeAdminRoute
+                  component={AddStudentToRecruitmentDrive}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_STUDENT_DRIVE}
+                />
 
-              {/* Activities */}
-              <RouteWithLayout
-                component={ViewActivityBatches}
-                exact
-                layout={Layout}
-                path={routeConstants.MANAGE_ACTIVITY_BATCH}
-              />
+                {/* Activities */}
+                <RouteWithLayout
+                  component={ViewActivityBatches}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.MANAGE_ACTIVITY_BATCH}
+                />
 
-              <RouteWithLayout
-                component={EditActivityBatchRoute}
-                exact
-                layout={Layout}
-                path={routeConstants.EDIT_ACTIVITY_BATCH}
-              />
+                <RouteWithLayout
+                  component={EditActivityBatchRoute}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.EDIT_ACTIVITY_BATCH}
+                />
 
-              <RouteWithLayout
-                component={AddEditActivityBatch}
-                exact
-                layout={Layout}
-                path={routeConstants.ADD_ACTIVITY_BATCH}
-              />
-              <Route path="*" component={NotFoundPage} />
-            </Switch>
-          </div>
-        </Router>
-      </ThemeProvider>
-    </SetIndexContext.Provider>
+                <RouteWithLayout
+                  component={AddEditActivityBatch}
+                  exact
+                  layout={Layout}
+                  path={routeConstants.ADD_ACTIVITY_BATCH}
+                />
+                <Route path="*" component={NotFoundPage} />
+              </Switch>
+            </div>
+          </Router>
+        </ThemeProvider>
+      </SetIndexContext.Provider>
+    </LoaderContext.Provider>
   );
 }
 export default App;
