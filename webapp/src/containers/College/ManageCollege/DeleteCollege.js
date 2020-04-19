@@ -30,8 +30,6 @@ const DeleteZone = props => {
     dataToDelete: {}
   });
 
-  console.log("deletecollege", props);
-
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[COLLEGE_ID] = props.id;
@@ -148,7 +146,6 @@ const DeleteZone = props => {
             ...formState,
             isValid: true
           }));
-          console.log(res);
           formState.isDeleteData = true;
           handleCloseModal("Colleges has been deleted successfully");
         })

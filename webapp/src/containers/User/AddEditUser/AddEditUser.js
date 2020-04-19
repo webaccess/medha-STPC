@@ -466,6 +466,7 @@ const AddEditUser = props => {
           });
         })
         .catch(error => {
+          console.log("error", error);
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
@@ -482,6 +483,7 @@ const AddEditUser = props => {
             pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: true,
+            addedUserName: res.data.user,
             addResponseMessage: "",
             addedData: {}
           });

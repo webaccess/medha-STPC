@@ -86,18 +86,22 @@ const BlockUnblockCollege = props => {
           }));
           formState.isDataBlockUnblock = true;
           if (props.isMultiUnblock) {
-            handleCloseModal("Colleges successfully unblocked");
+            handleCloseModal("Colleges has been unblocked");
           } else {
-            handleCloseModal("Colleges successfully blocked");
+            handleCloseModal("Colleges has been blocked");
           }
         })
         .catch(error => {
           console.log("error");
           formState.isDataBlockUnblock = false;
           if (props.isMultiUnblock) {
-            handleCloseModal("Error unblocking selected colleges");
+            handleCloseModal(
+              "An error has occured while unblocking colleges. Kindly, try again."
+            );
           } else {
-            handleCloseModal("Error blocking selected colleges");
+            handleCloseModal(
+              "An error has occured while blocking colleges. Kindly, try again."
+            );
           }
         });
     } else {
@@ -124,13 +128,13 @@ const BlockUnblockCollege = props => {
             handleCloseModal(
               "College " +
                 props.dataToBlockUnblock["name"] +
-                " successfully unblocked"
+                " has been unblocked."
             );
           } else {
             handleCloseModal(
               "College " +
                 props.dataToBlockUnblock["name"] +
-                " successfully blocked"
+                " has been blocked."
             );
           }
         })
@@ -139,11 +143,15 @@ const BlockUnblockCollege = props => {
           formState.isDataBlockUnblock = false;
           if (props.dataToBlockUnblock["blocked"]) {
             handleCloseModal(
-              "Error unblocking College " + props.dataToBlockUnblock["name"]
+              "An error has occured while unblocking college" +
+                props.dataToBlockUnblock["name"] +
+                ". Kindly, try again."
             );
           } else {
             handleCloseModal(
-              "Error blocking College " + props.dataToBlockUnblock["name"]
+              "An error has occured while blocking college" +
+                props.dataToBlockUnblock["name"] +
+                ". Kindly, try again."
             );
           }
         });

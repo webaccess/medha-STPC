@@ -88,12 +88,10 @@ const AddEditCollege = props => {
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
- 
+
   const [backDropOpen, setBackDropOpen] = React.useState(false);
 
   React.useEffect(() => {
-  
-
     if (auth.getUserInfo().role.name === "Medha Admin") {
       setFormState(formState => ({
         ...formState,
@@ -614,10 +612,12 @@ const AddEditCollege = props => {
           postData
         )
         .then(res => {
+          console.log("collegeedited", res);
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
             isDataEdited: true,
+            editedCollegeData: res.data,
             editResponseMessage: "",
             editedData: {}
           });
@@ -638,10 +638,13 @@ const AddEditCollege = props => {
       serviceProviders
         .serviceProviderForPostRequest(COLLEGES_URL, postData)
         .then(res => {
+          console.log("collegeadded", res);
+
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,
             fromAddCollege: true,
             isDataAdded: true,
+            addedCollegeData: res.data,
             addResponseMessage: "",
             addedData: {}
           });
@@ -782,7 +785,7 @@ const AddEditCollege = props => {
                       /** This is used to set the default value to the auto complete */
                       value={
                         states[
-                          states.findIndex(function (item, i) {
+                          states.findIndex(function(item, i) {
                             return item.id === formState.values[state];
                           })
                         ] || null
@@ -836,7 +839,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : zones[
-                              zones.findIndex(function (item, i) {
+                              zones.findIndex(function(item, i) {
                                 return item.id === formState.values[zone];
                               })
                             ] ||
@@ -894,7 +897,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : rpcs[
-                              rpcs.findIndex(function (item, i) {
+                              rpcs.findIndex(function(item, i) {
                                 return item.id === formState.values[rpc];
                               })
                             ] ||
@@ -949,7 +952,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : districts[
-                              districts.findIndex(function (item, i) {
+                              districts.findIndex(function(item, i) {
                                 return item.id === formState.values[district];
                               })
                             ] ||
@@ -1051,7 +1054,7 @@ const AddEditCollege = props => {
                         /** This is used to set the default value to the auto complete */
                         value={
                           user[
-                            user.findIndex(function (item, i) {
+                            user.findIndex(function(item, i) {
                               return item.id === formState.values[principal];
                             })
                           ] || null /** Please give a default " " blank value */
@@ -1214,7 +1217,7 @@ const AddEditCollege = props => {
                                     name={streamId}
                                     value={
                                       streamsDataBackup[
-                                        streamsDataBackup.findIndex(function (
+                                        streamsDataBackup.findIndex(function(
                                           item,
                                           i
                                         ) {

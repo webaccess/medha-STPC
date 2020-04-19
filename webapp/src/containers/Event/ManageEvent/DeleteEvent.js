@@ -24,16 +24,21 @@ const DeleteUser = props => {
     isValid: false,
     stateCounter: 0,
     values: {},
-    username: ""
+    dataToDelete: {}
   });
 
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[EVENT_ID] = props.id;
     formState.isDeleteData = false;
+    formState.dataToDelete = props.dataToDelete;
   }
-
-  const handleCloseModal = () => {
+  const handleCloseModal = (message = "") => {
+    /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
+    to ensure that only string value is passed to message variable */
+    if (typeof message !== "string") {
+      message = "";
+    }
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -41,13 +46,11 @@ const DeleteUser = props => {
       isValid: false,
       stateCounter: 0
     }));
-
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.closeModal(true, message);
     } else {
-      props.deleteEvent(false);
+      props.closeModal(false, message);
     }
-    props.closeModal();
   };
 
   const handleSubmit = event => {
@@ -67,12 +70,14 @@ const DeleteUser = props => {
             isValid: true
           }));
           formState.isDeleteData = true;
-          handleCloseModal();
+          handleCloseModal("Events has been deleted successfully");
         })
         .catch(error => {
           console.log("error", error);
           formState.isDeleteData = false;
-          handleCloseModal();
+          handleCloseModal(
+            "An error has occured while deleting events. Kindly, try again"
+          );
         });
     } else {
       serviceProviders
@@ -83,12 +88,20 @@ const DeleteUser = props => {
             isValid: true
           }));
           formState.isDeleteData = true;
-          handleCloseModal();
+          handleCloseModal(
+            "Event " +
+              formState.dataToDelete["name"] +
+              " has been deleted successfully"
+          );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal();
+          handleCloseModal(
+            "An error has occured while deleting event" +
+              formState.dataToDelete["name"] +
+              ". Kindly, try again"
+          );
         });
     }
   };

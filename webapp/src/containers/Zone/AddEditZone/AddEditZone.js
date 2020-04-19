@@ -167,6 +167,7 @@ const AddEditZone = props => {
             pathname: routeConstants.MANAGE_ZONES,
             fromEditZone: true,
             isDataEdited: true,
+            editedZoneData: res.data,
             editResponseMessage: "",
             editedData: {}
           });
@@ -195,6 +196,7 @@ const AddEditZone = props => {
             pathname: routeConstants.MANAGE_ZONES,
             fromAddZone: true,
             isDataAdded: true,
+            addedZoneData: res.data,
             addResponseMessage: "",
             addedData: {}
           });

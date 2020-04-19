@@ -68,12 +68,14 @@ const DeleteState = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("States successfully deleted");
+          handleCloseModal("States has been deleted successfully.");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error deleting selected states");
+          handleCloseModal(
+            "An error has occured while deleting states. Kindly, try again."
+          );
         });
     } else {
       serviceProviders
@@ -85,14 +87,18 @@ const DeleteState = props => {
           }));
           formState.isDeleteData = true;
           handleCloseModal(
-            "State " + formState.dataToDelete["name"] + " successfully deleted"
+            "State " +
+              formState.dataToDelete["name"] +
+              " has been deleted successfully."
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error deleting State " + formState.dataToDelete["name"]
+            "An error has occured while deleting states" +
+              formState.dataToDelete["name"] +
+              ". Kindly, try again."
           );
         });
     }

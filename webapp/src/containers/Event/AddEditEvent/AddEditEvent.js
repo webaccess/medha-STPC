@@ -943,13 +943,15 @@ const AddEditEvent = props => {
           postData
         )
         .then(res => {
+          console.log("editeddata", res);
           if (formState.files.name) {
             postImage(res.data.id);
           } else {
             history.push({
               pathname: routeConstants.MANAGE_EVENT,
-              fromAddEvent: true,
-              isDataAdded: true,
+              fromeditEvent: true,
+              isDataEdited: true,
+              editedEventData: res.data,
               addResponseMessage: "",
               addedData: {}
             });
@@ -957,11 +959,19 @@ const AddEditEvent = props => {
         })
         .catch(error => {
           console.log("puterror", error);
+          history.push({
+            pathname: routeConstants.MANAGE_EVENT,
+            fromeditEvent: true,
+            isDataEdited: false,
+            editResponseMessage: "",
+            editedData: {}
+          });
         });
     } else {
       serviceProvider
         .serviceProviderForPostRequest(EVENTS_URL, postData)
         .then(res => {
+          console.log("addeddata", res);
           if (formState.files.name) {
             postImage(res.data.id);
           } else {
@@ -969,6 +979,7 @@ const AddEditEvent = props => {
               pathname: routeConstants.MANAGE_EVENT,
               fromAddEvent: true,
               isDataAdded: true,
+              addedEventData: res.data,
               addResponseMessage: "",
               addedData: {}
             });
@@ -976,6 +987,13 @@ const AddEditEvent = props => {
         })
         .catch(error => {
           console.log("posterror", error);
+          history.push({
+            pathname: routeConstants.MANAGE_EVENT,
+            fromeditEvent: true,
+            isDataEdited: false,
+            editResponseMessage: "",
+            editedData: {}
+          });
         });
     }
   };
@@ -1087,16 +1105,15 @@ const AddEditEvent = props => {
                 <Grid container className={classes.formgridInputFile}>
                   <Grid item md={10} xs={12}>
                     <div className={classes.imageDiv}>
-                      {
-                        formState.showPreviewImage ? (
-                          <Img
-                            src={formState.previewFile}
-                            alt="abc"
-                            loader={<Spinner />}
-                            className={classes.UploadImage}
-                          />
-                        ) : null
-                        // <div class={classes.DefaultNoImage}></div>
+                      {formState.showPreviewImage ? (
+                        <Img
+                          src={formState.previewFile}
+                          alt="abc"
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                        />
+                      ) : null
+                      // <div class={classes.DefaultNoImage}></div>
                       }
 
                       {formState.showPreviewEditImage &&
@@ -1316,7 +1333,7 @@ const AddEditEvent = props => {
                         }
                         value={
                           states[
-                            states.findIndex(function (item, i) {
+                            states.findIndex(function(item, i) {
                               return item.id === formState.values[state];
                             })
                           ] || null
@@ -1363,7 +1380,7 @@ const AddEditEvent = props => {
                         }
                         value={
                           zones[
-                            zones.findIndex(function (item, i) {
+                            zones.findIndex(function(item, i) {
                               return item.id === formState.values[zone];
                             })
                           ] || null
@@ -1413,7 +1430,7 @@ const AddEditEvent = props => {
                         }
                         value={
                           rpcs[
-                            rpcs.findIndex(function (item, i) {
+                            rpcs.findIndex(function(item, i) {
                               return item.id === formState.values[rpc];
                             })
                           ] || null
@@ -1590,7 +1607,7 @@ const AddEditEvent = props => {
                                       value={
                                         qualificationsDataBackup[
                                           qualificationsDataBackup.findIndex(
-                                            function (item, i) {
+                                            function(item, i) {
                                               return (
                                                 item.value ===
                                                 formState.dynamicBar[idx][
@@ -1770,7 +1787,7 @@ const AddEditEvent = props => {
                                       value={
                                         educationsDataBackup[
                                           educationsDataBackup.findIndex(
-                                            function (item, i) {
+                                            function(item, i) {
                                               return (
                                                 item.value ===
                                                 formState.dynamicEducationBar[

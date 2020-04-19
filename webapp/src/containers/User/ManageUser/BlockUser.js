@@ -155,12 +155,18 @@ const BlockUser = props => {
                 justifyContent="center"
               >
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isUnBlocked || props.isMultiUnblock
-                    ? "Are you sure you want to unblock this user"
-                    : null}
-                  {props.isBlocked || props.isMulBlocked
-                    ? "Are you sure you want to block this user"
-                    : null}
+                  {props.isUnBlocked || props.isMultiUnblock ? (
+                    <p>
+                      Are you sure you want to unblock user{" "}
+                      {props.dataToBlockUnblock["name"]}
+                    </p>
+                  ) : null}
+                  {props.isBlocked || props.isMulBlocked ? (
+                    <p>
+                      Are you sure you want to block user{" "}
+                      {props.dataToBlockUnblock["name"]}
+                    </p>
+                  ) : null}
                 </Grid>
               </Grid>
             </Grid>

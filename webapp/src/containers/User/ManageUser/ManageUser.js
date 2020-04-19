@@ -94,6 +94,9 @@ const ManageUser = props => {
     fromAddUser: props["location"]["fromAddUser"]
       ? props["location"]["fromAddUser"]
       : false,
+    addedUserName: props["location"]["addedUserName"]
+      ? props["location"]["addedUserName"]["username"]
+      : "",
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
@@ -130,6 +133,8 @@ const ManageUser = props => {
     isStateClearFilter: false,
     toggleCleared: false
   });
+
+  console.log("addedUserName", props["location"]["addedUserName"]);
 
   const getFilterData = () => {
     let params = {
@@ -366,9 +371,9 @@ const ManageUser = props => {
       isDataDeleted: false,
       messageToShow: "",
       fromDeleteModal: false,
-      fromAddCollege: false,
       fromeditCollege: false,
-      fromBlockModal: false
+      fromBlockModal: false,
+      fromAddUser: false
     }));
     let url_user = USER_URL + "/" + dataId;
     serviceProviders
@@ -395,7 +400,8 @@ const ManageUser = props => {
       showModalDelete: false,
       fromDeleteModal: true,
       isMultiDelete: false,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
+      fromAddUser: false
     }));
     if (status) {
       getUserData(formState.pageSize, 1);
@@ -859,7 +865,7 @@ const ManageUser = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              User {formState.addedUserName} has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -881,7 +887,7 @@ const ManageUser = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding user. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
