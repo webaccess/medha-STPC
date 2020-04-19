@@ -603,6 +603,50 @@ const ManageEvent = props => {
             </Alert>
           </Collapse>
         ) : null}
+
+        {formState.fromeditEvent && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromeditEvent && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         <Card>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>

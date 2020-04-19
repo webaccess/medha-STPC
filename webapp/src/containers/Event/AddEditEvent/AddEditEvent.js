@@ -954,10 +954,10 @@ const AddEditEvent = props => {
           } else {
             history.push({
               pathname: routeConstants.MANAGE_EVENT,
-              fromAddEvent: true,
-              isDataAdded: true,
+              fromeditEvent: true,
+              isDataEdited: true,
               addResponseMessage: "",
-              addedData: {}
+              editedData: {}
             });
           }
           setLoaderStatus(false);

@@ -16,7 +16,6 @@ const Layout = props => {
     defaultMatches: true
   });
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
-  console.log("loaderStatus", loaderStatus);
   if (auth.getToken() != null && isDesktop) {
     return (
       <React.Fragment>
@@ -29,7 +28,6 @@ const Layout = props => {
           <SideAndTopNavBar />
           <main className={classes.content}>{children}</main>
         </div>
-        xakhbjac
         <Backdrop className={classes.backdrop} open={loaderStatus}>
           <CircularProgress color="inherit" />
         </Backdrop>
