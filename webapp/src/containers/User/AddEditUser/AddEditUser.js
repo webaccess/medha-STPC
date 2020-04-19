@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import UserSchema from "../UserSchema";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import { get, set } from "lodash";
@@ -8,7 +8,6 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { YellowButton, GrayButton } from "../../../components";
 import {
   InputAdornment,
   IconButton,
@@ -30,6 +29,8 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
+import LoaderContext from "../../../context/LoaderContext";
+import { YellowButton, GrayButton, Auth as auth } from "../../../components";
 
 /** Constants  declaration */
 const firstname = "firstname";
@@ -90,6 +91,7 @@ const AddEditUser = props => {
   /** Initializing all the hooks */
   const classes = useStyles();
   const history = useHistory();
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -99,7 +101,9 @@ const AddEditUser = props => {
     showPassword: false,
     isEditUser: props["editUser"] ? props["editUser"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0
+    counter: 0,
+    isCollegeAdmin:
+      auth.getUserInfo().role.name === "College Admin" ? true : false
   });
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
@@ -108,7 +112,8 @@ const AddEditUser = props => {
   const [roles, setRoles] = useState([]);
 
   /** Part for editing user */
-  if (formState.dataForEdit && !formState.counter) {
+  if (formState.isEditUser && !formState.counter) {
+    setLoaderStatus(true);
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["first_name"]) {
         formState.values[firstname] = props["dataForEdit"]["first_name"];
@@ -180,13 +185,16 @@ const AddEditUser = props => {
           ) {
             roles.push(res.data.roles[i]);
           }
+          if (formState.isEditUser && res.data.roles[i]["name"] === "Student") {
+            roles.push(res.data.roles[i]);
+          }
         }
         setRoles(roles);
       })
       .catch(error => {
         console.log(error);
       });
-  }, [STATES_URL, ROLES_URL]);
+  }, []);
 
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
@@ -434,6 +442,7 @@ const AddEditUser = props => {
   };
 
   const postUserData = async () => {
+    setLoaderStatus(true);
     let postData = databaseUtilities.addUser(
       formState.values[username],
       formState.values[email],
@@ -464,6 +473,7 @@ const AddEditUser = props => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         })
         .catch(error => {
           console.log("error", error);
@@ -474,6 +484,7 @@ const AddEditUser = props => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         });
     } else {
       serviceProvider
@@ -487,6 +498,7 @@ const AddEditUser = props => {
             addResponseMessage: "",
             addedData: {}
           });
+          setLoaderStatus(false);
         })
         .catch(error => {
           history.push({
@@ -497,6 +509,7 @@ const AddEditUser = props => {
             addedData: {}
           });
         });
+      setLoaderStatus(false);
     }
   };
 

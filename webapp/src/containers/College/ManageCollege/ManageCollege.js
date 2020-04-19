@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import {
   TextField,
   Card,
@@ -33,6 +33,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import BlockUnblockCollege from "./BlockUnblockCollege";
 import DeleteIcon from "@material-ui/icons/Delete";
+import LoaderContext from "../../../context/LoaderContext";
 
 /** Contsants for filters */
 const COLLEGE_FILTER = "name_contains";
@@ -54,10 +55,12 @@ const ManageCollege = props => {
   const [open, setOpen] = React.useState(true);
   /** Data we get for filtering */
   const [collegesFilter, setCollegesFilter] = React.useState([]);
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
   const [rpcs, setRpcs] = React.useState([]);
   const [zones, setZones] = React.useState([]);
   const [states, setStates] = React.useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
+
   /**------------------------------------ */
   /** Our actual form data  */
   const [formState, setFormState] = useState({
@@ -329,6 +332,7 @@ const ManageCollege = props => {
 
   /** Edit cell */
   const getDataForEdit = async (id, isView = false) => {
+    setLoaderStatus(true);
     /** Get college data for edit */
     let paramsForCollege = {
       id: id
@@ -347,6 +351,7 @@ const ManageCollege = props => {
       .catch(error => {
         console.log("error");
       });
+    setLoaderStatus(false);
   };
 
   const editCell = event => {
@@ -356,10 +361,12 @@ const ManageCollege = props => {
   /**---------------------------------------------------------- */
   /** View Cell */
   const viewCell = event => {
+    setLoaderStatus(true);
     history.push({
       pathname: routeConstants.VIEW_COLLEGE,
       dataForEdit: event.target.id
     });
+    setLoaderStatus(false);
   };
 
   /** ---------------------------------------------------------- */
@@ -375,6 +382,7 @@ const ManageCollege = props => {
   };
 
   const getDataForBlockUnblock = async id => {
+    setLoaderStatus(true);
     /** Get college data for edit */
     let paramsForCollege = {
       id: id
@@ -400,6 +408,7 @@ const ManageCollege = props => {
       .catch(error => {
         console.log("error");
       });
+    setLoaderStatus(false);
   };
 
   const blockMulCollegeById = () => {
@@ -499,6 +508,7 @@ const ManageCollege = props => {
   /**----------------------------------------------------- */
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -513,6 +523,7 @@ const ManageCollege = props => {
       fromeditCollege: false,
       fromBlockModal: false
     }));
+    setLoaderStatus(false);
   };
 
   /** This is used to handle the close modal event */
@@ -902,7 +913,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter
                       ? null
                       : states[
-                          states.findIndex(function(item, i) {
+                          states.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STATE_FILTER]
@@ -933,7 +944,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : zones[
-                          zones.findIndex(function(item, i) {
+                          zones.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[ZONE_FILTER]
@@ -964,7 +975,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : rpcs[
-                          rpcs.findIndex(function(item, i) {
+                          rpcs.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[RPC_FILTER]

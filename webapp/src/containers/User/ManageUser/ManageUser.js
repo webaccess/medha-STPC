@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import BlockIcon from "@material-ui/icons/Block";
@@ -34,6 +34,7 @@ import DeleteUser from "./DeleteUser";
 import BlockUser from "./BlockUser";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import { setCollege, setRole } from "../../../Utilities/StrapiUtilities";
+import LoaderContext from "../../../context/LoaderContext";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -61,6 +62,7 @@ const ManageUser = props => {
   const [states, setStates] = useState([]);
   const [ipcs, setIpcs] = useState([]);
   const [roles, setRoles] = useState([]);
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -358,6 +360,7 @@ const ManageUser = props => {
   // };
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     let dataId = event.target.id;
 
     setFormState(formState => ({
@@ -373,7 +376,8 @@ const ManageUser = props => {
       fromDeleteModal: false,
       fromeditCollege: false,
       fromBlockModal: false,
-      fromAddUser: false
+      fromAddUser: false,
+      fromeditUser: false
     }));
     let url_user = USER_URL + "/" + dataId;
     serviceProviders
@@ -387,6 +391,7 @@ const ManageUser = props => {
       .catch(error => {
         console.log("error", error);
       });
+    setLoaderStatus(false);
   };
 
   /** This is used to handle the close modal event */
@@ -400,8 +405,7 @@ const ManageUser = props => {
       showModalDelete: false,
       fromDeleteModal: true,
       isMultiDelete: false,
-      messageToShow: statusToShow,
-      fromAddUser: false
+      messageToShow: statusToShow
     }));
     if (status) {
       getUserData(formState.pageSize, 1);
@@ -531,6 +535,7 @@ const ManageUser = props => {
 
   /** Get multiple user id for delete */
   const deleteMulUserById = () => {
+    setLoaderStatus(true);
     let arrayId = [];
 
     selectedRows.forEach(d => {
@@ -544,6 +549,7 @@ const ManageUser = props => {
       isMultiDelete: true,
       MultiDeleteID: arrayId
     }));
+    setLoaderStatus(false);
   };
 
   const blockedCell = event => {
@@ -569,6 +575,7 @@ const ManageUser = props => {
   };
 
   const blockedCellData = (id, user, isBlocked = false) => {
+    setLoaderStatus(true);
     if (isBlocked === true) {
       setFormState(formState => ({
         ...formState,
@@ -579,7 +586,9 @@ const ManageUser = props => {
         },
         isBlocked: true,
         isUnBlocked: false,
-        showModalBlock: true
+        showModalBlock: true,
+        fromAddUser: false,
+        fromeditUser: false
       }));
     } else {
       setFormState(formState => ({
@@ -591,9 +600,12 @@ const ManageUser = props => {
         },
         isBlocked: false,
         isUnBlocked: true,
-        showModalBlock: true
+        showModalBlock: true,
+        fromAddUser: false,
+        fromeditUser: false
       }));
     }
+    setLoaderStatus(false);
   };
 
   const selectedRowCleared = data => {
@@ -664,6 +676,7 @@ const ManageUser = props => {
   }, []);
 
   const blockMulUserById = () => {
+    setLoaderStatus(true);
     let arrayId = [];
     for (var k = 0; k < selectedRows.length; k++) {
       arrayId.push(selectedRows[k]["id"]);
@@ -685,9 +698,11 @@ const ManageUser = props => {
         MultiBlockUser: arrayId
       }));
     }
+    setLoaderStatus(false);
   };
 
   const getDataForEdit = async id => {
+    setLoaderStatus(true);
     let paramsForUsers = {
       id: id
     };
@@ -705,6 +720,7 @@ const ManageUser = props => {
       .catch(error => {
         console.log("error");
       });
+    setLoaderStatus(false);
   };
 
   const editCell = event => {
@@ -712,10 +728,12 @@ const ManageUser = props => {
   };
 
   const viewCell = event => {
+    setLoaderStatus(true);
     history.push({
       pathname: routeConstants.DETAIL_USER,
       dataForEdit: event.target.id
     });
+    setLoaderStatus(false);
   };
 
   /** Table Data */

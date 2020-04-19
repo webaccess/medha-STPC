@@ -32,7 +32,8 @@ const RegisterEvent = props => {
     values: {},
     stateCounter: 0,
     isMultipleAdding: false,
-    isErrorAddingStudentToEvent: false
+    isErrorAddingStudentToEvent: false,
+    fromAddStudentToRecruitmentDrive: false
   });
 
   if (props.showModal && !formState.stateCounter) {
@@ -42,16 +43,35 @@ const RegisterEvent = props => {
     formState.isMultipleAdding = props.multipleUserIds
       ? props.multipleUserIds
       : false;
+    formState.fromAddStudentToRecruitmentDrive = props.fromAddStudentToRecruitmentDrive
+      ? true
+      : false;
   }
 
   const handleSubmit = async event => {
     event.persist();
     setOpen(true);
-    if (formState.isMultipleAdding) {
-      for (let studentData in formState.values[STUDENT_ID]) {
+    if (formState.fromAddStudentToRecruitmentDrive) {
+      if (formState.isMultipleAdding) {
+        for (let studentData in formState.values[STUDENT_ID]) {
+          let postData = databaseUtilities.studentEventRegistration(
+            formState.values[EVENT_ID],
+            formState.values[STUDENT_ID][studentData]["id"]
+          );
+          await serviceProviders
+            .serviceProviderForPostRequest(EVENT_REG_URL, postData)
+            .then(res => {
+              formState.stateCounter += 1;
+            })
+            .catch(error => {
+              formState.isErrorAddingStudentToEvent = true;
+              formState.stateCounter += 1;
+            });
+        }
+      } else {
         let postData = databaseUtilities.studentEventRegistration(
           formState.values[EVENT_ID],
-          formState.values[STUDENT_ID][studentData]["id"]
+          formState.values[STUDENT_ID]
         );
         await serviceProviders
           .serviceProviderForPostRequest(EVENT_REG_URL, postData)
@@ -63,25 +83,49 @@ const RegisterEvent = props => {
             formState.stateCounter += 1;
           });
       }
-      if (formState.isErrorAddingStudentToEvent) {
-        props.setStatusDataWhileClosingModal(
-          false,
-          "Error registering students to the event '" + props.eventTitle + "'",
-          true
-        );
-        props.modalClose();
+
+      if (formState.isMultipleAdding) {
+        if (formState.isErrorAddingStudentToEvent) {
+          props.setStatusDataWhileClosingModal(
+            false,
+            "Error registering students to the event '" +
+              props.eventTitle +
+              "'",
+            true
+          );
+          props.modalClose();
+        } else {
+          props.setStatusDataWhileClosingModal(
+            true,
+            "Successfully registered " +
+              props.userCount +
+              " students to the event '" +
+              props.eventTitle +
+              "'",
+            true
+          );
+          props.modalClose();
+        }
       } else {
-        props.setStatusDataWhileClosingModal(
-          true,
-          "Successfully registered " +
-            props.userCount +
-            " students to the event '" +
-            props.eventTitle +
-            "'",
-          true
-        );
-        props.modalClose();
+        if (formState.isErrorAddingStudentToEvent) {
+          props.setStatusDataWhileClosingModal(
+            false,
+            "Error registering student to the event '" + props.eventTitle + "'",
+            true
+          );
+          props.modalClose();
+        } else {
+          props.setStatusDataWhileClosingModal(
+            true,
+            "Successfully registered student to the event '" +
+              props.eventTitle +
+              "'",
+            true
+          );
+          props.modalClose();
+        }
       }
+
       setOpen(false);
     } else {
       setOpen(true);
@@ -115,7 +159,6 @@ const RegisterEvent = props => {
         });
     }
   };
-
   const classes = useStyles();
   return (
     <Modal
@@ -150,11 +193,18 @@ const RegisterEvent = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {formState.isMultipleAdding ? (
-                    <p>
-                      Are you sure you want to register selected students for
-                      the event "{props.eventTitle}" ?
-                    </p>
+                  {formState.fromAddStudentToRecruitmentDrive ? (
+                    formState.isMultipleAdding ? (
+                      <p>
+                        Are you sure you want to register selected students for
+                        the event "{props.eventTitle}" ?
+                      </p>
+                    ) : (
+                      <p>
+                        Are you sure you want to register the selected student
+                        for the event "{props.eventTitle}" ?
+                      </p>
+                    )
                   ) : (
                     <p>
                       Are you sure you want to register for the event "

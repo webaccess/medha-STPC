@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import moment from "moment";
 import {
@@ -35,6 +35,7 @@ import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import auth from "../../../components/Auth";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import LoaderContext from "../../../context/LoaderContext";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
@@ -48,6 +49,8 @@ const ManageEvent = props => {
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+
   /** Value to set for event filter */
   const [value, setValue] = React.useState(null);
 
@@ -300,6 +303,7 @@ const ManageEvent = props => {
   };
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -312,8 +316,10 @@ const ManageEvent = props => {
       fromDeleteModal: false,
       fromeditCollege: false,
       fromBlockModal: false,
-      fromAddEvent: false
+      fromAddEvent: false,
+      fromeditEvent: false
     }));
+    setLoaderStatus(false);
   };
 
   /** Get multiple user id for delete */
@@ -329,7 +335,9 @@ const ManageEvent = props => {
       showEditModal: false,
       showModalDelete: true,
       isMultiDelete: true,
-      MultiDeleteID: arrayId
+      MultiDeleteID: arrayId,
+      fromAddEvent: false,
+      fromeditEvent: false
     }));
   };
 
@@ -343,15 +351,18 @@ const ManageEvent = props => {
 
   /** View Student List */
   const viewStudentList = event => {
+    setLoaderStatus(true);
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
       eventId: event.target.id,
       eventTitle: event.target.getAttribute("value")
     });
+    setLoaderStatus(false);
   };
 
   /** Edit -------------------------------------------------------*/
   const getDataForEdit = async id => {
+    setLoaderStatus(true);
     await serviceProviders
       .serviceProviderForGetOneRequest(EVENT_URL, id)
       .then(res => {
@@ -366,6 +377,7 @@ const ManageEvent = props => {
       .catch(error => {
         console.log("error");
       });
+    setLoaderStatus(false);
   };
 
   const editCell = event => {

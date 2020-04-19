@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import InputLabel from "@material-ui/core/InputLabel";
 import {
   Card,
@@ -41,6 +41,7 @@ import htmlToDraft from "html-to-draftjs";
 import Img from "react-image";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import moment from "moment";
+import LoaderContext from "../../../context/LoaderContext";
 
 /** Event names initialization */
 const eventName = "eventName";
@@ -76,6 +77,8 @@ const AddEditEvent = props => {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+
   const classes = useStyles();
   const history = useHistory();
   /** Initializiing form state value */
@@ -142,7 +145,8 @@ const AddEditEvent = props => {
   const [educations, setEducations] = useState([]);
   const [educationsDataBackup, setEducationsDataBackup] = useState([]);
 
-  if (formState.dataForEdit && !formState.counter) {
+  if (formState.isEditEvent && !formState.counter) {
+    setLoaderStatus(true);
     /** Part for editing state */
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["title"]) {
@@ -847,6 +851,7 @@ const AddEditEvent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
+    setLoaderStatus(true);
     if (formState.isCollegeAdmin && !formState.isEditEvent) {
       setDataForCollegeAdmin();
     }
@@ -906,6 +911,7 @@ const AddEditEvent = props => {
         ...formState,
         isValid: false
       }));
+      setLoaderStatus(false);
     }
   };
 
@@ -953,9 +959,10 @@ const AddEditEvent = props => {
               isDataEdited: true,
               editedEventData: res.data,
               addResponseMessage: "",
-              addedData: {}
+              editedData: {}
             });
           }
+          setLoaderStatus(false);
         })
         .catch(error => {
           console.log("puterror", error);
@@ -966,6 +973,7 @@ const AddEditEvent = props => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         });
     } else {
       serviceProvider
@@ -984,6 +992,7 @@ const AddEditEvent = props => {
               addedData: {}
             });
           }
+          setLoaderStatus(false);
         })
         .catch(error => {
           console.log("posterror", error);
@@ -994,6 +1003,7 @@ const AddEditEvent = props => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         });
     }
   };
