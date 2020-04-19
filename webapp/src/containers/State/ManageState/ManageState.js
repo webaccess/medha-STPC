@@ -60,6 +60,10 @@ const ViewStates = props => {
     fromEditState: props["location"]["fromEditState"]
       ? props["location"]["fromEditState"]
       : false,
+    editedStateName: props["location"]["stateDataEdited"]
+      ? props["location"]["stateDataEdited"]["name"]
+      : "",
+
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddState"]
       ? props["location"]["isDataAdded"]
@@ -70,6 +74,9 @@ const ViewStates = props => {
     fromAddState: props["location"]["fromAddState"]
       ? props["location"]["fromAddState"]
       : false,
+    addedStateName: props["location"]["addedStateData"]
+      ? props["location"]["addedStateData"]["name"]
+      : "",
     /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
@@ -92,6 +99,9 @@ const ViewStates = props => {
     messageToShow: "",
     isDataDeleted: false
   });
+
+  console.log("addedState", props["location"]["addedStateData"]);
+  console.log("addedState", props["location"]["stateDataEdited"]);
 
   useEffect(() => {
     let paramsForPageSize = {
@@ -481,7 +491,7 @@ const ViewStates = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              State {formState.editedStateName} has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -502,7 +512,7 @@ const ViewStates = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating state. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -524,7 +534,7 @@ const ViewStates = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              State {formState.addedStateName} has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -545,7 +555,7 @@ const ViewStates = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding state. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}

@@ -472,6 +472,7 @@ const AddEditUser = (props) => {
             pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
             isDataEdited: true,
+            editedUserName: res.data.result,
             editResponseMessage: "",
             editedData: {},
           });
@@ -495,6 +496,7 @@ const AddEditUser = (props) => {
             pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: true,
+            addedUserName: res.data.user,
             addResponseMessage: "",
             addedData: {},
           });

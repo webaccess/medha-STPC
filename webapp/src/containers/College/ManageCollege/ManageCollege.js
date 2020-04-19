@@ -79,6 +79,9 @@ const ManageCollege = props => {
     fromeditCollege: props["location"]["fromeditCollege"]
       ? props["location"]["fromeditCollege"]
       : false,
+    editedCollegeName: props["location"]["editedCollegeData"]
+      ? props["location"]["editedCollegeData"]["name"]
+      : "",
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddCollege"]
       ? props["location"]["isDataAdded"]
@@ -89,6 +92,9 @@ const ManageCollege = props => {
     fromAddCollege: props["location"]["fromAddCollege"]
       ? props["location"]["fromAddCollege"]
       : false,
+    addedCollegeName: props["location"]["addedCollegeData"]
+      ? props["location"]["addedCollegeData"]["name"]
+      : "",
     /** This is for delete */
     isDataDeleted: false,
     dataToDelete: {},
@@ -97,6 +103,7 @@ const ManageCollege = props => {
     MultiDeleteID: [],
     selectedRowFilter: true,
     greenButtonChecker: true,
+    toggleCleared: false,
     /** View  */
     isView: false,
     /** Filters */
@@ -580,7 +587,8 @@ const ManageCollege = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -609,6 +617,10 @@ const ManageCollege = props => {
     });
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+  };
 
   /** Columns to show in table */
   const column = [
@@ -711,7 +723,8 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              College {formState.editedCollegeName} has been updated
+              successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -732,7 +745,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating college. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -755,7 +768,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              College {formState.addedCollegeName} has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -776,7 +789,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while adding college. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -1023,6 +1036,7 @@ const ManageCollege = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -1043,6 +1057,7 @@ const ManageCollege = props => {
             modalClose={modalClose}
             isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
           />
           <BlockUnblockCollege
             showModal={formState.showModalBlock}
@@ -1053,6 +1068,7 @@ const ManageCollege = props => {
             isMultiUnblock={formState.isMulUnBlocked ? true : false}
             multiBlockCollegeIds={formState.multiBlockCollegeIds}
             modalClose={modalClose}
+            clearSelectedRow={selectedRowCleared}
           />
         </Card>
       </Grid>

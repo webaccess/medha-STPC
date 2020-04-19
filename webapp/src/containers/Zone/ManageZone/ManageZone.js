@@ -53,6 +53,9 @@ const ViewZone = props => {
     fromEditZone: props["location"]["fromEditZone"]
       ? props["location"]["fromEditZone"]
       : false,
+    editedZoneName: props["location"]["editedZoneData"]
+      ? props["location"]["editedZoneData"]["name"]
+      : "",
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddZone"]
       ? props["location"]["isDataAdded"]
@@ -63,6 +66,9 @@ const ViewZone = props => {
     fromAddZone: props["location"]["fromAddZone"]
       ? props["location"]["fromAddZone"]
       : false,
+    addedZoneName: props["location"]["addedZoneData"]
+      ? props["location"]["addedZoneData"]["name"]
+      : "",
     isClearResetFilter: false,
     /** This is for delete */
     isDataDeleted: false,
@@ -485,7 +491,7 @@ const ViewZone = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              Zone {formState.editedZoneName} has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -506,7 +512,7 @@ const ViewZone = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating Zone. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -529,7 +535,7 @@ const ViewZone = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              Zone {formState.addedZoneName} has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -550,7 +556,7 @@ const ViewZone = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding zone. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
