@@ -32,6 +32,7 @@ export const ADD_USER_TITLE = "Add User";
 export const VIEW_USER_TITLE = "View User";
 export const MANAGE_USER_TEXT = "Manage User";
 export const DELETE_MULTI_USER_BUTTON = "Delete Selected User";
+export const EDIT_USER_TITLE = "Edit User";
 
 /** College */
 export const ADD_COLLEGE_TEXT = "Add College";

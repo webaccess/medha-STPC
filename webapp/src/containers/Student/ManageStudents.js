@@ -25,17 +25,15 @@ import {
 import { serviceProviderForGetRequest } from "../../api/Axios";
 import auth from "../../components/Auth";
 
-// const STUDENTS_URL =
-//   strapiConstants.STRAPI_DB_URL +
-//   strapiConstants.STRAPI_COLLEGES +
-//   "/" +
-//   auth.getUserInfo().college.id +
-//   "/" +
-//   strapiConstants.STRAPI_STUDENTS;
+const college = auth.getUserInfo() ? auth.getUserInfo().college : null;
+const collegeId = college ? college.id : null;
+
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL +
   strapiConstants.STRAPI_COLLEGES +
+  `/${collegeId}/` +
   strapiConstants.STRAPI_STUDENTS;
+
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const USER_FILTER = "user.username_contains";

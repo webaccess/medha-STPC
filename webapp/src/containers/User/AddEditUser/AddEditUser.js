@@ -511,7 +511,9 @@ const AddEditUser = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.ADD_USER_TITLE}
+          {formState.isEditUser
+            ? genericConstants.EDIT_USER_TITLE
+            : genericConstants.ADD_USER_TITLE}
         </Typography>
       </Grid>
       <Grid spacing={3}>

@@ -90,7 +90,7 @@ const AddEditActivity = props => {
     { name: "Third", id: "Third" },
     { name: "Fourth", id: "Fourth" }
   ];
-
+  let stream;
   const [isFailed, setIsFailed] = useState(false);
 
   const classes = useStyles();
@@ -100,10 +100,12 @@ const AddEditActivity = props => {
   const [academicyearlist, setacademicyearlist] = useState([]);
   useEffect(() => {
     getColleges();
-    getStreams();
 
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
+  useEffect(() => {
+    getStreams();
+  }, [collegelist]);
 
   if (formState.dataForEdit && !formState.counter) {
     if (props.location["dataForEdit"]) {
@@ -331,6 +333,7 @@ const AddEditActivity = props => {
       )
       .then(res => {
         console.log(res);
+        console.log(collegelist);
         setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
@@ -342,6 +345,7 @@ const AddEditActivity = props => {
       )
       .then(res => {
         console.log(res);
+        stream = res.data.result.map();
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
