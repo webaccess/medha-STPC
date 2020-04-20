@@ -576,7 +576,7 @@ const ManageEvent = props => {
         <GreenButton
           variant="contained"
           color="primary"
-          onClick={clearFilter}
+          onClick={() => {}}
           disableElevation
           to={routeConstants.ADD_EVENT}
           startIcon={<AddCircleOutlineOutlinedIcon />}
