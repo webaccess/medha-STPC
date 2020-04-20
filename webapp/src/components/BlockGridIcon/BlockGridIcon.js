@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "@material-ui/core";
 
-const BlockIcon = (props) => {
+const BlockIcon = props => {
   return (
     <Tooltip title={props.title ? "Unblock" : "Block"} placement="top">
       <i

@@ -141,12 +141,14 @@ const DeleteZone = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("Zones successfully deleted");
+          handleCloseModal("Zones has been deleted successfully.");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error deleting selected Zones");
+          handleCloseModal(
+            "An error has occured while deleting zones. Kindly, try again."
+          );
         });
     } else {
       serviceProviders
@@ -158,14 +160,18 @@ const DeleteZone = props => {
           }));
           formState.isDeleteData = true;
           handleCloseModal(
-            "Zone " + formState.dataToDelete["name"] + " successfully deleted"
+            "Zone " +
+              formState.dataToDelete["name"] +
+              " has been deleted successfully."
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error deleting Zone " + formState.dataToDelete["name"]
+            "An error has occured while deleting zone" +
+              formState.dataToDelete["name"] +
+              ". Kindly, try again."
           );
         });
     }

@@ -62,6 +62,7 @@ const DeleteZone = props => {
     setOpen(true);
     event.preventDefault();
     event.persist();
+    props.clearSelectedRow(true);
     let status = {};
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
      and returns back an opbject with status and message*/
@@ -145,14 +146,15 @@ const DeleteZone = props => {
             ...formState,
             isValid: true
           }));
-          console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("Colleges successfully deleted");
+          handleCloseModal("Colleges has been deleted successfully");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error deleting selected Colleges");
+          handleCloseModal(
+            "An error has occured while deleting colleges. Kindly, try again"
+          );
         });
     } else {
       serviceProviders
@@ -166,14 +168,16 @@ const DeleteZone = props => {
           handleCloseModal(
             "College " +
               formState.dataToDelete["name"] +
-              " successfully deleted"
+              " has been deleted successfully"
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error deleting College " + formState.dataToDelete["name"]
+            "An error has occured while deleting college" +
+              formState.dataToDelete["name"] +
+              ". Kindly, try again"
           );
         });
     }

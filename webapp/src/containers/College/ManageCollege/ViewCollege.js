@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Auth as auth, Typography } from "../../../components";
@@ -21,6 +21,7 @@ import {
   ReadOnlyTextField
 } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
+import LoaderContext from "../../../context/LoaderContext";
 
 const CollegeName = "College name";
 const CollegeCode = "College code";
@@ -32,17 +33,16 @@ const Zone = "Zone";
 const ContactNumber = "Contact";
 const Email = "Email-Id";
 const Principal = "Principal";
-const Streams = "Stream";
-const Strength = "Strength";
 const StreamNotPresent = "Stream and data not present";
 
 const ViewCollege = props => {
   const history = useHistory();
   const classes = useStyles();
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+
   const COLLEGE_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
   const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
-  const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     collegeDetails: [],
     streams: []
@@ -52,6 +52,7 @@ const ViewCollege = props => {
   }, []);
 
   async function getCollegeData() {
+    setLoaderStatus(true);
     let paramsForCollege;
     if (auth.getUserInfo().role.name === "College Admin") {
       paramsForCollege = {
@@ -63,7 +64,6 @@ const ViewCollege = props => {
       };
     }
     if (paramsForCollege.id !== undefined) {
-      setOpen(true);
       await serviceProviders
         .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
         .then(res => {
@@ -72,25 +72,26 @@ const ViewCollege = props => {
             ...formState,
             collegeDetails: viewData
           }));
-          setOpen(false);
         })
         .catch(error => {
           console.log("error", error);
-          setOpen(false);
         });
     } else {
       history.push({
         pathname: routeConstants.MANAGE_COLLEGE
       });
     }
+    setLoaderStatus(false);
   }
 
   const editData = () => {
+    setLoaderStatus(true);
     history.push({
       pathname: routeConstants.EDIT_COLLEGE,
       editCollege: true,
       dataForEdit: formState.collegeDetails
     });
+    setLoaderStatus(false);
   };
 
   return (
@@ -259,9 +260,6 @@ const ViewCollege = props => {
                 </Grid>
               </Grid>
             </Grid>
-            <Backdrop className={classes.backdrop} open={open}>
-              <CircularProgress color="inherit" />
-            </Backdrop>
           </CardContent>
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>
