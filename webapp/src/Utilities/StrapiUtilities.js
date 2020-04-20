@@ -44,64 +44,64 @@
  */
 
 /**  Setters */
-export const setState = id => {
+export const setState = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
-export const setUser = id => {
+export const setUser = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
-export const setAdmins = id => {
+export const setAdmins = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
-export const setZone = id => {
+export const setZone = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
 export const setRpc = (id, main_college = null) => {
   return {
     id: id,
-    main_college: main_college
+    main_college: main_college,
   };
 };
 
-export const setMainCollege = id => {
+export const setMainCollege = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
-export const setRole = id => {
+export const setRole = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
-export const setStreams = id => {
+export const setStreams = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
-export const setCollege = id => {
+export const setCollege = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
-export const setQualification = id => {
+export const setQualification = (id) => {
   return {
-    id: id
+    id: id,
   };
 };
 
@@ -110,7 +110,7 @@ export const addRpc = (name, state = null, main_college = null) => {
   return {
     name: name,
     state: state,
-    main_college: main_college
+    main_college: main_college,
   };
 };
 
@@ -140,7 +140,7 @@ export const addCollege = (
     zone: zone,
     district: district,
     stream_strength: stream_strength,
-    tpos: tpos
+    tpos: tpos,
   };
 };
 export const addEvent = (
@@ -169,19 +169,19 @@ export const addEvent = (
     educations: educations,
     colleges: colleges,
     streams: streams,
-    state: state
+    state: state,
   };
 };
-export const addState = name => {
+export const addState = (name) => {
   return {
-    name: name
+    name: name,
   };
 };
 
 export const addZone = (name, state = null) => {
   return {
     name: name,
-    state: state
+    state: state,
   };
 };
 
@@ -192,7 +192,7 @@ export const addUser = (
   last_name,
   password,
   contact_number,
-  confirmed = false,
+  blocked = false,
   state = null,
   zone = null,
   rpc = null,
@@ -206,12 +206,12 @@ export const addUser = (
     last_name: last_name,
     password: password,
     contact_number: contact_number,
-    confirmed: confirmed,
+    blocked: blocked,
     state: state,
     zone: zone,
     rpc: rpc,
     college: college,
-    role: role
+    role: role,
   };
 };
 export const addStudent = (
@@ -252,7 +252,7 @@ export const addStudent = (
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
-    physicallyHandicapped: physicallyHandicapped
+    physicallyHandicapped: physicallyHandicapped,
   };
 };
 
@@ -292,7 +292,7 @@ export const editStudent = (
     gender: gender,
     roll_number: rollNumber,
     physicallyHandicapped: physicallyHandicapped,
-    id: id
+    id: id,
   };
 };
 export const addEducation = (
@@ -305,7 +305,7 @@ export const addEducation = (
     qualification,
     board,
     year_of_passing: parseInt(yearOfPassing),
-    percentage: parseFloat(percentage)
+    percentage: parseFloat(percentage),
   };
 };
 
@@ -341,7 +341,7 @@ export const addActivity = (
     address: address,
     description: description,
     trainer_name: trainer_name,
-    streams: streams
+    streams: streams,
   };
 
   if (files) {
@@ -378,7 +378,7 @@ export const editActivity = (
     description: description,
     trainer_name: trainer_name,
     streams: streams,
-    id: id
+    id: id,
   };
   const formdata = new FormData();
   //console.log(files);
@@ -392,7 +392,7 @@ export const addAcademicHistory = (academicYear, educationYear, percentage) => {
   return {
     academic_year: academicYear,
     education_year: educationYear,
-    percentage
+    percentage,
   };
 };
 
@@ -401,13 +401,13 @@ export const addActivityBatch = (name, students, dateFrom, dateTo) => {
     name,
     students,
     start_date_time: dateFrom,
-    end_date_time: dateTo
+    end_date_time: dateTo,
   };
 };
 
 export const studentEventRegistration = (event, student) => {
   return {
     event: event,
-    student: student
+    student: student,
   };
 };

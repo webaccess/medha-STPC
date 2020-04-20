@@ -168,6 +168,7 @@ const ViewUser = (props) => {
                 <FormControlLabel
                   control={
                     <Switch
+                      checked={formState.userDetails.blocked || false}
                       value={formState.userDetails.blocked}
                       disabled={true}
                     />

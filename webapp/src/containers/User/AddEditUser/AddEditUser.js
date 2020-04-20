@@ -47,7 +47,7 @@ const zone = "zone";
 const rpc = "rpc";
 const role = "role";
 const college = "college";
-const active = "active";
+const blocked = "blocked";
 
 /** URLS */
 const USERS_URL =
@@ -133,8 +133,8 @@ const AddEditUser = (props) => {
       if (props["dataForEdit"]["username"]) {
         formState.values[username] = props["dataForEdit"]["username"];
       }
-      if (props["dataForEdit"]["confirmed"]) {
-        formState.values[active] = props["dataForEdit"]["confirmed"];
+      if (props["dataForEdit"]["blocked"]) {
+        formState.values[blocked] = props["dataForEdit"]["blocked"];
       }
       if (props["dataForEdit"]["role"] && props["dataForEdit"]["role"]["id"]) {
         formState.values[role] = props["dataForEdit"]["role"]["id"];
@@ -453,7 +453,7 @@ const AddEditUser = (props) => {
       formState.values[lastname],
       formState.values[password],
       formState.values[contact],
-      formState.values[active],
+      formState.values[blocked] ? formState.values[blocked] : false,
       formState.values[state] ? formState.values[state] : null,
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
@@ -741,21 +741,21 @@ const AddEditUser = (props) => {
                   <FormControlLabel
                     control={
                       <Switch
-                        name={active}
-                        checked={formState.values[active] || false}
+                        name={blocked}
+                        checked={formState.values[blocked] || false}
                         onChange={handleChange}
-                        value={formState.values[active] || false}
-                        error={hasError(active)}
+                        value={formState.values[blocked] || false}
+                        error={hasError(blocked)}
                         helperText={
-                          hasError(active)
-                            ? formState.errors[active].map((error) => {
+                          hasError(blocked)
+                            ? formState.errors[blocked].map((error) => {
                                 return error + " ";
                               })
                             : null
                         }
                       />
                     }
-                    label={formState.values[active] ? "Unblock" : "Block"}
+                    label={formState.values[blocked] ? "Unblock" : "Block"}
                   />
                 </FormGroup>
               </Grid>
