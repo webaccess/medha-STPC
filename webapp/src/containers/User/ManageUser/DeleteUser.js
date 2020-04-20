@@ -14,13 +14,14 @@ import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_ID = "UserName";
 
-const DeleteUser = props => {
+const DeleteUser = (props) => {
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
     values: {},
-    dataToDelete: {}
+    username: "",
+    dataToDelete: {},
   });
 
   if (props.showModal && !formState.stateCounter) {
@@ -36,12 +37,12 @@ const DeleteUser = props => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -50,7 +51,7 @@ const DeleteUser = props => {
     }
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     /** CALL Put FUNCTION */
     deleteData();
     props.clearSelectedRow(true);
@@ -61,15 +62,15 @@ const DeleteUser = props => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(USER_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           formState.isDeleteData = true;
           handleCloseModal("Users has been deleted successfully");
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
           formState.isDeleteData = false;
           handleCloseModal(
@@ -79,10 +80,10 @@ const DeleteUser = props => {
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(USER_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           formState.isDeleteData = true;
           handleCloseModal(
@@ -91,8 +92,8 @@ const DeleteUser = props => {
               " has been deleted successfully"
           );
         })
-        .catch(error => {
-          console.log("errorDelete", error);
+        .catch((error) => {
+          console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
             "An error has occured while deleting user" +
@@ -114,7 +115,7 @@ const DeleteUser = props => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500
+        timeout: 500,
       }}
     >
       <Fade in={props.showModal}>
@@ -144,7 +145,7 @@ const DeleteUser = props => {
                     </p>
                   ) : (
                     <p>
-                      Are you sure you want to delete user "
+                      Are you sure you want to delete "
                       {formState.dataToDelete["name"]}"?
                     </p>
                   )}

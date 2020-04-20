@@ -10,6 +10,9 @@ import {
   Divider,
   Backdrop,
   CircularProgress,
+  FormGroup,
+  FormControlLabel,
+  Switch,
 } from "@material-ui/core";
 import useStyles from "../../ContainerStyles/ViewPageStyles";
 import { useHistory } from "react-router-dom";
@@ -66,13 +69,31 @@ const ViewUser = (props) => {
   };
 
   const editData = () => {
-    history.push({
-      pathname: routeConstants.EDIT_USER,
-      editCollege: true,
-      dataForEdit: formState.userDetails,
-    });
+    getDataForEdit(props["location"]["dataForEdit"]);
   };
 
+  const getDataForEdit = async (id) => {
+    setLoaderStatus(true);
+    let paramsForUsers = {
+      id: id,
+    };
+    await serviceProviders
+      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
+      .then((res) => {
+        let editData = res.data.result[0];
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_USER,
+          editUser: true,
+          dataForEdit: editData,
+        });
+      })
+      .catch((error) => {
+        console.log("error");
+      });
+    setLoaderStatus(false);
+  };
+  console.log(formState.userDetails);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -141,6 +162,21 @@ const ViewUser = (props) => {
                 </Grid>
                 <Grid item md={6} xs={12}></Grid>
               </Grid>
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <FormGroup row>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      value={formState.userDetails.blocked}
+                      disabled={true}
+                    />
+                  }
+                  label={
+                    formState.userDetails.blocked ? "Blocked" : "Unblocked"
+                  }
+                />
+              </FormGroup>
             </Grid>
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>

@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Modal,
   Backdrop,
-  Fade
+  Fade,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -17,13 +17,13 @@ import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
-const BlockUser = props => {
+const BlockUser = (props) => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDataBlockUnblock: false,
     isValid: false,
     stateCounter: 0,
-    values: {}
+    values: {},
   });
 
   const handleCloseModal = (message = "") => {
@@ -33,12 +33,12 @@ const BlockUser = props => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDataBlockUnblock: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
     if (formState.isDataBlockUnblock) {
       props.closeModal(true, message);
@@ -47,34 +47,33 @@ const BlockUser = props => {
     }
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     setOpen(true);
     /** CALL Put FUNCTION */
     blockUser();
     props.clearSelectedRow(true);
     event.preventDefault();
   };
-
   const blockUser = () => {
     var body;
     if (props.isUnBlocked || props.isMultiUnblock) {
       body = {
-        blocked: false
+        blocked: false,
       };
     }
     if (props.isBlocked || props.isMulBlocked) {
       body = {
-        blocked: true
+        blocked: true,
       };
     }
 
     if (props.isMulBlocked || props.isMultiUnblock) {
       serviceProviders
         .serviceProviderForAllBlockRequest(USER_URL, props.id, body)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           formState.isDataBlockUnblock = true;
           if (props.isMultiUnblock) {
@@ -83,7 +82,7 @@ const BlockUser = props => {
             handleCloseModal("Users has been blocked");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error");
           formState.isDataBlockUnblock = false;
           if (props.isMultiUnblock) {
@@ -95,7 +94,7 @@ const BlockUser = props => {
     } else {
       serviceProviders
         .serviceProviderForPutRequest(USER_URL, props.id, body)
-        .then(res => {
+        .then((res) => {
           formState.isDataBlockUnblock = true;
           if (props.dataToBlockUnblock["isUserBlock"]) {
             handleCloseModal(
@@ -107,14 +106,13 @@ const BlockUser = props => {
             );
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
           formState.isDataBlockUnblock = false;
           handleCloseModal("user unblock successfully");
         });
     }
   };
-
   const classes = useStyles();
   return (
     <Modal
@@ -126,7 +124,7 @@ const BlockUser = props => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500
+        timeout: 500,
       }}
     >
       <Fade in={props.getModel}>
@@ -155,18 +153,20 @@ const BlockUser = props => {
                 justifyContent="center"
               >
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isUnBlocked || props.isMultiUnblock ? (
-                    <p>
-                      Are you sure you want to unblock user{" "}
-                      {props.dataToBlockUnblock["name"]}
-                    </p>
-                  ) : null}
-                  {props.isBlocked || props.isMulBlocked ? (
-                    <p>
-                      Are you sure you want to block user{" "}
-                      {props.dataToBlockUnblock["name"]}
-                    </p>
-                  ) : null}
+                  {props.isUnBlocked
+                    ? "Are you sure you want to unblock " +
+                      props.dataToBlockUserName
+                    : null}
+                  {props.isMultiUnblock
+                    ? "Are you sure you want to unblock all the selected users"
+                    : null}
+                  {props.isBlocked
+                    ? "Are you sure you want to block " +
+                      props.dataToBlockUserName
+                    : null}
+                  {props.isMulBlocked
+                    ? "Are you sure you want to block all the selected users"
+                    : null}
                 </Grid>
               </Grid>
             </Grid>
