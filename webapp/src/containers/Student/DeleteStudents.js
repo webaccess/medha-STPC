@@ -3,7 +3,7 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -14,43 +14,43 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../components";
-import useStyles from "./ApproveStudentStyles";
+import useStyles from "../ContainerStyles/ModalPopUpStyles";
 
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
+const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_ID = "UserName";
 
-const DeleteStudents = props => {
-
+const DeleteStudents = (props) => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
-    values: {}
+    values: {},
   });
 
   const handleCloseModal = (message = "") => {
+    /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
+    to ensure that only string value is passed to message variable */
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
-
     if (formState.isDeleteData) {
-      props.deleteEvent(true, message);
+      props.closeModal(true, message);
     } else {
-      props.deleteEvent(false, message);
+      props.closeModal(false, message);
     }
-    props.closeModal();
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     /** CALL Put FUNCTION */
     deleteStudentData();
     event.preventDefault();
@@ -60,29 +60,55 @@ const DeleteStudents = props => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(STUDENTS_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
-            ...formState,
-            isValid: true
-          }));
-          formState.isDeleteData = true;
-          handleCloseModal("selected " + props.id.length + "students are succesfully deleted");
+        .then((res) => {
+          serviceProviders
+            .serviceProviderForAllDeleteRequest(USERS_URL, props.UserID)
+            .then((res) => {
+              setFormState((formState) => ({
+                ...formState,
+                isValid: true,
+              }));
+
+              formState.isDeleteData = true;
+              handleCloseModal(
+                "Selected " + props.id.length + " students successfully deleted"
+              );
+            })
+            .catch((error) => {
+              console.log("UserDeleteError", error);
+            });
         })
-        .catch(error => {
-          console.log("error", error);
+        .catch((error) => {
+          console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error in Deleting " + props.id.length + " selected students");
+          handleCloseModal(
+            "Error deleting selected " + props.id.length + " students"
+          );
         });
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(STUDENTS_URL, props.id)
-        .then(res => {
-          formState.isDeleteData = true;
-          handleCloseModal("Successfully deleted selected student " + props.dataToDelete["name"]);
+        .then((res) => {
+          serviceProviders
+            .serviceProviderForDeleteRequest(
+              USERS_URL,
+              props.dataToDelete["userId"]
+            )
+            .then((res) => {
+              formState.isDeleteData = true;
+              handleCloseModal(
+                "Successfully deleted student " + props.dataToDelete["name"]
+              );
+            })
+            .catch((error) => {
+              console.log("studenterror", error);
+            });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
-          handleCloseModal("Error in deleting selected student " + props.dataToDelete["name"]);
+          handleCloseModal(
+            "Error in deleting student " + props.dataToDelete["name"]
+          );
         });
     }
   };
@@ -98,7 +124,7 @@ const DeleteStudents = props => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500
+        timeout: 500,
       }}
     >
       <Fade in={props.showModal}>
@@ -121,13 +147,13 @@ const DeleteStudents = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                {props.isMultiDelete ? (
-                     "Are you sure you want to delete " +  props.id.length + " students ?"
-                  ) : (
-                    "  Are you sure you want to delete student " +
-                     props.dataToDelete["name"] + " ?"
-                    
-                  )}
+                  {props.isMultiDelete
+                    ? "Are you sure you want to delete " +
+                      props.id.length +
+                      " students ?"
+                    : "  Are you sure you want to delete student " +
+                      props.dataToDelete["name"] +
+                      " ?"}
                 </Grid>
               </Grid>
             </Grid>

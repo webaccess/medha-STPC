@@ -128,6 +128,7 @@ const StudentProfile = props => {
     fromAddStudentToRecruitmentDrive:
       props["location"]["fromAddStudentToRecruitmentDrive"],
     fromEventStudentList: props["location"]["fromEventStudentList"],
+    fromManageStudentList: props["location"]["fromManageStudentList"],
     eventId: props["location"]["eventId"],
     eventTitle: props["location"]["eventTitle"]
   });
@@ -225,6 +226,12 @@ const StudentProfile = props => {
     } else if (formState.fromEventStudentList) {
       history.push({
         pathname: routeConstants.EVENT_STUDENT_LIST,
+        eventId: formState.eventId,
+        eventTitle: formState.eventTitle
+      });
+    } else if (formState.fromManageStudentList){
+      history.push({
+        pathname: routeConstants.MANAGE_STUDENT,
         eventId: formState.eventId,
         eventTitle: formState.eventTitle
       });
