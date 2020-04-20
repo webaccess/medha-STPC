@@ -8,13 +8,13 @@
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity
+  sanitizeEntity,
 } = require("strapi-utils");
 
 const utils = require("../../../config/utils.js");
 const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model
+    model: strapi.query("user", "users-permissions").model,
   });
 
 const _ = require("lodash");
@@ -29,7 +29,7 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["activity-batch"],
-          filters
+          filters,
         })
       )
       .fetchPage({
@@ -37,7 +37,7 @@ module.exports = {
         pageSize:
           pageSize < 0
             ? await utils.getTotalRecords("activity-batch")
-            : pageSize
+            : pageSize,
       })
       .then((res) => {
         return utils.getPaginatedResponse(res);
@@ -56,9 +56,24 @@ module.exports = {
   async student(ctx) {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
 
     const { student_id, stream_id } = query;
+
+    let sort;
+    if (filters.sort) {
+      sort = _.pick(filters, ["sort"]);
+
+      let field = sort.sort[0].field.toString();
+
+      if (field.includes(".")) {
+        field = field.split(".");
+
+        if (field.length > 1) {
+          filters = _.omit(filters, ["sort"]);
+        }
+      }
+    }
 
     const activityBatch = await strapi.query("activity-batch").findOne({ id });
     if (!activityBatch) {
@@ -77,7 +92,7 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["student"],
-          filters
+          filters,
         })
       )
       .fetchAll()
@@ -104,11 +119,17 @@ module.exports = {
     if (stream_id) {
       students = students.filter((student) => (student.stream.id = stream_id));
     }
+    if (sort) {
+      const field = sort.sort[0].field.toString();
+      const order = sort.sort[0].order.toString();
 
+      if (order === "desc") students = _.sortBy(students, [field]).reverse();
+      else if (order === "asc") students = _.sortBy(students, [field]);
+    }
     const response = utils.paginate(students, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination
+      ...response.pagination,
     };
   },
 
@@ -133,7 +154,7 @@ module.exports = {
       .destroy({ require: false });
 
     return {
-      result: "success"
+      result: "success",
     };
   },
 
@@ -256,5 +277,5 @@ module.exports = {
     }
 
     return strapi.services["activity-batch"].addStudentsToActivityBatch(ctx);
-  }
+  },
 };

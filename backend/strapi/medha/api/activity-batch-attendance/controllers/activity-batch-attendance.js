@@ -18,7 +18,7 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["activity-batch-attendance"],
-          filters
+          filters,
         })
       )
       .fetchPage({
@@ -26,9 +26,9 @@ module.exports = {
         pageSize:
           pageSize < 0
             ? await utils.getTotalRecords("activity-batch-attendance")
-            : pageSize
+            : pageSize,
       })
-      .then(res => {
+      .then((res) => {
         return utils.getPaginatedResponse(res);
       });
   },
@@ -40,5 +40,5 @@ module.exports = {
       .findOne({ id });
 
     return utils.getFindOneResponse(response);
-  }
+  },
 };
