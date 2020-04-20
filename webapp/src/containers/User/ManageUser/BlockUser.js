@@ -158,14 +158,14 @@ const BlockUser = (props) => {
                       props.dataToBlockUserName
                     : null}
                   {props.isMultiUnblock
-                    ? "Are you sure you want to unblock all the selected users"
+                    ? "Are you sure you want to unblock the selected users"
                     : null}
                   {props.isBlocked
                     ? "Are you sure you want to block " +
                       props.dataToBlockUserName
                     : null}
                   {props.isMulBlocked
-                    ? "Are you sure you want to block all the selected users"
+                    ? "Are you sure you want to block the selected users"
                     : null}
                 </Grid>
               </Grid>
