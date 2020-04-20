@@ -641,7 +641,6 @@ const AddEditCollege = props => {
           postData
         )
         .then(res => {
-          console.log("collegeedited", res);
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
@@ -667,8 +666,6 @@ const AddEditCollege = props => {
       serviceProviders
         .serviceProviderForPostRequest(COLLEGES_URL, postData)
         .then(res => {
-          console.log("collegeadded", res);
-
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,
             fromAddCollege: true,

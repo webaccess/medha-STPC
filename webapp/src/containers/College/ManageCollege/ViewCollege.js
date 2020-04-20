@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Auth as auth, Typography } from "../../../components";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   Card,
   CardContent,
@@ -33,6 +35,7 @@ const Zone = "Zone";
 const ContactNumber = "Contact";
 const Email = "Email-Id";
 const Principal = "Principal";
+const TPO = "TPO's";
 const StreamNotPresent = "Stream and data not present";
 
 const ViewCollege = props => {
@@ -47,6 +50,11 @@ const ViewCollege = props => {
     collegeDetails: [],
     streams: []
   });
+
+  const tposData = formState.collegeDetails.tpos;
+  //console.log("tpos", tpos);
+  console.log("collegeDetails", formState.collegeDetails);
+
   useEffect(() => {
     getCollegeData();
   }, []);
@@ -206,7 +214,30 @@ const ViewCollege = props => {
                 </Grid>
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}></Grid>
+                <Grid item md={6} xs={12}>
+                  {/* <ReadOnlyTextField
+                    id="TPO"
+                    label={TPO}
+                    defaultValue={("value1", "value2")}
+                  /> */}
+                  <Autocomplete
+                    multiple
+                    id="fixed-tags-demo"
+                    options={tposData}
+                    getOptionLabel={option => option.username}
+                    //defaultValue={formState.collegeDetails.tpos}
+                    //disabled
+                    style={{ width: 500 }}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label="TPO"
+                        variant="outlined"
+                        placeholder="Favorites"
+                      />
+                    )}
+                  />
+                </Grid>
                 <Grid item md={6} xs={12}></Grid>
               </Grid>
             </Grid>
