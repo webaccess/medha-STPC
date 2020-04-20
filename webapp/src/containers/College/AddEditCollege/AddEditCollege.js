@@ -818,7 +818,7 @@ const AddEditCollege = props => {
                         /** This is used to set the default value to the auto complete */
                         value={
                           states[
-                            states.findIndex(function(item, i) {
+                            states.findIndex(function (item, i) {
                               return item.id === formState.values[state];
                             })
                           ] || null
@@ -880,7 +880,7 @@ const AddEditCollege = props => {
                           formState.isStateClearFilter
                             ? null
                             : zones[
-                                zones.findIndex(function(item, i) {
+                                zones.findIndex(function (item, i) {
                                   return item.id === formState.values[zone];
                                 })
                               ] ||
@@ -946,7 +946,7 @@ const AddEditCollege = props => {
                           formState.isStateClearFilter
                             ? null
                             : rpcs[
-                                rpcs.findIndex(function(item, i) {
+                                rpcs.findIndex(function (item, i) {
                                   return item.id === formState.values[rpc];
                                 })
                               ] ||
@@ -1002,7 +1002,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : districts[
-                              districts.findIndex(function(item, i) {
+                              districts.findIndex(function (item, i) {
                                 return item.id === formState.values[district];
                               })
                             ] ||
@@ -1104,7 +1104,7 @@ const AddEditCollege = props => {
                         /** This is used to set the default value to the auto complete */
                         value={
                           user[
-                            user.findIndex(function(item, i) {
+                            user.findIndex(function (item, i) {
                               return item.id === formState.values[principal];
                             })
                           ] || null /** Please give a default " " blank value */
@@ -1267,7 +1267,7 @@ const AddEditCollege = props => {
                                     name={streamId}
                                     value={
                                       streamsDataBackup[
-                                        streamsDataBackup.findIndex(function(
+                                        streamsDataBackup.findIndex(function (
                                           item,
                                           i
                                         ) {
