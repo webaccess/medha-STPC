@@ -63,6 +63,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:id/colleges/:collegeId/students",
+      "handler": "event.eligibleCollegeStudents",
+      "config": {
+        "policies": ["isCollegeEventOwner"]
+      }
     }
   ]
 }
