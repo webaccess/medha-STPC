@@ -9,7 +9,7 @@ import {
   Tooltip,
   Collapse,
   IconButton,
-  CardActions,
+  CardActions
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -28,7 +28,7 @@ import {
   GreenButton,
   Alert,
   CustomDateTimePicker,
-  DeleteGridIcon,
+  DeleteGridIcon
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import { uniqBy, get } from "lodash";
@@ -43,7 +43,7 @@ import CrossGridIcon from "../../../components/CrossGridIcon";
 const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
 
-const AddEditActivityBatches = (props) => {
+const AddEditActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
@@ -78,7 +78,7 @@ const AddEditActivityBatches = (props) => {
     isValid: false,
     values: {},
     touched: {},
-    errors: {},
+    errors: {}
   });
 
   if (formState.isEditActivityBatch) {
@@ -150,15 +150,15 @@ const AddEditActivityBatches = (props) => {
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT)
-      .then((res) => {
+      .then(res => {
         console.log(res);
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           studentsFilter: res.data.result,
-          streams: getStreams(res.data.result),
+          streams: getStreams(res.data.result)
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
 
@@ -170,28 +170,28 @@ const AddEditActivityBatches = (props) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
-      Object.keys(params).map((key) => {
+      Object.keys(params).map(key => {
         defaultParams[key] = params[key];
       });
       params = defaultParams;
     } else {
       params = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT, params)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           students: res.data.result,
           dataToShow: res.data.result,
@@ -200,10 +200,10 @@ const AddEditActivityBatches = (props) => {
           page: res.data.page,
           pageCount: res.data.pageCount,
           isDataLoading: false,
-          streams: getStreams(res.data.result),
+          streams: getStreams(res.data.result)
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
@@ -222,7 +222,7 @@ const AddEditActivityBatches = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStudents(formState.pageSize, page);
     } else {
@@ -243,13 +243,13 @@ const AddEditActivityBatches = (props) => {
   };
 
   const clearFilter = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -259,12 +259,12 @@ const AddEditActivityBatches = (props) => {
     getStudents(formState.pageSize, 1);
   };
 
-  const getStreams = (data) => {
-    const streams = data.map((student) => student.stream);
-    return uniqBy(streams, (stream) => stream.id);
+  const getStreams = data => {
+    const streams = data.map(student => student.stream);
+    return uniqBy(streams, stream => stream.id);
   };
 
-  const isDeleteCellCompleted = (status) => {
+  const isDeleteCellCompleted = status => {
     formState.isDataDeleted = status;
   };
 
@@ -280,35 +280,35 @@ const AddEditActivityBatches = (props) => {
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
     setSeletedStudent([]);
-    setClearSelectedRows((val) => ({ clearSelectedRows: !val }));
+    setClearSelectedRows(val => ({ clearSelectedRows: !val }));
     if (formState.isDataDeleted) {
       getStudents(formState.pageSize, formState.page);
     }
   };
 
-  const handleDeleteActivityBatchStudent = (student) => {
-    setFormState((formState) => ({
+  const handleDeleteActivityBatchStudent = student => {
+    setFormState(formState => ({
       ...formState,
       dataToDelete: [student.id],
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
   const handleDeleteMultipleStudents = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       dataToDelete: selectedStudents,
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
-  const handleVerifyMultipleStudents = (ids) => {
+  const handleVerifyMultipleStudents = ids => {
     const studentsToVerify = ids;
     const URL =
       strapiConstants.STRAPI_DB_URL +
@@ -317,22 +317,22 @@ const AddEditActivityBatches = (props) => {
       strapiConstants.STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH;
 
     const postData = {
-      students: studentsToVerify,
+      students: studentsToVerify
     };
 
     serviceProviders
       .serviceProviderForPostRequest(URL, postData)
       .then(() => {
         setSeletedStudent([]);
-        setClearSelectedRows((val) => ({ clearSelectedRows: !val }));
+        setClearSelectedRows(val => ({ clearSelectedRows: !val }));
         getStudents(formState.pageSize, formState.page);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
   };
 
-  const handleUnVerifyMultipleStudents = (ids) => {
+  const handleUnVerifyMultipleStudents = ids => {
     const studentsToVerify = ids;
     const URL =
       strapiConstants.STRAPI_DB_URL +
@@ -341,35 +341,35 @@ const AddEditActivityBatches = (props) => {
       strapiConstants.STRAPI_UNVALIDATE_STUDENT_ACTIVITY_BATCH;
 
     const postData = {
-      students: studentsToVerify,
+      students: studentsToVerify
     };
 
     serviceProviders
       .serviceProviderForPostRequest(URL, postData)
       .then(() => {
         setSeletedStudent([]);
-        setClearSelectedRows((val) => ({ clearSelectedRows: !val }));
+        setClearSelectedRows(val => ({ clearSelectedRows: !val }));
         getStudents(formState.pageSize, formState.page);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
   };
 
   /** This handle change is used to handle changes to text field */
-  const handleChange = (event) => {
+  const handleChange = event => {
     /** TO SET VALUES IN FORMSTATE */
     event.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [event.target.name]: event.target.value,
+        [event.target.name]: event.target.value
       },
       touched: {
         ...formState.touched,
-        [event.target.name]: true,
-      },
+        [event.target.name]: true
+      }
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -379,15 +379,15 @@ const AddEditActivityBatches = (props) => {
   };
 
   const handleRowChange = ({ selectedRows }) => {
-    const studentIds = selectedRows.map((student) => student.id);
+    const studentIds = selectedRows.map(student => student.id);
     setSeletedStudent(studentIds);
   };
 
   /** This checks if the corresponding field has errors */
-  const hasError = (field) => (formState.errors[field] ? true : false);
+  const hasError = field => (formState.errors[field] ? true : false);
 
   /** Handle submit handles the submit and performs all the validations */
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     let isValid = false;
     /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -420,25 +420,25 @@ const AddEditActivityBatches = (props) => {
       /** CALL POST FUNCTION */
       postActivityBatchData();
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
     }
     event.preventDefault();
   };
 
   const handleDateChange = (datefrom, event) => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [datefrom]: event,
+        [datefrom]: event
       },
       touched: {
         ...formState.touched,
-        [datefrom]: true,
-      },
+        [datefrom]: true
+      }
     }));
   };
 
@@ -464,37 +464,37 @@ const AddEditActivityBatches = (props) => {
             fromEditActivityBatch: true,
             isDataEdited: true,
             addResponseMessage: "",
-            editedData: {},
+            editedData: {}
           });
         })
-        .catch((error) => {
+        .catch(error => {
           history.push({
             pathname: `/manage-activity-batch/${activity}`,
             fromEditActivityBatch: true,
             isDataEdited: false,
             addResponseMessage: "",
-            editedData: {},
+            editedData: {}
           });
         });
     } else {
       serviceProviders
         .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
-        .then((res) => {
+        .then(res => {
           history.push({
             pathname: `/manage-activity-batch/${activity}`,
             fromAddActivityBatch: true,
             isDataAdded: true,
             addResponseMessage: "",
-            addedData: {},
+            addedData: {}
           });
         })
-        .catch((error) => {
+        .catch(error => {
           history.push({
             pathname: `/manage-activity-batch/${activity}`,
             fromAddActivityBatch: true,
             isDataAdded: false,
             addResponseMessage: "",
-            addedData: {},
+            addedData: {}
           });
         });
     }
@@ -505,16 +505,16 @@ const AddEditActivityBatches = (props) => {
     {
       name: "Student Name",
       sortable: true,
-      cell: (row) => `${row.user.first_name} ${row.user.last_name}`,
+      cell: row => `${row.user.first_name} ${row.user.last_name}`
     },
     { name: "Stream", sortable: true, selector: "stream.name" },
-    { name: "Mobile No.", sortable: true, selector: "user.contact_number" },
+    { name: "Mobile No.", sortable: true, selector: "user.contact_number" }
   ];
 
   if (formState.isEditActivityBatch) {
     column.push({
       name: "Action",
-      cell: (cell) => (
+      cell: cell => (
         <div style={{ display: "flex" }}>
           {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
@@ -556,7 +556,7 @@ const AddEditActivityBatches = (props) => {
       ),
       button: true,
       conditionalCellStyles: [],
-      width: "200px",
+      width: "200px"
     });
   }
 
@@ -702,7 +702,7 @@ const AddEditActivityBatches = (props) => {
                   id="student-dropdown"
                   options={formState.studentsFilter}
                   className={classes.autoCompleteField}
-                  getOptionLabel={(option) =>
+                  getOptionLabel={option =>
                     `${option.user.first_name} ${option.user.last_name}`
                   }
                   onChange={(event, value) =>
@@ -712,7 +712,7 @@ const AddEditActivityBatches = (props) => {
                       value
                     )
                   }
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       label="Student Name"
@@ -727,7 +727,7 @@ const AddEditActivityBatches = (props) => {
                   id="stream-dropdown"
                   options={formState.streams}
                   className={classes.autoCompleteField}
-                  getOptionLabel={(option) => option.name}
+                  getOptionLabel={option => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(
                       ACTIVITY_BATCH_STREAM_FILTER,
@@ -735,7 +735,7 @@ const AddEditActivityBatches = (props) => {
                       value
                     )
                   }
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       label="Stream"
@@ -751,7 +751,7 @@ const AddEditActivityBatches = (props) => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={(event) => {
+                  onClick={event => {
                     event.persist();
                     searchFilter();
                   }}
@@ -810,7 +810,7 @@ const AddEditActivityBatches = (props) => {
                     error={hasError(activityBatchName)}
                     helperText={
                       hasError(activityBatchName)
-                        ? formState.errors[activityBatchName].map((error) => {
+                        ? formState.errors[activityBatchName].map(error => {
                             return error + " ";
                           })
                         : null
@@ -821,7 +821,7 @@ const AddEditActivityBatches = (props) => {
                 </Grid>
                 <Grid item md={12} xs={12}>
                   <CustomDateTimePicker
-                    onChange={(event) => {
+                    onChange={event => {
                       handleDateChange(dateFrom, event);
                     }}
                     value={formState.values[dateFrom]}
@@ -832,7 +832,7 @@ const AddEditActivityBatches = (props) => {
                     error={hasError(dateFrom)}
                     helperText={
                       hasError(dateFrom)
-                        ? formState.errors[dateFrom].map((error) => {
+                        ? formState.errors[dateFrom].map(error => {
                             return error + " ";
                           })
                         : null
@@ -842,7 +842,7 @@ const AddEditActivityBatches = (props) => {
                 </Grid>
                 <Grid item md={12} xs={12} className={classes.marginTop}>
                   <CustomDateTimePicker
-                    onChange={(event) => {
+                    onChange={event => {
                       handleDateChange(dateTo, event);
                     }}
                     value={formState.values[dateTo]}
@@ -855,7 +855,7 @@ const AddEditActivityBatches = (props) => {
                     error={hasError(dateTo)}
                     helperText={
                       hasError(dateTo)
-                        ? formState.errors[dateTo].map((error) => {
+                        ? formState.errors[dateTo].map(error => {
                             return error + " ";
                           })
                         : null
@@ -874,16 +874,18 @@ const AddEditActivityBatches = (props) => {
                       {genericConstants.SAVE_BUTTON_TEXT}
                     </YellowButton>
                   </Grid>
-                  <Grid item className={classes.marginTop}>
-                    <YellowButton
-                      type="submit"
-                      color="primary"
-                      variant="contained"
-                      onClick={() => setShowStudentModal(true)}
-                    >
-                      {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
-                    </YellowButton>
-                  </Grid>
+                  {formState.isEditActivityBatch ? (
+                    <Grid item className={classes.marginTop}>
+                      <YellowButton
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        onClick={() => setShowStudentModal(true)}
+                      >
+                        {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
+                      </YellowButton>
+                    </Grid>
+                  ) : null}
                   <Grid item className={classes.marginTop}>
                     <GrayButton
                       type="submit"

@@ -22,7 +22,7 @@ import {
   Typography,
   Collapse,
   IconButton,
-  Tooltip,
+  Tooltip
 } from "@material-ui/core";
 import { serviceProviderForGetRequest } from "../../api/Axios";
 import auth from "../../components/Auth";
@@ -41,7 +41,7 @@ const SORT_FIELD_KEY = "_sort";
 const COLLEGEID = "college.id";
 const VERIFIEDBYCOLLEGE = "verifiedByCollege";
 
-const ManageStudents = (props) => {
+const ManageStudents = props => {
   const history = useHistory();
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -73,7 +73,7 @@ const ManageStudents = (props) => {
     sortAscending: true,
     dataVerifiedByCollege: false,
     isClearResetFilter: false,
-    checked: false,
+    checked: false
   });
 
   useEffect(() => {
@@ -85,16 +85,16 @@ const ManageStudents = (props) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
-      Object.keys(paramsForUsers).map((key) => {
+      Object.keys(paramsForUsers).map(key => {
         defaultParams[key] = paramsForUsers[key];
       });
       paramsForUsers = defaultParams;
     } else {
       paramsForUsers = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
     }
 
@@ -113,7 +113,7 @@ const ManageStudents = (props) => {
 
       serviceProviders
         .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
-        .then((res) => {
+        .then(res => {
           let currentPage = res.data.page;
           let totalRows = res.data.rowCount;
           let currentPageSize = res.data.pageSize;
@@ -122,27 +122,27 @@ const ManageStudents = (props) => {
             let tempStudentData = [];
             let student_data = res.data.result;
             tempStudentData = convertStudentData(student_data);
-            setFormState((formState) => ({
+            setFormState(formState => ({
               ...formState,
               student: tempStudentData,
               pageSize: currentPageSize,
               totalRows: totalRows,
               page: currentPage,
-              pageCount: pageCount,
+              pageCount: pageCount
             }));
           } else {
-            setFormState((formState) => ({
+            setFormState(formState => ({
               ...formState,
-              student: res.data.length,
+              student: res.data.length
             }));
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
         });
     } else {
       history.push({
-        pathname: routeConstants.NOT_FOUND_URL,
+        pathname: routeConstants.NOT_FOUND_URL
       });
     }
   };
@@ -150,15 +150,15 @@ const ManageStudents = (props) => {
   const getStreamData = () => {
     serviceProviders
       .serviceProviderForGetRequest(STREAMS_URL)
-      .then((res) => {
+      .then(res => {
         setStreams(res.data.result);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("streamError", error);
       });
   };
 
-  const convertStudentData = (data) => {
+  const convertStudentData = data => {
     let studentDataArray = [];
     if (data) {
       for (let i in data) {
@@ -200,12 +200,12 @@ const ManageStudents = (props) => {
   //     });
   // };
 
-  const approveCell = (event) => {
+  const approveCell = event => {
     event.persist();
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      cellName: event.target.getAttribute("value"),
+      cellName: event.target.getAttribute("value")
     }));
 
     formState.approvedId = event.target.id;
@@ -220,19 +220,19 @@ const ManageStudents = (props) => {
     }
   };
 
-  const approveCellData = async (id) => {
+  const approveCellData = async id => {
     /** Get student data for edit */
     let paramsForStudent = {
-      id: id,
+      id: id
     };
     var STUDENTAPPROVEDATA =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
     await serviceProviders
       .serviceProviderForGetRequest(STUDENTAPPROVEDATA, paramsForStudent)
-      .then((res) => {
+      .then(res => {
         /** This we will use as final data for edit we send to modal */
         let editData = res.data[0];
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           dataToBlockUnblock: editData,
           dataVerifiedByCollege: res.data[0].verifiedByCollege,
@@ -243,23 +243,23 @@ const ManageStudents = (props) => {
           fromDeleteModal: false,
           fromAddCollege: false,
           fromeditCollege: false,
-          fromBlockModal: false,
+          fromBlockModal: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("studentspproveerror", error);
       });
   };
 
   const handleCloseBlockModal = () => {
     /** This restores all the data when we close the modal */
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      showModalBlock: false,
+      showModalBlock: false
     }));
     if (formState.isUserBlocked) {
       //getUserData();
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         showModalBlock: false,
         showModalDelete: false,
@@ -269,7 +269,7 @@ const ManageStudents = (props) => {
         isMulBlocked: false,
         isMulUnBlocked: false,
         MultiBlockUser: {},
-        isUserBlocked: false,
+        isUserBlocked: false
       }));
       getStudentData();
       // window.location.reload(false);
@@ -284,7 +284,7 @@ const ManageStudents = (props) => {
     }
 
     setOpen(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataBlockUnblock: status,
       showModalBlock: false,
@@ -293,26 +293,26 @@ const ManageStudents = (props) => {
       isMulUnBlocked: false,
       // multiBlockCollegeIds: [],
       MultiBlockUser: {},
-      messageToShow: statusToShow,
+      messageToShow: statusToShow
     }));
 
     formState.isUserBlocked = status;
   };
   const modalClose = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       showModalBlock: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
   };
 
-  const deleteCell = (event) => {
-    setFormState((formState) => ({
+  const deleteCell = event => {
+    setFormState(formState => ({
       ...formState,
       dataToDelete: {
         id: event.target.id,
         name: event.target.getAttribute("value"),
-        userId: event.target.getAttribute("userId"),
+        userId: event.target.getAttribute("userId")
       },
       MultiDeleteUserId: [],
       showModalDelete: true,
@@ -321,7 +321,7 @@ const ManageStudents = (props) => {
       fromDeleteModal: false,
       fromAddCollege: false,
       fromeditCollege: false,
-      fromBlockModal: false,
+      fromBlockModal: false
     }));
   };
 
@@ -330,13 +330,13 @@ const ManageStudents = (props) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
       isMultiDelete: false,
-      messageToShow: statusToShow,
+      messageToShow: statusToShow
     }));
     if (status) {
       getStudentData(formState.pageSize, 1);
@@ -352,13 +352,13 @@ const ManageStudents = (props) => {
     // formState.isDataDeleted = status;
 
     setOpen(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       // fromDeleteModal: true,
       // isMultiDelete: false,
-      messageToShow: statusToShow,
+      messageToShow: statusToShow
     }));
   };
 
@@ -377,17 +377,17 @@ const ManageStudents = (props) => {
       //restoreData();
     } else {
       formState.filterDataParameters[filterName] = value["id"];
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isClearResetFilter: false,
+        isClearResetFilter: false
       }));
     }
   };
 
-  const handleCheckedChange = (event) => {
-    setFormState((formState) => ({
+  const handleCheckedChange = event => {
+    setFormState(formState => ({
       ...formState,
-      checked: event.target.checked,
+      checked: event.target.checked
     }));
     if (event.target.checked) {
       formState.filterDataParameters[VERIFIEDBYCOLLEGE] = false;
@@ -396,7 +396,7 @@ const ManageStudents = (props) => {
     }
   };
 
-  const handleFilterChange = (event) => {
+  const handleFilterChange = event => {
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
@@ -421,7 +421,7 @@ const ManageStudents = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStudentData(formState.pageSize, page);
     } else {
@@ -436,14 +436,14 @@ const ManageStudents = (props) => {
   /** To reset search filter */
   const refreshPage = () => {
     formState.filterDataParameters = {};
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       isClearResetFilter: true,
       isStateClearFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
-      checked: false,
+      checked: false
     }));
     formState.filterDataParameters[USER_FILTER] = "";
     // formState.filterDataParameters[STREAM_FILTER] = "";
@@ -456,12 +456,12 @@ const ManageStudents = (props) => {
   const deleteMulUserById = () => {
     let arrayId = [];
     let arrayUserId = [];
-    selectedRows.forEach((d) => {
+    selectedRows.forEach(d => {
       arrayId.push(d.id);
       arrayUserId.push(d.userId);
     });
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
@@ -472,11 +472,11 @@ const ManageStudents = (props) => {
       fromDeleteModal: false,
       fromAddCollege: false,
       fromeditCollege: false,
-      fromBlockModal: false,
+      fromBlockModal: false
     }));
   };
 
-  const isBlockUnblockCellCompleted = (status) => {
+  const isBlockUnblockCellCompleted = status => {
     formState.isDataBlockUnblock = status;
   };
 
@@ -486,7 +486,7 @@ const ManageStudents = (props) => {
     //restoreData();
     setOpen(true);
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataBlockUnblock: status,
       showModalBlock: false,
@@ -495,44 +495,44 @@ const ManageStudents = (props) => {
       isMulUnBlocked: false,
       multiBlockCollegeIds: [],
       dataToBlockUnblock: {},
-      messageToShow: statusToShow,
+      messageToShow: statusToShow
     }));
     if (status) {
       getStudentData(formState.pageSize, 1);
     }
   };
 
-  const handleRowSelected = useCallback((state) => {
+  const handleRowSelected = useCallback(state => {
     let blockData = [];
     let unblockData = [];
 
     if (state.selectedCount >= 1) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false,
+        selectedRowFilter: false
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        selectedRowFilter: true,
+        selectedRowFilter: true
       }));
     }
 
-    state.selectedRows.forEach((data) => {
+    state.selectedRows.forEach(data => {
       if (data.Approved === false) {
         blockData.push(data);
       } else {
         unblockData.push(data);
       }
       if (blockData.length > 0) {
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Approve Selected User",
+          bottonBlockUnblock: "Approve Selected User"
         }));
       } else {
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
-          bottonBlockUnblock: "Unapprove Selected User",
+          bottonBlockUnblock: "Unapprove Selected User"
         }));
       }
     });
@@ -545,7 +545,7 @@ const ManageStudents = (props) => {
       arrayId.push(selectedRows[k]["id"]);
     }
     if (formState.bottonBlockUnblock === "Approve Selected User") {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         isMulBlocked: true,
         isMulUnBlocked: false,
@@ -554,10 +554,10 @@ const ManageStudents = (props) => {
         fromDeleteModal: false,
         fromAddCollege: false,
         fromeditCollege: false,
-        fromBlockModal: false,
+        fromBlockModal: false
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         isMulBlocked: false,
         isMulUnBlocked: true,
@@ -566,7 +566,7 @@ const ManageStudents = (props) => {
         fromDeleteModal: false,
         fromAddCollege: false,
         fromeditCollege: false,
-        fromBlockModal: false,
+        fromBlockModal: false
       }));
     }
   };
@@ -582,7 +582,7 @@ const ManageStudents = (props) => {
     </div>
   );
 
-  const handleClickViewStudent = (event) => {
+  const handleClickViewStudent = event => {
     history.push({
       pathname: routeConstants.VIEW_STUDENT_PROFILE,
       dataForStudent: event.target.id,
@@ -598,12 +598,12 @@ const ManageStudents = (props) => {
       name: "Name",
       sortable: true,
       selector: "name",
-      cell: (row) => <CustomLink row={row} />,
+      cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
     {
       name: "Actions",
-      cell: (cell) => (
+      cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <Tooltip
@@ -654,9 +654,9 @@ const ManageStudents = (props) => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%",
-      },
-    },
+        maxWidth: "18%"
+      }
+    }
   ];
 
   return (
@@ -819,7 +819,7 @@ const ManageStudents = (props) => {
                 name={STREAM_FILTER}
                 options={streams}
                 className={classes.autoCompleteField}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={option => option.name}
                 // value={
                 //   formState.filterDataParameters
                 //     ? formState.filterDataParameters[STREAM_FILTER]
@@ -840,7 +840,7 @@ const ManageStudents = (props) => {
                 onChange={(event, value) =>
                   handleChangeAutoCompleteStream(STREAM_FILTER, event, value)
                 }
-                renderInput={(params) => (
+                renderInput={params => (
                   <TextField
                     {...params}
                     label="Stream"
@@ -873,7 +873,7 @@ const ManageStudents = (props) => {
                 variant="contained"
                 color="primary"
                 disableElevation
-                onClick={(event) => {
+                onClick={event => {
                   event.persist();
                   searchFilter();
                 }}

@@ -242,7 +242,8 @@ const ActivityDetails = props => {
                             {getDate()}
                           </Grid>
                         </Grid>
-                        {auth.getUserInfo().role.name === "Medha Admin" ? (
+                        {auth.getUserInfo().role.name === "Medha Admin" ||
+                        auth.getUserInfo().role.name === "College Admin" ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
                               <b>Time :-</b>
