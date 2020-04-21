@@ -26,6 +26,8 @@ import {
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as genericConstants from "../../constants/GenericConstants";
 import { GrayButton, YellowButton } from "../../components";
+import SetIndexContext from "../../context/SetIndexContext";
+import { useContext } from "react";
 
 const Dashboard = props => {
   const { container, className, ...rest } = props;

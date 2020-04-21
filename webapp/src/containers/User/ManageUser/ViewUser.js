@@ -12,7 +12,7 @@ import {
   CircularProgress,
   FormGroup,
   FormControlLabel,
-  Switch,
+  Switch
 } from "@material-ui/core";
 import useStyles from "../../ContainerStyles/ViewPageStyles";
 import { useHistory } from "react-router-dom";
@@ -20,20 +20,20 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import {
   YellowButton,
   GrayButton,
-  ReadOnlyTextField,
+  ReadOnlyTextField
 } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import LoaderContext from "../../../context/LoaderContext";
 
 const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
-const ViewUser = (props) => {
+const ViewUser = props => {
   const classes = useStyles();
   const history = useHistory();
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
-    userDetails: [],
+    userDetails: []
   });
   useEffect(() => {
     getUserData();
@@ -45,24 +45,24 @@ const ViewUser = (props) => {
 
     if (auth.getUserInfo().role.name === "Medha Admin") {
       paramsForUser = {
-        id: props["location"]["dataForEdit"],
+        id: props["location"]["dataForEdit"]
       };
     }
     if (paramsForUser.id !== undefined) {
       await serviceProviders
         .serviceProviderForGetRequest(USER_URL, paramsForUser)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            userDetails: res.data.result[0],
+            userDetails: res.data.result[0]
           }));
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
         });
     } else {
       history.push({
-        pathname: routeConstants.MANAGE_COLLEGE,
+        pathname: routeConstants.MANAGE_USER
       });
     }
     setLoaderStatus(false);
@@ -72,23 +72,23 @@ const ViewUser = (props) => {
     getDataForEdit(props["location"]["dataForEdit"]);
   };
 
-  const getDataForEdit = async (id) => {
+  const getDataForEdit = async id => {
     setLoaderStatus(true);
     let paramsForUsers = {
-      id: id,
+      id: id
     };
     await serviceProviders
       .serviceProviderForGetRequest(USER_URL, paramsForUsers)
-      .then((res) => {
+      .then(res => {
         let editData = res.data.result[0];
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_USER,
           editUser: true,
-          dataForEdit: editData,
+          dataForEdit: editData
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error");
       });
     setLoaderStatus(false);

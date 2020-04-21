@@ -1,8 +1,8 @@
-import React from "../../node_modules/react";
 import { Redirect, Route } from "../../node_modules/react-router-dom";
 import * as routeConstants from "../constants/RouteConstants";
 import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
+import React from "react";
 
 const privateRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
