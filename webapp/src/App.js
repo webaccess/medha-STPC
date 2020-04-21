@@ -16,6 +16,7 @@ import {
   EditStateRoute,
   EditZoneRoute,
   EditRpcRoute,
+  
   EditUserRoute,
   EditEducation,
   RouteWithTabLayout,
@@ -92,6 +93,7 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 
+
 function App() {
   const [index, setIndex] = useState(0);
   const [loaderStatus, setLoaderStatus] = useState(false);
@@ -146,7 +148,7 @@ function App() {
                   exact
                   component={AddEditStudent}
                 />
-
+               
                 <RequestOtp
                   path={routeConstants.REQUEST_OTP}
                   layout={Layout}
@@ -179,6 +181,7 @@ function App() {
                   layout={Layout}
                   path={routeConstants.VIEW_PROFILE}
                 />
+               
                 {/**Education */}
                 <RouteWithTabLayout
                   component={ViewEducation}
@@ -186,6 +189,7 @@ function App() {
                   layout={Layout}
                   path={routeConstants.VIEW_EDUCATION}
                 />
+                
 
                 <RouteWithTabLayout
                   component={AddEducation}

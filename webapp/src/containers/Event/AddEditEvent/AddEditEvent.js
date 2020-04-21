@@ -78,7 +78,6 @@ const AddEditEvent = props => {
     EditorState.createEmpty()
   );
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
-
   const classes = useStyles();
   const history = useHistory();
   /** Initializiing form state value */
@@ -99,7 +98,7 @@ const AddEditEvent = props => {
     eventCollegeIds: [],
     dataToShowForStreamMultiSelect: [],
     eventStreamsIds: [],
-    isStreamQualificationsEducationsDisabled: false,
+    isCollegeAdminDoesNotHaveEditPreviliges: false,
     deleteImage: false,
     previewFile: {},
     showPreviewImage: false,
@@ -140,11 +139,32 @@ const AddEditEvent = props => {
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
   const inputLabel = React.useRef(null);
-  const [qualifications, setQualifications] = useState([]);
-  const [qualificationsDataBackup, setQualificationsDataBackup] = useState([]);
-  const [educations, setEducations] = useState([]);
-  const [educationsDataBackup, setEducationsDataBackup] = useState([]);
-
+  const [qualifications, setQualifications] = useState([
+    { id: 1, value: "SSC" },
+    { id: 2, value: "HSC" },
+    { id: 3, value: "BSc" },
+    { id: 4, value: "MSc" },
+    { id: 5, value: "BE" }
+  ]);
+  const [qualificationsDataBackup, setQualificationsDataBackup] = useState([
+    { id: 1, value: "SSC" },
+    { id: 2, value: "HSC" },
+    { id: 3, value: "BSc" },
+    { id: 4, value: "MSc" },
+    { id: 5, value: "BE" }
+  ]);
+  const [educations, setEducations] = useState([
+    { id: 1, value: "First" },
+    { id: 2, value: "Second" },
+    { id: 3, value: "Third" },
+    { id: 4, value: "Fourth" }
+  ]);
+  const [educationsDataBackup, setEducationsDataBackup] = useState([
+    { id: 1, value: "First" },
+    { id: 2, value: "Second" },
+    { id: 3, value: "Third" },
+    { id: 4, value: "Fourth" }
+  ]);
   if (formState.isEditEvent && !formState.counter) {
     setLoaderStatus(true);
     /** Part for editing state */
@@ -263,6 +283,7 @@ const AddEditEvent = props => {
 
       if (
         formState.isCollegeAdmin &&
+        formState.isEditEvent &&
         formState.values[state] &&
         formState.values[rpc] &&
         formState.values[zone] &&
@@ -270,9 +291,9 @@ const AddEditEvent = props => {
         formState.values[college].length === 1 &&
         formState.values[college].indexOf(collegeInfo.college.id) !== -1
       ) {
-        formState.isStreamQualificationsEducationsDisabled = false;
+        formState.isCollegeAdminDoesNotHaveEditPreviliges = false;
       } else {
-        formState.isStreamQualificationsEducationsDisabled = true;
+        formState.isCollegeAdminDoesNotHaveEditPreviliges = true;
       }
     }
     formState.counter += 1;
@@ -280,6 +301,7 @@ const AddEditEvent = props => {
 
   /** Setting educations and qualifications */
   useEffect(() => {
+    setLoaderStatus(true);
     let paramsForPageSize = {
       pageSize: -1
     };
@@ -297,43 +319,45 @@ const AddEditEvent = props => {
         });
     }
 
-    setEducationsDataBackup(genericConstants.EDUCATIONS);
-    let educationDataForEdit = genericConstants.EDUCATIONS;
-
+    let educationDataForEdit = [
+      { id: 1, value: "First" },
+      { id: 2, value: "Second" },
+      { id: 3, value: "Third" },
+      { id: 4, value: "Fourth" }
+    ];
     if (formState.isEditEvent) {
-      let tempQualificationData = educationDataForEdit;
-      let qualificationPercentageArray =
-        props["dataForEdit"]["qualification_percentage"];
-
-      for (let i in qualificationPercentageArray) {
-        let id = qualificationPercentageArray[i]["qualification"]["id"];
-        for (let j in tempQualificationData) {
-          if (tempQualificationData[j]["id"] === id)
-            tempQualificationData.splice(j, 1);
+      let tempEducationData = educationDataForEdit;
+      let educationPercentageArray = props["dataForEdit"]["educations"];
+      for (let i in educationPercentageArray) {
+        let id = educationPercentageArray[i]["education_year"];
+        for (let j in tempEducationData) {
+          if (tempEducationData[j]["value"] === id)
+            tempEducationData.splice(j, 1);
         }
       }
-      setEducations(tempQualificationData);
-    } else {
-      setEducations(educationDataForEdit);
+      setEducations(tempEducationData);
     }
 
-    setQualificationsDataBackup(genericConstants.QUALIFICATIONS);
-    let dataForEditing = genericConstants.QUALIFICATIONS;
+    let dataForEditing = [
+      { id: 1, value: "SSC" },
+      { id: 2, value: "HSC" },
+      { id: 3, value: "BSc" },
+      { id: 4, value: "MSc" },
+      { id: 5, value: "BE" }
+    ];
     if (formState.isEditEvent) {
       let tempQualificationData = dataForEditing;
-      let qualificationPercentageArray =
-        props["dataForEdit"]["qualification_percentage"];
+      let qualificationPercentageArray = props["dataForEdit"]["qualifications"];
       for (let i in qualificationPercentageArray) {
-        let id = qualificationPercentageArray[i]["qualification"]["id"];
+        let id = qualificationPercentageArray[i]["qualification"];
         for (let j in tempQualificationData) {
-          if (tempQualificationData[j]["id"] === id)
+          if (tempQualificationData[j]["value"] === id)
             tempQualificationData.splice(j, 1);
         }
       }
       setQualifications(tempQualificationData);
-    } else {
-      setQualifications(dataForEditing);
     }
+
     if (!formState.isCollegeAdmin) {
       serviceProvider
         .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
@@ -351,6 +375,7 @@ const AddEditEvent = props => {
       });
       setStreams(streamData);
     }
+    setLoaderStatus(false);
   }, []);
 
   /** Setting rpc, zone on state change */
@@ -366,6 +391,7 @@ const AddEditEvent = props => {
 
   /** Common function to get zones, rpcs after changing state */
   async function fetchZoneRpcData() {
+    setLoaderStatus(true);
     if (
       formState.values.hasOwnProperty(state) &&
       formState.values[state] !== null &&
@@ -416,6 +442,7 @@ const AddEditEvent = props => {
         setRpcs([collegeInfo.rpc]);
       }
     }
+    setLoaderStatus(false);
   }
   useEffect(() => {
     if (formState.values[zone] && formState.values[rpc]) {
@@ -425,6 +452,7 @@ const AddEditEvent = props => {
 
   /** Function to get college data after selcting zones and rpc's */
   async function fetchCollegeData() {
+    setLoaderStatus(true);
     let params = {
       "zone.id": formState.values[zone],
       "rpc.id": formState.values[rpc],
@@ -442,6 +470,7 @@ const AddEditEvent = props => {
     } else if (formState.isCollegeAdmin) {
       setColleges([collegeInfo.college]);
     }
+    setLoaderStatus(false);
   }
 
   const hasError = field => (formState.errors[field] ? true : false);
@@ -533,7 +562,7 @@ const AddEditEvent = props => {
       let qualificationsTempArray = [];
       qualificationsTempArray = qualifications;
       qualificationsDataBackup.map(qualificationData => {
-        if (record["qualification"] === qualificationData["id"]) {
+        if (record["qualification"] === qualificationData["value"]) {
           qualificationsTempArray.push(qualificationData);
         }
       });
@@ -543,7 +572,7 @@ const AddEditEvent = props => {
       let qualificationsTempArray = [];
       qualificationsTempArray = educations;
       educationsDataBackup.map(qualificationData => {
-        if (record["education"] === qualificationData["id"]) {
+        if (record["education"] === qualificationData["value"]) {
           qualificationsTempArray.push(qualificationData);
         }
       });
@@ -596,7 +625,7 @@ const AddEditEvent = props => {
                 let qualificationsTempArray = [];
                 qualificationsTempArray = qualifications;
                 qualificationsDataBackup.map(qualificationData => {
-                  if (r[eventName] === qualificationData["id"]) {
+                  if (r[eventName] === qualificationData["value"]) {
                     qualificationsTempArray.push(qualificationData);
                   }
                 });
@@ -668,7 +697,7 @@ const AddEditEvent = props => {
                 let educationsTempArray = [];
                 educationsTempArray = educations;
                 educationsDataBackup.map(educationData => {
-                  if (r[eventName] === educationData["id"]) {
+                  if (r[eventName] === educationData["value"]) {
                     educationsTempArray.push(educationData);
                   }
                 });
@@ -949,7 +978,6 @@ const AddEditEvent = props => {
           postData
         )
         .then(res => {
-          console.log("editeddata", res);
           if (formState.files.name) {
             postImage(res.data.id);
           } else {
@@ -979,7 +1007,6 @@ const AddEditEvent = props => {
       serviceProvider
         .serviceProviderForPostRequest(EVENTS_URL, postData)
         .then(res => {
-          console.log("addeddata", res);
           if (formState.files.name) {
             postImage(res.data.id);
           } else {
@@ -1115,15 +1142,16 @@ const AddEditEvent = props => {
                 <Grid container className={classes.formgridInputFile}>
                   <Grid item md={10} xs={12}>
                     <div className={classes.imageDiv}>
-                      {formState.showPreviewImage ? (
-                        <Img
-                          src={formState.previewFile}
-                          alt="abc"
-                          loader={<Spinner />}
-                          className={classes.UploadImage}
-                        />
-                      ) : null
-                      // <div class={classes.DefaultNoImage}></div>
+                      {
+                        formState.showPreviewImage ? (
+                          <Img
+                            src={formState.previewFile}
+                            alt="abc"
+                            loader={<Spinner />}
+                            className={classes.UploadImage}
+                          />
+                        ) : null
+                        // <div class={classes.DefaultNoImage}></div>
                       }
 
                       {formState.showPreviewEditImage &&
@@ -1343,7 +1371,7 @@ const AddEditEvent = props => {
                         }
                         value={
                           states[
-                            states.findIndex(function(item, i) {
+                            states.findIndex(function (item, i) {
                               return item.id === formState.values[state];
                             })
                           ] || null
@@ -1390,7 +1418,7 @@ const AddEditEvent = props => {
                         }
                         value={
                           zones[
-                            zones.findIndex(function(item, i) {
+                            zones.findIndex(function (item, i) {
                               return item.id === formState.values[zone];
                             })
                           ] || null
@@ -1440,7 +1468,7 @@ const AddEditEvent = props => {
                         }
                         value={
                           rpcs[
-                            rpcs.findIndex(function(item, i) {
+                            rpcs.findIndex(function (item, i) {
                               return item.id === formState.values[rpc];
                             })
                           ] || null
@@ -1532,7 +1560,7 @@ const AddEditEvent = props => {
                       disabled={
                         formState.isCollegeAdmin &&
                         formState.isEditEvent &&
-                        formState.isStreamQualificationsEducationsDisabled
+                        formState.isCollegeAdminDoesNotHaveEditPreviliges
                           ? true
                           : false
                       }
@@ -1601,6 +1629,13 @@ const AddEditEvent = props => {
                                     <Autocomplete
                                       id={qualificationId}
                                       options={qualifications}
+                                      disabled={
+                                        formState.isCollegeAdmin &&
+                                        formState.isEditEvent &&
+                                        formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                          ? true
+                                          : false
+                                      }
                                       getOptionLabel={option => option.value}
                                       onChange={(event, value) => {
                                         handleChangeForDynamicGrid(
@@ -1617,7 +1652,7 @@ const AddEditEvent = props => {
                                       value={
                                         qualificationsDataBackup[
                                           qualificationsDataBackup.findIndex(
-                                            function(item, i) {
+                                            function (item, i) {
                                               return (
                                                 item.value ===
                                                 formState.dynamicBar[idx][
@@ -1672,6 +1707,13 @@ const AddEditEvent = props => {
                                     name={percentageId}
                                     variant="outlined"
                                     fullWidth
+                                    disabled={
+                                      formState.isCollegeAdmin &&
+                                      formState.isEditEvent &&
+                                      formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                        ? true
+                                        : false
+                                    }
                                     data-id={idx}
                                     id={percentageId}
                                     value={
@@ -1712,8 +1754,20 @@ const AddEditEvent = props => {
                                 <Grid item xs={2}>
                                   {idx > 0 ? (
                                     <DeleteForeverOutlinedIcon
-                                      onClick={e => clickOnDelete(val, idx)}
-                                      style={{ color: "red", fontSize: "24px" }}
+                                      onClick={e =>
+                                        formState.isCollegeAdmin &&
+                                        formState.isEditEvent &&
+                                        formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                          ? null
+                                          : clickOnDelete(val, idx)
+                                      }
+                                      style={
+                                        formState.isCollegeAdmin &&
+                                        formState.isEditEvent &&
+                                        formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                          ? { color: "gray", fontSize: "24px" }
+                                          : { color: "red", fontSize: "24px" }
+                                      }
                                     />
                                   ) : (
                                     ""
@@ -1727,9 +1781,17 @@ const AddEditEvent = props => {
                       <div className={classes.btnspaceadd}>
                         <YellowButton
                           type="button"
-                          disabled={qualifications.length ? false : true}
                           color="primary"
                           variant="contained"
+                          disabled={
+                            formState.isCollegeAdmin &&
+                            formState.isEditEvent &&
+                            formState.isCollegeAdminDoesNotHaveEditPreviliges
+                              ? true
+                              : qualifications.length
+                              ? false
+                              : true
+                          }
                           className={classes.add_more_btn}
                           onClick={e => {
                             addNewRow(e, qualification);
@@ -1781,6 +1843,13 @@ const AddEditEvent = props => {
                                     <Autocomplete
                                       id={qualificationId}
                                       options={educations}
+                                      disabled={
+                                        formState.isCollegeAdmin &&
+                                        formState.isEditEvent &&
+                                        formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                          ? true
+                                          : false
+                                      }
                                       getOptionLabel={option => option.value}
                                       onChange={(event, value) => {
                                         handleChangeForDynamicGrid(
@@ -1797,7 +1866,7 @@ const AddEditEvent = props => {
                                       value={
                                         educationsDataBackup[
                                           educationsDataBackup.findIndex(
-                                            function(item, i) {
+                                            function (item, i) {
                                               return (
                                                 item.value ===
                                                 formState.dynamicEducationBar[
@@ -1852,6 +1921,13 @@ const AddEditEvent = props => {
                                     name={percentageId}
                                     variant="outlined"
                                     fullWidth
+                                    disabled={
+                                      formState.isCollegeAdmin &&
+                                      formState.isEditEvent &&
+                                      formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                        ? true
+                                        : false
+                                    }
                                     data-id={idx}
                                     id={percentageId}
                                     value={
@@ -1895,8 +1971,20 @@ const AddEditEvent = props => {
                                 <Grid item xs={2}>
                                   {idx > 0 ? (
                                     <DeleteForeverOutlinedIcon
-                                      onClick={e => clickOnDelete(val, idx)}
-                                      style={{ color: "red", fontSize: "24px" }}
+                                      onClick={e =>
+                                        formState.isCollegeAdmin &&
+                                        formState.isEditEvent &&
+                                        formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                          ? null
+                                          : clickOnDelete(val, idx)
+                                      }
+                                      style={
+                                        formState.isCollegeAdmin &&
+                                        formState.isEditEvent &&
+                                        formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                          ? { color: "gray", fontSize: "24px" }
+                                          : { color: "red", fontSize: "24px" }
+                                      }
                                     />
                                   ) : (
                                     ""
@@ -1910,8 +1998,16 @@ const AddEditEvent = props => {
                       <div className={classes.btnspaceadd}>
                         <YellowButton
                           type="button"
-                          disabled={educations.length ? false : true}
                           color="primary"
+                          disabled={
+                            formState.isCollegeAdmin &&
+                            formState.isEditEvent &&
+                            formState.isCollegeAdminDoesNotHaveEditPreviliges
+                              ? true
+                              : educations.length
+                              ? false
+                              : true
+                          }
                           variant="contained"
                           className={classes.add_more_btn}
                           onClick={e => {
@@ -1928,7 +2024,18 @@ const AddEditEvent = props => {
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton type="submit" color="primary" variant="contained">
+                <YellowButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  disabled={
+                    formState.isCollegeAdmin &&
+                    formState.isEditEvent &&
+                    formState.isCollegeAdminDoesNotHaveEditPreviliges
+                      ? true
+                      : false
+                  }
+                >
                   {genericConstants.SAVE_BUTTON_TEXT}
                 </YellowButton>
                 <GrayButton
