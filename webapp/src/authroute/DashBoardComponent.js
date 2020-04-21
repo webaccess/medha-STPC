@@ -1,51 +1,50 @@
-/**
- *
- * PrivateRoute
- * Higher Order Component that blocks navigation when the user is not logged in
- * and redirect the user to login page
- *
- * Wrap your protected routes to secure your container
- */
-
 import React from "../../node_modules/react";
-import { Redirect, Route } from "../../node_modules/react-router-dom";
+import { Redirect } from "../../node_modules/react-router-dom";
 import * as routeConstants from "../constants/RouteConstants";
-
+import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
 
-const DashBoardComponent = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      auth.getToken() !== null ? (
-        auth.getUserInfo().role.name === "Student" ? (
-          <Redirect
-            to={{
-              pathname: routeConstants.VIEW_PROFILE,
-              state: { from: props.location }
-            }}
-          />
-        ) : (
-            <Redirect
-              to={{
-                pathname: routeConstants.DASHBOARD_URL,
-                state: { from: props.location }
-              }}
-            />
-          )
-      ) : (
-          <React.Fragment>
-            {auth.clearAppStorage()}
-            <Redirect
-              to={{
-                pathname: routeConstants.SIGN_IN_URL,
-                state: { from: props.location }
-              }}
-            />
-          </React.Fragment>
-        )
+const DashBoardComponent = props => {
+  const { layout: Layout, component: Component, ...rest } = props;
+  if (auth.getToken() !== null) {
+    if (auth.getUserInfo().role.name === "Student") {
+      return (
+        <Redirect
+          to={{
+            pathname: routeConstants.VIEW_PROFILE,
+            state: { from: props.location }
+          }}
+        />
+      );
+    } else {
+      return (
+        <Redirect
+          to={{
+            pathname: routeConstants.DASHBOARD_URL,
+            state: { from: props.location }
+          }}
+        />
+      );
     }
-  />
-);
+  } else {
+    return (
+      <React.Fragment>
+        {auth.clearAppStorage()}
+        <Redirect
+          to={{
+            pathname: routeConstants.SIGN_IN_URL,
+            state: { from: props.location }
+          }}
+        />
+      </React.Fragment>
+    );
+  }
+};
+
+DashBoardComponent.propTypes = {
+  component: PropTypes.any.isRequired,
+  layout: PropTypes.any.isRequired,
+  path: PropTypes.string
+};
 
 export default DashBoardComponent;

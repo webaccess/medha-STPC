@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import clsx from "clsx";
 import SideAndTopNavBar from "../../components/SideAndTopNavBar/SideAndTopNavBar";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
 import { useMediaQuery, Backdrop, CircularProgress } from "@material-ui/core";
 import auth from "../../components/Auth/Auth";
 import LoaderContext from "../../context/LoaderContext";
