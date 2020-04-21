@@ -11,16 +11,18 @@ const utils = require("../../../config/utils.js");
 module.exports = {
   async requestOTP(ctx) {
     const num = ctx.request.body.contact_number;
+
     const buffer = crypto.randomBytes(2);
-    const OTP = parseInt(buffer.toString("hex"), 16)
-      .toString()
-      .substr(0, 6);
+    const OTP = Math.floor(100000 + Math.random() * 900000);
+    // OTP = parseInt(buffer.toString("hex"), 16)
+    //   .toString()
+    //   .substr(0, 6);
     console.log(OTP);
     return bookshelf
       .model("otp")
       .forge({ contact_number: num, otp: OTP })
       .save()
-      .then(model => {
+      .then((model) => {
         const response = utils.getResponse(model);
         response.result = { status: "Ok" };
         return response;
@@ -51,7 +53,7 @@ module.exports = {
           .model("user")
           .where({ contact_number: contact_number })
           .fetch()
-          .then(usr => {
+          .then((usr) => {
             usr.save(
               { resetPasswordToken: resetPasswordToken },
               { pach: true }
@@ -71,10 +73,11 @@ module.exports = {
     const { contact_number } = ctx.request.body;
     let OTP, buffer;
     try {
-      buffer = crypto.randomBytes(3);
-      OTP = parseInt(buffer.toString("hex"), 16)
-        .toString()
-        .substr(0, 6);
+      // buffer = crypto.randomBytes(3);
+      // OTP = parseInt(buffer.toString("hex"), 16)
+      //   .toString()
+      //   .substr(0, 6);
+      OTP = Math.floor(100000 + Math.random() * 900000);
       console.log(OTP);
       await bookshelf
         .model("otp")
@@ -95,7 +98,7 @@ module.exports = {
         .model("user")
         .where({ contact_number: contact_number })
         .fetch()
-        .then(data => {
+        .then((data) => {
           if (data) ctx.response.forbidden("User already registered.");
           else throw "not a user";
         });
@@ -106,7 +109,7 @@ module.exports = {
           .where({
             contact_number: contact_number,
             otp: otp,
-            is_verified: null
+            is_verified: null,
           })
           .fetch();
         const response = utils.getResponse(null);
@@ -117,5 +120,5 @@ module.exports = {
         ctx.response.badRequest("Invalid OTP");
       }
     }
-  }
+  },
 };
