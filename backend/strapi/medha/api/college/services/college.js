@@ -66,5 +66,22 @@ module.exports = {
     });
 
     return filtered;
+  },
+
+  /**
+   * Get College Admins
+   */
+  getAdmins: async collegeId => {
+    // Get college role
+    const collegeRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ college: collegeId, role: collegeRole.id });
+
+    const userIds = response.map(user => user.id);
+    return userIds;
   }
 };

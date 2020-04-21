@@ -5,9 +5,7 @@
       "path": "/students/register",
       "handler": "student.register",
       "config": {
-        "policies": [
-          "validate"
-        ]
+        "policies": ["validate"]
       }
     },
     {
@@ -71,9 +69,7 @@
       "path": "/students/:id",
       "handler": "student.edit",
       "config": {
-        "policies": [
-          "isOwner"
-        ]
+        "policies": ["isOwner", "isValidCollegeAdmin"]
       }
     },
     {
@@ -89,9 +85,7 @@
       "path": "/students/:id/education",
       "handler": "student.education",
       "config": {
-        "policies": [
-          "isOwner"
-        ]
+        "policies": ["isOwner"]
       }
     },
     {
@@ -99,9 +93,7 @@
       "path": "/students/:id/document",
       "handler": "student.document",
       "config": {
-        "policies": [
-          "isOwner"
-        ]
+        "policies": ["isOwner"]
       }
     },
     {
@@ -109,9 +101,7 @@
       "path": "/students/:id/academic-history",
       "handler": "student.academicHistory",
       "config": {
-        "policies": [
-          "isOwner"
-        ]
+        "policies": ["isOwner"]
       }
     },
     {
@@ -127,9 +117,7 @@
       "path": "/students/:id/file/:fileId",
       "handler": "student.deleteDocument",
       "config": {
-        "policies": [
-          "isOwner"
-        ]
+        "policies": ["isOwner"]
       }
     },
     {
@@ -137,9 +125,7 @@
       "path": "/students/:id/events",
       "handler": "student.events",
       "config": {
-        "policies": [
-          "isOwner"
-        ]
+        "policies": ["isOwner"]
       }
     }
   ]

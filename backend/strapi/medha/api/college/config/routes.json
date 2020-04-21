@@ -89,6 +89,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/colleges/:id/admins",
+      "handler": "college.admins",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "DELETE",
       "path": "/colleges/:id",
       "handler": "college.delete",
