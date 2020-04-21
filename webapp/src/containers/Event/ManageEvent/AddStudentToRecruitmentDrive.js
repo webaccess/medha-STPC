@@ -20,7 +20,8 @@ import {
   Table,
   YearMonthPicker,
   Auth as auth,
-  Alert
+  Alert,
+  AddStudentIcon
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -80,7 +81,12 @@ const AddStudentToRecruitmentDrive = props => {
     showRegisterModel: false,
     fromModal: false,
     message: "",
-    status: null
+    fromAddStudentToRecruitmentDrive: true,
+    status: null,
+    isSingleReg: false,
+    regUserId: null,
+    isRegButtonClicked: false,
+    regStudentName: ""
   });
 
   useEffect(() => {
@@ -128,6 +134,10 @@ const AddStudentToRecruitmentDrive = props => {
     }));
     let get_student_list =
       strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      formState.eventId +
+      "/" +
       strapiConstants.STRAPI_COLLEGES +
       "/" +
       formState.collegeId +
@@ -347,7 +357,20 @@ const AddStudentToRecruitmentDrive = props => {
   const addStudentsToEvent = async () => {
     setFormState(formState => ({
       ...formState,
-      showRegisterModel: true
+      showRegisterModel: true,
+      isSingleReg: false,
+      isRegButtonClicked: true
+    }));
+  };
+
+  const addSingleStudentToRegistration = event => {
+    formState.regStudentName = event.target.value;
+    setFormState(formState => ({
+      ...formState,
+      showRegisterModel: true,
+      isSingleReg: true,
+      isRegButtonClicked: true,
+      regUserId: event.target.id
     }));
   };
 
@@ -373,7 +396,26 @@ const AddStudentToRecruitmentDrive = props => {
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
-    { name: "Academic Year", sortable: true, selector: "educations" }
+    { name: "Academic Year", sortable: true, selector: "educations" },
+    {
+      name: "Actions",
+      cell: cell => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <AddStudentIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={addSingleStudentToRegistration}
+            />
+          </div>
+        </div>
+      ),
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
+    }
   ];
 
   return (
@@ -390,7 +432,7 @@ const AddStudentToRecruitmentDrive = props => {
           buttonDisabled={formState.selectedRowFilter}
           greenButtonChecker={formState.greenButtonChecker}
         >
-          Add
+          Add Selected Student's
         </GreenButton>
         <GreenButton
           variant="contained"
@@ -539,16 +581,26 @@ const AddStudentToRecruitmentDrive = props => {
           )}
         </Card>
       </Grid>
-      <RegisterEvent
-        showModal={formState.showRegisterModel}
-        modalClose={modalClose}
-        eventId={formState.eventId}
-        multipleUserIds={true}
-        userCount={selectedRows.selectedRowsCount}
-        userId={selectedRows.selectedRows}
-        eventTitle={formState.eventTitle}
-        setStatusDataWhileClosingModal={setStatusDataWhileClosingModal}
-      />
+      {formState.isRegButtonClicked ? (
+        <RegisterEvent
+          showModal={formState.showRegisterModel}
+          modalClose={modalClose}
+          eventId={formState.eventId}
+          multipleUserIds={formState.isSingleReg ? false : true}
+          userCount={formState.isSingleReg ? 1 : selectedRows.selectedRowsCount}
+          userId={
+            formState.isSingleReg
+              ? formState.regUserId
+              : selectedRows.selectedRows
+          }
+          eventTitle={formState.eventTitle}
+          setStatusDataWhileClosingModal={setStatusDataWhileClosingModal}
+          fromAddStudentToRecruitmentDrive={
+            formState.fromAddStudentToRecruitmentDrive
+          }
+          name={formState.regStudentName}
+        />
+      ) : null}
     </Grid>
   );
 };

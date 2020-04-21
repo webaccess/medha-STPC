@@ -29,10 +29,10 @@ export const ALERT_ERROR_STUDENT_REGISTRATION = "Registration fail";
 
 /** User */
 export const ADD_USER_TITLE = "Add User";
+export const EDIT_USER_TITLE = "Edit User";
 export const VIEW_USER_TITLE = "View User";
 export const MANAGE_USER_TEXT = "Manage User";
 export const DELETE_MULTI_USER_BUTTON = "Delete Selected User";
-export const EDIT_USER_TITLE = "Edit User";
 
 /** College */
 export const ADD_COLLEGE_TEXT = "Add College";
@@ -116,4 +116,11 @@ export const EDUCATIONS = [
   { id: 2, value: "Second" },
   { id: 3, value: "Third" },
   { id: 4, value: "Fourth" }
+];
+
+export const EDUCATIONYEARLIST = [
+  { name: "First", id: "First" },
+  { name: "Second", id: "Second" },
+  { name: "Third", id: "Third" },
+  { name: "Fourth", id: "Fourth" }
 ];

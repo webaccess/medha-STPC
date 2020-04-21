@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import {
   TextField,
   Card,
@@ -33,6 +33,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import BlockUnblockCollege from "./BlockUnblockCollege";
 import DeleteIcon from "@material-ui/icons/Delete";
+import LoaderContext from "../../../context/LoaderContext";
 
 /** Contsants for filters */
 const COLLEGE_FILTER = "name_contains";
@@ -54,10 +55,12 @@ const ManageCollege = props => {
   const [open, setOpen] = React.useState(true);
   /** Data we get for filtering */
   const [collegesFilter, setCollegesFilter] = React.useState([]);
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
   const [rpcs, setRpcs] = React.useState([]);
   const [zones, setZones] = React.useState([]);
   const [states, setStates] = React.useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
+
   /**------------------------------------ */
   /** Our actual form data  */
   const [formState, setFormState] = useState({
@@ -76,6 +79,9 @@ const ManageCollege = props => {
     fromeditCollege: props["location"]["fromeditCollege"]
       ? props["location"]["fromeditCollege"]
       : false,
+    editedCollegeName: props["location"]["editedCollegeData"]
+      ? props["location"]["editedCollegeData"]["name"]
+      : "",
     /** This is when we return from add page */
     isDataAdded: props["location"]["fromAddCollege"]
       ? props["location"]["isDataAdded"]
@@ -86,6 +92,9 @@ const ManageCollege = props => {
     fromAddCollege: props["location"]["fromAddCollege"]
       ? props["location"]["fromAddCollege"]
       : false,
+    addedCollegeName: props["location"]["addedCollegeData"]
+      ? props["location"]["addedCollegeData"]["name"]
+      : "",
     /** This is for delete */
     isDataDeleted: false,
     dataToDelete: {},
@@ -94,6 +103,7 @@ const ManageCollege = props => {
     MultiDeleteID: [],
     selectedRowFilter: true,
     greenButtonChecker: true,
+    toggleCleared: false,
     /** View  */
     isView: false,
     /** Filters */
@@ -322,6 +332,7 @@ const ManageCollege = props => {
 
   /** Edit cell */
   const getDataForEdit = async (id, isView = false) => {
+    setLoaderStatus(true);
     /** Get college data for edit */
     let paramsForCollege = {
       id: id
@@ -340,6 +351,7 @@ const ManageCollege = props => {
       .catch(error => {
         console.log("error");
       });
+    setLoaderStatus(false);
   };
 
   const editCell = event => {
@@ -349,10 +361,12 @@ const ManageCollege = props => {
   /**---------------------------------------------------------- */
   /** View Cell */
   const viewCell = event => {
+    setLoaderStatus(true);
     history.push({
       pathname: routeConstants.VIEW_COLLEGE,
       dataForEdit: event.target.id
     });
+    setLoaderStatus(false);
   };
 
   /** ---------------------------------------------------------- */
@@ -368,6 +382,7 @@ const ManageCollege = props => {
   };
 
   const getDataForBlockUnblock = async id => {
+    setLoaderStatus(true);
     /** Get college data for edit */
     let paramsForCollege = {
       id: id
@@ -393,6 +408,7 @@ const ManageCollege = props => {
       .catch(error => {
         console.log("error");
       });
+    setLoaderStatus(false);
   };
 
   const blockMulCollegeById = () => {
@@ -492,6 +508,7 @@ const ManageCollege = props => {
   /**----------------------------------------------------- */
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -506,6 +523,7 @@ const ManageCollege = props => {
       fromeditCollege: false,
       fromBlockModal: false
     }));
+    setLoaderStatus(false);
   };
 
   /** This is used to handle the close modal event */
@@ -569,7 +587,8 @@ const ManageCollege = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -598,6 +617,10 @@ const ManageCollege = props => {
     });
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+  };
 
   /** Columns to show in table */
   const column = [
@@ -700,7 +723,8 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              College {formState.editedCollegeName} has been updated
+              successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -721,7 +745,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating college. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -744,7 +768,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              College {formState.addedCollegeName} has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -765,7 +789,7 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while adding college. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -889,7 +913,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter
                       ? null
                       : states[
-                          states.findIndex(function(item, i) {
+                          states.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STATE_FILTER]
@@ -920,7 +944,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : zones[
-                          zones.findIndex(function(item, i) {
+                          zones.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[ZONE_FILTER]
@@ -951,7 +975,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : rpcs[
-                          rpcs.findIndex(function(item, i) {
+                          rpcs.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[RPC_FILTER]
@@ -1012,6 +1036,7 @@ const ManageCollege = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -1032,6 +1057,7 @@ const ManageCollege = props => {
             modalClose={modalClose}
             isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
           />
           <BlockUnblockCollege
             showModal={formState.showModalBlock}
@@ -1042,6 +1068,7 @@ const ManageCollege = props => {
             isMultiUnblock={formState.isMulUnBlocked ? true : false}
             multiBlockCollegeIds={formState.multiBlockCollegeIds}
             modalClose={modalClose}
+            clearSelectedRow={selectedRowCleared}
           />
         </Card>
       </Grid>

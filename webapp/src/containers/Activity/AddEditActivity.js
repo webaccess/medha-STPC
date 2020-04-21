@@ -90,7 +90,7 @@ const AddEditActivity = props => {
     { name: "Third", id: "Third" },
     { name: "Fourth", id: "Fourth" }
   ];
-  let stream;
+  const [stream, setStream] = useState([]);
   const [isFailed, setIsFailed] = useState(false);
 
   const classes = useStyles();
@@ -100,12 +100,36 @@ const AddEditActivity = props => {
   const [academicyearlist, setacademicyearlist] = useState([]);
   useEffect(() => {
     getColleges();
+    // getStreams();
 
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
   useEffect(() => {
-    getStreams();
-  }, [collegelist]);
+    console.log("in use effect");
+    console.log(formState.values.hasOwnProperty("college"));
+    console.log(stream);
+    console.log(formState.values["college"]);
+    if (
+      stream !== null &&
+      stream !== undefined &&
+      formState.values.hasOwnProperty("college") &&
+      formState.values["college"] !== null &&
+      formState.values["college"] !== undefined
+    ) {
+      console.log("if use effect");
+      const list = stream
+        .map(obj => {
+          if (formState.values.college === obj.id) return obj.stream;
+        })
+        .filter(stream => stream);
+      console.log(list);
+      setstreamlist(
+        list[0].map(obj => {
+          return { id: obj.stream.id, name: obj.stream.name };
+        })
+      );
+    }
+  }, [formState.values["college"]]);
 
   if (formState.dataForEdit && !formState.counter) {
     if (props.location["dataForEdit"]) {
@@ -129,7 +153,14 @@ const AddEditActivity = props => {
         const id = props.location["dataForEdit"]["streams"].map(stream => {
           return stream.id;
         });
+        const data = {
+          id: props.location["dataForEdit"]["college"]["id"],
+          stream: props.location["dataForEdit"]["college"]["stream_strength"]
+        };
+        const list = [];
+        list.push(data);
         formState["stream"] = id;
+        setStream(list);
       }
       if (props.location["dataForEdit"]["address"]) {
         formState.values["address"] = props.location["dataForEdit"]["address"];
@@ -345,7 +376,13 @@ const AddEditActivity = props => {
       )
       .then(res => {
         console.log(res);
-        stream = res.data.result.map();
+        const streams = res.data.result
+          .map(college => {
+            return { stream: college.stream_strength, id: college.id };
+          })
+          .filter(c => c);
+        console.log(streams);
+        setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
@@ -442,6 +479,7 @@ const AddEditActivity = props => {
   return (
     <Grid>
       {console.log(formState)}
+      {console.log(streamlist)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editActivity

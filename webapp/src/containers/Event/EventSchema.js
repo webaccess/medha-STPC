@@ -27,9 +27,9 @@ const EventSchema = {
   dateFrom: {
     label: "Start Date",
     id: "dateFrom",
-    autoComplete: "dateFrom",
+    autoComplete: "startDate",
     required: true,
-    placeholder: "From Date",
+    placeholder: "Start Date",
     autoFocus: true,
     type: "text",
     validations: {
@@ -42,9 +42,9 @@ const EventSchema = {
   dateTo: {
     label: "End Date",
     id: "dateTo",
-    autoComplete: "dateTo",
+    autoComplete: "endDate",
     required: true,
-    placeholder: "To Date",
+    placeholder: "End Date",
     autoFocus: true,
     type: "text",
     validations: {

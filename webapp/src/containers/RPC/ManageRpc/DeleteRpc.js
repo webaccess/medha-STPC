@@ -108,12 +108,14 @@ const DeleteRpc = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("RPC's successfully deleted");
+          handleCloseModal("RPC's has been deleted successfully.");
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
-          handleCloseModal("Error deleting selected RPC's");
+          handleCloseModal(
+            "An error has occured while deleting RPC's. Kindly, try again."
+          );
         });
     } else {
       serviceProviders
@@ -125,14 +127,18 @@ const DeleteRpc = props => {
           }));
           formState.isDeleteData = true;
           handleCloseModal(
-            "RPC " + formState.dataToDelete["name"] + " successfully deleted"
+            "RPC " +
+              formState.dataToDelete["name"] +
+              " has been deleted successfully."
           );
         })
         .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error deleting RPC " + formState.dataToDelete["name"]
+            "An error has occured while deleting RPC" +
+              formState.dataToDelete["name"] +
+              ". Kindly, try again."
           );
         });
     }

@@ -1045,6 +1045,17 @@ const AddEditStudent = props => {
                   >
                     <span>{authPageConstants.REGISTER}</span>
                   </YellowButton>
+                  <GrayButton
+                    color="primary"
+                    type="submit"
+                    mfullWidth
+                    variant="contained"
+                    onClick={() => {
+                      history.push(routeConstants.SIGN_IN_URL);
+                    }}
+                  >
+                    <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                  </GrayButton>
                 </CardActions>
               </Grid>
             )}
