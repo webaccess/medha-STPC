@@ -70,31 +70,6 @@ function paginate(list, currentPage, numberPerPage) {
   };
 }
 
-// function createXLSX(data, headers) {
-//   // Creating work book
-//   let wb = XLSX.utils.book_new();
-
-//   /**
-//    * Create worksheet for every batch
-//    * Add students list for respective batch
-//    */
-//   data.forEach((d) => {
-//     const { workSheetName, workSheetData } = d;
-//     let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
-//     wb.SheetNames.push(workSheetName);
-//     wb.Sheets[workSheetName] = ws;
-//   });
-
-//   XLSX.writeFile(wb, "students.xlsx");
-// }
-
-function s2ab(s) {
-  var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
-  var view = new Uint8Array(buf); //create uint8array as viewer
-  for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff; //convert to octet
-  return buf;
-}
-
 function getErrorResponse(response) {
   return {
     result: {
