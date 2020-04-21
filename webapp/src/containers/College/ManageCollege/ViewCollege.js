@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { Auth as auth, Typography } from "../../../components";
 import TextField from "@material-ui/core/TextField";
+import Chip from "@material-ui/core/Chip";
+import Switch from "@material-ui/core/Switch";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
 import {
   Card,
   CardContent,
@@ -35,7 +39,6 @@ const Zone = "Zone";
 const ContactNumber = "Contact";
 const Email = "Email-Id";
 const Principal = "Principal";
-const TPO = "TPO's";
 const StreamNotPresent = "Stream and data not present";
 
 const ViewCollege = props => {
@@ -48,12 +51,9 @@ const ViewCollege = props => {
   const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
   const [formState, setFormState] = useState({
     collegeDetails: [],
-    streams: []
+    streams: [],
+    tpoData: []
   });
-
-  const tposData = formState.collegeDetails.tpos;
-  //console.log("tpos", tpos);
-  console.log("collegeDetails", formState.collegeDetails);
 
   useEffect(() => {
     getCollegeData();
@@ -76,9 +76,12 @@ const ViewCollege = props => {
         .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
         .then(res => {
           let viewData = res.data.result[0];
+          let dataConverter = [];
+          dataConverter = convertStudentData(viewData.tpos);
           setFormState(formState => ({
             ...formState,
-            collegeDetails: viewData
+            collegeDetails: viewData,
+            tpoData: dataConverter
           }));
         })
         .catch(error => {
@@ -91,6 +94,16 @@ const ViewCollege = props => {
     }
     setLoaderStatus(false);
   }
+
+  const convertStudentData = data => {
+    let collegeDataArray = [];
+    for (let i in data) {
+      var tempIndividualStudentData = {};
+      tempIndividualStudentData["TPO"] = data[i] ? data[i]["username"] : "";
+      collegeDataArray.push(tempIndividualStudentData);
+    }
+    return collegeDataArray;
+  };
 
   const editData = () => {
     setLoaderStatus(true);
@@ -214,31 +227,40 @@ const ViewCollege = props => {
                 </Grid>
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
-                  {/* <ReadOnlyTextField
-                    id="TPO"
-                    label={TPO}
-                    defaultValue={("value1", "value2")}
-                  /> */}
+                <Grid item md={12} xs={12}>
                   <Autocomplete
                     multiple
+                    freeSolo
                     id="fixed-tags-demo"
-                    options={tposData}
-                    getOptionLabel={option => option.username}
-                    //defaultValue={formState.collegeDetails.tpos}
-                    //disabled
-                    style={{ width: 500 }}
+                    options={[]}
+                    getOptionLabel={option => option.TPO}
+                    value={formState.tpoData}
+                    disableClearable
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip
+                          label={option.TPO}
+                          {...getTagProps({ index })}
+                          disabled
+                        />
+                      ))
+                    }
                     renderInput={params => (
-                      <TextField
-                        {...params}
-                        label="TPO"
-                        variant="outlined"
-                        placeholder="Favorites"
-                      />
+                      <TextField {...params} label="TPOs" variant="outlined" />
                     )}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}></Grid>
+                <Grid item md={6} xs={12}>
+                  <FormControl component="fieldset">
+                    <FormControlLabel
+                      //value={formState.collegeDetails.blocked || false}
+                      checked={formState.collegeDetails.blocked}
+                      control={<Switch color="primary" />}
+                      label="Blocked"
+                      labelPlacement="start"
+                    />
+                  </FormControl>
+                </Grid>
               </Grid>
             </Grid>
             <Divider className={classes.divider} />
