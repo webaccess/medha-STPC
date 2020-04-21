@@ -274,7 +274,7 @@ const AppRouter = props => {
           component={ViewUser}
           exact
           layout={Layout}
-          path={routeConstants.DETAIL_USER}
+          path={routeConstants.VIEW_USER}
         />
         {/** State */}
         {/** Add Edit State */}
