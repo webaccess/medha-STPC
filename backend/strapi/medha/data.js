@@ -288,7 +288,8 @@ const roles = {
           "delete",
           "update",
           "activity",
-          "event"
+          "event",
+          "admins"
         ]
       },
       {

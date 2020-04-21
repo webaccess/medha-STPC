@@ -357,5 +357,31 @@ module.exports = {
       .then(res => {
         return utils.getPaginatedResponse(res);
       });
+  },
+
+  /**
+   * Get college admins
+   */
+  async admins(ctx) {
+    const { id } = ctx.params;
+
+    const college = await strapi.query("college").findOne({ id });
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    const userIds = await strapi.services.college.getAdmins(id);
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ id_in: userIds });
+
+    const list = response.map(user => {
+      return {
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`
+      };
+    });
+
+    return utils.getFindOneResponse(list);
   }
 };

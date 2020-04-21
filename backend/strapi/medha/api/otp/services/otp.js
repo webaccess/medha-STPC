@@ -9,8 +9,8 @@
  * Kaleyra API config
  */
 const KALEYRA_API_URL = "https://api.ap.kaleyra.io/v1/";
-const SID = "HXAP1663285974IN";
-const KALEYRA_API_KEY = "Af34335fb07fb3fe712441ecc92a5d193";
+const SID = "HXAP1660860792IN";
+const KALEYRA_API_KEY = "A576e8f4409aa06c96a27e6328ae1a81a";
 
 const axios = require("axios");
 
@@ -28,7 +28,7 @@ module.exports = {
     const body = {
       to: `+91${mobileNo}`,
       type: "OTP",
-      sender: "Medha-STPC",
+      sender: "KLRHXA",
       body: `Your OTP is ${OTP}`
     };
 
