@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import AppRouter from "./AppRouter";
 import { ThemeProvider } from "@material-ui/styles";

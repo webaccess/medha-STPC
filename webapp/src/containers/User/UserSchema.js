@@ -10,9 +10,9 @@ const UserSchema = {
     validations: {
       required: {
         value: "true",
-        message: "User Name is required",
-      },
-    },
+        message: "User Name is required"
+      }
+    }
   },
   password: {
     label: "Password",
@@ -25,9 +25,9 @@ const UserSchema = {
     validations: {
       required: {
         value: "true",
-        message: "password is required",
-      },
-    },
+        message: "password is required"
+      }
+    }
   },
   firstname: {
     label: "First Name",
@@ -40,9 +40,9 @@ const UserSchema = {
     validations: {
       required: {
         value: "true",
-        message: "First Name is required",
-      },
-    },
+        message: "First Name is required"
+      }
+    }
   },
   lastname: {
     label: "Last Name",
@@ -55,9 +55,9 @@ const UserSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Last Name is required",
-      },
-    },
+        message: "Last Name is required"
+      }
+    }
   },
   email: {
     label: "Email",
@@ -70,13 +70,13 @@ const UserSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Email is required",
+        message: "Email is required"
       },
       validateEmailRegex: {
         value: "true",
-        message: "Not an Email",
-      },
-    },
+        message: "Not an Email"
+      }
+    }
   },
   contact: {
     label: "Contact Number",
@@ -89,13 +89,13 @@ const UserSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Contact number is required",
+        message: "Contact number is required"
       },
       validateMobileNumber: {
         value: 10,
-        message: "Please enter a valid contact number",
-      },
-    },
+        message: "Please enter a valid contact number"
+      }
+    }
   },
   blocked: {
     label: "Block/Unblock",
@@ -105,7 +105,7 @@ const UserSchema = {
     placeholder: "active",
     autoFocus: true,
     type: "checkbox",
-    validations: {},
+    validations: {}
   },
   state: {
     label: "State",
@@ -115,7 +115,7 @@ const UserSchema = {
     placeholder: "Choose State",
     autoFocus: true,
     type: "text",
-    validations: {},
+    validations: {}
   },
   zone: {
     label: "Zone",
@@ -125,7 +125,7 @@ const UserSchema = {
     placeholder: "Choose Zone",
     autoFocus: true,
     type: "text",
-    validations: {},
+    validations: {}
   },
   rpc: {
     label: "RPC",
@@ -135,7 +135,7 @@ const UserSchema = {
     placeholder: "Choose RPC",
     autoFocus: true,
     type: "text",
-    validations: {},
+    validations: {}
   },
   college: {
     label: "College",
@@ -145,7 +145,7 @@ const UserSchema = {
     placeholder: "Choose College",
     autoFocus: true,
     type: "text",
-    validations: {},
+    validations: {}
   },
   role: {
     label: "Role",
@@ -158,10 +158,10 @@ const UserSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Role is required",
-      },
-    },
-  },
+        message: "Role is required"
+      }
+    }
+  }
 };
 
 export default UserSchema;
