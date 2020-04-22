@@ -308,8 +308,6 @@ const AddEditStudent = props => {
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id
       );
-      console.log(postData);
-      console.log(formState.dataForEdit.id);
       serviceProvider
         .serviceProviderForPutRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
@@ -317,18 +315,24 @@ const AddEditStudent = props => {
           postData
         )
         .then(response => {
-          console.log(response);
-          console.log("Success");
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
+          if (
+            auth.getUserInfo().role.name === "Medha Admin" ||
+            auth.getUserInfo().role.name === "College Admin"
+          ) {
+            history.push({
+              pathname: routeConstants.MANAGE_STUDENT,
+              success: true
+            });
+          } else {
           history.push({
             pathname: routeConstants.VIEW_PROFILE,
             success: true
           });
+        }
         })
         .catch(err => {
-          console.log(err);
-          console.log(err.response.data);
           console.log(JSON.stringify(err));
           setIsFailed(true);
         });
@@ -357,7 +361,6 @@ const AddEditStudent = props => {
         parseInt(formState.values["rollnumber"]),
         formState.values.otp
       );
-      console.log(postData);
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +
@@ -366,7 +369,14 @@ const AddEditStudent = props => {
         )
         .then(response => {
           console.log(response);
-          history.push(routeConstants.REGISTERED);
+          if (
+            auth.getUserInfo().role.name === "Medha Admin" ||
+            auth.getUserInfo().role.name === "College Admin"
+          ) {
+            history.push(routeConstants.MANAGE_STUDENT);
+          } else {
+            history.push(routeConstants.REGISTERED);
+          }
         })
         .catch(err => {
           console.log(err);
@@ -708,6 +718,7 @@ const AddEditStudent = props => {
                   variant="outlined"
                   required
                   fullWidth
+                  onChange={handleChange}
                   readOnly
                   disabled
                   error={hasError("contact")}
@@ -1018,7 +1029,7 @@ const AddEditStudent = props => {
                     type="submit"
                     mfullWidth
                     variant="contained"
-                    onClick={() => {
+                    onClick={() => {  auth.getUserInfo().role.name === "College Admin" ? history.push(routeConstants.MANAGE_STUDENT)  : 
                       history.push(routeConstants.VIEW_PROFILE);
                     }}
                   >

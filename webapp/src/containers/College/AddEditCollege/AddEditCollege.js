@@ -677,14 +677,21 @@ const AddEditCollege = props => {
           postData
         )
         .then(res => {
-          history.push({
-            pathname: routeConstants.MANAGE_COLLEGE,
-            fromeditCollege: true,
-            isDataEdited: true,
-            editedCollegeData: res.data,
-            editResponseMessage: "",
-            editedData: {}
-          });
+          if (auth.getUserInfo().role.name === "Medha Admin") {
+            history.push({
+              pathname: routeConstants.MANAGE_COLLEGE,
+              fromeditCollege: true,
+              isDataEdited: true,
+              editedCollegeData: res.data,
+              editResponseMessage: "",
+              editedData: {}
+            });
+          } else if (auth.getUserInfo().role.name === "College Admin") {
+            history.push({
+              pathname: routeConstants.VIEW_COLLEGE
+            });
+          }
+
           setLoaderStatus(false);
         })
         .catch(error => {

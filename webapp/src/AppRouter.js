@@ -274,7 +274,7 @@ const AppRouter = props => {
           component={ViewUser}
           exact
           layout={Layout}
-          path={routeConstants.DETAIL_USER}
+          path={routeConstants.VIEW_USER}
         />
         {/** State */}
         {/** Add Edit State */}
@@ -419,6 +419,18 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_STUDENT_PROFILE}
+        />
+        <CollegeAdminRoute
+          component={AddEditStudent}
+          exact
+          layout={Layout}
+          path={routeConstants.ADD_STUDENT_FROM_COLLEGE_ADMIN}
+        />
+         <CollegeAdminRoute
+          component={AddEditStudent}
+          exact
+          layout={Layout}
+          path={routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN}
         />
         {/** Add student to recruitment drive */}
         <CollegeAdminRoute
