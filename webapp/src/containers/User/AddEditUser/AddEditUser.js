@@ -17,7 +17,7 @@ import {
   FormHelperText,
   FormGroup,
   FormControlLabel,
-  Switch,
+  Switch
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -30,10 +30,11 @@ import {
   Divider,
   Grid,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import LoaderContext from "../../../context/LoaderContext";
 import { YellowButton, GrayButton, Auth as auth } from "../../../components";
+import { et } from "date-fns/locale";
 
 /** Constants  declaration */
 const firstname = "firstname";
@@ -68,29 +69,29 @@ const COLLEGE_URL =
 let VALIDATIONFORRPC = {
   required: {
     value: "true",
-    message: "RPC is required",
-  },
+    message: "RPC is required"
+  }
 };
 let VALIDATIONFORSTATE = {
   required: {
     value: "true",
-    message: "State is required",
-  },
+    message: "State is required"
+  }
 };
 let VALIDATIONFORZONE = {
   required: {
     value: "true",
-    message: "Zone is required",
-  },
+    message: "Zone is required"
+  }
 };
 let VALIDATIONFORCOLLEGE = {
   required: {
     value: "true",
-    message: "College is required",
-  },
+    message: "College is required"
+  }
 };
 
-const AddEditUser = (props) => {
+const AddEditUser = props => {
   /** Initializing all the hooks */
   const classes = useStyles();
   const history = useHistory();
@@ -106,7 +107,7 @@ const AddEditUser = (props) => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     isCollegeAdmin:
-      auth.getUserInfo().role.name === "College Admin" ? true : false,
+      auth.getUserInfo().role.name === "College Admin" ? true : false
   });
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
@@ -118,6 +119,7 @@ const AddEditUser = (props) => {
   if (formState.isEditUser && !formState.counter) {
     setLoaderStatus(true);
     if (props["dataForEdit"]) {
+      formState.values[password] = undefined;
       if (props["dataForEdit"]["first_name"]) {
         formState.values[firstname] = props["dataForEdit"]["first_name"];
       }
@@ -164,20 +166,20 @@ const AddEditUser = (props) => {
   /** Use Effect function to set roles */
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: -1,
+      pageSize: -1
     };
     serviceProvider
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
-      .then((res) => {
+      .then(res => {
         setStates(res.data.result);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
 
     serviceProvider
       .serviceProviderForGetRequest(ROLES_URL, paramsForPageSize)
-      .then((res) => {
+      .then(res => {
         let roles = [];
         for (let i in res.data.roles) {
           if (
@@ -194,7 +196,7 @@ const AddEditUser = (props) => {
         }
         setRoles(roles);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
   }, []);
@@ -227,10 +229,10 @@ const AddEditUser = (props) => {
 
       await serviceProvider
         .serviceProviderForGetRequest(zones_url)
-        .then((res) => {
+        .then(res => {
           setZones(res.data.result);
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
         });
 
@@ -243,14 +245,14 @@ const AddEditUser = (props) => {
 
       await serviceProvider
         .serviceProviderForGetRequest(rpcs_url)
-        .then((res) => {
+        .then(res => {
           if (Array.isArray(res.data)) {
             setRpcs(res.data[0].result);
           } else {
             setRpcs(res.data.result);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
         });
     }
@@ -267,34 +269,34 @@ const AddEditUser = (props) => {
     let params = {
       "zone.id": formState.values[zone],
       "rpc.id": formState.values[rpc],
-      pageSize: -1,
+      pageSize: -1
     };
 
     await serviceProvider
       .serviceProviderForGetRequest(COLLEGE_URL, params)
-      .then((res) => {
+      .then(res => {
         setColleges(res.data.result);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   }
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
     e.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
 
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+          e.target.type === "checkbox" ? e.target.checked : e.target.value
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
-      },
+        [e.target.name]: true
+      }
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -305,17 +307,17 @@ const AddEditUser = (props) => {
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (value !== null) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         values: {
           ...formState.values,
-          [eventName]: value.id,
+          [eventName]: value.id
         },
         touched: {
           ...formState.touched,
-          [eventName]: true,
+          [eventName]: true
         },
-        isStateClearFilter: false,
+        isStateClearFilter: false
       }));
       if (eventName === state) {
         fetchZoneRpcDistrictData();
@@ -324,7 +326,7 @@ const AddEditUser = (props) => {
       if (eventName === role) {
         let roleName = value.name;
         clearValidations();
-        setValidationsForCollegeAdmin(roleName);
+        setValidationsForDifferentRoles(roleName);
       }
       /** This is used to remove any existing errors if present in auto complete */
       if (formState.errors.hasOwnProperty(eventName)) {
@@ -354,9 +356,9 @@ const AddEditUser = (props) => {
         delete formState.values[state];
         clearValidations();
       }
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isStateClearFilter: setStateFilterValue,
+        isStateClearFilter: setStateFilterValue
       }));
       /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
@@ -383,8 +385,8 @@ const AddEditUser = (props) => {
     UserSchema[college]["validations"] = {};
   };
 
-  const setValidationsForCollegeAdmin = (roleName) => {
-    if (roleName === "College Admin") {
+  const setValidationsForDifferentRoles = roleName => {
+    if (roleName === "College Admin" || roleName === "Student") {
       UserSchema[rpc]["required"] = true;
       UserSchema[state]["required"] = true;
       UserSchema[zone]["required"] = true;
@@ -403,11 +405,19 @@ const AddEditUser = (props) => {
       UserSchema[zone]["required"] = true;
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
       UserSchema[zone]["validations"] = VALIDATIONFORZONE;
+    } else if (roleName === "Medha Admin") {
+      clearValidations();
     }
   };
-
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
+    if (formState.isEditUser) {
+      UserSchema[password]["required"] = false;
+      UserSchema[password]["validations"] = {};
+      if (formState.values[password] && formState.values[password] === "") {
+        formState.values[password] = undefined;
+      }
+    }
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
@@ -432,14 +442,14 @@ const AddEditUser = (props) => {
       postUserData();
 
       /** Call axios from here */
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: true,
+        isValid: true
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
     }
   };
@@ -451,7 +461,7 @@ const AddEditUser = (props) => {
       formState.values[email],
       formState.values[firstname],
       formState.values[lastname],
-      formState.values[password],
+      formState.values[password] ? formState.values[password] : undefined,
       formState.values[contact],
       formState.values[blocked] ? formState.values[blocked] : false,
       formState.values[state] ? formState.values[state] : null,
@@ -467,48 +477,48 @@ const AddEditUser = (props) => {
           formState.dataForEdit["id"],
           postData
         )
-        .then((res) => {
+        .then(res => {
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
             isDataEdited: true,
             editedUserName: res.data.result,
             editResponseMessage: "",
-            editedData: {},
+            editedData: {}
           });
           setLoaderStatus(false);
         })
-        .catch((error) => {
+        .catch(error => {
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
             isDataEdited: false,
             editResponseMessage: "",
-            editedData: {},
+            editedData: {}
           });
           setLoaderStatus(false);
         });
     } else {
       serviceProvider
         .serviceProviderForPostRequest(USERS_URL, postData)
-        .then((res) => {
+        .then(res => {
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: true,
             addedUserName: res.data.user,
             addResponseMessage: "",
-            addedData: {},
+            addedData: {}
           });
           setLoaderStatus(false);
         })
-        .catch((error) => {
+        .catch(error => {
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: false,
             addResponseMessage: "",
-            addedData: {},
+            addedData: {}
           });
         });
       setLoaderStatus(false);
@@ -519,11 +529,11 @@ const AddEditUser = (props) => {
     setFormState({ ...formState, showPassword: !formState.showPassword });
   };
 
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = event => {
     event.preventDefault();
   };
 
-  const hasError = (field) => (formState.errors[field] ? true : false);
+  const hasError = field => (formState.errors[field] ? true : false);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -552,7 +562,7 @@ const AddEditUser = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError(firstname)
-                          ? formState.errors[firstname].map((error) => {
+                          ? formState.errors[firstname].map(error => {
                               return error + " ";
                             })
                           : null
@@ -572,7 +582,7 @@ const AddEditUser = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError(lastname)
-                          ? formState.errors[lastname].map((error) => {
+                          ? formState.errors[lastname].map(error => {
                               return error + " ";
                             })
                           : null
@@ -594,7 +604,7 @@ const AddEditUser = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError(email)
-                          ? formState.errors[email].map((error) => {
+                          ? formState.errors[email].map(error => {
                               return error + " ";
                             })
                           : null
@@ -616,7 +626,7 @@ const AddEditUser = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError(contact)
-                          ? formState.errors[contact].map((error) => {
+                          ? formState.errors[contact].map(error => {
                               return error + " ";
                             })
                           : null
@@ -628,7 +638,7 @@ const AddEditUser = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={roles}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(role, event, value);
                       }}
@@ -639,7 +649,7 @@ const AddEditUser = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           error={hasError(role)}
@@ -649,7 +659,7 @@ const AddEditUser = (props) => {
                           name="tester"
                           helperText={
                             hasError(role)
-                              ? formState.errors[role].map((error) => {
+                              ? formState.errors[role].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -677,7 +687,7 @@ const AddEditUser = (props) => {
                       onChange={handleChange}
                       helperText={
                         hasError(username)
-                          ? formState.errors[username].map((error) => {
+                          ? formState.errors[username].map(error => {
                               return error + " ";
                             })
                           : null
@@ -726,7 +736,7 @@ const AddEditUser = (props) => {
                       />
                       <FormHelperText error={hasError(password)}>
                         {hasError(password)
-                          ? formState.errors[password].map((error) => {
+                          ? formState.errors[password].map(error => {
                               return error + " ";
                             })
                           : null}
@@ -748,7 +758,7 @@ const AddEditUser = (props) => {
                         error={hasError(blocked)}
                         helperText={
                           hasError(blocked)
-                            ? formState.errors[blocked].map((error) => {
+                            ? formState.errors[blocked].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -766,7 +776,7 @@ const AddEditUser = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={states}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(state, event, value);
                       }}
@@ -777,7 +787,7 @@ const AddEditUser = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label={get(UserSchema[state], "label")}
@@ -786,7 +796,7 @@ const AddEditUser = (props) => {
                           error={hasError(state)}
                           helperText={
                             hasError(state)
-                              ? formState.errors[state].map((error) => {
+                              ? formState.errors[state].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -800,7 +810,7 @@ const AddEditUser = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={zones}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(zone, event, value);
                       }}
@@ -811,7 +821,7 @@ const AddEditUser = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label={get(UserSchema[zone], "label")}
@@ -820,7 +830,7 @@ const AddEditUser = (props) => {
                           error={hasError(zone)}
                           helperText={
                             hasError(zone)
-                              ? formState.errors[zone].map((error) => {
+                              ? formState.errors[zone].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -836,7 +846,7 @@ const AddEditUser = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={rpcs}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(rpc, event, value);
                       }}
@@ -847,7 +857,7 @@ const AddEditUser = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label={get(UserSchema[rpc], "label")}
@@ -856,7 +866,7 @@ const AddEditUser = (props) => {
                           error={hasError(rpc)}
                           helperText={
                             hasError(rpc)
-                              ? formState.errors[rpc].map((error) => {
+                              ? formState.errors[rpc].map(error => {
                                   return error + " ";
                                 })
                               : null
@@ -870,7 +880,7 @@ const AddEditUser = (props) => {
                       id="combo-box-demo"
                       className={classes.root}
                       options={colleges}
-                      getOptionLabel={(option) => option.name}
+                      getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(college, event, value);
                       }}
@@ -881,7 +891,7 @@ const AddEditUser = (props) => {
                           })
                         ] || null
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label={get(UserSchema[college], "label")}
@@ -890,7 +900,7 @@ const AddEditUser = (props) => {
                           error={hasError(college)}
                           helperText={
                             hasError(college)
-                              ? formState.errors[college].map((error) => {
+                              ? formState.errors[college].map(error => {
                                   return error + " ";
                                 })
                               : null
