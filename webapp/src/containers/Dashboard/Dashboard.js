@@ -34,6 +34,8 @@ const Dashboard = props => {
   const classes = useStyles();
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
+  const { index, setIndex } = useContext(SetIndexContext);
+  setIndex(0);
 
   React.useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);

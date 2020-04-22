@@ -30,6 +30,8 @@ import {
 import DeleteState from "./DeleteState";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -42,6 +44,8 @@ const ViewStates = props => {
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
   const [statesFilter, setStatesFilter] = useState([]);
+  const { setLoaderStatus } = useContext(LoaderContext);
+
   /** Form state variables */
   const [formState, setFormState] = useState({
     filterState: "",
@@ -96,12 +100,8 @@ const ViewStates = props => {
     sortAscending: true,
     /** Message to show */
     fromDeleteModal: false,
-    messageToShow: "",
-    isDataDeleted: false
+    messageToShow: ""
   });
-
-  console.log("addedState", props["location"]["addedStateData"]);
-  console.log("addedState", props["location"]["stateDataEdited"]);
 
   useEffect(() => {
     let paramsForPageSize = {
@@ -248,6 +248,7 @@ const ViewStates = props => {
 
   /** Edit -------------------------------------------------------*/
   const getDataForEdit = async id => {
+    setLoaderStatus(true);
     let paramsForStates = {
       id: id
     };
@@ -265,6 +266,7 @@ const ViewStates = props => {
       .catch(error => {
         console.log("error");
       });
+    setLoaderStatus(false);
   };
 
   const editCell = event => {
@@ -290,6 +292,7 @@ const ViewStates = props => {
   /** Delete cell ------------------ */
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {

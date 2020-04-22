@@ -9,7 +9,8 @@ import LoaderContext from "./context/LoaderContext";
 import * as utlities from "./Utilities/CommonUtilities";
 
 function App(props) {
-  let id = utlities.setSideBarIndex(window.location.pathname);
+  let id = 0;
+  id = utlities.setSideBarIndex(window.location.pathname);
   const [index, setIndex] = useState(id);
   const [loaderStatus, setLoaderStatus] = useState(false);
   return (

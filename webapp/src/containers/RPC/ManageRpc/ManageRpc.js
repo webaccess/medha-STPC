@@ -34,6 +34,8 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
@@ -48,6 +50,7 @@ const ViewRpc = props => {
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     filterRpc: "",
@@ -270,6 +273,7 @@ const ViewRpc = props => {
   };
 
   const getDataForEdit = async id => {
+    setLoaderStatus(true);
     let paramsForRpcs = {
       id: id
     };
@@ -286,26 +290,13 @@ const ViewRpc = props => {
       .catch(error => {
         console.log("error", error);
       });
+    setLoaderStatus(false);
   };
 
-  /** 
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      formState.isFilterSearch = false;
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
-    setFormState(formState => ({
-      ...formState,
-      isClearResetFilter: false
-    }));
-  };
-*/
   /** ---------Delete -------- */
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -320,6 +311,7 @@ const ViewRpc = props => {
       fromEditRpc: false,
       isMultiDelete: false
     }));
+    setLoaderStatus(false);
   };
 
   /** This is used to handle the close modal event */

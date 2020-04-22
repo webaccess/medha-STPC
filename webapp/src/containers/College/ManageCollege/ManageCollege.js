@@ -55,7 +55,7 @@ const ManageCollege = props => {
   const [open, setOpen] = React.useState(true);
   /** Data we get for filtering */
   const [collegesFilter, setCollegesFilter] = React.useState([]);
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [rpcs, setRpcs] = React.useState([]);
   const [zones, setZones] = React.useState([]);
   const [states, setStates] = React.useState([]);
@@ -366,7 +366,6 @@ const ManageCollege = props => {
       pathname: routeConstants.VIEW_COLLEGE,
       dataForEdit: event.target.id
     });
-    setLoaderStatus(false);
   };
 
   /** ---------------------------------------------------------- */
