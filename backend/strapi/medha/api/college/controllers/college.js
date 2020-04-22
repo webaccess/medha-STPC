@@ -378,7 +378,8 @@ module.exports = {
     const list = response.map(user => {
       return {
         id: user.id,
-        name: `${user.first_name} ${user.last_name}`
+        name: `${user.first_name} ${user.last_name}`,
+        username: user.username
       };
     });
 
