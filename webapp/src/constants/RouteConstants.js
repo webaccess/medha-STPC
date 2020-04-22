@@ -23,8 +23,8 @@ export const MANAGE_STUDENT = "/manage-student";
 export const VALIDATE_STUDENT = "/validate-student";
 export const PROFILE = "/profile";
 
-export const ADD_STUDENT_FROM_COLLEGE_ADMIN = "/college-admin-add-student";
-export const EDIT_STUDENT_FROM_COLLEGE_ADMIN = "/college-admin-edit-student";
+export const ADD_STUDENT_FROM_COLLEGE_ADMIN = "/college-add-student";
+export const EDIT_STUDENT_FROM_COLLEGE_ADMIN = "/college-edit-student";
 
 /**Student Documents */
 export const VIEW_DOCUMENTS = "/view-documents";
@@ -184,7 +184,7 @@ activity_college_admin.push(
   ELIGIBLE_ACTIVITY
 );
 
-students_college_admin.push(MANAGE_STUDENT, VIEW_PROFILE, EDIT_PROFILE);
+students_college_admin.push(MANAGE_STUDENT, VIEW_PROFILE, EDIT_PROFILE,ADD_STUDENT_FROM_COLLEGE_ADMIN,EDIT_STUDENT_FROM_COLLEGE_ADMIN);
 
 export const COLLEGE_ADMIN = [
   { key: 0, value: dashboard_college_admin },
