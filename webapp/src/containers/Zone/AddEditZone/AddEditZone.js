@@ -20,6 +20,8 @@ import {
 } from "@material-ui/core";
 import * as serviceProviders from "../../../api/Axios";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const ZONE_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
@@ -32,6 +34,7 @@ const AddEditZone = props => {
   const state = "stateName";
   const content = "content";
   const classes = useStyles();
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -147,6 +150,7 @@ const AddEditZone = props => {
         ...formState,
         isValid: false
       }));
+      setLoaderStatus(false);
     }
   };
 
@@ -163,6 +167,7 @@ const AddEditZone = props => {
           postData
         )
         .then(res => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
             fromEditZone: true,
@@ -173,6 +178,7 @@ const AddEditZone = props => {
           });
         })
         .catch(error => {
+          setLoaderStatus(false);
           console.log(error);
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
@@ -192,6 +198,7 @@ const AddEditZone = props => {
       serviceProviders
         .serviceProviderForPostRequest(ZONE_URL, postData)
         .then(res => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
             fromAddZone: true,
@@ -202,6 +209,7 @@ const AddEditZone = props => {
           });
         })
         .catch(error => {
+          setLoaderStatus(false);
           console.log(error);
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
@@ -272,7 +280,7 @@ const AddEditZone = props => {
                     }}
                     value={
                       states[
-                        states.findIndex(function(item, i) {
+                        states.findIndex(function (item, i) {
                           return item.id === formState.values[state];
                         })
                       ] || null /** Please give a default " " blank value */
@@ -300,7 +308,14 @@ const AddEditZone = props => {
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton type="submit" color="primary" variant="contained">
+                <YellowButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    setLoaderStatus(true);
+                  }}
+                >
                   {genericConstants.SAVE_BUTTON_TEXT}
                 </YellowButton>
                 <GrayButton

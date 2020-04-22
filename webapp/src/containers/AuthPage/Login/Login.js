@@ -25,14 +25,14 @@ import {
   useMediaQuery,
   Collapse,
   Backdrop,
-  CircularProgress,
+  CircularProgress
 } from "@material-ui/core";
 import useStyles from "./LoginStyles";
 import form from "./loginform.json";
 import {
   Alert,
   Auth as auth,
-  Validation as validateInput,
+  Validation as validateInput
 } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as authPageConstants from "../../../constants/AuthPageConstants";
@@ -45,11 +45,10 @@ import image from "../../../assets/images/login-img.png";
 import CardIcon from "../../../components/Card/CardIcon.js";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
-
 const identifier = "identifier";
 const password = "password";
 
-const LogIn = (props) => {
+const LogIn = props => {
   const [openSpinner, setOpenSpinner] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
@@ -66,12 +65,12 @@ const LogIn = (props) => {
     isSuccess: false,
     showPassword: false,
     fromPasswordChangedPage: props.from.fromPasswordChangedPage ? true : false,
-    dataToShow: props.from.fromPasswordChangedPage ? props.from.dataToShow : "",
+    dataToShow: props.from.fromPasswordChangedPage ? props.from.dataToShow : ""
   });
 
   function checkAllKeysPresent(obj) {
     let areFieldsValid = false;
-    Object.keys(form).map((field) => {
+    Object.keys(form).map(field => {
       if (form[field]["required"] === true && obj.hasOwnProperty(field)) {
         areFieldsValid = true;
       } else {
@@ -86,17 +85,17 @@ const LogIn = (props) => {
   }
 
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"), {
-    defaultMatches: true,
+    defaultMatches: true
   });
 
   useEffect(() => {
     if (formUtilities.checkAllKeysPresent(formState.values, form)) {
-      Object.keys(formState.values).map((field) => {
+      Object.keys(formState.values).map(field => {
         const errors = validateInput(
           formState.values[field],
           form[field]["validations"]
         );
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           isValid:
             !errors.length &&
@@ -107,9 +106,9 @@ const LogIn = (props) => {
           errors: errors.length
             ? {
                 ...formState.errors,
-                [field]: errors,
+                [field]: errors
               }
-            : formState.errors,
+            : formState.errors
         }));
         if (!errors.length && formState.errors.hasOwnProperty(field)) {
           delete formState.errors[field];
@@ -120,12 +119,12 @@ const LogIn = (props) => {
         formState.values,
         form
       );
-      Object.keys(formState.values).map((field) => {
+      Object.keys(formState.values).map(field => {
         const errors = validateInput(
           formState.values[field],
           form[field]["validations"]
         );
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           isValid:
             !errors.length &&
@@ -136,9 +135,9 @@ const LogIn = (props) => {
           errors: errors.length
             ? {
                 ...formState.errors,
-                [field]: errors,
+                [field]: errors
               }
-            : formState.errors,
+            : formState.errors
         }));
         if (!errors.length && formState.errors.hasOwnProperty(field)) {
           delete formState.errors[field];
@@ -146,12 +145,12 @@ const LogIn = (props) => {
       });
     }
 
-    Object.keys(formState.values).map((field) => {
+    Object.keys(formState.values).map(field => {
       const errors = validateInput(
         formState.values[field],
         form[field]["validations"]
       );
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         isValid:
           !errors.length &&
@@ -162,9 +161,9 @@ const LogIn = (props) => {
         errors: errors.length
           ? {
               ...formState.errors,
-              [field]: errors,
+              [field]: errors
             }
-          : formState.errors,
+          : formState.errors
       }));
       if (!errors.length && formState.errors.hasOwnProperty(field)) {
         delete formState.errors[field];
@@ -172,20 +171,20 @@ const LogIn = (props) => {
     });
   }, [formState.values]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     e.persist();
     setIfFailure(false);
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [e.target.name]: e.target.value,
+        [e.target.name]: e.target.value
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
-      },
+        [e.target.name]: true
+      }
     }));
   };
 
@@ -194,25 +193,25 @@ const LogIn = (props) => {
       <Redirect
         to={{
           pathname: routeConstants.VIEW_PROFILE,
-          state: { from: props.location },
+          state: { from: props.location }
         }}
       />
     ) : (
       <Redirect
         to={{
           pathname: routeConstants.DASHBOARD_URL,
-          state: { from: props.location },
+          state: { from: props.location }
         }}
       />
     );
   }
 
-  const handleSignIn = (event) => {
+  const handleSignIn = event => {
     event.preventDefault();
     processLogin();
   };
 
-  const hasError = (field) =>
+  const hasError = field =>
     formState.touched[field] && formState.errors[field] ? true : false;
 
   const processLogin = async () => {
@@ -222,10 +221,10 @@ const LogIn = (props) => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_LOGIN_PATH,
         {
           identifier: formState.values.identifier,
-          password: formState.values.password,
+          password: formState.values.password
         }
       )
-      .then((response) => {
+      .then(response => {
         if (
           response.data.user.role.name === "Student" &&
           !response.data.user.studentInfo.verifiedByCollege
@@ -239,7 +238,7 @@ const LogIn = (props) => {
           // Handle success.
         }
       })
-      .catch((error) => {
+      .catch(error => {
         setOpen(true);
         setIfFailure(true);
         console.log("An error occurred:", JSON.stringify(error));
@@ -250,11 +249,11 @@ const LogIn = (props) => {
   const handleClickShowPassword = () => {
     setFormState({
       ...formState,
-      showPassword: !formState.showPassword,
+      showPassword: !formState.showPassword
     });
   };
 
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = event => {
     event.preventDefault();
   };
 
@@ -336,7 +335,7 @@ const LogIn = (props) => {
                     autoFocus={get(form[identifier], "autoFocus")}
                     helperText={
                       hasError(identifier)
-                        ? formState.errors[identifier].map((error) => {
+                        ? formState.errors[identifier].map(error => {
                             return error + " ";
                           })
                         : null
@@ -391,20 +390,20 @@ const LogIn = (props) => {
                       InputLabelProps={{
                         classes: {
                           root: classes.cssLabel,
-                          focused: classes.cssFocused,
-                        },
+                          focused: classes.cssFocused
+                        }
                       }}
                       InputProps={{
                         classes: {
                           root: classes.cssOutlinedInput,
                           focused: classes.cssFocused,
-                          notchedOutline: classes.notchedOutline,
-                        },
+                          notchedOutline: classes.notchedOutline
+                        }
                       }}
                     ></OutlinedInput>
                     <FormHelperText error={hasError(password)}>
                       {hasError(password)
-                        ? formState.errors[password].map((error) => {
+                        ? formState.errors[password].map(error => {
                             return error + " ";
                           })
                         : null}

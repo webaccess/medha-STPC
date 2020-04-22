@@ -426,7 +426,7 @@ const AppRouter = props => {
           layout={Layout}
           path={routeConstants.ADD_STUDENT_FROM_COLLEGE_ADMIN}
         />
-         <CollegeAdminRoute
+        <CollegeAdminRoute
           component={AddEditStudent}
           exact
           layout={Layout}

@@ -93,10 +93,6 @@ const ManageStudents = props => {
       : null
   });
 
-  console.log("isDataEdited", formState.isDataEdited);
-  console.log("fromeditCollege", formState.fromeditCollege);
-  console.log("editedCollegeName", formState.editedCollegeName);
-
   useEffect(() => {
     getStudentData(10, 1);
     getStreamData();
@@ -1008,7 +1004,7 @@ const ManageStudents = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function(item, i) {
+                          streams.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]

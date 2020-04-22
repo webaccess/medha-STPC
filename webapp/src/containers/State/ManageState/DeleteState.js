@@ -15,11 +15,14 @@ import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_ID = "state";
 
 const DeleteState = props => {
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
@@ -31,6 +34,7 @@ const DeleteState = props => {
 
   /** This is called when we open the modal */
   if (props.showModal && !formState.stateCounter) {
+    setLoaderStatus(false);
     formState.stateCounter = 0;
     formState.values[STATE_ID] = props.id;
     formState.isDeleteData = false;

@@ -49,7 +49,7 @@ const ManageEvent = props => {
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
   /** Value to set for event filter */
   const [value, setValue] = React.useState(null);
 
