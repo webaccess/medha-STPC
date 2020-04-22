@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
-
+import utilities from "../../../Utilities/CommonUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
@@ -29,13 +29,13 @@ import {
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DeleteUser from "./DeleteEvent";
-import * as genericConstants from "../../../constants/GenericConstants";
 import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import auth from "../../../components/Auth";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LoaderContext from "../../../context/LoaderContext";
+import SetIndexContext from "../../../context/SetIndexContext";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
@@ -50,7 +50,6 @@ const ManageEvent = props => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
-
   /** Value to set for event filter */
   const [value, setValue] = React.useState(null);
 
