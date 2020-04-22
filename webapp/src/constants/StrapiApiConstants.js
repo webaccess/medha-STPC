@@ -37,3 +37,4 @@ export const STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH = "validate-activity-batch";
 export const STRAPI_UNVALIDATE_STUDENT_ACTIVITY_BATCH =
   "invalidate-activity-batch";
 export const STRAPI_EVENT_REGISTRATION = "event-registrations";
+export const STRAPI_ADMIN = "admins";

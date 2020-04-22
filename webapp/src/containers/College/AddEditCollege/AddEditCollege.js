@@ -210,14 +210,7 @@ const AddEditCollege = props => {
     let paramsForPageSize = {
       pageSize: -1
     };
-    serviceProviders
-      .serviceProviderForGetRequest(USERS_URL, paramsForPageSize)
-      .then(res => {
-        setUser(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
@@ -258,6 +251,42 @@ const AddEditCollege = props => {
       });
     setLoaderStatus(false);
   }, []);
+
+  useEffect(() => {
+    fetchCollegeAdminData();
+    return () => {};
+  }, []);
+
+  async function fetchCollegeAdminData() {
+    if (auth.getUserInfo().role.name === "Medha Admin") {
+      let paramsForPageSize = {
+        pageSize: -1
+      };
+      serviceProviders
+        .serviceProviderForGetRequest(USERS_URL, paramsForPageSize)
+        .then(res => {
+          setUser(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    } else if (auth.getUserInfo().role.name === "College Admin") {
+      let user_url =
+        COLLEGES_URL +
+        "/" +
+        auth.getUserInfo().college.id +
+        "/" +
+        strapiConstants.STRAPI_ADMIN;
+      serviceProviders
+        .serviceProviderForGetRequest(user_url)
+        .then(res => {
+          setUser(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
+  }
 
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
@@ -652,7 +681,12 @@ const AddEditCollege = props => {
             });
           } else if (auth.getUserInfo().role.name === "College Admin") {
             history.push({
-              pathname: routeConstants.VIEW_COLLEGE
+              pathname: routeConstants.VIEW_COLLEGE,
+              fromeditCollege: true,
+              isDataEdited: true,
+              editedCollegeData: res.data,
+              editResponseMessage: "",
+              editedData: {}
             });
           }
 
@@ -825,7 +859,7 @@ const AddEditCollege = props => {
                         /** This is used to set the default value to the auto complete */
                         value={
                           states[
-                            states.findIndex(function (item, i) {
+                            states.findIndex(function(item, i) {
                               return item.id === formState.values[state];
                             })
                           ] || null
@@ -887,7 +921,7 @@ const AddEditCollege = props => {
                           formState.isStateClearFilter
                             ? null
                             : zones[
-                                zones.findIndex(function (item, i) {
+                                zones.findIndex(function(item, i) {
                                   return item.id === formState.values[zone];
                                 })
                               ] ||
@@ -953,7 +987,7 @@ const AddEditCollege = props => {
                           formState.isStateClearFilter
                             ? null
                             : rpcs[
-                                rpcs.findIndex(function (item, i) {
+                                rpcs.findIndex(function(item, i) {
                                   return item.id === formState.values[rpc];
                                 })
                               ] ||
@@ -1009,7 +1043,7 @@ const AddEditCollege = props => {
                         formState.isStateClearFilter
                           ? null
                           : districts[
-                              districts.findIndex(function (item, i) {
+                              districts.findIndex(function(item, i) {
                                 return item.id === formState.values[district];
                               })
                             ] ||
@@ -1092,102 +1126,103 @@ const AddEditCollege = props => {
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
-                  <FormControl
+                  {/* {/* <FormControl
                     variant="outlined"
                     fullWidth
                     className={classes.formControl}
-                  >
-                    <InputLabel ref={inputLabel} id="principal-label">
+                  > */}
+                  {/* <InputLabel ref={inputLabel} id="principal-label">
                       {/* principal */}
-                    </InputLabel>
-                    {user.length ? (
-                      <Autocomplete
-                        id={get(CollegeFormSchema[principal], "id")}
-                        options={user}
-                        getOptionLabel={option => option.username}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(principal, event, value);
-                        }}
-                        /** This is used to set the default value to the auto complete */
-                        value={
-                          user[
-                            user.findIndex(function (item, i) {
-                              return item.id === formState.values[principal];
-                            })
-                          ] || null /** Please give a default " " blank value */
-                        }
-                        name={principal}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            error={hasError(principal)}
-                            helperText={
-                              hasError(principal)
-                                ? formState.errors[principal].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            placeholder={get(
-                              CollegeFormSchema[principal],
-                              "placeholder"
-                            )}
-                            value={option => option.id}
-                            name={principal}
-                            key={option => option.id}
-                            label={get(CollegeFormSchema[principal], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    ) : null}
-                  </FormControl>
+                  {/* </InputLabel>  */}
+
+                  {user.length ? (
+                    <Autocomplete
+                      id={get(CollegeFormSchema[principal], "id")}
+                      options={user}
+                      getOptionLabel={option => option.username}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(principal, event, value);
+                      }}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        user[
+                          user.findIndex(function(item, i) {
+                            return item.id === formState.values[principal];
+                          })
+                        ] || null /** Please give a default " " blank value */
+                      }
+                      name={principal}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(principal)}
+                          helperText={
+                            hasError(principal)
+                              ? formState.errors[principal].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(
+                            CollegeFormSchema[principal],
+                            "placeholder"
+                          )}
+                          value={option => option.id}
+                          name={principal}
+                          key={option => option.id}
+                          label={get(CollegeFormSchema[principal], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  ) : null}
+                  {/* </FormControl> */}
                 </Grid>
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
-                  <FormControl
+                  {/*<FormControl
                     variant="outlined"
                     fullWidth
                     className={classes.formControl}
                   >
                     <InputLabel ref={inputLabel} id="tpos-label">
                       {/* TPO */}
-                    </InputLabel>
-                    {user.length ? (
-                      <Autocomplete
-                        id={get(CollegeFormSchema[tpos], "id")}
-                        multiple
-                        options={user}
-                        getOptionLabel={option => option.username}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(tpos, event, value);
-                        }}
-                        name={tpos}
-                        filterSelectedOptions
-                        value={formState.dataToShowForMultiSelect || null}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            error={hasError(tpos)}
-                            helperText={
-                              hasError(tpos)
-                                ? formState.errors[tpos].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            placeholder={get(
-                              CollegeFormSchema[tpos],
-                              "placeholder"
-                            )}
-                            label={get(CollegeFormSchema[tpos], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    ) : null}
-                  </FormControl>
+                  {/* // </InputLabel>  */}
+                  {user.length ? (
+                    <Autocomplete
+                      id={get(CollegeFormSchema[tpos], "id")}
+                      multiple
+                      options={user}
+                      getOptionLabel={option => option.username}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(tpos, event, value);
+                      }}
+                      name={tpos}
+                      filterSelectedOptions
+                      value={formState.dataToShowForMultiSelect || null}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(tpos)}
+                          helperText={
+                            hasError(tpos)
+                              ? formState.errors[tpos].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(
+                            CollegeFormSchema[tpos],
+                            "placeholder"
+                          )}
+                          label={get(CollegeFormSchema[tpos], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  ) : null}
+                  {/* </FormControl> */}
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <div
@@ -1274,7 +1309,7 @@ const AddEditCollege = props => {
                                     name={streamId}
                                     value={
                                       streamsDataBackup[
-                                        streamsDataBackup.findIndex(function (
+                                        streamsDataBackup.findIndex(function(
                                           item,
                                           i
                                         ) {

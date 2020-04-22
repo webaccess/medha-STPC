@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Auth as auth, Typography } from "../../../components";
+import { Auth as auth, Typography, Alert } from "../../../components";
+import TextField from "@material-ui/core/TextField";
+import Chip from "@material-ui/core/Chip";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import FormControl from "@material-ui/core/FormControl";
+import CloseIcon from "@material-ui/icons/Close";
 import {
   Card,
   CardContent,
@@ -9,8 +14,8 @@ import {
   Grid,
   Divider,
   InputLabel,
-  Backdrop,
-  CircularProgress
+  Collapse,
+  IconButton
 } from "@material-ui/core";
 import useStyles from "../../ContainerStyles/ViewPageStyles";
 import { useHistory } from "react-router-dom";
@@ -33,20 +38,34 @@ const Zone = "Zone";
 const ContactNumber = "Contact";
 const Email = "Email-Id";
 const Principal = "Principal";
+const Block = "Blocked";
 const StreamNotPresent = "Stream and data not present";
 
 const ViewCollege = props => {
+  const [open, setOpen] = useState(true);
   const history = useHistory();
   const classes = useStyles();
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const COLLEGE_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
-  const ZONE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
   const [formState, setFormState] = useState({
     collegeDetails: [],
-    streams: []
+    streams: [],
+    tpoData: [],
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditCollege"]
+      ? props["location"]["isDataEdited"]
+      : false,
+
+    fromeditCollege: props["location"]["fromeditCollege"]
+      ? props["location"]["fromeditCollege"]
+      : false,
+    editedCollegeName: props["location"]["editedCollegeData"]
+      ? props["location"]["editedCollegeData"]["name"]
+      : ""
   });
+
   useEffect(() => {
     getCollegeData();
   }, []);
@@ -68,9 +87,12 @@ const ViewCollege = props => {
         .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
         .then(res => {
           let viewData = res.data.result[0];
+          let dataConverter = [];
+          dataConverter = convertStudentData(viewData.tpos);
           setFormState(formState => ({
             ...formState,
-            collegeDetails: viewData
+            collegeDetails: viewData,
+            tpoData: dataConverter
           }));
         })
         .catch(error => {
@@ -83,6 +105,16 @@ const ViewCollege = props => {
     }
     setLoaderStatus(false);
   }
+
+  const convertStudentData = data => {
+    let collegeDataArray = [];
+    for (let i in data) {
+      var tempIndividualStudentData = {};
+      tempIndividualStudentData["TPO"] = data[i] ? data[i]["username"] : "";
+      collegeDataArray.push(tempIndividualStudentData);
+    }
+    return collegeDataArray;
+  };
 
   const editData = () => {
     setLoaderStatus(true);
@@ -101,12 +133,58 @@ const ViewCollege = props => {
           {genericConstants.VIEW_COLLEGE_TEXT}
         </Typography>
       </Grid>
+      <Grid item xs={12} className={classes.formgrid}>
+        {/** Error/Success messages to be shown for edit */}
+        {formState.fromeditCollege && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              College {formState.editedCollegeName} has been updated
+              successfully.
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromeditCollege && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              An error has occured while updating college. Kindly, try again.
+            </Alert>
+          </Collapse>
+        ) : null}
+      </Grid>
       <Grid spacing={3}>
         <Card>
           <CardContent>
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <ReadOnlyTextField
                     id="CollegeName"
                     label={CollegeName}
@@ -206,8 +284,48 @@ const ViewCollege = props => {
                 </Grid>
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}></Grid>
-                <Grid item md={6} xs={12}></Grid>
+                <Grid item md={12} xs={12}>
+                  <Autocomplete
+                    multiple
+                    freeSolo
+                    id="fixed-tags-demo"
+                    options={[]}
+                    getOptionLabel={option => option.TPO}
+                    value={formState.tpoData}
+                    disableClearable
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip
+                          label={option.TPO}
+                          {...getTagProps({ index })}
+                          disabled
+                        />
+                      ))
+                    }
+                    renderInput={params => (
+                      <TextField {...params} label="TPOs" variant="outlined" />
+                    )}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  {formState.collegeDetails.blocked ? (
+                    <FormControl component="fieldset">
+                      <ReadOnlyTextField
+                        id="Block"
+                        label={Block}
+                        defaultValue="Yes"
+                      />
+                    </FormControl>
+                  ) : (
+                    <FormControl component="fieldset">
+                      <ReadOnlyTextField
+                        id="Blocked"
+                        label={Block}
+                        defaultValue="No"
+                      />
+                    </FormControl>
+                  )}
+                </Grid>
               </Grid>
             </Grid>
             <Divider className={classes.divider} />

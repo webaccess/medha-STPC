@@ -241,13 +241,11 @@ const AddEditStudent = props => {
     } else {
       schema = registrationSchema;
     }
-    console.log(schema);
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
       schema
     );
-    console.log(checkAllFieldsValid);
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(formState.values, schema);
@@ -263,10 +261,8 @@ const AddEditStudent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, schema);
     }
-    console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
-      console.log("postcall");
       postStudentData();
 
       /** Call axios from here */
@@ -315,6 +311,13 @@ const AddEditStudent = props => {
           postData
         )
         .then(response => {
+          let studentName =
+            props.location["dataForEdit"]["first_name"] +
+            " " +
+            props.location["dataForEdit"]["studentInfo"]["father_first_name"] +
+            " " +
+            props.location["dataForEdit"]["last_name"];
+
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
           if (
@@ -323,18 +326,25 @@ const AddEditStudent = props => {
           ) {
             history.push({
               pathname: routeConstants.MANAGE_STUDENT,
-              success: true
+              fromeditStudent: true,
+              isDataEdited: true,
+              editedStudentName: studentName
             });
           } else {
-          history.push({
-            pathname: routeConstants.VIEW_PROFILE,
-            success: true
-          });
-        }
+            history.push({
+              pathname: routeConstants.VIEW_PROFILE,
+              success: true
+            });
+          }
         })
         .catch(err => {
           console.log(JSON.stringify(err));
           setIsFailed(true);
+          history.push({
+            pathname: routeConstants.MANAGE_STUDENT,
+            fromeditStudent: true,
+            isDataEdited: false
+          });
         });
     } else {
       postData = databaseUtilities.addStudent(
@@ -388,7 +398,6 @@ const AddEditStudent = props => {
     axios
       .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS)
       .then(res => {
-        console.log(res);
         setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
@@ -399,7 +408,6 @@ const AddEditStudent = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
-        console.log(res);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
@@ -408,7 +416,6 @@ const AddEditStudent = props => {
     axios
       .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
       .then(res => {
-        console.log(res);
         //   const sanitzedOptions = res.data.map(state => {
         //     return {
         //       id: state.id,
@@ -425,7 +432,6 @@ const AddEditStudent = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DISTRICTS
       )
       .then(res => {
-        console.log(res);
         //   const sanitzedOptions = res.data.map(district => {
         //     return {
         //       id: district.id,
@@ -1029,8 +1035,10 @@ const AddEditStudent = props => {
                     type="submit"
                     mfullWidth
                     variant="contained"
-                    onClick={() => {  auth.getUserInfo().role.name === "College Admin" ? history.push(routeConstants.MANAGE_STUDENT)  : 
-                      history.push(routeConstants.VIEW_PROFILE);
+                    onClick={() => {
+                      auth.getUserInfo().role.name === "College Admin"
+                        ? history.push(routeConstants.MANAGE_STUDENT)
+                        : history.push(routeConstants.VIEW_PROFILE);
                     }}
                   >
                     <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
