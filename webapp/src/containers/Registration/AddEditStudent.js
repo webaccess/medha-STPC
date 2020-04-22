@@ -308,8 +308,6 @@ const AddEditStudent = props => {
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id
       );
-      console.log(postData);
-      console.log(formState.dataForEdit.id);
       serviceProvider
         .serviceProviderForPutRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
@@ -317,8 +315,6 @@ const AddEditStudent = props => {
           postData
         )
         .then(response => {
-          console.log(response);
-          console.log("Success");
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
           if (
@@ -337,8 +333,6 @@ const AddEditStudent = props => {
         }
         })
         .catch(err => {
-          console.log("Put error",err);
-          console.log(err.response.data);
           console.log(JSON.stringify(err));
           setIsFailed(true);
         });
@@ -367,7 +361,6 @@ const AddEditStudent = props => {
         parseInt(formState.values["rollnumber"]),
         formState.values.otp
       );
-      console.log(postData);
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +
