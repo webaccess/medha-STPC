@@ -321,13 +321,23 @@ const AddEditStudent = props => {
           console.log("Success");
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
+          if (
+            auth.getUserInfo().role.name === "Medha Admin" ||
+            auth.getUserInfo().role.name === "College Admin"
+          ) {
+            history.push({
+              pathname: routeConstants.MANAGE_STUDENT,
+              success: true
+            });
+          } else {
           history.push({
             pathname: routeConstants.VIEW_PROFILE,
             success: true
           });
+        }
         })
         .catch(err => {
-          console.log(err);
+          console.log("Put error",err);
           console.log(err.response.data);
           console.log(JSON.stringify(err));
           setIsFailed(true);
@@ -366,7 +376,14 @@ const AddEditStudent = props => {
         )
         .then(response => {
           console.log(response);
-          history.push(routeConstants.REGISTERED);
+          if (
+            auth.getUserInfo().role.name === "Medha Admin" ||
+            auth.getUserInfo().role.name === "College Admin"
+          ) {
+            history.push(routeConstants.MANAGE_STUDENT);
+          } else {
+            history.push(routeConstants.REGISTERED);
+          }
         })
         .catch(err => {
           console.log(err);
@@ -708,6 +725,7 @@ const AddEditStudent = props => {
                   variant="outlined"
                   required
                   fullWidth
+                  onChange={handleChange}
                   readOnly
                   disabled
                   error={hasError("contact")}
@@ -1018,7 +1036,7 @@ const AddEditStudent = props => {
                     type="submit"
                     mfullWidth
                     variant="contained"
-                    onClick={() => {
+                    onClick={() => {  auth.getUserInfo().role.name === "College Admin" ? history.push(routeConstants.MANAGE_STUDENT)  : 
                       history.push(routeConstants.VIEW_PROFILE);
                     }}
                   >

@@ -23,6 +23,9 @@ export const MANAGE_STUDENT = "/manage-student";
 export const VALIDATE_STUDENT = "/validate-student";
 export const PROFILE = "/profile";
 
+export const ADD_STUDENT_FROM_COLLEGE_ADMIN = "/college-admin-add-student";
+export const EDIT_STUDENT_FROM_COLLEGE_ADMIN = "/college-admin-edit-student";
+
 /**Student Documents */
 export const VIEW_DOCUMENTS = "/view-documents";
 export const EDIT_DOCUMENTS = "/edit-documents";
