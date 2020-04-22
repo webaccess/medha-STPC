@@ -165,6 +165,9 @@ const AddEditUser = props => {
 
   /** Use Effect function to set roles */
   useEffect(() => {
+    /** Initially clear all the vlidations */
+    clearValidations();
+
     let paramsForPageSize = {
       pageSize: -1
     };
@@ -324,7 +327,7 @@ const AddEditUser = props => {
       }
       /** Get dependent roles */
       if (eventName === role) {
-        let roleName = value.name;
+        let roleName = value.id;
         clearValidations();
         setValidationsForDifferentRoles(roleName);
       }
@@ -385,7 +388,14 @@ const AddEditUser = props => {
     UserSchema[college]["validations"] = {};
   };
 
-  const setValidationsForDifferentRoles = roleName => {
+  const setValidationsForDifferentRoles = roleId => {
+    let roleName = "";
+    for (let i in roles) {
+      if (roles[i]["id"] === roleId) {
+        roleName = roles[i]["name"];
+        break;
+      }
+    }
     if (roleName === "College Admin" || roleName === "Student") {
       UserSchema[rpc]["required"] = true;
       UserSchema[state]["required"] = true;
@@ -414,9 +424,17 @@ const AddEditUser = props => {
     if (formState.isEditUser) {
       UserSchema[password]["required"] = false;
       UserSchema[password]["validations"] = {};
-      if (formState.values[password] && formState.values[password] === "") {
-        formState.values[password] = undefined;
+      if (formState.values[role]) {
+        setValidationsForDifferentRoles(formState.values[role]);
       }
+    } else {
+      UserSchema[password]["required"] = true;
+      UserSchema[password]["validations"] = {
+        required: {
+          value: "true",
+          message: "password is required"
+        }
+      };
     }
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
