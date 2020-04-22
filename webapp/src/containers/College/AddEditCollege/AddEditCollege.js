@@ -210,14 +210,7 @@ const AddEditCollege = props => {
     let paramsForPageSize = {
       pageSize: -1
     };
-    // serviceProviders
-    //   .serviceProviderForGetRequest(USERS_URL, paramsForPageSize)
-    //   .then(res => {
-    //     setUser(res.data.result);
-    //   })
-    //   .catch(error => {
-    //     console.log("error", error);
-    //   });
+
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
@@ -688,7 +681,12 @@ const AddEditCollege = props => {
             });
           } else if (auth.getUserInfo().role.name === "College Admin") {
             history.push({
-              pathname: routeConstants.VIEW_COLLEGE
+              pathname: routeConstants.VIEW_COLLEGE,
+              fromeditCollege: true,
+              isDataEdited: true,
+              editedCollegeData: res.data,
+              editResponseMessage: "",
+              editedData: {}
             });
           }
 
@@ -1183,48 +1181,48 @@ const AddEditCollege = props => {
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
-                  <FormControl
+                  {/*<FormControl
                     variant="outlined"
                     fullWidth
                     className={classes.formControl}
                   >
                     <InputLabel ref={inputLabel} id="tpos-label">
                       {/* TPO */}
-                    </InputLabel>
-                    {user.length ? (
-                      <Autocomplete
-                        id={get(CollegeFormSchema[tpos], "id")}
-                        multiple
-                        options={user}
-                        getOptionLabel={option => option.username}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(tpos, event, value);
-                        }}
-                        name={tpos}
-                        filterSelectedOptions
-                        value={formState.dataToShowForMultiSelect || null}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            error={hasError(tpos)}
-                            helperText={
-                              hasError(tpos)
-                                ? formState.errors[tpos].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            placeholder={get(
-                              CollegeFormSchema[tpos],
-                              "placeholder"
-                            )}
-                            label={get(CollegeFormSchema[tpos], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    ) : null}
-                  </FormControl>
+                  {/* // </InputLabel>  */}
+                  {user.length ? (
+                    <Autocomplete
+                      id={get(CollegeFormSchema[tpos], "id")}
+                      multiple
+                      options={user}
+                      getOptionLabel={option => option.username}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(tpos, event, value);
+                      }}
+                      name={tpos}
+                      filterSelectedOptions
+                      value={formState.dataToShowForMultiSelect || null}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(tpos)}
+                          helperText={
+                            hasError(tpos)
+                              ? formState.errors[tpos].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(
+                            CollegeFormSchema[tpos],
+                            "placeholder"
+                          )}
+                          label={get(CollegeFormSchema[tpos], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                  ) : null}
+                  {/* </FormControl> */}
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <div
