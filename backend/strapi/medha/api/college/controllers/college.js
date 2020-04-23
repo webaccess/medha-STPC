@@ -8,13 +8,13 @@
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity
+  sanitizeEntity,
 } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
-
-const sanitizeUser = user =>
+const bookshelf = require("../../../config/config.js");
+const sanitizeUser = (user) =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model
+    model: strapi.query("user", "users-permissions").model,
   });
 
 const _ = require("lodash");
@@ -33,16 +33,16 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters
+            filters,
           })
         )
         .fetchPage({
           page: page,
           pageSize:
             pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
-          columns: ["id", "name"]
+          columns: ["id", "name"],
         })
-        .then(res => {
+        .then((res) => {
           return utils.getPaginatedResponse(res);
         });
     }
@@ -59,25 +59,25 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters
+            filters,
           })
         )
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
         })
-        .then(res => {
+        .then((res) => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map(college => {
+      response.result = response.result.map((college) => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find(s => s.id === stateId);
+        const state = states.find((s) => s.id === stateId);
         return {
           ...college,
-          state
+          state,
         };
       });
       return response;
@@ -89,26 +89,26 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters
+            filters,
           })
         )
         .where({ zone: zone })
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
         })
-        .then(res => {
+        .then((res) => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map(college => {
+      response.result = response.result.map((college) => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find(s => s.id === stateId);
+        const state = states.find((s) => s.id === stateId);
         return {
           ...college,
-          state
+          state,
         };
       });
       return response;
@@ -120,26 +120,26 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters
+            filters,
           })
         )
         .where({ rpc: rpc })
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
         })
-        .then(res => {
+        .then((res) => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map(college => {
+      response.result = response.result.map((college) => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find(s => s.id === stateId);
+        const state = states.find((s) => s.id === stateId);
         return {
           ...college,
-          state
+          state,
         };
       });
       return response;
@@ -151,26 +151,26 @@ module.exports = {
         .model.query(
           buildQuery({
             model: strapi.models.college,
-            filters
+            filters,
           })
         )
         .where({ id: college })
         .fetchPage({
           page: page,
           pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize
+            pageSize < 0 ? await utils.getTotalRecords("college") : pageSize,
         })
-        .then(res => {
+        .then((res) => {
           return utils.getPaginatedResponse(res);
         });
 
-      response.result = response.result.map(college => {
+      response.result = response.result.map((college) => {
         const { rpc, zone } = college;
         const stateId = rpc.state || zone.state;
-        const state = states.find(s => s.id === stateId);
+        const state = states.find((s) => s.id === stateId);
         return {
           ...college,
-          state
+          state,
         };
       });
       return response;
@@ -182,7 +182,7 @@ module.exports = {
     const states = await strapi.query("state").find();
     const response = await strapi.query("college").findOne({ id });
     const stateId = response.rpc.state || response.zone.state;
-    response.state = states.find(s => s.id === stateId);
+    response.state = states.find((s) => s.id === stateId);
     return utils.getFindOneResponse(response);
   },
 
@@ -204,14 +204,14 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models.student,
-          filters
+          filters,
         })
       )
       .fetchAll()
-      .then(model => model.toJSON());
+      .then((model) => model.toJSON());
 
     let filtered = [];
-    await utils.asyncForEach(students, async student => {
+    await utils.asyncForEach(students, async (student) => {
       const user = student.user;
 
       if (_.includes(userIds, student.user.id)) {
@@ -256,7 +256,7 @@ module.exports = {
 
     await strapi
       .query("college")
-      .model.query(qb => {
+      .model.query((qb) => {
         qb.whereIn("id", idsToBlock);
       })
       .save({ blocked: true }, { patch: true, require: false });
@@ -290,7 +290,7 @@ module.exports = {
 
     await strapi
       .query("college")
-      .model.query(qb => {
+      .model.query((qb) => {
         qb.whereIn("id", idsToBlock);
       })
       .save({ blocked: false }, { patch: true, require: false });
@@ -317,11 +317,11 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["event"],
-          filters
+          filters,
         })
       )
       .fetchAll()
-      .then(model => model.toJSON());
+      .then((model) => model.toJSON());
 
     /**
      * Get all events for specific college
@@ -345,17 +345,151 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models.activity,
-          filters
+          filters,
         })
       )
       .where({ college: id })
       .fetchPage({
         page: page,
         pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize
+          pageSize < 0 ? await utils.getTotalRecords("activity") : pageSize,
       })
-      .then(res => {
+      .then((res) => {
         return utils.getPaginatedResponse(res);
+      });
+  },
+  async studentregister(ctx) {
+    const { email, contact_number } = ctx.request.body;
+
+    if (!contact_number) {
+      return ctx.response.badRequest("Contact no. is missing");
+    }
+
+    const usr = await bookshelf
+      .model("user")
+      .where({ email: email })
+      .fetch()
+      .then((data) => {
+        return data ? data.toJSON() : null;
+      });
+    console.log("email verification");
+    console.log(usr);
+    if (!!usr) {
+      return ctx.response.forbidden("Email already taken");
+    }
+
+    const collegeId = ctx.params.id;
+    console.log(collegeId);
+    const college = await bookshelf
+      .model("college")
+      .where({ id: collegeId })
+      .fetch({ require: false })
+      .then((data) => {
+        return data ? data.toJSON() : null;
+      });
+
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+    const rpc = await bookshelf
+      .model("rpc")
+      .where({ id: college.rpc })
+      .fetch({ require: false })
+      .then((data) => {
+        return data ? data.toJSON() : null;
+      });
+
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    const zone = await bookshelf
+      .model("zone")
+      .where({ id: college.zone })
+      .fetch({ require: false })
+      .then((data) => {
+        return data ? data.toJSON() : null;
+      });
+
+    if (!zone) {
+      return ctx.response.notFound("Zone does not exist");
+    }
+
+    // const studentRole = await bookshelf
+    //   .model("role")
+    //   .where({ name: "Student" })
+    //   .fetch({ require: false })
+    //   .then(model => (model ? model.toJSON() : null));
+
+    const studentRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Student" });
+    const requestBody = ctx.request.body;
+    console.log(ctx.request.body);
+    const userRequestBody = Object.assign(
+      {
+        state: requestBody.state,
+        zone: zone.id,
+        rpc: rpc.id,
+        college: college.id,
+        role: studentRole.id,
+        provider: "local",
+        confirmed: false,
+        blocked: false,
+      },
+      _.omit(requestBody, [
+        "stream",
+        "father_first_name",
+        "father_last_name",
+        "date_of_birth",
+        "gender",
+        "roll_number",
+        "district",
+        "physicallyHandicapped",
+        "address",
+        "otp",
+        "college_id",
+      ])
+    );
+
+    userRequestBody.password = await strapi.plugins[
+      "users-permissions"
+    ].services.user.hashPassword(userRequestBody);
+
+    await bookshelf
+      .transaction(async (t) => {
+        const _user = await bookshelf
+          .model("user")
+          .forge(userRequestBody)
+          .save(null, { transacting: t })
+          .then((userModel) => userModel.toJSON());
+
+        const studentRequestData = Object.assign(
+          { user: _user.id, verifiedByCollege: true },
+          _.omit(ctx.request.body, [
+            "username",
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+            "contact_number",
+            "otp",
+            "college_id",
+            "state",
+          ])
+        );
+        return await bookshelf
+          .model("student")
+          .forge(studentRequestData)
+          .save(null, { transacting: t });
+      })
+      .then((success) => {
+        console.log(success);
+        return ctx.send(utils.getResponse(success));
+      })
+      .catch((error) => {
+        console.log(error);
+        return ctx.response.badRequest(`Invalid ${error.detail}`);
       });
   },
 
@@ -375,14 +509,14 @@ module.exports = {
       .query("user", "users-permissions")
       .find({ id_in: userIds });
 
-    const list = response.map(user => {
+    const list = response.map((user) => {
       return {
         id: user.id,
         name: `${user.first_name} ${user.last_name}`,
-        username: user.username
+        username: user.username,
       };
     });
 
     return utils.getFindOneResponse(list);
-  }
+  },
 };

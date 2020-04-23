@@ -18,6 +18,14 @@
     },
     {
       "method": "POST",
+      "path": "/colleges/:id/studentregister",
+      "handler": "college.studentregister",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
       "path": "/colleges/unblock",
       "handler": "college.unblock",
       "config": {

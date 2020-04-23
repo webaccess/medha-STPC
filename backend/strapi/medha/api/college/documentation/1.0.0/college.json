@@ -50,9 +50,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "_limit",
@@ -238,9 +236,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -305,9 +301,76 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "foo": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/colleges/{id}/studentregister": {
+      "post": {
+        "deprecated": false,
+        "description": "Create a new record",
+        "responses": {
+          "200": {
+            "description": "response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "foo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -376,9 +439,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -447,9 +508,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -515,9 +574,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": []
       }
     },
@@ -568,9 +625,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -630,9 +685,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "requestBody": {
           "description": "",
           "required": true,
@@ -704,9 +757,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -772,9 +823,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -840,9 +889,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -908,9 +955,7 @@
           }
         },
         "summary": "",
-        "tags": [
-          "College"
-        ],
+        "tags": ["College"],
         "parameters": [
           {
             "name": "id",
@@ -929,13 +974,7 @@
   "components": {
     "schemas": {
       "College": {
-        "required": [
-          "id",
-          "name",
-          "college_code",
-          "college_email",
-          "address"
-        ],
+        "required": ["id", "name", "college_code", "college_email", "address"],
         "properties": {
           "id": {
             "type": "string"
@@ -944,10 +983,7 @@
             "type": "string"
           },
           "rpc": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -1033,10 +1069,7 @@
             }
           },
           "district": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -1057,18 +1090,13 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "id"
-              ],
+              "required": ["id"],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": [
-                    "id",
-                    "name"
-                  ],
+                  "required": ["id", "name"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -1085,10 +1113,7 @@
             }
           },
           "zone": {
-            "required": [
-              "id",
-              "name"
-            ],
+            "required": ["id", "name"],
             "properties": {
               "id": {
                 "type": "string"
@@ -1167,12 +1192,7 @@
         }
       },
       "NewCollege": {
-        "required": [
-          "name",
-          "college_code",
-          "college_email",
-          "address"
-        ],
+        "required": ["name", "college_code", "college_email", "address"],
         "properties": {
           "name": {
             "type": "string"
@@ -1203,18 +1223,13 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "id"
-              ],
+              "required": ["id"],
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "stream": {
-                  "required": [
-                    "id",
-                    "name"
-                  ],
+                  "required": ["id", "name"],
                   "properties": {
                     "id": {
                       "type": "string"
