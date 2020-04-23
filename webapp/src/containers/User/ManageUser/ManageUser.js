@@ -607,17 +607,15 @@ const ManageUser = props => {
     setLoaderStatus(false);
   };
 
-  const isUserBlockCompleted = status => {
-    formState.isUserBlocked = status;
-  };
-
   const selectedRowCleared = data => {
     formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState(formState => ({
+        ...formState,
+        toggleCleared: false
+      }));
+    }, 2000);
   };
-
-  // const isUserBlockCompleted = status => {
-  //   formState.isUserBlocked = status;
-  // };
 
   /** This is used to handle the close modal event */
   const handleCloseBlockUnblockModal = (status, statusToShow = "") => {
@@ -1042,7 +1040,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter
                       ? null
                       : roles[
-                          roles.findIndex(function (item, i) {
+                          roles.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[ROLE_FILTER]
@@ -1075,7 +1073,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter
                       ? null
                       : states[
-                          states.findIndex(function (item, i) {
+                          states.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STATE_FILTER]
@@ -1107,7 +1105,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : zones[
-                          zones.findIndex(function (item, i) {
+                          zones.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[ZONE_FILTER]
@@ -1140,7 +1138,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : rpcs[
-                          rpcs.findIndex(function (item, i) {
+                          rpcs.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[RPC_FILTER]
@@ -1173,7 +1171,7 @@ const ManageUser = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : ipcs[
-                          ipcs.findIndex(function (item, i) {
+                          ipcs.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[IPC_FILTER]
