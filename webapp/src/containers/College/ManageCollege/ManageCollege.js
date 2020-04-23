@@ -619,6 +619,12 @@ const ManageCollege = props => {
 
   const selectedRowCleared = data => {
     formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState(formState => ({
+        ...formState,
+        toggleCleared: false
+      }));
+    }, 2000);
   };
 
   /** Columns to show in table */
