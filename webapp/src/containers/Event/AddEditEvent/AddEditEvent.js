@@ -1134,7 +1134,7 @@ const AddEditEvent = props => {
           {genericConstants.ADD_EVENT_TEXT}
         </Typography>
       </Grid>
-      <Grid spacing={3}>
+      <Grid>
         <Card>
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
@@ -1175,7 +1175,7 @@ const AddEditEvent = props => {
                         />
                       ) : null}
                       {formState.showAddPreviewNoImage ? (
-                        <div class={classes.DefaultNoImage}></div>
+                        <div className={classes.DefaultNoImage}></div>
                       ) : null}
                     </div>
                   </Grid>

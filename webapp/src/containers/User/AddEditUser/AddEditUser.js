@@ -561,7 +561,7 @@ const AddEditUser = props => {
             : genericConstants.ADD_USER_TITLE}
         </Typography>
       </Grid>
-      <Grid spacing={3}>
+      <Grid>
         <Card>
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
@@ -576,9 +576,9 @@ const AddEditUser = props => {
                       error={hasError(firstname)}
                       variant="outlined"
                       required
-                      fullWidth
+                      fullwidth="true"
                       onChange={handleChange}
-                      helperText={
+                      helpertext={
                         hasError(firstname)
                           ? formState.errors[firstname].map(error => {
                               return error + " ";
@@ -596,9 +596,9 @@ const AddEditUser = props => {
                       error={hasError(lastname)}
                       variant="outlined"
                       required
-                      fullWidth
+                      fullwidth="true"
                       onChange={handleChange}
-                      helperText={
+                      helpertext={
                         hasError(lastname)
                           ? formState.errors[lastname].map(error => {
                               return error + " ";
@@ -618,9 +618,9 @@ const AddEditUser = props => {
                       error={hasError(email)}
                       variant="outlined"
                       required
-                      fullWidth
+                      fullwidth="true"
                       onChange={handleChange}
-                      helperText={
+                      helpertext={
                         hasError(email)
                           ? formState.errors[email].map(error => {
                               return error + " ";
@@ -640,9 +640,9 @@ const AddEditUser = props => {
                       error={hasError(contact)}
                       variant="outlined"
                       required
-                      fullWidth
+                      fullwidth="true"
                       onChange={handleChange}
-                      helperText={
+                      helpertext={
                         hasError(contact)
                           ? formState.errors[contact].map(error => {
                               return error + " ";
@@ -675,7 +675,7 @@ const AddEditUser = props => {
                           placeholder={get(UserSchema[role], "placeholder")}
                           variant="outlined"
                           name="tester"
-                          helperText={
+                          helpertext={
                             hasError(role)
                               ? formState.errors[role].map(error => {
                                   return error + " ";
@@ -701,9 +701,9 @@ const AddEditUser = props => {
                       error={hasError(username)}
                       variant="outlined"
                       required
-                      fullWidth
+                      fullwidth="true"
                       onChange={handleChange}
-                      helperText={
+                      helpertext={
                         hasError(username)
                           ? formState.errors[username].map(error => {
                               return error + " ";
@@ -716,7 +716,7 @@ const AddEditUser = props => {
                     <FormControl variant="outlined" fullWidth>
                       <InputLabel
                         htmlFor="outlined-adornment-password"
-                        fullWidth
+                        fullwidth="true"
                         error={hasError(password)}
                       >
                         {get(UserSchema[password], "label")}
@@ -726,7 +726,7 @@ const AddEditUser = props => {
                         placeholder={get(UserSchema[password], "placeholder")}
                         name={password}
                         required
-                        fullWidth
+                        fullwidth="true"
                         error={hasError(password)}
                         type={formState.showPassword ? "text" : "password"}
                         value={formState.values[password] || ""}
@@ -734,7 +734,7 @@ const AddEditUser = props => {
                         endAdornment={
                           <InputAdornment
                             position="end"
-                            error={hasError(password)}
+                            error={hasError(password) ? hasError(password) : undefined}
                           >
                             <IconButton
                               aria-label="toggle password visibility"
@@ -773,8 +773,8 @@ const AddEditUser = props => {
                         checked={formState.values[blocked] || false}
                         onChange={handleChange}
                         value={formState.values[blocked] || false}
-                        error={hasError(blocked)}
-                        helperText={
+                        error={hasError(blocked) ? hasError(blocked) : undefined}
+                        helpertext={
                           hasError(blocked)
                             ? formState.errors[blocked].map(error => {
                                 return error + " ";
@@ -812,7 +812,7 @@ const AddEditUser = props => {
                           placeholder={get(UserSchema[state], "placeholder")}
                           variant="outlined"
                           error={hasError(state)}
-                          helperText={
+                          helpertext={
                             hasError(state)
                               ? formState.errors[state].map(error => {
                                   return error + " ";
@@ -846,7 +846,7 @@ const AddEditUser = props => {
                           placeholder={get(UserSchema[zone], "placeholder")}
                           variant="outlined"
                           error={hasError(zone)}
-                          helperText={
+                          helpertext={
                             hasError(zone)
                               ? formState.errors[zone].map(error => {
                                   return error + " ";
@@ -882,7 +882,7 @@ const AddEditUser = props => {
                           placeholder={get(UserSchema[rpc], "placeholder")}
                           variant="outlined"
                           error={hasError(rpc)}
-                          helperText={
+                          helpertext={
                             hasError(rpc)
                               ? formState.errors[rpc].map(error => {
                                   return error + " ";
@@ -916,7 +916,7 @@ const AddEditUser = props => {
                           placeholder={get(UserSchema[college], "placeholder")}
                           variant="outlined"
                           error={hasError(college)}
-                          helperText={
+                          helpertext={
                             hasError(college)
                               ? formState.errors[college].map(error => {
                                   return error + " ";

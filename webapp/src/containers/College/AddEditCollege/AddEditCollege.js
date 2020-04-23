@@ -750,7 +750,7 @@ const AddEditCollege = props => {
             : genericConstants.ADD_COLLEGE_TEXT}
         </Typography>
       </Grid>
-      <Grid spacing={3}>
+      <Grid>
         <Card>
           <CardContent>
             <Grid item xs={12} md={6} xl={3}>
