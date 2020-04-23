@@ -52,6 +52,8 @@ const DeleteStudents = props => {
 
   const handleSubmit = event => {
     /** CALL Put FUNCTION */
+    props.clearSelectedRow(true);
+
     deleteStudentData();
     event.preventDefault();
   };

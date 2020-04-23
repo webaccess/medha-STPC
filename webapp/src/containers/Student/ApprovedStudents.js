@@ -54,6 +54,8 @@ const ApprovedStudents = props => {
     setOpen(true);
     event.preventDefault();
     event.persist();
+    props.clearSelectedRow(true);
+
     /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
       and returns back an opbject with status and message*/
     ApprovedStudent();
