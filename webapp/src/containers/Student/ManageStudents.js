@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import useStyles from "../ContainerStyles/ManagePageStyles";
 import * as serviceProviders from "../../api/Axios";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
@@ -25,13 +25,13 @@ import {
   Tooltip,
   CircularProgress
 } from "@material-ui/core";
-import { serviceProviderForGetRequest } from "../../api/Axios";
 import auth from "../../components/Auth";
 import { useHistory } from "react-router-dom";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import LoaderContext from "../../context/LoaderContext";
 
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
@@ -49,6 +49,7 @@ const ManageStudents = props => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [streams, setStreams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   /** Value to set for event filter */
   const [value, setValue] = React.useState(null);
@@ -58,17 +59,16 @@ const ManageStudents = props => {
     studentNameFilterData: [],
     approvedId: 0,
     approvedData: false,
-    showModalBlock: false,
     dataToDelete: {},
     filterDataParameters: {},
     isMultiDelete: false,
     selectedRowFilter: true,
     greenButtonChecker: true,
-    isMulBlocked: false,
-    isMulUnBlocked: false,
-    MultiBlockUser: {},
+    isMultiApprove: false,
+    isMultiUnapprove: false,
+    multiApproveUnapproveStudentIds: {},
     isUserBlocked: false,
-    cellName: "",
+    studentName: "",
     bottonBlockUnblock: "Approve Selected User",
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -85,10 +85,10 @@ const ManageStudents = props => {
     isDataEdited: props["location"]["fromeditStudent"]
       ? props["location"]["isDataEdited"]
       : false,
-    fromeditCollege: props["location"]["fromeditStudent"]
+    fromeditStudent: props["location"]["fromeditStudent"]
       ? props["location"]["fromeditStudent"]
       : false,
-    editedCollegeName: props["location"]["fromeditStudent"]
+    editedStudentName: props["location"]["fromeditStudent"]
       ? props["location"]["editedStudentName"]
       : null,
     toggleCleared: false
@@ -208,15 +208,15 @@ const ManageStudents = props => {
   };
 
   const editCell = event => {
-    console.log("editcell", event.target);
     setFormState(formState => ({
       ...formState,
-      editedCollegeName: event.target.getAttribute("value")
+      editedStudentName: event.target.getAttribute("value")
     }));
     getEditStudentData(event.target.getAttribute("userId"));
   };
 
   const getEditStudentData = userId => {
+    setLoaderStatus(true)
     serviceProviders
       .serviceProviderForGetOneRequest(USERS_URL, userId)
       .then(res => {
@@ -229,6 +229,7 @@ const ManageStudents = props => {
       .catch(error => {
         console.log("erroredit student", error);
       });
+    setLoaderStatus(false)
   };
 
   const approveCell = event => {
@@ -236,7 +237,7 @@ const ManageStudents = props => {
 
     setFormState(formState => ({
       ...formState,
-      cellName: event.target.getAttribute("value")
+      studentName: event.target.getAttribute("value")
     }));
 
     formState.approvedId = event.target.id;
@@ -265,16 +266,16 @@ const ManageStudents = props => {
         let editData = res.data[0];
         setFormState(formState => ({
           ...formState,
-          dataToBlockUnblock: editData,
+          dataToApproveUnapprove: editData,
           dataVerifiedByCollege: res.data[0].verifiedByCollege,
-          isMulBlocked: false,
-          isMulUnBlocked: false,
-          showModalBlock: true,
+          isMultiApprove: false,
+          isMultiUnapprove: false,
+          showModalApproveUnapprove: true,
           multiBlockCollegeIds: [],
           fromDeleteModal: false,
           fromAddCollege: false,
-          fromeditCollege: false,
-          fromBlockModal: false
+          fromeditStudent: false,
+          fromApproveUnapproveModal: false
         }));
       })
       .catch(error => {
@@ -286,20 +287,20 @@ const ManageStudents = props => {
     /** This restores all the data when we close the modal */
     setFormState(formState => ({
       ...formState,
-      showModalBlock: false
+      showModalApproveUnapprove: false
     }));
     if (formState.isUserBlocked) {
       //getUserData();
       setFormState(formState => ({
         ...formState,
-        showModalBlock: false,
+        showModalApproveUnapprove: false,
         showModalDelete: false,
         isMultiDelete: false,
         selectedRowFilter: true,
         greenButtonChecker: true,
-        isMulBlocked: false,
-        isMulUnBlocked: false,
-        MultiBlockUser: {},
+        isMultiApprove: false,
+        isMultiUnapprove: false,
+        multiApproveUnapproveStudentIds: {},
         isUserBlocked: false
       }));
       getStudentData();
@@ -317,13 +318,13 @@ const ManageStudents = props => {
     setOpen(true);
     setFormState(formState => ({
       ...formState,
-      isDataBlockUnblock: status,
-      showModalBlock: false,
-      // fromBlockModal: true,
-      isMulBlocked: false,
-      isMulUnBlocked: false,
+      isDataApproveUnapprove: status,
+      showModalApproveUnapprove: false,
+      // fromApproveUnapproveModal: true,
+      isMultiApprove: false,
+      isMultiUnapprove: false,
       // multiBlockCollegeIds: [],
-      MultiBlockUser: {},
+      multiApproveUnapproveStudentIds: {},
       messageToShow: statusToShow
     }));
 
@@ -332,7 +333,7 @@ const ManageStudents = props => {
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
-      showModalBlock: false,
+      showModalApproveUnapprove: false,
       showModalDelete: false
     }));
   };
@@ -351,8 +352,8 @@ const ManageStudents = props => {
       messageToShow: "",
       fromDeleteModal: false,
       fromAddCollege: false,
-      fromeditCollege: false,
-      fromBlockModal: false
+      fromeditStudent: false,
+      fromApproveUnapproveModal: false
     }));
   };
 
@@ -540,18 +541,15 @@ const ManageStudents = props => {
       isFilterSearch: false,
       isClearResetFilter: true,
       isStateClearFilter: true,
-      /** Clear all filters */
       filterDataParameters: {},
       isDataLoading: true,
       checked: false,
       studentNameFilterData: []
     }));
     formState.filterDataParameters[USER_FILTER] = "";
-    // formState.filterDataParameters[STREAM_FILTER] = "";
     setStreams([]);
     getStudentData(10, 1);
     getStreamData();
-    // window.location.reload(false);
   };
 
   const deleteMulUserById = () => {
@@ -572,30 +570,29 @@ const ManageStudents = props => {
       isDataDeleted: false,
       fromDeleteModal: false,
       fromAddCollege: false,
-      fromeditCollege: false,
-      fromBlockModal: false
+      fromeditStudent: false,
+      fromApproveUnapproveModal: false
     }));
   };
 
-  const isBlockUnblockCellCompleted = status => {
-    formState.isDataBlockUnblock = status;
+  const isApproveUnapproveCellCompleted = status => {
+    formState.isDataApproveUnapprove = status;
   };
 
   /** This is used to handle the close modal event */
-  const handleCloseBlockUnblockModal = (status, statusToShow = "") => {
+  const handleCloseApproveUnapproveModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
-    //restoreData();
     setOpen(true);
 
     setFormState(formState => ({
       ...formState,
-      isDataBlockUnblock: status,
-      showModalBlock: false,
-      fromBlockModal: true,
-      isMulBlocked: false,
-      isMulUnBlocked: false,
+      isDataApproveUnapprove: status,
+      showModalApproveUnapprove: false,
+      fromApproveUnapproveModal: true,
+      isMultiApprove: false,
+      isMultiUnapprove: false,
       multiBlockCollegeIds: [],
-      dataToBlockUnblock: {},
+      dataToApproveUnapprove: {},
       messageToShow: statusToShow
     }));
     if (status) {
@@ -653,26 +650,26 @@ const ManageStudents = props => {
     if (formState.bottonBlockUnblock === "Approve Selected User") {
       setFormState(formState => ({
         ...formState,
-        isMulBlocked: true,
-        isMulUnBlocked: false,
-        showModalBlock: true,
-        MultiBlockUser: arrayId,
+        isMultiApprove: true,
+        isMultiUnapprove: false,
+        showModalApproveUnapprove: true,
+        multiApproveUnapproveStudentIds: arrayId,
         fromDeleteModal: false,
         fromAddCollege: false,
-        fromeditCollege: false,
-        fromBlockModal: false
+        fromeditStudent: false,
+        fromApproveUnapproveModal: false
       }));
     } else {
       setFormState(formState => ({
         ...formState,
-        isMulBlocked: false,
-        isMulUnBlocked: true,
-        showModalBlock: true,
-        MultiBlockUser: arrayId,
+        isMultiApprove: false,
+        isMultiUnapprove: true,
+        showModalApproveUnapprove: true,
+        multiApproveUnapproveStudentIds: arrayId,
         fromDeleteModal: false,
         fromAddCollege: false,
-        fromeditCollege: false,
-        fromBlockModal: false
+        fromeditStudent: false,
+        fromApproveUnapproveModal: false
       }));
     }
   };
@@ -777,12 +774,10 @@ const ManageStudents = props => {
           color="secondary"
           to={"/"}
           onClick={() => blockMulUserById()}
-          // startIcon={<BlockIcon />}
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
           {formState.bottonBlockUnblock}
-          {/* Approved Selected User */}
         </GreenButton>
 
         <GreenButton
@@ -809,7 +804,7 @@ const ManageStudents = props => {
       {/** Error/Success messages to be shown for student */}
 
       <Grid item xs={12} className={classes.formgrid}>
-        {formState.fromeditCollege && formState.isDataEdited ? (
+        {formState.fromeditStudent && formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
               severity="success"
@@ -826,12 +821,12 @@ const ManageStudents = props => {
                 </IconButton>
               }
             >
-              Student {formState.editedCollegeName} has been updated
+              Student {formState.editedStudentName} has been updated
               successfully.
             </Alert>
           </Collapse>
         ) : null}
-        {formState.fromeditCollege && !formState.isDataEdited ? (
+        {formState.fromeditStudent && !formState.isDataEdited ? (
           <Collapse in={open}>
             <Alert
               severity="error"
@@ -854,101 +849,100 @@ const ManageStudents = props => {
         ) : null}
 
         {formState.fromDeleteModal &&
-        formState.isDataDeleted &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-              {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
-            </Alert>
-          </Collapse>
-        ) : null}
+          formState.isDataDeleted &&
+          formState.messageToShow !== "" ? (
+            <Collapse in={open}>
+              <Alert
+                severity="success"
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+              >
+                {formState.messageToShow}
+              </Alert>
+            </Collapse>
+          ) : null}
 
         {formState.fromDeleteModal &&
-        !formState.isDataDeleted &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
+          !formState.isDataDeleted &&
+          formState.messageToShow !== "" ? (
+            <Collapse in={open}>
+              <Alert
+                severity="error"
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+              >
+                {formState.messageToShow}
+              </Alert>
+            </Collapse>
+          ) : null}
 
-        {formState.fromBlockModal &&
-        formState.isDataBlockUnblock &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
+        {formState.fromApproveUnapproveModal &&
+          formState.isDataApproveUnapprove &&
+          formState.messageToShow !== "" ? (
+            <Collapse in={open}>
+              <Alert
+                severity="success"
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+              >
+                {formState.messageToShow}
+              </Alert>
+            </Collapse>
+          ) : null}
 
-        {formState.fromBlockModal &&
-        !formState.isDataBlockUnblock &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
+        {formState.fromApproveUnapproveModal &&
+          !formState.isDataApproveUnapprove &&
+          formState.messageToShow !== "" ? (
+            <Collapse in={open}>
+              <Alert
+                severity="error"
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+              >
+                {formState.messageToShow}
+              </Alert>
+            </Collapse>
+          ) : null}
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card>
@@ -956,7 +950,7 @@ const ManageStudents = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <Autocomplete
-                  id="event-text-filter"
+                  id="student-text-filter"
                   freeSolo
                   autoHighlight
                   autoComplete
@@ -1001,7 +995,7 @@ const ManageStudents = props => {
               </Grid>
               <Grid item className={classes.paddingDate}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="stream-filter"
                   name={STREAM_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}
@@ -1010,13 +1004,13 @@ const ManageStudents = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function(item, i) {
-                            return (
-                              item.id ===
-                              formState.filterDataParameters[STREAM_FILTER]
-                            );
-                          })
-                        ] || null
+                      streams.findIndex(function (item, i) {
+                        return (
+                          item.id ===
+                          formState.filterDataParameters[STREAM_FILTER]
+                        );
+                      })
+                      ] || null
                   }
                   onChange={(event, value) =>
                     handleChangeAutoCompleteStream(STREAM_FILTER, event, value)
@@ -1072,7 +1066,6 @@ const ManageStudents = props => {
             </Grid>
           </CardContent>
         </Card>
-        {/* table */}
 
         <Card className={classes.tabledata} variant="outlined">
           {formState.student ? (
@@ -1093,13 +1086,13 @@ const ManageStudents = props => {
                 clearSelectedRows={formState.toggleCleared}
               />
             ) : (
-              <Spinner />
-            )
+                <Spinner />
+              )
           ) : (
-            <div className={classes.noDataMargin}>
-              {genericConstants.NO_DATA_TO_SHOW_TEXT}
-            </div>
-          )}
+              <div className={classes.noDataMargin}>
+                {genericConstants.NO_DATA_TO_SHOW_TEXT}
+              </div>
+            )}
 
           <DeleteStudents
             showModal={formState.showModalDelete}
@@ -1117,15 +1110,15 @@ const ManageStudents = props => {
           />
 
           <ApprovedStudents
-            cellName={formState.cellName}
-            showModal={formState.showModalBlock}
-            closeModal={handleCloseBlockUnblockModal}
-            dataToBlockUnblock={formState.dataToBlockUnblock}
+            studentName={formState.studentName}
+            showModal={formState.showModalApproveUnapprove}
+            closeModal={handleCloseApproveUnapproveModal}
+            dataToApproveUnapprove={formState.dataToApproveUnapprove}
             verifiedByCollege={formState.dataVerifiedByCollege}
-            blockUnblockEvent={isBlockUnblockCellCompleted}
-            isMultiBlock={formState.isMulBlocked ? true : false}
-            isMultiUnblock={formState.isMulUnBlocked ? true : false}
-            multiBlockCollegeIds={formState.MultiBlockUser}
+            approveUnapproveEvent={isApproveUnapproveCellCompleted}
+            isMultiApprove={formState.isMultiApprove ? true : false}
+            isMultiUnapprove={formState.isMultiUnapprove ? true : false}
+            multiApproveUnapproveStudentIds={formState.multiApproveUnapproveStudentIds}
             modalClose={modalClose}
             clearSelectedRow={selectedRowCleared}
           />
