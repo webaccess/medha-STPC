@@ -90,7 +90,8 @@ const ManageStudents = props => {
       : false,
     editedCollegeName: props["location"]["fromeditStudent"]
       ? props["location"]["editedStudentName"]
-      : null
+      : null,
+    toggleCleared: false
   });
 
   useEffect(() => {
@@ -609,7 +610,8 @@ const ManageStudents = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -638,6 +640,10 @@ const ManageStudents = props => {
     });
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+  };
 
   const blockMulUserById = () => {
     let arrayId = [];
@@ -1004,7 +1010,7 @@ const ManageStudents = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function (item, i) {
+                          streams.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]
@@ -1084,6 +1090,7 @@ const ManageStudents = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -1106,6 +1113,7 @@ const ManageStudents = props => {
             modalClose={modalClose}
             isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
           />
 
           <ApprovedStudents
@@ -1119,6 +1127,7 @@ const ManageStudents = props => {
             isMultiUnblock={formState.isMulUnBlocked ? true : false}
             multiBlockCollegeIds={formState.MultiBlockUser}
             modalClose={modalClose}
+            clearSelectedRow={selectedRowCleared}
           />
         </Card>
       </Grid>
