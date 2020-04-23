@@ -561,12 +561,23 @@ module.exports = {
 
     if (!student) return ctx.response.notFound("Student does not exist");
 
-    const activityBatch = await strapi
+    let activityBatch = await strapi
       .query("activity-batch-attendance")
       .find({ student: id });
 
     if (!activityBatch.length)
       return ctx.response.notFound("Student not Enrolled in any event");
+    console.log(activityBatch);
+
+    const currentDate = new Date();
+
+    activityBatch = activityBatch.filter((activityBatch) => {
+      const startTime = new Date(activityBatch.activity_batch.start_date_time);
+      const time =
+        (startTime.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
+      if (time > 0.0) return activityBatch;
+    });
+    console.log(activityBatch);
     if (activityBatch) {
       const activityIds = activityBatch.map(
         (activityBatch) => activityBatch.activity_batch.activity
