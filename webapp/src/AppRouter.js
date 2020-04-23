@@ -75,7 +75,7 @@ import ViewEducation from "./containers/Student/Education/ViewEducation";
 import AddEducation from "./containers/Student/Education/AddEditEducation";
 import ViewDocument from "./containers/Student/Document/ViewDocument";
 import AddDocument from "./containers/Student/Document/AddEditDocument";
-import ManageStudents from "./containers/Student/ManageStudents";
+import ManageStudents from "./containers/Student/ManageStudentCollegeAdmin/ManageStudent/ManageStudents";
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 

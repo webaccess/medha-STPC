@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import useStyles from "../ContainerStyles/ManagePageStyles";
-import * as serviceProviders from "../../api/Axios";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
+import useStyles from "../../../ContainerStyles/ManagePageStyles";
+import * as serviceProviders from "../../../../api/Axios";
+import * as strapiConstants from "../../../../constants/StrapiApiConstants";
 import {
   Table,
   Spinner,
@@ -12,15 +12,15 @@ import {
   GreenButton,
   EditGridIcon,
   DeleteGridIcon
-} from "../../components";
-import { CustomRouterLink } from "../../components";
+} from "../../../../components";
+import { CustomRouterLink } from "../../../../components";
 import ApprovedStudents from "./ApprovedStudents";
 import DeleteStudents from "./DeleteStudents";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import * as formUtilities from "../../Utilities/FormUtilities";
+import * as formUtilities from "../../../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
-import * as genericConstants from "../../constants/GenericConstants";
-import * as routeConstants from "../../constants/RouteConstants";
+import * as genericConstants from "../../../../constants/GenericConstants";
+import * as routeConstants from "../../../../constants/RouteConstants";
 
 import CloseIcon from "@material-ui/icons/Close";
 import {
@@ -33,13 +33,13 @@ import {
   IconButton,
   CircularProgress
 } from "@material-ui/core";
-import auth from "../../components/Auth";
+import auth from "../../../../components/Auth";
 import { useHistory } from "react-router-dom";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import LoaderContext from "../../context/LoaderContext";
+import LoaderContext from "../../../../context/LoaderContext";
 
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
@@ -220,6 +220,14 @@ const ManageStudents = props => {
     getEditStudentData(event.target.getAttribute("userId"));
   };
 
+  const addStudentsToCollege = () => {
+    history.push({
+      pathname: routeConstants.ADD_STUDENT_FROM_COLLEGE_ADMIN,
+      fromCollegeAdmin: true,
+      addStudent: true
+    });
+  };
+
   const getEditStudentData = async userId => {
     setLoaderStatus(true);
     await serviceProviders
@@ -229,7 +237,8 @@ const ManageStudents = props => {
         history.push({
           pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
           editStudent: true,
-          dataForEdit: res.data.result
+          dataForEdit: res.data.result,
+          fromCollegeAdmin: true
         });
       })
       .catch(error => {
@@ -578,7 +587,7 @@ const ManageStudents = props => {
     }, 2000);
   };
 
-  const blockMulUserById = () => {
+  const approveUnapproveMultiStudent = () => {
     let arrayId = [];
     for (var k = 0; k < selectedRows.length; k++) {
       arrayId.push(selectedRows[k]["id"]);
@@ -689,7 +698,7 @@ const ManageStudents = props => {
           variant="contained"
           color="secondary"
           to={"/"}
-          onClick={() => blockMulUserById()}
+          onClick={() => approveUnapproveMultiStudent()}
           greenButtonChecker={formState.greenButtonChecker}
           buttonDisabled={formState.selectedRowFilter}
         >
@@ -710,8 +719,8 @@ const ManageStudents = props => {
           variant="contained"
           color="primary"
           disableElevation
-          component={CustomRouterLink}
-          to={routeConstants.ADD_STUDENT_FROM_COLLEGE_ADMIN}
+          greenButtonChecker={formState.greenButtonChecker}
+          onClick={() => addStudentsToCollege()}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           {genericConstants.ADD_STUDENT_BUTTON_TEXT}

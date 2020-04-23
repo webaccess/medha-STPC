@@ -7,14 +7,14 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import * as serviceProviders from "../../api/Axios";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
-import * as genericConstants from "../../constants/GenericConstants";
+import * as serviceProviders from "../../../../api/Axios";
+import * as strapiConstants from "../../../../constants/StrapiApiConstants";
+import * as genericConstants from "../../../../constants/GenericConstants";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { YellowButton, GrayButton } from "../../components";
-import useStyles from "../ContainerStyles/ModalPopUpStyles";
+import { YellowButton, GrayButton } from "../../../../components";
+import useStyles from "../../../ContainerStyles/ModalPopUpStyles";
 
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
@@ -95,8 +95,8 @@ const DeleteStudents = props => {
               formState.isDeleteData = true;
               handleCloseModal(
                 "Student " +
-                props.dataToDelete["name"] +
-                " has been deleted successfully."
+                  props.dataToDelete["name"] +
+                  " has been deleted successfully."
               );
             })
             .catch(error => {
@@ -107,8 +107,8 @@ const DeleteStudents = props => {
           console.log("error", error);
           handleCloseModal(
             "An error has occured while deleting student " +
-            props.dataToDelete["name"] +
-            ". Kindly, try again."
+              props.dataToDelete["name"] +
+              ". Kindly, try again."
           );
         });
     }
@@ -151,8 +151,8 @@ const DeleteStudents = props => {
                   {props.isMultiDelete
                     ? "Are you sure you want to delete the selected students ?"
                     : "Are you sure you want to delete the student " +
-                    props.dataToDelete["name"] +
-                    " ?"}
+                      props.dataToDelete["name"] +
+                      " ?"}
                 </Grid>
               </Grid>
             </Grid>

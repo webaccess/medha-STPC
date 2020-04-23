@@ -9,10 +9,10 @@ import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import * as serviceProviders from "../../api/Axios";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
-import { YellowButton, GrayButton } from "../../components";
-import useStyles from "../ContainerStyles/ModalPopUpStyles";
+import * as serviceProviders from "../../../../api/Axios";
+import * as strapiConstants from "../../../../constants/StrapiApiConstants";
+import { YellowButton, GrayButton } from "../../../../components";
+import useStyles from "../../../ContainerStyles/ModalPopUpStyles";
 
 const ApprovedStudents = props => {
   const [open, setOpen] = React.useState(false);
@@ -137,14 +137,14 @@ const ApprovedStudents = props => {
           if (props.verifiedByCollege) {
             handleCloseModal(
               "An error has occured while unapproving the student" +
-              props.studentName +
-              ". Kindly, try again."
+                props.studentName +
+                ". Kindly, try again."
             );
           } else {
             handleCloseModal(
               "An error has occured while approving the student" +
-              props.studentName +
-              ". Kindly, try again."
+                props.studentName +
+                ". Kindly, try again."
             );
           }
         });
@@ -204,9 +204,9 @@ const ApprovedStudents = props => {
                     {!props.isMultiApprove && !props.isMultiUnapprove
                       ? props.verifiedByCollege
                         ? "Are you sure you want to unapprove the student " +
-                        props.studentName
+                          props.studentName
                         : "Are you sure you want to approve the student " +
-                        props.studentName
+                          props.studentName
                       : null}
                   </Grid>
                 </Grid>
