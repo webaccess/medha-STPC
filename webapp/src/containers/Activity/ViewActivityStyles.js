@@ -60,6 +60,9 @@ const useStyles = makeStyles(theme => ({
   marginTop: {
     marginTop: "8px"
   },
+  breadCrumbs: {
+    marginBottom: "24px !important"
+  },
   /**css for datatable action buttons */
   DisplayFlex: {
     display: "flex"

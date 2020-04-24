@@ -1016,7 +1016,7 @@ const ManageStudents = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function(item, i) {
+                          streams.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]

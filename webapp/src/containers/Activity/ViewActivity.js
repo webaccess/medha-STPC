@@ -8,7 +8,7 @@ import {
   Typography,
   Tooltip,
   Collapse,
-  IconButton,
+  IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -31,7 +31,7 @@ import {
   EditGridIcon,
   ViewStudentGridIcon,
   DeleteGridIcon,
-  DownloadIcon,
+  DownloadIcon
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -39,35 +39,12 @@ import { useHistory } from "react-router-dom";
 import moment from "moment";
 import XLSX from "xlsx";
 
-const ACTIVITY_FILTER = "id";
-const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
-const role = user ? user.role : null;
-const roleName = role ? role.name : null;
-
-const url = () => {
-  let url;
-  if (roleName === "Medha Admin") {
-    url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
-  }
-
-  if (roleName === "College Admin") {
-    const college = user ? user.college : null;
-    const collegeId = college ? college.id : null;
-    url =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_COLLEGES +
-      `/${collegeId}/` +
-      strapiConstants.STRAPI_COLLEGE_ACTIVITY;
-  }
-  return url;
-};
-
-const ViewActivity = (props) => {
+const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
   const [formState, setFormState] = useState({
-    dataToShow: [],
+    dataToShow: null,
     activities: [],
     activityFilter: [],
     filterDataParameters: {},
@@ -103,26 +80,49 @@ const ViewActivity = (props) => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true,
+    sortAscending: true
   });
 
   const [alert, setAlert] = useState({
     isOpen: false,
     message: "",
-    severity: "",
+    severity: ""
   });
+
+  const ACTIVITY_FILTER = "id";
+  const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
+  const role = user ? user.role : null;
+  const roleName = role ? role.name : null;
+
+  const url = () => {
+    let url;
+    if (roleName === "Medha Admin") {
+      url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
+    }
+
+    if (roleName === "College Admin") {
+      const college = user ? user.college : null;
+      const collegeId = college ? college.id : null;
+      url =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_COLLEGES +
+        `/${collegeId}/` +
+        strapiConstants.STRAPI_COLLEGE_ACTIVITY;
+    }
+    return url;
+  };
 
   useEffect(() => {
     const URL = url();
     serviceProviders
       .serviceProviderForGetRequest(URL)
-      .then((res) => {
-        setFormState((formState) => ({
+      .then(res => {
+        setFormState(formState => ({
           ...formState,
-          activityFilter: res.data.result,
+          activityFilter: res.data.result
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
 
@@ -135,28 +135,28 @@ const ViewActivity = (props) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
-      Object.keys(params).map((key) => {
+      Object.keys(params).map(key => {
         defaultParams[key] = params[key];
       });
       params = defaultParams;
     } else {
       params = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(URL, params)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           activities: res.data.result,
           dataToShow: res.data.result,
@@ -164,10 +164,10 @@ const ViewActivity = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
@@ -186,7 +186,7 @@ const ViewActivity = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getActivityData(formState.pageSize, page);
     } else {
@@ -207,13 +207,13 @@ const ViewActivity = (props) => {
   };
 
   const clearFilter = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -223,30 +223,30 @@ const ViewActivity = (props) => {
     getActivityData(formState.pageSize, 1);
   };
 
-  const editCell = (data) => {
+  const editCell = data => {
     history.push({
       pathname: routeConstants.EDIT_ACTIVITY,
       editActivity: true,
-      dataForEdit: data,
+      dataForEdit: data
     });
   };
 
-  const isDeleteCellCompleted = (status) => {
+  const isDeleteCellCompleted = status => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = (event) => {
-    setFormState((formState) => ({
+  const deleteCell = event => {
+    setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
-  const viewCell = (data) => {
+  const viewCell = data => {
     history.push({
       pathname: routeConstants.VIEW_ACTIVITY,
-      dataForView: data.id,
+      dataForView: data.id
     });
   };
 
@@ -263,10 +263,10 @@ const ViewActivity = (props) => {
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
     if (formState.isDataDeleted) {
       getActivityData(formState.pageSize, formState.page);
@@ -276,12 +276,12 @@ const ViewActivity = (props) => {
   /**
    * Redirect to Activity batch UI for given activity
    */
-  const handleManageActivityBatchClick = (activity) => {
+  const handleManageActivityBatchClick = activity => {
     const manageActivityBatchURL = `/manage-activity-batch/${activity.id}`;
     history.push(manageActivityBatchURL);
   };
 
-  const handleClickDownloadStudents = (activity) => {
+  const handleClickDownloadStudents = activity => {
     const URL =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_ACTIVITY +
@@ -296,7 +296,7 @@ const ViewActivity = (props) => {
          * Add students list for respective batch
          */
         const headers = ["Roll Number", "Student Name", "Stream"];
-        data.result.forEach((d) => {
+        data.result.forEach(d => {
           const { workSheetName, workSheetData } = d;
           let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
           wb.SheetNames.push(workSheetName);
@@ -305,12 +305,12 @@ const ViewActivity = (props) => {
 
         XLSX.writeFile(wb, "students.xlsx");
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
   };
 
-  const handleDeleteActivity = (activity) => {
+  const handleDeleteActivity = activity => {
     const url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
     const activityId = activity.id;
     serviceProviders
@@ -319,7 +319,7 @@ const ViewActivity = (props) => {
         setAlert(() => ({
           isOpen: true,
           message: "Success",
-          severity: "success",
+          severity: "success"
         }));
         getActivityData(10, 1);
       })
@@ -327,7 +327,7 @@ const ViewActivity = (props) => {
         setAlert(() => ({
           isOpen: true,
           message: response.data.message,
-          severity: "error",
+          severity: "error"
         }));
       });
   };
@@ -339,23 +339,24 @@ const ViewActivity = (props) => {
     {
       name: "Streams",
       sortable: true,
-      selector: (row) => `${row.streams.map((s) => ` ${s.name}`)}`,
+      selector: row => `${row.streams.map(s => ` ${s.name}`)}`
     },
     { name: "College", sortable: true, selector: "college.name" },
     {
       name: "Date",
       sortable: true,
-      selector: (row) => `${moment(row.start_date_time).format("DD MMM YYYY")}`,
+      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`
     },
     {
       name: "Actions",
-      cell: (cell) => (
+      cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <ViewStudentGridIcon
               id={cell.id}
               value={cell.name}
               onClick={() => handleManageActivityBatchClick(cell)}
+              title="Manage Activity Batch"
             />
           </div>
           {roleName === "Medha Admin" ? (
@@ -397,15 +398,15 @@ const ViewActivity = (props) => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%",
-      },
-    },
+        maxWidth: "18%"
+      }
+    }
   ];
 
   const handleAddActivityClick = () => {
     history.push({
       pathname: routeConstants.ADD_ACTIVITY,
-      addActivity: true,
+      addActivity: true
     });
   };
 
@@ -550,11 +551,11 @@ const ViewActivity = (props) => {
                   id="combo-box-demo"
                   options={formState.activityFilter}
                   className={classes.autoCompleteField}
-                  getOptionLabel={(option) => option.title}
+                  getOptionLabel={option => option.title}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(ACTIVITY_FILTER, event, value)
                   }
-                  renderInput={(params) => (
+                  renderInput={params => (
                     <TextField
                       {...params}
                       label="Activity Title"
@@ -569,7 +570,7 @@ const ViewActivity = (props) => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={(event) => {
+                  onClick={event => {
                     event.persist();
                     searchFilter();
                   }}

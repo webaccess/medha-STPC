@@ -1,7 +1,9 @@
 import React from "react";
 import UseStyle from "../NotFoundPage/Styles.js";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, Link } from "@material-ui/core";
 import Layout from "../../hoc/Layout/Layout.js";
+import * as routeConstants from "../../constants/RouteConstants";
+import * as authPageConstants from "../../constants/AuthPageConstants";
 
 const RequiredConformation = () => {
   const classes = UseStyle();
@@ -15,6 +17,19 @@ const RequiredConformation = () => {
                 Your verification is pending from College.
               </Typography>
             </div>
+          </Grid>
+          <Grid item xs={12} style={{ textAlign: "center" }}>
+            <Link
+              href={routeConstants.SIGN_IN_URL}
+              variant="body2"
+              style={{
+                color: "#21abdc",
+                fontSize: "0.8rem",
+                textAlign: "right"
+              }}
+            >
+              {authPageConstants.BACK_TO_LOGIN_TEXT}
+            </Link>
           </Grid>
         </Grid>
       </Layout>

@@ -18,7 +18,7 @@ const UserSchema = {
     label: "Password",
     id: "password",
     autoComplete: "password",
-    required: true,
+    required: false,
     placeholder: "Password",
     autoFocus: true,
     type: "password",
