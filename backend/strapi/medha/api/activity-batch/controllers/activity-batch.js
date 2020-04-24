@@ -8,13 +8,13 @@
 const {
   convertRestQueryParams,
   buildQuery,
-  sanitizeEntity,
+  sanitizeEntity
 } = require("strapi-utils");
 
 const utils = require("../../../config/utils.js");
-const sanitizeUser = (user) =>
+const sanitizeUser = user =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model,
+    model: strapi.query("user", "users-permissions").model
   });
 
 const _ = require("lodash");
@@ -29,7 +29,7 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.models["activity-batch"],
-          filters,
+          filters
         })
       )
       .fetchPage({
@@ -37,9 +37,9 @@ module.exports = {
         pageSize:
           pageSize < 0
             ? await utils.getTotalRecords("activity-batch")
-            : pageSize,
+            : pageSize
       })
-      .then((res) => {
+      .then(res => {
         return utils.getPaginatedResponse(res);
       });
   },
@@ -59,20 +59,10 @@ module.exports = {
     let filters = convertRestQueryParams(query);
 
     const { student_id, stream_id } = query;
-
     let sort;
     if (filters.sort) {
-      sort = _.pick(filters, ["sort"]);
-
-      let field = sort.sort[0].field.toString();
-
-      if (field.includes(".")) {
-        field = field.split(".");
-
-        if (field.length > 1) {
-          filters = _.omit(filters, ["sort"]);
-        }
-      }
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
     }
 
     const activityBatch = await strapi.query("activity-batch").findOne({ id });
@@ -85,26 +75,26 @@ module.exports = {
 
       .find({ activity_batch: id });
 
-    const studentIds = activityBatchStudents.map((ab) => ab.student.id);
+    const studentIds = activityBatchStudents.map(ab => ab.student.id);
 
     let students = await strapi
       .query("student")
       .model.query(
         buildQuery({
           model: strapi.models["student"],
-          filters,
+          filters
         })
       )
       .fetchAll()
-      .then((model) => model.toJSON());
+      .then(model => model.toJSON());
 
-    students = students.filter((s) => {
+    students = students.filter(s => {
       if (_.includes(studentIds, s.id)) {
         return s;
       }
     });
 
-    await utils.asyncForEach(students, async (student) => {
+    await utils.asyncForEach(students, async student => {
       const activityBatch = await strapi
         .query("activity-batch-attendance")
         .findOne({ activity_batch: id, student: student.id }, []);
@@ -113,23 +103,22 @@ module.exports = {
     });
 
     if (student_id) {
-      students = students.filter((student) => student.id == student_id);
+      students = students.filter(student => student.id == student_id);
     }
 
     if (stream_id) {
-      students = students.filter((student) => (student.stream.id = stream_id));
+      students = students.filter(student => (student.stream.id = stream_id));
     }
-    if (sort) {
-      const field = sort.sort[0].field.toString();
-      const order = sort.sort[0].order.toString();
 
-      if (order === "desc") students = _.sortBy(students, [field]).reverse();
-      else if (order === "asc") students = _.sortBy(students, [field]);
+    // Sorting ascending or descending on one or multiple fields
+    if (sort && sort.length) {
+      students = utils.sort(students, sort);
     }
+
     const response = utils.paginate(students, page, pageSize);
     return {
       result: response.result,
-      ...response.pagination,
+      ...response.pagination
     };
   },
 
@@ -148,13 +137,13 @@ module.exports = {
 
     await strapi
       .query("activity-batch-attendance")
-      .model.query((qb) => {
+      .model.query(qb => {
         qb.whereIn("student", students).andWhere("activity_batch", id);
       })
       .destroy({ require: false });
 
     return {
-      result: "success",
+      result: "success"
     };
   },
 
@@ -180,12 +169,12 @@ module.exports = {
     }
 
     const studentsResponse = await Promise.all(
-      students.map((studentId) =>
+      students.map(studentId =>
         strapi.query("student").findOne({ id: studentId })
       )
     );
 
-    if (studentsResponse.some((s) => s === null)) {
+    if (studentsResponse.some(s => s === null)) {
       return ctx.response.badRequest("Invalid Student Ids");
     }
 
@@ -194,14 +183,14 @@ module.exports = {
      */
 
     const areStudentPresentInActivityBatch = await Promise.all(
-      students.map((studentId) =>
+      students.map(studentId =>
         strapi
           .query("activity-batch-attendance")
           .findOne({ activity_batch: id, student: studentId })
       )
     );
 
-    if (areStudentPresentInActivityBatch.some((a) => a === null)) {
+    if (areStudentPresentInActivityBatch.some(a => a === null)) {
       return ctx.response.badRequest(
         "Invalid Student Ids present in activity batch"
       );
@@ -225,12 +214,12 @@ module.exports = {
     }
 
     const studentsResponse = await Promise.all(
-      students.map((studentId) =>
+      students.map(studentId =>
         strapi.query("student").findOne({ id: studentId })
       )
     );
 
-    if (studentsResponse.some((s) => s === null)) {
+    if (studentsResponse.some(s => s === null)) {
       return ctx.response.badRequest("Invalid Student Ids");
     }
 
@@ -239,14 +228,14 @@ module.exports = {
      */
 
     const areStudentPresentInActivityBatch = await Promise.all(
-      students.map((studentId) =>
+      students.map(studentId =>
         strapi
           .query("activity-batch-attendance")
           .findOne({ activity_batch: id, student: studentId })
       )
     );
 
-    if (areStudentPresentInActivityBatch.some((a) => a === null)) {
+    if (areStudentPresentInActivityBatch.some(a => a === null)) {
       return ctx.response.badRequest(
         "Invalid Student Ids present in activity batch"
       );
@@ -267,15 +256,15 @@ module.exports = {
 
     const { students } = ctx.request.body;
     const studentsResponse = await Promise.all(
-      students.map((studentId) =>
+      students.map(studentId =>
         strapi.query("student").findOne({ id: studentId })
       )
     );
 
-    if (studentsResponse.some((s) => s === null)) {
+    if (studentsResponse.some(s => s === null)) {
       return ctx.response.badRequest("Invalid Student Ids");
     }
 
     return strapi.services["activity-batch"].addStudentsToActivityBatch(ctx);
-  },
+  }
 };
