@@ -32,6 +32,7 @@ import * as genericConstants from "../../constants/GenericConstants";
 import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
 import noImage from "../../assets/images/no-image-icon.png";
+import moment from "moment";
 //import RegisterEvent from "./EventRegistration";
 
 const EligibleActivity = props => {
@@ -145,11 +146,12 @@ const EligibleActivity = props => {
       data.activity_batch.start_date_time &&
       data.activity_batch.end_date_time
     ) {
-      let startTime = new Date(data.activity_batch["start_date_time"]);
-      let endTime = new Date(data.activity_batch["end_date_time"]);
-      return (
-        startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
+      // let startTime = new Date(data.activity_batch["start_date_time"]);
+      let startTime = moment(data.activity_batch["start_date_time"]).format(
+        "LT"
       );
+      let endTime = moment(data.activity_batch["end_date_time"]).format("LT");
+      return startTime + " to " + endTime;
     } else {
       return null;
     }

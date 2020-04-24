@@ -33,14 +33,6 @@ import DeleteAcademicHistory from "./DeleteAcademicHistory";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
-const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
-const studentId = studentInfo ? studentInfo.id : null;
-const STUDENT_ACADEMIC_YEAR_URL =
-  strapiConstants.STRAPI_DB_URL +
-  strapiConstants.STRAPI_STUDENTS +
-  `/${studentId}/academic-history`;
-const ACADEMIC_YEAR_FILTER = "id";
-
 const ViewAcademicHistory = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
@@ -80,6 +72,16 @@ const ViewAcademicHistory = props => {
     isDataLoading: false,
     sortAscending: true
   });
+
+  const studentInfo = Auth.getUserInfo()
+    ? Auth.getUserInfo().studentInfo
+    : null;
+  const studentId = studentInfo ? studentInfo.id : null;
+  const STUDENT_ACADEMIC_YEAR_URL =
+    strapiConstants.STRAPI_DB_URL +
+    strapiConstants.STRAPI_STUDENTS +
+    `/${studentId}/academic-history`;
+  const ACADEMIC_YEAR_FILTER = "id";
 
   useEffect(() => {
     serviceProviders
