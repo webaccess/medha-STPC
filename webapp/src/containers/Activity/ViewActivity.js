@@ -39,29 +39,6 @@ import { useHistory } from "react-router-dom";
 import moment from "moment";
 import XLSX from "xlsx";
 
-const ACTIVITY_FILTER = "id";
-const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
-const role = user ? user.role : null;
-const roleName = role ? role.name : null;
-
-const url = () => {
-  let url;
-  if (roleName === "Medha Admin") {
-    url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
-  }
-
-  if (roleName === "College Admin") {
-    const college = user ? user.college : null;
-    const collegeId = college ? college.id : null;
-    url =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_COLLEGES +
-      `/${collegeId}/` +
-      strapiConstants.STRAPI_COLLEGE_ACTIVITY;
-  }
-  return url;
-};
-
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
@@ -111,6 +88,29 @@ const ViewActivity = props => {
     message: "",
     severity: ""
   });
+
+  const ACTIVITY_FILTER = "id";
+  const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
+  const role = user ? user.role : null;
+  const roleName = role ? role.name : null;
+
+  const url = () => {
+    let url;
+    if (roleName === "Medha Admin") {
+      url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
+    }
+
+    if (roleName === "College Admin") {
+      const college = user ? user.college : null;
+      const collegeId = college ? college.id : null;
+      url =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_COLLEGES +
+        `/${collegeId}/` +
+        strapiConstants.STRAPI_COLLEGE_ACTIVITY;
+    }
+    return url;
+  };
 
   useEffect(() => {
     const URL = url();
@@ -356,6 +356,7 @@ const ViewActivity = props => {
               id={cell.id}
               value={cell.name}
               onClick={() => handleManageActivityBatchClick(cell)}
+              title="Manage Activity Batch"
             />
           </div>
           {roleName === "Medha Admin" ? (
