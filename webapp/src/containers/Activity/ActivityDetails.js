@@ -19,6 +19,7 @@ import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../constants/RouteConstants";
 import Img from "react-image";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
+import moment from "moment";
 
 const ACTIVITIES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
@@ -151,15 +152,13 @@ const ActivityDetails = props => {
       formState.activityDetails.activity_batch.start_date_time &&
       formState.activityDetails.activity_batch.end_date_time
     ) {
-      let startTime = new Date(
+      let startTime = moment(
         formState.activityDetails.activity_batch["start_date_time"]
-      );
-      let endTime = new Date(
+      ).format("LT");
+      let endTime = moment(
         formState.activityDetails.activity_batch["end_date_time"]
-      );
-      return (
-        startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
-      );
+      ).format("LT");
+      return startTime + " to " + endTime;
     } else {
       return null;
     }

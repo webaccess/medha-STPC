@@ -33,15 +33,6 @@ import DeleteEducation from "./DeleteEducation";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
-const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
-const studentId = studentInfo ? studentInfo.id : null;
-console.log(studentId);
-const STUDENT_EDUCATION_URL =
-  strapiConstants.STRAPI_DB_URL +
-  strapiConstants.STRAPI_STUDENTS +
-  `/${studentId}/education`;
-const EDUCATION_FILTER = "id";
-
 const ViewEducation = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
@@ -85,6 +76,16 @@ const ViewEducation = props => {
     pageCount: "",
     sortAscending: true
   });
+
+  const studentInfo = Auth.getUserInfo()
+    ? Auth.getUserInfo().studentInfo
+    : null;
+  const studentId = studentInfo ? studentInfo.id : null;
+  const STUDENT_EDUCATION_URL =
+    strapiConstants.STRAPI_DB_URL +
+    strapiConstants.STRAPI_STUDENTS +
+    `/${studentId}/education`;
+  const EDUCATION_FILTER = "id";
 
   useEffect(() => {
     serviceProviders
