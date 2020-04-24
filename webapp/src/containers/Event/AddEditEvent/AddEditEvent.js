@@ -1175,7 +1175,7 @@ const AddEditEvent = props => {
                         />
                       ) : null}
                       {formState.showAddPreviewNoImage ? (
-                        <div class={classes.DefaultNoImage}></div>
+                        <div className={classes.DefaultNoImage}></div>
                       ) : null}
                     </div>
                   </Grid>
