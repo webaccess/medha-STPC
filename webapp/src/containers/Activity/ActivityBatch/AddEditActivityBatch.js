@@ -28,7 +28,8 @@ import {
   GreenButton,
   Alert,
   CustomDateTimePicker,
-  DeleteGridIcon
+  DeleteGridIcon,
+  Breadcrumbs
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import { uniqBy, get } from "lodash";
@@ -591,6 +592,18 @@ const AddEditActivityBatches = props => {
       </GreenButton>
     );
   };
+
+  const breadcrumbs = [
+    { title: "Activity", href: "/manage-activity" },
+    { title: "Activity Batches", href: `/manage-activity-batch/${activity}` },
+    {
+      title: formState.isEditActivityBatch
+        ? formState.dataForEdit[activityBatchName]
+        : "New Batch",
+      href: "/"
+    }
+  ];
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -772,6 +785,10 @@ const AddEditActivityBatches = props => {
             </Grid>
           </CardContent>
         </Card>
+        <div className={classes.breadCrumbs}>
+          <Breadcrumbs list={breadcrumbs} />
+        </div>
+
         <>
           <Table
             data={formState.dataToShow}
