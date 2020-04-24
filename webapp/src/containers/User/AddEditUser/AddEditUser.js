@@ -653,7 +653,7 @@ const AddEditUser = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id={get(UserSchema[role], "id")}
                       className={classes.root}
                       options={roles}
                       getOptionLabel={option => option.name}
@@ -791,7 +791,7 @@ const AddEditUser = props => {
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id={get(UserSchema[state], "id")}
                       className={classes.root}
                       options={states}
                       getOptionLabel={option => option.name}
@@ -825,7 +825,7 @@ const AddEditUser = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id={get(UserSchema[zone], "id")}
                       className={classes.root}
                       options={zones}
                       getOptionLabel={option => option.name}
@@ -861,7 +861,7 @@ const AddEditUser = props => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id={get(UserSchema[rpc], "id")}
                       className={classes.root}
                       options={rpcs}
                       getOptionLabel={option => option.name}
@@ -895,7 +895,7 @@ const AddEditUser = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id={get(UserSchema[college], "id")}
                       className={classes.root}
                       options={colleges}
                       getOptionLabel={option => option.name}
