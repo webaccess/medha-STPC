@@ -1,9 +1,12 @@
 import React from "react";
 import { Tooltip } from "@material-ui/core";
 
-const ViewGridIcon = (props) => {
+const ViewGridIcon = props => {
   return (
-    <Tooltip title="View Student List" placement="top">
+    <Tooltip
+      title={props.title ? props.title : "View Student List"}
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}
