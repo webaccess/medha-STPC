@@ -24,6 +24,8 @@ import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 
@@ -34,6 +36,7 @@ const ViewZone = props => {
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
   const [zonesFilter, setZonesFilter] = useState([]);
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [formState, setFormState] = useState({
     filterZone: "",
     dataToShow: [],
@@ -254,6 +257,7 @@ const ViewZone = props => {
   */
 
   const getDataForEdit = async id => {
+    setLoaderStatus(true);
     let paramsForZones = {
       id: id
     };
@@ -270,12 +274,14 @@ const ViewZone = props => {
       .catch(error => {
         console.log("error", error);
       });
+    setLoaderStatus(false);
   };
   const editCell = event => {
     getDataForEdit(event.target.id);
   };
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -290,6 +296,7 @@ const ViewZone = props => {
       fromEditZone: false,
       isMultiDelete: false
     }));
+    setLoaderStatus(false);
   };
 
   /** This is used to handle the close modal event */

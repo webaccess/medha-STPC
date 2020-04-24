@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { get } from "lodash";
 import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
@@ -18,12 +18,15 @@ import {
   Grid,
   Typography
 } from "@material-ui/core";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const AddEditState = props => {
   const history = useHistory();
   const state = "state";
   const content = "content";
   const classes = useStyles();
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -64,8 +67,12 @@ const AddEditState = props => {
     }
   };
 
+  const setLoader = () => {
+    setLoaderStatus(true);
+  };
   const handleSubmit = event => {
     event.preventDefault();
+    setLoader();
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
@@ -96,10 +103,11 @@ const AddEditState = props => {
         ...formState,
         isValid: false
       }));
+      setLoaderStatus(false);
     }
   };
 
-  const postStateData = async () => {
+  const postStateData = () => {
     let postData = databaseUtilities.addState(formState.values[state]);
     if (formState.isEditState) {
       serviceProviders
@@ -109,6 +117,7 @@ const AddEditState = props => {
           postData
         )
         .then(res => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_STATES,
             fromEditState: true,
@@ -119,6 +128,7 @@ const AddEditState = props => {
           });
         })
         .catch(error => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_STATES,
             fromEditState: true,
@@ -139,6 +149,7 @@ const AddEditState = props => {
           postData
         )
         .then(res => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_STATES,
             fromAddState: true,
@@ -149,6 +160,7 @@ const AddEditState = props => {
           });
         })
         .catch(error => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_STATES,
             fromAddState: true,
@@ -210,7 +222,14 @@ const AddEditState = props => {
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton type="submit" color="primary" variant="contained">
+                <YellowButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    setLoaderStatus(true);
+                  }}
+                >
                   {genericConstants.SAVE_BUTTON_TEXT}
                 </YellowButton>
                 <GrayButton

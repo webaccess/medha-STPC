@@ -55,7 +55,7 @@ const ManageCollege = props => {
   const [open, setOpen] = React.useState(true);
   /** Data we get for filtering */
   const [collegesFilter, setCollegesFilter] = React.useState([]);
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [rpcs, setRpcs] = React.useState([]);
   const [zones, setZones] = React.useState([]);
   const [states, setStates] = React.useState([]);
@@ -366,7 +366,6 @@ const ManageCollege = props => {
       pathname: routeConstants.VIEW_COLLEGE,
       dataForEdit: event.target.id
     });
-    setLoaderStatus(false);
   };
 
   /** ---------------------------------------------------------- */
@@ -620,6 +619,12 @@ const ManageCollege = props => {
 
   const selectedRowCleared = data => {
     formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState(formState => ({
+        ...formState,
+        toggleCleared: false
+      }));
+    }, 2000);
   };
 
   /** Columns to show in table */
@@ -913,7 +918,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter
                       ? null
                       : states[
-                          states.findIndex(function (item, i) {
+                          states.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STATE_FILTER]
@@ -944,7 +949,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : zones[
-                          zones.findIndex(function (item, i) {
+                          zones.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[ZONE_FILTER]
@@ -975,7 +980,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : rpcs[
-                          rpcs.findIndex(function (item, i) {
+                          rpcs.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[RPC_FILTER]

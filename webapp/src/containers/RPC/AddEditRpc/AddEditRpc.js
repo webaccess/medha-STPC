@@ -19,6 +19,8 @@ import * as genericConstants from "../../../constants/GenericConstants.js";
 import * as serviceProviders from "../../../api/Axios";
 import { Alert, GrayButton, YellowButton } from "../../../components";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
@@ -34,10 +36,10 @@ const AddEditRpc = props => {
   const history = useHistory();
   const classes = useStyles();
   const [states, setStates] = useState([]);
-  const [zones, setZones] = useState([]);
   const [getColleges, setGetColleges] = useState([]);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -181,6 +183,7 @@ const AddEditRpc = props => {
         ...formState,
         isValid: false
       }));
+      setLoaderStatus(false);
     }
     event.preventDefault();
   };
@@ -199,6 +202,7 @@ const AddEditRpc = props => {
           postData
         )
         .then(res => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_RPC,
             fromEditRpc: true,
@@ -209,6 +213,7 @@ const AddEditRpc = props => {
           });
         })
         .catch(error => {
+          setLoaderStatus(false);
           console.log(error);
           history.push({
             pathname: routeConstants.MANAGE_RPC,
@@ -222,6 +227,7 @@ const AddEditRpc = props => {
       serviceProviders
         .serviceProviderForPostRequest(RPCS_URL, postData)
         .then(res => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
@@ -232,6 +238,7 @@ const AddEditRpc = props => {
           });
         })
         .catch(error => {
+          setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
@@ -300,7 +307,7 @@ const AddEditRpc = props => {
                     name={stateName}
                     value={
                       states[
-                        states.findIndex(function(item, i) {
+                        states.findIndex(function (item, i) {
                           return item.id === formState.values[stateName];
                         })
                       ] || null /** Please give a default " " blank value */
@@ -341,7 +348,7 @@ const AddEditRpc = props => {
                     name={collegeName}
                     value={
                       getColleges[
-                        getColleges.findIndex(function(item, i) {
+                        getColleges.findIndex(function (item, i) {
                           return item.id === formState.values[collegeName];
                         })
                       ] || null /** Please give a default " " blank value */
@@ -375,7 +382,14 @@ const AddEditRpc = props => {
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton type="submit" color="primary" variant="contained">
+                <YellowButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    setLoaderStatus(true);
+                  }}
+                >
                   {genericConstants.SAVE_BUTTON_TEXT}
                 </YellowButton>
                 <GrayButton

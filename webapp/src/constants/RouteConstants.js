@@ -23,6 +23,9 @@ export const MANAGE_STUDENT = "/manage-student";
 export const VALIDATE_STUDENT = "/validate-student";
 export const PROFILE = "/profile";
 
+export const ADD_STUDENT_FROM_COLLEGE_ADMIN = "/college-add-student";
+export const EDIT_STUDENT_FROM_COLLEGE_ADMIN = "/college-edit-student";
+
 /**Student Documents */
 export const VIEW_DOCUMENTS = "/view-documents";
 export const EDIT_DOCUMENTS = "/edit-documents";
@@ -98,7 +101,7 @@ let user_management_medha_admin = [];
 let activity_medha_admin = [];
 let events_medha_admin = [];
 
-dashboard_medha_admin.push(DASHBOARD_URL);
+dashboard_medha_admin.push(DASHBOARD_URL, DEFAULT_URL);
 
 masters_medha_admin.push(
   EDIT_STATE,
@@ -158,7 +161,7 @@ let students_college_admin = [];
 let activity_college_admin = [];
 let events_college_admin = [];
 
-dashboard_college_admin.push(DASHBOARD_URL);
+dashboard_college_admin.push(DASHBOARD_URL, DEFAULT_URL);
 
 college_profile_admin_admin.push(EDIT_COLLEGE, VIEW_COLLEGE);
 
@@ -181,7 +184,13 @@ activity_college_admin.push(
   ELIGIBLE_ACTIVITY
 );
 
-students_college_admin.push(MANAGE_STUDENT, VIEW_PROFILE, EDIT_PROFILE);
+students_college_admin.push(
+  MANAGE_STUDENT,
+  VIEW_PROFILE,
+  EDIT_PROFILE,
+  ADD_STUDENT_FROM_COLLEGE_ADMIN,
+  EDIT_STUDENT_FROM_COLLEGE_ADMIN
+);
 
 export const COLLEGE_ADMIN = [
   { key: 0, value: dashboard_college_admin },
@@ -197,6 +206,7 @@ let activity_students = [];
 let events_students = [];
 
 profile_students.push(
+  DEFAULT_URL,
   VIEW_EDUCATION,
   ADD_EDUCATION,
   EDIT_EDUCATION,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import AppRouter from "./AppRouter";
 import { ThemeProvider } from "@material-ui/styles";
@@ -9,7 +9,8 @@ import LoaderContext from "./context/LoaderContext";
 import * as utlities from "./Utilities/CommonUtilities";
 
 function App(props) {
-  let id = utlities.setSideBarIndex(window.location.pathname);
+  let id = 0;
+  id = utlities.setSideBarIndex(window.location.pathname);
   const [index, setIndex] = useState(id);
   const [loaderStatus, setLoaderStatus] = useState(false);
   return (

@@ -34,6 +34,8 @@ const Dashboard = props => {
   const classes = useStyles();
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = React.useState(0);
+  const { index, setIndex } = useContext(SetIndexContext);
+  setIndex(0);
 
   React.useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
@@ -243,7 +245,7 @@ const Dashboard = props => {
                       Select Zone
                     </InputLabel>
                     <Autocomplete
-                      id={"demo"}
+                      id={"zoneDemo"}
                       options={[]}
                       getOptionLabel={option => option.name}
                       /* This is used to set the default value to the auto complete */
@@ -271,7 +273,7 @@ const Dashboard = props => {
                       Select Region
                     </InputLabel>
                     <Autocomplete
-                      id={"demo"}
+                      id={"regionDemo"}
                       options={[]}
                       getOptionLabel={option => option.name}
                       /* This is used to set the default value to the auto complete */
@@ -299,7 +301,7 @@ const Dashboard = props => {
                       Select College
                     </InputLabel>
                     <Autocomplete
-                      id={"demo"}
+                      id={"collegeDemo"}
                       options={[]}
                       getOptionLabel={option => option.name}
                       /* This is used to set the default value to the auto complete */
@@ -327,7 +329,7 @@ const Dashboard = props => {
                       Select Month
                     </InputLabel>
                     <Autocomplete
-                      id={"demo"}
+                      id={"monthDemo"}
                       options={[]}
                       getOptionLabel={option => option.name}
                       /* This is used to set the default value to the auto complete */
@@ -355,7 +357,7 @@ const Dashboard = props => {
                       Select Trainer
                     </InputLabel>
                     <Autocomplete
-                      id={"demo"}
+                      id={"trainerDemo"}
                       options={[]}
                       getOptionLabel={option => option.name}
                       /* This is used to set the default value to the auto complete */

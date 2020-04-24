@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import useStyles from "./ManageStudentStyle";
+import useStyles from "../ContainerStyles/ManagePageStyles";
 import * as serviceProviders from "../../api/Axios";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
 import { Table, Spinner, Alert } from "../../components";
@@ -22,7 +22,8 @@ import {
   Typography,
   Collapse,
   IconButton,
-  Tooltip
+  Tooltip,
+  CircularProgress
 } from "@material-ui/core";
 import { serviceProviderForGetRequest } from "../../api/Axios";
 import auth from "../../components/Auth";
@@ -47,8 +48,14 @@ const ManageStudents = props => {
   const [open, setOpen] = React.useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
   const [streams, setStreams] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  /** Value to set for event filter */
+  const [value, setValue] = React.useState(null);
+
   const [formState, setFormState] = useState({
     student: [],
+    studentNameFilterData: [],
     approvedId: 0,
     approvedData: false,
     showModalBlock: false,
@@ -73,14 +80,25 @@ const ManageStudents = props => {
     sortAscending: true,
     dataVerifiedByCollege: false,
     isClearResetFilter: false,
-    checked: false
+    checked: false,
+    /** This is when we return from edit page */
+    isDataEdited: props["location"]["fromeditStudent"]
+      ? props["location"]["isDataEdited"]
+      : false,
+    fromeditCollege: props["location"]["fromeditStudent"]
+      ? props["location"]["fromeditStudent"]
+      : false,
+    editedCollegeName: props["location"]["fromeditStudent"]
+      ? props["location"]["editedStudentName"]
+      : null,
+    toggleCleared: false
   });
 
   useEffect(() => {
     getStudentData(10, 1);
-
     getStreamData();
   }, []);
+
   const getStudentData = async (pageSize, page, paramsForUsers = null) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
@@ -111,6 +129,11 @@ const ManageStudents = props => {
         "/" +
         strapiConstants.STRAPI_STUDENTS;
 
+      setFormState(formState => ({
+        ...formState,
+        isDataLoading: true
+      }));
+
       serviceProviders
         .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
         .then(res => {
@@ -125,10 +148,12 @@ const ManageStudents = props => {
             setFormState(formState => ({
               ...formState,
               student: tempStudentData,
+              // studentNameFilterData: tempStudentData,
               pageSize: currentPageSize,
               totalRows: totalRows,
               page: currentPage,
-              pageCount: pageCount
+              pageCount: pageCount,
+              isDataLoading: false
             }));
           } else {
             setFormState(formState => ({
@@ -171,6 +196,7 @@ const ManageStudents = props => {
           data[i]["father_first_name"] +
           " " +
           data[i]["user"]["last_name"];
+        tempIndividualStudentData["first_name"] = data[i]["user"]["first_name"];
         tempIndividualStudentData["streamId"] = data[i]["stream"]["id"];
         tempIndividualStudentData["stream"] = data[i]["stream"]["name"];
         studentDataArray.push(tempIndividualStudentData);
@@ -181,24 +207,29 @@ const ManageStudents = props => {
     }
   };
 
-  // const editCell = (event) => {
-  //   getEditStudentData(event.target.getAttribute("userId"));
-  // };
+  const editCell = event => {
+    console.log("editcell", event.target);
+    setFormState(formState => ({
+      ...formState,
+      editedCollegeName: event.target.getAttribute("value")
+    }));
+    getEditStudentData(event.target.getAttribute("userId"));
+  };
 
-  // const getEditStudentData = (userId) => {
-  //   serviceProviders
-  //     .serviceProviderForGetOneRequest(USERS_URL, userId)
-  //     .then((res) => {
-  //       history.push({
-  //         pathname: routeConstants.MANAGE_EDIT_STUDENT,
-  //         editStudent: true,
-  //         dataForEdit: res.data.result,
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.log("erroredit student", error);
-  //     });
-  // };
+  const getEditStudentData = userId => {
+    serviceProviders
+      .serviceProviderForGetOneRequest(USERS_URL, userId)
+      .then(res => {
+        history.push({
+          pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
+          editStudent: true,
+          dataForEdit: res.data.result
+        });
+      })
+      .catch(error => {
+        console.log("erroredit student", error);
+      });
+  };
 
   const approveCell = event => {
     event.persist();
@@ -400,6 +431,74 @@ const ManageStudents = props => {
     formState.filterDataParameters[event.target.name] = event.target.value;
   };
 
+  const getStudentSelectedValue = (event, value) => {
+    if (value === null) {
+      getFilteredStudentDataValueInDropDown(null);
+    } else {
+      getFilteredStudentDataValueInDropDown(
+        value.first_name
+      ); /** value.title will give you name of the student */
+    }
+  };
+
+  const handleFilterChangeForStudentField = event => {
+    getFilteredStudentDataValueInDropDown(event.target.value);
+    event.persist();
+    // setRpcsFilter(event.target.value);
+  };
+
+  const getFilteredStudentDataValueInDropDown = async studentName => {
+    setIsLoading(true);
+    setValue({
+      first_name: studentName
+    });
+    if (studentName && studentName !== null && studentName !== "") {
+      formState.filterDataParameters[USER_FILTER] = studentName;
+      let params = {
+        [USER_FILTER]: studentName
+      };
+      if (
+        auth.getUserInfo().role.name === "College Admin" &&
+        auth.getUserInfo().college !== null &&
+        auth.getUserInfo().college.id !== null
+      ) {
+        const STUDENTS_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_COLLEGES +
+          "/" +
+          auth.getUserInfo().college.id +
+          "/" +
+          strapiConstants.STRAPI_STUDENTS;
+
+        serviceProviders
+          .serviceProviderForGetRequest(STUDENTS_URL, params)
+          .then(res => {
+            setIsLoading(false);
+            let tempData = [];
+            if (res.data.result.length !== 0) {
+              tempData = convertStudentData(res.data.result);
+            }
+            setFormState(formState => ({
+              ...formState,
+              studentNameFilterData: tempData,
+              isClearResetFilter: false
+            }));
+          })
+          .catch(error => {
+            console.log("errFilter", error);
+          });
+      }
+    } else {
+      delete formState.filterDataParameters[USER_FILTER];
+      setIsLoading(false);
+      setFormState(formState => ({
+        ...formState,
+        studentNameFilterData: [],
+        isClearResetFilter: false
+      }));
+    }
+  };
+
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
@@ -443,7 +542,9 @@ const ManageStudents = props => {
       isStateClearFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
-      checked: false
+      isDataLoading: true,
+      checked: false,
+      studentNameFilterData: []
     }));
     formState.filterDataParameters[USER_FILTER] = "";
     // formState.filterDataParameters[STREAM_FILTER] = "";
@@ -509,7 +610,8 @@ const ManageStudents = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -538,6 +640,16 @@ const ManageStudents = props => {
     });
     setSelectedRows(state.selectedRows);
   }, []);
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState(formState => ({
+        ...formState,
+        toggleCleared: false
+      }));
+    }, 2000);
+  };
 
   const blockMulUserById = () => {
     let arrayId = [];
@@ -628,7 +740,7 @@ const ManageStudents = props => {
                 id={cell.id}
                 value={cell.name}
                 userId={cell.userId}
-                // onClick={editCell}
+                onClick={editCell}
                 style={{ color: "green", fontSize: "21px" }}
               >
                 edit
@@ -694,14 +806,58 @@ const ManageStudents = props => {
           color="primary"
           disableElevation
           component={CustomRouterLink}
-          to={"/"}
+          to={routeConstants.ADD_STUDENT_FROM_COLLEGE_ADMIN}
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           {genericConstants.ADD_STUDENT_BUTTON_TEXT}
         </GreenButton>
       </Grid>
+      {/** Error/Success messages to be shown for student */}
+
       <Grid item xs={12} className={classes.formgrid}>
-        {/* //error success ManageStudents */}
+        {formState.fromeditCollege && formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              Student {formState.editedCollegeName} has been updated
+              successfully.
+            </Alert>
+          </Collapse>
+        ) : null}
+        {formState.fromeditCollege && !formState.isDataEdited ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              An error has occured while updating student. Kindly, try again.
+            </Alert>
+          </Collapse>
+        ) : null}
 
         {formState.fromDeleteModal &&
         formState.isDataDeleted &&
@@ -800,155 +956,187 @@ const ManageStudents = props => {
           </Collapse>
         ) : null}
       </Grid>
-
-      <Card>
-        <CardContent className={classes.Cardtheming}>
-          <Grid className={classes.filterOptions} container spacing={1}>
-            <Grid item>
-              <TextField
-                label={"Name"}
-                placeholder="Name"
-                variant="outlined"
-                name={USER_FILTER}
-                onChange={handleFilterChange}
-              />
-            </Grid>
-            <Grid item>
-              <Autocomplete
-                id="combo-box-demo"
-                name={STREAM_FILTER}
-                options={streams}
-                className={classes.autoCompleteField}
-                getOptionLabel={option => option.name}
-                // value={
-                //   formState.filterDataParameters
-                //     ? formState.filterDataParameters[STREAM_FILTER]
-                //     : ""
-                // }
-                value={
-                  formState.isClearResetFilter
-                    ? null
-                    : streams[
-                        streams.findIndex(function (item, i) {
-                          return (
-                            item.id ===
-                            formState.filterDataParameters[STREAM_FILTER]
-                          );
-                        })
-                      ] || null
-                }
-                onChange={(event, value) =>
-                  handleChangeAutoCompleteStream(STREAM_FILTER, event, value)
-                }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    label="Stream"
-                    className={classes.autoCompleteField}
-                    variant="outlined"
+      <Grid item xs={12} className={classes.formgrid}>
+        <Card>
+          <CardContent className={classes.Cardtheming}>
+            <Grid className={classes.filterOptions} container spacing={1}>
+              <Grid item>
+                <Autocomplete
+                  id="event-text-filter"
+                  freeSolo
+                  autoHighlight
+                  autoComplete
+                  loading={isLoading}
+                  options={formState.studentNameFilterData}
+                  includeInputInList
+                  getOptionLabel={option => {
+                    if (typeof option === "string") {
+                      return option;
+                    }
+                    if (option.inputValue) {
+                      return option.inputValue;
+                    }
+                    return option.first_name;
+                  }}
+                  renderOption={option => option.first_name}
+                  onChange={getStudentSelectedValue}
+                  value={formState.isClearResetFilter ? null : value}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Student Name"
+                      margin="normal"
+                      variant="outlined"
+                      placeholder="Search Students"
+                      className={classes.autoCompleteField}
+                      onChange={handleFilterChangeForStudentField}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <React.Fragment>
+                            {isLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </React.Fragment>
+                        )
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item className={classes.paddingDate}>
+                <Autocomplete
+                  id="combo-box-demo"
+                  name={STREAM_FILTER}
+                  options={streams}
+                  className={classes.autoCompleteField}
+                  getOptionLabel={option => option.name}
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : streams[
+                          streams.findIndex(function (item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STREAM_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
+                  onChange={(event, value) =>
+                    handleChangeAutoCompleteStream(STREAM_FILTER, event, value)
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Stream"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item className={classes.paddingDate}>
+                <FormGroup row>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formState.checked}
+                        onChange={handleCheckedChange}
+                        name={VERIFIEDBYCOLLEGE}
+                        color="primary"
+                      />
+                    }
+                    label="Awaiting For Approval"
                   />
-                )}
-              />
+                </FormGroup>
+              </Grid>
+              <Grid item className={classes.filterButtonsMargin}>
+                <YellowButton
+                  variant="contained"
+                  color="primary"
+                  disableElevation
+                  onClick={event => {
+                    event.persist();
+                    searchFilter();
+                  }}
+                >
+                  {genericConstants.SEARCH_BUTTON_TEXT}
+                </YellowButton>
+              </Grid>
+              <Grid item className={classes.filterButtonsMargin}>
+                <GrayButton
+                  variant="contained"
+                  color="primary"
+                  onClick={refreshPage}
+                  disableElevation
+                >
+                  {genericConstants.RESET_BUTTON_TEXT}
+                </GrayButton>
+              </Grid>
             </Grid>
-            <FormGroup row>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formState.checked}
-                    // value={
-                    //   formState.filterDataParameters
-                    //     ? formState.filterDataParameters[STREAM_FILTER]
-                    //     : ""
-                    // }
-                    onChange={handleCheckedChange}
-                    name={VERIFIEDBYCOLLEGE}
-                    color="primary"
-                  />
-                }
-                label="Awaiting For Approval"
-              />
-            </FormGroup>
-            <Grid item className={classes.filterButtonsMargin}>
-              <YellowButton
-                variant="contained"
-                color="primary"
-                disableElevation
-                onClick={event => {
-                  event.persist();
-                  searchFilter();
-                }}
-              >
-                {genericConstants.SEARCH_BUTTON_TEXT}
-              </YellowButton>
-            </Grid>
-            <Grid item className={classes.filterButtonsMargin}>
-              <GrayButton
-                variant="contained"
-                color="primary"
-                onClick={refreshPage}
-                disableElevation
-              >
-                {genericConstants.RESET_BUTTON_TEXT}
-              </GrayButton>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-      {/* table */}
+          </CardContent>
+        </Card>
+        {/* table */}
 
-      <Card className={classes.tabledata} variant="outlined">
-        {formState.student ? (
-          formState.student.length ? (
-            <Table
-              data={formState.student}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              // editEvent={editCell}
-              onSelectedRowsChange={handleRowSelected}
-              deleteEvent={deleteCell}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-            />
+        <Card className={classes.tabledata} variant="outlined">
+          {formState.student ? (
+            formState.student.length ? (
+              <Table
+                data={formState.student}
+                column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
+                editEvent={editCell}
+                onSelectedRowsChange={handleRowSelected}
+                deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
+              />
+            ) : (
+              <Spinner />
+            )
           ) : (
-            <Spinner />
-          )
-        ) : (
-          <div className={classes.noDataMargin}>
-            {genericConstants.NO_DATA_TO_SHOW_TEXT}
-          </div>
-        )}
+            <div className={classes.noDataMargin}>
+              {genericConstants.NO_DATA_TO_SHOW_TEXT}
+            </div>
+          )}
 
-        <DeleteStudents
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={
-            formState.isMultiDelete
-              ? formState.MultiDeleteID
-              : formState.dataToDelete["id"]
-          }
-          UserID={formState.MultiDeleteUserId}
-          modalClose={modalClose}
-          isMultiDelete={formState.isMultiDelete ? true : false}
-          dataToDelete={formState.dataToDelete}
-        />
+          <DeleteStudents
+            showModal={formState.showModalDelete}
+            closeModal={handleCloseDeleteModal}
+            id={
+              formState.isMultiDelete
+                ? formState.MultiDeleteID
+                : formState.dataToDelete["id"]
+            }
+            UserID={formState.MultiDeleteUserId}
+            modalClose={modalClose}
+            isMultiDelete={formState.isMultiDelete ? true : false}
+            dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
+          />
 
-        <ApprovedStudents
-          cellName={formState.cellName}
-          showModal={formState.showModalBlock}
-          closeModal={handleCloseBlockUnblockModal}
-          dataToBlockUnblock={formState.dataToBlockUnblock}
-          verifiedByCollege={formState.dataVerifiedByCollege}
-          blockUnblockEvent={isBlockUnblockCellCompleted}
-          isMultiBlock={formState.isMulBlocked ? true : false}
-          isMultiUnblock={formState.isMulUnBlocked ? true : false}
-          multiBlockCollegeIds={formState.MultiBlockUser}
-          modalClose={modalClose}
-        />
-      </Card>
+          <ApprovedStudents
+            cellName={formState.cellName}
+            showModal={formState.showModalBlock}
+            closeModal={handleCloseBlockUnblockModal}
+            dataToBlockUnblock={formState.dataToBlockUnblock}
+            verifiedByCollege={formState.dataVerifiedByCollege}
+            blockUnblockEvent={isBlockUnblockCellCompleted}
+            isMultiBlock={formState.isMulBlocked ? true : false}
+            isMultiUnblock={formState.isMulUnBlocked ? true : false}
+            multiBlockCollegeIds={formState.MultiBlockUser}
+            modalClose={modalClose}
+            clearSelectedRow={selectedRowCleared}
+          />
+        </Card>
+      </Grid>
     </Grid>
   );
 };

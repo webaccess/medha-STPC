@@ -3,7 +3,7 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress,
+  CircularProgress
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -21,13 +21,13 @@ const STUDENTS_URL =
 const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_ID = "UserName";
 
-const DeleteStudents = (props) => {
+const DeleteStudents = props => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
-    values: {},
+    values: {}
   });
 
   const handleCloseModal = (message = "") => {
@@ -36,12 +36,12 @@ const DeleteStudents = (props) => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0,
+      stateCounter: 0
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -50,8 +50,10 @@ const DeleteStudents = (props) => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     /** CALL Put FUNCTION */
+    props.clearSelectedRow(true);
+
     deleteStudentData();
     event.preventDefault();
   };
@@ -60,54 +62,56 @@ const DeleteStudents = (props) => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(STUDENTS_URL, props.id)
-        .then((res) => {
+        .then(res => {
           serviceProviders
             .serviceProviderForAllDeleteRequest(USERS_URL, props.UserID)
-            .then((res) => {
-              setFormState((formState) => ({
+            .then(res => {
+              setFormState(formState => ({
                 ...formState,
-                isValid: true,
+                isValid: true
               }));
 
               formState.isDeleteData = true;
-              handleCloseModal(
-                "Selected " + props.id.length + " students successfully deleted"
-              );
+              handleCloseModal("Students has been deleted successfully.");
             })
-            .catch((error) => {
+            .catch(error => {
               console.log("UserDeleteError", error);
             });
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "Error deleting selected " + props.id.length + " students"
+            "An error has occured while deleting students. Kindly, try again."
           );
         });
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(STUDENTS_URL, props.id)
-        .then((res) => {
+        .then(res => {
           serviceProviders
             .serviceProviderForDeleteRequest(
               USERS_URL,
               props.dataToDelete["userId"]
             )
-            .then((res) => {
+            .then(res => {
               formState.isDeleteData = true;
               handleCloseModal(
-                "Successfully deleted student " + props.dataToDelete["name"]
+                "Student " +
+                  props.dataToDelete["name"] +
+                  " has been deleted successfully."
               );
             })
-            .catch((error) => {
+            .catch(error => {
               console.log("studenterror", error);
             });
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
           handleCloseModal(
-            "Error in deleting student " + props.dataToDelete["name"]
+            "An error has occured while deleting student " +
+              props.dataToDelete["name"] +
+              ". Kindly, try again."
           );
         });
     }
@@ -124,7 +128,7 @@ const DeleteStudents = (props) => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500,
+        timeout: 500
       }}
     >
       <Fade in={props.showModal}>

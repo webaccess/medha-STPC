@@ -182,7 +182,7 @@ const AddStudentToRecruitmentDrive = props => {
               console.log("error", error);
             });
         })
-        .catch(error => {});
+        .catch(error => { });
     } else {
       history.push({
         pathname: routeConstants.MANAGE_EVENT
@@ -204,10 +204,10 @@ const AddStudentToRecruitmentDrive = props => {
           : "";
         individualStudentData["name"] = data[i]["user"]
           ? data[i]["user"]["first_name"] +
-            " " +
-            data[i]["father_first_name"] +
-            " " +
-            data[i]["user"]["last_name"]
+          " " +
+          data[i]["father_first_name"] +
+          " " +
+          data[i]["user"]["last_name"]
           : "";
         individualStudentData["stream"] = data[i]["stream"]
           ? data[i]["stream"]["name"]
@@ -364,7 +364,7 @@ const AddStudentToRecruitmentDrive = props => {
   };
 
   const addSingleStudentToRegistration = event => {
-    formState.regStudentName = event.target.value;
+    formState.regStudentName = event.target.getAttribute("value");
     setFormState(formState => ({
       ...formState,
       showRegisterModel: true,
@@ -574,11 +574,11 @@ const AddStudentToRecruitmentDrive = props => {
                 onChangePage={handlePageChange}
               />
             ) : (
-              <Spinner />
-            )
+                <Spinner />
+              )
           ) : (
-            <div className={classes.noDataMargin}>No data to show</div>
-          )}
+              <div className={classes.noDataMargin}>No data to show</div>
+            )}
         </Card>
       </Grid>
       {formState.isRegButtonClicked ? (
