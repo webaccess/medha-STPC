@@ -4,6 +4,8 @@ import * as strapiConstants from "../../constants/StrapiApiConstants";
 import { Auth as auth } from "../../components";
 import Spinner from "../../components/Spinner/Spinner.js";
 import GreenButton from "../../components/GreenButton/GreenButton.js";
+import Clock from "@material-ui/icons/AddAlarm";
+import { green, red } from "@material-ui/core/colors";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {
   Card,
@@ -11,7 +13,8 @@ import {
   Grid,
   Divider,
   Icon,
-  Typography
+  Typography,
+  IconButton
 } from "@material-ui/core";
 import ReactHtmlParser from "react-html-parser";
 import useStyles from "./ActivityDetailsStyle.js";
@@ -169,6 +172,20 @@ const ActivityDetails = props => {
     return formState.activityDetails["address"];
   };
 
+  const getRemainingDays = () => {
+    let currentDate = new Date();
+    let startDate = new Date(
+      formState.activityDetails["activity_batch"]["start_date_time"]
+    );
+    let remainingDays =
+      (startDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
+    console.log(remainingDays);
+    if (remainingDays >= 2.0) return parseInt(remainingDays) + " Days to go";
+    else if (remainingDays <= 2.0 && remainingDays >= 1) return "1 Day to go";
+    else if (remainingDays < 1.0 && remainingDays >= 0.0) return "Today";
+    else return 0;
+  };
+
   return (
     <Grid>
       {console.log(formState)}
@@ -195,10 +212,38 @@ const ActivityDetails = props => {
               <Grid item md={12} xs={12}>
                 {!formUtilities.checkEmpty(formState.activityDetails) ? (
                   <React.Fragment>
-                    <Grid item md={12} xs={12} className={classes.title}>
-                      <Typography variant="h4" gutterBottom>
-                        {formState.activityDetails["title"]}
-                      </Typography>
+                    <Grid container md={12}>
+                      <Grid item md={6} xs={12} className={classes.title}>
+                        <Typography variant="h4" gutterBottom>
+                          {formState.activityDetails["title"]}
+                        </Typography>
+                      </Grid>
+                      {auth.getUserInfo().role.name === "Student" ? (
+                        <Grid
+                          container
+                          md={6}
+                          justify="flex-end"
+                          alignItems="baseline"
+                          className={classes.CardHeader}
+                        >
+                          <Grid item xs={10} style={{ textAlign: "end" }}>
+                            <IconButton aria-label="is student registered">
+                              <Clock style={{ color: green[500] }} />
+                            </IconButton>
+                          </Grid>
+
+                          <Grid item xs={2}>
+                            <Typography
+                              className={classes.header}
+                              style={{
+                                color: green[500]
+                              }}
+                            >
+                              {getRemainingDays()}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      ) : null}
                     </Grid>
                     <Divider />
                     <Grid
@@ -236,7 +281,7 @@ const ActivityDetails = props => {
                         </Grid>
                         <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
-                            <b>Date :-</b>
+                            <b>Date </b>
                           </Grid>
                           <Grid item md={9} xs={9}>
                             {getDate()}
@@ -246,7 +291,7 @@ const ActivityDetails = props => {
                         auth.getUserInfo().role.name === "College Admin" ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
-                              <b>Time :-</b>
+                              <b>Time </b>
                             </Grid>
                             <Grid item md={9} xs={9}>
                               {getTime()}
@@ -255,7 +300,7 @@ const ActivityDetails = props => {
                         ) : null}
                         <Grid container className={classes.defaultMargin}>
                           <Grid item md={3} xs={3}>
-                            <b>Venue :-</b>
+                            <b>Venue </b>
                           </Grid>
                           <Grid item md={9} xs={9}>
                             {getVenue()}
@@ -264,7 +309,7 @@ const ActivityDetails = props => {
                         {auth.getUserInfo().role.name === "Student" ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
-                              <b>Batch :-</b>
+                              <b>Batch </b>
                             </Grid>
                             <Grid item md={9} xs={9}>
                               {getBatch()}
@@ -274,7 +319,7 @@ const ActivityDetails = props => {
                         {auth.getUserInfo().role.name === "Student" ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
-                              <b>Timing :-</b>
+                              <b>Timing </b>
                             </Grid>
                             <Grid item md={9} xs={9}>
                               {getBatchTime()}

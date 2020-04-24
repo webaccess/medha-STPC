@@ -109,6 +109,7 @@ const AddEditActivity = props => {
     console.log(formState.values.hasOwnProperty("college"));
     console.log(stream);
     console.log(formState.values["college"]);
+
     if (
       stream !== null &&
       stream !== undefined &&
@@ -470,6 +471,12 @@ const AddEditActivity = props => {
         delete formState.errors[eventName];
       }
     } else {
+      if (eventName === "college") {
+        delete formState.values["stream"];
+        formState.stream = [];
+        setstreamlist([]);
+      }
+      console.log(formState);
       delete formState.values[eventName];
     }
   };

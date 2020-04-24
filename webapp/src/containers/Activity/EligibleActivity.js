@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import * as serviceProviders from "../../api/Axios";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import { green } from "@material-ui/core/colors";
+import Clock from "@material-ui/icons/AddAlarm";
+import { green, red } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
 
 import {
@@ -51,8 +52,6 @@ const EligibleActivity = props => {
   useEffect(() => {
     getactivityDetails();
   }, []);
-
-  console.log("aurhUser", formState.authUserRegistering);
 
   async function getactivityDetails() {
     let paramsForStudent = null;
@@ -162,29 +161,18 @@ const EligibleActivity = props => {
       dataForView: data
     });
   };
-
+  const getRemainingDays = data => {
+    let currentDate = new Date();
+    let startDate = new Date(data["activity_batch"]["start_date_time"]);
+    let remainingDays =
+      (startDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
+    console.log(remainingDays);
+    if (remainingDays >= 2.0) return parseInt(remainingDays) + " Days to go";
+    else if (remainingDays <= 2.0 && remainingDays >= 1) return "1 Day to go";
+    else if (remainingDays < 1.0 && remainingDays >= 0.0) return "Today";
+    else return 0;
+  };
   /** Show event registration model */
-  const registerUserForEvent = (event, id, title) => {
-    setFormState(formState => ({
-      ...formState,
-      showRegisterModel: true,
-      registerUserId: id
-    }));
-  };
-
-  const isRegistrationCompleted = status => {
-    formState.isStudentRegister = status;
-  };
-
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showRegisterModel: false
-    }));
-    // if (formState.isDataDeleted) {
-    //   getactivityDetails();
-    // }
-  };
 
   const handleCloseBlockModal = () => {
     /** This restores all the data when we close the modal */
@@ -198,7 +186,7 @@ const EligibleActivity = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Eligible Activity
+          Upcoming Activity
         </Typography>
       </Grid>
       <Grid item xs={12}>
@@ -216,7 +204,22 @@ const EligibleActivity = props => {
                       alignItems="center"
                       className={classes.CardHeaderFooter}
                     >
-                      <div className={classes.successTickDiv}></div>
+                      <Grid item xs={2}>
+                        <IconButton aria-label="is student registered">
+                          <Clock style={{ color: green[500] }} />
+                        </IconButton>
+                      </Grid>
+
+                      <Grid item xs={10}>
+                        <Typography
+                          className={classes.header}
+                          style={{
+                            color: green[500]
+                          }}
+                        >
+                          {getRemainingDays(data)}
+                        </Typography>
+                      </Grid>
                       {/* {data["isRegistered"] ? (
                         <React.Fragment>
                           <Grid item xs={2}>

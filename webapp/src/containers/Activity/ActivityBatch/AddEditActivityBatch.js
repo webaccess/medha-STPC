@@ -531,7 +531,7 @@ const AddEditActivityBatches = props => {
                 id={cell.id}
                 value={cell.name}
                 onClick={() => handleVerifyMultipleStudents([cell.id])}
-                style={{ color: "red" }}
+                style={{ color: "grey" }}
               />
             </div>
           )}
