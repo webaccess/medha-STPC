@@ -10,10 +10,9 @@ import {
   IconButton,
   InputAdornment,
   OutlinedInput,
-  MuiThemeProvider,
   FormHelperText
 } from "@material-ui/core";
-import { Auth as auth } from "../../../../components";
+import { Auth as auth, InlineDatePicker } from "../../../../components";
 import useStyles from "../../../ContainerStyles/AddEditPageStyles";
 import * as routeConstants from "../../../../constants/RouteConstants";
 import * as _ from "lodash";
@@ -21,11 +20,6 @@ import * as genericConstants from "../../../../constants/GenericConstants.js";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
 import GrayButton from "../../../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../../../components/YellowButton/YellowButton.js";
 import * as strapiApiConstants from "../../../../constants/StrapiApiConstants.js";
@@ -34,7 +28,6 @@ import * as databaseUtilities from "../../../../Utilities/StrapiUtilities.js";
 import registrationSchema from "../AddEditStudentSchema";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../../../api/Axios.js";
-import customTheme from "./CustomDateTimePickerStyles";
 import LoaderContext from "../../../../context/LoaderContext";
 
 const STATES_URL =
@@ -666,30 +659,62 @@ const AddEditStudentForCollegeAdmin = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12} className={classes.DateMargin}>
-                    <MuiThemeProvider theme={customTheme}>
-                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                          format="dd/MM/yyyy"
-                          margin="normal"
-                          id="date-picker-inline"
-                          label="Date of Birth"
-                          value={selectedDate}
-                          onChange={date => setSelectedDate(date)}
-                          error={hasError("dateofbirth")}
+                  <Grid item md={6} xs={12}>
+                    <InlineDatePicker
+                      // variant="inline"
+                      format="dd/MM/yyyy"
+                      margin="normal"
+                      id="date-picker-inline"
+                      label="Date of Birth"
+                      value={selectedDate}
+                      onChange={date => setSelectedDate(date)}
+                      error={hasError("dateofbirth")}
+                      helperText={
+                        hasError("dateofbirth")
+                          ? formState.errors["dateofbirth"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      KeyboardButtonProps={{
+                        "aria-label": "change date"
+                      }}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="gender-filter"
+                      className={classes.root}
+                      options={genderlist}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("gender", event, value);
+                      }}
+                      value={
+                        genderlist[
+                          genderlist.findIndex(function (item, i) {
+                            return item.id === formState.values.gender;
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError("gender")}
+                          label="Gender"
+                          required
+                          variant="outlined"
+                          name="tester"
                           helperText={
-                            hasError("dateofbirth")
-                              ? formState.errors["dateofbirth"].map(error => {
+                            hasError("gender")
+                              ? formState.errors["gender"].map(error => {
                                   return error + " ";
                                 })
                               : null
                           }
-                          KeyboardButtonProps={{
-                            "aria-label": "change date"
-                          }}
                         />
-                      </MuiPickersUtilsProvider>
-                    </MuiThemeProvider>
+                      )}
+                    />
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
@@ -780,42 +805,7 @@ const AddEditStudentForCollegeAdmin = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="gender-filter"
-                      className={classes.root}
-                      options={genderlist}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete("gender", event, value);
-                      }}
-                      value={
-                        genderlist[
-                          genderlist.findIndex(function (item, i) {
-                            return item.id === formState.values.gender;
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError("gender")}
-                          label="Gender"
-                          required
-                          variant="outlined"
-                          name="tester"
-                          helperText={
-                            hasError("gender")
-                              ? formState.errors["gender"].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={12} xs={12}>
                     <Autocomplete
                       id="college-filter"
                       className={classes.root}
