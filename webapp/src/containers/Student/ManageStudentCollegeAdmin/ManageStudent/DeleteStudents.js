@@ -7,19 +7,18 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import * as serviceProviders from "../../api/Axios";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
-import * as genericConstants from "../../constants/GenericConstants";
+import * as serviceProviders from "../../../../api/Axios";
+import * as strapiConstants from "../../../../constants/StrapiApiConstants";
+import * as genericConstants from "../../../../constants/GenericConstants";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { YellowButton, GrayButton } from "../../components";
-import useStyles from "../ContainerStyles/ModalPopUpStyles";
+import { YellowButton, GrayButton } from "../../../../components";
+import useStyles from "../../../ContainerStyles/ModalPopUpStyles";
 
 const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
 const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
-const USER_ID = "UserName";
 
 const DeleteStudents = props => {
   const [open, setOpen] = React.useState(false);
@@ -31,8 +30,6 @@ const DeleteStudents = props => {
   });
 
   const handleCloseModal = (message = "") => {
-    /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
-    to ensure that only string value is passed to message variable */
     if (typeof message !== "string") {
       message = "";
     }
@@ -58,9 +55,10 @@ const DeleteStudents = props => {
     event.preventDefault();
   };
 
-  const deleteStudentData = () => {
+  const deleteStudentData = async () => {
+    setOpen(true);
     if (props.isMultiDelete) {
-      serviceProviders
+      await serviceProviders
         .serviceProviderForAllDeleteRequest(STUDENTS_URL, props.id)
         .then(res => {
           serviceProviders
@@ -70,23 +68,27 @@ const DeleteStudents = props => {
                 ...formState,
                 isValid: true
               }));
-
+              setOpen(false);
               formState.isDeleteData = true;
-              handleCloseModal("Students has been deleted successfully.");
+              handleCloseModal(
+                "The selected students have been deleted successfully."
+              );
             })
             .catch(error => {
+              setOpen(false);
               console.log("UserDeleteError", error);
             });
         })
         .catch(error => {
+          setOpen(false);
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
-            "An error has occured while deleting students. Kindly, try again."
+            "An error has occured while deleting the selected students. Kindly, try again."
           );
         });
     } else {
-      serviceProviders
+      await serviceProviders
         .serviceProviderForDeleteRequest(STUDENTS_URL, props.id)
         .then(res => {
           serviceProviders
@@ -96,20 +98,23 @@ const DeleteStudents = props => {
             )
             .then(res => {
               formState.isDeleteData = true;
+              setOpen(false);
               handleCloseModal(
                 "Student " +
                   props.dataToDelete["name"] +
-                  " has been deleted successfully."
+                  " has been successfully deleted"
               );
             })
             .catch(error => {
+              setOpen(false);
               console.log("studenterror", error);
             });
         })
         .catch(error => {
+          setOpen(false);
           console.log("error", error);
           handleCloseModal(
-            "An error has occured while deleting student " +
+            "An error has occured while deleting the student " +
               props.dataToDelete["name"] +
               ". Kindly, try again."
           );
@@ -152,10 +157,8 @@ const DeleteStudents = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiDelete
-                    ? "Are you sure you want to delete " +
-                      props.id.length +
-                      " students ?"
-                    : "  Are you sure you want to delete student " +
+                    ? "Are you sure you want to delete the selected students?"
+                    : "Are you sure you want to delete student " +
                       props.dataToDelete["name"] +
                       " ?"}
                 </Grid>

@@ -1,0 +1,247 @@
+const RegistrationSchema = {
+  firstname: {
+    label: "First Name",
+    id: "firstname",
+    autoComplete: "firstname",
+    required: true,
+    placeholder: "firstname",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "First Name is required"
+      }
+    }
+  },
+  lastname: {
+    label: "Last Name",
+    id: "lastname",
+    autoComplete: "lastname",
+    required: true,
+    placeholder: "lastname",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Last Name is required"
+      }
+    }
+  },
+  fatherFirstName: {
+    label: "First Name",
+    id: "firstname",
+    autoComplete: "firstname",
+    required: true,
+    placeholder: "firstname",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Father's First Name is required"
+      }
+    }
+  },
+  fatherLastName: {
+    label: "Last Name",
+    id: "lastname",
+    autoComplete: "lastname",
+    required: true,
+    placeholder: "lastname",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: " Father's Last Name is required"
+      }
+    }
+  },
+  address: {
+    label: "Address",
+    id: "address",
+    autoComplete: "address",
+    required: true,
+    placeholder: "address",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Address is required"
+      }
+    }
+  },
+  state: {
+    label: "State",
+    id: "state",
+    autoComplete: "state",
+    required: false,
+    placeholder: "state",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  district: {
+    label: "District",
+    id: "district",
+    autoComplete: "district",
+    required: false,
+    placeholder: "district",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  contact: {
+    label: "Contact",
+    id: "contact",
+    autoComplete: "contact",
+    required: true,
+    placeholder: "contact",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Contact Number is required"
+      },
+      validateMobileNumber: {
+        value: "true",
+        message: "Not an Contact Number"
+      }
+    }
+  },
+  gender: {
+    label: "Gender",
+    id: "gender",
+    autoComplete: "gender",
+    required: true,
+    placeholder: "gender",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Gender is required"
+      }
+    }
+  },
+  physicallyHandicapped: {
+    label: "Physically Handicapped",
+    id: "physicallyHandicapped",
+    autoComplete: "physicallyHandicapped",
+    required: false,
+    placeholder: "physicallyHandicapped",
+    autoFocus: true,
+    type: "checkbox",
+    validations: {}
+  },
+  college: {
+    label: "College",
+    id: "college",
+    autoComplete: "college",
+    required: true,
+    placeholder: "college",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "College is required"
+      }
+    }
+  },
+  stream: {
+    label: "Stream",
+    id: "stream",
+    autoComplete: "stream",
+    required: true,
+    placeholder: "stream",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Stream is required"
+      }
+    }
+  },
+  rollnumber: {
+    label: "Roll Number",
+    id: "rollnumber",
+    autoComplete: "rollnumber",
+    required: true,
+    placeholder: "rollnumber",
+    autoFocus: true,
+    type: "integer",
+    validations: {
+      required: {
+        value: "true",
+        message: "Email is required"
+      }
+    }
+  },
+  email: {
+    label: "Email",
+    id: "email",
+    autoComplete: "email",
+    required: true,
+    placeholder: "email",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Email is required"
+      },
+      validateEmailRegex: {
+        value: "true",
+        message: "Invalid Email"
+      }
+    }
+  },
+
+  username: {
+    label: "User Name",
+    id: "username",
+    autoComplete: "username",
+    required: true,
+    placeholder: "username",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "User Name is required"
+      }
+    }
+  },
+  password: {
+    label: "Password",
+    id: "password",
+    autoComplete: "password",
+    required: true,
+    placeholder: "password",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Password is required"
+      }
+    }
+  },
+  otp: {
+    label: "OTP",
+    id: "otp",
+    autoComplete: "otp",
+    required: true,
+    placeholder: "otp",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  }
+};
+export default RegistrationSchema;

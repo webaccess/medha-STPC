@@ -718,7 +718,7 @@ const StudentList = props => {
               </Grid>
               <Grid item className={classes.paddingDate}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="streams-filter"
                   name={STREAM_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}

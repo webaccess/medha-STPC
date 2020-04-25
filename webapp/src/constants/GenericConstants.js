@@ -75,7 +75,7 @@ export const VIEW_ACADEMIC_HISTORY_TEXT = "Academic History";
 
 /**Manage Students */
 export const MANAGE_STUDENTS = "Manage Student";
-export const DELETE_SELECTED_STUDENT = "Delete Selected user";
+export const DELETE_SELECTED_STUDENT = "Delete Selected Student";
 export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 
 /**Activity */

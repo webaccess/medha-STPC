@@ -7,6 +7,7 @@ const EditGridIcon = props => {
       <i
         className="material-icons"
         id={props.id}
+        userId={props.userId}
         value={props.value}
         onClick={props.onClick}
         style={{ color: "green", fontSize: "20px" }}

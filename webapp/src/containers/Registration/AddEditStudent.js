@@ -411,7 +411,9 @@ const AddEditStudent = props => {
   const getDistrict = () => {
     axios
       .get(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DISTRICTS
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_DISTRICTS +
+          "?pageSize=-1"
       )
       .then(res => {
         //   const sanitzedOptions = res.data.map(district => {
