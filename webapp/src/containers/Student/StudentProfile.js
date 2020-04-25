@@ -208,11 +208,19 @@ const StudentProfile = props => {
   }
 
   const editData = () => {
-    history.push({
-      pathname: routeConstants.EDIT_PROFILE,
-      editStudent: true,
-      dataForEdit: formState.details
-    });
+    if (auth.getUserInfo().role.name === "Student") {
+      history.push({
+        pathname: routeConstants.EDIT_PROFILE,
+        editStudent: true,
+        dataForEdit: formState.details
+      });
+    } else if (auth.getUserInfo().role.name === "College Admin") {
+      history.push({
+        pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
+        dataForEdit: formState.details,
+        editStudent: true
+      });
+    }
   };
 
   const handleClickCancel = event => {
@@ -229,7 +237,7 @@ const StudentProfile = props => {
         eventId: formState.eventId,
         eventTitle: formState.eventTitle
       });
-    } else if (formState.fromManageStudentList){
+    } else if (formState.fromManageStudentList) {
       history.push({
         pathname: routeConstants.MANAGE_STUDENT,
         eventId: formState.eventId,
@@ -467,7 +475,8 @@ const StudentProfile = props => {
                         </CardContent>
 
                         <CardActions className={classes.btnspace}>
-                          {auth.getUserInfo().role.name === "Student" ? (
+                          {auth.getUserInfo().role.name === "Student" ||
+                          auth.getUserInfo().role.name === "College Admin" ? (
                             <YellowButton
                               type="submit"
                               color="primary"

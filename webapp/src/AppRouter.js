@@ -78,6 +78,7 @@ import AddDocument from "./containers/Student/Document/AddEditDocument";
 import ManageStudents from "./containers/Student/ManageStudentCollegeAdmin/ManageStudent/ManageStudents";
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
+import AddEditStudentForCollegeAdmin from "./containers/Student/ManageStudentCollegeAdmin/AddEditStudentForCollegeAdmin/AddEditStudentForCollegeAdmin";
 
 /** Activity */
 import ViewActivity from "./containers/Activity/ViewActivity.js";
@@ -421,13 +422,13 @@ const AppRouter = props => {
           path={routeConstants.VIEW_STUDENT_PROFILE}
         />
         <CollegeAdminRoute
-          component={AddEditStudent}
+          component={AddEditStudentForCollegeAdmin}
           exact
           layout={Layout}
           path={routeConstants.ADD_STUDENT_FROM_COLLEGE_ADMIN}
         />
         <CollegeAdminRoute
-          component={AddEditStudent}
+          component={AddEditStudentForCollegeAdmin}
           exact
           layout={Layout}
           path={routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN}

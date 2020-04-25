@@ -113,21 +113,6 @@ const RegistrationSchema = {
       }
     }
   },
-  // dateofbirth: {
-  //   label: "Date Of Birth",
-  //   id: "dateofbirth",
-  //   autoComplete: "dateofbirth",
-  //   required: true,
-  //   placeholder: "Date of Birth",
-  //   autoFocus: true,
-  //   type: "text",
-  //   validations: {
-  //     required: {
-  //       value: "true",
-  //       message: "Date of Birth is required"
-  //     }
-  //   }
-  // },
   gender: {
     label: "Gender",
     id: "gender",
@@ -172,22 +157,17 @@ const RegistrationSchema = {
     label: "Stream",
     id: "stream",
     autoComplete: "stream",
-    required: false,
+    required: true,
     placeholder: "stream",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "Stream is required"
+      }
+    }
   },
-  // currentacademicyear: {
-  //   label: "Current Academic Year",
-  //   id: "currentacademicyear",
-  //   autoComplete: "currentacademicyear",
-  //   required: true,
-  //   placeholder: "currentacademicyear",
-  //   autoFocus: true,
-  //   type: "text",
-  //   validations: {}
-  // },
   rollnumber: {
     label: "Roll Number",
     id: "rollnumber",

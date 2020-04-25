@@ -429,7 +429,9 @@ const AddEditStudent = props => {
   const getDistrict = () => {
     axios
       .get(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DISTRICTS
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_DISTRICTS +
+          "?pageSize=-1"
       )
       .then(res => {
         //   const sanitzedOptions = res.data.map(district => {
@@ -649,7 +651,7 @@ const AddEditStudent = props => {
               </Grid>
               <Grid item md={3} xs={12}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="state-filter"
                   className={classes.root}
                   options={statelist}
                   getOptionLabel={option => option.name}
@@ -658,7 +660,7 @@ const AddEditStudent = props => {
                   }}
                   value={
                     statelist[
-                      statelist.findIndex(function(item, i) {
+                      statelist.findIndex(function (item, i) {
                         return item.id === formState.values.state;
                       })
                     ] || null
@@ -683,7 +685,7 @@ const AddEditStudent = props => {
               </Grid>
               <Grid item md={3} xs={12}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="district-filter"
                   className={classes.root}
                   options={districtlist}
                   getOptionLabel={option => option.name}
@@ -692,7 +694,7 @@ const AddEditStudent = props => {
                   }}
                   value={
                     districtlist[
-                      districtlist.findIndex(function(item, i) {
+                      districtlist.findIndex(function (item, i) {
                         return item.id === formState.values.district;
                       })
                     ] || null
@@ -763,7 +765,7 @@ const AddEditStudent = props => {
               </Grid>
               <Grid item md={3} xs={12}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="gender-filter"
                   className={classes.root}
                   options={genderlist}
                   getOptionLabel={option => option.name}
@@ -772,7 +774,7 @@ const AddEditStudent = props => {
                   }}
                   value={
                     genderlist[
-                      genderlist.findIndex(function(item, i) {
+                      genderlist.findIndex(function (item, i) {
                         return item.id === formState.values.gender;
                       })
                     ] || null
@@ -818,7 +820,7 @@ const AddEditStudent = props => {
               </Grid>
               <Grid item md={3} xs={12}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="college-filter"
                   className={classes.root}
                   options={collegelist}
                   disabled={formState.editStudent ? true : false}
@@ -828,7 +830,7 @@ const AddEditStudent = props => {
                   }}
                   value={
                     collegelist[
-                      collegelist.findIndex(function(item, i) {
+                      collegelist.findIndex(function (item, i) {
                         return item.id === formState.values.college;
                       })
                     ] || null
@@ -854,7 +856,7 @@ const AddEditStudent = props => {
               </Grid>
               <Grid item md={3} xs={12}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="stream-filter"
                   className={classes.root}
                   options={streamlist}
                   disabled={formState.editStudent ? true : false}
@@ -864,7 +866,7 @@ const AddEditStudent = props => {
                   }}
                   value={
                     streamlist[
-                      streamlist.findIndex(function(item, i) {
+                      streamlist.findIndex(function (item, i) {
                         return item.id === formState.values.stream;
                       })
                     ] || null
@@ -978,7 +980,7 @@ const AddEditStudent = props => {
               )}
               <Grid item md={3} xs={12}>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="physicallyhandicaped-filter"
                   className={classes.root}
                   options={physicallyHandicappedlist}
                   getOptionLabel={option => option.name}
@@ -991,7 +993,7 @@ const AddEditStudent = props => {
                   }}
                   value={
                     physicallyHandicappedlist[
-                      physicallyHandicappedlist.findIndex(function(item, i) {
+                      physicallyHandicappedlist.findIndex(function (item, i) {
                         return (
                           item.id === formState.values.physicallyHandicapped
                         );
