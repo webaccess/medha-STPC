@@ -136,13 +136,13 @@ const ApprovedStudents = props => {
           formState.isDataToApproveUnapprove = false;
           if (props.verifiedByCollege) {
             handleCloseModal(
-              "An error has occured while unapproving the student" +
+              "An error has occured while unapproving the student " +
                 props.studentName +
                 ". Kindly, try again."
             );
           } else {
             handleCloseModal(
-              "An error has occured while approving the student" +
+              "An error has occured while approving the student " +
                 props.studentName +
                 ". Kindly, try again."
             );
