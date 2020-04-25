@@ -914,6 +914,7 @@ const ManageStudents = props => {
                   id="stream-filter"
                   name={STREAM_FILTER}
                   options={streams}
+                  placeholder="Search by streams"
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   value={
