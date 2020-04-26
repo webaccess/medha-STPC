@@ -9,7 +9,7 @@ import {
   Collapse,
   IconButton,
   Typography,
-  CircularProgress,
+  CircularProgress
 } from "@material-ui/core";
 import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -24,7 +24,7 @@ import {
   EditGridIcon,
   ViewStudentGridIcon,
   DeleteGridIcon,
-  InlineDatePicker,
+  InlineDatePicker
 } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
@@ -33,25 +33,20 @@ import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import auth from "../../../components/Auth";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import LoaderContext from "../../../context/LoaderContext";
-import SetIndexContext from "../../../context/SetIndexContext";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
-const END_DATE_FILTER = "end_date_time_lte";
+const END_DATE_FILTER = "end_date_time_lt";
 const SORT_FIELD_KEY = "_sort";
 
-const ManageEvent = (props) => {
+const ManageEvent = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const { setLoaderStatus } = useContext(LoaderContext);
-  /** Value to set for event filter */
-  const [value, setValue] = React.useState(null);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -109,7 +104,7 @@ const ManageEvent = (props) => {
       : false,
     addedEventName: props["location"]["addedEventData"]
       ? props["location"]["addedEventData"]["title"]
-      : "",
+      : ""
   });
 
   useEffect(() => {
@@ -118,7 +113,7 @@ const ManageEvent = (props) => {
     } else {
       auth.clearAppStorage();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL,
+        pathname: routeConstants.SIGN_IN_URL
       });
     }
   }, []);
@@ -131,9 +126,9 @@ const ManageEvent = (props) => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "start_date_time:asc",
+        [SORT_FIELD_KEY]: "start_date_time:asc"
       };
-      Object.keys(paramsForevents).map((key) => {
+      Object.keys(paramsForevents).map(key => {
         defaultParams[key] = paramsForevents[key];
       });
       paramsForevents = defaultParams;
@@ -141,12 +136,12 @@ const ManageEvent = (props) => {
       paramsForevents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "start_date_time:asc",
+        [SORT_FIELD_KEY]: "start_date_time:asc"
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
     if (auth.getUserInfo().role !== null) {
       if (auth.getUserInfo().role.name === "College Admin") {
@@ -161,12 +156,12 @@ const ManageEvent = (props) => {
             EVENTS_FOR_COLLEGE_ADMIN,
             paramsForevents
           )
-          .then((res) => {
+          .then(res => {
             formState.dataToShow = [];
             formState.tempData = [];
             let eventData = [];
             eventData = convertEventData(res.data.result);
-            setFormState((formState) => ({
+            setFormState(formState => ({
               ...formState,
               events: res.data.result,
               pageSize: res.data.pageSize,
@@ -175,21 +170,21 @@ const ManageEvent = (props) => {
               pageCount: res.data.pageCount,
               dataToShow: eventData,
               tempData: eventData,
-              isDataLoading: false,
+              isDataLoading: false
             }));
           })
-          .catch((error) => {
+          .catch(error => {
             console.log("error", error);
           });
       } else if (auth.getUserInfo().role.name === "Medha Admin") {
         await serviceProviders
           .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
-          .then((res) => {
+          .then(res => {
             formState.dataToShow = [];
             formState.tempData = [];
             let eventData = [];
             eventData = convertEventData(res.data.result);
-            setFormState((formState) => ({
+            setFormState(formState => ({
               ...formState,
               events: res.data.result,
               pageSize: res.data.pageSize,
@@ -198,22 +193,22 @@ const ManageEvent = (props) => {
               pageCount: res.data.pageCount,
               dataToShow: eventData,
               tempData: eventData,
-              isDataLoading: false,
+              isDataLoading: false
             }));
           })
-          .catch((error) => {
+          .catch(error => {
             console.log("error", error);
           });
       }
     } else {
       auth.clearAppStorage();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL,
+        pathname: routeConstants.SIGN_IN_URL
       });
     }
   };
 
-  const convertEventData = (data) => {
+  const convertEventData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -222,6 +217,48 @@ const ManageEvent = (props) => {
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["start_date_time"] = startDate.toDateString();
+        eventIndividualData["IsEditable"] = false;
+        if (auth.getUserInfo().role.name === "College Admin") {
+          let state = false;
+          if (
+            data[i]["state"] &&
+            data[i]["state"]["id"] &&
+            auth.getUserInfo().state.id === data[i]["state"]["id"]
+          ) {
+            state = true;
+          }
+          let rpc = false;
+          if (
+            data[i]["rpc"] &&
+            data[i]["rpc"]["id"] &&
+            auth.getUserInfo().rpc.id === data[i]["rpc"]["id"]
+          ) {
+            rpc = true;
+          }
+          let zone = false;
+          if (
+            data[i]["zone"] &&
+            data[i]["zone"]["id"] &&
+            auth.getUserInfo().zone.id === data[i]["zone"]["id"]
+          ) {
+            zone = true;
+          }
+          let colleges = false;
+          if (
+            data[i]["colleges"] &&
+            data[i]["colleges"].length === 1 &&
+            data[i]["colleges"][0]["id"] === auth.getUserInfo().college.id
+          ) {
+            colleges = true;
+          }
+          if (state && rpc && zone && colleges) {
+            eventIndividualData["IsEditable"] = true;
+          } else {
+            eventIndividualData["IsEditable"] = false;
+          }
+        } else if (auth.getUserInfo().role.name === "Medha Admin") {
+          eventIndividualData["IsEditable"] = true;
+        }
         x.push(eventIndividualData);
       }
       return x;
@@ -242,7 +279,7 @@ const ManageEvent = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getEventData(formState.pageSize, page);
     } else {
@@ -254,17 +291,17 @@ const ManageEvent = (props) => {
     }
   };
 
-  const handleRowSelected = useCallback((state) => {
+  const handleRowSelected = useCallback(state => {
     if (state.selectedCount >= 1) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         selectedRowFilter: false,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        selectedRowFilter: true,
+        selectedRowFilter: true
       }));
     }
     setSelectedRows(state.selectedRows);
@@ -275,14 +312,14 @@ const ManageEvent = (props) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
       isMultiDelete: false,
       fromAddEvent: false,
-      messageToShow: statusToShow,
+      messageToShow: statusToShow
     }));
     if (status) {
       getEventData(formState.pageSize, 1);
@@ -294,20 +331,20 @@ const ManageEvent = (props) => {
   // };
 
   const modalClose = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       showModalBlock: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
   };
 
-  const deleteCell = (event) => {
+  const deleteCell = event => {
     setLoaderStatus(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       dataToDelete: {
         id: event.target.id,
-        name: event.target.getAttribute("value"),
+        name: event.target.getAttribute("value")
       },
       showEditModal: false,
       showModalDelete: true,
@@ -316,7 +353,7 @@ const ManageEvent = (props) => {
       fromeditCollege: false,
       fromBlockModal: false,
       fromAddEvent: false,
-      fromeditEvent: false,
+      fromeditEvent: false
     }));
     setLoaderStatus(false);
   };
@@ -325,70 +362,70 @@ const ManageEvent = (props) => {
   const deleteMulUserById = () => {
     let arrayId = [];
 
-    selectedRows.forEach((d) => {
+    selectedRows.forEach(d => {
       arrayId.push(d.id);
     });
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
       isMultiDelete: true,
       MultiDeleteID: arrayId,
       fromAddEvent: false,
-      fromeditEvent: false,
+      fromeditEvent: false
     }));
   };
 
   /** View Event */
-  const viewCell = (event) => {
+  const viewCell = event => {
     history.push({
       pathname: routeConstants.VIEW_EVENT,
-      dataForView: event.target.id,
+      dataForView: event.target.id
     });
   };
 
   /** View Student List */
-  const viewStudentList = (event) => {
+  const viewStudentList = event => {
     setLoaderStatus(true);
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
       eventId: event.target.id,
-      eventTitle: event.target.getAttribute("value"),
+      eventTitle: event.target.getAttribute("value")
     });
     setLoaderStatus(false);
   };
 
   /** Edit -------------------------------------------------------*/
-  const getDataForEdit = async (id) => {
+  const getDataForEdit = async id => {
     setLoaderStatus(true);
     await serviceProviders
       .serviceProviderForGetOneRequest(EVENT_URL, id)
-      .then((res) => {
+      .then(res => {
         let editData = res.data.result;
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_EVENT,
           editEvent: true,
-          dataForEdit: editData,
+          dataForEdit: editData
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error");
       });
     setLoaderStatus(false);
   };
 
-  const editCell = (event) => {
+  const editCell = event => {
     getDataForEdit(event.target.id);
   };
 
-  const selectedRowCleared = (data) => {
+  const selectedRowCleared = data => {
     formState.toggleCleared = data;
     setTimeout(() => {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     }, 2000);
   };
@@ -397,17 +434,22 @@ const ManageEvent = (props) => {
 
   /** Table Data */
   const column = [
-    { name: "Event", sortable: true, selector: "title" },
+    { name: "Name", sortable: true, selector: "title" },
     { name: "Date", sortable: true, selector: "start_date_time" },
     {
       name: "Actions",
-      cell: (cell) => (
+      cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
           </div>
           <div className={classes.PaddingActionButton}>
-            <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
+            <EditGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={editCell}
+              disabled={!cell.IsEditable}
+            />
           </div>
           <div className={classes.PaddingActionButton}>
             <ViewStudentGridIcon
@@ -421,6 +463,7 @@ const ManageEvent = (props) => {
               id={cell.id}
               value={cell.title}
               onClick={deleteCell}
+              disabled={!cell.IsEditable}
             />
           </div>
         </div>
@@ -428,9 +471,9 @@ const ManageEvent = (props) => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%",
-      },
-    },
+        maxWidth: "18%"
+      }
+    }
   ];
 
   /** Used for restoring data */
@@ -442,7 +485,7 @@ const ManageEvent = (props) => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
@@ -453,7 +496,7 @@ const ManageEvent = (props) => {
       texttvalue: "",
       startDate: null,
       endDate: null,
-      eventFilterData: [],
+      eventFilterData: []
     }));
 
     restoreData();
@@ -461,37 +504,43 @@ const ManageEvent = (props) => {
 
   /** Handle Start Date filter change */
   const handleStartDateChange = (START_DATE_FILTER, event) => {
-    let startDate = moment(event).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    let startDate = moment(event).format("YYYY-MM-DDT00:00:00.000Z");
     if (startDate === "Invalid date") {
       startDate = null;
     }
-    formState.filterDataParameters[START_DATE_FILTER] = startDate;
-    setFormState((formState) => ({
+    formState.filterDataParameters[START_DATE_FILTER] = new Date(
+      startDate
+    ).toISOString();
+    setFormState(formState => ({
       ...formState,
-      startDate: event,
+      startDate: event
     }));
   };
 
   /** Handle End Date filter change */
   const handleEndDateChange = (END_DATE_FILTER, event) => {
-    let endDate = moment(event).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    let endDate = moment(event)
+      .add(1, "days")
+      .format("YYYY-MM-DDT00:00:00.000Z");
     if (endDate === "Invalid date") {
       endDate = null;
     }
-    formState.filterDataParameters[END_DATE_FILTER] = endDate;
-    setFormState((formState) => ({
+    formState.filterDataParameters[END_DATE_FILTER] = new Date(
+      endDate
+    ).toISOString();
+    setFormState(formState => ({
       ...formState,
-      endDate: event,
+      endDate: event
     }));
   };
 
-  const handleFilterChangeForEventField = (event) => {
-    setFormState((formState) => ({
+  const handleFilterChangeForEventField = event => {
+    setFormState(formState => ({
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [EVENT_FILTER]: event.target.value,
-      },
+        [EVENT_FILTER]: event.target.value
+      }
     }));
     event.persist();
   };
@@ -505,7 +554,6 @@ const ManageEvent = (props) => {
       await getEventData(perPage, page);
     }
   };
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -676,11 +724,11 @@ const ManageEvent = (props) => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label="Event Name"
+                  label="Name"
                   margin="normal"
                   variant="outlined"
                   value={formState.filterDataParameters[EVENT_FILTER] || ""}
-                  placeholder="Search Events"
+                  placeholder="Name"
                   className={classes.autoCompleteField}
                   onChange={handleFilterChangeForEventField}
                 />
@@ -689,9 +737,10 @@ const ManageEvent = (props) => {
                 <InlineDatePicker
                   id="startDate"
                   label="Start Date"
+                  placeholder="Start Date"
                   value={formState.startDate}
                   name={START_DATE_FILTER}
-                  onChange={(event) =>
+                  onChange={event =>
                     handleStartDateChange(START_DATE_FILTER, event)
                   }
                 />
@@ -700,9 +749,10 @@ const ManageEvent = (props) => {
                 <InlineDatePicker
                   id="endDate"
                   label="End Date"
+                  placeholder="End Date"
                   value={formState.endDate}
                   name={END_DATE_FILTER}
-                  onChange={(event) =>
+                  onChange={event =>
                     handleEndDateChange(END_DATE_FILTER, event)
                   }
                 />
@@ -712,7 +762,7 @@ const ManageEvent = (props) => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={(event) => {
+                  onClick={event => {
                     event.persist();
                     searchFilter();
                   }}
@@ -741,7 +791,6 @@ const ManageEvent = (props) => {
                 column={column}
                 onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
-                defaultSortField="start_date_time"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}

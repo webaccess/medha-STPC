@@ -31,7 +31,6 @@ import {
   Typography,
   Collapse,
   IconButton,
-  CircularProgress,
   Tooltip
 } from "@material-ui/core";
 import auth from "../../../../components/Auth";
@@ -887,7 +886,7 @@ const ManageStudents = props => {
                   margin="normal"
                   variant="outlined"
                   value={formState.filterDataParameters[USER_FILTER] || ""}
-                  placeholder="Search by students name"
+                  placeholder="Name"
                   className={classes.autoCompleteField}
                   onChange={handleFilterChangeForStudentField}
                 />
@@ -918,7 +917,7 @@ const ManageStudents = props => {
                     <TextField
                       {...params}
                       label="Stream"
-                      placeholder="Search by streams"
+                      placeholder="Stream"
                       className={classes.autoCompleteField}
                       variant="outlined"
                     />
@@ -937,7 +936,7 @@ const ManageStudents = props => {
                       label="Education Year"
                       variant="outlined"
                       name="education-year"
-                      placeholder="Search by education year"
+                      placeholder="Education Year"
                       className={classes.autoCompleteField}
                     />
                   )}
