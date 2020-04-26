@@ -32,3 +32,4 @@ export { default as AddStudentIcon } from "./AddStudentIcon";
 export { default as ApproveUnapprove } from "./ApproveUnapprove";
 export { default as Breadcrumbs } from "./Breadcrumbs";
 export { default as AlertMessage } from "./AlertMessage";
+export { default as StickyFooter } from "./StickyFooter";

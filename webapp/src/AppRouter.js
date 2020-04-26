@@ -20,12 +20,13 @@ import {
   EditEducation,
   RouteWithTabLayout,
   EditAcademicHistoryRoute,
-  EditActivityBatchRoute
+  EditActivityBatchRoute,
 } from "./authroute";
 
 /** General */
 import Dashboard from "./containers/Dashboard/Dashboard";
 import Layout from "./hoc/Layout/Layout";
+import ChangePassword from "./containers/AuthPage/ChangePassword/ChangePassword";
 
 /** College routes */
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
@@ -89,7 +90,7 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 
-const AppRouter = props => {
+const AppRouter = (props) => {
   return (
     <div>
       <Switch>
@@ -117,6 +118,15 @@ const AppRouter = props => {
         />
         <Route path={routeConstants.LOGOUT_URL} component={Logout} exact />
         <Registered path={routeConstants.REGISTERED} layout={Layout} exact />
+
+        {/** Change Password*/}
+        <RouteWithLayout
+          component={ChangePassword}
+          exact
+          layout={Layout}
+          path={routeConstants.CHANGE_PASSWORD}
+        />
+
         {/**Student Registration route */}
         <RegistrationRoute
           path={routeConstants.NEW_REGISTRATION_URL}

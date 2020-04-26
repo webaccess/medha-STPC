@@ -20,6 +20,10 @@ export const UNBLOCK_BUTTON_TEXT = "Unblock";
 export const HIRE_BUTTON_TEXT = "Hire";
 export const DEHIRE_BUTTON_TEXT = "Dehire";
 
+/**Change Password
+ */
+export const CHANGE_PASSWORD = "Change Password";
+
 /**Student
  */
 export const STUDENT_REGISTRATION = "Student Registration";
@@ -106,7 +110,7 @@ export const QUALIFICATIONS = [
   { id: 2, value: "HSC" },
   { id: 3, value: "BSc" },
   { id: 4, value: "MSc" },
-  { id: 5, value: "BE" }
+  { id: 5, value: "BE" },
 ];
 
 export const EDUCATIONANDPERCENTAGE = "Education and Percentage";
@@ -115,12 +119,12 @@ export const EDUCATIONS = [
   { id: 1, value: "First" },
   { id: 2, value: "Second" },
   { id: 3, value: "Third" },
-  { id: 4, value: "Fourth" }
+  { id: 4, value: "Fourth" },
 ];
 
 export const EDUCATIONYEARLIST = [
   { name: "First", id: "First" },
   { name: "Second", id: "Second" },
   { name: "Third", id: "Third" },
-  { name: "Fourth", id: "Fourth" }
+  { name: "Fourth", id: "Fourth" },
 ];
