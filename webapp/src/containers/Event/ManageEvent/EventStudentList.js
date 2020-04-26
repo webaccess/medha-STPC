@@ -23,7 +23,8 @@ import {
   GrayButton,
   Table,
   ThumbIcon,
-  Alert
+  Alert,
+  HowToReg
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -82,6 +83,7 @@ const StudentList = props => {
     studentName: "",
     hireStudent: "",
     fromHiredModal: false,
+    hiredDehireMessage: "",
 
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -89,8 +91,17 @@ const StudentList = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+
+    /** Attaindance */
+    markAttaindance: "",
+    dataToMarkAttaindance: {},
+    isPresent: false,
+    isAbsent: false,
+    showModalAttaindance: false
   });
+
+  console.log("Message", formState.message);
 
   useEffect(() => {
     getStudentList(10, 1);
@@ -264,14 +275,19 @@ const StudentList = props => {
     }));
   };
 
-  const handleCloseHireModal = () => {
+  const handleCloseHireModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
+    //restoreData();
+    setOpen(true);
     setFormState(formState => ({
       ...formState,
-      showModalHire: false
+      isStudentHired: status,
+      showModalHire: false,
+      fromHiredModal: true,
+      message: statusToShow
     }));
-    if (formState.isStudentHired) {
-      restoreData();
+    if (status) {
+      getStudentList(formState.pageSize, 1);
     }
   };
 
@@ -279,10 +295,13 @@ const StudentList = props => {
     status,
     fromHiredModal,
     isHired,
-    isUnHired
+    isUnHired,
+    message
   ) => {
-    formState.isStudentHired = status;
-    formState.fromHiredModal = fromHiredModal;
+    // console.log("message", message);
+    // formState.isStudentHired = status;
+    // formState.fromHiredModal = fromHiredModal;
+    // formState.hiredDehireMessage = message;
   };
 
   const hiredCell = event => {
@@ -332,6 +351,62 @@ const StudentList = props => {
         isHired: false,
         isUnHired: true,
         showModalHire: true,
+        studentName: studentName
+      }));
+    }
+    setLoaderStatus(false);
+  };
+
+  const handleAttaindance = event => {
+    setLoaderStatus(true);
+    setFormState(formState => ({
+      ...formState,
+      markAttaindance: event.target.getAttribute("value")
+    }));
+    markStudentAttaindance(event.target.id);
+  };
+
+  const markStudentAttaindance = async id => {
+    let paramsForHire = {
+      "student.id": id,
+      "event.id": formState.eventId
+    };
+    serviceProvider
+      .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
+      .then(res => {
+        let registerData = res.data.result[0];
+        let regUserID = registerData.id;
+        console.log("attaindance", registerData);
+        if (registerData.attendance_verified) {
+          attaindanceCellData(regUserID, false, "");
+          console.log("present");
+        } else {
+          attaindanceCellData(regUserID, true, "");
+          console.log("absent");
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
+  const attaindanceCellData = (id, isPresent = false, studentName) => {
+    if (isPresent === true) {
+      setFormState(formState => ({
+        ...formState,
+        dataToMarkAttaindance: id,
+        isPresent: true,
+        isAbsent: false,
+        showModalAttaindance: true,
+        studentName: studentName
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        dataToMarkAttaindance: id,
+        isPresent: false,
+        isAbsent: true,
+        showModalAttaindance: true,
         studentName: studentName
       }));
     }
@@ -432,38 +507,6 @@ const StudentList = props => {
     }
     return data;
   };
-  /** Table Data */
-  const column = [
-    {
-      name: "Students",
-      sortable: true,
-      cell: row => <CustomLink row={row} />
-    },
-    { name: "Stream", sortable: true, selector: "stream" },
-    { name: "Academic Year", sortable: true, selector: "educations" },
-    { name: "Mobile", sortable: true, selector: "mobile" },
-
-    {
-      name: "Actions",
-      cell: cell => (
-        <div className={classes.DisplayFlex}>
-          <div className={classes.PaddingFirstActionButton}>
-            <ThumbIcon
-              id={cell.id}
-              value={cell.name}
-              onClick={hiredCell}
-              style={cell.hired}
-            />
-          </div>
-        </div>
-      ),
-      width: "18%",
-      cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
-      }
-    }
-  ];
 
   /** Used for restoring data */
   const restoreData = () => {
@@ -581,6 +624,46 @@ const StudentList = props => {
     }
     return data;
   };
+  /** Table Data */
+  const column = [
+    {
+      name: "Students",
+      sortable: true,
+      cell: row => <CustomLink row={row} />
+    },
+    { name: "Stream", sortable: true, selector: "stream" },
+    { name: "Academic Year", sortable: true, selector: "educations" },
+    { name: "Mobile", sortable: true, selector: "mobile" },
+
+    {
+      name: "Actions",
+      cell: cell => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <HowToReg
+              id={cell.id}
+              value={cell.name}
+              onClick={handleAttaindance}
+              //style={cell.hired}
+            />
+          </div>
+          <div className={classes.PaddingFirstActionButton}>
+            <ThumbIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={hiredCell}
+              style={cell.hired}
+            />
+          </div>
+        </div>
+      ),
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
+    }
+  ];
 
   return (
     <Grid>
@@ -634,9 +717,7 @@ const StudentList = props => {
               </IconButton>
             }
           >
-            {formState.isHired
-              ? "Student hired successfully"
-              : "Student DeHired successfully"}
+            {formState.message}
           </Alert>
         </Collapse>
       ) : null}
@@ -730,7 +811,7 @@ const StudentList = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function (item, i) {
+                          streams.findIndex(function(item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]

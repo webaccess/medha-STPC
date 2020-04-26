@@ -307,25 +307,7 @@ const ViewCollege = props => {
                     )}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}>
-                  {formState.collegeDetails.blocked ? (
-                    <FormControl component="fieldset">
-                      <ReadOnlyTextField
-                        id="Block"
-                        label={Block}
-                        defaultValue="Yes"
-                      />
-                    </FormControl>
-                  ) : (
-                    <FormControl component="fieldset">
-                      <ReadOnlyTextField
-                        id="Blocked"
-                        label={Block}
-                        defaultValue="No"
-                      />
-                    </FormControl>
-                  )}
-                </Grid>
+                <Grid item md={6} xs={12}></Grid>
               </Grid>
             </Grid>
             <Divider className={classes.divider} />

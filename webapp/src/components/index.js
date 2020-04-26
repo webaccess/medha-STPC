@@ -29,3 +29,4 @@ export { default as ThumbIcon } from "./ThumbGridIcon";
 export { default as InlineDatePicker } from "./InlineDatePicker";
 export { default as DownloadIcon } from "./DownloadIcon";
 export { default as AddStudentIcon } from "./AddStudentIcon";
+export { default as HowToReg } from "./HowToReg";

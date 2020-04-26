@@ -29,8 +29,11 @@ const HireStudent = props => {
     values: {}
   });
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (message = "") => {
     setOpen(false);
+    if (typeof message !== "string") {
+      message = "";
+    }
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -39,12 +42,28 @@ const HireStudent = props => {
       stateCounter: 0
     }));
 
+    // if (formState.isStudentHired) {
+    //   props.hiredSuccessfully(
+    //     true,
+    //     true,
+    //     props.isHired,
+    //     props.isUnHired,
+
+    //   );
+    // } else {
+    //   props.hiredSuccessfully(
+    //     false,
+    //     true,
+    //     props.isHired,
+    //     props.isUnHired,
+
+    //   );
+    // }
     if (formState.isStudentHired) {
-      props.hiredSuccessfully(true, true, props.isHired, props.isUnHired);
+      props.closeHireModal(true, message);
     } else {
-      props.hiredSuccessfully(false, true, props.isHired, props.isUnHired);
+      props.closeHireModal(false, message);
     }
-    props.closeHireModal();
   };
 
   const handleSubmit = event => {
@@ -70,12 +89,21 @@ const HireStudent = props => {
       .serviceProviderForPutRequest(REGISTRATION_URL, props.id, body)
       .then(res => {
         formState.isStudentHired = true;
+        if (props.isHired) {
+          handleCloseModal(
+            "The Student " + props.studentName + " has been marked as hired."
+          );
+        } else {
+          handleCloseModal(
+            "The Student " + props.studentName + " has been marked as dehired."
+          );
+        }
         handleCloseModal();
       })
       .catch(error => {
         console.log("error---", error);
         formState.isStudentHired = false;
-        handleCloseModal();
+        handleCloseModal("error");
       });
   };
 
@@ -116,9 +144,9 @@ const HireStudent = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isHired ? (
-                    <p>Are you sure you want Hire {props.studentName}?</p>
+                    <p>Are you sure you want to Hire {props.studentName}?</p>
                   ) : (
-                    <p>Are you sure you want Dehire {props.studentName}?</p>
+                    <p>Are you sure you want to Dehire {props.studentName}?</p>
                   )}
                 </Grid>
               </Grid>
