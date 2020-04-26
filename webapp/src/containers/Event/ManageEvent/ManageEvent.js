@@ -9,7 +9,7 @@ import {
   Collapse,
   IconButton,
   Typography,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -24,7 +24,7 @@ import {
   EditGridIcon,
   ViewStudentGridIcon,
   DeleteGridIcon,
-  InlineDatePicker
+  InlineDatePicker,
 } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
@@ -43,7 +43,7 @@ const START_DATE_FILTER = "start_date_time_gte";
 const END_DATE_FILTER = "end_date_time_lte";
 const SORT_FIELD_KEY = "_sort";
 
-const ManageEvent = props => {
+const ManageEvent = (props) => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
@@ -109,7 +109,7 @@ const ManageEvent = props => {
       : false,
     addedEventName: props["location"]["addedEventData"]
       ? props["location"]["addedEventData"]["title"]
-      : ""
+      : "",
   });
 
   useEffect(() => {
@@ -118,7 +118,7 @@ const ManageEvent = props => {
     } else {
       auth.clearAppStorage();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.SIGN_IN_URL,
       });
     }
   }, []);
@@ -131,9 +131,9 @@ const ManageEvent = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "start_date_time:asc"
+        [SORT_FIELD_KEY]: "start_date_time:asc",
       };
-      Object.keys(paramsForevents).map(key => {
+      Object.keys(paramsForevents).map((key) => {
         defaultParams[key] = paramsForevents[key];
       });
       paramsForevents = defaultParams;
@@ -141,12 +141,12 @@ const ManageEvent = props => {
       paramsForevents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "start_date_time:asc"
+        [SORT_FIELD_KEY]: "start_date_time:asc",
       };
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
     if (auth.getUserInfo().role !== null) {
       if (auth.getUserInfo().role.name === "College Admin") {
@@ -161,12 +161,12 @@ const ManageEvent = props => {
             EVENTS_FOR_COLLEGE_ADMIN,
             paramsForevents
           )
-          .then(res => {
+          .then((res) => {
             formState.dataToShow = [];
             formState.tempData = [];
             let eventData = [];
             eventData = convertEventData(res.data.result);
-            setFormState(formState => ({
+            setFormState((formState) => ({
               ...formState,
               events: res.data.result,
               pageSize: res.data.pageSize,
@@ -175,21 +175,21 @@ const ManageEvent = props => {
               pageCount: res.data.pageCount,
               dataToShow: eventData,
               tempData: eventData,
-              isDataLoading: false
+              isDataLoading: false,
             }));
           })
-          .catch(error => {
+          .catch((error) => {
             console.log("error", error);
           });
       } else if (auth.getUserInfo().role.name === "Medha Admin") {
         await serviceProviders
           .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
-          .then(res => {
+          .then((res) => {
             formState.dataToShow = [];
             formState.tempData = [];
             let eventData = [];
             eventData = convertEventData(res.data.result);
-            setFormState(formState => ({
+            setFormState((formState) => ({
               ...formState,
               events: res.data.result,
               pageSize: res.data.pageSize,
@@ -198,22 +198,22 @@ const ManageEvent = props => {
               pageCount: res.data.pageCount,
               dataToShow: eventData,
               tempData: eventData,
-              isDataLoading: false
+              isDataLoading: false,
             }));
           })
-          .catch(error => {
+          .catch((error) => {
             console.log("error", error);
           });
       }
     } else {
       auth.clearAppStorage();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.SIGN_IN_URL,
       });
     }
   };
 
-  const convertEventData = data => {
+  const convertEventData = (data) => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -242,7 +242,7 @@ const ManageEvent = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getEventData(formState.pageSize, page);
     } else {
@@ -254,17 +254,17 @@ const ManageEvent = props => {
     }
   };
 
-  const handleRowSelected = useCallback(state => {
+  const handleRowSelected = useCallback((state) => {
     if (state.selectedCount >= 1) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         selectedRowFilter: false,
-        toggleCleared: false
+        toggleCleared: false,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        selectedRowFilter: true
+        selectedRowFilter: true,
       }));
     }
     setSelectedRows(state.selectedRows);
@@ -275,14 +275,14 @@ const ManageEvent = props => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
       isMultiDelete: false,
       fromAddEvent: false,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
     }));
     if (status) {
       getEventData(formState.pageSize, 1);
@@ -294,20 +294,20 @@ const ManageEvent = props => {
   // };
 
   const modalClose = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showModalBlock: false,
-      showModalDelete: false
+      showModalDelete: false,
     }));
   };
 
-  const deleteCell = event => {
+  const deleteCell = (event) => {
     setLoaderStatus(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       dataToDelete: {
         id: event.target.id,
-        name: event.target.getAttribute("value")
+        name: event.target.getAttribute("value"),
       },
       showEditModal: false,
       showModalDelete: true,
@@ -316,7 +316,7 @@ const ManageEvent = props => {
       fromeditCollege: false,
       fromBlockModal: false,
       fromAddEvent: false,
-      fromeditEvent: false
+      fromeditEvent: false,
     }));
     setLoaderStatus(false);
   };
@@ -325,70 +325,70 @@ const ManageEvent = props => {
   const deleteMulUserById = () => {
     let arrayId = [];
 
-    selectedRows.forEach(d => {
+    selectedRows.forEach((d) => {
       arrayId.push(d.id);
     });
 
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
       isMultiDelete: true,
       MultiDeleteID: arrayId,
       fromAddEvent: false,
-      fromeditEvent: false
+      fromeditEvent: false,
     }));
   };
 
   /** View Event */
-  const viewCell = event => {
+  const viewCell = (event) => {
     history.push({
       pathname: routeConstants.VIEW_EVENT,
-      dataForView: event.target.id
+      dataForView: event.target.id,
     });
   };
 
   /** View Student List */
-  const viewStudentList = event => {
+  const viewStudentList = (event) => {
     setLoaderStatus(true);
     history.push({
       pathname: routeConstants.EVENT_STUDENT_LIST,
       eventId: event.target.id,
-      eventTitle: event.target.getAttribute("value")
+      eventTitle: event.target.getAttribute("value"),
     });
     setLoaderStatus(false);
   };
 
   /** Edit -------------------------------------------------------*/
-  const getDataForEdit = async id => {
+  const getDataForEdit = async (id) => {
     setLoaderStatus(true);
     await serviceProviders
       .serviceProviderForGetOneRequest(EVENT_URL, id)
-      .then(res => {
+      .then((res) => {
         let editData = res.data.result;
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_EVENT,
           editEvent: true,
-          dataForEdit: editData
+          dataForEdit: editData,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error");
       });
     setLoaderStatus(false);
   };
 
-  const editCell = event => {
+  const editCell = (event) => {
     getDataForEdit(event.target.id);
   };
 
-  const selectedRowCleared = data => {
+  const selectedRowCleared = (data) => {
     formState.toggleCleared = data;
     setTimeout(() => {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        toggleCleared: false
+        toggleCleared: false,
       }));
     }, 2000);
   };
@@ -401,7 +401,7 @@ const ManageEvent = props => {
     { name: "Date", sortable: true, selector: "start_date_time" },
     {
       name: "Actions",
-      cell: cell => (
+      cell: (cell) => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
@@ -428,9 +428,9 @@ const ManageEvent = props => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%"
-      }
-    }
+        maxWidth: "18%",
+      },
+    },
   ];
 
   /** Used for restoring data */
@@ -442,7 +442,7 @@ const ManageEvent = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
@@ -453,7 +453,7 @@ const ManageEvent = props => {
       texttvalue: "",
       startDate: null,
       endDate: null,
-      eventFilterData: []
+      eventFilterData: [],
     }));
 
     restoreData();
@@ -466,9 +466,9 @@ const ManageEvent = props => {
       startDate = null;
     }
     formState.filterDataParameters[START_DATE_FILTER] = startDate;
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      startDate: event
+      startDate: event,
     }));
   };
 
@@ -479,75 +479,21 @@ const ManageEvent = props => {
       endDate = null;
     }
     formState.filterDataParameters[END_DATE_FILTER] = endDate;
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      endDate: event
+      endDate: event,
     }));
   };
 
-  const handleFilterChangeForEventField = event => {
-    getFilteredEventDataValueInDropDown(event.target.value);
+  const handleFilterChangeForEventField = (event) => {
+    setFormState((formState) => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [EVENT_FILTER]: event.target.value,
+      },
+    }));
     event.persist();
-    // setRpcsFilter(event.target.value);
-  };
-
-  const getFilteredEventDataValueInDropDown = eventValue => {
-    setIsLoading(true);
-    setValue({
-      title: eventValue
-    });
-    if (eventValue && eventValue !== null && eventValue !== "") {
-      formState.filterDataParameters[EVENT_FILTER] = eventValue;
-      let params = {
-        [EVENT_FILTER]: eventValue
-      };
-      let filterEvents =
-        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-      if (auth.getUserInfo().role.name === "College Admin") {
-        filterEvents =
-          strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_COLLEGES +
-          "/" +
-          auth.getUserInfo().college.id +
-          "/event";
-      }
-      serviceProviders
-        .serviceProviderForGetAsyncRequest(filterEvents, params)
-        .then(res => {
-          if (res.data.result.length !== 0) {
-          }
-          setIsLoading(false);
-          setFormState(formState => ({
-            ...formState,
-            eventFilterData: res.data.result,
-            isClearResetFilter: false,
-            isEventCleared: eventValue
-          }));
-        })
-        .catch(error => {
-          setIsLoading(false);
-          console.log("error", error);
-        });
-    } else {
-      delete formState.filterDataParameters[EVENT_FILTER];
-      setIsLoading(false);
-      setFormState(formState => ({
-        ...formState,
-        eventFilterData: [],
-        isClearResetFilter: false,
-        isEventCleared: ""
-      }));
-    }
-  };
-
-  const getEventSelectedValue = (event, value) => {
-    if (value === null) {
-      getFilteredEventDataValueInDropDown(null);
-    } else {
-      getFilteredEventDataValueInDropDown(
-        value.title
-      ); /** value.title will give you name of the event */
-    }
   };
 
   /** Search filter is called when we select filters and click on search button */
@@ -729,48 +675,14 @@ const ManageEvent = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="event-text-filter"
-                  freeSolo
-                  autoHighlight
-                  autoComplete
-                  loading={isLoading}
-                  options={formState.eventFilterData}
-                  includeInputInList
-                  getOptionLabel={option => {
-                    if (typeof option === "string") {
-                      return option;
-                    }
-                    if (option.inputValue) {
-                      return option.inputValue;
-                    }
-                    return option.title;
-                  }}
-                  renderOption={option => option.title}
-                  onChange={getEventSelectedValue}
-                  value={formState.isClearResetFilter ? null : value}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Event Name"
-                      margin="normal"
-                      variant="outlined"
-                      placeholder="Search Event's"
-                      className={classes.autoCompleteField}
-                      onChange={handleFilterChangeForEventField}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <React.Fragment>
-                            {isLoading ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : null}
-                            {params.InputProps.endAdornment}
-                          </React.Fragment>
-                        )
-                      }}
-                    />
-                  )}
+                <TextField
+                  label="Event Name"
+                  margin="normal"
+                  variant="outlined"
+                  value={formState.filterDataParameters[EVENT_FILTER] || ""}
+                  placeholder="Search Events"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForEventField}
                 />
               </Grid>
               <Grid item className={classes.paddingDate}>
@@ -779,7 +691,7 @@ const ManageEvent = props => {
                   label="Start Date"
                   value={formState.startDate}
                   name={START_DATE_FILTER}
-                  onChange={event =>
+                  onChange={(event) =>
                     handleStartDateChange(START_DATE_FILTER, event)
                   }
                 />
@@ -790,7 +702,7 @@ const ManageEvent = props => {
                   label="End Date"
                   value={formState.endDate}
                   name={END_DATE_FILTER}
-                  onChange={event =>
+                  onChange={(event) =>
                     handleEndDateChange(END_DATE_FILTER, event)
                   }
                 />
@@ -800,7 +712,7 @@ const ManageEvent = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     searchFilter();
                   }}

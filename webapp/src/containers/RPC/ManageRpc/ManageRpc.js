@@ -7,7 +7,7 @@ import {
   Typography,
   Collapse,
   IconButton,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
@@ -18,10 +18,10 @@ import {
   YellowButton,
   Alert,
   EditGridIcon,
-  DeleteGridIcon
+  DeleteGridIcon,
 } from "../../../components";
 import Autocomplete, {
-  createFilterOptions
+  createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import DeleteRpc from "./DeleteRpc";
 import * as formUtilities from "../../../Utilities/FormUtilities";
@@ -41,7 +41,7 @@ const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
 const SORT_FIELD_KEY = "_sort";
 
-const ViewRpc = props => {
+const ViewRpc = (props) => {
   /** Value to set for Rpc filter */
   const [value, setValue] = React.useState(null);
 
@@ -49,6 +49,7 @@ const ViewRpc = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [rpcsFilter, setRpcsFilter] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -112,21 +113,21 @@ const ViewRpc = props => {
 
     /**Filter RPC's */
     rpcsFilterValueToStore: "",
-    rpcsFilterData: []
+    rpcsFilterData: [],
   });
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: -1
+      pageSize: -1,
     };
     serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
-      .then(res => {
-        setFormState(formState => ({
+      .then((res) => {
+        setFormState((formState) => ({
           ...formState,
-          rpcFilter: res.data.result
+          rpcFilter: res.data.result,
         }));
       })
-      .catch(error => [console.log("error", error)]);
+      .catch((error) => [console.log("error", error)]);
 
     getRpcStateData(10, 1);
   }, []);
@@ -136,9 +137,9 @@ const ViewRpc = props => {
       formState.rpcsFilterValueToStore === null ||
       formState.rpcsFilterValueToStore === ""
     ) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        rpcsFilterData: []
+        rpcsFilterData: [],
       }));
     }
   }, [formState.rpcsFilterValueToStore]);
@@ -148,9 +149,9 @@ const ViewRpc = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
+        [SORT_FIELD_KEY]: "name:asc",
       };
-      Object.keys(paramsForRpc).map(key => {
+      Object.keys(paramsForRpc).map((key) => {
         defaultParams[key] = paramsForRpc[key];
       });
       paramsForRpc = defaultParams;
@@ -158,17 +159,17 @@ const ViewRpc = props => {
       paramsForRpc = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
+        [SORT_FIELD_KEY]: "name:asc",
       };
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForRpc)
-      .then(res => {
+      .then((res) => {
         let currentPage = res.data.page;
         let totalRows = res.data.rowCount;
         let currentPageSize = res.data.pageSize;
@@ -177,7 +178,7 @@ const ViewRpc = props => {
         formState.tempData = [];
         let temp = [];
         temp = convertRpcData(res.data.result);
-        setFormState(formState => ({
+        setFormState((formState) => ({
           ...formState,
           rpcs: res.data.result,
           dataToShow: temp,
@@ -186,15 +187,15 @@ const ViewRpc = props => {
           totalRows: totalRows,
           page: currentPage,
           pageCount: pageCount,
-          isDataLoading: false
+          isDataLoading: false,
         }));
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("rpcerror", error);
       });
   };
 
-  const convertRpcData = data => {
+  const convertRpcData = (data) => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -222,7 +223,7 @@ const ViewRpc = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getRpcStateData(formState.pageSize, page);
     } else {
@@ -246,7 +247,8 @@ const ViewRpc = props => {
 
   /**---------------------------clear filter------------------------ */
   const clearFilter = () => {
-    setFormState(formState => ({
+    setRpcsFilter([""]);
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       isClearResetFilter: true,
@@ -257,7 +259,7 @@ const ViewRpc = props => {
       /** Clear filter */
       rpcsFilterValueToStore: null,
       /**Clear filters */
-      rpcsFilterData: []
+      rpcsFilterData: [],
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -268,26 +270,26 @@ const ViewRpc = props => {
   };
 
   /**-----------edit ----------- */
-  const editCell = event => {
+  const editCell = (event) => {
     getDataForEdit(event.target.id);
   };
 
-  const getDataForEdit = async id => {
+  const getDataForEdit = async (id) => {
     setLoaderStatus(true);
     let paramsForRpcs = {
-      id: id
+      id: id,
     };
     await serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForRpcs)
-      .then(res => {
+      .then((res) => {
         let editData = res.data.result[0];
         history.push({
           pathname: routeConstants.EDIT_RPC,
           editRpc: true,
-          dataForEdit: editData
+          dataForEdit: editData,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
     setLoaderStatus(false);
@@ -295,13 +297,13 @@ const ViewRpc = props => {
 
   /** ---------Delete -------- */
 
-  const deleteCell = event => {
+  const deleteCell = (event) => {
     setLoaderStatus(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       dataToDelete: {
         id: event.target.id,
-        name: event.target.getAttribute("value")
+        name: event.target.getAttribute("value"),
       },
       showModalDelete: true,
       isDataDeleted: false,
@@ -309,7 +311,7 @@ const ViewRpc = props => {
       messageToShow: "",
       fromAddRpc: false,
       fromEditRpc: false,
-      isMultiDelete: false
+      isMultiDelete: false,
     }));
     setLoaderStatus(false);
   };
@@ -319,13 +321,13 @@ const ViewRpc = props => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
       messageToShow: statusToShow,
-      isMultiDelete: false
+      isMultiDelete: false,
     }));
     if (status) {
       getRpcStateData(formState.pageSize, 1);
@@ -333,9 +335,9 @@ const ViewRpc = props => {
   };
 
   const modalClose = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      showModalDelete: false
+      showModalDelete: false,
     }));
   };
 
@@ -344,11 +346,11 @@ const ViewRpc = props => {
   const deleteMulUserById = () => {
     let arrayId = [];
 
-    selectedRows.forEach(d => {
+    selectedRows.forEach((d) => {
       arrayId.push(d.id);
     });
 
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
@@ -357,95 +359,63 @@ const ViewRpc = props => {
       isDataDeleted: false,
       fromDeleteModal: false,
       fromAddRpc: false,
-      fromEditRpc: false
+      fromEditRpc: false,
     }));
   };
 
   /** On select multiple rows */
-  const handleRowSelected = useCallback(state => {
+  const handleRowSelected = useCallback((state) => {
     if (state.selectedCount >= 1) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        selectedRowFilter: true
+        selectedRowFilter: true,
       }));
     }
     setSelectedRows(state.selectedRows);
   }, []);
 
   /** Filter methods and functions */
-  const handleFilterChange = event => {
-    getFilteredRpcDataValueInDropDown(event.target.value);
-    event.persist();
-    // setRpcsFilter(event.target.value);
+  const handleFilterChange = (event) => {
+    setRpcsFilter(event.target.value);
   };
 
-  const getFilteredRpcDataValueInDropDown = rpcValue => {
-    setIsLoading(true);
-    let params = {
-      name_contains: rpcValue
-    };
-    setValue({
-      name: rpcValue
-    });
-    if (rpcValue !== null || rpcValue !== "") {
-      let FilterRpcURL =
-        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
-
-      serviceProviders
-        .serviceProviderForGetAsyncRequest(FilterRpcURL, params)
-        .then(res => {
-          if (res.data.result.length !== 0) {
-          }
-          setIsLoading(false);
-          setFormState(formState => ({
-            ...formState,
-            rpcsFilterData: res.data.result,
-            rpcsFilterValueToStore: rpcValue,
-            isClearResetFilter: false
-          }));
-        })
-        .catch(error => {
-          setIsLoading(false);
-          console.log("error", error);
-        });
-    } else {
-      setIsLoading(false);
-      setFormState(formState => ({
-        ...formState,
-        rpcsFilterData: [],
-        rpcsFilterValueToStore: rpcValue,
-        isClearResetFilter: false
-      }));
-    }
-  };
-
-  const getRpcSelectedValue = (event, value) => {
-    if (value === null) {
-      getFilteredRpcDataValueInDropDown(null);
-    } else {
-      getFilteredRpcDataValueInDropDown(value.name);
-    }
-  };
 
   /** Search filter is called when we select filters and click on search button */
   const filterRpcData = async (perPage = formState.pageSize, page = 1) => {
-    if (
-      formState.rpcsFilterValueToStore !== null &&
-      formState.rpcsFilterValueToStore !== ""
-    ) {
-      let params = {
-        name_contains: formState.rpcsFilterValueToStore
-      };
-      formState.isFilterSearch = true;
-      await getRpcStateData(perPage, page, params);
-    } else {
-      await getRpcStateData(perPage, page);
-    }
+    let params = "?name_contains=" + rpcsFilter;
+    let FilterRpcURL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS + params;
+    serviceProviders
+      .serviceProviderForGetRequest(FilterRpcURL)
+      .then((res) => {
+        let currentPage = res.data.page;
+        let totalRows = res.data.rowCount;
+        let currentPageSize = res.data.pageSize;
+        let pageCount = res.data.pageCount;
+        formState.dataToShow = [];
+        formState.tempData = [];
+        let temp = [];
+        temp = convertRpcData(res.data.result);
+        setFormState((formState) => ({
+          ...formState,
+          rpcs: res.data.result,
+          dataToShow: temp,
+          tempData: temp,
+          pageSize: currentPageSize,
+          totalRows: totalRows,
+          page: currentPage,
+          pageCount: pageCount,
+          isDataLoading: false,
+        }));
+      })
+      .catch((error) => {
+        console.log("filterRpcDataError", error);
+      });
   };
 
   const column = [
@@ -453,7 +423,7 @@ const ViewRpc = props => {
     { name: "State", sortable: true, selector: "state" },
     {
       name: "Actions",
-      cell: cell => (
+      cell: (cell) => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
@@ -470,9 +440,9 @@ const ViewRpc = props => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%"
-      }
-    }
+        maxWidth: "18%",
+      },
+    },
   ];
   return (
     <Grid>
@@ -641,56 +611,21 @@ const ViewRpc = props => {
           <CardContent>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="rpc-text-filter"
-                  freeSolo
-                  autoHighlight
-                  autoComplete
-                  loading={isLoading}
-                  options={formState.rpcsFilterData}
-                  includeInputInList
-                  getOptionLabel={option => {
-                    if (typeof option === "string") {
-                      return option;
-                    }
-                    if (option.inputValue) {
-                      return option.inputValue;
-                    }
-                    return option.name;
-                  }}
-                  renderOption={option => option.name}
-                  onChange={getRpcSelectedValue}
-                  value={formState.isClearResetFilter ? null : value}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="RPC"
-                      margin="normal"
-                      variant="outlined"
-                      placeholder="Search RPC's"
-                      className={classes.autoCompleteField}
-                      onChange={handleFilterChange}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <React.Fragment>
-                            {isLoading ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : null}
-                            {params.InputProps.endAdornment}
-                          </React.Fragment>
-                        )
-                      }}
-                    />
-                  )}
+                <TextField
+                  label={"Name"}
+                  placeholder="Name"
+                  variant="outlined"
+                  value={rpcsFilter}
+                  onChange={handleFilterChange}
                 />
+               
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     filterRpcData();
                   }}

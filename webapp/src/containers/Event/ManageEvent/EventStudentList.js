@@ -485,79 +485,24 @@ const StudentList = props => {
       isDataLoading: true,
       studentFilterData: []
     }));
-
+    formState.filterDataParameters[STUDENT_FILTER] = "";
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
 
   const handleFilterChangeForStudentField = event => {
-    getFilteredStudentDataValueInDropDown(event.target.value);
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [STUDENT_FILTER]: event.target.value
+      }
+    }));
     event.persist();
     // setRpcsFilter(event.target.value);
   };
 
-  const getFilteredStudentDataValueInDropDown = async studentName => {
-    setIsLoading(true);
-    setValue({
-      first_name: studentName
-    });
-    if (studentName && studentName !== null && studentName !== "") {
-      formState.filterDataParameters[STUDENT_FILTER] = studentName;
-      let params = {
-        [STUDENT_FILTER]: studentName
-      };
-
-      let EVENT_ID = null;
-      let regStudent_url = null;
-      if (
-        auth.getUserInfo().role.name === "Medha Admin" ||
-        auth.getUserInfo().role.name === "College Admin"
-      ) {
-        EVENT_ID = formState.eventId;
-        regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
-        if (auth.getUserInfo().role.name === "College Admin") {
-          params["user.college"] = auth.getUserInfo()["college"]["id"];
-        }
-      }
-
-      serviceProvider
-        .serviceProviderForGetAsyncRequest(regStudent_url, params)
-        .then(res => {
-          setIsLoading(false);
-          let tempData = [];
-          if (res.data.result.length !== 0) {
-            tempData = convertStudentData(res.data.result);
-          }
-          setFormState(formState => ({
-            ...formState,
-            studentFilterData: tempData,
-            isClearResetFilter: false
-          }));
-        })
-        .catch(error => {
-          setIsLoading(false);
-          console.log("error", error);
-        });
-    } else {
-      delete formState.filterDataParameters[STUDENT_FILTER];
-      setIsLoading(false);
-      setFormState(formState => ({
-        ...formState,
-        studentFilterData: [],
-        isClearResetFilter: false
-      }));
-    }
-  };
-
-  const getStudentSelectedValue = (event, value) => {
-    if (value === null) {
-      getFilteredStudentDataValueInDropDown(null);
-    } else {
-      getFilteredStudentDataValueInDropDown(
-        value.first_name
-      ); /** value.title will give you name of the student */
-    }
-  };
+  
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
@@ -672,48 +617,14 @@ const StudentList = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="event-text-filter"
-                  freeSolo
-                  autoHighlight
-                  autoComplete
-                  loading={isLoading}
-                  options={formState.studentFilterData}
-                  includeInputInList
-                  getOptionLabel={option => {
-                    if (typeof option === "string") {
-                      return option;
-                    }
-                    if (option.inputValue) {
-                      return option.inputValue;
-                    }
-                    return option.first_name;
-                  }}
-                  renderOption={option => option.first_name}
-                  onChange={getStudentSelectedValue}
-                  value={formState.isClearResetFilter ? null : value}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Student Name"
-                      margin="normal"
-                      variant="outlined"
-                      placeholder="Search Students"
-                      className={classes.autoCompleteField}
-                      onChange={handleFilterChangeForStudentField}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <React.Fragment>
-                            {isLoading ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : null}
-                            {params.InputProps.endAdornment}
-                          </React.Fragment>
-                        )
-                      }}
-                    />
-                  )}
+              <TextField
+                  label="Students"
+                  margin="normal"
+                  variant="outlined"
+                  value={formState.filterDataParameters[STUDENT_FILTER] || ""}
+                  placeholder="Students"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForStudentField}
                 />
               </Grid>
               <Grid item className={classes.paddingDate}>
@@ -758,6 +669,7 @@ const StudentList = props => {
                     <TextField
                       {...params}
                       label="Academic Year"
+                      placeholder="Academic Year"
                       variant="outlined"
                       name="tester"
                       className={classes.autoCompleteField}
