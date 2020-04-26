@@ -273,21 +273,7 @@ const ViewStates = props => {
     getDataForEdit(event.target.id);
   };
 
-  /**---------------------------------------------------------------- */
-  /** Handle auto change---------- */
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
-    setFormState(formState => ({
-      ...formState,
-      isClearResetFilter: false
-    }));
-  };
-  /** ---------------------------- */
+
 
   /** Delete cell ------------------ */
 
@@ -374,10 +360,6 @@ const ViewStates = props => {
 
   const handleFilterChange = event => {
     setStatesFilter(event.target.value);
-    // setFormState(formState => ({
-    //   ...formState,
-    //   filterState: event.target.value
-    // }));
   };
 
   const filterStateData = () => {
@@ -613,8 +595,8 @@ const ViewStates = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label={"State"}
-                  placeholder="State"
+                  label={"Name"}
+                  placeholder="Name"
                   value={statesFilter}
                   variant="outlined"
                   onChange={handleFilterChange}

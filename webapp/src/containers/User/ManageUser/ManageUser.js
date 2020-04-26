@@ -522,8 +522,15 @@ const ManageUser = props => {
     delete formState.filterDataParameters[IPC_FILTER];
   };
 
-  const handleFilterChange = (event, eventName) => {
-    formState.filterDataParameters[event.target.name] = event.target.value;
+  const handleFilterChange = (event) => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [USER_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
 
   /** Get multiple user id for delete */
@@ -1019,11 +1026,10 @@ const ManageUser = props => {
                   label="User Name"
                   placeholder="User Name"
                   variant="outlined"
-                  value={formState.filterDataParameters[USER_FILTER]}
+                  value={formState.filterDataParameters[USER_FILTER] || ""}
                   name={USER_FILTER}
-                  onChange={event => {
-                    handleFilterChange(event, USER_FILTER);
-                  }}
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChange}
                 />
               </Grid>
               <Grid item>

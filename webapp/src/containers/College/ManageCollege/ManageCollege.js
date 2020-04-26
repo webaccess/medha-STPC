@@ -552,7 +552,14 @@ const ManageCollege = props => {
   };
 
   const handleFilterChange = event => {
-    formState.filterDataParameters[event.target.name] = event.target.value;
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [COLLEGE_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
 
   /** Multi Delete */
@@ -899,10 +906,12 @@ const ManageCollege = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label={"College"}
-                  placeholder="College"
+                  label={"Name"}
+                  placeholder="Name"
                   variant="outlined"
                   name={COLLEGE_FILTER}
+                  value={formState.filterDataParameters[COLLEGE_FILTER] || ""}
+                  className={classes.autoCompleteField}
                   onChange={handleFilterChange}
                 />
               </Grid>
