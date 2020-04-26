@@ -19,11 +19,11 @@ import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
 
-const HireStudent = props => {
+const MarkAttaindance = props => {
   const [open, setOpen] = React.useState(false);
 
   const [formState, setFormState] = useState({
-    isStudentHired: false,
+    isAttaindanceMarked: false,
     isValid: false,
     stateCounter: 0,
     values: {}
@@ -35,50 +35,49 @@ const HireStudent = props => {
     setFormState(formState => ({
       ...formState,
       values: {},
-      isStudentHired: false,
+      isAttaindanceMarked: false,
       isValid: false,
       stateCounter: 0
     }));
 
-    if (formState.isStudentHired) {
-      props.closeHireModal(true);
+    if (formState.isAttaindanceMarked) {
+      props.closeAttaindanceModal(true);
     } else {
-      props.closeHireModal(false);
+      props.closeAttaindanceModal(false);
     }
   };
 
   const handleSubmit = event => {
     setOpen(true);
     /** CALL Put FUNCTION */
-    studentHired();
+    attaindanceHandler();
     event.preventDefault();
   };
 
-  const studentHired = () => {
+  const attaindanceHandler = () => {
     var body;
-    if (props.isHired) {
+    if (props.isPresent) {
       body = {
-        hired_at_event: true
+        attendance_verified: true
       };
     }
-    if (props.isUnHired) {
+    if (props.isAbsent) {
       body = {
-        hired_at_event: false
+        attendance_verified: false
       };
     }
     serviceProviders
       .serviceProviderForPutRequest(REGISTRATION_URL, props.id, body)
       .then(res => {
-        formState.isStudentHired = true;
+        formState.isAttaindanceMarked = true;
         handleCloseModal();
       })
       .catch(error => {
         console.log("error---", error);
-        formState.isStudentHired = false;
+        formState.isAttaindanceMarked = false;
         handleCloseModal();
       });
   };
-
   const classes = useStyles();
   return (
     <Modal
@@ -97,9 +96,9 @@ const HireStudent = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {props.isHired
-                ? genericConstants.HIRE_BUTTON_TEXT
-                : genericConstants.DEHIRE_BUTTON_TEXT}
+              {props.isPresent
+                ? genericConstants.ADD_ATT_BUTTON_TEXT
+                : genericConstants.REMOVE_ATT_BUTTON_TEXT}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -115,10 +114,16 @@ const HireStudent = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isHired ? (
-                    <p>Are you sure you want to Hire {props.studentName}?</p>
+                  {props.isPresent ? (
+                    <p>
+                      Are you sure you want to add attaindance for{" "}
+                      {props.studentName}?
+                    </p>
                   ) : (
-                    <p>Are you sure you want to Dehire {props.studentName}?</p>
+                    <p>
+                      Are you sure you want to remove attaindance for{" "}
+                      {props.studentName}?
+                    </p>
                   )}
                 </Grid>
               </Grid>
@@ -162,4 +167,4 @@ const HireStudent = props => {
     </Modal>
   );
 };
-export default HireStudent;
+export default MarkAttaindance;
