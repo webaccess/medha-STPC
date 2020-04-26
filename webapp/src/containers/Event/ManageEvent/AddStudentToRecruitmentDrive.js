@@ -388,15 +388,12 @@ const AddStudentToRecruitmentDrive = props => {
         <Tooltip
           title={
             <React.Fragment>
-              <Typography color="inherit">{`${row.qualifications.slice(
-                0,
-                row.qualifications.length
-              )}`}</Typography>
+              <Typography color="inherit">{`${row.qualifications}`}</Typography>
             </React.Fragment>
           }
           placement="top"
         >
-          <div>{`${row.qualifications.slice(0, 3)}...`}</div>
+          <div>{`${row.qualifications}`}</div>
         </Tooltip>
       )
     },
