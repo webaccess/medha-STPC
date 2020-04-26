@@ -11,7 +11,8 @@ import {
   YellowButton,
   GreenButton,
   EditGridIcon,
-  DeleteGridIcon
+  DeleteGridIcon,
+  AlertMessage
 } from "../../../../components";
 import ApprovedStudents from "./ApprovedStudents";
 import DeleteStudents from "./DeleteStudents";
@@ -351,8 +352,8 @@ const ManageStudents = props => {
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
-    //restoreData();
     setOpen(true);
+    clearFilter();
     setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
@@ -382,7 +383,8 @@ const ManageStudents = props => {
   const handleCheckedChange = event => {
     setFormState(formState => ({
       ...formState,
-      checked: event.target.checked
+      checked: event.target.checked,
+      isClearResetFilter: false
     }));
     if (event.target.checked) {
       formState.filterDataParameters[VERIFIEDBYCOLLEGE] = false;
@@ -397,7 +399,8 @@ const ManageStudents = props => {
       filterDataParameters: {
         ...formState.filterDataParameters,
         [USER_FILTER]: event.target.value
-      }
+      },
+      isClearResetFilter: false
     }));
     event.persist();
   };
@@ -450,10 +453,7 @@ const ManageStudents = props => {
       checked: false,
       studentNameFilterData: []
     }));
-    formState.filterDataParameters[USER_FILTER] = "";
-    setStreams([]);
     getStudentData(10, 1);
-    getStreamData();
   };
 
   const deleteMulUserById = () => {
@@ -487,7 +487,7 @@ const ManageStudents = props => {
   const handleCloseApproveUnapproveModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
     setOpen(true);
-
+    clearFilter();
     setFormState(formState => ({
       ...formState,
       isDataApproveUnapprove: status,
@@ -605,6 +605,13 @@ const ManageStudents = props => {
     });
   };
 
+  const clearFilter = () => {
+    setFormState(formState => ({
+      ...formState,
+      checked: false,
+      filterDataParameters: {}
+    }));
+  };
   /** Columns to show in table */
   const column = [
     {
@@ -801,97 +808,73 @@ const ManageStudents = props => {
         {formState.fromDeleteModal &&
         formState.isDataDeleted &&
         formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
+          <AlertMessage
+            variant="filled"
+            openAlert={open}
+            alertTitle="success"
+            arialabel="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            {formState.messageToShow}
+          </AlertMessage>
         ) : null}
 
         {formState.fromDeleteModal &&
         !formState.isDataDeleted &&
         formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
+          <AlertMessage
+            variant="filled"
+            openAlert={open}
+            alertTitle="error"
+            arialabel="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            {formState.messageToShow}
+          </AlertMessage>
         ) : null}
 
         {formState.fromApproveUnapproveModal &&
         formState.isDataApproveUnapprove &&
         formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
+          <AlertMessage
+            variant="filled"
+            openAlert={open}
+            alertTitle="success"
+            arialabel="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            {formState.messageToShow}
+          </AlertMessage>
         ) : null}
 
         {formState.fromApproveUnapproveModal &&
         !formState.isDataApproveUnapprove &&
         formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
+          <AlertMessage
+            variant="filled"
+            openAlert={open}
+            alertTitle="error"
+            arialabel="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            {formState.messageToShow}
+          </AlertMessage>
         ) : null}
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
@@ -900,11 +883,11 @@ const ManageStudents = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label="Student Name"
+                  label="Name"
                   margin="normal"
                   variant="outlined"
                   value={formState.filterDataParameters[USER_FILTER] || ""}
-                  placeholder="Search Students"
+                  placeholder="Search by students name"
                   className={classes.autoCompleteField}
                   onChange={handleFilterChangeForStudentField}
                 />
@@ -914,7 +897,6 @@ const ManageStudents = props => {
                   id="stream-filter"
                   name={STREAM_FILTER}
                   options={streams}
-                  placeholder="Search by streams"
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   value={
@@ -936,8 +918,27 @@ const ManageStudents = props => {
                     <TextField
                       {...params}
                       label="Stream"
+                      placeholder="Search by streams"
                       className={classes.autoCompleteField}
                       variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item className={classes.paddingDate}>
+                <Autocomplete
+                  id="education-year-list"
+                  options={genericConstants.EDUCATIONYEARLIST}
+                  getOptionLabel={option => option.name}
+                  value={null}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Education Year"
+                      variant="outlined"
+                      name="education-year"
+                      placeholder="Search by education year"
+                      className={classes.autoCompleteField}
                     />
                   )}
                 />
