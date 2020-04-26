@@ -7,7 +7,7 @@ import {
   Grid,
   Tooltip,
   Collapse,
-  IconButton,
+  IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -26,21 +26,14 @@ import {
   GrayButton,
   Alert,
   Auth,
+  EditGridIcon,
+  DeleteGridIcon
 } from "../../../components";
 import DeleteEducation from "./DeleteEducation";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
-const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
-const studentId = studentInfo ? studentInfo.id : null;
-console.log(studentId);
-const STUDENT_EDUCATION_URL =
-  strapiConstants.STRAPI_DB_URL +
-  strapiConstants.STRAPI_STUDENTS +
-  `/${studentId}/education`;
-const EDUCATION_FILTER = "id";
-
-const ViewEducation = (props) => {
+const ViewEducation = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
@@ -81,19 +74,29 @@ const ViewEducation = (props) => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true,
+    sortAscending: true
   });
+
+  const studentInfo = Auth.getUserInfo()
+    ? Auth.getUserInfo().studentInfo
+    : null;
+  const studentId = studentInfo ? studentInfo.id : null;
+  const STUDENT_EDUCATION_URL =
+    strapiConstants.STRAPI_DB_URL +
+    strapiConstants.STRAPI_STUDENTS +
+    `/${studentId}/education`;
+  const EDUCATION_FILTER = "id";
 
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_EDUCATION_URL)
-      .then((res) => {
-        setFormState((formState) => ({
+      .then(res => {
+        setFormState(formState => ({
           ...formState,
-          educationFilter: res.data.result,
+          educationFilter: res.data.result
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
 
@@ -105,28 +108,28 @@ const ViewEducation = (props) => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
-      Object.keys(params).map((key) => {
+      Object.keys(params).map(key => {
         defaultParams[key] = params[key];
       });
       params = defaultParams;
     } else {
       params = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(STUDENT_EDUCATION_URL, params)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           educations: res.data.result,
           dataToShow: res.data.result,
@@ -134,10 +137,10 @@ const ViewEducation = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
@@ -156,7 +159,7 @@ const ViewEducation = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getEducationData(formState.pageSize, page);
     } else {
@@ -177,13 +180,13 @@ const ViewEducation = (props) => {
   };
 
   const clearFilter = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -193,23 +196,23 @@ const ViewEducation = (props) => {
     getEducationData(formState.pageSize, 1);
   };
 
-  const editCell = (data) => {
+  const editCell = data => {
     history.push({
       pathname: routeConstants.EDIT_EDUCATION,
       editEducation: true,
-      dataForEdit: data,
+      dataForEdit: data
     });
   };
 
-  const isDeleteCellCompleted = (status) => {
+  const isDeleteCellCompleted = status => {
     formState.isDataDeleted = status;
   };
 
-  const deleteCell = (event) => {
-    setFormState((formState) => ({
+  const deleteCell = event => {
+    setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
-      showModalDelete: true,
+      showModalDelete: true
     }));
   };
 
@@ -226,10 +229,10 @@ const ViewEducation = (props) => {
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
     //restoreData();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false,
+      showModalDelete: false
     }));
     if (formState.isDataDeleted) {
       getEducationData(formState.pageSize, formState.page);
@@ -242,45 +245,37 @@ const ViewEducation = (props) => {
     { name: "Board", sortable: true, selector: "board" },
     { name: "Percentage", sortable: true, selector: "percentage" },
     { name: "Year Of Passing", sortable: true, selector: "year_of_passing" },
-    /** Columns for edit and delete */
     {
-      cell: (cell) => (
-        <Tooltip title="Edit" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            value={cell.name}
-            onClick={() => editCell(cell)}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            edit
-          </i>
-        </Tooltip>
+      name: "Actions",
+      cell: cell => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <EditGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => editCell(cell)}
+            />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={deleteCell}
+            />
+          </div>
+        </div>
       ),
-      button: true,
-      conditionalCellStyles: [],
-    },
-    {
-      cell: (cell) => (
-        <Tooltip title="Delete" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            onClick={deleteCell}
-            style={{ color: "red" }}
-          >
-            delete_outline
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: [],
-    },
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
+    }
   ];
 
   const handleAddEducationClick = () => {
     history.push({
-      pathname: routeConstants.ADD_EDUCATION,
+      pathname: routeConstants.ADD_EDUCATION
     });
   };
 
@@ -398,11 +393,11 @@ const ViewEducation = (props) => {
                       id="combo-box-demo"
                       options={formState.educationFilter}
                       className={classes.autoCompleteField}
-                      getOptionLabel={(option) => option.qualification}
+                      getOptionLabel={option => option.qualification}
                       onChange={(event, value) =>
                         handleChangeAutoComplete(EDUCATION_FILTER, event, value)
                       }
-                      renderInput={(params) => (
+                      renderInput={params => (
                         <TextField
                           {...params}
                           label="Qualification"
@@ -417,7 +412,7 @@ const ViewEducation = (props) => {
                       variant="contained"
                       color="primary"
                       disableElevation
-                      onClick={(event) => {
+                      onClick={event => {
                         event.persist();
                         searchFilter();
                       }}

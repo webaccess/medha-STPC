@@ -201,7 +201,7 @@ const RegisterEvent = props => {
                       </p>
                     ) : (
                       <p>
-                        Are you sure you want to register the selected student
+                        Are you sure you want to register {props.name}{" "}
                         for the event "{props.eventTitle}" ?
                       </p>
                     )

@@ -329,7 +329,7 @@ const ViewCollege = props => {
                         className={classes.streamcardcontent}
                       >
                         {formState.collegeDetails.stream_strength.map(value => (
-                          <div>
+                          <div key={value.id}>
                             <CardContent>
                               <Grid container spacing={1}>
                                 <Grid item xs={6}>

@@ -266,7 +266,7 @@ const EligibleEvents = (props) => {
           {formState.eventDetails.length ? (
             formState.eventDetails.map((data) => {
               return (
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid key={data.id} item xs={12} sm={6} md={4}>
                   <Card>
                     {/* <CardHeader className={classes.CardHeaderFooter}> */}
                     <Grid

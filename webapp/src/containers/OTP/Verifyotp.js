@@ -1,15 +1,27 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
-  Container,
-  Box,
-  TextField,
-  Typography,
-  Grid,
   Button,
-  CardContent,
-  Card,
+  CssBaseline,
+  TextField,
+  Link,
+  Grid,
+  Typography,
+  Hidden,
   CardMedia,
+  Paper,
+  Icon,
+  CardContent,
+  useMediaQuery,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText,
+  Collapse,
+  CircularProgress,
+  Backdrop
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import { Redirect } from "../../../node_modules/react-router-dom";
@@ -23,9 +35,10 @@ import YellowButton from "../../components/YellowButton/YellowButton.js";
 import * as serviceProvider from "../../api/Axios.js";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import axios from "axios";
+import CardIcon from "../../components/Card/CardIcon";
 import image from "../../assets/images/login-img.png";
 
-const VerifyOtp = (props) => {
+const VerifyOtp = props => {
   let history = useHistory();
 
   const [otp, setotp] = useState("");
@@ -45,14 +58,14 @@ const VerifyOtp = (props) => {
             strapiApiConstants.STRAPI_CHECK_OTP,
           { otp: otp, contact_number: props.location.state.contactNumber }
         )
-        .then((res) => {
+        .then(res => {
           console.log("IN then");
           history.push(routeConstants.NEW_REGISTRATION_URL, {
             otp: otp,
-            contactNumber: props.location.state.contactNumber,
+            contactNumber: props.location.state.contactNumber
           });
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err.response.status);
           if (err.response.status === 403) {
             history.push(routeConstants.REQUIRED_CONFORMATION);
@@ -68,11 +81,11 @@ const VerifyOtp = (props) => {
           strapiApiConstants.STRAPI_REQUEST_STUDENT_OTP,
         { contact_number: props.location.state.contactNumber }
       )
-      .then((res) => {
+      .then(res => {
         setclick(true);
         console.log(click);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
@@ -80,99 +93,102 @@ const VerifyOtp = (props) => {
     return (
       <Redirect
         to={{
-          pathname: routeConstants.SIGN_IN_URL,
+          pathname: routeConstants.SIGN_IN_URL
         }}
       />
     );
   } else {
     return (
       <Layout>
-        {console.log(props)}
-        <div className={classes.paper}>
-          <Card className={classes.paper}>
-            <CardContent style={{ margin: "30px" }}>
-              <Typography
-                component="h1"
-                variant="h5"
-                style={{ marginTop: ".9rem" }}
-              >
-                {authPageConstants.REGISTER}
-              </Typography>
-              <div className={classes.form}>
-                <Grid container spacing={3}>
-                  <Grid item md={12}>
-                    <TextField
-                      label="One Time Password"
-                      name="otp"
-                      value={otp}
-                      error={error[0] ? true : false}
-                      variant="outlined"
-                      fullWidth
-                      helperText={error ? error : null}
-                      onChange={(event) => {
-                        if (otp.length > 0) setError("");
-                        setotp(event.target.value);
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3}>
-                  <Grid item>
-                    <YellowButton
-                      color="Secondary"
-                      mfullWidth
-                      variant="contained"
-                      size="large"
-                      disabled={click}
-                      onClick={() => {
-                        requestOtpAgain();
-                      }}
-                    >
-                      {authPageConstants.RESEND_OTP_BUTTON}
-                    </YellowButton>
-                  </Grid>
+        <div className={classes.masterlogin2}>
+          <div className={classes.masterlogin1}>
+            <div className={classes.masterlogin}>
+              <Paper className={classes.rootDesktop}>
+                <CardContent>
+                  <CssBaseline />
+                  <div className={classes.paper}>
+                    <div className={classes.signin_header}>
+                      <div className={classes.loginlock}>
+                        <CardIcon>
+                          <Icon>lock</Icon>
+                        </CardIcon>
+                      </div>
+                      <Typography
+                        className={classes.signin}
+                        component="h1"
+                        variant="h5"
+                        style={{ fontWeight: "700" }}
+                      >
+                        {authPageConstants.REGISTER}
+                      </Typography>
+                    </div>
 
-                  <Grid item>
-                    <GreenButton
-                      color="primary"
-                      type="submit"
-                      mfullWidth
-                      variant="contained"
-                      size="large"
-                      greenButtonChecker={true}
-                      onClick={() => {
-                        validate();
-                      }}
-                    >
-                      {authPageConstants.VERIFY_OTP_BUTTON}
-                    </GreenButton>
-                  </Grid>
-                </Grid>
-              </div>
-            </CardContent>
-            <CardMedia
-              style={{
-                width: "500px",
-                height: "300px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-              }}
-              image={image}
-              title="Live from space album cover"
-            />
-          </Card>
+                    <React.Fragment>
+                      <Typography
+                        component="h5"
+                        variant="subtitle2"
+                        style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
+                      >
+                        {authPageConstants.MOBILE_NUMBER_ALERT}
+                      </Typography>
+                      <TextField
+                        label="One Time Password"
+                        name="otp"
+                        value={otp}
+                        error={error[0] ? true : false}
+                        variant="outlined"
+                        fullWidth
+                        helperText={error ? error : null}
+                        onChange={event => {
+                          if (otp.length > 0) setError("");
+                          setotp(event.target.value);
+                        }}
+                      />
+                      <Link
+                        href="javascript:void(0);"
+                        variant="body2"
+                        className={classes.linkColor}
+                        onClick={requestOtpAgain}
+                      >
+                        {authPageConstants.RESEND_OTP_BUTTON}
+                      </Link>
+                      <Button
+                        color="primary"
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        className={classes.submit}
+                        onClick={() => {
+                          validate();
+                        }}
+                      >
+                        Verify OTP
+                      </Button>
+                    </React.Fragment>
+                    <Grid container>
+                      <Grid item xs={12} style={{ textAlign: "center" }}>
+                        <Link
+                          href={routeConstants.SIGN_IN_URL}
+                          variant="body2"
+                          className={classes.linkColor}
+                        >
+                          {authPageConstants.BACK_TO_LOGIN_TEXT}
+                        </Link>
+                      </Grid>
+                    </Grid>
+                  </div>
+                </CardContent>
+
+                <CardMedia
+                  className={classes.cover}
+                  image={image}
+                  title="Live from space album cover"
+                />
+              </Paper>
+            </div>
+          </div>
         </div>
       </Layout>
-      // <div>
-      //   <button
-      //     onClick={() => {
-      //       history.push("/registration");
-      //     }}
-      //   >
-      //     registration page
-      //   </button>
-      // </div>
     );
   }
 };

@@ -364,7 +364,7 @@ const AddStudentToRecruitmentDrive = props => {
   };
 
   const addSingleStudentToRegistration = event => {
-    formState.regStudentName = event.target.value;
+    formState.regStudentName = event.target.getAttribute("value");
     setFormState(formState => ({
       ...formState,
       showRegisterModel: true,
@@ -509,7 +509,7 @@ const AddStudentToRecruitmentDrive = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="combo-box-demo"
+                  id="streams-filter"
                   name={STREAMS_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}

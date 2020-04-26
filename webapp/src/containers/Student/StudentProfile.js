@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Auth as auth, Typography, GrayButton } from "../../components";
+import {
+  Auth as auth,
+  Typography,
+  YellowButton,
+  GrayButton,
+  ReadOnlyTextField
+} from "../../components";
 import {
   Card,
   CardContent,
   CardActions,
   Grid,
   Collapse,
-  IconButton
+  IconButton,
+  Divider,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 
@@ -14,88 +23,11 @@ import * as genericConstants from "../../constants/GenericConstants.js";
 
 import * as serviceProvider from "../../api/Axios.js";
 import CloseIcon from "@material-ui/icons/Close";
-import YellowButton from "../../components/YellowButton/YellowButton.js";
-import { makeStyles } from "@material-ui/core/styles";
+
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import { useHistory } from "react-router-dom";
 import Alert from "../../components/Alert/Alert.js";
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    maxWidth: "100%"
-  },
-  btnspace: {
-    padding: "15px 18px 50px"
-  },
-  btnspaceadd: {
-    padding: "0px 15px 15px"
-  },
-  labelside: {
-    padding: "0px 0px 15px 0px",
-    fontWeight: "600",
-    paddingBottom: "3px",
-    marginRight: "25px"
-  },
-  formgrid: {
-    marginTop: theme.spacing(0),
-    alignItems: "center"
-  },
-  divider: {
-    marginTop: "15px",
-    marginBottom: "15px"
-  },
-  add_more_btn: {
-    float: "right"
-  },
-  streamcard: {
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    padding: "15px !important",
-    margin: "15px",
-    position: "relative",
-    "& label": {
-      position: "absolute",
-      top: "-8px",
-      backgroundColor: "#fff"
-    }
-  },
-  streamoffer: {
-    paddingLeft: "15px",
-    paddingRight: "15px",
-    borderRadius: "0px",
-    boxShadow: "none !important"
-  },
-  streamcardcontent: {
-    boxShadow: "none",
-    borderBottom: "1px solid #ccc",
-    marginBottom: "15px",
-    borderRadius: "0px"
-  },
-  labelside: {
-    paddingBottom: "10px",
-    fontWeight: "600",
-    // backgroundColor: "#ccc",
-    marginRight: "15px",
-    fontWeight: "700",
-    borderBottom: "1px solid #ccc"
-  },
-  Cardtheming: {
-    paddingBottom: "16px !important"
-  },
-  Cardthemingstream: {
-    paddingLeft: "0px"
-  },
-  labelcontent: {
-    paddingBottom: "10px",
-    borderBottom: "1px solid #f6c80a",
-    marginRight: "15px",
-    maxWidth: "100% !important"
-  },
-  padding: {
-    padding: "0px !important"
-  }
-}));
-
+import useStyles from "../ContainerStyles/ViewPageStyles.js";
 const StudentProfile = props => {
   let history = useHistory();
   const [user, setUser] = useState({
@@ -208,11 +140,19 @@ const StudentProfile = props => {
   }
 
   const editData = () => {
-    history.push({
-      pathname: routeConstants.EDIT_PROFILE,
-      editStudent: true,
-      dataForEdit: formState.details
-    });
+    if (auth.getUserInfo().role.name === "Student") {
+      history.push({
+        pathname: routeConstants.EDIT_PROFILE,
+        editStudent: true,
+        dataForEdit: formState.details
+      });
+    } else if (auth.getUserInfo().role.name === "College Admin") {
+      history.push({
+        pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
+        dataForEdit: formState.details,
+        editStudent: true
+      });
+    }
   };
 
   const handleClickCancel = event => {
@@ -229,7 +169,7 @@ const StudentProfile = props => {
         eventId: formState.eventId,
         eventTitle: formState.eventTitle
       });
-    } else if (formState.fromManageStudentList){
+    } else if (formState.fromManageStudentList) {
       history.push({
         pathname: routeConstants.MANAGE_STUDENT,
         eventId: formState.eventId,
@@ -261,243 +201,194 @@ const StudentProfile = props => {
           </Alert>
         </Collapse>
       ) : null}
-      <Grid item xs={12} className={classes.formgrid}>
-        <Grid className={classes.root} variant="outlined">
-          <Card>
-            <CardContent>
+      <Grid item xs={12} className={classes.title}>
+        {auth.getUserInfo().role.name === "College Admin" ? (
+          <Typography variant="h4" gutterBottom>
+            View Student
+          </Typography>
+        ) : null}
+      </Grid>
+      <Grid spacing={3}>
+        <Card>
+          <CardContent>
+            <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={12} xs={12} className={classes.padding}>
-                  {formState.values ? (
-                    <form>
-                      <Card style={{ boxShadow: "none" }}>
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography>First Name:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.firstname}
-                              </Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography>Last Name:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.lastname}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Father's First Name:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.fatherFirstName}
-                              </Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography>Father's Last Name:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.fatherLastName}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography>Address:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.address}
-                              </Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> State:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>{formState.values.state}</Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> District:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.district}
-                              </Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Contact Number:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.contact}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Email:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>{formState.values.email}</Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Date of Birth:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {selectedDate.getFullYear() +
-                                  "-" +
-                                  (selectedDate.getMonth() + 1) +
-                                  "-" +
-                                  selectedDate.getDate()}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Gender:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>{formState.values.gender}</Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Roll Number:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.rollnumber}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> College:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.college}
-                              </Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Stream:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>{formState.values.stream}</Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                        <CardContent className={classes.Cardtheming}>
-                          <Grid
-                            className={classes.filterOptions}
-                            container
-                            spacing={1}
-                          >
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Username:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.username}
-                              </Typography>
-                            </Grid>
-                            <Grid md={2} className={classes.labelside}>
-                              <Typography> Physically Handicapped:</Typography>
-                            </Grid>
-                            <Grid md={3} className={classes.labelcontent}>
-                              <Typography>
-                                {formState.values.physicallyHandicapped
-                                  ? "Yes"
-                                  : "No"}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-
-                        <CardActions className={classes.btnspace}>
-                          {auth.getUserInfo().role.name === "Student" ? (
-                            <YellowButton
-                              type="submit"
-                              color="primary"
-                              variant="contained"
-                              onClick={editData}
-                              className={classes.submitbtn}
-                            >
-                              {genericConstants.EDIT_TEXT}
-                            </YellowButton>
-                          ) : null}
-                          {auth.getUserInfo().role.name === "Medha Admin" ||
-                          auth.getUserInfo().role.name === "College Admin" ? (
-                            <GrayButton
-                              color="primary"
-                              variant="contained"
-                              onClick={handleClickCancel}
-                              className={classes.resetbtn}
-                            >
-                              {genericConstants.CANCEL_BUTTON_TEXT}
-                            </GrayButton>
-                          ) : null}
-                        </CardActions>
-                      </Card>
-                    </form>
-                  ) : null}
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="firstname"
+                    label="First Name"
+                    defaultValue={formState.values.firstname}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="lastname"
+                    label="Last Name"
+                    defaultValue={formState.values.lastname}
+                  />
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="fathersFirstName"
+                    label="Father's First Name"
+                    defaultValue={formState.values.fatherFirstName}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="fathersLastName"
+                    label="Father's Last Name"
+                    defaultValue={formState.values.fatherLastName}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="address"
+                    label="Address"
+                    defaultValue={formState.values.address}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="state"
+                    label="State"
+                    defaultValue={formState.values.state}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="district"
+                    label="District"
+                    defaultValue={formState.values.district}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="dateOfBirth"
+                    label="Date Of Birth"
+                    defaultValue={
+                      selectedDate.getFullYear() +
+                      "-" +
+                      (selectedDate.getMonth() + 1) +
+                      "-" +
+                      selectedDate.getDate()
+                    }
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="gender"
+                    label="Gender"
+                    defaultValue={formState.values.gender}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="contact"
+                    label="Contact"
+                    defaultValue={formState.values.contact}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="physicallyHandicapped"
+                    label="Physically Handicapped"
+                    defaultValue={
+                      formState.values.physicallyHandicapped ? "Yes" : "No"
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="email"
+                    label="Email"
+                    defaultValue={formState.values.email}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="college"
+                    label="College"
+                    defaultValue={formState.values.college}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="stream"
+                    label="Stream"
+                    defaultValue={formState.values.stream}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="rollNumber"
+                    label="College Roll Number"
+                    defaultValue={formState.values.rollnumber}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="username"
+                    label="Username"
+                    defaultValue={formState.values.username}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}></Grid>
+              </Grid>
+            </Grid>
+          </CardContent>
+          <Grid item xs={12} className={classes.CardActionGrid}>
+            <CardActions className={classes.btnspace}>
+              {auth.getUserInfo().role.name === "Student" ||
+              auth.getUserInfo().role.name === "College Admin" ? (
+                <YellowButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  onClick={editData}
+                  className={classes.submitbtn}
+                >
+                  {genericConstants.EDIT_TEXT}
+                </YellowButton>
+              ) : null}
+              {auth.getUserInfo().role.name === "Medha Admin" ||
+              auth.getUserInfo().role.name === "College Admin" ? (
+                <GrayButton
+                  color="primary"
+                  variant="contained"
+                  onClick={handleClickCancel}
+                  className={classes.resetbtn}
+                >
+                  {genericConstants.CANCEL_BUTTON_TEXT}
+                </GrayButton>
+              ) : null}
+            </CardActions>
+          </Grid>
+        </Card>
       </Grid>
     </Grid>
   );

@@ -271,7 +271,7 @@ const AddEditZone = props => {
                 </Grid>
                 <Grid item md={12} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id="states-filter"
                     className={classes.root}
                     options={states}
                     getOptionLabel={option => option.name}

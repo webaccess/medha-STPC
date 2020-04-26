@@ -2,7 +2,7 @@ import React from "react";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   KeyboardDatePicker,
-  MuiPickersUtilsProvider,
+  MuiPickersUtilsProvider
 } from "@material-ui/pickers";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import customTheme from "./InlineDatePickerStyles";
@@ -18,12 +18,12 @@ function InlineDatePicker(props) {
           inputVariant="outlined"
           format="dd/MM/yyyy"
           //margin="normal"
-          id="date-picker-inline"
+          id={props.id}
           label={props.label}
           value={props.value}
           onChange={props.onChange}
           KeyboardButtonProps={{
-            "aria-label": "change date",
+            "aria-label": "change date"
           }}
         />
       </MuiPickersUtilsProvider>

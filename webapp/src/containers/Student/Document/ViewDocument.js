@@ -25,20 +25,13 @@ import {
   YellowButton,
   GrayButton,
   Alert,
-  Auth
+  Auth,
+  ViewGridIcon,
+  DeleteGridIcon
 } from "../../../components";
 import DeleteDocument from "./DeleteDocument";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
-
-const studentInfo = Auth.getUserInfo() ? Auth.getUserInfo().studentInfo : null;
-const studentId = studentInfo ? studentInfo.id : null;
-
-const STUDENT_DOCUMENT_URL =
-  strapiConstants.STRAPI_DB_URL +
-  strapiConstants.STRAPI_STUDENTS +
-  `/${studentId}/document`;
-const DOCUMENT_FILTER = "id";
 
 const ViewDocument = props => {
   const [open, setOpen] = React.useState(true);
@@ -69,6 +62,17 @@ const ViewDocument = props => {
     isDataLoading: false,
     sortAscending: true
   });
+
+  const studentInfo = Auth.getUserInfo()
+    ? Auth.getUserInfo().studentInfo
+    : null;
+  const studentId = studentInfo ? studentInfo.id : null;
+
+  const STUDENT_DOCUMENT_URL =
+    strapiConstants.STRAPI_DB_URL +
+    strapiConstants.STRAPI_STUDENTS +
+    `/${studentId}/document`;
+  const DOCUMENT_FILTER = "id";
 
   useEffect(() => {
     serviceProviders
@@ -179,36 +183,30 @@ const ViewDocument = props => {
     { name: "Name", sortable: true, selector: "name" },
     { name: "Size", sortable: true, selector: "size" },
     {
+      name: "Actions",
       cell: cell => (
-        <Tooltip title="View" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            onClick={() => viewCell(cell)}
-            style={{ color: "green", fontSize: "19px" }}
-          >
-            view_list
-          </i>
-        </Tooltip>
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <ViewGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => viewCell(cell)}
+            />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={deleteCell}
+            />
+          </div>
+        </div>
       ),
-      button: true,
-      conditionalCellStyles: []
-    },
-    {
-      cell: cell => (
-        <Tooltip title="Delete" placement="top">
-          <i
-            className="material-icons"
-            id={cell.id}
-            onClick={deleteCell}
-            style={{ color: "red" }}
-          >
-            delete_outline
-          </i>
-        </Tooltip>
-      ),
-      button: true,
-      conditionalCellStyles: []
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
     }
   ];
 
