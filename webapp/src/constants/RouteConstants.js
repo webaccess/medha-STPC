@@ -3,6 +3,7 @@
 export const FORGOT_PASSWORD_URL = "/forgot-password";
 export const SIGN_IN_URL = "/login";
 export const LOGOUT_URL = "/logout";
+export const CHANGE_PASSWORD = "/change-password";
 export const NOT_FOUND_URL = "/404";
 
 /** Dashboard */
@@ -152,7 +153,7 @@ export const MEDHA_ADMIN = [
   { key: 1, value: masters_medha_admin },
   { key: 2, value: user_management_medha_admin },
   { key: 3, value: activity_medha_admin },
-  { key: 4, value: events_medha_admin }
+  { key: 4, value: events_medha_admin },
 ];
 
 /** college admin */
@@ -198,7 +199,7 @@ export const COLLEGE_ADMIN = [
   { key: 1, value: college_profile_admin_admin },
   { key: 2, value: students_college_admin },
   { key: 3, value: activity_college_admin },
-  { key: 4, value: events_college_admin }
+  { key: 4, value: events_college_admin },
 ];
 
 /** Student */
@@ -226,5 +227,5 @@ events_students.push(ELIGIBLE_EVENT, VIEW_EVENT);
 export const STUDENT = [
   { key: 0, value: profile_students },
   { key: 1, value: activity_students },
-  { key: 2, value: events_students }
+  { key: 2, value: events_students },
 ];
