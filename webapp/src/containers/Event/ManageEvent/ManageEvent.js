@@ -434,7 +434,7 @@ const ManageEvent = props => {
 
   /** Table Data */
   const column = [
-    { name: "Event", sortable: true, selector: "title" },
+    { name: "Name", sortable: true, selector: "title" },
     { name: "Date", sortable: true, selector: "start_date_time" },
     {
       name: "Actions",

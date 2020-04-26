@@ -377,7 +377,7 @@ const AddStudentToRecruitmentDrive = props => {
   /** Table Data */
   const column = [
     {
-      name: "Student Name",
+      name: "Name",
       sortable: true,
       cell: row => <CustomLink row={row} />
     },
