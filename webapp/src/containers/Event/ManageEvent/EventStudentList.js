@@ -34,6 +34,7 @@ import HireStudent from "./HireStudent";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ExportCSV from "./ExportCSV";
 import LoaderContext from "../../../context/LoaderContext";
+import MarkAttaindance from "./MarkAttaindance";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const STREAM_URL =
@@ -79,11 +80,8 @@ const StudentList = props => {
     isHired: false,
     isUnHired: false,
     showModalHire: false,
-    isStudentHired: false,
     studentName: "",
     hireStudent: "",
-    fromHiredModal: false,
-    hiredDehireMessage: "",
 
     /** Pagination and sortinig data */
     isDataLoading: false,
@@ -100,8 +98,6 @@ const StudentList = props => {
     isAbsent: false,
     showModalAttaindance: false
   });
-
-  console.log("Message", formState.message);
 
   useEffect(() => {
     getStudentList(10, 1);
@@ -193,31 +189,35 @@ const StudentList = props => {
   };
 
   const getHiredIds = async studentData => {
-    let ids = [];
+    let studentEventData = [];
     for (let data in studentData) {
       let paramsForHire = {
         "event.id": props["location"]["eventId"],
-        "student.id": studentData[data]["id"],
-        hired_at_event: true
+        "student.id": studentData[data]["id"]
       };
       await serviceProvider
         .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
         .then(res => {
-          if (res.data.result.length !== 0) {
-            ids.push(studentData[data]["id"]);
+          for (let i in res.data.result) {
+            var attaindandeAndHire = {};
+            attaindandeAndHire["Attaindance"] =
+              res.data.result[i]["attendance_verified"];
+            attaindandeAndHire["HireDehire"] =
+              res.data.result[i]["hired_at_event"];
+            studentEventData.push(attaindandeAndHire);
           }
         })
         .catch(error => {
           console.log("error", error);
         });
     }
-    return ids;
+    return studentEventData;
   };
 
   const convertEventData = (data, hiredIds) => {
     let x = [];
     if (data.length > 0) {
-      for (let i in data) {
+      for (let i in (data, hiredIds)) {
         var eventIndividualData = {};
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["studentid"] = data[i]["user"]
@@ -236,17 +236,16 @@ const StudentList = props => {
         eventIndividualData["stream"] = data[i]["stream"]
           ? data[i]["stream"]["name"]
           : "";
-        eventIndividualData["educations"] = data[i]["educations"][0]
-          ? data[i]["educations"][0]["year_of_passing"]
+        eventIndividualData["educations"] = data[i]["qualifications"][0]
+          ? data[i]["qualifications"][0]["education_year"]
           : "";
         eventIndividualData["mobile"] = data[i]["user"]
           ? data[i]["user"]["contact_number"]
           : "";
-        if (hiredIds.includes(data[i]["id"])) {
-          eventIndividualData["hired"] = true;
-        } else {
-          eventIndividualData["hired"] = false;
-        }
+
+        eventIndividualData["attaindance"] = hiredIds[i]["Attaindance"];
+        eventIndividualData["hired"] = hiredIds[i]["HireDehire"];
+
         x.push(eventIndividualData);
       }
       return x;
@@ -271,11 +270,12 @@ const StudentList = props => {
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
-      showModalHire: false
+      showModalHire: false,
+      showModalAttaindance: false
     }));
   };
 
-  const handleCloseHireModal = (status, statusToShow = "") => {
+  const handleCloseHireModal = status => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
@@ -284,24 +284,12 @@ const StudentList = props => {
       isStudentHired: status,
       showModalHire: false,
       fromHiredModal: true,
-      message: statusToShow
+      isAttaindanceMarked: false,
+      fromAttaindanceModal: false
     }));
     if (status) {
       getStudentList(formState.pageSize, 1);
     }
-  };
-
-  const isStudentHiredCompleted = (
-    status,
-    fromHiredModal,
-    isHired,
-    isUnHired,
-    message
-  ) => {
-    // console.log("message", message);
-    // formState.isStudentHired = status;
-    // formState.fromHiredModal = fromHiredModal;
-    // formState.hiredDehireMessage = message;
   };
 
   const hiredCell = event => {
@@ -342,7 +330,8 @@ const StudentList = props => {
         isHired: true,
         isUnHired: false,
         showModalHire: true,
-        studentName: studentName
+        fromHiredModal: false,
+        isStudentHired: false
       }));
     } else {
       setFormState(formState => ({
@@ -351,7 +340,9 @@ const StudentList = props => {
         isHired: false,
         isUnHired: true,
         showModalHire: true,
-        studentName: studentName
+        messageToShow: "",
+        fromHiredModal: false,
+        isStudentHired: false
       }));
     }
     setLoaderStatus(false);
@@ -376,13 +367,10 @@ const StudentList = props => {
       .then(res => {
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
-        console.log("attaindance", registerData);
         if (registerData.attendance_verified) {
           attaindanceCellData(regUserID, false, "");
-          console.log("present");
         } else {
           attaindanceCellData(regUserID, true, "");
-          console.log("absent");
         }
       })
       .catch(error => {
@@ -411,6 +399,23 @@ const StudentList = props => {
       }));
     }
     setLoaderStatus(false);
+  };
+
+  const handleCloseAttaindanceModal = status => {
+    /** This restores all the data when we close the modal */
+    //restoreData();
+    setOpen(true);
+    setFormState(formState => ({
+      ...formState,
+      isAttaindanceMarked: status,
+      showModalAttaindance: false,
+      fromAttaindanceModal: true,
+      isStudentHired: false,
+      fromHiredModal: false
+    }));
+    if (status) {
+      getStudentList(formState.pageSize, 1);
+    }
   };
 
   /** Pagination */
@@ -632,7 +637,7 @@ const StudentList = props => {
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
-    { name: "Academic Year", sortable: true, selector: "educations" },
+    { name: "Education Year", sortable: true, selector: "educations" },
     { name: "Mobile", sortable: true, selector: "mobile" },
 
     {
@@ -644,7 +649,7 @@ const StudentList = props => {
               id={cell.id}
               value={cell.name}
               onClick={handleAttaindance}
-              //style={cell.hired}
+              style={cell.attaindance}
             />
           </div>
           <div className={classes.PaddingFirstActionButton}>
@@ -699,7 +704,62 @@ const StudentList = props => {
         </GreenButton>
       </Grid>
 
-      {/** Error/Success messages to be shown for add */}
+      {/** Error/Success messages to be shown for student */}
+      {formState.fromAttaindanceModal && formState.isAttaindanceMarked ? (
+        <Collapse in={open}>
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {formState.isPresent
+              ? "The Student " +
+                formState.markAttaindance +
+                " has been marked as present."
+              : "The Student " +
+                formState.markAttaindance +
+                " has been marked as absent."}
+          </Alert>
+        </Collapse>
+      ) : null}
+      {formState.fromAttaindanceModal && !formState.isAttaindanceMarked ? (
+        <Collapse in={open}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {formState.isPresent
+              ? "An error has occured while marking student " +
+                formState.markAttaindance +
+                " attaindance. Kindly, try again."
+              : "An error has occured while removing student. " +
+                formState.markAttaindance +
+                " attaindance Kindly, try again."}
+          </Alert>
+        </Collapse>
+      ) : null}
+
       {formState.fromHiredModal && formState.isStudentHired ? (
         <Collapse in={open}>
           <Alert
@@ -717,7 +777,13 @@ const StudentList = props => {
               </IconButton>
             }
           >
-            {formState.message}
+            {formState.isHired
+              ? "The Student " +
+                formState.hireStudent +
+                " has been marked as hired."
+              : "The Student " +
+                formState.hireStudent +
+                " has been marked as dehired."}
           </Alert>
         </Collapse>
       ) : null}
@@ -738,7 +804,13 @@ const StudentList = props => {
               </IconButton>
             }
           >
-            Error hiring student
+            {formState.isHired
+              ? "An error has occured while hiring student " +
+                formState.hireStudent +
+                " . Kindly, try again."
+              : "An error has occured while dehiring student. " +
+                formState.hireStudent +
+                " Kindly, try again."}
           </Alert>
         </Collapse>
       ) : null}
@@ -838,9 +910,10 @@ const StudentList = props => {
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label="Academic Year"
+                      label="Education Year"
                       variant="outlined"
-                      name="tester"
+                      name="education-year"
+                      placeholder="Search by education year"
                       className={classes.autoCompleteField}
                     />
                   )}
@@ -898,10 +971,19 @@ const StudentList = props => {
             showModal={formState.showModalHire}
             isHired={formState.isHired}
             isUnHired={formState.isUnHired}
-            hiredSuccessfully={isStudentHiredCompleted}
+            //hiredSuccessfully={isStudentHiredCompleted}
             closeHireModal={handleCloseHireModal}
             modalClose={modalClose}
             studentName={formState.hireStudent}
+          />
+          <MarkAttaindance
+            id={formState.dataToMarkAttaindance}
+            showModal={formState.showModalAttaindance}
+            isPresent={formState.isPresent}
+            isAbsent={formState.isAbsent}
+            closeAttaindanceModal={handleCloseAttaindanceModal}
+            modalClose={modalClose}
+            studentName={formState.markAttaindance}
           />
         </Card>
       </Grid>
