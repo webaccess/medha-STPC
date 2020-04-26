@@ -13,6 +13,7 @@ export const DEFAULT_URL = "/";
 export const NEW_REGISTRATION_URL = "/registration";
 export const REGISTERED = "/registered";
 export const REQUIRED_CONFORMATION = "/requiredconformation";
+export const REQUIRED_ERROR_PAGE = "/authorization-error";
 export const VIEW_PROFILE = "/view-profile";
 export const EDIT_PROFILE = "/edit-profile";
 
