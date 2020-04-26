@@ -10,7 +10,7 @@ const CrossGridIcon = (props) => {
         value={props.name}
         onClick={props.onClick}
         style={{
-          color: "red",
+          color: "#8C8C8C",
           fontSize: "23px",
           cursor: "pointer",
         }}
