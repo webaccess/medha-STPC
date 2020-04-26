@@ -225,12 +225,20 @@ const LogIn = props => {
         }
       )
       .then(response => {
+        console.log("response", response);
         if (
           response.data.user.role.name === "Student" &&
           !response.data.user.studentInfo.verifiedByCollege
         ) {
           setOpenSpinner(false);
           history.push(routeConstants.REQUIRED_CONFORMATION);
+        } else if (
+          response.data.user.role.name === "College Admin" &&
+          response.data.user.college.blocked
+        ) {
+          setOpenSpinner(false);
+          history.push(routeConstants.REQUIRED_ERROR_PAGE);
+          console.log("College is block", response.data.user.college.blocked);
         } else {
           auth.setToken(response.data.jwt, true);
           auth.setUserInfo(response.data.user, true);

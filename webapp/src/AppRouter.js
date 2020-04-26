@@ -68,6 +68,7 @@ import AddEditStudent from "./containers/Registration/AddEditStudent";
 
 /** RequiredConformation */
 import RequiredConformation from "./components/RequiredConformation/RequiredConformation.js";
+import RequiredErrorPage from "./components/RequiredErrorPage/RequiredErrorPage.js";
 
 /** Student */
 import StudentProfile from "./containers/Student/StudentProfile";
@@ -115,6 +116,7 @@ const AppRouter = props => {
           path={routeConstants.REQUIRED_CONFORMATION}
           exact
         />
+        <RequiredErrorPage path={routeConstants.REQUIRED_ERROR_PAGE} exact />
         <Route path={routeConstants.LOGOUT_URL} component={Logout} exact />
         <Registered path={routeConstants.REGISTERED} layout={Layout} exact />
         {/**Student Registration route */}

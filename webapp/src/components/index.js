@@ -33,3 +33,4 @@ export { default as HowToReg } from "./HowToReg";
 export { default as ApproveUnapprove } from "./ApproveUnapprove";
 export { default as Breadcrumbs } from "./Breadcrumbs";
 export { default as AlertMessage } from "./AlertMessage";
+export { default as RequiredErrorPage } from "./RequiredErrorPage";
