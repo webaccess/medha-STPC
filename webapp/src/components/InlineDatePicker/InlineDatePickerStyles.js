@@ -41,6 +41,13 @@ const customTheme = createMuiTheme({
     MuiSvgIcon: {
       root: {
         fontSize: "20px",
+        paddingTop: "5px",
+      },
+    },
+    MuiFormLabel: {
+      root: {
+        fontSize: "14px",
+        color: "#263238",
       },
     },
   },

@@ -33,14 +33,12 @@ import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import auth from "../../../components/Auth";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import LoaderContext from "../../../context/LoaderContext";
-import SetIndexContext from "../../../context/SetIndexContext";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
-const END_DATE_FILTER = "end_date_time_lte";
+const END_DATE_FILTER = "end_date_time_lt";
 const SORT_FIELD_KEY = "_sort";
 
 const ManageEvent = props => {
@@ -48,10 +46,7 @@ const ManageEvent = props => {
   const history = useHistory();
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const { setLoaderStatus } = useContext(LoaderContext);
-  /** Value to set for event filter */
-  const [value, setValue] = React.useState(null);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -222,6 +217,48 @@ const ManageEvent = props => {
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["start_date_time"] = startDate.toDateString();
+        eventIndividualData["IsEditable"] = false;
+        if (auth.getUserInfo().role.name === "College Admin") {
+          let state = false;
+          if (
+            data[i]["state"] &&
+            data[i]["state"]["id"] &&
+            auth.getUserInfo().state.id === data[i]["state"]["id"]
+          ) {
+            state = true;
+          }
+          let rpc = false;
+          if (
+            data[i]["rpc"] &&
+            data[i]["rpc"]["id"] &&
+            auth.getUserInfo().rpc.id === data[i]["rpc"]["id"]
+          ) {
+            rpc = true;
+          }
+          let zone = false;
+          if (
+            data[i]["zone"] &&
+            data[i]["zone"]["id"] &&
+            auth.getUserInfo().zone.id === data[i]["zone"]["id"]
+          ) {
+            zone = true;
+          }
+          let colleges = false;
+          if (
+            data[i]["colleges"] &&
+            data[i]["colleges"].length === 1 &&
+            data[i]["colleges"][0]["id"] === auth.getUserInfo().college.id
+          ) {
+            colleges = true;
+          }
+          if (state && rpc && zone && colleges) {
+            eventIndividualData["IsEditable"] = true;
+          } else {
+            eventIndividualData["IsEditable"] = false;
+          }
+        } else if (auth.getUserInfo().role.name === "Medha Admin") {
+          eventIndividualData["IsEditable"] = true;
+        }
         x.push(eventIndividualData);
       }
       return x;
@@ -397,7 +434,7 @@ const ManageEvent = props => {
 
   /** Table Data */
   const column = [
-    { name: "Event", sortable: true, selector: "title" },
+    { name: "Name", sortable: true, selector: "title" },
     { name: "Date", sortable: true, selector: "start_date_time" },
     {
       name: "Actions",
@@ -407,7 +444,12 @@ const ManageEvent = props => {
             <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
           </div>
           <div className={classes.PaddingActionButton}>
-            <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
+            <EditGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={editCell}
+              disabled={!cell.IsEditable}
+            />
           </div>
           <div className={classes.PaddingActionButton}>
             <ViewStudentGridIcon
@@ -421,6 +463,7 @@ const ManageEvent = props => {
               id={cell.id}
               value={cell.title}
               onClick={deleteCell}
+              disabled={!cell.IsEditable}
             />
           </div>
         </div>
@@ -461,11 +504,13 @@ const ManageEvent = props => {
 
   /** Handle Start Date filter change */
   const handleStartDateChange = (START_DATE_FILTER, event) => {
-    let startDate = moment(event).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    let startDate = moment(event).format("YYYY-MM-DDT00:00:00.000Z");
     if (startDate === "Invalid date") {
       startDate = null;
     }
-    formState.filterDataParameters[START_DATE_FILTER] = startDate;
+    formState.filterDataParameters[START_DATE_FILTER] = new Date(
+      startDate
+    ).toISOString();
     setFormState(formState => ({
       ...formState,
       startDate: event
@@ -474,11 +519,15 @@ const ManageEvent = props => {
 
   /** Handle End Date filter change */
   const handleEndDateChange = (END_DATE_FILTER, event) => {
-    let endDate = moment(event).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+    let endDate = moment(event)
+      .add(1, "days")
+      .format("YYYY-MM-DDT00:00:00.000Z");
     if (endDate === "Invalid date") {
       endDate = null;
     }
-    formState.filterDataParameters[END_DATE_FILTER] = endDate;
+    formState.filterDataParameters[END_DATE_FILTER] = new Date(
+      endDate
+    ).toISOString();
     setFormState(formState => ({
       ...formState,
       endDate: event
@@ -486,68 +535,14 @@ const ManageEvent = props => {
   };
 
   const handleFilterChangeForEventField = event => {
-    getFilteredEventDataValueInDropDown(event.target.value);
-    event.persist();
-    // setRpcsFilter(event.target.value);
-  };
-
-  const getFilteredEventDataValueInDropDown = eventValue => {
-    setIsLoading(true);
-    setValue({
-      title: eventValue
-    });
-    if (eventValue && eventValue !== null && eventValue !== "") {
-      formState.filterDataParameters[EVENT_FILTER] = eventValue;
-      let params = {
-        [EVENT_FILTER]: eventValue
-      };
-      let filterEvents =
-        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
-      if (auth.getUserInfo().role.name === "College Admin") {
-        filterEvents =
-          strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_COLLEGES +
-          "/" +
-          auth.getUserInfo().college.id +
-          "/event";
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [EVENT_FILTER]: event.target.value
       }
-      serviceProviders
-        .serviceProviderForGetAsyncRequest(filterEvents, params)
-        .then(res => {
-          if (res.data.result.length !== 0) {
-          }
-          setIsLoading(false);
-          setFormState(formState => ({
-            ...formState,
-            eventFilterData: res.data.result,
-            isClearResetFilter: false,
-            isEventCleared: eventValue
-          }));
-        })
-        .catch(error => {
-          setIsLoading(false);
-          console.log("error", error);
-        });
-    } else {
-      delete formState.filterDataParameters[EVENT_FILTER];
-      setIsLoading(false);
-      setFormState(formState => ({
-        ...formState,
-        eventFilterData: [],
-        isClearResetFilter: false,
-        isEventCleared: ""
-      }));
-    }
-  };
-
-  const getEventSelectedValue = (event, value) => {
-    if (value === null) {
-      getFilteredEventDataValueInDropDown(null);
-    } else {
-      getFilteredEventDataValueInDropDown(
-        value.title
-      ); /** value.title will give you name of the event */
-    }
+    }));
+    event.persist();
   };
 
   /** Search filter is called when we select filters and click on search button */
@@ -559,7 +554,6 @@ const ManageEvent = props => {
       await getEventData(perPage, page);
     }
   };
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -729,54 +723,21 @@ const ManageEvent = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="event-text-filter"
-                  freeSolo
-                  autoHighlight
-                  autoComplete
-                  loading={isLoading}
-                  options={formState.eventFilterData}
-                  includeInputInList
-                  getOptionLabel={option => {
-                    if (typeof option === "string") {
-                      return option;
-                    }
-                    if (option.inputValue) {
-                      return option.inputValue;
-                    }
-                    return option.title;
-                  }}
-                  renderOption={option => option.title}
-                  onChange={getEventSelectedValue}
-                  value={formState.isClearResetFilter ? null : value}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Event Name"
-                      margin="normal"
-                      variant="outlined"
-                      placeholder="Search Event's"
-                      className={classes.autoCompleteField}
-                      onChange={handleFilterChangeForEventField}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <React.Fragment>
-                            {isLoading ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : null}
-                            {params.InputProps.endAdornment}
-                          </React.Fragment>
-                        )
-                      }}
-                    />
-                  )}
+                <TextField
+                  label="Name"
+                  margin="normal"
+                  variant="outlined"
+                  value={formState.filterDataParameters[EVENT_FILTER] || ""}
+                  placeholder="Name"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForEventField}
                 />
               </Grid>
               <Grid item className={classes.paddingDate}>
                 <InlineDatePicker
                   id="startDate"
                   label="Start Date"
+                  placeholder="Start Date"
                   value={formState.startDate}
                   name={START_DATE_FILTER}
                   onChange={event =>
@@ -788,6 +749,7 @@ const ManageEvent = props => {
                 <InlineDatePicker
                   id="endDate"
                   label="End Date"
+                  placeholder="End Date"
                   value={formState.endDate}
                   name={END_DATE_FILTER}
                   onChange={event =>
@@ -829,7 +791,6 @@ const ManageEvent = props => {
                 column={column}
                 onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
-                defaultSortField="start_date_time"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
