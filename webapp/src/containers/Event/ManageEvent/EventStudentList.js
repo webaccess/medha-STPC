@@ -137,6 +137,7 @@ const StudentList = props => {
     ) {
       EVENT_ID = formState.eventId;
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
+      console.log("regStudent_url", regStudent_url);
       if (auth.getUserInfo().role.name === "College Admin") {
         paramsForevents["user.college"] = auth.getUserInfo()["college"]["id"];
       }
@@ -595,14 +596,16 @@ const StudentList = props => {
               style={cell.attaindance}
             />
           </div>
-          <div className={classes.PaddingFirstActionButton}>
-            <ThumbIcon
-              id={cell.id}
-              value={cell.name}
-              onClick={hiredCell}
-              style={cell.hired}
-            />
-          </div>
+          {cell.attaindance === true ? (
+            <div className={classes.PaddingFirstActionButton}>
+              <ThumbIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={hiredCell}
+                style={cell.hired}
+              />
+            </div>
+          ) : null}
         </div>
       ),
       width: "18%",
