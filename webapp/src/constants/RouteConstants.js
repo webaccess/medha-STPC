@@ -24,6 +24,8 @@ export const EDIT_EDUCATION = "/edit-education";
 export const MANAGE_STUDENT = "/manage-student";
 export const VALIDATE_STUDENT = "/validate-student";
 export const PROFILE = "/profile";
+export const VIEW_PAST_ACTIVITIES = "/past-activities";
+export const VIEW_PAST_EVENTS = "/past-events";
 
 export const ADD_STUDENT_FROM_COLLEGE_ADMIN = "/college-add-student";
 export const EDIT_STUDENT_FROM_COLLEGE_ADMIN = "/college-edit-student";
@@ -153,7 +155,7 @@ export const MEDHA_ADMIN = [
   { key: 1, value: masters_medha_admin },
   { key: 2, value: user_management_medha_admin },
   { key: 3, value: activity_medha_admin },
-  { key: 4, value: events_medha_admin },
+  { key: 4, value: events_medha_admin }
 ];
 
 /** college admin */
@@ -199,7 +201,7 @@ export const COLLEGE_ADMIN = [
   { key: 1, value: college_profile_admin_admin },
   { key: 2, value: students_college_admin },
   { key: 3, value: activity_college_admin },
-  { key: 4, value: events_college_admin },
+  { key: 4, value: events_college_admin }
 ];
 
 /** Student */
@@ -227,5 +229,5 @@ events_students.push(ELIGIBLE_EVENT, VIEW_EVENT);
 export const STUDENT = [
   { key: 0, value: profile_students },
   { key: 1, value: activity_students },
-  { key: 2, value: events_students },
+  { key: 2, value: events_students }
 ];

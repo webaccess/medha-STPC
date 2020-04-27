@@ -99,20 +99,28 @@ const MenuItems = props => {
         link: routeConstants.VIEW_PROFILE,
         tabItems: [
           {
-            name: "Education",
-            link: routeConstants.VIEW_EDUCATION
-          },
-          {
-            name: "Documents",
-            link: routeConstants.VIEW_DOCUMENTS
+            name: "Personal Details",
+            link: routeConstants.VIEW_PROFILE
           },
           {
             name: "Academic History",
             link: routeConstants.VIEW_ACADEMIC_HISTORY
           },
           {
-            name: "Personal Details",
-            link: routeConstants.VIEW_PROFILE
+            name: "Documents",
+            link: routeConstants.VIEW_DOCUMENTS
+          },
+          {
+            name: "Education",
+            link: routeConstants.VIEW_EDUCATION
+          },
+          {
+            name: "Activities",
+            link: routeConstants.VIEW_PAST_ACTIVITIES
+          },
+          {
+            name: "Events",
+            link: routeConstants.VIEW_PAST_EVENTS
           }
         ]
       },
