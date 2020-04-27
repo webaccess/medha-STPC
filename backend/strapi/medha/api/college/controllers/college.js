@@ -532,7 +532,6 @@ module.exports = {
   },
   async deleteStudents(ctx) {
     let { id } = ctx.request.body;
-    console.log(id);
 
     let user = [];
     let notStudent = await Promise.all(
@@ -541,28 +540,23 @@ module.exports = {
         if (student === null) {
           return null;
         } else {
-          console.log(student);
           const data = { studentId: id, userId: student.user.id };
           user.push(data);
           return id;
         }
       })
     );
-    console.log("user id list");
-    console.log(user);
 
     notStudent = _.xor(id, notStudent).filter((c) => c);
-    console.log("not a student:");
-    console.log(notStudent);
-    id = _.pullAll(id, notStudent);
 
-    const stud = await strapi.query("student").findOne({ id: 1 });
-    const documents = stud.documents;
-    console.log(documents);
-    if (documents.length > 0) console.log("In documents If");
+    id = _.pullAll(id, notStudent);
 
     let list = await Promise.all(
       id.map(async (id) => {
+        const stud = await strapi.query("student").findOne({ id: id });
+        const documents = stud.documents;
+        if (documents.length > 0) return id;
+
         const academic_history = await strapi
           .query("academic-history")
           .findOne({ student: id });
@@ -584,11 +578,9 @@ module.exports = {
         if (event_registration !== null) return id;
       })
     );
-    console.log("after list await");
+
     list = _.xor(id, list).filter((c) => c);
     id = _.pullAll(id, list);
-    console.log("list which needs to be deleted is:");
-    console.log(list);
     console.log("id that cant't be deleted is:");
     console.log(id);
 
@@ -599,43 +591,28 @@ module.exports = {
     console.log("after filtering userId");
     console.log(userId);
 
-    // const result = await Promise.all(
-    //   userId.map(async (user) => {
-    //     const student = await strapi
-    //       .query("student")
-    //       .delete({ id: user.studentId });
-    //     // console.log(student);
-    //     const userData = await strapi
-    //       .query("user", "users-permissions")
-    //       .delete({ id: user.userId });
-    //     //console.log(userData);
+    console.log("not a student:");
+    console.log(notStudent);
 
-    //     return { student: student, user: userData };
-    //   })
-    // );
-    // console.log(result);
+    const result = await Promise.all(
+      userId.map(async (user) => {
+        const student = await strapi
+          .query("student")
+          .delete({ id: user.studentId });
+        // console.log(student);
+        const userData = await strapi
+          .query("user", "users-permissions")
+          .delete({ id: user.userId });
+        //console.log(userData);
 
-    //Add return statement with relevent details.
+        return { student: student, user: userData };
+      })
+    );
 
-    // await bookshelf
-    //   .transaction(async (t) => {
-    //     const student = await bookshelf
-    //       .model("student")
-    //       .where({ id: list })
-    //       .destroy({ transacting: t });
-    //     console.log(student);
-    //     return await bookshelf
-    //       .model("user")
-    //       .where({ id: userId })
-    //       .destroy({ transacting: t });
-    //   })
-    //   .then((result) => {
-    //     console.log(result);
-    //     return ctx.send(utils.getResponse(result));
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     return ctx.response.badRequest(`Invalid ${error.detail}`);
-    //   });
+    if (notStudent.length > 0)
+      return ctx.response.notFound(
+        "Students with Id " + `${notStudent}` + " not found"
+      );
+    else return utils.getFindOneResponse("success");
   },
 };
