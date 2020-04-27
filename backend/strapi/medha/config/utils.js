@@ -78,6 +78,24 @@ function getErrorResponse(response) {
   };
 }
 
+function sort(data, sort) {
+  let sortByFields = [],
+    orderByFields = [];
+
+  sort.forEach(s => {
+    sortByFields.push(s.field);
+    orderByFields.push(s.order);
+  });
+
+  let result;
+  if (sortByFields.length && orderByFields.length) {
+    result = _.orderBy(data, sortByFields, orderByFields);
+  } else {
+    result = data;
+  }
+  return result;
+}
+
 module.exports = {
   getRequestParams,
   getPaginatedResponse,
@@ -86,5 +104,6 @@ module.exports = {
   getTotalRecords,
   asyncForEach,
   paginate,
-  getErrorResponse
+  getErrorResponse,
+  sort
 };

@@ -53,26 +53,16 @@ module.exports = {
    * get student using event id
    */
   async students(ctx) {
-    // const { id } = ctx.params;
-    // const { page, pageSize } = utils.getRequestParams(ctx.request.query);
-    // const registrations = await strapi
-    //   .query("event-registration")
-    //   .find({ event: id });
-    // const studentIds = registrations.map((r) => r.student.id);
-    // let students = await strapi.query("student").find({ id_in: studentIds });
-    // students = students.map((student) => {
-    //   student.user = sanitizeUser(student.user);
-    //   return student;
-    // });
-    // const response = utils.paginate(students, page, pageSize);
-    // return {
-    //   result: response.result,
-    //   ...response.pagination
-    // };
-
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
+
+    console.log(filters);
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
+    }
 
     const event = await strapi.query("event").findOne({ id });
     if (!event) {
@@ -116,6 +106,11 @@ module.exports = {
         filtered.push(student);
       }
     });
+
+    // Sorting ascending or descending on one or multiple fields
+    if (sort && sort.length) {
+      filtered = utils.sort(filtered, sort);
+    }
 
     const response = utils.paginate(filtered, page, pageSize);
     return {
@@ -168,7 +163,13 @@ module.exports = {
     const { id, collegeId } = ctx.params;
 
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
+
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
+    }
 
     const event = await strapi.query("event").findOne({ id });
     const college = await strapi.query("college").findOne({ id: collegeId });
@@ -279,6 +280,11 @@ module.exports = {
         filtered.push(student);
       }
     });
+
+    // Sorting ascending or descending on one or multiple fields
+    if (sort && sort.length) {
+      filtered = utils.sort(filtered, sort);
+    }
 
     const response = utils.paginate(filtered, page, pageSize);
     return {
