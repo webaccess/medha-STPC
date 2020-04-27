@@ -291,6 +291,7 @@ const roles = {
           "event",
           "admins",
           "studentregister",
+          "deletestudents",
         ],
       },
       {
