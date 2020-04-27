@@ -9,7 +9,8 @@ import {
   Collapse,
   IconButton,
   Typography,
-  CircularProgress
+  CircularProgress,
+  Tooltip
 } from "@material-ui/core";
 import { Table, Spinner, Alert } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -214,9 +215,11 @@ const ManageEvent = props => {
       for (let i in data) {
         var eventIndividualData = {};
         let startDate = new Date(data[i]["start_date_time"]);
+        let endDate = new Date(data[i]["end_date_time"]);
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["start_date_time"] = startDate.toDateString();
+        eventIndividualData["end_date_time"] = endDate.toDateString();
         eventIndividualData["IsEditable"] = false;
         if (auth.getUserInfo().role.name === "College Admin") {
           let state = false;
@@ -434,8 +437,24 @@ const ManageEvent = props => {
 
   /** Table Data */
   const column = [
-    { name: "Name", sortable: true, selector: "title" },
-    { name: "Date", sortable: true, selector: "start_date_time" },
+    {
+      name: "Name",
+      sortable: true,
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.title}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.title}`}</div>
+        </Tooltip>
+      )
+    },
+    { name: "Start Date", sortable: true, selector: "start_date_time" },
+    { name: "End Date", sortable: true, selector: "end_date_time" },
     {
       name: "Actions",
       cell: cell => (
