@@ -5,14 +5,13 @@ import {
   Card,
   CardContent,
   Grid,
-  Tooltip,
   Collapse,
   IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import styles from "./AcademicHistory.module.css";
-import useStyles from "./ViewAcademicHistoryStyles.js";
+import useStyles from "../CommonStyles/ViewStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
