@@ -97,6 +97,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": " /colleges/:id/delete-students",
+      "handler": "college.deleteStudents",
+      "config": {
+        "policies": ["isAllowedDelete"]
+      }
+    },
+    {
       "method": "DELETE",
       "path": "/colleges/:id",
       "handler": "college.delete",
