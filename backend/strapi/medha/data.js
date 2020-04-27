@@ -445,6 +445,7 @@ const roles = {
           "registeredevents",
           "activity",
           "pastevents",
+          "pastActivity",
         ],
       },
       {

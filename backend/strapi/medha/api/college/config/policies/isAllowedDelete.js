@@ -6,7 +6,7 @@
 
 module.exports = async (ctx, next) => {
   // Add your own logic here.
-  console.log("In isAllowedDelete policy.");
+
   const { id } = ctx.params;
   const user = ctx.state.user;
   const body = ctx.request.body;

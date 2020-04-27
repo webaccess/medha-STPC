@@ -551,9 +551,8 @@ module.exports = {
     const currentDate = new Date();
     result = result.filter((event) => {
       const endDate = new Date(event.end_date_time);
-      const time =
-        (endDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
-      if (time > 0.0) return event;
+
+      if (endDate.getTime() > currentDate.getTime()) return event;
     });
     const response = utils.paginate(result, page, pageSize);
     return {
@@ -564,7 +563,7 @@ module.exports = {
 
   async activity(ctx) {
     const { id } = ctx.params;
-
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     const student = await strapi.query("student").findOne({ id });
 
     if (!student) return ctx.response.notFound("Student does not exist");
@@ -580,10 +579,9 @@ module.exports = {
     const currentDate = new Date();
 
     activityBatch = activityBatch.filter((activityBatch) => {
-      const startTime = new Date(activityBatch.activity_batch.start_date_time);
-      const time =
-        (startTime.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
-      if (time > 0.0) return activityBatch;
+      const endTime = new Date(activityBatch.activity_batch.end_date_time);
+
+      if (endTime.getTime() > currentDate.getTime()) return activityBatch;
     });
     console.log(activityBatch);
     if (activityBatch) {
@@ -609,7 +607,11 @@ module.exports = {
         })
         .filter((activity) => activity);
 
-      return utils.getFindOneResponse(result);
+      const response = utils.paginate(result, page, pageSize);
+      return {
+        result: response.result,
+        ...response.pagination,
+      };
     }
   },
   /**
@@ -722,14 +724,66 @@ module.exports = {
     const currentDate = new Date();
     result = result.filter((event) => {
       const endDate = new Date(event.end_date_time);
-      const time =
-        (currentDate.getTime() - endDate.getTime()) / (1000 * 3600 * 24);
-      if (time > 0.0) return event;
+
+      if (currentDate.getTime() > endDate.getTime()) return event;
     });
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
       ...response.pagination,
     };
+  },
+  async pastActivity(ctx) {
+    const { id } = ctx.params;
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const student = await strapi.query("student").findOne({ id });
+
+    if (!student) return ctx.response.notFound("Student does not exist");
+
+    let activityBatch = await strapi
+      .query("activity-batch-attendance")
+      .find({ student: id });
+
+    if (!activityBatch.length)
+      return ctx.response.notFound("Student not Enrolled in any event");
+    console.log(activityBatch);
+
+    const currentDate = new Date();
+
+    activityBatch = activityBatch.filter((activityBatch) => {
+      const endTime = new Date(activityBatch.activity_batch.end_date_time);
+
+      if (currentDate.getTime() > endTime.getTime()) return activityBatch;
+    });
+    console.log(activityBatch);
+    if (activityBatch) {
+      const activityIds = activityBatch.map(
+        (activityBatch) => activityBatch.activity_batch.activity
+      );
+
+      const activity = await strapi.query("activity").find({ id: activityIds });
+      // console.log(activity);
+
+      const result = activity
+        .map((activity) => {
+          let flag = 0;
+          // for (let i = 0; i < activityBatch.length; i++) {
+          activityBatch.forEach((activityBatch) => {
+            if (activity.id === activityBatch.activity_batch.activity) {
+              activity["activity_batch"] = activityBatch.activity_batch;
+              flag = 1;
+            }
+          });
+
+          if (flag) return activity;
+        })
+        .filter((activity) => activity);
+
+      const response = utils.paginate(result, page, pageSize);
+      return {
+        result: response.result,
+        ...response.pagination,
+      };
+    }
   },
 };
