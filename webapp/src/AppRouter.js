@@ -20,7 +20,7 @@ import {
   EditEducation,
   RouteWithTabLayout,
   EditAcademicHistoryRoute,
-  EditActivityBatchRoute
+  EditActivityBatchRoute,
 } from "./authroute";
 
 /** General */
@@ -57,6 +57,7 @@ import StudentList from "./containers/Event/ManageEvent/EventStudentList";
 import ViewEvent from "./containers/Event/ViewEvent/ViewEvent";
 import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
 import AddStudentToRecruitmentDrive from "./containers/Event/ManageEvent/AddStudentToRecruitmentDrive";
+import ViewPastEvent from "./containers/Event/ViewEvent/ViewPastEvent";
 
 /** OTP */
 import RequestOtp from "./containers/OTP/Requestotp";
@@ -92,7 +93,7 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 
-const AppRouter = props => {
+const AppRouter = (props) => {
   return (
     <div>
       <Switch>
@@ -168,6 +169,13 @@ const AppRouter = props => {
           layout={Layout}
           path={routeConstants.VIEW_PROFILE}
           title="Profile"
+        />
+        {/**View Past Event */}
+        <RouteWithTabLayout
+          component={ViewPastEvent}
+          exact
+          layout={Layout}
+          path={routeConstants.VIEW_PAST_EVENTS}
         />
 
         {/**Education */}
