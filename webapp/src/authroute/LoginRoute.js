@@ -13,7 +13,7 @@ import * as routeConstants from "../constants/RouteConstants";
 export default function LoginRoute(props) {
   const { layout: Layout, ...rest } = props;
   if (props.type === "login") {
-    if (auth.getToken() !== null) {
+    if (auth.getToken() !== null && auth.getUserInfo() !== null) {
       return auth.getUserInfo().role.name === "Student" ? (
         <Redirect
           to={{
