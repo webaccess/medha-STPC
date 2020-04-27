@@ -29,6 +29,7 @@ import registrationSchema from "../AddEditStudentSchema";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../../../api/Axios.js";
 import LoaderContext from "../../../../context/LoaderContext";
+import { get } from "lodash";
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
@@ -80,6 +81,7 @@ const AddEditStudentForCollegeAdmin = (props) => {
     values: {},
     touched: {},
     errors: {},
+    dateOfBirth: false,
     isSuccess: false,
     showPassword: false,
     addStudent: props.location.addStudent ? props.location.addStudent : false,
@@ -267,7 +269,13 @@ const AddEditStudentForCollegeAdmin = (props) => {
       );
       formState.errors = formUtilities.setErrors(formState.values, schema);
     }
-    if (isValid) {
+
+    if(selectedDate === null){
+      formState.dateOfBirth = true;
+    }else {
+      formState.dateOfBirth = false;
+    }
+    if (isValid && !formState.dateOfBirth) {
       /** CALL POST FUNCTION */
       postStudentData();
 
@@ -488,8 +496,12 @@ const AddEditStudentForCollegeAdmin = (props) => {
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label="First Name"
+                      label={get(registrationSchema["firstname"], "label")}
                       name="firstname"
+                      placeholder={get(
+                        registrationSchema["firstname"],
+                        "placeholder"
+                      )}
                       value={formState.values["firstname"] || ""}
                       variant="outlined"
                       error={hasError("firstname")}
@@ -507,8 +519,12 @@ const AddEditStudentForCollegeAdmin = (props) => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label="Last Name"
+                      label={get(registrationSchema["lastname"], "label")}
                       name="lastname"
+                      placeholder={get(
+                        registrationSchema["lastname"],
+                        "placeholder"
+                      )}
                       value={formState.values["lastname"] || ""}
                       variant="outlined"
                       required
@@ -528,8 +544,15 @@ const AddEditStudentForCollegeAdmin = (props) => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label="Father's First Name"
+                      label={get(
+                        registrationSchema["fatherFirstName"],
+                        "label"
+                      )}
                       name="fatherFirstName"
+                      placeholder={get(
+                        registrationSchema["fatherFirstName"],
+                        "placeholder"
+                      )}
                       value={formState.values["fatherFirstName"] || ""}
                       variant="outlined"
                       required
@@ -547,8 +570,12 @@ const AddEditStudentForCollegeAdmin = (props) => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label="Father's Last Name"
+                      label={get(registrationSchema["fatherLastName"], "label")}
                       name="fatherLastName"
+                      placeholder={get(
+                        registrationSchema["fatherLastName"],
+                        "placeholder"
+                      )}
                       value={formState.values["fatherLastName"] || ""}
                       variant="outlined"
                       required
@@ -568,8 +595,12 @@ const AddEditStudentForCollegeAdmin = (props) => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <TextField
-                      label="Address"
+                      label={get(registrationSchema["address"], "label")}
                       name="address"
+                      placeholder={get(
+                        registrationSchema["address"],
+                        "placeholder"
+                      )}
                       value={formState.values["address"] || ""}
                       variant="outlined"
                       required
@@ -607,9 +638,13 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         <TextField
                           {...params}
                           error={hasError("state")}
-                          label="State"
+                          label={get(registrationSchema["state"], "label")}
+                          placeholder={get(
+                            registrationSchema["state"],
+                            "placeholder"
+                          )}
                           variant="outlined"
-                          name="tester"
+                          name="state"
                           helperText={
                             hasError("state")
                               ? formState.errors["state"].map((error) => {
@@ -641,9 +676,13 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         <TextField
                           {...params}
                           error={hasError("district")}
-                          label="District"
+                          label={get(registrationSchema["district"], "label")}
+                          placeholder={get(
+                            registrationSchema["district"],
+                            "placeholder"
+                          )}
                           variant="outlined"
-                          name="tester"
+                          name="district"
                           helperText={
                             hasError("district")
                               ? formState.errors["district"].map((error) => {
@@ -657,27 +696,22 @@ const AddEditStudentForCollegeAdmin = (props) => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    <InlineDatePicker
-                      // variant="inline"
-                      format="dd/MM/yyyy"
-                      margin="normal"
-                      id="date-picker-inline"
-                      label="Date of Birth"
-                      value={selectedDate || null}
-                      onChange={(date) => setSelectedDate(date)}
-                      error={hasError("dateofbirth")}
-                      helperText={
-                        hasError("dateofbirth")
-                          ? formState.errors["dateofbirth"].map((error) => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                      }}
-                    />
+                  <Grid item md={6} xs={12} >
+                      <InlineDatePicker
+                        className={classes.dateField}
+                        format="dd/MM/yyyy"
+                        margin="normal"
+                        id="date-picker-inline"
+                        placeholder="DD/MM//YYYY"
+                        label={get(registrationSchema["dateofbirth"], "label")}
+                        value={selectedDate}
+                        onChange={(date) => setSelectedDate(date)}
+                        error={formState.dateOfBirth}
+                        helperText={formState.dateOfBirth ? "Date of Birth is required" : null }
+                        KeyboardButtonProps={{
+                          "aria-label": "change date",
+                        }}
+                      />
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
@@ -699,7 +733,11 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         <TextField
                           {...params}
                           error={hasError("gender")}
-                          label="Gender"
+                          label={get(registrationSchema["gender"], "label")}
+                          placeholder={get(
+                            registrationSchema["gender"],
+                            "placeholder"
+                          )}
                           required
                           variant="outlined"
                           name="tester"
@@ -718,7 +756,11 @@ const AddEditStudentForCollegeAdmin = (props) => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label="Contact Number"
+                      label={get(registrationSchema["contact"], "label")}
+                      placeholder={get(
+                        registrationSchema["contact"],
+                        "placeholder"
+                      )}
                       name="contact"
                       value={formState.values["contact"] || ""}
                       variant="outlined"
@@ -764,7 +806,14 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         <TextField
                           {...params}
                           error={hasError("physicallyHandicapped")}
-                          label="Physically Handicapped"
+                          label={get(
+                            registrationSchema["physicallyHandicapped"],
+                            "label"
+                          )}
+                          placeholder={get(
+                            registrationSchema["physicallyHandicapped"],
+                            "placeholder"
+                          )}
                           variant="outlined"
                           name="tester"
                           helperText={
@@ -784,7 +833,11 @@ const AddEditStudentForCollegeAdmin = (props) => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <TextField
-                      label="Email-Id"
+                      label={get(registrationSchema["email"], "label")}
+                      placeholder={get(
+                        registrationSchema["email"],
+                        "placeholder"
+                      )}
                       name="email"
                       value={formState.values["email"] || ""}
                       variant="outlined"
@@ -823,10 +876,14 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         <TextField
                           {...params}
                           error={hasError("college")}
-                          label="College"
+                          label={get(registrationSchema["college"], "label")}
+                          placeholder={get(
+                            registrationSchema["college"],
+                            "placeholder"
+                          )}
                           variant="outlined"
                           required
-                          name="tester"
+                          name="college"
                           helperText={
                             hasError("college")
                               ? formState.errors["college"].map((error) => {
@@ -860,9 +917,13 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         <TextField
                           {...params}
                           error={hasError("stream")}
-                          label="Stream"
+                          label={get(registrationSchema["stream"], "label")}
+                          placeholder={get(
+                            registrationSchema["stream"],
+                            "placeholder"
+                          )}
                           variant="outlined"
-                          name="tester"
+                          name="stream"
                           helperText={
                             hasError("stream")
                               ? formState.errors["stream"].map((error) => {
@@ -876,7 +937,11 @@ const AddEditStudentForCollegeAdmin = (props) => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label="College Roll Number "
+                      label={get(registrationSchema["rollnumber"], "label")}
+                      placeholder={get(
+                        registrationSchema["rollnumber"],
+                        "placeholder"
+                      )}
                       name="rollnumber"
                       value={formState.values["rollnumber"] || ""}
                       variant="outlined"
@@ -897,7 +962,11 @@ const AddEditStudentForCollegeAdmin = (props) => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label="Username"
+                      label={get(registrationSchema["username"], "label")}
+                      placeholder={get(
+                        registrationSchema["username"],
+                        "placeholder"
+                      )}
                       name="username"
                       value={formState.values["username"] || ""}
                       variant="outlined"
@@ -924,7 +993,11 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         Password
                       </InputLabel>
                       <OutlinedInput
-                        label="Password"
+                        label={get(registrationSchema["password"], "label")}
+                        placeholder={get(
+                          registrationSchema["password"],
+                          "placeholder"
+                        )}
                         name="password"
                         type={formState.showPassword ? "text" : "password"}
                         value={formState.values[user.password]}

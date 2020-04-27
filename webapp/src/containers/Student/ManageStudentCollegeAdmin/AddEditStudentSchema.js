@@ -4,7 +4,7 @@ const RegistrationSchema = {
     id: "firstname",
     autoComplete: "firstname",
     required: true,
-    placeholder: "firstname",
+    placeholder: "First Name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -19,7 +19,7 @@ const RegistrationSchema = {
     id: "lastname",
     autoComplete: "lastname",
     required: true,
-    placeholder: "lastname",
+    placeholder: "Last Name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -30,11 +30,11 @@ const RegistrationSchema = {
     }
   },
   fatherFirstName: {
-    label: "First Name",
-    id: "firstname",
-    autoComplete: "firstname",
+    label: "Father's First Name",
+    id: "fatherFirstName",
+    autoComplete: "fatherFirstName",
     required: true,
-    placeholder: "firstname",
+    placeholder: "Father's First Name ",
     autoFocus: true,
     type: "text",
     validations: {
@@ -45,11 +45,11 @@ const RegistrationSchema = {
     }
   },
   fatherLastName: {
-    label: "Last Name",
-    id: "lastname",
-    autoComplete: "lastname",
+    label: "Father's Last Name",
+    id: "fatherLastName",
+    autoComplete: "fatherLastName",
     required: true,
-    placeholder: "lastname",
+    placeholder: "Father's Last Name",
     autoFocus: true,
     type: "text",
     validations: {
@@ -64,7 +64,7 @@ const RegistrationSchema = {
     id: "address",
     autoComplete: "address",
     required: true,
-    placeholder: "address",
+    placeholder: "Address",
     autoFocus: true,
     type: "text",
     validations: {
@@ -79,27 +79,37 @@ const RegistrationSchema = {
     id: "state",
     autoComplete: "state",
     required: false,
-    placeholder: "state",
+    placeholder: "State",
     autoFocus: true,
     type: "text",
     validations: {}
   },
-  district: {
+  district: { 
     label: "District",
     id: "district",
     autoComplete: "district",
     required: false,
-    placeholder: "district",
+    placeholder: "District",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  dateofbirth: {
+    label: "Date of Birth",
+    id: "dateOfBirth",
+    autoComplete: "dateOfBirth",
+    required: false,
+    placeholder: "Date of Birth",
     autoFocus: true,
     type: "text",
     validations: {}
   },
   contact: {
-    label: "Contact",
+    label: "Contact Number",
     id: "contact",
     autoComplete: "contact",
     required: true,
-    placeholder: "contact",
+    placeholder: "Contact Number",
     autoFocus: true,
     type: "text",
     validations: {
@@ -118,7 +128,7 @@ const RegistrationSchema = {
     id: "gender",
     autoComplete: "gender",
     required: true,
-    placeholder: "gender",
+    placeholder: "Gender",
     autoFocus: true,
     type: "text",
     validations: {
@@ -133,7 +143,7 @@ const RegistrationSchema = {
     id: "physicallyHandicapped",
     autoComplete: "physicallyHandicapped",
     required: false,
-    placeholder: "physicallyHandicapped",
+    placeholder: "Physically Handicapped",
     autoFocus: true,
     type: "checkbox",
     validations: {}
@@ -143,7 +153,7 @@ const RegistrationSchema = {
     id: "college",
     autoComplete: "college",
     required: true,
-    placeholder: "college",
+    placeholder: "College",
     autoFocus: true,
     type: "text",
     validations: {
@@ -158,7 +168,7 @@ const RegistrationSchema = {
     id: "stream",
     autoComplete: "stream",
     required: true,
-    placeholder: "stream",
+    placeholder: "Stream",
     autoFocus: true,
     type: "text",
     validations: {
@@ -169,11 +179,11 @@ const RegistrationSchema = {
     }
   },
   rollnumber: {
-    label: "Roll Number",
+    label: "College Roll Number",
     id: "rollnumber",
     autoComplete: "rollnumber",
     required: true,
-    placeholder: "rollnumber",
+    placeholder: "College Roll Number",
     autoFocus: true,
     type: "integer",
     validations: {
@@ -188,7 +198,7 @@ const RegistrationSchema = {
     id: "email",
     autoComplete: "email",
     required: true,
-    placeholder: "email",
+    placeholder: "Email",
     autoFocus: true,
     type: "text",
     validations: {
@@ -204,11 +214,11 @@ const RegistrationSchema = {
   },
 
   username: {
-    label: "User Name",
+    label: "Username",
     id: "username",
     autoComplete: "username",
     required: true,
-    placeholder: "username",
+    placeholder: "Username",
     autoFocus: true,
     type: "text",
     validations: {
@@ -223,7 +233,7 @@ const RegistrationSchema = {
     id: "password",
     autoComplete: "password",
     required: true,
-    placeholder: "password",
+    placeholder: "Password",
     autoFocus: true,
     type: "text",
     validations: {
@@ -232,16 +242,6 @@ const RegistrationSchema = {
         message: "Password is required"
       }
     }
-  },
-  otp: {
-    label: "OTP",
-    id: "otp",
-    autoComplete: "otp",
-    required: true,
-    placeholder: "otp",
-    autoFocus: true,
-    type: "text",
-    validations: {}
   }
 };
 export default RegistrationSchema;
