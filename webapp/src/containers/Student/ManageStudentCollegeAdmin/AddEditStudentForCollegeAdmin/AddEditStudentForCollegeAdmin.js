@@ -254,7 +254,7 @@ const AddEditStudentForCollegeAdmin = (props) => {
       formState.values,
       schema
     );
-    if (checkAllFieldsValid) {;
+    if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(formState.values, schema);
 
