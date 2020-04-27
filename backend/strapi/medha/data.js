@@ -299,7 +299,13 @@ const roles = {
       },
       {
         name: "event",
-        action: ["findone", "students", "eligibleCollegeStudents", "update"],
+        action: [
+          "findone",
+          "students",
+          "eligibleCollegeStudents",
+          "update",
+          "delete",
+        ],
       },
       {
         name: "event-registration",
@@ -350,7 +356,7 @@ const roles = {
       },
       {
         name: "user",
-        action: ["me", "findOne"],
+        action: ["me", "findOne", "destroy"],
       },
       {
         name: "zone",
