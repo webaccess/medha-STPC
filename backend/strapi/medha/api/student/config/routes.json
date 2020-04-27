@@ -50,6 +50,14 @@
     },
     {
       "method": "GET",
+      "path": "/students/:id/past-activity",
+      "handler": "student.pastActivity",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/students/:id",
       "handler": "student.findOne",
       "config": {
