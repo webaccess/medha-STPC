@@ -147,7 +147,7 @@ const DeleteZone = props => {
             isValid: true
           }));
           formState.isDeleteData = true;
-          handleCloseModal("Colleges has been deleted successfully");
+          handleCloseModal("Colleges have been deleted successfully");
         })
         .catch(error => {
           console.log("error");
@@ -218,9 +218,7 @@ const DeleteZone = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiDelete
-                    ? "Are you sure you want to delete " +
-                      props.id.length +
-                      " Colleges?"
+                    ? "Are you sure you want to delete the selected Colleges?"
                     : "Are you sure you want to delete College " +
                       formState.dataToDelete["name"] +
                       "?"}

@@ -17,10 +17,14 @@ function InlineDatePicker(props) {
           variant="inline"
           inputVariant="outlined"
           format="dd/MM/yyyy"
-          //margin="normal"
+          margin="normal"
           id={props.id}
+          color={props.color}
           label={props.label}
           value={props.value}
+          error={props.error}
+          placeholder={props.placeholder}
+          helperText={props.helperText}
           onChange={props.onChange}
           KeyboardButtonProps={{
             "aria-label": "change date"

@@ -238,7 +238,6 @@ const LogIn = props => {
         ) {
           setOpenSpinner(false);
           history.push(routeConstants.REQUIRED_ERROR_PAGE);
-          console.log("College is block", response.data.user.college.blocked);
         } else {
           auth.setToken(response.data.jwt, true);
           auth.setUserInfo(response.data.user, true);

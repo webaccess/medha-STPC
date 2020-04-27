@@ -10,7 +10,8 @@ import {
   Collapse,
   IconButton,
   Icon,
-  CircularProgress
+  CircularProgress,
+  Tooltip
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import * as routeConstants from "../../../constants/RouteConstants";
@@ -219,6 +220,7 @@ const StudentList = props => {
     if (data.length > 0) {
       for (let i in (data, hiredIds)) {
         var eventIndividualData = {};
+        let educationYear = [];
         eventIndividualData["id"] = data[i]["id"];
         eventIndividualData["studentid"] = data[i]["user"]
           ? data[i]["user"]["id"]
@@ -236,9 +238,14 @@ const StudentList = props => {
         eventIndividualData["stream"] = data[i]["stream"]
           ? data[i]["stream"]["name"]
           : "";
-        eventIndividualData["educations"] = data[i]["qualifications"][0]
-          ? data[i]["qualifications"][0]["education_year"]
-          : "";
+        if (data[i]["qualifications"]) {
+          for (let j in data[i]["qualifications"]) {
+            educationYear.push(data[i]["qualifications"][j]["education_year"]);
+          }
+          eventIndividualData["educations"] = educationYear;
+        } else {
+          eventIndividualData["educations"] = [];
+        }
         eventIndividualData["mobile"] = data[i]["user"]
           ? data[i]["user"]["contact_number"]
           : "";
@@ -560,27 +567,30 @@ const StudentList = props => {
     }
   };
 
-  /** Converts student data */
-  const convertStudentData = studentData => {
-    let data = [];
-    for (let i in studentData) {
-      let temp = {};
-      temp["first_name"] = studentData[i]["user"]["first_name"];
-      temp["father_first_name"] = studentData[i]["father_first_name"];
-      temp["last_name"] = studentData[i]["user"]["last_name"];
-      data.push(temp);
-    }
-    return data;
-  };
   /** Table Data */
   const column = [
     {
-      name: "Students",
+      name: "Name",
       sortable: true,
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
-    { name: "Education Year", sortable: true, selector: "educations" },
+    {
+      name: "Education year",
+      sortable: true,
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.educations}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.educations}`}</div>
+        </Tooltip>
+      )
+    },
     { name: "Mobile", sortable: true, selector: "mobile" },
 
     {
@@ -771,11 +781,11 @@ const StudentList = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label="Students"
+                  label="Name"
                   margin="normal"
                   variant="outlined"
                   value={formState.filterDataParameters[STUDENT_FILTER] || ""}
-                  placeholder="Students"
+                  placeholder="Name"
                   className={classes.autoCompleteField}
                   onChange={handleFilterChangeForStudentField}
                 />
@@ -794,7 +804,7 @@ const StudentList = props => {
                     formState.isClearResetFilter
                       ? null
                       : streams[
-                          streams.findIndex(function(item, i) {
+                          streams.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STREAM_FILTER]
@@ -824,7 +834,7 @@ const StudentList = props => {
                       label="Education Year"
                       variant="outlined"
                       name="education-year"
-                      placeholder="Search by education year"
+                      placeholder="Education Year"
                       className={classes.autoCompleteField}
                     />
                   )}

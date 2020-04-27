@@ -250,9 +250,7 @@ const DeleteState = props => {
                 <Grid container spacing={2} alignItems="center">
                   <Grid item lg className={classes.deletemessage}>
                     {props.isMultiDelete
-                      ? "Are you sure you want to delete " +
-                        props.id.length +
-                        " states?"
+                      ? "Are you sure you want to delete the selected states?"
                       : "Are you sure you want to delete state " +
                         formState.dataToDelete["name"] +
                         "?"}

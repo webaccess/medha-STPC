@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "@material-ui/core";
 
-const DeleteGridIcon = (props) => {
+const DeleteGridIcon = props => {
   return (
     <Tooltip title="Delete" placement="top">
       <i
@@ -12,7 +12,7 @@ const DeleteGridIcon = (props) => {
         onClick={props.disabled ? null : props.onClick}
         style={
           props.disabled
-            ? { color: "gray", fontSize: "20px" }
+            ? { color: "#8C8C8C", fontSize: "20px" }
             : { color: "red", fontSize: "20px" }
         }
       >
