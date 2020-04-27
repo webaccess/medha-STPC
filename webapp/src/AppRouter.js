@@ -20,7 +20,7 @@ import {
   EditEducation,
   RouteWithTabLayout,
   EditAcademicHistoryRoute,
-  EditActivityBatchRoute,
+  EditActivityBatchRoute
 } from "./authroute";
 
 /** General */
@@ -91,7 +91,7 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 
-const AppRouter = (props) => {
+const AppRouter = props => {
   return (
     <div>
       <Switch>
@@ -141,6 +141,7 @@ const AppRouter = (props) => {
           layout={Layout}
           exact
           component={AddEditStudent}
+          title="Edit Profile"
         />
 
         <RequestOtp path={routeConstants.REQUEST_OTP} layout={Layout} exact />
@@ -165,6 +166,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_PROFILE}
+          title="Profile"
         />
 
         {/**Education */}
@@ -173,6 +175,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_EDUCATION}
+          title="View Education"
         />
 
         <RouteWithTabLayout
@@ -180,6 +183,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.ADD_EDUCATION}
+          title="Add Education"
         />
 
         <RouteWithTabLayout
@@ -187,6 +191,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.EDIT_EDUCATION}
+          title="Edit Education"
         />
         {/**Student document */}
         <RouteWithTabLayout
@@ -194,6 +199,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_DOCUMENTS}
+          title="View Document"
         />
 
         <RouteWithTabLayout
@@ -201,6 +207,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.ADD_DOCUMENTS}
+          title="Add Document"
         />
         {/** Activity List*/}
         <RouteWithLayout
@@ -244,6 +251,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_ACADEMIC_HISTORY}
+          title="View Academic History"
         />
 
         <RouteWithTabLayout
@@ -251,6 +259,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.ADD_ACADEMIC_HISTORY}
+          title="Add Academic History"
         />
 
         <RouteWithTabLayout
@@ -258,6 +267,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.EDIT_ACADEMIC_HISTORY}
+          title="Edit Academic History"
         />
 
         {/** User */}
