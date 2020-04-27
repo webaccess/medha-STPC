@@ -122,6 +122,14 @@
     },
     {
       "method": "GET",
+      "path": "/students/:id/past-events",
+      "handler": "student.pastEvents",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
       "path": "/students/:id/events",
       "handler": "student.events",
       "config": {

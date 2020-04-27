@@ -443,6 +443,7 @@ const roles = {
           "events",
           "registeredevents",
           "activity",
+          "pastevents",
         ],
       },
       {

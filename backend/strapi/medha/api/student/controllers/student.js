@@ -547,6 +547,14 @@ module.exports = {
         return event;
       }
     });
+
+    const currentDate = new Date();
+    result = result.filter((event) => {
+      const endDate = new Date(event.end_date_time);
+      const time =
+        (endDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
+      if (time > 0.0) return event;
+    });
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
@@ -612,5 +620,116 @@ module.exports = {
     const { id } = ctx.params;
 
     return await strapi.query("event-registration").find({ student: id });
+  },
+  async pastEvents(ctx) {
+    const { id } = ctx.params;
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const student = await strapi
+      .query("student")
+      .findOne({ id }, ["user.college", "stream"]);
+
+    if (!student) {
+      return ctx.response.notFound("Student does not exist");
+    }
+
+    const { college } = student.user;
+    const { stream } = student;
+
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters,
+        })
+      )
+      .fetchAll()
+      .then((model) => model.toJSON());
+
+    let result;
+    /**Filtering college */
+    if (college) {
+      // Get student college events
+      result = await strapi.services.college.getEvents(college, events);
+    } else {
+      result = events;
+    }
+
+    /**Filtering stream */
+
+    if (stream) {
+      result = result.filter((event) => {
+        const { streams } = event;
+        const streamIds = streams.map((s) => s.id);
+        if (streamIds.length == 0 || _.includes(streamIds, stream.id)) {
+          return event;
+        }
+      });
+    }
+
+    /** Filtering qualifications */
+    const studentEducations = await strapi
+      .query("education")
+      .find({ student: id });
+    result = result.filter((event) => {
+      const { qualifications } = event;
+      let isEligible = true;
+      qualifications.forEach((q) => {
+        const isQualificationPresent = studentEducations.find(
+          (e) =>
+            e.qualification == q.qualification && e.percentage >= q.percentage
+        );
+
+        if (!isQualificationPresent) {
+          isEligible = false;
+        }
+      });
+
+      if (isEligible) {
+        return event;
+      }
+    });
+
+    /**Filtering educations */
+    const academicHistory = await strapi
+      .query("academic-history")
+      .find({ student: id });
+
+    result = result.filter((event) => {
+      const { educations } = event;
+
+      let isEligible = true;
+
+      educations.forEach((edu) => {
+        const isEducationPresent = academicHistory.find(
+          (ah) =>
+            ah.education_year == edu.education_year &&
+            ah.percentage >= edu.percentage
+        );
+
+        if (!isEducationPresent) {
+          isEligible = false;
+        }
+      });
+
+      if (isEligible) {
+        return event;
+      }
+    });
+
+    const currentDate = new Date();
+    result = result.filter((event) => {
+      const endDate = new Date(event.end_date_time);
+      const time =
+        (currentDate.getTime() - endDate.getTime()) / (1000 * 3600 * 24);
+      if (time > 0.0) return event;
+    });
+    const response = utils.paginate(result, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination,
+    };
   },
 };
