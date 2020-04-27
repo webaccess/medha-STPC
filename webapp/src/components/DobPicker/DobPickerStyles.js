@@ -31,10 +31,10 @@ const customTheme = createMuiTheme({
     MuiOutlinedInput: {
       input: {
         padding: "17.5px 14px"
+      },
+      inputAdornedEnd: {
+        paddingRight: "130px"
       }
-      // inputAdornedEnd: {
-      //   paddingRight: "130px"
-      // }
     },
     MuiInputBase: {
       root: {

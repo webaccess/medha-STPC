@@ -16,7 +16,8 @@ import {
   CardActions
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import { Auth as auth, InlineDatePicker } from "../../components";
+import { Auth as auth } from "../../components";
+import DobPicker from "../../components/DobPicker/DobPicker.js";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
@@ -730,7 +731,7 @@ const AddEditStudent = props => {
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
-                  <InlineDatePicker
+                  <DobPicker
                     // variant="inline"
                     format="dd/MM/yyyy"
                     margin="normal"
@@ -992,7 +993,7 @@ const AddEditStudent = props => {
                         fullWidth
                         onChange={handleChange}
                         error={hasError("password")}
-                        helperText={
+                        helpertext={
                           hasError("password")
                             ? formState.errors["password"].map(error => {
                                 return error + " ";
