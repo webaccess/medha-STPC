@@ -81,6 +81,7 @@ import ManageStudents from "./containers/Student/ManageStudentCollegeAdmin/Manag
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import AddEditStudentForCollegeAdmin from "./containers/Student/ManageStudentCollegeAdmin/AddEditStudentForCollegeAdmin/AddEditStudentForCollegeAdmin";
+import ViewPastActivities from "./containers/Student/Activity/PastActivities";
 
 /** Activity */
 import ViewActivity from "./containers/Activity/ViewActivity.js";
@@ -209,6 +210,15 @@ const AppRouter = props => {
           path={routeConstants.ADD_DOCUMENTS}
           title="Add Document"
         />
+
+        <RouteWithTabLayout
+          component={ViewPastActivities}
+          exact
+          layout={Layout}
+          path={routeConstants.VIEW_PAST_ACTIVITIES}
+          title="Activities"
+        />
+
         {/** Activity List*/}
         <RouteWithLayout
           component={ViewActivity}
