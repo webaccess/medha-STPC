@@ -110,9 +110,7 @@ export const QUALIFICATIONANDPERCENTAGE = "Qualification and Percentage";
 export const QUALIFICATIONS = [
   { id: 1, value: "SSC" },
   { id: 2, value: "HSC" },
-  { id: 3, value: "BSc" },
-  { id: 4, value: "MSc" },
-  { id: 5, value: "BE" }
+  { id: 3, value: "Diploma" }
 ];
 
 export const EDUCATIONANDPERCENTAGE = "Education and Percentage";

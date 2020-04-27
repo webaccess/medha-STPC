@@ -142,16 +142,12 @@ const AddEditEvent = props => {
   const [qualifications, setQualifications] = useState([
     { id: 1, value: "SSC" },
     { id: 2, value: "HSC" },
-    { id: 3, value: "BSc" },
-    { id: 4, value: "MSc" },
-    { id: 5, value: "BE" }
+    { id: 3, value: "Diploma" }
   ]);
   const [qualificationsDataBackup, setQualificationsDataBackup] = useState([
     { id: 1, value: "SSC" },
     { id: 2, value: "HSC" },
-    { id: 3, value: "BSc" },
-    { id: 4, value: "MSc" },
-    { id: 5, value: "BE" }
+    { id: 3, value: "Diploma" }
   ]);
   const [educations, setEducations] = useState([
     { id: 1, value: "First" },
@@ -341,9 +337,7 @@ const AddEditEvent = props => {
     let dataForEditing = [
       { id: 1, value: "SSC" },
       { id: 2, value: "HSC" },
-      { id: 3, value: "BSc" },
-      { id: 4, value: "MSc" },
-      { id: 5, value: "BE" }
+      { id: 3, value: "Diploma" }
     ];
     if (formState.isEditEvent) {
       let tempQualificationData = dataForEditing;
