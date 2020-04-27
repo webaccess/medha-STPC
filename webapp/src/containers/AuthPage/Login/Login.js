@@ -214,6 +214,19 @@ const LogIn = props => {
   const hasError = field =>
     formState.touched[field] && formState.errors[field] ? true : false;
 
+  const setUserData = (jwt, user) => {
+    auth.setToken(jwt, true);
+    auth.setUserInfo(user, true);
+    setIfSuccess(true);
+  };
+
+  const moveToErrorPageForBlocked = () => {
+    history.push({
+      pathname: routeConstants.REQUIRED_ERROR_PAGE,
+      from: "login"
+    });
+  };
+
   const processLogin = async () => {
     setOpenSpinner(true);
     await axios
@@ -225,30 +238,73 @@ const LogIn = props => {
         }
       )
       .then(response => {
-        console.log("response", response);
-        if (
-          response.data.user.role.name === "Student" &&
-          !response.data.user.studentInfo.verifiedByCollege
-        ) {
+        if (response.data.user.role.name === "Student") {
+          /** This check whether the college is blocked or not then it checks whether the user is blocked or not */
+          if (response.data.user.college.blocked) {
+            moveToErrorPageForBlocked();
+          } else {
+            if (response.data.user.blocked) {
+              moveToErrorPageForBlocked();
+            } else if (!response.data.user.studentInfo.verifiedByCollege) {
+              history.push(routeConstants.REQUIRED_CONFORMATION);
+            } else {
+              setUserData(response.data.jwt, response.data.user);
+            }
+          }
           setOpenSpinner(false);
-          history.push(routeConstants.REQUIRED_CONFORMATION);
-        } else if (
-          response.data.user.role.name === "College Admin" &&
-          response.data.user.college.blocked
-        ) {
+        } else if (response.data.user.role.name === "College Admin") {
+          if (response.data.user.college.blocked) {
+            moveToErrorPageForBlocked();
+          } else {
+            if (response.data.user.blocked) {
+              moveToErrorPageForBlocked();
+            } else {
+              setUserData(response.data.jwt, response.data.user);
+            }
+          }
           setOpenSpinner(false);
-          history.push(routeConstants.REQUIRED_ERROR_PAGE);
+        } else if (response.data.user.role.name === "Medha Admin") {
+          if (response.data.user.blocked) {
+            moveToErrorPageForBlocked();
+          } else {
+            setUserData(response.data.jwt, response.data.user);
+          }
+          setOpenSpinner(false);
+        } else if (response.data.user.role.name === "Zonal Admin") {
+          if (response.data.user.blocked) {
+            moveToErrorPageForBlocked();
+          } else {
+            setUserData(response.data.jwt, response.data.user);
+          }
+          setOpenSpinner(false);
+        } else if (response.data.user.role.name === "RPC Admin") {
+          if (response.data.user.blocked) {
+            moveToErrorPageForBlocked();
+          } else {
+            setUserData(response.data.jwt, response.data.user);
+          }
+          setOpenSpinner(false);
         } else {
-          auth.setToken(response.data.jwt, true);
-          auth.setUserInfo(response.data.user, true);
-          setIfSuccess(true);
-          // Handle success.
+          moveToErrorPageForBlocked();
         }
       })
       .catch(error => {
-        setOpen(true);
-        setIfFailure(true);
-        console.log("An error occurred:", JSON.stringify(error));
+        if (error.response) {
+          if (error.response.status === 400) {
+            if (error.response.data["message"]) {
+              if (
+                error.response.data["message"][0]["messages"][0]["id"] ===
+                "Auth.form.error.blocked"
+              ) {
+                moveToErrorPageForBlocked();
+              }
+            }
+          } else {
+            setOpen(true);
+            setIfFailure(true);
+            console.log("An error occurred:", JSON.stringify(error));
+          }
+        }
       });
     setOpenSpinner(false);
   };
