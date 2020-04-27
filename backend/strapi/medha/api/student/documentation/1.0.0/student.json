@@ -592,7 +592,7 @@
         ]
       }
     },
-    "/students/{id}/past-activity": {
+    "/students/{id}/past-activities": {
       "get": {
         "deprecated": false,
         "description": "",
