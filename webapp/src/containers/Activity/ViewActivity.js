@@ -295,7 +295,15 @@ const ViewActivity = props => {
          * Create worksheet for every batch
          * Add students list for respective batch
          */
-        const headers = ["Roll Number", "Student Name", "Stream"];
+        const headers = [
+          "Roll Number",
+          "Name",
+          "College",
+          "Stream",
+          "Attended?",
+          "Trainer",
+          "Activity Date"
+        ];
         data.result.forEach(d => {
           const { workSheetName, workSheetData } = d;
           let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
