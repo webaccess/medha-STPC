@@ -1,9 +1,22 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
 const PastEventStatus = props => {
   return (
-    <Tooltip title={props.style ? "Attended" : "Missed"} placement="top">
+    <Tooltip
+      title={
+        props.style ? (
+          <React.Fragment>
+            <Typography color="inherit">Attended</Typography>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography color="inherit">Missed</Typography>
+          </React.Fragment>
+        )
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         style={

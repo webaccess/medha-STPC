@@ -941,7 +941,7 @@ const AddEditEvent = props => {
   const setDataForCollegeAdmin = () => {
     formState.values[zone] = collegeInfo.zone.id;
     formState.values[rpc] = collegeInfo.rpc.id;
-    formState.values[college] = collegeInfo.college.id;
+    formState.values[college] = [collegeInfo.college.id];
     formState.values[state] = collegeInfo.state.id;
   };
 

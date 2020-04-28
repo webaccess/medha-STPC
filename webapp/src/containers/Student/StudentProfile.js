@@ -26,6 +26,7 @@ import { useHistory } from "react-router-dom";
 import Alert from "../../components/Alert/Alert.js";
 import useStyles from "../ContainerStyles/ViewPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
+import SetIndexContext from "../../context/SetIndexContext";
 
 const StudentProfile = props => {
   let history = useHistory();
@@ -68,7 +69,8 @@ const StudentProfile = props => {
     new Date("2000-01-01T21:11:54")
   );
   const classes = useStyles();
-
+  const { setIndex } = useContext(SetIndexContext);
+  setIndex(0);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
