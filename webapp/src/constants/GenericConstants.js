@@ -134,3 +134,8 @@ export const ACTIVITY_STATUS = [
   { name: "Missed", id: "missed" },
   { name: "Attended", id: "attended" }
 ];
+
+export const EVENT_STATUS = [
+  { name: "Missed", id: "false" },
+  { name: "Attended", id: "true" }
+];
