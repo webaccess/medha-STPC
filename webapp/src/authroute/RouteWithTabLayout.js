@@ -56,7 +56,8 @@ const StyledTab = withStyles(theme => ({
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    marginBottom: "16px"
+    marginBottom: "16px",
+    textTransform: "uppercase"
   },
   padding: {
     padding: theme.spacing(3)
@@ -69,7 +70,6 @@ const useStyles = makeStyles(theme => ({
 
 const RouteWithTabLayout = props => {
   const { layout: Layout, component: Component, title, ...rest } = props;
-  console.log(rest);
   let history = useHistory();
   const classes = useStyles();
   // Default selected tab view-profile

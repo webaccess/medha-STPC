@@ -18,7 +18,7 @@ import {
   Box,
   CardHeader,
   CardMedia,
-  Button,
+  Button
 } from "@material-ui/core";
 import useStyles from "./EligibleEventsStyles";
 import { useHistory } from "react-router-dom";
@@ -27,7 +27,7 @@ import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
 import noImage from "../../../assets/images/no-image-icon.png";
 
-const EligibleEvents = (props) => {
+const EligibleEvents = props => {
   const history = useHistory();
   const [open, setOpen] = useState(true);
 
@@ -42,7 +42,7 @@ const EligibleEvents = (props) => {
     registrationFail: false,
     authUserRegistering: null,
     NoEventsData: false,
-    registeredEventsIds: [],
+    registeredEventsIds: []
   });
 
   /** This use effect is called at the very begining and only once */
@@ -58,7 +58,7 @@ const EligibleEvents = (props) => {
       getRegisteredEvents();
     } else {
       history.push({
-        pathname: routeConstants.NOT_FOUND_URL,
+        pathname: routeConstants.NOT_FOUND_URL
       });
     }
   }, []);
@@ -104,15 +104,15 @@ const EligibleEvents = (props) => {
           auth.getUserInfo().studentInfo.id +
           "/registeredevents";
         let params = {
-          pageSize: -1,
+          pageSize: -1
         };
 
         /** First api call to genrate all the regestered event ids */
         await serviceProviders
           .serviceProviderForGetRequest(apiToCheckStudentRegistration)
-          .then(async (res) => {
+          .then(async res => {
             let registeredEvents = [];
-            res.data.map((data) => {
+            res.data.map(data => {
               registeredEvents.push(data.event.id);
             });
             /** This gets us the registered events ids with the students */
@@ -120,12 +120,12 @@ const EligibleEvents = (props) => {
             /** This api gets all the eligible events and then we check with the retrieved events that with witch event is the student registered with */
             await serviceProviders
               .serviceProviderForGetRequest(ELIGIBLE_EVENTS, params)
-              .then((res) => {
+              .then(res => {
                 let viewData = [];
                 if (res.data.result.length === 0) {
-                  setFormState((formState) => ({
+                  setFormState(formState => ({
                     ...formState,
-                    NoEventsData: true,
+                    NoEventsData: true
                   }));
                 } else {
                   viewData = convertDataAndGetRegisteredStatus(
@@ -133,28 +133,28 @@ const EligibleEvents = (props) => {
                     registeredEvents
                   );
                 }
-                setFormState((formState) => ({
+                setFormState(formState => ({
                   ...formState,
-                  eventDetails: viewData,
+                  eventDetails: viewData
                 }));
               })
-              .catch((error) => {
+              .catch(error => {
                 console.log("error", error);
               });
           })
-          .catch((error) => {
+          .catch(error => {
             console.log("error", error);
           });
       } else {
         auth.clearAppStorage();
         history.push({
-          pathname: routeConstants.SIGN_IN_URL,
+          pathname: routeConstants.SIGN_IN_URL
         });
       }
     } else {
       auth.clearAppStorage();
       history.push({
-        pathname: routeConstants.SIGN_IN_URL,
+        pathname: routeConstants.SIGN_IN_URL
       });
     }
   }
@@ -164,7 +164,7 @@ const EligibleEvents = (props) => {
     originalEventData,
     registeredEvents
   ) => {
-    originalEventData.map((data) => {
+    originalEventData.map(data => {
       if (formState.registeredEventsIds.length === 0) {
         data["isRegistered"] = false;
       } else {
@@ -177,7 +177,7 @@ const EligibleEvents = (props) => {
     return originalEventData;
   };
 
-  const getTime = (data) => {
+  const getTime = data => {
     let startTime = new Date(data["start_date_time"]);
     if (data["start_date_time"] && data["end_date_time"]) {
       let endTime = new Date(data["end_date_time"]);
@@ -190,7 +190,7 @@ const EligibleEvents = (props) => {
     }
   };
 
-  const getDate = (data) => {
+  const getDate = data => {
     let startDate = new Date(data["start_date_time"]);
     if (data["start_date_time"] && data["end_date_time"]) {
       let endDate = new Date(data["end_date_time"]);
@@ -201,14 +201,14 @@ const EligibleEvents = (props) => {
     }
   };
 
-  const getVenue = (data) => {
+  const getVenue = data => {
     return data["address"];
   };
 
-  const routeToDisplayEvent = (id) => {
+  const routeToDisplayEvent = id => {
     history.push({
       pathname: routeConstants.VIEW_EVENT,
-      dataForView: id,
+      dataForView: id
     });
   };
 
@@ -264,7 +264,7 @@ const EligibleEvents = (props) => {
         ) : null}
         <Grid container spacing={3}>
           {formState.eventDetails.length ? (
-            formState.eventDetails.map((data) => {
+            formState.eventDetails.map(data => {
               return (
                 <Grid key={data.id} item xs={12} sm={6} md={4}>
                   <Card>

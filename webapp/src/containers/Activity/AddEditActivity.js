@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
   CardContent,
@@ -23,8 +23,6 @@ import CustomDateTimePicker from "../../components/CustomDateTimePicker/CustomDa
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
-import * as authPageConstants from "../../constants/AuthPageConstants.js";
-import { makeStyles } from "@material-ui/core/styles";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
@@ -40,6 +38,7 @@ import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import useStyles from "../../containers/ContainerStyles/AddEditPageStyles.js";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
+import LoaderContext from "../../context/LoaderContext";
 
 const AddEditActivity = props => {
   let history = useHistory();
@@ -77,6 +76,7 @@ const AddEditActivity = props => {
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const activitytypelist = [
     { name: "Workshop", id: "workshop" },
@@ -97,14 +97,15 @@ const AddEditActivity = props => {
 
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
-  const [academicyearlist, setacademicyearlist] = useState([]);
-  useEffect(() => {
-    getColleges();
-    // getStreams();
 
-    // setLabelWidth(inputLabel.current.offsetWidth);
+  useEffect(() => {
+    setLoaderStatus(true);
+    getColleges();
+
+    setLoaderStatus(false);
   }, []);
   useEffect(() => {
+    setLoaderStatus(true);
     console.log("in use effect");
     console.log(formState.values.hasOwnProperty("college"));
     console.log(stream);
@@ -121,6 +122,7 @@ const AddEditActivity = props => {
       const list = stream
         .map(obj => {
           if (formState.values.college === obj.id) return obj.stream;
+          else return undefined;
         })
         .filter(stream => stream);
       console.log(list);
@@ -130,9 +132,11 @@ const AddEditActivity = props => {
         })
       );
     }
+    setLoaderStatus(false);
   }, [formState.values["college"]]);
 
   if (formState.dataForEdit && !formState.counter) {
+    setLoaderStatus(true);
     if (props.location["dataForEdit"]) {
       if (props.location["dataForEdit"]["title"]) {
         formState.values["activityname"] =
@@ -228,6 +232,7 @@ const AddEditActivity = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
+    setLoaderStatus(true);
     // if (formState.editActivity) {
     //   schema = Object.assign(
     //     {},
@@ -280,6 +285,7 @@ const AddEditActivity = props => {
         isValid: false
       }));
     }
+    setLoaderStatus(false);
   };
 
   const postActivityData = () => {
@@ -317,10 +323,12 @@ const AddEditActivity = props => {
             editedData: response.data,
             fromEditActivity: true
           });
+          setLoaderStatus(false);
         })
         .catch(err => {
           console.log(JSON.stringify(err));
           setIsFailed(true);
+          setLoaderStatus(false);
         });
     } else {
       postData = databaseUtilities.addActivity(
@@ -350,24 +358,14 @@ const AddEditActivity = props => {
             addedData: response,
             fromAddActivity: true
           });
+          setLoaderStatus(false);
         })
         .catch(err => {
           console.log(err);
           setIsFailed(true);
+          setLoaderStatus(false);
         });
     }
-  };
-
-  const getStreams = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS
-      )
-      .then(res => {
-        console.log(res);
-        console.log(collegelist);
-        setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
   };
 
   const getColleges = () => {

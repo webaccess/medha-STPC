@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Auth as auth,
   Typography,
@@ -12,10 +12,7 @@ import {
   CardActions,
   Grid,
   Collapse,
-  IconButton,
-  Divider,
-  Backdrop,
-  CircularProgress
+  IconButton
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 
@@ -28,6 +25,8 @@ import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import { useHistory } from "react-router-dom";
 import Alert from "../../components/Alert/Alert.js";
 import useStyles from "../ContainerStyles/ViewPageStyles.js";
+import LoaderContext from "../../context/LoaderContext";
+
 const StudentProfile = props => {
   let history = useHistory();
   const [user, setUser] = useState({
@@ -47,6 +46,7 @@ const StudentProfile = props => {
     stream: null,
     rollnumber: null
   });
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -72,11 +72,13 @@ const StudentProfile = props => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    setLoaderStatus(true);
     handleSetDetails();
     if (props.location.success && !formState.counter) {
       setSuccess(true);
       formState.counter += 1;
     }
+    setLoaderStatus(false);
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
@@ -127,16 +129,20 @@ const StudentProfile = props => {
               physicallyHandicapped: data.studentInfo.physicallyHandicapped
             });
             setSelectedDate(new Date(data.studentInfo.date_of_birth));
+            setLoaderStatus(false);
           })
           .catch(err => {
             console.log(err);
+            setLoaderStatus(false);
           });
       } else {
         history.push({
           pathname: routeConstants.DASHBOARD_URL
         });
+        setLoaderStatus(false);
       }
     }
+    setLoaderStatus(false);
   }
 
   const editData = () => {

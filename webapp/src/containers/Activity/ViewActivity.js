@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
@@ -6,7 +6,6 @@ import {
   CardContent,
   Grid,
   Typography,
-  Tooltip,
   Collapse,
   IconButton
 } from "@material-ui/core";
@@ -38,6 +37,7 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import moment from "moment";
 import XLSX from "xlsx";
+import LoaderContext from "../../context/LoaderContext";
 
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
@@ -82,6 +82,7 @@ const ViewActivity = props => {
     pageCount: "",
     sortAscending: true
   });
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [alert, setAlert] = useState({
     isOpen: false,
@@ -131,6 +132,7 @@ const ViewActivity = props => {
 
   /** This seperate function is used to get the Activity data*/
   const getActivityData = async (pageSize, page, params = null) => {
+    setLoaderStatus(true);
     const URL = url();
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
@@ -170,6 +172,7 @@ const ViewActivity = props => {
       .catch(error => {
         console.log("error", error);
       });
+    setLoaderStatus(false);
   };
 
   /** Pagination */
@@ -224,11 +227,13 @@ const ViewActivity = props => {
   };
 
   const editCell = data => {
+    setLoaderStatus(true);
     history.push({
       pathname: routeConstants.EDIT_ACTIVITY,
       editActivity: true,
       dataForEdit: data
     });
+    setLoaderStatus(false);
   };
 
   const isDeleteCellCompleted = status => {
@@ -236,11 +241,13 @@ const ViewActivity = props => {
   };
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
       showModalDelete: true
     }));
+    setLoaderStatus(false);
   };
 
   const viewCell = data => {
@@ -277,11 +284,14 @@ const ViewActivity = props => {
    * Redirect to Activity batch UI for given activity
    */
   const handleManageActivityBatchClick = activity => {
+    setLoaderStatus(true);
     const manageActivityBatchURL = `/manage-activity-batch/${activity.id}`;
     history.push(manageActivityBatchURL);
+    setLoaderStatus(false);
   };
 
   const handleClickDownloadStudents = activity => {
+    setLoaderStatus(true);
     const URL =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_ACTIVITY +
@@ -295,7 +305,15 @@ const ViewActivity = props => {
          * Create worksheet for every batch
          * Add students list for respective batch
          */
-        const headers = ["Roll Number", "Student Name", "Stream"];
+        const headers = [
+          "Roll Number",
+          "Name",
+          "College",
+          "Stream",
+          "Attended?",
+          "Trainer",
+          "Activity Date"
+        ];
         data.result.forEach(d => {
           const { workSheetName, workSheetData } = d;
           let ws = XLSX.utils.json_to_sheet(workSheetData, ...headers);
@@ -308,9 +326,11 @@ const ViewActivity = props => {
       .catch(error => {
         console.log(error);
       });
+    setLoaderStatus(false);
   };
 
   const handleDeleteActivity = activity => {
+    setLoaderStatus(true);
     const url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
     const activityId = activity.id;
     serviceProviders
@@ -330,6 +350,7 @@ const ViewActivity = props => {
           severity: "error"
         }));
       });
+    setLoaderStatus(false);
   };
 
   /** Columns to show in table */

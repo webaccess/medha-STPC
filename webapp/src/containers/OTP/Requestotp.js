@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import useStyles from "../OTP/OTPstyles.js";
 import validateInput from "../../components/Validation/Validation.js";
@@ -9,43 +9,31 @@ import {
   Link,
   Grid,
   Typography,
-  Hidden,
   CardMedia,
   Paper,
   Icon,
-  CardContent,
-  useMediaQuery,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
-  FormHelperText,
-  Collapse,
-  CircularProgress,
-  Backdrop
+  CardContent
 } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
-import Logo from "../../components/Logo/Logo.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import form from "./OTPform.json";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
-import * as serviceProvider from "../../api/Axios.js";
 import axios from "axios";
 import image from "../../assets/images/login-img.png";
 import CardIcon from "../../components/Card/CardIcon";
 import * as routeConstants from "../../constants/RouteConstants";
+import LoaderContext from "../../context/LoaderContext.js";
 
 const RequestOtp = props => {
   let history = useHistory();
 
   const [contactNumber, setContactNumber] = useState("");
   const [error, setError] = useState("");
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const classes = useStyles();
-  const theme = useTheme();
   const { layout: Layout } = props;
   const validate = () => {
+    setLoaderStatus(true);
     const error = validateInput(
       contactNumber,
       form["contactNumber"]["validations"]
@@ -55,6 +43,7 @@ const RequestOtp = props => {
     else {
       postCall();
     }
+    setLoaderStatus(false);
   };
 
   const postCall = () => {

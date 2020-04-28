@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
   Card,
   CardContent,
   Grid,
-  Tooltip,
   Collapse,
   IconButton
 } from "@material-ui/core";
@@ -32,6 +31,7 @@ import {
 import DeleteDocument from "./DeleteDocument";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
 
 const ViewDocument = props => {
   const [open, setOpen] = React.useState(true);
@@ -62,6 +62,7 @@ const ViewDocument = props => {
     isDataLoading: false,
     sortAscending: true
   });
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
@@ -75,6 +76,7 @@ const ViewDocument = props => {
   const DOCUMENT_FILTER = "id";
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_DOCUMENT_URL)
       .then(res => {
@@ -107,9 +109,11 @@ const ViewDocument = props => {
           dataToShow: res.data.result,
           isDataLoading: false
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
   };
 

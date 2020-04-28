@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
@@ -31,6 +31,7 @@ import {
 // import DeleteActivityBatch from "./DeleteActivityBatch";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
 
 const ACTIVITY_BATCH_FILTER = "activity_batch_id";
 
@@ -38,6 +39,7 @@ const ViewActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -94,6 +96,7 @@ const ViewActivityBatches = props => {
     strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_URL)
       .then(({ data }) => {
@@ -104,9 +107,11 @@ const ViewActivityBatches = props => {
       .catch(() => {
         history.push("/404");
       });
+    setLoaderStatus(false);
   }, []);
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_URL)
       .then(res => {
@@ -120,6 +125,7 @@ const ViewActivityBatches = props => {
       });
 
     getActivityBatches(10, 1);
+    setLoaderStatus(false);
   }, []);
 
   const [alert, setAlert] = useState({
@@ -136,7 +142,7 @@ const ViewActivityBatches = props => {
         pageSize: pageSize
       };
       Object.keys(params).map(key => {
-        defaultParams[key] = params[key];
+        return (defaultParams[key] = params[key]);
       });
       params = defaultParams;
     } else {
@@ -168,10 +174,12 @@ const ViewActivityBatches = props => {
       .catch(error => {
         console.log("error", error);
       });
+    setLoaderStatus(false);
   };
 
   /** Pagination */
   const handlePerRowsChange = async (perPage, page) => {
+    setLoaderStatus(true);
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getActivityBatches(perPage, page);
@@ -186,6 +194,7 @@ const ViewActivityBatches = props => {
 
   const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
+      setLoaderStatus(true);
       await getActivityBatches(formState.pageSize, page);
     } else {
       if (formState.isFilterSearch) {
@@ -198,6 +207,7 @@ const ViewActivityBatches = props => {
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
+    setLoaderStatus(true);
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getActivityBatches(perPage, page, formState.filterDataParameters);
@@ -243,6 +253,7 @@ const ViewActivityBatches = props => {
   };
 
   const handleDeleteActivityBatch = activityBatch => {
+    setLoaderStatus(true);
     const url =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
     const activityBatchId = activityBatch.id;
@@ -255,6 +266,7 @@ const ViewActivityBatches = props => {
           severity: "success"
         }));
         getActivityBatches(10, 1);
+        setLoaderStatus(false);
       })
       .catch(({ response }) => {
         setAlert(() => ({
@@ -262,6 +274,7 @@ const ViewActivityBatches = props => {
           message: response.data.message,
           severity: "error"
         }));
+        setLoaderStatus(false);
       });
   };
   /** Columns to show in table */

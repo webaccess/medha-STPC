@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Button,
@@ -7,39 +7,29 @@ import {
   Link,
   Grid,
   Typography,
-  Hidden,
   CardMedia,
   Paper,
   Icon,
-  CardContent,
-  useMediaQuery,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
-  FormHelperText,
-  Collapse,
-  CircularProgress,
-  Backdrop
+  CardContent
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import { Redirect } from "../../../node_modules/react-router-dom";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
-import Logo from "../../components/Logo/Logo.js";
+
 import useStyles from "../OTP/OTPstyles.js";
-import GreenButton from "../../components/GreenButton/GreenButton.js";
+
 import form from "./OTPform.json";
 import validateInput from "../../components/Validation/Validation.js";
-import YellowButton from "../../components/YellowButton/YellowButton.js";
-import * as serviceProvider from "../../api/Axios.js";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import axios from "axios";
 import CardIcon from "../../components/Card/CardIcon";
 import image from "../../assets/images/login-img.png";
+import LoaderContext from "../../context/LoaderContext";
 
 const VerifyOtp = props => {
   let history = useHistory();
+
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const [otp, setotp] = useState("");
   const classes = useStyles();
@@ -49,9 +39,10 @@ const VerifyOtp = props => {
 
   const validate = () => {
     const error = validateInput(otp, form["otp"]["validations"]);
-    console.log(error);
+
     if (error[0]) setError(error);
     else {
+      setLoaderStatus(true);
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +
@@ -71,10 +62,12 @@ const VerifyOtp = props => {
             history.push(routeConstants.REQUIRED_CONFORMATION);
           } else if (err.response.status === 400) setError("Invalid OTP");
         });
+      setLoaderStatus(false);
     }
   };
 
   const requestOtpAgain = () => {
+    setLoaderStatus(true);
     axios
       .post(
         strapiApiConstants.STRAPI_DB_URL +
@@ -88,6 +81,7 @@ const VerifyOtp = props => {
       .catch(err => {
         console.log(err);
       });
+    setLoaderStatus(false);
   };
   if (!props.location.state) {
     return (
@@ -129,12 +123,14 @@ const VerifyOtp = props => {
                         variant="subtitle2"
                         style={{ marginTop: ".9rem", marginBottom: ".9rem" }}
                       >
-                        {authPageConstants.MOBILE_NUMBER_ALERT}
+                        {authPageConstants.OTP_ALERT}{" "}
+                        {props.location.state.contactNumber}
                       </Typography>
                       <TextField
                         label="One Time Password"
                         name="otp"
                         value={otp}
+                        style={{ marginRight: "175px" }}
                         error={error[0] ? true : false}
                         variant="outlined"
                         fullWidth

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
@@ -19,12 +19,14 @@ import { uniqBy } from "lodash";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
+import LoaderContext from "../../../context/LoaderContext";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
 
 const AddEditActivityBatches = props => {
   const classes = useStyles();
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -60,6 +62,7 @@ const AddEditActivityBatches = props => {
     strapiConstants.STRAPI_ADD_STUDENT_ACTIVITY_BATCH;
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_STUDENTS)
       .then(res => {
@@ -68,9 +71,11 @@ const AddEditActivityBatches = props => {
           studentsFilter: res.data.result,
           streams: getStreams(res.data.result)
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
 
     getStudents(10, 1);
@@ -78,13 +83,14 @@ const AddEditActivityBatches = props => {
 
   /** This seperate function is used to get the Activity Batches data*/
   const getStudents = async (pageSize, page, params = null) => {
+    setLoaderStatus(true);
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
         pageSize: pageSize
       };
       Object.keys(params).map(key => {
-        defaultParams[key] = params[key];
+        return (defaultParams[key] = params[key]);
       });
       params = defaultParams;
     } else {
@@ -113,9 +119,11 @@ const AddEditActivityBatches = props => {
           isDataLoading: false,
           streams: getStreams(res.data.result)
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
   };
 

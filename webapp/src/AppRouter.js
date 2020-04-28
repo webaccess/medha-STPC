@@ -20,7 +20,7 @@ import {
   EditEducation,
   RouteWithTabLayout,
   EditAcademicHistoryRoute,
-  EditActivityBatchRoute,
+  EditActivityBatchRoute
 } from "./authroute";
 
 /** General */
@@ -93,7 +93,7 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 
-const AppRouter = (props) => {
+const AppRouter = props => {
   return (
     <div>
       <Switch>
@@ -176,6 +176,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_PAST_EVENTS}
+          title="Event History"
         />
 
         {/**Education */}
@@ -224,7 +225,7 @@ const AppRouter = (props) => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_PAST_ACTIVITIES}
-          title="Activities"
+          title="Activity History"
         />
 
         {/** Activity List*/}

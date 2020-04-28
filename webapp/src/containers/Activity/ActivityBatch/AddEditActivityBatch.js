@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
@@ -6,10 +6,8 @@ import {
   CardContent,
   Grid,
   Typography,
-  Tooltip,
   Collapse,
-  IconButton,
-  CardActions
+  IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -22,7 +20,6 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import {
   Table,
-  Spinner,
   YellowButton,
   GrayButton,
   GreenButton,
@@ -40,6 +37,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import TickGridIcon from "../../../components/TickGridIcon";
 import CrossGridIcon from "../../../components/CrossGridIcon";
+import LoaderContext from "../../../context/LoaderContext";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
@@ -48,6 +46,7 @@ const AddEditActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const activityBatchName = "name";
   const dateFrom = "dateFrom";
@@ -83,6 +82,7 @@ const AddEditActivityBatches = props => {
   });
 
   if (formState.isEditActivityBatch) {
+    setLoaderStatus(true);
     if (formState.dataForEdit && formState.dataForEdit[activityBatchName]) {
       formState.values[activityBatchName] =
         formState.dataForEdit[activityBatchName];
@@ -99,6 +99,7 @@ const AddEditActivityBatches = props => {
         formState.dataForEdit["end_date_time"]
       );
     }
+    setLoaderStatus(false);
   }
 
   const [selectedStudents, setSeletedStudent] = useState([]);
@@ -135,6 +136,7 @@ const AddEditActivityBatches = props => {
     : ACTIVITY_BATCH_STUDENTS;
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_URL)
       .then(({ data }) => {
@@ -146,9 +148,11 @@ const AddEditActivityBatches = props => {
       .catch(() => {
         history.push("/404");
       });
+    setLoaderStatus(false);
   }, []);
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT)
       .then(res => {
@@ -164,6 +168,7 @@ const AddEditActivityBatches = props => {
       });
 
     getStudents(10, 1);
+    setLoaderStatus(false);
   }, []);
 
   /** This seperate function is used to get the Activity Batches data*/
@@ -203,15 +208,18 @@ const AddEditActivityBatches = props => {
           isDataLoading: false,
           streams: getStreams(res.data.result)
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
   };
 
   /** Pagination */
   const handlePerRowsChange = async (perPage, page) => {
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
+
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStudents(perPage, page);
     } else {
@@ -310,6 +318,7 @@ const AddEditActivityBatches = props => {
   };
 
   const handleVerifyMultipleStudents = ids => {
+    setLoaderStatus(true);
     const studentsToVerify = ids;
     const URL =
       strapiConstants.STRAPI_DB_URL +
@@ -327,13 +336,16 @@ const AddEditActivityBatches = props => {
         setSeletedStudent([]);
         setClearSelectedRows(val => ({ clearSelectedRows: !val }));
         getStudents(formState.pageSize, formState.page);
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log(error);
+        setLoaderStatus(false);
       });
   };
 
   const handleUnVerifyMultipleStudents = ids => {
+    setLoaderStatus(true);
     const studentsToVerify = ids;
     const URL =
       strapiConstants.STRAPI_DB_URL +
@@ -351,9 +363,11 @@ const AddEditActivityBatches = props => {
         setSeletedStudent([]);
         setClearSelectedRows(val => ({ clearSelectedRows: !val }));
         getStudents(formState.pageSize, formState.page);
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log(error);
+        setLoaderStatus(false);
       });
   };
 
@@ -389,6 +403,7 @@ const AddEditActivityBatches = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
+    setLoaderStatus(true);
     let isValid = false;
     /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -427,6 +442,7 @@ const AddEditActivityBatches = props => {
       }));
     }
     event.preventDefault();
+    setLoaderStatus(false);
   };
 
   const handleDateChange = (datefrom, event) => {
@@ -467,6 +483,7 @@ const AddEditActivityBatches = props => {
             addResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         })
         .catch(error => {
           history.push({
@@ -476,6 +493,7 @@ const AddEditActivityBatches = props => {
             addResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         });
     } else {
       serviceProviders
@@ -488,6 +506,7 @@ const AddEditActivityBatches = props => {
             addResponseMessage: "",
             addedData: {}
           });
+          setLoaderStatus(false);
         })
         .catch(error => {
           history.push({
@@ -497,6 +516,7 @@ const AddEditActivityBatches = props => {
             addResponseMessage: "",
             addedData: {}
           });
+          setLoaderStatus(false);
         });
     }
   };

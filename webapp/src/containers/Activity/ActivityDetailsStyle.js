@@ -9,12 +9,6 @@ const useStyles = makeStyles(theme => ({
   btnspaceadd: {
     padding: "0px 15px 15px"
   },
-  labelside: {
-    padding: "0px 0px 15px 0px",
-    fontWeight: "600",
-    paddingBottom: "3px",
-    marginRight: "25px"
-  },
   formgrid: {
     marginTop: theme.spacing(0),
     alignItems: "center"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import useStyles from "../StudentStyles.js";
 import { get } from "lodash";
 import {
@@ -19,6 +19,7 @@ import { useHistory } from "react-router-dom";
 import EducationSchema from "../EducationSchema.js";
 import auth from "../../../components/Auth/Auth.js";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import LoaderContext from "../../../context/LoaderContext";
 
 const qualification = "qualification";
 const yearOfPassing = "yearOfPassing";
@@ -31,6 +32,8 @@ const AddEditEducation = props => {
   const studentInfo = auth.getUserInfo()
     ? auth.getUserInfo().studentInfo
     : null;
+
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const EDUCATION_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EDUCATIONS;
@@ -50,6 +53,7 @@ const AddEditEducation = props => {
 
   /** Part for editing Education */
   if (formState.isEditEducation && !formState.counter) {
+    setLoaderStatus(true);
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["qualification"]) {
         formState.values[qualification] = props["dataForEdit"]["qualification"];
@@ -96,6 +100,7 @@ const AddEditEducation = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
+    setLoaderStatus(true);
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -134,6 +139,7 @@ const AddEditEducation = props => {
       }));
     }
     event.preventDefault();
+    setLoaderStatus(false);
   };
 
   const postEducationData = async () => {
@@ -162,6 +168,7 @@ const AddEditEducation = props => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         })
         .catch(error => {
           console.log(error);
@@ -172,6 +179,7 @@ const AddEditEducation = props => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         });
     } else {
       serviceProviders
@@ -185,6 +193,7 @@ const AddEditEducation = props => {
             addResponseMessage: "",
             addedData: {}
           });
+          setLoaderStatus(false);
         })
         .catch(error => {
           history.push({
@@ -194,6 +203,7 @@ const AddEditEducation = props => {
             addResponseMessage: "",
             addedData: {}
           });
+          setLoaderStatus(false);
         });
     }
   };

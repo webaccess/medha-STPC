@@ -7,6 +7,7 @@ import useStyles from "../CommonStyles/ViewStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as routeConstants from "../../../constants/RouteConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import {
   Table,
@@ -16,11 +17,9 @@ import {
   Auth,
   ViewGridIcon
 } from "../../../components";
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 
 const PastActivities = props => {
-  const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
   const [formState, setFormState] = useState({
@@ -46,7 +45,7 @@ const PastActivities = props => {
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS +
-    `/${studentId}/past-activities`;
+    `/${studentId}/past-activity`;
   const ACTIVITY_FILTER = "id";
   const ACTIVITY_STATUS = "status";
 
@@ -168,11 +167,36 @@ const PastActivities = props => {
     }
   };
 
+  const viewCell = activity => {
+    history.push({
+      pathname: routeConstants.VIEW_ACTIVITY,
+      dataForView: activity
+    });
+  };
   /** Columns to show in table */
   const column = [
     { name: "Training & Activity", sortable: true, selector: "title" },
     { name: "Type", sortable: true, selector: "activity_type" },
-    { name: "Education Year", sortable: true, selector: "education_year" }
+    { name: "Batch", sortable: true, selector: "activity_batch.name" },
+    {
+      name: "Actions",
+      cell: cell => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingActionButton}>
+            <ViewGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={() => viewCell(cell)}
+            />
+          </div>
+        </div>
+      ),
+      width: "18%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
+    }
   ];
 
   return (

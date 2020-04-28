@@ -1,24 +1,19 @@
 import React, { useState } from "react";
 import useStyles from "../StudentStyles.js";
 import { get } from "lodash";
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Grid,
-  Typography,
-  TextField
-} from "@material-ui/core";
+import { Card, CardActions, Grid, TextField, Button } from "@material-ui/core";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";
 import * as serviceProviders from "../../../api/Axios";
-import { Alert, GrayButton, YellowButton } from "../../../components";
+import { Alert, GrayButton, YellowButton, Spinner } from "../../../components";
 import { useHistory } from "react-router-dom";
 import DocumentSchema from "../DocumentSchema.js";
 import auth from "../../../components/Auth/Auth.js";
+import Img from "react-image";
+import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 
 const field = "documents";
 const ref = "student";
@@ -39,7 +34,9 @@ const AddEditDocument = props => {
     errors: {},
     isSuccess: false,
     counter: 0,
-    files: {}
+    files: {},
+    showNoImage: true,
+    showPreview: false
   });
 
   /** This handle change is used to handle changes to text field */
@@ -57,7 +54,10 @@ const AddEditDocument = props => {
         ...formState.touched,
         [event.target.name]: true
       },
-      files: event.target.files[0]
+      files: event.target.files[0],
+      previewFile: URL.createObjectURL(event.target.files[0]),
+      showPreview: true,
+      showNoImage: false
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -163,7 +163,85 @@ const AddEditDocument = props => {
           </Alert>
         ) : null}
       </Grid>
-      <Grid item xs={12} className={classes.formgrid}>
+      <Card>
+        <Grid item xs={12} md={6} xl={3} className={classes.formgrid}>
+          <Grid container className={classes.formgridInputFile}>
+            <Grid item md={10} xs={12}>
+              <div className={classes.imageDiv}>
+                {formState.showPreview ? (
+                  <Img
+                    alt="abc"
+                    loader={<Spinner />}
+                    className={classes.UploadImage}
+                    src={formState.previewFile}
+                  />
+                ) : null}
+                {!formState.showPreview && !formState.showEditPreview ? (
+                  <div class={classes.DefaultNoImage}></div>
+                ) : null}
+              </div>
+            </Grid>
+          </Grid>
+          <Grid container className={classes.MarginBottom}>
+            <Grid item md={10} xs={12}>
+              <TextField
+                fullWidth
+                id="files"
+                margin="normal"
+                name="files"
+                placeholder="Upload Logo"
+                onChange={handleChange}
+                required
+                type="file"
+                inputProps={{ accept: "image/*" }}
+                //value={formState.values["files"] || ""}
+                error={hasError("files")}
+                helperText={
+                  hasError("files")
+                    ? formState.errors["files"].map(error => {
+                        return error + " ";
+                      })
+                    : null
+                }
+                variant="outlined"
+                className={classes.inputFile}
+              />
+              <label htmlFor={get(DocumentSchema["files"], "id")}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component="span"
+                  fullWidth
+                  className={classes.InputFileButton}
+                  startIcon={<AddOutlinedIcon />}
+                >
+                  ADD NEW FILE
+                </Button>
+              </label>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} md={6} xl={3}>
+          <CardActions className={classes.btnspace}>
+            <YellowButton
+              onClick={handleSubmit}
+              color="primary"
+              variant="contained"
+            >
+              {genericConstants.SAVE_BUTTON_TEXT}
+            </YellowButton>
+            <GrayButton
+              type="submit"
+              color="primary"
+              variant="contained"
+              to={routeConstants.VIEW_DOCUMENTS}
+            >
+              {genericConstants.CANCEL_BUTTON_TEXT}
+            </GrayButton>
+          </CardActions>
+        </Grid>
+      </Card>
+      {/* <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
@@ -207,7 +285,7 @@ const AddEditDocument = props => {
             </CardActions>
           </form>
         </Card>
-      </Grid>
+                  </Grid>*/}
     </Grid>
   );
 };

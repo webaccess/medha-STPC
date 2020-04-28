@@ -102,7 +102,7 @@ export const EVENT_REGISTRATION = "Register";
 export const EVENT_REGISTERED = "Registered";
 export const EVENT_CONFIRMATION =
   "I have read the above mentioned criteria and description";
-export const EVENT_HISTORY = "EVENT HISTORY"
+export const EVENT_HISTORY = "EVENT HISTORY";
 
 /**Qualifications */
 
