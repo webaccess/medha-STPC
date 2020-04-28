@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useStyles from "../StudentStyles.js";
 import {
   Card,
@@ -19,6 +19,7 @@ import AcademicHistorySchema from "../AcademicHistorySchema";
 import auth from "../../../components/Auth/Auth.js";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { get } from "lodash";
+import LoaderContext from "../../../context/LoaderContext.js";
 
 const academicYear = "academicYear";
 const educationYear = "educationYear";
@@ -31,13 +32,14 @@ const educationYearList = [
   { name: "Fourth", id: "Fourth" }
 ];
 
-const AddEditAcademicHistory = (props) => {
+const AddEditAcademicHistory = props => {
   const history = useHistory();
   const classes = useStyles();
 
   const studentInfo = auth.getUserInfo()
     ? auth.getUserInfo().studentInfo
     : null;
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const ACADEMIC_HISTORY_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACADEMIC_HISTORY;
@@ -63,17 +65,20 @@ const AddEditAcademicHistory = (props) => {
   const [academicYears, setAcademicYearList] = useState([]);
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACADEMIC_YEAR_URL)
-      .then((res) => {
+      .then(res => {
         setAcademicYearList(
           res.data.result.map(({ id, name }) => ({ id, name }))
         );
       });
+    setLoaderStatus(false);
   }, []);
 
   /** Part for editing Education */
   if (formState.isEditAcademicHistory && !formState.counter) {
+    setLoaderStatus(true);
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["academic_year"]) {
         const academicYearId = props["dataForEdit"]["academic_year"]
@@ -94,7 +99,7 @@ const AddEditAcademicHistory = (props) => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
@@ -111,10 +116,10 @@ const AddEditAcademicHistory = (props) => {
   };
 
   /** This handle change is used to handle changes to text field */
-  const handleChange = (event) => {
+  const handleChange = event => {
     /** TO SET VALUES IN FORMSTATE */
     event.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
@@ -133,10 +138,11 @@ const AddEditAcademicHistory = (props) => {
   };
 
   /** This checks if the corresponding field has errors */
-  const hasError = (field) => (formState.errors[field] ? true : false);
+  const hasError = field => (formState.errors[field] ? true : false);
 
   /** Handle submit handles the submit and performs all the validations */
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
+    setLoaderStatus(true);
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -169,11 +175,12 @@ const AddEditAcademicHistory = (props) => {
       /** CALL POST FUNCTION */
       postAcademicHistoryData();
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         isValid: false
       }));
     }
+    setLoaderStatus(false);
     event.preventDefault();
   };
 
@@ -195,7 +202,7 @@ const AddEditAcademicHistory = (props) => {
           formState.dataForEdit["id"],
           postData
         )
-        .then((res) => {
+        .then(res => {
           history.push({
             pathname: routeConstants.VIEW_ACADEMIC_HISTORY,
             fromEditAcademicHistory: true,
@@ -203,8 +210,9 @@ const AddEditAcademicHistory = (props) => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         })
-        .catch((error) => {
+        .catch(error => {
           history.push({
             pathname: routeConstants.VIEW_ACADEMIC_HISTORY,
             fromEditAcademicHistory: true,
@@ -212,11 +220,12 @@ const AddEditAcademicHistory = (props) => {
             editResponseMessage: "",
             editedData: {}
           });
+          setLoaderStatus(false);
         });
     } else {
       serviceProviders
         .serviceProviderForPostRequest(ACADEMIC_HISTORY_URL, postData)
-        .then((res) => {
+        .then(res => {
           setIsSuccess(true);
           history.push({
             pathname: routeConstants.VIEW_ACADEMIC_HISTORY,
@@ -225,8 +234,9 @@ const AddEditAcademicHistory = (props) => {
             addResponseMessage: "",
             addedData: {}
           });
+          setLoaderStatus(false);
         })
-        .catch((error) => {
+        .catch(error => {
           history.push({
             pathname: routeConstants.VIEW_ACADEMIC_HISTORY,
             fromAddAcademicHistory: true,
@@ -234,6 +244,7 @@ const AddEditAcademicHistory = (props) => {
             addResponseMessage: "",
             addedData: {}
           });
+          setLoaderStatus(false);
         });
     }
   };
@@ -262,7 +273,7 @@ const AddEditAcademicHistory = (props) => {
                     id="Academic-year-list"
                     className={classes.elementroot}
                     options={academicYears}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(academicYear, event, value);
                     }}
@@ -273,7 +284,7 @@ const AddEditAcademicHistory = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError(academicYear)}
@@ -283,7 +294,7 @@ const AddEditAcademicHistory = (props) => {
                         name="tester"
                         helperText={
                           hasError(academicYear)
-                            ? formState.errors[academicYear].map((error) => {
+                            ? formState.errors[academicYear].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -297,7 +308,7 @@ const AddEditAcademicHistory = (props) => {
                     id="education-year-list"
                     className={classes.elementroot}
                     options={educationYearList}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(educationYear, event, value);
                     }}
@@ -308,7 +319,7 @@ const AddEditAcademicHistory = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         style={{ marginTop: "16px" }}
@@ -319,7 +330,7 @@ const AddEditAcademicHistory = (props) => {
                         name="tester"
                         helperText={
                           hasError(educationYear)
-                            ? formState.errors[educationYear].map((error) => {
+                            ? formState.errors[educationYear].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -342,7 +353,7 @@ const AddEditAcademicHistory = (props) => {
                     error={hasError(percentage)}
                     helperText={
                       hasError(percentage)
-                        ? formState.errors[percentage].map((error) => {
+                        ? formState.errors[percentage].map(error => {
                             return error + " ";
                           })
                         : null

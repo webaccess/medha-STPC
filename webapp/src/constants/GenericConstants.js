@@ -19,6 +19,12 @@ export const BLOCK_BUTTON_TEXT = "Block";
 export const UNBLOCK_BUTTON_TEXT = "Unblock";
 export const HIRE_BUTTON_TEXT = "Hire";
 export const DEHIRE_BUTTON_TEXT = "Dehire";
+export const ADD_ATT_BUTTON_TEXT = "Add attaindance";
+export const REMOVE_ATT_BUTTON_TEXT = "Remove attaindance";
+
+/**Change Password
+ */
+export const CHANGE_PASSWORD = "Change Password";
 
 /**Student
  */
@@ -75,7 +81,7 @@ export const VIEW_ACADEMIC_HISTORY_TEXT = "Academic History";
 
 /**Manage Students */
 export const MANAGE_STUDENTS = "Manage Student";
-export const DELETE_SELECTED_STUDENT = "Delete Selected user";
+export const DELETE_SELECTED_STUDENT = "Delete Selected Student";
 export const ADD_STUDENT_BUTTON_TEXT = "Add Student";
 
 /**Activity */
@@ -104,9 +110,7 @@ export const QUALIFICATIONANDPERCENTAGE = "Qualification and Percentage";
 export const QUALIFICATIONS = [
   { id: 1, value: "SSC" },
   { id: 2, value: "HSC" },
-  { id: 3, value: "BSc" },
-  { id: 4, value: "MSc" },
-  { id: 5, value: "BE" }
+  { id: 3, value: "Diploma" }
 ];
 
 export const EDUCATIONANDPERCENTAGE = "Education and Percentage";
@@ -123,4 +127,9 @@ export const EDUCATIONYEARLIST = [
   { name: "Second", id: "Second" },
   { name: "Third", id: "Third" },
   { name: "Fourth", id: "Fourth" }
+];
+
+export const ACTIVITY_STATUS = [
+  { name: "Missed", id: "missed" },
+  { name: "Attended", id: "attended" }
 ];

@@ -44,64 +44,64 @@
  */
 
 /**  Setters */
-export const setState = (id) => {
+export const setState = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
-export const setUser = (id) => {
+export const setUser = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
-export const setAdmins = (id) => {
+export const setAdmins = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
-export const setZone = (id) => {
+export const setZone = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
 export const setRpc = (id, main_college = null) => {
   return {
     id: id,
-    main_college: main_college,
+    main_college: main_college
   };
 };
 
-export const setMainCollege = (id) => {
+export const setMainCollege = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
-export const setRole = (id) => {
+export const setRole = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
-export const setStreams = (id) => {
+export const setStreams = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
-export const setCollege = (id) => {
+export const setCollege = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
-export const setQualification = (id) => {
+export const setQualification = id => {
   return {
-    id: id,
+    id: id
   };
 };
 
@@ -110,7 +110,7 @@ export const addRpc = (name, state = null, main_college = null) => {
   return {
     name: name,
     state: state,
-    main_college: main_college,
+    main_college: main_college
   };
 };
 
@@ -140,7 +140,7 @@ export const addCollege = (
     zone: zone,
     district: district,
     stream_strength: stream_strength,
-    tpos: tpos,
+    tpos: tpos
   };
 };
 export const addEvent = (
@@ -169,19 +169,19 @@ export const addEvent = (
     educations: educations,
     colleges: colleges,
     streams: streams,
-    state: state,
+    state: state
   };
 };
-export const addState = (name) => {
+export const addState = name => {
   return {
-    name: name,
+    name: name
   };
 };
 
 export const addZone = (name, state = null) => {
   return {
     name: name,
-    state: state,
+    state: state
   };
 };
 
@@ -211,7 +211,7 @@ export const addUser = (
     zone: zone,
     rpc: rpc,
     college: college,
-    role: role,
+    role: role
   };
 };
 export const addStudent = (
@@ -252,7 +252,47 @@ export const addStudent = (
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
-    physicallyHandicapped: physicallyHandicapped,
+    physicallyHandicapped: physicallyHandicapped
+  };
+};
+
+export const addStudentFromCollege = (
+  firstname,
+  lastname,
+  fatherfirstname,
+  fatherlastname,
+  address,
+  state,
+  district,
+  email,
+  contactNumber,
+  userName,
+  password,
+  gender,
+  dateofbirth,
+  physicallyHandicapped,
+  college,
+  stream = null,
+  rollNumber = null
+) => {
+  return {
+    contact_number: contactNumber,
+    username: userName,
+    password: password,
+    email: email,
+    college_id: college,
+    first_name: firstname,
+    last_name: lastname,
+    father_first_name: fatherfirstname,
+    father_last_name: fatherlastname,
+    address: address,
+    state: state,
+    district: district,
+    date_of_birth: dateofbirth,
+    stream: stream,
+    gender: gender,
+    roll_number: rollNumber,
+    physicallyHandicapped: physicallyHandicapped
   };
 };
 
@@ -273,7 +313,8 @@ export const editStudent = (
   college,
   stream = null,
   rollNumber = null,
-  id
+  id,
+  password = undefined
 ) => {
   return {
     contact_number: contactNumber,
@@ -293,6 +334,7 @@ export const editStudent = (
     roll_number: rollNumber,
     physicallyHandicapped: physicallyHandicapped,
     id: id,
+    password: password
   };
 };
 export const addEducation = (
@@ -305,7 +347,7 @@ export const addEducation = (
     qualification,
     board,
     year_of_passing: parseInt(yearOfPassing),
-    percentage: parseFloat(percentage),
+    percentage: parseFloat(percentage)
   };
 };
 
@@ -341,7 +383,7 @@ export const addActivity = (
     address: address,
     description: description,
     trainer_name: trainer_name,
-    streams: streams,
+    streams: streams
   };
 
   if (files) {
@@ -378,7 +420,7 @@ export const editActivity = (
     description: description,
     trainer_name: trainer_name,
     streams: streams,
-    id: id,
+    id: id
   };
   const formdata = new FormData();
   //console.log(files);
@@ -392,7 +434,7 @@ export const addAcademicHistory = (academicYear, educationYear, percentage) => {
   return {
     academic_year: academicYear,
     education_year: educationYear,
-    percentage,
+    percentage
   };
 };
 
@@ -401,13 +443,13 @@ export const addActivityBatch = (name, students, dateFrom, dateTo) => {
     name,
     students,
     start_date_time: dateFrom,
-    end_date_time: dateTo,
+    end_date_time: dateTo
   };
 };
 
 export const studentEventRegistration = (event, student) => {
   return {
     event: event,
-    student: student,
+    student: student
   };
 };

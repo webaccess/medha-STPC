@@ -8,7 +8,8 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
@@ -18,7 +19,6 @@ import {
   YellowButton,
   GrayButton,
   Table,
-  YearMonthPicker,
   Auth as auth,
   Alert,
   AddStudentIcon
@@ -28,14 +28,15 @@ import * as serviceProvider from "../../../api/Axios";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import RegisterEvent from "../EventRegistration/EventRegistration";
 import CloseIcon from "@material-ui/icons/Close";
+import * as genericConstants from "../../../constants/GenericConstants";
 
 const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const SORT_FIELD_KEY = "_sort";
-const NAME_FILTER = "username_contains";
-const STREAMS_FILTER = "stream.id";
+const USER_FILTER = "user.first_name_contains";
+const STREAM_FILTER = "stream.id";
 
 const AddStudentToRecruitmentDrive = props => {
   const history = useHistory();
@@ -182,7 +183,7 @@ const AddStudentToRecruitmentDrive = props => {
               console.log("error", error);
             });
         })
-        .catch(error => { });
+        .catch(error => {});
     } else {
       history.push({
         pathname: routeConstants.MANAGE_EVENT
@@ -195,6 +196,7 @@ const AddStudentToRecruitmentDrive = props => {
     if (data.length > 0) {
       for (let i in data) {
         var individualStudentData = {};
+        let educationYear = [];
         individualStudentData["id"] = data[i]["id"];
         individualStudentData["studentid"] = data[i]["user"]
           ? data[i]["user"]["id"]
@@ -204,20 +206,28 @@ const AddStudentToRecruitmentDrive = props => {
           : "";
         individualStudentData["name"] = data[i]["user"]
           ? data[i]["user"]["first_name"] +
-          " " +
-          data[i]["father_first_name"] +
-          " " +
-          data[i]["user"]["last_name"]
+            " " +
+            data[i]["father_first_name"] +
+            " " +
+            data[i]["user"]["last_name"]
           : "";
         individualStudentData["stream"] = data[i]["stream"]
           ? data[i]["stream"]["name"]
           : "";
-        individualStudentData["educations"] = data[i]["educations"][0]
+        individualStudentData["qualifications"] = data[i]["educations"][0]
           ? data[i]["educations"][0]["year_of_passing"]
           : "";
         individualStudentData["mobile"] = data[i]["user"]
           ? data[i]["user"]["contact_number"]
           : "";
+        if (data[i]["qualifications"]) {
+          for (let j in data[i]["qualifications"]) {
+            educationYear.push(data[i]["qualifications"][j]["education_year"]);
+          }
+          individualStudentData["qualifications"] = educationYear;
+        } else {
+          individualStudentData["qualifications"] = [];
+        }
         x.push(individualStudentData);
       }
       return x;
@@ -279,30 +289,6 @@ const AddStudentToRecruitmentDrive = props => {
 
   const restoreData = () => {
     getStudentList(formState.pageSize, 1);
-  };
-
-  const handleYearChange = date => {
-    //formState.filterDataParameters[date.target.name] = date.target.value;
-    setFormState(formState => ({
-      ...formState,
-      year: date
-    }));
-  };
-
-  const handleFilterChange = (event, value) => {
-    if (value != null) {
-      formState.filterDataParameters[event.target.name] = event.target.value;
-      setFormState(formState => ({
-        ...formState,
-        texttvalue: event.target.value
-      }));
-    } else {
-      formState.filterDataParameters[event.target.name] = event.target.value;
-      setFormState(formState => ({
-        ...formState,
-        texttvalue: null
-      }));
-    }
   };
 
   const handleClick = event => {
@@ -391,12 +377,26 @@ const AddStudentToRecruitmentDrive = props => {
   /** Table Data */
   const column = [
     {
-      name: "Student Name",
+      name: "Name",
       sortable: true,
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
-    { name: "Academic Year", sortable: true, selector: "educations" },
+    {
+      name: "Education year",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.qualifications}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.qualifications}`}</div>
+        </Tooltip>
+      )
+    },
     {
       name: "Actions",
       cell: cell => (
@@ -417,6 +417,31 @@ const AddStudentToRecruitmentDrive = props => {
       }
     }
   ];
+
+  const handleFilterChangeForStudentField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [USER_FILTER]: event.target.value
+      },
+      isClearResetFilter: false
+    }));
+    event.persist();
+  };
+
+  const handleChangeAutoCompleteStream = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false
+      }));
+    }
+  };
 
   return (
     <Grid>
@@ -499,21 +524,37 @@ const AddStudentToRecruitmentDrive = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label={"Student Name"}
-                  placeholder="Search by student's name"
+                  label="Name"
+                  margin="normal"
                   variant="outlined"
-                  name={NAME_FILTER}
-                  value={formState.texttvalue}
-                  onChange={(event, value) => handleFilterChange(event, value)}
+                  value={formState.filterDataParameters[USER_FILTER] || ""}
+                  placeholder="Name"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForStudentField}
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <Autocomplete
-                  id="combo-box-demo"
-                  name={STREAMS_FILTER}
+                  id="stream-filter"
+                  name={STREAM_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : streams[
+                          streams.findIndex(function (item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STREAM_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
+                  onChange={(event, value) =>
+                    handleChangeAutoCompleteStream(STREAM_FILTER, event, value)
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -525,14 +566,24 @@ const AddStudentToRecruitmentDrive = props => {
                   )}
                 />
               </Grid>
-              <Grid item>
-                <YearMonthPicker
-                  label="Academic Year"
-                  value={formState.year}
-                  onChange={handleYearChange}
+              <Grid item className={classes.paddingDate}>
+                <Autocomplete
+                  id="education-year-list"
+                  options={genericConstants.EDUCATIONYEARLIST}
+                  getOptionLabel={option => option.name}
+                  value={null}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Education Year"
+                      variant="outlined"
+                      name="education-year"
+                      placeholder="Education Year"
+                      className={classes.autoCompleteField}
+                    />
+                  )}
                 />
               </Grid>
-
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"
@@ -574,11 +625,11 @@ const AddStudentToRecruitmentDrive = props => {
                 onChangePage={handlePageChange}
               />
             ) : (
-                <Spinner />
-              )
+              <Spinner />
+            )
           ) : (
-              <div className={classes.noDataMargin}>No data to show</div>
-            )}
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
         </Card>
       </Grid>
       {formState.isRegButtonClicked ? (

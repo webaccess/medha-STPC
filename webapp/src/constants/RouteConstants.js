@@ -3,6 +3,7 @@
 export const FORGOT_PASSWORD_URL = "/forgot-password";
 export const SIGN_IN_URL = "/login";
 export const LOGOUT_URL = "/logout";
+export const CHANGE_PASSWORD = "/change-password";
 export const NOT_FOUND_URL = "/404";
 
 /** Dashboard */
@@ -13,6 +14,7 @@ export const DEFAULT_URL = "/";
 export const NEW_REGISTRATION_URL = "/registration";
 export const REGISTERED = "/registered";
 export const REQUIRED_CONFORMATION = "/requiredconformation";
+export const REQUIRED_ERROR_PAGE = "/authorization-error";
 export const VIEW_PROFILE = "/view-profile";
 export const EDIT_PROFILE = "/edit-profile";
 
@@ -22,6 +24,8 @@ export const EDIT_EDUCATION = "/edit-education";
 export const MANAGE_STUDENT = "/manage-student";
 export const VALIDATE_STUDENT = "/validate-student";
 export const PROFILE = "/profile";
+export const VIEW_PAST_ACTIVITIES = "/past-activities";
+export const VIEW_PAST_EVENTS = "/past-events";
 
 export const ADD_STUDENT_FROM_COLLEGE_ADMIN = "/college-add-student";
 export const EDIT_STUDENT_FROM_COLLEGE_ADMIN = "/college-edit-student";

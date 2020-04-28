@@ -107,83 +107,6 @@ const VerifyOtp = props => {
   } else {
     return (
       <Layout>
-        {console.log(props)}
-        {/* <div className={classes.paper}>
-          <Card className={classes.paper}>
-            <CardContent style={{ margin: "30px" }}>
-              <Typography
-                component="h1"
-                variant="h5"
-                style={{ marginTop: ".9rem" }}
-              >
-                {authPageConstants.REGISTER}
-              </Typography>
-              <div className={classes.form}>
-                <Grid container spacing={3}>
-                  <Grid item md={12}>
-                    <TextField
-                      label="One Time Password"
-                      name="otp"
-                      value={otp}
-                      error={error[0] ? true : false}
-                      variant="outlined"
-                      fullWidth
-                      helperText={error ? error : null}
-                      onChange={(event) => {
-                        if (otp.length > 0) setError("");
-                        setotp(event.target.value);
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3}>
-                  <Grid item>
-                    <YellowButton
-                      color="Secondary"
-                      mfullWidth
-                      variant="contained"
-                      size="large"
-                      disabled={click}
-                      onClick={() => {
-                        requestOtpAgain();
-                      }}
-                    >
-                      {authPageConstants.RESEND_OTP_BUTTON}
-                    </YellowButton>
-                  </Grid>
-
-                  <Grid item>
-                    <GreenButton
-                      color="primary"
-                      type="submit"
-                      mfullWidth
-                      variant="contained"
-                      size="large"
-                      greenButtonChecker={true}
-                      onClick={() => {
-                        validate();
-                      }}
-                    >
-                      {authPageConstants.VERIFY_OTP_BUTTON}
-                    </GreenButton>
-                  </Grid>
-                </Grid>
-              </div>
-            </CardContent>
-            <CardMedia
-              style={{
-                width: "500px",
-                height: "300px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-              }}
-              image={image}
-              title="Live from space album cover"
-            />
-          </Card>
-        </div> */}
-
         <div className={classes.masterlogin2}>
           <div className={classes.masterlogin1}>
             <div className={classes.masterlogin}>
@@ -248,14 +171,8 @@ const VerifyOtp = props => {
                           validate();
                         }}
                       >
-                        {authPageConstants.SEND_OTP_BUTTON}
+                        Verify OTP
                       </Button>
-                      {/* <Backdrop
-                        className={classes.backdrop}
-                        open={openBackdrop}
-                      >
-                        <CircularProgress color="inherit" />
-                      </Backdrop> */}
                     </React.Fragment>
                     <Grid container>
                       <Grid item xs={12} style={{ textAlign: "center" }}>

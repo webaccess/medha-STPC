@@ -32,9 +32,6 @@ const customTheme = createMuiTheme({
       input: {
         padding: "17.5px 14px"
       }
-      // inputAdornedEnd: {
-      //   paddingRight: "130px"
-      // }
     },
     MuiInputBase: {
       root: {
@@ -43,7 +40,14 @@ const customTheme = createMuiTheme({
     },
     MuiSvgIcon: {
       root: {
-        fontSize: "20px"
+        fontSize: "20px",
+        paddingTop: "5px"
+      }
+    },
+    MuiFormLabel: {
+      root: {
+        fontSize: "14px",
+        color: "#263238"
       }
     }
   }

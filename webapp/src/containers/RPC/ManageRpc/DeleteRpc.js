@@ -108,7 +108,7 @@ const DeleteRpc = props => {
           }));
           console.log(res);
           formState.isDeleteData = true;
-          handleCloseModal("RPC's has been deleted successfully.");
+          handleCloseModal("RPC's have been deleted successfully.");
         })
         .catch(error => {
           console.log("error");
@@ -212,9 +212,7 @@ const DeleteRpc = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isMultiDelete
-                    ? "Are you sure you want to delete " +
-                      props.id.length +
-                      " RPC's?"
+                    ? "Are you sure you want to delete the selected RPC's?"
                     : "Are you sure you want to delete RPC " +
                       formState.dataToDelete["name"] +
                       "?"}

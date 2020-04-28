@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
   CardHeader,
@@ -21,21 +21,16 @@ import DobPicker from "../../components/DobPicker/DobPicker.js";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
-import { Redirect } from "react-router-dom";
+
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
+
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
-import { makeStyles } from "@material-ui/core/styles";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
@@ -43,6 +38,7 @@ import registrationSchema from "./RegistrationSchema.js";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
 import useStyles from "../ContainerStyles/AddEditPageStyles.js";
+import LoaderContext from "../../context/LoaderContext";
 
 const AddEditStudent = props => {
   let history = useHistory();
@@ -82,6 +78,8 @@ const AddEditStudent = props => {
       : false,
     counter: 0
   });
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+
   const [selectedDate, setSelectedDate] = React.useState(
     new Date("2000-01-01T21:11:54")
   );
@@ -98,7 +96,6 @@ const AddEditStudent = props => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
 
-  const { layout: Layout } = props;
   const classes = useStyles();
 
   const [statelist, setstatelist] = useState([]);
@@ -107,15 +104,17 @@ const AddEditStudent = props => {
   const [streamlist, setstreamlist] = useState([]);
 
   useEffect(() => {
+    setLoaderStatus(true);
     getStates();
     getDistrict();
     getColleges();
     getStreams();
-
+    setLoaderStatus(false);
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
   if (formState.dataForEdit && !formState.counter) {
+    setLoaderStatus(true);
     if (props.location["dataForEdit"]) {
       if (props.location["dataForEdit"]["first_name"]) {
         formState.values["firstname"] =
@@ -214,7 +213,7 @@ const AddEditStudent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-
+    setLoaderStatus(true);
     let schema;
     if (formState.editStudent) {
       schema = Object.assign(
@@ -258,6 +257,7 @@ const AddEditStudent = props => {
         ...formState,
         isValid: false
       }));
+      setLoaderStatus(false);
     }
   };
 
@@ -319,6 +319,7 @@ const AddEditStudent = props => {
               success: true
             });
           }
+          setLoaderStatus(false);
         })
         .catch(err => {
           console.log(JSON.stringify(err));
@@ -328,6 +329,7 @@ const AddEditStudent = props => {
             fromeditStudent: true,
             isDataEdited: false
           });
+          setLoaderStatus(false);
         });
     } else {
       postData = databaseUtilities.addStudent(
@@ -370,9 +372,11 @@ const AddEditStudent = props => {
           } else {
             history.push(routeConstants.REGISTERED);
           }
+          setLoaderStatus(false);
         })
         .catch(err => {
           console.log(err);
+          setLoaderStatus(false);
         });
     }
   };
@@ -412,7 +416,9 @@ const AddEditStudent = props => {
   const getDistrict = () => {
     axios
       .get(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DISTRICTS
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_DISTRICTS +
+          "?pageSize=-1"
       )
       .then(res => {
         //   const sanitzedOptions = res.data.map(district => {

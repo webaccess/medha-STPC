@@ -12,7 +12,7 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 
 import styles from "./Document.module.css";
-import useStyles from "./ViewDocumentStyles.js";
+import useStyles from "../CommonStyles/ViewStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";

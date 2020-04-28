@@ -4,20 +4,74 @@ import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
 import * as routeConstants from "../constants/RouteConstants";
 import MenuItems from "../components/SideAndTopNavBar/Component/MenuItems.js";
-import {
-  createMuiTheme,
-  ThemeProvider,
-  Tabs,
-  Tab,
-  Paper
-} from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { get } from "lodash";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { Typography } from "../components";
+
+const StyledTabs = withStyles({
+  root: {},
+  indicator: {
+    backgroundColor: "#006000"
+  }
+})(Tabs);
+
+const StyledTab = withStyles(theme => ({
+  root: {
+    color: "#000000",
+    textTransform: "uppercase",
+    minWidth: 80,
+    fontWeight: theme.typography.fontWeightBold,
+    fontSize: "12px",
+    marginRight: theme.spacing(4),
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"'
+    ].join(","),
+    "&:hover": {
+      color: "#43a047",
+      opacity: 1
+    },
+    "&$selected": {
+      color: "#006000",
+      fontWeight: theme.typography.fontWeightBold
+    },
+    "&:focus": {
+      color: "#43a047"
+    }
+  },
+  selected: {}
+}))(props => <Tab disableRipple {...props} />);
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+    marginBottom: "16px"
+  },
+  padding: {
+    padding: theme.spacing(3)
+  },
+  marginY: {
+    marginBottom: "16px",
+    marginTop: "8px"
+  }
+}));
 
 const RouteWithTabLayout = props => {
-  const { layout: Layout, component: Component, ...rest } = props;
+  const { layout: Layout, component: Component, title, ...rest } = props;
+  console.log(rest);
   let history = useHistory();
+  const classes = useStyles();
   // Default selected tab view-profile
   const [selectedTab, setSelectedTab] = useState("/view-profile");
 
@@ -26,53 +80,6 @@ const RouteWithTabLayout = props => {
       history.push(selectedTab);
     }
   }, [selectedTab]);
-
-  const overrideTabsTheme = createMuiTheme({
-    overrides: {
-      // Style sheet name ⚛️
-      MuiTabs: {
-        // Name of the rule
-        flexContainer: {
-          display: "flex",
-          flexDirection: "row-reverse",
-          background: "#f4f6f8",
-          borderRadius: 0
-        },
-        indicator: {
-          backgroundColor: "#F6C80A",
-          height: "4px"
-        },
-        root: {
-          backgroundColor: "#f4f6f8"
-        }
-      },
-      MuiButtonBase: {
-        root: {
-          color: "white !important"
-        }
-      },
-      MuiTab: {
-        root: {
-          minHeight: "32px",
-          textTransform: "capitalize",
-          fontWeight: 400,
-          marginLeft: "8px",
-          marginTop: "8px"
-        },
-        textColorPrimary: {
-          background: "#333333"
-        }
-      },
-      MuiPaper: {
-        elevation1: {
-          boxShadow: "none"
-        },
-        rounded: {
-          borderRadius: "0px"
-        }
-      }
-    }
-  });
 
   const menu = get(
     MenuItems(),
@@ -91,21 +98,19 @@ const RouteWithTabLayout = props => {
     };
 
     return (
-      <div>
-        <ThemeProvider theme={overrideTabsTheme}>
-          <Paper>
-            <Tabs
-              value={selectedTab}
-              onChange={(event, value) => handleTabChange(value)}
-              indicatorColor="primary"
-              textColor="primary"
-            >
-              {tabs.map(tab => {
-                return <Tab label={tab.name} value={tab.link} />;
-              })}
-            </Tabs>
-          </Paper>
-        </ThemeProvider>
+      <div className={classes.root}>
+        <Typography className={classes.marginY} variant="h4">
+          {title || ""}
+        </Typography>
+        <StyledTabs
+          variant="fullWidth"
+          value={selectedTab}
+          onChange={(event, value) => handleTabChange(value)}
+        >
+          {tabs.map((tab, index) => {
+            return <StyledTab label={tab.name} value={tab.link} key={index} />;
+          })}
+        </StyledTabs>
       </div>
     );
   };

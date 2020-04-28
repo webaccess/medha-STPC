@@ -11,8 +11,8 @@ const ThumbIcon = props => {
         onClick={props.onClick}
         style={
           props.style
-            ? { color: "green", fontSize: "20px" }
-            : { color: "red", fontSize: "20px" }
+            ? { color: "green", fontSize: "19px" }
+            : { color: "grey", fontSize: "19px" }
         }
       >
         thumb_up

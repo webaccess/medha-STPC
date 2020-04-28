@@ -7,9 +7,14 @@ const EditGridIcon = props => {
       <i
         className="material-icons"
         id={props.id}
+        userId={props.userId}
         value={props.value}
-        onClick={props.onClick}
-        style={{ color: "green", fontSize: "20px" }}
+        onClick={props.disabled ? null : props.onClick}
+        style={
+          props.disabled
+            ? { color: "#8C8C8C", fontSize: "20px" }
+            : { color: "green", fontSize: "20px" }
+        }
       >
         edit
       </i>

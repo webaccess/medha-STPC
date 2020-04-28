@@ -31,6 +31,7 @@ const HireStudent = props => {
 
   const handleCloseModal = () => {
     setOpen(false);
+
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -40,11 +41,10 @@ const HireStudent = props => {
     }));
 
     if (formState.isStudentHired) {
-      props.hiredSuccessfully(true, true, props.isHired, props.isUnHired);
+      props.closeHireModal(true);
     } else {
-      props.hiredSuccessfully(false, true, props.isHired, props.isUnHired);
+      props.closeHireModal(false);
     }
-    props.closeHireModal();
   };
 
   const handleSubmit = event => {
@@ -116,9 +116,9 @@ const HireStudent = props => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
                   {props.isHired ? (
-                    <p>Are you sure you want Hire {props.studentName}?</p>
+                    <p>Are you sure you want to Hire {props.studentName}?</p>
                   ) : (
-                    <p>Are you sure you want Dehire {props.studentName}?</p>
+                    <p>Are you sure you want to Dehire {props.studentName}?</p>
                   )}
                 </Grid>
               </Grid>

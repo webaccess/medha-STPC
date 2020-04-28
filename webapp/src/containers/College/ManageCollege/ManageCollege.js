@@ -251,6 +251,9 @@ const ManageCollege = props => {
         tempIndividualCollegeData["id"] = data[i]["id"];
         tempIndividualCollegeData["blocked"] = data[i]["blocked"];
         tempIndividualCollegeData["name"] = data[i]["name"];
+        tempIndividualCollegeData["state"] = data[i]["state"]
+          ? data[i]["state"]["name"]
+          : "";
         tempIndividualCollegeData["rpc"] = data[i]["rpc"]
           ? data[i]["rpc"]["name"]
           : "";
@@ -552,7 +555,14 @@ const ManageCollege = props => {
   };
 
   const handleFilterChange = event => {
-    formState.filterDataParameters[event.target.name] = event.target.value;
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [COLLEGE_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
 
   /** Multi Delete */
@@ -630,6 +640,7 @@ const ManageCollege = props => {
   /** Columns to show in table */
   const column = [
     { name: "Name", sortable: true, selector: "name" },
+    { name: "State", sortable: true, selector: "state" },
     { name: "Zone", sortable: true, selector: "zone_name" },
     { name: "RPC", sortable: true, selector: "rpc" },
     {
@@ -899,10 +910,12 @@ const ManageCollege = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label={"College"}
-                  placeholder="College"
+                  label={"Name"}
+                  placeholder="Name"
                   variant="outlined"
                   name={COLLEGE_FILTER}
+                  value={formState.filterDataParameters[COLLEGE_FILTER] || ""}
+                  className={classes.autoCompleteField}
                   onChange={handleFilterChange}
                 />
               </Grid>
@@ -918,7 +931,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter
                       ? null
                       : states[
-                          states.findIndex(function(item, i) {
+                          states.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[STATE_FILTER]
@@ -949,7 +962,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : zones[
-                          zones.findIndex(function(item, i) {
+                          zones.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[ZONE_FILTER]
@@ -980,7 +993,7 @@ const ManageCollege = props => {
                     formState.isClearResetFilter || formState.isStateClearFilter
                       ? null
                       : rpcs[
-                          rpcs.findIndex(function(item, i) {
+                          rpcs.findIndex(function (item, i) {
                             return (
                               item.id ===
                               formState.filterDataParameters[RPC_FILTER]

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Grid,
   Typography,
@@ -6,23 +6,18 @@ import {
   CircularProgress
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-
-import * as serviceProviders from "../../api/Axios";
-import * as strapiConstants from "../../constants/StrapiApiConstants";
-import { YellowButton, GrayButton } from "../../components";
-import useStyles from "../ContainerStyles/ModalPopUpStyles";
-const STUDENTS_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
+import * as serviceProviders from "../../../../api/Axios";
+import * as strapiConstants from "../../../../constants/StrapiApiConstants";
+import { YellowButton, GrayButton } from "../../../../components";
+import useStyles from "../../../ContainerStyles/ModalPopUpStyles";
 
 const ApprovedStudents = props => {
   const [open, setOpen] = React.useState(false);
-  const [username, setUsername] = useState([]);
   const [formState, setFormState] = useState({
-    isDataBlockUnblock: false,
+    isDataToApproveUnapprove: false,
     isValid: false,
     stateCounter: 0,
     values: {}
@@ -30,19 +25,17 @@ const ApprovedStudents = props => {
 
   const handleCloseModal = (message = "") => {
     setOpen(false);
-    /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
-    to ensure that only string value is passed to message variable */
     if (typeof message !== "string") {
       message = "";
     }
     setFormState(formState => ({
       ...formState,
       values: {},
-      isDataBlockUnblock: false,
+      isDataToApproveUnapprove: false,
       isValid: false,
       stateCounter: 0
     }));
-    if (formState.isDataBlockUnblock) {
+    if (formState.isDataToApproveUnapprove) {
       props.closeModal(true, message);
     } else {
       props.closeModal(false, message);
@@ -55,105 +48,102 @@ const ApprovedStudents = props => {
     event.preventDefault();
     event.persist();
     props.clearSelectedRow(true);
-
-    /** Calls checkIfStateCanBeDelete function to check whether the state can be deleted
-      and returns back an opbject with status and message*/
     ApprovedStudent();
   };
 
   const ApprovedStudent = () => {
-    if (props.isMultiBlock || props.isMultiUnblock) {
-      let approve_url = "";
-      if (props.isMultiUnblock) {
-        approve_url =
+    if (props.isMultiApprove || props.isMultiUnapprove) {
+      let urlForApproveUnapprove = "";
+      if (props.isMultiUnapprove) {
+        urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_STUDENT +
           "/unapprove";
       } else {
-        approve_url =
+        urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_STUDENT +
           "/approve";
       }
       let postData = {
-        ids: props.multiBlockCollegeIds
+        ids: props.multiApproveUnapproveStudentIds
       };
       serviceProviders
-        .serviceProviderForPostRequest(approve_url, postData)
+        .serviceProviderForPostRequest(urlForApproveUnapprove, postData)
         .then(res => {
           setFormState(formState => ({
             ...formState,
             isValid: true
           }));
-          formState.isDataBlockUnblock = true;
-          if (props.isMultiUnblock) {
-            handleCloseModal("The students has been unapproved.");
+          formState.isDataToApproveUnapprove = true;
+          if (props.isMultiUnapprove) {
+            handleCloseModal("The selected students have been unapproved.");
           } else {
-            handleCloseModal("The students has been approved.");
+            handleCloseModal("The selected students have been approved.");
           }
         })
         .catch(error => {
           console.log("error");
-          formState.isDataBlockUnblock = false;
-          if (props.isMultiUnblock) {
+          formState.isDataToApproveUnapprove = false;
+          if (props.isMultiUnapprove) {
             handleCloseModal(
-              "An error has occured while unapproving the students. Kindly, try again."
+              "An error has occured while unapproving the selected students. Kindly, try again."
             );
           } else {
             handleCloseModal(
-              "An error has occured while approving the students. Kindly, try again."
+              "An error has occured while approving the selected students. Kindly, try again."
             );
           }
         });
     } else {
-      let approve_url = "";
+      let urlForApproveUnapprove = "";
       if (props.verifiedByCollege) {
-        approve_url =
+        urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_STUDENT +
           "/unapprove";
       } else {
-        approve_url =
+        urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_STUDENT +
           "/approve";
       }
       let ids = [];
-      ids.push(props.dataToBlockUnblock["id"]);
+      ids.push(props.dataToApproveUnapprove["id"]);
       let postData = {
         ids: ids
       };
       serviceProviders
-        .serviceProviderForPostRequest(approve_url, postData)
+        .serviceProviderForPostRequest(urlForApproveUnapprove, postData)
         .then(res => {
           setFormState(formState => ({
             ...formState,
             isValid: true
           }));
-          formState.isDataBlockUnblock = true;
+          formState.isDataToApproveUnapprove = true;
           if (props.verifiedByCollege) {
             handleCloseModal(
-              "The student " + props.cellName + " has been unapproved."
+              "The student " + props.studentName + " has been unapproved."
             );
           } else {
             handleCloseModal(
-              "The student " + props.cellName + " has been approved."
+              "The student " + props.studentName + " has been approved."
             );
           }
         })
         .catch(error => {
           console.log("error");
-          formState.isDataBlockUnblock = false;
+          formState.isDataToApproveUnapprove = false;
           if (props.verifiedByCollege) {
             handleCloseModal(
-              "An error has occured while unapproving the student" +
-                props.cellName +
+              "An error has occured while unapproving the student " +
+                props.studentName +
                 ". Kindly, try again."
             );
           } else {
             handleCloseModal(
-              "An error has occured while approving the student" +
-                props.cellName +
+              "An error has occured while approving the student " +
+                props.studentName +
                 ". Kindly, try again."
             );
           }
@@ -180,13 +170,13 @@ const ApprovedStudents = props => {
           <div className={classes.paper}>
             <div className={classes.blockpanel}>
               <Typography variant={"h2"} className={classes.textMargin}>
-                {props.isMultiBlock || props.isMultiUnblock
-                  ? props.isMultiBlock
+                {props.isMultiApprove || props.isMultiUnapprove
+                  ? props.isMultiApprove
                     ? "Approve"
                     : "Unapprove"
                   : null}
 
-                {!props.isMultiBlock && !props.isMultiUnblock
+                {!props.isMultiApprove && !props.isMultiUnapprove
                   ? props.verifiedByCollege
                     ? "Unapprove"
                     : "Approve"
@@ -206,21 +196,17 @@ const ApprovedStudents = props => {
               <Grid item xs={12}>
                 <Grid container spacing={2} alignItems="center">
                   <Grid item lg className={classes.deletemessage}>
-                    {props.isMultiBlock || props.isMultiUnblock
-                      ? props.isMultiBlock
-                        ? "Are you sure you want to approve " +
-                          props.multiBlockCollegeIds.length +
-                          " selected students"
-                        : "Are you sure you want to Unapprove  " +
-                          props.multiBlockCollegeIds.length +
-                          " selected students"
+                    {props.isMultiApprove || props.isMultiUnapprove
+                      ? props.isMultiApprove
+                        ? "Are you sure you want to approve the selected students"
+                        : "Are you sure you want to Unapprove the selected students"
                       : null}
-                    {!props.isMultiBlock && !props.isMultiUnblock
+                    {!props.isMultiApprove && !props.isMultiUnapprove
                       ? props.verifiedByCollege
-                        ? "Are you sure you want to Unapprove student " +
-                          props.cellName
-                        : "Are you sure you want to approve student " +
-                          props.cellName
+                        ? "Are you sure you want to unapprove the student " +
+                          props.studentName
+                        : "Are you sure you want to approve the student " +
+                          props.studentName
                       : null}
                   </Grid>
                 </Grid>

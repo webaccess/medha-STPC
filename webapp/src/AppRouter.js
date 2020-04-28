@@ -26,6 +26,7 @@ import {
 /** General */
 import Dashboard from "./containers/Dashboard/Dashboard";
 import Layout from "./hoc/Layout/Layout";
+import ChangePassword from "./containers/AuthPage/ChangePassword/ChangePassword";
 
 /** College routes */
 import AddEditCollege from "./containers/College/AddEditCollege/AddEditCollege";
@@ -68,6 +69,7 @@ import AddEditStudent from "./containers/Registration/AddEditStudent";
 
 /** RequiredConformation */
 import RequiredConformation from "./components/RequiredConformation/RequiredConformation.js";
+import RequiredErrorPage from "./components/RequiredErrorPage/RequiredErrorPage.js";
 
 /** Student */
 import StudentProfile from "./containers/Student/StudentProfile";
@@ -75,9 +77,11 @@ import ViewEducation from "./containers/Student/Education/ViewEducation";
 import AddEducation from "./containers/Student/Education/AddEditEducation";
 import ViewDocument from "./containers/Student/Document/ViewDocument";
 import AddDocument from "./containers/Student/Document/AddEditDocument";
-import ManageStudents from "./containers/Student/ManageStudents";
+import ManageStudents from "./containers/Student/ManageStudentCollegeAdmin/ManageStudent/ManageStudents";
 import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
 import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
+import AddEditStudentForCollegeAdmin from "./containers/Student/ManageStudentCollegeAdmin/AddEditStudentForCollegeAdmin/AddEditStudentForCollegeAdmin";
+import ViewPastActivities from "./containers/Student/Activity/PastActivities";
 
 /** Activity */
 import ViewActivity from "./containers/Activity/ViewActivity.js";
@@ -114,8 +118,18 @@ const AppRouter = props => {
           path={routeConstants.REQUIRED_CONFORMATION}
           exact
         />
+        <RequiredErrorPage path={routeConstants.REQUIRED_ERROR_PAGE} exact />
         <Route path={routeConstants.LOGOUT_URL} component={Logout} exact />
         <Registered path={routeConstants.REGISTERED} layout={Layout} exact />
+
+        {/** Change Password*/}
+        <RouteWithLayout
+          component={ChangePassword}
+          exact
+          layout={Layout}
+          path={routeConstants.CHANGE_PASSWORD}
+        />
+
         {/**Student Registration route */}
         <RegistrationRoute
           path={routeConstants.NEW_REGISTRATION_URL}
@@ -128,6 +142,7 @@ const AppRouter = props => {
           layout={Layout}
           exact
           component={AddEditStudent}
+          title="Edit Profile"
         />
 
         <RequestOtp path={routeConstants.REQUEST_OTP} layout={Layout} exact />
@@ -152,6 +167,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_PROFILE}
+          title="Profile"
         />
 
         {/**Education */}
@@ -160,6 +176,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_EDUCATION}
+          title="View Education"
         />
 
         <RouteWithTabLayout
@@ -167,6 +184,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.ADD_EDUCATION}
+          title="Add Education"
         />
 
         <RouteWithTabLayout
@@ -174,6 +192,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.EDIT_EDUCATION}
+          title="Edit Education"
         />
         {/**Student document */}
         <RouteWithTabLayout
@@ -181,6 +200,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_DOCUMENTS}
+          title="View Document"
         />
 
         <RouteWithTabLayout
@@ -188,7 +208,17 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.ADD_DOCUMENTS}
+          title="Add Document"
         />
+
+        <RouteWithTabLayout
+          component={ViewPastActivities}
+          exact
+          layout={Layout}
+          path={routeConstants.VIEW_PAST_ACTIVITIES}
+          title="Activities"
+        />
+
         {/** Activity List*/}
         <RouteWithLayout
           component={ViewActivity}
@@ -231,6 +261,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_ACADEMIC_HISTORY}
+          title="View Academic History"
         />
 
         <RouteWithTabLayout
@@ -238,6 +269,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.ADD_ACADEMIC_HISTORY}
+          title="Add Academic History"
         />
 
         <RouteWithTabLayout
@@ -245,6 +277,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.EDIT_ACADEMIC_HISTORY}
+          title="Edit Academic History"
         />
 
         {/** User */}
@@ -421,13 +454,13 @@ const AppRouter = props => {
           path={routeConstants.VIEW_STUDENT_PROFILE}
         />
         <CollegeAdminRoute
-          component={AddEditStudent}
+          component={AddEditStudentForCollegeAdmin}
           exact
           layout={Layout}
           path={routeConstants.ADD_STUDENT_FROM_COLLEGE_ADMIN}
         />
         <CollegeAdminRoute
-          component={AddEditStudent}
+          component={AddEditStudentForCollegeAdmin}
           exact
           layout={Layout}
           path={routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN}

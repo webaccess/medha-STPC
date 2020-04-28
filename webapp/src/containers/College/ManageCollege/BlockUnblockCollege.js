@@ -86,9 +86,9 @@ const BlockUnblockCollege = props => {
           }));
           formState.isDataBlockUnblock = true;
           if (props.isMultiUnblock) {
-            handleCloseModal("Colleges has been unblocked");
+            handleCloseModal("Colleges have been unblocked successfully");
           } else {
-            handleCloseModal("Colleges has been blocked");
+            handleCloseModal("Colleges have been blocked successfully");
           }
         })
         .catch(error => {
