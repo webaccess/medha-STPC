@@ -7,32 +7,19 @@ import {
   Link,
   Grid,
   Typography,
-  Hidden,
   CardMedia,
   Paper,
   Icon,
-  CardContent,
-  useMediaQuery,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
-  FormHelperText,
-  Collapse,
-  CircularProgress,
-  Backdrop
+  CardContent
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import { Redirect } from "../../../node_modules/react-router-dom";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
-import Logo from "../../components/Logo/Logo.js";
+
 import useStyles from "../OTP/OTPstyles.js";
-import GreenButton from "../../components/GreenButton/GreenButton.js";
+
 import form from "./OTPform.json";
 import validateInput from "../../components/Validation/Validation.js";
-import YellowButton from "../../components/YellowButton/YellowButton.js";
-import * as serviceProvider from "../../api/Axios.js";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import axios from "axios";
 import CardIcon from "../../components/Card/CardIcon";

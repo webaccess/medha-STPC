@@ -129,6 +129,11 @@ const useStyles = makeStyles(theme => ({
     objectFit: "contain",
     backgroundColor: "#666666",
     marginLeft: "18%"
+  },
+  date: {
+    MuiFormControl: {
+      root: { width: "100% !important" }
+    }
   }
 }));
 

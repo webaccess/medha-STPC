@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
   Card,
   CardContent,
   Grid,
-  Tooltip,
   Collapse,
   IconButton
 } from "@material-ui/core";
@@ -32,6 +31,7 @@ import {
 import DeleteEducation from "./DeleteEducation";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
 
 const ViewEducation = props => {
   const [open, setOpen] = React.useState(true);
@@ -76,6 +76,7 @@ const ViewEducation = props => {
     pageCount: "",
     sortAscending: true
   });
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
@@ -88,6 +89,7 @@ const ViewEducation = props => {
   const EDUCATION_FILTER = "id";
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_EDUCATION_URL)
       .then(res => {
@@ -101,6 +103,7 @@ const ViewEducation = props => {
       });
 
     getEducationData(10, 1);
+    setLoaderStatus(false);
   }, []);
 
   /** This seperate function is used to get the education data*/
@@ -111,7 +114,7 @@ const ViewEducation = props => {
         pageSize: pageSize
       };
       Object.keys(params).map(key => {
-        defaultParams[key] = params[key];
+        return (defaultParams[key] = params[key]);
       });
       params = defaultParams;
     } else {
@@ -139,9 +142,11 @@ const ViewEducation = props => {
           pageCount: res.data.pageCount,
           isDataLoading: false
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
   };
 

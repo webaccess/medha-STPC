@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import * as serviceProviders from "../../api/Axios";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
 import { Auth as auth } from "../../components";
 import Spinner from "../../components/Spinner/Spinner.js";
 import GreenButton from "../../components/GreenButton/GreenButton.js";
 import Clock from "@material-ui/icons/AddAlarm";
-import { green, red } from "@material-ui/core/colors";
+import { green } from "@material-ui/core/colors";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {
   Card,
@@ -23,6 +23,7 @@ import * as routeConstants from "../../constants/RouteConstants";
 import Img from "react-image";
 import * as formUtilities from "../../Utilities/FormUtilities.js";
 import moment from "moment";
+import LoaderContext from "../../context/LoaderContext";
 
 const ACTIVITIES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
@@ -34,8 +35,12 @@ const ActivityDetails = props => {
     activityDetails: {},
     greenButtonChecker: true
   });
+  const { setLoaderStatus } = useContext(LoaderContext);
+
   useEffect(() => {
+    setLoaderStatus(true);
     getactivityDetails();
+    setLoaderStatus(false);
   }, []);
 
   async function getactivityDetails() {
@@ -96,6 +101,7 @@ const ActivityDetails = props => {
   }
 
   const route = () => {
+    setLoaderStatus(true);
     if (auth.getUserInfo().role.name === "Student") {
       history.push({
         pathname: routeConstants.ELIGIBLE_ACTIVITY
@@ -114,6 +120,7 @@ const ActivityDetails = props => {
         pathname: routeConstants.SIGN_IN_URL
       });
     }
+    setLoaderStatus(false);
   };
 
   const getTime = () => {

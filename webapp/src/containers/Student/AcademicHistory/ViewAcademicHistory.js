@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
@@ -31,11 +31,14 @@ import {
 import DeleteAcademicHistory from "./DeleteAcademicHistory";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
 
 const ViewAcademicHistory = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+
   const [formState, setFormState] = useState({
     dataToShow: [],
     academicHistory: [],
@@ -83,6 +86,7 @@ const ViewAcademicHistory = props => {
   const ACADEMIC_YEAR_FILTER = "id";
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACADEMIC_YEAR_URL)
       .then(res => {
@@ -115,9 +119,11 @@ const ViewAcademicHistory = props => {
           dataToShow: res.data.result,
           isDataLoading: false
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
   };
 

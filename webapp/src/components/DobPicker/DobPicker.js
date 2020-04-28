@@ -18,6 +18,7 @@ function DobPicker(props) {
           inputVariant="outlined"
           format="dd/MM/yyyy"
           //margin="normal"
+          className={props.classes}
           id={props.id}
           label={props.label}
           value={props.value}

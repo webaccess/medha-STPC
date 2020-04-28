@@ -744,6 +744,7 @@ const AddEditStudent = props => {
                     id="date-picker-inline"
                     label="Date of Birth"
                     value={selectedDate}
+                    className={classes.date}
                     onChange={date => setSelectedDate(date)}
                     error={hasError("dateofbirth")}
                     helperText={

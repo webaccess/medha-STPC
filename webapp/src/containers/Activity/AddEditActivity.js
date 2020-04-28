@@ -76,7 +76,7 @@ const AddEditActivity = props => {
   });
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const activitytypelist = [
     { name: "Workshop", id: "workshop" },
@@ -97,13 +97,11 @@ const AddEditActivity = props => {
 
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
-  const [academicyearlist, setacademicyearlist] = useState([]);
+
   useEffect(() => {
     setLoaderStatus(true);
     getColleges();
-    // getStreams();
 
-    // setLabelWidth(inputLabel.current.offsetWidth);
     setLoaderStatus(false);
   }, []);
   useEffect(() => {
@@ -124,6 +122,7 @@ const AddEditActivity = props => {
       const list = stream
         .map(obj => {
           if (formState.values.college === obj.id) return obj.stream;
+          else return undefined;
         })
         .filter(stream => stream);
       console.log(list);
@@ -367,18 +366,6 @@ const AddEditActivity = props => {
           setLoaderStatus(false);
         });
     }
-  };
-
-  const getStreams = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS
-      )
-      .then(res => {
-        console.log(res);
-        console.log(collegelist);
-        setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
   };
 
   const getColleges = () => {
