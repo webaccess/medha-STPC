@@ -453,6 +453,31 @@ module.exports = {
   async events(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+
+    // Extrating the details for query params
+    let isRegistered, hasAttended, isHired;
+
+    /**
+     * Removing isRegistered,hasAttended, isHired since those
+     * are custom fields added and strapi won't allow custom fields if present
+     * in query params
+     */
+
+    if (_.has(query, "isRegistered")) {
+      isRegistered = query.isRegistered;
+      delete query.isRegistered;
+    }
+
+    if (_.has(query, "hasAttended")) {
+      hasAttended = query.hasAttended;
+      delete query.hasAttended;
+    }
+
+    if (_.has(query, "isHired")) {
+      isHired = query.isHired;
+      delete query.isHired;
+    }
+
     const filters = convertRestQueryParams(query);
 
     const student = await strapi
@@ -547,6 +572,51 @@ module.exports = {
         return event;
       }
     });
+
+    /**
+     * Since event object don't have information regarding
+     * student has registered or attended we are getting
+     * that information from event registration and then adding that details to
+     * original event object
+     */
+    await utils.asyncForEach(result, async event => {
+      const eventRegistrationInfo = await strapi
+        .query("event-registration")
+        .findOne({ student: id, event: event.id });
+      event.isRegistered = eventRegistrationInfo ? true : false;
+      event.isHired =
+        eventRegistrationInfo && eventRegistrationInfo.hired_at_event
+          ? true
+          : false;
+      event.hasAttended =
+        eventRegistrationInfo && eventRegistrationInfo.attendance_verified
+          ? true
+          : false;
+    });
+
+    /**
+     * Filtering for custom filters hasAttended, isHired and isRegistered
+     */
+    if (isRegistered) {
+      const _val = isRegistered == "true";
+      result = result.filter(event => {
+        if (event.isRegistered == _val) return event;
+      });
+    }
+
+    if (isHired) {
+      const _val = isHired == "true";
+      result = result.filter(event => {
+        if (event.isHired == _val) return event;
+      });
+    }
+
+    if (hasAttended) {
+      const _val = hasAttended == "true";
+      result = result.filter(event => {
+        if (event.hasAttended == _val) return event;
+      });
+    }
 
     const currentDate = new Date();
     result = result.filter(event => {
@@ -623,9 +693,35 @@ module.exports = {
 
     return await strapi.query("event-registration").find({ student: id });
   },
+
   async pastEvents(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+
+    // Extrating the details for query params
+    let isRegistered, hasAttended, isHired;
+
+    /**
+     * Removing isRegistered,hasAttended, isHired since those
+     * are custom fields added and strapi won't allow custom fields if present
+     * in query params
+     */
+
+    if (_.has(query, "isRegistered")) {
+      isRegistered = query.isRegistered;
+      delete query.isRegistered;
+    }
+
+    if (_.has(query, "hasAttended")) {
+      hasAttended = query.hasAttended;
+      delete query.hasAttended;
+    }
+
+    if (_.has(query, "isHired")) {
+      isHired = query.isHired;
+      delete query.isHired;
+    }
+
     const filters = convertRestQueryParams(query);
 
     const student = await strapi
@@ -721,18 +817,71 @@ module.exports = {
       }
     });
 
+    /**
+     * Since event object don't have information regarding
+     * student has registered or attended we are getting
+     * that information from event registration and then adding that details to
+     * original event object
+     */
+    await utils.asyncForEach(result, async event => {
+      const eventRegistrationInfo = await strapi
+        .query("event-registration")
+        .findOne({ student: id, event: event.id });
+      event.isRegistered = eventRegistrationInfo ? true : false;
+      event.isHired =
+        eventRegistrationInfo && eventRegistrationInfo.hired_at_event
+          ? true
+          : false;
+      event.hasAttended =
+        eventRegistrationInfo && eventRegistrationInfo.attendance_verified
+          ? true
+          : false;
+    });
+
+    /**
+     * Filtering for custom filters hasAttended, isHired and isRegistered
+     */
+    if (isRegistered) {
+      const _val = isRegistered == "true";
+      result = result.filter(event => {
+        if (event.isRegistered == _val) return event;
+      });
+    }
+
+    if (isHired) {
+      const _val = isHired == "true";
+      result = result.filter(event => {
+        if (event.isHired == _val) return event;
+      });
+    }
+
+    if (hasAttended) {
+      const _val = hasAttended == "true";
+      result = result.filter(event => {
+        if (event.hasAttended == _val) return event;
+      });
+    }
+
+    // Filtering events to get past events
     const currentDate = new Date();
     result = result.filter(event => {
       const endDate = new Date(event.end_date_time);
 
       if (currentDate.getTime() > endDate.getTime()) return event;
     });
+
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
       ...response.pagination
     };
   },
+
+  /**
+   *
+   * @param {Object} ctx
+   * This will return all past activities student has missed and attended
+   */
   async pastActivity(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
