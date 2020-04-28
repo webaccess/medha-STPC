@@ -3,7 +3,7 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -20,25 +20,26 @@ const STUDENTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
 const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 
-const DeleteStudents = props => {
+const DeleteStudents = (props) => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
-    values: {}
+    values: {},
   });
 
   const handleCloseModal = (message = "") => {
+    props.clearSelectedRow(true);
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -47,7 +48,7 @@ const DeleteStudents = props => {
     }
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     /** CALL Put FUNCTION */
     props.clearSelectedRow(true);
 
@@ -60,13 +61,13 @@ const DeleteStudents = props => {
     if (props.isMultiDelete) {
       await serviceProviders
         .serviceProviderForAllDeleteRequest(STUDENTS_URL, props.id)
-        .then(res => {
+        .then((res) => {
           serviceProviders
             .serviceProviderForAllDeleteRequest(USERS_URL, props.UserID)
-            .then(res => {
-              setFormState(formState => ({
+            .then((res) => {
+              setFormState((formState) => ({
                 ...formState,
-                isValid: true
+                isValid: true,
               }));
               setOpen(false);
               formState.isDeleteData = true;
@@ -74,12 +75,12 @@ const DeleteStudents = props => {
                 "The selected students have been deleted successfully."
               );
             })
-            .catch(error => {
+            .catch((error) => {
               setOpen(false);
               console.log("UserDeleteError", error);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           setOpen(false);
           console.log("error");
           formState.isDeleteData = false;
@@ -90,13 +91,13 @@ const DeleteStudents = props => {
     } else {
       await serviceProviders
         .serviceProviderForDeleteRequest(STUDENTS_URL, props.id)
-        .then(res => {
+        .then((res) => {
           serviceProviders
             .serviceProviderForDeleteRequest(
               USERS_URL,
               props.dataToDelete["userId"]
             )
-            .then(res => {
+            .then((res) => {
               formState.isDeleteData = true;
               setOpen(false);
               handleCloseModal(
@@ -105,12 +106,12 @@ const DeleteStudents = props => {
                   " has been successfully deleted"
               );
             })
-            .catch(error => {
+            .catch((error) => {
               setOpen(false);
               console.log("studenterror", error);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           setOpen(false);
           console.log("error", error);
           handleCloseModal(
@@ -133,7 +134,7 @@ const DeleteStudents = props => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500
+        timeout: 500,
       }}
     >
       <Fade in={props.showModal}>

@@ -11,7 +11,7 @@ import {
   IconButton,
   Icon,
   CircularProgress,
-  Tooltip
+  Tooltip,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import * as routeConstants from "../../../constants/RouteConstants";
@@ -25,7 +25,7 @@ import {
   Table,
   ThumbIcon,
   Alert,
-  HowToReg
+  HowToReg,
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -48,7 +48,7 @@ const SORT_FIELD_KEY = "_sort";
 const STUDENT_FILTER = "user.first_name_contains";
 const STREAM_FILTER = "stream.id";
 
-const StudentList = props => {
+const StudentList = (props) => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
@@ -97,7 +97,7 @@ const StudentList = props => {
     dataToMarkAttaindance: {},
     isPresent: false,
     isAbsent: false,
-    showModalAttaindance: false
+    showModalAttaindance: false,
   });
 
   useEffect(() => {
@@ -113,9 +113,9 @@ const StudentList = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "father_first_name:asc"
+        [SORT_FIELD_KEY]: "father_first_name:asc",
       };
-      Object.keys(paramsForevents).map(key => {
+      Object.keys(paramsForevents).map((key) => {
         defaultParams[key] = paramsForevents[key];
       });
       paramsForevents = defaultParams;
@@ -123,12 +123,12 @@ const StudentList = props => {
       paramsForevents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "father_first_name:asc"
+        [SORT_FIELD_KEY]: "father_first_name:asc",
       };
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      isDataLoading: true
+      isDataLoading: true,
     }));
     let EVENT_ID = null;
     let regStudent_url = null;
@@ -149,14 +149,14 @@ const StudentList = props => {
     ) {
       await serviceProvider
         .serviceProviderForGetRequest(regStudent_url, paramsForevents)
-        .then(res => {
+        .then((res) => {
           formState.dataToShow = [];
           formState.tempData = [];
           let eventData = [];
           getHiredIds(res.data.result)
-            .then(res1 => {
+            .then((res1) => {
               eventData = convertEventData(res.data.result, res1);
-              setFormState(formState => ({
+              setFormState((formState) => ({
                 ...formState,
                 students: res.data.result,
                 pageSize: res.data.pageSize,
@@ -165,12 +165,12 @@ const StudentList = props => {
                 pageCount: res.data.pageCount,
                 dataToShow: eventData,
                 tempData: eventData,
-                isDataLoading: false
+                isDataLoading: false,
               }));
             })
-            .catch(error => {});
+            .catch((error) => {});
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
         });
     } else {
@@ -179,26 +179,26 @@ const StudentList = props => {
         auth.getUserInfo().role.name === "College Admin"
       ) {
         history.push({
-          pathname: routeConstants.MANAGE_EVENT
+          pathname: routeConstants.MANAGE_EVENT,
         });
       } else {
         history.push({
-          pathname: routeConstants.DASHBOARD_URL
+          pathname: routeConstants.DASHBOARD_URL,
         });
       }
     }
   };
 
-  const getHiredIds = async studentData => {
+  const getHiredIds = async (studentData) => {
     let studentEventData = [];
     for (let data in studentData) {
       let paramsForHire = {
         "event.id": props["location"]["eventId"],
-        "student.id": studentData[data]["id"]
+        "student.id": studentData[data]["id"],
       };
       await serviceProvider
         .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-        .then(res => {
+        .then((res) => {
           for (let i in res.data.result) {
             var attaindandeAndHire = {};
             attaindandeAndHire["Attaindance"] =
@@ -208,7 +208,7 @@ const StudentList = props => {
             studentEventData.push(attaindandeAndHire);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error", error);
         });
     }
@@ -261,61 +261,61 @@ const StudentList = props => {
 
   const getFilterData = () => {
     let params = {
-      pageSize: -1
+      pageSize: -1,
     };
 
     serviceProvider
       .serviceProviderForGetRequest(STREAM_URL, params)
-      .then(res => {
+      .then((res) => {
         setStreams(res.data.result);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error");
       });
   };
 
   const modalClose = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       showModalHire: false,
-      showModalAttaindance: false
+      showModalAttaindance: false,
     }));
   };
 
-  const handleCloseHireModal = status => {
+  const handleCloseHireModal = (status) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isStudentHired: status,
       showModalHire: false,
       fromHiredModal: true,
       isAttaindanceMarked: false,
-      fromAttaindanceModal: false
+      fromAttaindanceModal: false,
     }));
     if (status) {
       getStudentList(formState.pageSize, 1);
     }
   };
 
-  const hiredCell = event => {
+  const hiredCell = (event) => {
     setLoaderStatus(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      hireStudent: event.target.getAttribute("value")
+      hireStudent: event.target.getAttribute("value"),
     }));
     getEventRegistrationData(event.target.id);
   };
 
-  const getEventRegistrationData = async id => {
+  const getEventRegistrationData = async (id) => {
     let paramsForHire = {
       "student.id": id,
-      "event.id": formState.eventId
+      "event.id": formState.eventId,
     };
     serviceProvider
       .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-      .then(res => {
+      .then((res) => {
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
         if (registerData.hired_at_event) {
@@ -324,24 +324,24 @@ const StudentList = props => {
           registerCellData(regUserID, true, "");
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
 
   const registerCellData = (id, isHired = false, studentName) => {
     if (isHired === true) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToHire: id,
         isHired: true,
         isUnHired: false,
         showModalHire: true,
         fromHiredModal: false,
-        isStudentHired: false
+        isStudentHired: false,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToHire: id,
         isHired: false,
@@ -349,29 +349,29 @@ const StudentList = props => {
         showModalHire: true,
         messageToShow: "",
         fromHiredModal: false,
-        isStudentHired: false
+        isStudentHired: false,
       }));
     }
     setLoaderStatus(false);
   };
 
-  const handleAttaindance = event => {
+  const handleAttaindance = (event) => {
     setLoaderStatus(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      markAttaindance: event.target.getAttribute("value")
+      markAttaindance: event.target.getAttribute("value"),
     }));
     markStudentAttaindance(event.target.id);
   };
 
-  const markStudentAttaindance = async id => {
+  const markStudentAttaindance = async (id) => {
     let paramsForHire = {
       "student.id": id,
-      "event.id": formState.eventId
+      "event.id": formState.eventId,
     };
     serviceProvider
       .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
-      .then(res => {
+      .then((res) => {
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
         if (registerData.attendance_verified) {
@@ -380,45 +380,45 @@ const StudentList = props => {
           attaindanceCellData(regUserID, true, "");
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
       });
   };
 
   const attaindanceCellData = (id, isPresent = false, studentName) => {
     if (isPresent === true) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToMarkAttaindance: id,
         isPresent: true,
         isAbsent: false,
         showModalAttaindance: true,
-        studentName: studentName
+        studentName: studentName,
       }));
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         dataToMarkAttaindance: id,
         isPresent: false,
         isAbsent: true,
         showModalAttaindance: true,
-        studentName: studentName
+        studentName: studentName,
       }));
     }
     setLoaderStatus(false);
   };
 
-  const handleCloseAttaindanceModal = status => {
+  const handleCloseAttaindanceModal = (status) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isAttaindanceMarked: status,
       showModalAttaindance: false,
       fromAttaindanceModal: true,
       isStudentHired: false,
-      fromHiredModal: false
+      fromHiredModal: false,
     }));
     if (status) {
       getStudentList(formState.pageSize, 1);
@@ -439,7 +439,7 @@ const StudentList = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStudentList(formState.pageSize, page);
     } else {
@@ -456,21 +456,21 @@ const StudentList = props => {
       delete formState.filterDataParameters[filterName];
     } else {
       formState.filterDataParameters[filterName] = value["id"];
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isClearResetFilter: false
+        isClearResetFilter: false,
       }));
     }
   };
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     history.push({
       pathname: routeConstants.VIEW_STUDENT_PROFILE,
       dataForStudent: event.target.id,
       fromAddStudentToRecruitmentDrive: false,
       fromEventStudentList: true,
       eventId: formState.eventId,
-      eventTitle: formState.eventTitle
+      eventTitle: formState.eventTitle,
     });
   };
 
@@ -488,7 +488,7 @@ const StudentList = props => {
 
   const backToManageEvent = () => {
     history.push({
-      pathname: routeConstants.MANAGE_EVENT
+      pathname: routeConstants.MANAGE_EVENT,
     });
   };
 
@@ -496,12 +496,12 @@ const StudentList = props => {
     history.push({
       pathname: routeConstants.ADD_STUDENT_DRIVE,
       eventId: formState.eventId,
-      eventTitle: formState.eventTitle
+      eventTitle: formState.eventTitle,
     });
   };
 
   /** Data Export Functionality */
-  const handleClickDownloadStudents = value => {
+  const handleClickDownloadStudents = (value) => {
     let data = [];
     for (let i in value) {
       var eventIndividualData = {};
@@ -529,7 +529,7 @@ const StudentList = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
@@ -538,20 +538,20 @@ const StudentList = props => {
       isClearResetFilter: true,
       isStateClearFilter: true,
       isDataLoading: true,
-      studentFilterData: []
+      studentFilterData: [],
     }));
     formState.filterDataParameters[STUDENT_FILTER] = "";
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
 
-  const handleFilterChangeForStudentField = event => {
-    setFormState(formState => ({
+  const handleFilterChangeForStudentField = (event) => {
+    setFormState((formState) => ({
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [STUDENT_FILTER]: event.target.value
-      }
+        [STUDENT_FILTER]: event.target.value,
+      },
     }));
     event.persist();
     // setRpcsFilter(event.target.value);
@@ -572,13 +572,13 @@ const StudentList = props => {
     {
       name: "Name",
       sortable: true,
-      cell: row => <CustomLink row={row} />
+      cell: (row) => <CustomLink row={row} />,
     },
     { name: "Stream", sortable: true, selector: "stream" },
     {
       name: "Education year",
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <Tooltip
           title={
             <React.Fragment>
@@ -589,15 +589,15 @@ const StudentList = props => {
         >
           <div>{`${row.educations}`}</div>
         </Tooltip>
-      )
+      ),
     },
     { name: "Mobile", sortable: true, selector: "mobile" },
 
     {
       name: "Actions",
-      cell: cell => (
+      cell: (cell) => (
         <div className={classes.DisplayFlex}>
-          <div className={classes.PaddingFirstActionButton}>
+          <div className={classes.PaddingSomeActionButton}>
             <HowToReg
               id={cell.id}
               value={cell.name}
@@ -606,7 +606,7 @@ const StudentList = props => {
             />
           </div>
           {cell.attaindance === true ? (
-            <div className={classes.PaddingFirstActionButton}>
+            <div className={classes.PaddingActionButton}>
               <ThumbIcon
                 id={cell.id}
                 value={cell.name}
@@ -620,9 +620,9 @@ const StudentList = props => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%"
-      }
-    }
+        maxWidth: "18%",
+      },
+    },
   ];
 
   return (
@@ -796,7 +796,7 @@ const StudentList = props => {
                   name={STREAM_FILTER}
                   options={streams}
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={(option) => option.name}
                   onChange={(event, value) =>
                     handleChangeAutoComplete(STREAM_FILTER, event, value)
                   }
@@ -812,7 +812,7 @@ const StudentList = props => {
                           })
                         ] || null
                   }
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Stream"
@@ -827,8 +827,8 @@ const StudentList = props => {
                 <Autocomplete
                   id="education-year-list"
                   options={genericConstants.EDUCATIONYEARLIST}
-                  getOptionLabel={option => option.name}
-                  renderInput={params => (
+                  getOptionLabel={(option) => option.name}
+                  renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Education Year"
@@ -846,7 +846,7 @@ const StudentList = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     searchFilter();
                   }}
