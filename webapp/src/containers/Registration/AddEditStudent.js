@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
-  CardHeader,
   CardContent,
   Grid,
   TextField,
@@ -16,8 +15,8 @@ import {
   CardActions
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import { Auth as auth } from "../../components";
-import DobPicker from "../../components/DobPicker/DobPicker.js";
+import { Auth as auth, InlineDatePicker } from "../../components";
+
 import * as routeConstants from "../../constants/RouteConstants";
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
@@ -737,7 +736,7 @@ const AddEditStudent = props => {
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
-                  <DobPicker
+                  <InlineDatePicker
                     // variant="inline"
                     format="dd/MM/yyyy"
                     margin="normal"

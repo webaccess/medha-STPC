@@ -49,6 +49,11 @@ const customTheme = createMuiTheme({
         fontSize: "14px",
         color: "#263238"
       }
+    },
+    MuiFormControl: {
+      root: {
+        width: "100%"
+      }
     }
   }
 });

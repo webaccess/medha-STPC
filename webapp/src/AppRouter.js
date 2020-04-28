@@ -57,6 +57,7 @@ import StudentList from "./containers/Event/ManageEvent/EventStudentList";
 import ViewEvent from "./containers/Event/ViewEvent/ViewEvent";
 import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
 import AddStudentToRecruitmentDrive from "./containers/Event/ManageEvent/AddStudentToRecruitmentDrive";
+import ViewPastEvent from "./containers/Event/ViewEvent/ViewPastEvent";
 
 /** OTP */
 import RequestOtp from "./containers/OTP/Requestotp";
@@ -169,6 +170,14 @@ const AppRouter = props => {
           path={routeConstants.VIEW_PROFILE}
           title="Profile"
         />
+        {/**View Past Event */}
+        <RouteWithTabLayout
+          component={ViewPastEvent}
+          exact
+          layout={Layout}
+          path={routeConstants.VIEW_PAST_EVENTS}
+          title="Event History"
+        />
 
         {/**Education */}
         <RouteWithTabLayout
@@ -216,7 +225,7 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_PAST_ACTIVITIES}
-          title="Activities"
+          title="Activity History"
         />
 
         {/** Activity List*/}
