@@ -5,14 +5,14 @@ import {
   Card,
   CardContent,
   Grid,
-  Typography
 } from "@material-ui/core";
 import {
   Table,
   Spinner,
   GrayButton,
   YellowButton,
-  InlineDatePicker
+  InlineDatePicker,
+  PastEventStatus,
 } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import auth from "../../../components/Auth";
@@ -20,13 +20,16 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProviders from "../../../api/Axios";
 import moment from "moment";
 import * as genericConstants from "../../../constants/GenericConstants";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
 const END_DATE_FILTER = "end_date_time_lt";
+const STATUS_FILTER = "hasAttended";
 
-const ViewPastEvent = props => {
+const ViewPastEvent = (props) => {
   const classes = useStyles();
+  const [statusFilter, setStatusFilter] = useState([]);
   const [formState, setFormState] = useState({
     PastEvent: [],
     /** Pagination and sorting data */
@@ -37,29 +40,36 @@ const ViewPastEvent = props => {
     pageCount: "",
     messageToShow: "",
     sortAscending: true,
+    /**Filter */
     filterDataParameters: {},
     startDate: null,
-    endDate: null
+    endDate: null,
   });
 
   useEffect(() => {
+    getStatusFilterData();
+
     getPastEvent(10, 1);
   }, []);
+
+  const getStatusFilterData = () => {
+    setStatusFilter(genericConstants.EVENT_STATUS);
+  };
 
   const getPastEvent = async (pageSize, page, paramsForUsers = null) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
       };
-      Object.keys(paramsForUsers).map(key => {
+      Object.keys(paramsForUsers).map((key) => {
         defaultParams[key] = paramsForUsers[key];
       });
       paramsForUsers = defaultParams;
     } else {
       paramsForUsers = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
       };
     }
 
@@ -76,14 +86,14 @@ const ViewPastEvent = props => {
         "/" +
         strapiConstants.STRAPI_PAST_EVENTS;
 
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isDataLoading: true
+        isDataLoading: true,
       }));
 
       serviceProviders
         .serviceProviderForGetRequest(PASTEVENT_URL, paramsForUsers)
-        .then(res => {
+        .then((res) => {
           let currentPage = res.data.page;
           let totalRows = res.data.rowCount;
           let currentPageSize = res.data.pageSize;
@@ -94,29 +104,29 @@ const ViewPastEvent = props => {
             let pastEventData = res.data.result;
             tempPastEventData = convertPastEventData(pastEventData);
 
-            setFormState(formState => ({
+            setFormState((formState) => ({
               ...formState,
               PastEvent: tempPastEventData,
               pageSize: currentPageSize,
               totalRows: totalRows,
               page: currentPage,
               pageCount: pageCount,
-              isDataLoading: false
+              isDataLoading: false,
             }));
           } else {
-            setFormState(formState => ({
+            setFormState((formState) => ({
               ...formState,
-              PastEvent: res.data.length
+              PastEvent: res.data.length,
             }));
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("Error_evvent", error);
         });
     }
   };
 
-  const convertPastEventData = data => {
+  const convertPastEventData = (data) => {
     let pastEventDataArray = [];
     if (data) {
       for (let i in data) {
@@ -130,6 +140,7 @@ const ViewPastEvent = props => {
           "start_date_time"
         ] = startDate.toDateString();
         tempIndividualPastEventData["end_date_time"] = endDate.toDateString();
+        tempIndividualPastEventData["status"] = data[i]["hasAttended"];
         pastEventDataArray.push(tempIndividualPastEventData);
       }
       return pastEventDataArray;
@@ -145,9 +156,9 @@ const ViewPastEvent = props => {
     formState.filterDataParameters[START_DATE_FILTER] = new Date(
       startDate
     ).toISOString();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      startDate: event
+      startDate: event,
     }));
   };
 
@@ -162,19 +173,19 @@ const ViewPastEvent = props => {
     formState.filterDataParameters[END_DATE_FILTER] = new Date(
       endDate
     ).toISOString();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
-      endDate: event
+      endDate: event,
     }));
   };
 
-  const handleFilterChangeForEventField = event => {
-    setFormState(formState => ({
+  const handleFilterChangeForEventField = (event) => {
+    setFormState((formState) => ({
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [EVENT_FILTER]: event.target.value
-      }
+        [EVENT_FILTER]: event.target.value,
+      },
     }));
     event.persist();
   };
@@ -193,7 +204,7 @@ const ViewPastEvent = props => {
     }
   };
 
-  const handlePageChange = async page => {
+  const handlePageChange = async (page) => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getPastEvent(formState.pageSize, page);
     } else {
@@ -202,6 +213,19 @@ const ViewPastEvent = props => {
       } else {
         await getPastEvent(formState.pageSize, page);
       }
+    }
+  };
+
+  const handleChangeAutoCompleteStatus = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      //restoreData();
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+      setFormState((formState) => ({
+        ...formState,
+        isClearResetFilter: false,
+      }));
     }
   };
 
@@ -219,7 +243,7 @@ const ViewPastEvent = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       isFilterSearch: false,
       /** Clear all filters */
@@ -227,15 +251,16 @@ const ViewPastEvent = props => {
       /** Turns on the spinner */
       isDataLoading: true,
       startDate: null,
-      endDate: null
+      endDate: null,
     }));
-
+    setStatusFilter([]);
     restoreData();
   };
 
   /** Used for restoring data */
   const restoreData = () => {
     getPastEvent(formState.pageSize, 1);
+    getStatusFilterData();
   };
 
   /** Columns to show in table */
@@ -243,21 +268,24 @@ const ViewPastEvent = props => {
     {
       name: "Name",
       sortable: true,
-      selector: "eventName"
+      selector: "eventName",
     },
     { name: "Start Date", sortable: true, selector: "start_date_time" },
-    { name: "End Date", sortable: true, selector: "end_date_time" }
+    { name: "End Date", sortable: true, selector: "end_date_time" },
+    {
+      name: "Status",
+      cell: (cell) => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <PastEventStatus style={cell.status} />
+          </div>
+        </div>
+      ),
+    },
   ];
 
   return (
     <Grid>
-      {/* <Grid item xs={12} className={classes.title}> */}
-      {/* <Typography variant="h4" gutterBottom>
-          {genericConstants.EVENT_HISTORY}
-        </Typography> */}
-      {/* Multiple action button */}
-      {/* </Grid> */}
-
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for student */}
       </Grid>
@@ -283,7 +311,7 @@ const ViewPastEvent = props => {
                   placeholder="Start Date"
                   value={formState.startDate}
                   name={START_DATE_FILTER}
-                  onChange={event =>
+                  onChange={(event) =>
                     handleStartDateChange(START_DATE_FILTER, event)
                   }
                 />
@@ -295,9 +323,42 @@ const ViewPastEvent = props => {
                   placeholder="End Date"
                   value={formState.endDate}
                   name={END_DATE_FILTER}
-                  onChange={event =>
+                  onChange={(event) =>
                     handleEndDateChange(END_DATE_FILTER, event)
                   }
+                />
+              </Grid>
+              <Grid item className={classes.paddingDate}>
+                <Autocomplete
+                  id="status-filter"
+                  name={"Status-filter"}
+                  options={statusFilter}
+                  className={classes.autoCompleteField}
+                  getOptionLabel={(option) => option.name}
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : statusFilter[
+                          statusFilter.findIndex(function (item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[STATUS_FILTER]
+                            );
+                          })
+                        ] || null
+                  }
+                  onChange={(event, value) =>
+                    handleChangeAutoCompleteStatus(STATUS_FILTER, event, value)
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Status"
+                      placeholder="Status"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
                 />
               </Grid>
 
@@ -306,7 +367,7 @@ const ViewPastEvent = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={event => {
+                  onClick={(event) => {
                     event.persist();
                     searchFilter();
                   }}
@@ -334,15 +395,11 @@ const ViewPastEvent = props => {
                 data={formState.PastEvent}
                 column={column}
                 defaultSortAsc={formState.sortAscending}
-                // editEvent={editCell}
-                // onSelectedRowsChange={handleRowSelected}
-                // deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
-                // clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -353,7 +410,7 @@ const ViewPastEvent = props => {
             </div>
           )}
 
-          {/* delete approve */}
+          {/* Action button component */}
         </Card>
       </Grid>
     </Grid>
