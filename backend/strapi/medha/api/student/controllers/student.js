@@ -736,6 +736,14 @@ module.exports = {
   async pastActivity(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+
+    // Removing custom query params since strapi won't allow filtering using that
+    let status;
+    if (query.status) {
+      status = query.status;
+      delete query.status;
+    }
+
     let filters = convertRestQueryParams(query);
 
     let sort;
@@ -745,12 +753,18 @@ module.exports = {
     }
 
     const student = await strapi.query("student").findOne({ id });
-
     if (!student) return ctx.response.notFound("Student does not exist");
+
+    // Building query depending on query params sent
+    let qb = {};
+    qb.student = id;
+    if (status) {
+      qb.verified_by_college = status == "attended" ? true : false;
+    }
 
     let activityBatch = await strapi
       .query("activity-batch-attendance")
-      .find({ student: id });
+      .find(qb);
 
     if (!activityBatch.length)
       return ctx.response.notFound("Student not Enrolled in any event");
@@ -759,7 +773,6 @@ module.exports = {
 
     activityBatch = activityBatch.filter(activityBatch => {
       const endTime = new Date(activityBatch.activity_batch.end_date_time);
-
       if (currentDate.getTime() > endTime.getTime()) return activityBatch;
     });
 
