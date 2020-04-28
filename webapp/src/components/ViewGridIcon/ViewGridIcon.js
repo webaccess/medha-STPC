@@ -1,9 +1,16 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
-const ViewGridIcon = (props) => {
+const ViewGridIcon = props => {
   return (
-    <Tooltip title="View" placement="top">
+    <Tooltip
+      title={
+        <React.Fragment>
+          <Typography color="inherit">View</Typography>
+        </React.Fragment>
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}

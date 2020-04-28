@@ -1,9 +1,22 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
 const ThumbIcon = props => {
   return (
-    <Tooltip title={props.style ? "DeHire" : "Hire"} placement="top">
+    <Tooltip
+      title={
+        props.style ? (
+          <React.Fragment>
+            <Typography color="inherit">DeHire</Typography>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography color="inherit">Hire</Typography>
+          </React.Fragment>
+        )
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}
