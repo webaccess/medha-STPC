@@ -266,7 +266,7 @@ const roles = {
       },
       {
         name: "activity",
-        action: ["findOne", "activitybatch", "download", "student"],
+        action: ["create", "findOne", "activitybatch", "download", "student"],
       },
       {
         name: "activity-batch",
@@ -301,6 +301,7 @@ const roles = {
       {
         name: "event",
         action: [
+          "create",
           "findone",
           "students",
           "eligibleCollegeStudents",
