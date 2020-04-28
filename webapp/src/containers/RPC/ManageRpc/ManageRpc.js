@@ -7,7 +7,6 @@ import {
   Typography,
   Collapse,
   IconButton,
-  CircularProgress,
 } from "@material-ui/core";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
@@ -20,9 +19,6 @@ import {
   EditGridIcon,
   DeleteGridIcon,
 } from "../../../components";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
 import DeleteRpc from "./DeleteRpc";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import { CustomRouterLink } from "../../../components";
@@ -114,6 +110,7 @@ const ViewRpc = (props) => {
     /**Filter RPC's */
     rpcsFilterValueToStore: "",
     rpcsFilterData: [],
+    toggleCleared: false,
   });
   useEffect(() => {
     let paramsForPageSize = {
@@ -369,6 +366,7 @@ const ViewRpc = (props) => {
       setFormState((formState) => ({
         ...formState,
         selectedRowFilter: false,
+        toggleCleared: false,
       }));
     } else {
       setFormState((formState) => ({
@@ -383,7 +381,6 @@ const ViewRpc = (props) => {
   const handleFilterChange = (event) => {
     setRpcsFilter(event.target.value);
   };
-
 
   /** Search filter is called when we select filters and click on search button */
   const filterRpcData = async (perPage = formState.pageSize, page = 1) => {
@@ -416,6 +413,16 @@ const ViewRpc = (props) => {
       .catch((error) => {
         console.log("filterRpcDataError", error);
       });
+  };
+
+  const selectedRowCleared = (data) => {
+    formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState((formState) => ({
+        ...formState,
+        toggleCleared: false,
+      }));
+    }, 2000);
   };
 
   const column = [
@@ -618,7 +625,6 @@ const ViewRpc = (props) => {
                   value={rpcsFilter}
                   onChange={handleFilterChange}
                 />
-               
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton
@@ -662,6 +668,7 @@ const ViewRpc = (props) => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -680,6 +687,7 @@ const ViewRpc = (props) => {
             modalClose={modalClose}
             isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
           />
         </Card>
       </Grid>

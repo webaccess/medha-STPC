@@ -92,6 +92,7 @@ const ViewZone = (props) => {
     /** Message to show */
     fromDeleteModal: false,
     messageToShow: "",
+    toggleCleared: false,
   });
 
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
@@ -324,6 +325,7 @@ const ViewZone = (props) => {
       setFormState((formState) => ({
         ...formState,
         selectedRowFilter: false,
+        toggleCleared: false,
       }));
     } else {
       setFormState((formState) => ({
@@ -369,6 +371,16 @@ const ViewZone = (props) => {
       .catch((error) => {
         console.log("error", error);
       });
+  };
+
+  const selectedRowCleared = (data) => {
+    formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState((formState) => ({
+        ...formState,
+        toggleCleared: false,
+      }));
+    }, 2000);
   };
 
   /** Columns to show in table */
@@ -635,6 +647,7 @@ const ViewZone = (props) => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -653,6 +666,7 @@ const ViewZone = (props) => {
             modalClose={modalClose}
             isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
           />
         </Card>
       </Grid>

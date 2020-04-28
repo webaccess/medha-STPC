@@ -3,7 +3,7 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
@@ -21,7 +21,7 @@ import { useContext } from "react";
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_ID = "state";
 
-const DeleteState = props => {
+const DeleteState = (props) => {
   const { setLoaderStatus } = useContext(LoaderContext);
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
@@ -29,7 +29,7 @@ const DeleteState = props => {
     isValid: false,
     stateCounter: 0,
     values: {},
-    dataToDelete: {}
+    dataToDelete: {},
   });
 
   /** This is called when we open the modal */
@@ -47,12 +47,12 @@ const DeleteState = props => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -65,16 +65,16 @@ const DeleteState = props => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(STATE_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           console.log(res);
           formState.isDeleteData = true;
           handleCloseModal("States has been deleted successfully.");
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -84,10 +84,10 @@ const DeleteState = props => {
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(STATE_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           formState.isDeleteData = true;
           handleCloseModal(
@@ -96,7 +96,7 @@ const DeleteState = props => {
               " has been deleted successfully."
           );
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -108,7 +108,7 @@ const DeleteState = props => {
     }
   };
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     /** CALL Put FUNCTION */
     setOpen(true);
     event.preventDefault();
@@ -151,7 +151,7 @@ const DeleteState = props => {
   };
 
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfStateCanBeDelete = async id => {
+  const checkIfStateCanBeDelete = async (id) => {
     let stateCanBeDeletedCounter = 0;
     let dataToReturn = {};
     let zonesCheckUrl =
@@ -159,59 +159,64 @@ const DeleteState = props => {
     let rpcsCheckUrl = STATE_URL + "/" + id + "/" + strapiConstants.STRAPI_RPCS;
     await serviceProviders
       .serviceProviderForGetRequest(zonesCheckUrl)
-      .then(res => {
+      .then((res) => {
         if (res.data.result.length) {
           dataToReturn = {
             status: false,
             message:
               "Cannot delete State " +
               formState.dataToDelete["name"] +
-              " as it is linked to other RPC's or Zone's"
+              " as it is linked to other RPC's or Zone's",
           };
         } else {
           stateCanBeDeletedCounter += 1;
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting state " + formState.dataToDelete["name"]
+          message: "Error deleting state " + formState.dataToDelete["name"],
         };
       });
 
     await serviceProviders
       .serviceProviderForGetRequest(rpcsCheckUrl)
-      .then(res => {
+      .then((res) => {
         if (res.data.result.length) {
           dataToReturn = {
             status: false,
             message:
               "Cannot delete State " +
               formState.dataToDelete["name"] +
-              " as it is linked to other RPC's or Zone's"
+              " as it is linked to other RPC's or Zone's",
           };
         } else {
           stateCanBeDeletedCounter += 1;
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting State " + formState.dataToDelete["name"]
+          message: "Error deleting State " + formState.dataToDelete["name"],
         };
       });
 
     if (stateCanBeDeletedCounter === 2) {
       dataToReturn = {
         status: true,
-        message: "Success"
+        message: "Success",
       };
     }
     return dataToReturn;
+  };
+
+  const handleClose = async (event) => {
+    props.clearSelectedRow(true);
+    props.closeModal();
   };
 
   const classes = useStyles();
@@ -226,7 +231,7 @@ const DeleteState = props => {
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
-          timeout: 500
+          timeout: 500,
         }}
       >
         <Fade in={props.showModal}>
@@ -280,7 +285,7 @@ const DeleteState = props => {
                       type="submit"
                       color="primary"
                       variant="contained"
-                      onClick={props.modalClose}
+                      onClick={handleClose}
                     >
                       Close
                     </GrayButton>

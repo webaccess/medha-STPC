@@ -3,7 +3,7 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
@@ -17,7 +17,7 @@ import { YellowButton, GrayButton } from "../../../components";
 
 const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
-const DeleteRpc = props => {
+const DeleteRpc = (props) => {
   const [open, setOpen] = React.useState(false);
   const classes = useStyles();
   const [formState, setFormState] = useState({
@@ -25,7 +25,7 @@ const DeleteRpc = props => {
     isValid: false,
     stateCounter: 0,
     values: {},
-    dataToDelete: {}
+    dataToDelete: {},
   });
 
   /** This is called when we open the modal */
@@ -41,12 +41,12 @@ const DeleteRpc = props => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -55,7 +55,7 @@ const DeleteRpc = props => {
     }
   };
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     /** CALL Put FUNCTION */
     setOpen(true);
     event.preventDefault();
@@ -101,16 +101,16 @@ const DeleteRpc = props => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(RPC_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           console.log(res);
           formState.isDeleteData = true;
           handleCloseModal("RPC's have been deleted successfully.");
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -120,10 +120,10 @@ const DeleteRpc = props => {
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(RPC_URL, props.id)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           formState.isDeleteData = true;
           handleCloseModal(
@@ -132,7 +132,7 @@ const DeleteRpc = props => {
               " has been deleted successfully."
           );
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -145,37 +145,42 @@ const DeleteRpc = props => {
   };
 
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfRPCCanBeDelete = async id => {
+  const checkIfRPCCanBeDelete = async (id) => {
     let dataToReturn = {};
     let collegesCheckUrl =
       RPC_URL + "/" + id + "/" + strapiConstants.STRAPI_COLLEGES;
     await serviceProviders
       .serviceProviderForGetRequest(collegesCheckUrl)
-      .then(res => {
+      .then((res) => {
         if (res.data.result.length) {
           dataToReturn = {
             status: false,
             message:
               "Cannot delete RPC " +
               formState.dataToDelete["name"] +
-              " as it is linked to other College's"
+              " as it is linked to other College's",
           };
         } else {
           dataToReturn = {
             status: true,
-            message: "Success"
+            message: "Success",
           };
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting RPC " + formState.dataToDelete["name"]
+          message: "Error deleting RPC " + formState.dataToDelete["name"],
         };
       });
     return dataToReturn;
+  };
+
+  const handleClose = async (event) => {
+    props.clearSelectedRow(true);
+    props.closeModal();
   };
 
   return (
@@ -188,7 +193,7 @@ const DeleteRpc = props => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500
+        timeout: 500,
       }}
     >
       <Fade in={props.showModal}>
@@ -242,7 +247,7 @@ const DeleteRpc = props => {
                     type="submit"
                     color="primary"
                     variant="contained"
-                    onClick={props.modalClose}
+                    onClick={handleClose}
                   >
                     Close
                   </GrayButton>
