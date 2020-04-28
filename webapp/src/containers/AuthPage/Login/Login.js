@@ -297,6 +297,12 @@ const LogIn = props => {
                 "Auth.form.error.blocked"
               ) {
                 moveToErrorPageForBlocked();
+              } else if (
+                error.response.data["message"][0]["messages"][0]["id"] ===
+                "Auth.form.error.invalid"
+              ) {
+                setOpen(true);
+                setIfFailure(true);
               }
             }
           } else {
