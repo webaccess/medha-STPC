@@ -1,9 +1,22 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
 const EditGridIcon = props => {
   return (
-    <Tooltip title={props.title ? props.title : "Edit"} placement="top">
+    <Tooltip
+      title={
+        props.title ? (
+          <React.Fragment>
+            <Typography color="inherit">{props.title}</Typography>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography color="inherit">Edit</Typography>
+          </React.Fragment>
+        )
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}

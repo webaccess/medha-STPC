@@ -1,9 +1,22 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
-const BlockIcon = (props) => {
+const BlockIcon = props => {
   return (
-    <Tooltip title={props.title ? "Unblock" : "Block"} placement="top">
+    <Tooltip
+      title={
+        props.title ? (
+          <React.Fragment>
+            <Typography color="inherit">Unblock</Typography>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography color="inherit">Block</Typography>
+          </React.Fragment>
+        )
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}
