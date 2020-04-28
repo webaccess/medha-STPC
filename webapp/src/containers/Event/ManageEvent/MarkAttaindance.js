@@ -116,12 +116,12 @@ const MarkAttaindance = props => {
                 <Grid item lg className={classes.deletemessage}>
                   {props.isPresent ? (
                     <p>
-                      Are you sure you want to add attaindance for{" "}
+                      Are you sure you want to add attendence for{" "}
                       {props.studentName}?
                     </p>
                   ) : (
                     <p>
-                      Are you sure you want to remove attaindance for{" "}
+                      Are you sure you want to remove attendence for{" "}
                       {props.studentName}?
                     </p>
                   )}
