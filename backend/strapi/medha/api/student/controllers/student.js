@@ -634,6 +634,8 @@ module.exports = {
   async activity(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
     const student = await strapi.query("student").findOne({ id });
 
     if (!student) return ctx.response.notFound("Student does not exist");
@@ -653,13 +655,23 @@ module.exports = {
 
       if (endTime.getTime() > currentDate.getTime()) return activityBatch;
     });
-    console.log(activityBatch);
+
     if (activityBatch) {
       const activityIds = activityBatch.map(
         activityBatch => activityBatch.activity_batch.activity
       );
 
-      const activity = await strapi.query("activity").find({ id: activityIds });
+      const activity = await strapi
+        .query("activity")
+        .model.query(
+          buildQuery({
+            model: strapi.models["activity"],
+            filters
+          })
+        )
+        .where("id", "in", activityIds)
+        .fetchAll()
+        .then(model => model.toJSON());
       // console.log(activity);
 
       const result = activity
@@ -911,22 +923,22 @@ module.exports = {
       qb.verified_by_college = status == "attended" ? true : false;
     }
 
-    let activityBatch = await strapi
+    let activityBatches = await strapi
       .query("activity-batch-attendance")
       .find(qb);
 
-    if (!activityBatch.length)
+    if (!activityBatches.length)
       return ctx.response.notFound("Student not Enrolled in any event");
 
     const currentDate = new Date();
 
-    activityBatch = activityBatch.filter(activityBatch => {
+    activityBatches = activityBatches.filter(activityBatch => {
       const endTime = new Date(activityBatch.activity_batch.end_date_time);
       if (currentDate.getTime() > endTime.getTime()) return activityBatch;
     });
 
-    if (activityBatch) {
-      const activityIds = activityBatch.map(
+    if (activityBatches) {
+      const activityIds = activityBatches.map(
         activityBatch => activityBatch.activity_batch.activity
       );
 
@@ -947,7 +959,7 @@ module.exports = {
         .map(activity => {
           let flag = 0;
           // for (let i = 0; i < activityBatch.length; i++) {
-          activityBatch.forEach(activityBatch => {
+          activityBatches.forEach(activityBatch => {
             if (activity.id === activityBatch.activity_batch.activity) {
               activity["activity_batch"] = activityBatch.activity_batch;
               flag = 1;
