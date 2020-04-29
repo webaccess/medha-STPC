@@ -39,6 +39,7 @@ const ViewActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
+  console.log({ history, props });
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
@@ -83,6 +84,7 @@ const ViewActivityBatches = props => {
   });
 
   const { activity } = props.match.params;
+  const [activityDetails, setActivityDetails] = useState(null);
 
   const ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
@@ -102,6 +104,8 @@ const ViewActivityBatches = props => {
       .then(({ data }) => {
         if (data.result == null) {
           history.push("/404");
+        } else {
+          setActivityDetails(data.result);
         }
       })
       .catch(() => {
@@ -320,7 +324,10 @@ const ViewActivityBatches = props => {
 
   const breadcrumbs = [
     { title: "Activity", href: "/manage-activity" },
-    { title: "Activity Batch", href: "/" }
+    {
+      title: `${activityDetails ? activityDetails.title : ""} Batches`,
+      href: "/"
+    }
   ];
 
   const AlertAPIResponseMessage = () => {
@@ -350,7 +357,7 @@ const ViewActivityBatches = props => {
   return (
     <Grid>
       <div className={classes.breadCrumbs}>
-        <Breadcrumbs list={breadcrumbs} />
+        {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
       </div>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>

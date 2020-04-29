@@ -105,7 +105,7 @@ const AddEditActivityBatches = props => {
   const [selectedStudents, setSeletedStudent] = useState([]);
   const [showStudentModal, setShowStudentModal] = useState(false);
   const [clearSelectedRows, setClearSelectedRows] = useState(false);
-  const [activityDetails, setActivityDetails] = useState({});
+  const [activityDetails, setActivityDetails] = useState(null);
 
   const { activity } = props.activity ? props : props.match.params;
   const ACTIVITY_URL =
@@ -615,7 +615,10 @@ const AddEditActivityBatches = props => {
 
   const breadcrumbs = [
     { title: "Activity", href: "/manage-activity" },
-    { title: "Activity Batches", href: `/manage-activity-batch/${activity}` },
+    {
+      title: `${activityDetails ? activityDetails.title : null} Batches`,
+      href: `/manage-activity-batch/${activity}`
+    },
     {
       title: formState.isEditActivityBatch
         ? formState.dataForEdit[activityBatchName]
@@ -627,7 +630,7 @@ const AddEditActivityBatches = props => {
   return (
     <Grid>
       <div className={classes.breadCrumbs}>
-        <Breadcrumbs list={breadcrumbs} />
+        {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
       </div>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
@@ -864,8 +867,16 @@ const AddEditActivityBatches = props => {
                     value={formState.values[dateFrom]}
                     name={dateFrom}
                     label={get(AddActivityBatchSchema[dateFrom], "label")}
-                    minDate={new Date(activityDetails.start_date_time)}
-                    maxDate={new Date(activityDetails.end_date_time)}
+                    minDate={
+                      activityDetails
+                        ? new Date(activityDetails.start_date_time)
+                        : null
+                    }
+                    maxDate={
+                      activityDetails
+                        ? new Date(activityDetails.end_date_time)
+                        : null
+                    }
                     error={hasError(dateFrom)}
                     helperText={
                       hasError(dateFrom)
@@ -888,7 +899,11 @@ const AddEditActivityBatches = props => {
                     minDate={
                       formState.values[dateTo] ? formState.values[dateTo] : {}
                     }
-                    maxDate={new Date(activityDetails.end_date_time)}
+                    maxDate={
+                      activityDetails
+                        ? new Date(activityDetails.end_date_time)
+                        : null
+                    }
                     error={hasError(dateTo)}
                     helperText={
                       hasError(dateTo)

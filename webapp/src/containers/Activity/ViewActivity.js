@@ -266,27 +266,15 @@ const ViewActivity = props => {
     }
   };
 
-  /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    setFormState(formState => ({
-      ...formState,
-      isDataDeleted: false,
-      showModalDelete: false
-    }));
-    if (formState.isDataDeleted) {
-      getActivityData(formState.pageSize, formState.page);
-    }
-  };
-
   /**
    * Redirect to Activity batch UI for given activity
    */
   const handleManageActivityBatchClick = activity => {
     setLoaderStatus(true);
     const manageActivityBatchURL = `/manage-activity-batch/${activity.id}`;
-    history.push(manageActivityBatchURL);
+    history.push({
+      pathname: manageActivityBatchURL
+    });
     setLoaderStatus(false);
   };
 
@@ -637,12 +625,6 @@ const ViewActivity = props => {
         ) : (
           <Spinner />
         )}
-        {/* <DeleteActivity
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
-          deleteEvent={isDeleteCellCompleted}
-        /> */}
       </Grid>
     </Grid>
   );
