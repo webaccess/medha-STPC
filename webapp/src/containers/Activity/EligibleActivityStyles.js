@@ -102,6 +102,9 @@ const useStyles = makeStyles(theme => ({
   },
   DivHeight: {
     height: "75px"
+  },
+  alignCenter: {
+    margin: "auto"
   }
 }));
 export default useStyles;
