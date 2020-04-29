@@ -6,7 +6,8 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 
 import BlockIcon from "@material-ui/icons/Block";
@@ -639,10 +640,70 @@ const ManageCollege = props => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Name", sortable: true, selector: "name" },
-    { name: "State", sortable: true, selector: "state" },
-    { name: "Zone", sortable: true, selector: "zone_name" },
-    { name: "RPC", sortable: true, selector: "rpc" },
+    {
+      name: "Name",
+      sortable: true,
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.name}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.name}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "State",
+      sortable: true,
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.state}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.state}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "Zone",
+      sortable: true,
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.zone_name}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.zone_name}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "RPC",
+      sortable: true,
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.rpc}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.rpc}`}</div>
+        </Tooltip>
+      )
+    },
     {
       name: "Actions",
       cell: cell => (

@@ -19,8 +19,8 @@ export const BLOCK_BUTTON_TEXT = "Block";
 export const UNBLOCK_BUTTON_TEXT = "Unblock";
 export const HIRE_BUTTON_TEXT = "Hire";
 export const DEHIRE_BUTTON_TEXT = "Dehire";
-export const ADD_ATT_BUTTON_TEXT = "Add attaindance";
-export const REMOVE_ATT_BUTTON_TEXT = "Remove attaindance";
+export const ADD_ATT_BUTTON_TEXT = "Add attendence";
+export const REMOVE_ATT_BUTTON_TEXT = "Remove attendence";
 
 /**Change Password
  */
@@ -133,4 +133,9 @@ export const EDUCATIONYEARLIST = [
 export const ACTIVITY_STATUS = [
   { name: "Missed", id: "missed" },
   { name: "Attended", id: "attended" }
+];
+
+export const EVENT_STATUS = [
+  { name: "Missed", id: "false" },
+  { name: "Attended", id: "true" }
 ];

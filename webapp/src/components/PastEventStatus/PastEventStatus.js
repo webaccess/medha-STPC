@@ -1,17 +1,17 @@
 import React from "react";
 import { Tooltip, Typography } from "@material-ui/core";
 
-const BlockIcon = props => {
+const PastEventStatus = props => {
   return (
     <Tooltip
       title={
-        props.title ? (
+        props.style ? (
           <React.Fragment>
-            <Typography color="inherit">Unblock</Typography>
+            <Typography color="inherit">Attended</Typography>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Typography color="inherit">Block</Typography>
+            <Typography color="inherit">Missed</Typography>
           </React.Fragment>
         )
       }
@@ -19,19 +19,16 @@ const BlockIcon = props => {
     >
       <i
         className="material-icons"
-        id={props.id}
-        value={props.value}
-        onClick={props.onClick}
         style={
           props.style
-            ? { color: "#8C8C8C", fontSize: "20px" }
-            : { color: "green", fontSize: "20px" }
+            ? { color: "green", fontSize: "23px" }
+            : { color: "grey", fontSize: "23px" }
         }
       >
-        block
+        how_to_reg
       </i>
     </Tooltip>
   );
 };
 
-export default BlockIcon;
+export default PastEventStatus;

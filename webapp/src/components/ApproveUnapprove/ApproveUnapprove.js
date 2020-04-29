@@ -1,9 +1,22 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
 const ApproveUnapprove = props => {
   return (
-    <Tooltip title={props.isApproved ? "Unapprove" : "Approve"} placement="top">
+    <Tooltip
+      title={
+        props.isApproved ? (
+          <React.Fragment>
+            <Typography color="inherit">Unapprove</Typography>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography color="inherit">Approve</Typography>
+          </React.Fragment>
+        )
+      }
+      placement="top"
+    >
       {props.isApproved ? (
         <i
           className="material-icons"

@@ -1,9 +1,16 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
-const TickGridIcon = (props) => {
+const TickGridIcon = props => {
   return (
-    <Tooltip title="Mark attendance" placement="top">
+    <Tooltip
+      title={
+        <React.Fragment>
+          <Typography color="inherit">Mark attendance</Typography>
+        </React.Fragment>
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}
@@ -12,7 +19,7 @@ const TickGridIcon = (props) => {
         style={{
           color: props.style.color,
           fontSize: "23px",
-          cursor: "pointer",
+          cursor: "pointer"
         }}
       >
         check

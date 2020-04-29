@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Modal,
   Backdrop,
-  Fade
+  Fade,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -20,12 +20,12 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 const COLLEGE_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 
-const BlockUnblockCollege = props => {
+const BlockUnblockCollege = (props) => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDataBlockUnblock: false,
     isValid: false,
-    stateCounter: 0
+    stateCounter: 0,
   });
 
   /** Part for editing college */
@@ -41,12 +41,12 @@ const BlockUnblockCollege = props => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {},
       isDataBlockUnblock: false,
       isValid: false,
-      stateCounter: 0
+      stateCounter: 0,
     }));
     if (formState.isDataBlockUnblock) {
       props.closeModal(true, message);
@@ -55,7 +55,7 @@ const BlockUnblockCollege = props => {
     }
   };
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     /** CALL Put FUNCTION */
     setOpen(true);
     event.preventDefault();
@@ -75,14 +75,14 @@ const BlockUnblockCollege = props => {
         blockUnblock = "/block";
       }
       let postData = {
-        ids: props.multiBlockCollegeIds
+        ids: props.multiBlockCollegeIds,
       };
       serviceProviders
         .serviceProviderForPostRequest(COLLEGE_URL + blockUnblock, postData)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           formState.isDataBlockUnblock = true;
           if (props.isMultiUnblock) {
@@ -91,7 +91,7 @@ const BlockUnblockCollege = props => {
             handleCloseModal("Colleges have been blocked successfully");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error");
           formState.isDataBlockUnblock = false;
           if (props.isMultiUnblock) {
@@ -114,14 +114,14 @@ const BlockUnblockCollege = props => {
       let ids = [];
       ids.push(props.dataToBlockUnblock["id"]);
       let postData = {
-        ids: ids
+        ids: ids,
       };
       serviceProviders
         .serviceProviderForPostRequest(COLLEGE_URL + blockUnblock, postData)
-        .then(res => {
-          setFormState(formState => ({
+        .then((res) => {
+          setFormState((formState) => ({
             ...formState,
-            isValid: true
+            isValid: true,
           }));
           formState.isDataBlockUnblock = true;
           if (props.dataToBlockUnblock["blocked"]) {
@@ -138,7 +138,7 @@ const BlockUnblockCollege = props => {
             );
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("error");
           formState.isDataBlockUnblock = false;
           if (props.dataToBlockUnblock["blocked"]) {
@@ -157,6 +157,12 @@ const BlockUnblockCollege = props => {
         });
     }
   };
+
+  const handleBlock = async (event) => {
+    props.clearSelectedRow(true);
+    props.closeModal();
+  };
+
   const classes = useStyles();
   return (
     <React.Fragment>
@@ -171,7 +177,7 @@ const BlockUnblockCollege = props => {
           closeAfterTransition
           BackdropComponent={Backdrop}
           BackdropProps={{
-            timeout: 500
+            timeout: 500,
           }}
         >
           <Fade in={props.showModal}>
@@ -241,7 +247,7 @@ const BlockUnblockCollege = props => {
                         type="submit"
                         color="primary"
                         variant="contained"
-                        onClick={props.modalClose}
+                        onClick={handleBlock}
                       >
                         Close
                       </GrayButton>

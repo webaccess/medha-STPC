@@ -6,7 +6,7 @@ import { green } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
 import "../../../assets/cssstylesheet/ImageCssStyles.css";
 
-import { Auth as auth, Spinner, GreenButton, Alert } from "../../../components";
+import { Auth as auth, Spinner, Alert } from "../../../components";
 import {
   Card,
   Grid,
@@ -14,9 +14,7 @@ import {
   Typography,
   IconButton,
   Collapse,
-  Tooltip,
   Box,
-  CardHeader,
   CardMedia,
   Button
 } from "@material-ui/core";
@@ -216,7 +214,7 @@ const EligibleEvents = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Eligible Events
+          Upcoming Events
         </Typography>
       </Grid>
       <Grid item xs={12}>
@@ -384,7 +382,7 @@ const EligibleEvents = props => {
           ) : (
             <React.Fragment>
               {formState.NoEventsData === true ? (
-                <p>No eligible events</p>
+                <p className={classes.alignCenter}>No upcoming events</p>
               ) : (
                 <Spinner />
               )}

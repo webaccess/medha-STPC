@@ -45,7 +45,6 @@ const Layout = (props) => {
         >
           <SideAndTopNavBar />
           <main className={classes.content}>{children}</main>
-          <StickyFooter />
         </div>
         <Backdrop className={classes.backdrop} open={loaderStatus}>
           <CircularProgress color="inherit" />
