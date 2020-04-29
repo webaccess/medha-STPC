@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TextField, Card, CardContent, Grid } from "@material-ui/core";
 
@@ -18,6 +18,7 @@ import {
   ViewGridIcon
 } from "../../../components";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
 
 const PastActivities = props => {
   const classes = useStyles();
@@ -38,6 +39,8 @@ const PastActivities = props => {
     sortAscending: true
   });
 
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
     : null;
@@ -50,6 +53,7 @@ const PastActivities = props => {
   const ACTIVITY_STATUS = "status";
 
   useEffect(() => {
+    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACTIVITY_URL)
       .then(res => {
@@ -101,9 +105,11 @@ const PastActivities = props => {
           pageCount: res.data.pageCount,
           isDataLoading: false
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
   };
 

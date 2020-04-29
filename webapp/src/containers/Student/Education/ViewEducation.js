@@ -103,7 +103,6 @@ const ViewEducation = props => {
       });
 
     getEducationData(10, 1);
-    setLoaderStatus(false);
   }, []);
 
   /** This seperate function is used to get the education data*/

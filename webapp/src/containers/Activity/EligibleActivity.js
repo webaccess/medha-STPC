@@ -166,13 +166,10 @@ const EligibleActivity = props => {
   const getRemainingDays = data => {
     let currentDate = new Date();
     let startDate = new Date(data["activity_batch"]["start_date_time"]);
-    let remainingDays =
-      (startDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
+    let remainingDays = startDate.getDay() - currentDate.getDay();
     console.log(remainingDays);
-    if (remainingDays >= 2.0) return parseInt(remainingDays) + " Days to go";
-    else if (remainingDays <= 2.0 && remainingDays >= 1) return "1 Day to go";
-    else if (remainingDays < 1.0 && remainingDays >= 0.0) return "Today";
-    else return 0;
+    if (remainingDays >= 1) return parseInt(remainingDays) + " Days to go";
+    else return "Today";
   };
   /** Show event registration model */
 
