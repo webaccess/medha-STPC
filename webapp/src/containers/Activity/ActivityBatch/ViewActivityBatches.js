@@ -349,6 +349,9 @@ const ViewActivityBatches = props => {
 
   return (
     <Grid>
+      <div className={classes.breadCrumbs}>
+        <Breadcrumbs list={breadcrumbs} />
+      </div>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_ACTIVITY_BATCHES}
@@ -510,9 +513,7 @@ const ViewActivityBatches = props => {
             </Grid>
           </CardContent>
         </Card>
-        <div className={classes.breadCrumbs}>
-          <Breadcrumbs list={breadcrumbs} />
-        </div>
+
         {formState.dataToShow ? (
           formState.dataToShow.length ? (
             <Table
