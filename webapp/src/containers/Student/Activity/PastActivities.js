@@ -45,7 +45,7 @@ const PastActivities = props => {
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS +
-    `/${studentId}/past-activity`;
+    `/${studentId}/past-activities`;
   const ACTIVITY_FILTER = "id";
   const ACTIVITY_STATUS = "status";
 
