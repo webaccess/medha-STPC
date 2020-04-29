@@ -178,18 +178,14 @@ const ActivityDetails = props => {
     return formState.activityDetails["address"];
   };
 
-  const getRemainingDays = () => {
+  const getRemainingDays = data => {
     let currentDate = new Date();
     let startDate = new Date(
       formState.activityDetails["activity_batch"]["start_date_time"]
     );
-    let remainingDays =
-      (startDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
-    console.log(remainingDays);
-    if (remainingDays >= 2.0) return parseInt(remainingDays) + " Days to go";
-    else if (remainingDays <= 2.0 && remainingDays >= 1) return "1 Day to go";
-    else if (remainingDays < 1.0 && remainingDays >= 0.0) return "Today";
-    else return 0;
+    let remainingDays = startDate.getDay() - currentDate.getDay();
+    if (remainingDays >= 1) return parseInt(remainingDays) + " Days to go";
+    else return "Today";
   };
 
   return (
@@ -232,13 +228,13 @@ const ActivityDetails = props => {
                           alignItems="baseline"
                           className={classes.CardHeader}
                         >
-                          <Grid item xs={10} style={{ textAlign: "end" }}>
+                          <Grid item xs={9} style={{ textAlign: "end" }}>
                             <IconButton aria-label="is student registered">
                               <Clock style={{ color: green[500] }} />
                             </IconButton>
                           </Grid>
 
-                          <Grid item xs={2}>
+                          <Grid item xs={3}>
                             <Typography
                               className={classes.header}
                               style={{
