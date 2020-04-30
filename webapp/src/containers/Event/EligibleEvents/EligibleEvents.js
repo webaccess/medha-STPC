@@ -102,7 +102,8 @@ const EligibleEvents = props => {
           auth.getUserInfo().studentInfo.id +
           "/registeredevents";
         let params = {
-          pageSize: -1
+          pageSize: -1,
+          _sort: "start_date_time"
         };
 
         /** First api call to genrate all the regestered event ids */
