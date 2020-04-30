@@ -189,7 +189,7 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Email is required"
+        message: "College Roll is required"
       }
     }
   },
