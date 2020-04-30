@@ -266,7 +266,7 @@ const ViewActivityBatches = props => {
       .then(() => {
         setAlert(() => ({
           isOpen: true,
-          message: "Success",
+          message: `Batch ${activityBatch.name} deleted successfully`,
           severity: "success"
         }));
         getActivityBatches(10, 1);
@@ -395,7 +395,9 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              Batch
+              {formState.editedData ? ` ${formState.editedData.name} ` : " "}
+              has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -416,7 +418,8 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating activity batch. Kindly, try
+              again.
             </Alert>
           </Collapse>
         ) : null}
@@ -439,7 +442,8 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              Batch {formState.addedData ? `${formState.addedData.name} ` : " "}
+              has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -460,7 +464,8 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding activity batch. Kindly, try
+              again.
             </Alert>
           </Collapse>
         ) : null}
@@ -521,28 +526,18 @@ const ViewActivityBatches = props => {
           </CardContent>
         </Card>
 
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              noDataComponent="No Activity Batch details found"
-            />
-          ) : (
-            <div className={classes.noDataMargin}>
-              No Activity Batch details found
-            </div>
-          )
-        ) : (
-          <Spinner />
-        )}
+        <Table
+          data={formState.dataToShow}
+          column={column}
+          defaultSortField="name"
+          defaultSortAsc={formState.sortAscending}
+          progressPending={formState.isDataLoading}
+          paginationTotalRows={formState.totalRows}
+          paginationRowsPerPageOptions={[10, 20, 50]}
+          onChangeRowsPerPage={handlePerRowsChange}
+          onChangePage={handlePageChange}
+          noDataComponent="No Activity Batch details found"
+        />
       </Grid>
     </Grid>
   );
