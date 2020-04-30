@@ -326,10 +326,11 @@ const ViewActivity = props => {
       .then(() => {
         setAlert(() => ({
           isOpen: true,
-          message: "Success",
+          message: `Activity ${activity.title} Deleted Successfully`,
           severity: "success"
         }));
         getActivityData(10, 1);
+        setLoaderStatus(false);
       })
       .catch(({ response }) => {
         setAlert(() => ({
@@ -337,8 +338,8 @@ const ViewActivity = props => {
           message: response.data.message,
           severity: "error"
         }));
+        setLoaderStatus(false);
       });
-    setLoaderStatus(false);
   };
 
   /** Columns to show in table */
@@ -482,7 +483,9 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              Activity{" "}
+              {formState.editedData ? `${formState.editedData.title} ` : ""}
+              has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -503,7 +506,7 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating activity. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -526,7 +529,9 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              Activity{" "}
+              {formState.addedData ? `${formState.addedData.title} ` : ""}
+              has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -547,7 +552,7 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding activity. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
