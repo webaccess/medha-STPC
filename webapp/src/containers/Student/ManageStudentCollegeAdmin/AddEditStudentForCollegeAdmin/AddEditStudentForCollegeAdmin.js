@@ -84,6 +84,7 @@ const AddEditStudentForCollegeAdmin = (props) => {
     dateOfBirth: false,
     isSuccess: false,
     showPassword: false,
+    isStateClearFilter: false,
     addStudent: props.location.addStudent ? props.location.addStudent : false,
     editStudent: props.location.editStudent
       ? props.location.editStudent
@@ -122,7 +123,6 @@ const AddEditStudentForCollegeAdmin = (props) => {
     }
 
     getStates();
-    getDistrict();
     getStreams();
   }, []);
 
@@ -145,12 +145,31 @@ const AddEditStudentForCollegeAdmin = (props) => {
   };
 
   const getDistrict = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(DISTRICTS_URL, defaultParams)
-      .then((res) => {
-        setdistrictlist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
+    let params = {
+      pageSize: -1,
+      "state.id": formState.values["state"],
+    };
+
+    if (formState.values["state"] !== undefined) {
+      serviceProvider
+        .serviceProviderForGetRequest(DISTRICTS_URL, params)
+        .then((res) => {
+          setdistrictlist(
+            res.data.result.map(({ id, name }) => ({ id, name }))
+          );
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
+    }
   };
+
+  useEffect(() => {
+    if (formState.values["state"]) {
+      getDistrict();
+    }
+    return () => {};
+  }, [formState.values["state"]]);
 
   if (formState.dataForEdit && !formState.counter) {
     if (props.location["dataForEdit"]) {
@@ -270,9 +289,9 @@ const AddEditStudentForCollegeAdmin = (props) => {
       formState.errors = formUtilities.setErrors(formState.values, schema);
     }
 
-    if(selectedDate === null){
+    if (selectedDate === null) {
       formState.dateOfBirth = true;
-    }else {
+    } else {
       formState.dateOfBirth = false;
     }
     if (isValid && !formState.dateOfBirth) {
@@ -302,8 +321,8 @@ const AddEditStudentForCollegeAdmin = (props) => {
         formState.values["fatherFirstName"],
         formState.values["fatherLastName"],
         formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
+        formState.values["state"] ? formState.values["state"] : null,
+        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["username"],
@@ -457,11 +476,31 @@ const AddEditStudentForCollegeAdmin = (props) => {
           ...formState.touched,
           [eventName]: true,
         },
+        isStateClearFilter: false,
       }));
       if (formState.errors.hasOwnProperty(eventName)) {
         delete formState.errors[eventName];
       }
     } else {
+      let setStateFilterValue = false;
+      /** If we click cross for state the district should clear off! */
+      if (eventName === "state") {
+        /** 
+        This flag is used to determine that state is cleared which clears 
+        off district by setting their value to null 
+        */
+        setStateFilterValue = true;
+        /** 
+        When state is cleared then clear district
+        */
+        setdistrictlist([]);
+        delete formState.values["district"];
+      }
+      setFormState((formState) => ({
+        ...formState,
+        isStateClearFilter: setStateFilterValue,
+      }));
+      /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
   };
@@ -628,11 +667,13 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         handleChangeAutoComplete("state", event, value);
                       }}
                       value={
-                        statelist[
-                          statelist.findIndex(function (item, i) {
-                            return item.id === formState.values.state;
-                          })
-                        ] || null
+                        formState.isStateClearFilter
+                          ? null
+                          : statelist[
+                              statelist.findIndex(function (item, i) {
+                                return item.id === formState.values.state;
+                              })
+                            ] || null
                       }
                       renderInput={(params) => (
                         <TextField
@@ -666,11 +707,13 @@ const AddEditStudentForCollegeAdmin = (props) => {
                         handleChangeAutoComplete("district", event, value);
                       }}
                       value={
-                        districtlist[
-                          districtlist.findIndex(function (item, i) {
-                            return item.id === formState.values.district;
-                          })
-                        ] || null
+                        formState.isStateClearFilter
+                          ? null
+                          : districtlist[
+                              districtlist.findIndex(function (item, i) {
+                                return item.id === formState.values.district;
+                              })
+                            ] || null
                       }
                       renderInput={(params) => (
                         <TextField
@@ -696,22 +739,26 @@ const AddEditStudentForCollegeAdmin = (props) => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12} >
-                      <InlineDatePicker
-                        className={classes.dateField}
-                        format="dd/MM/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        placeholder="DD/MM//YYYY"
-                        label={get(registrationSchema["dateofbirth"], "label")}
-                        value={selectedDate}
-                        onChange={(date) => setSelectedDate(date)}
-                        error={formState.dateOfBirth}
-                        helperText={formState.dateOfBirth ? "Date of Birth is required" : null }
-                        KeyboardButtonProps={{
-                          "aria-label": "change date",
-                        }}
-                      />
+                  <Grid item md={6} xs={12}>
+                    <InlineDatePicker
+                      className={classes.dateField}
+                      format="dd/MM/yyyy"
+                      margin="normal"
+                      id="date-picker-inline"
+                      placeholder="DD/MM//YYYY"
+                      label={get(registrationSchema["dateofbirth"], "label")}
+                      value={selectedDate}
+                      onChange={(date) => setSelectedDate(date)}
+                      error={formState.dateOfBirth}
+                      helperText={
+                        formState.dateOfBirth
+                          ? "Date of Birth is required"
+                          : null
+                      }
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                    />
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
