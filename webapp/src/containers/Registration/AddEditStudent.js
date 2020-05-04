@@ -114,25 +114,31 @@ const AddEditStudent = props => {
 
   useEffect(() => {
     setLoaderStatus(true);
-    if (
-      stream !== null &&
-      stream !== undefined &&
-      formState.values.hasOwnProperty("college") &&
-      formState.values["college"] !== null &&
-      formState.values["college"] !== undefined
-    ) {
-      const list = stream
-        .map(obj => {
-          if (formState.values.college === obj.id) return obj.stream;
-          else return undefined;
-        })
-        .filter(stream => stream);
-      setstreamlist(
-        list[0].map(obj => {
-          return { id: obj.stream.id, name: obj.stream.name };
-        })
-      );
+
+    if (!formState.dataForEdit) {
+      if (
+        stream !== [] &&
+        stream !== undefined &&
+        formState.values.hasOwnProperty("college") &&
+        formState.values["college"] !== null &&
+        formState.values["college"] !== undefined
+      ) {
+        console.log("stream2222", stream);
+        const list = stream
+          .map(obj => {
+            if (formState.values.college === obj.id) return obj.stream;
+            else return undefined;
+          })
+          .filter(stream => stream);
+        console.log("list", list);
+        setstreamlist(
+          list[0].map(obj => {
+            return { id: obj.stream.id, name: obj.stream.name };
+          })
+        );
+      }
     }
+
     setLoaderStatus(false);
   }, [formState.values["college"]]);
 
@@ -414,6 +420,7 @@ const AddEditStudent = props => {
             return { stream: college.stream_strength, id: college.id };
           })
           .filter(c => c);
+        console.log("stream", streams);
         setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
