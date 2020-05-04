@@ -125,7 +125,6 @@ const ViewActivityBatches = props => {
       });
 
     getActivityBatches(10, 1);
-    setLoaderStatus(false);
   }, []);
 
   const [alert, setAlert] = useState({
@@ -170,11 +169,12 @@ const ViewActivityBatches = props => {
           pageCount: res.data.pageCount,
           isDataLoading: false
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
-    setLoaderStatus(false);
   };
 
   /** Pagination */
@@ -513,28 +513,18 @@ const ViewActivityBatches = props => {
         <div className={classes.breadCrumbs}>
           <Breadcrumbs list={breadcrumbs} />
         </div>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              noDataComponent="No Activity Batch details found"
-            />
-          ) : (
-            <div className={classes.noDataMargin}>
-              No Activity Batch details found
-            </div>
-          )
-        ) : (
-          <Spinner />
-        )}
+        <Table
+          data={formState.dataToShow}
+          column={column}
+          defaultSortField="name"
+          defaultSortAsc={formState.sortAscending}
+          progressPending={formState.isDataLoading}
+          paginationTotalRows={formState.totalRows}
+          paginationRowsPerPageOptions={[10, 20, 50]}
+          onChangeRowsPerPage={handlePerRowsChange}
+          onChangePage={handlePageChange}
+          noDataComponent="No Activity Batch details found"
+        />
       </Grid>
     </Grid>
   );

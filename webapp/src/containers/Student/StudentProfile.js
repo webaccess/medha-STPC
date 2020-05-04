@@ -205,7 +205,8 @@ const StudentProfile = props => {
               </IconButton>
             }
           >
-            {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+            Student Date edited successfully
+            {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
           </Alert>
         </Collapse>
       ) : null}

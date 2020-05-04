@@ -58,6 +58,7 @@ const Table = props => {
         progressComponent={<Spinner />}
         clearSelectedRows={props.clearSelectedRows || false}
         customStyles={customStyles}
+        {...props}
       />
     </>
   );

@@ -29,7 +29,7 @@ const DeleteDocument = props => {
     formState.isDeleteData = false;
   }
 
-  const handleCloseModal = () => {
+  const handleCloseModal = data => {
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -39,9 +39,9 @@ const DeleteDocument = props => {
     }));
 
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.deleteEvent(true, data);
     } else {
-      props.deleteEvent(false);
+      props.deleteEvent(false, data);
     }
     props.closeModal();
   };
@@ -62,18 +62,19 @@ const DeleteDocument = props => {
     const API_URL = `${DELETE_DOCUMENT_URL}/${studentId}/file`;
     serviceProviders
       .serviceProviderForDeleteRequest(API_URL, props.id)
-      .then(() => {
+      .then(res => {
         setFormState(formState => ({
           ...formState,
           isValid: true
         }));
         formState.isDeleteData = true;
-        handleCloseModal();
+        console.log(res.data);
+        handleCloseModal(res.data.name);
       })
       .catch(error => {
         console.log("error");
         formState.isDeleteData = false;
-        handleCloseModal();
+        handleCloseModal(error.response.data.message);
       });
   };
 

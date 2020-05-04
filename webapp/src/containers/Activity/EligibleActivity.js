@@ -332,7 +332,7 @@ const EligibleActivity = props => {
           ) : (
             <React.Fragment>
               {formState.NoActivityData === true ? (
-                <p>No eligible Activity</p>
+                <p className={classes.alignCenter}>No eligible Activity</p>
               ) : (
                 <Spinner />
               )}

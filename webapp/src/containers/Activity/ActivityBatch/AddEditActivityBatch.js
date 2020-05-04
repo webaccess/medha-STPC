@@ -168,7 +168,6 @@ const AddEditActivityBatches = props => {
       });
 
     getStudents(10, 1);
-    setLoaderStatus(false);
   }, []);
 
   /** This seperate function is used to get the Activity Batches data*/
@@ -542,7 +541,8 @@ const AddEditActivityBatches = props => {
               <TickGridIcon
                 id={cell.id}
                 value={cell.name}
-                onClick={() => handleVerifyMultipleStudents([cell.id])}
+                tooltip={"Un-Mark attendance"}
+                onClick={() => handleUnVerifyMultipleStudents([cell.id])}
                 style={{ color: "green" }}
               />
             </div>
@@ -551,12 +551,13 @@ const AddEditActivityBatches = props => {
               <TickGridIcon
                 id={cell.id}
                 value={cell.name}
+                tooltip={"Mark attendance"}
                 onClick={() => handleVerifyMultipleStudents([cell.id])}
                 style={{ color: "grey" }}
               />
             </div>
           )}
-          {!!cell.activityBatch.verified_by_college ? (
+          {/* {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
               <CrossGridIcon
                 id={cell.id}
@@ -564,7 +565,7 @@ const AddEditActivityBatches = props => {
                 onClick={() => handleUnVerifyMultipleStudents([cell.id])}
               />
             </div>
-          ) : null}
+          ) : null} */}
 
           <div style={{ marginLeft: "8px" }}>
             <DeleteGridIcon

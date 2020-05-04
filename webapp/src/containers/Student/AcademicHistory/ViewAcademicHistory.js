@@ -32,6 +32,7 @@ import DeleteAcademicHistory from "./DeleteAcademicHistory";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
+import { string } from "prop-types";
 
 const ViewAcademicHistory = props => {
   const [open, setOpen] = React.useState(true);
@@ -75,6 +76,12 @@ const ViewAcademicHistory = props => {
     sortAscending: true
   });
 
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    message: "",
+    severity: ""
+  });
+
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
     : null;
@@ -86,7 +93,6 @@ const ViewAcademicHistory = props => {
   const ACADEMIC_YEAR_FILTER = "id";
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACADEMIC_YEAR_URL)
       .then(res => {
@@ -119,11 +125,9 @@ const ViewAcademicHistory = props => {
           dataToShow: res.data.result,
           isDataLoading: false
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
   };
 
@@ -160,16 +164,33 @@ const ViewAcademicHistory = props => {
     });
   };
 
-  const isDeleteCellCompleted = status => {
+  const isDeleteCellCompleted = (status, message) => {
     formState.isDataDeleted = status;
+    if (typeof message === typeof "") {
+      if (status) {
+        setAlert(() => ({
+          isOpen: true,
+          message: "Academic History " + message + " is deleted",
+          severity: "success"
+        }));
+      } else {
+        setAlert(() => ({
+          isOpen: true,
+          message: message,
+          severity: "error"
+        }));
+      }
+    }
   };
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
       showModalDelete: true
     }));
+    setLoaderStatus(false);
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
@@ -235,6 +256,30 @@ const ViewAcademicHistory = props => {
     });
   };
 
+  const AlertAPIResponseMessage = () => {
+    return (
+      <Collapse in={alert.isOpen}>
+        <Alert
+          severity={alert.severity || "warning"}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlert(() => ({ isOpen: false }));
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alert.message}
+        </Alert>
+      </Collapse>
+    );
+  };
+
   return (
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>
@@ -271,7 +316,8 @@ const ViewAcademicHistory = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+                  Academic History edited successfully.
+                  {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -292,7 +338,8 @@ const ViewAcademicHistory = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+                  Error in editing Academic History .
+                  {/* {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -315,7 +362,8 @@ const ViewAcademicHistory = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+                  Academic History added successfully.
+                  {/* {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -336,11 +384,12 @@ const ViewAcademicHistory = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+                  Error in adding Academic History.
+                  {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
-
+            <AlertAPIResponseMessage />
             <Card className={styles.filterButton}>
               <CardContent className={classes.Cardtheming}>
                 <Grid className={classes.filterOptions} container spacing={1}>
@@ -393,27 +442,18 @@ const ViewAcademicHistory = props => {
                 </Grid>
               </CardContent>
             </Card>
-            {formState.dataToShow ? (
-              formState.dataToShow.length ? (
-                <Table
-                  data={formState.dataToShow}
-                  column={column}
-                  defaultSortField="name"
-                  defaultSortAsc={formState.sortAscending}
-                  editEvent={editCell}
-                  deleteEvent={deleteCell}
-                  progressPending={formState.isDataLoading}
-                  pagination={false}
-                  selectableRows={false}
-                />
-              ) : (
-                <div className={classes.noDataMargin}>
-                  No academicHistory details found
-                </div>
-              )
-            ) : (
-              <Spinner />
-            )}
+            <Table
+              data={formState.dataToShow}
+              column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
+              editEvent={editCell}
+              deleteEvent={deleteCell}
+              progressPending={formState.isDataLoading}
+              pagination={false}
+              selectableRows={false}
+              noDataComponent="No Academic History found"
+            />
             <DeleteAcademicHistory
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}

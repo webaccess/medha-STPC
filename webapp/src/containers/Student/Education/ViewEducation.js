@@ -78,6 +78,11 @@ const ViewEducation = props => {
   });
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    message: "",
+    severity: ""
+  });
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
     : null;
@@ -89,7 +94,6 @@ const ViewEducation = props => {
   const EDUCATION_FILTER = "id";
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_EDUCATION_URL)
       .then(res => {
@@ -141,11 +145,9 @@ const ViewEducation = props => {
           pageCount: res.data.pageCount,
           isDataLoading: false
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
   };
 
@@ -208,16 +210,37 @@ const ViewEducation = props => {
     });
   };
 
-  const isDeleteCellCompleted = status => {
+  const isDeleteCellCompleted = (status, message) => {
     formState.isDataDeleted = status;
+    console.log(typeof message);
+    console.log(typeof status);
+    if (typeof message === typeof "") {
+      console.log("In 1 if");
+      if (status) {
+        console.log("In if");
+        setAlert(() => ({
+          isOpen: true,
+          message: "Education " + message + " is deleted",
+          severity: "success"
+        }));
+      } else {
+        setAlert(() => ({
+          isOpen: true,
+          message: message,
+          severity: "error"
+        }));
+      }
+    }
   };
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
       showModalDelete: true
     }));
+    setLoaderStatus(false);
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
@@ -283,6 +306,30 @@ const ViewEducation = props => {
     });
   };
 
+  const AlertAPIResponseMessage = () => {
+    return (
+      <Collapse in={alert.isOpen}>
+        <Alert
+          severity={alert.severity || "warning"}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlert(() => ({ isOpen: false }));
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alert.message}
+        </Alert>
+      </Collapse>
+    );
+  };
+
   return (
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>
@@ -319,7 +366,8 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+                  Education edited successfully.
+                  {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -340,7 +388,9 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+                  {" "}
+                  Error is editing Education.
+                  {/* {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -363,7 +413,8 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+                  Education added successfully.
+                  {/* {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -384,11 +435,12 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+                  Error in adding Education.
+                  {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
-
+            <AlertAPIResponseMessage />
             <Card className={styles.filterButton}>
               <CardContent className={classes.Cardtheming}>
                 <Grid className={classes.filterOptions} container spacing={1}>
@@ -437,30 +489,20 @@ const ViewEducation = props => {
                 </Grid>
               </CardContent>
             </Card>
-            {formState.dataToShow ? (
-              formState.dataToShow.length ? (
-                <Table
-                  data={formState.dataToShow}
-                  column={column}
-                  defaultSortField="name"
-                  defaultSortAsc={formState.sortAscending}
-                  editEvent={editCell}
-                  deleteEvent={deleteCell}
-                  progressPending={formState.isDataLoading}
-                  paginationTotalRows={formState.totalRows}
-                  paginationRowsPerPageOptions={[10, 20, 50]}
-                  onChangeRowsPerPage={handlePerRowsChange}
-                  onChangePage={handlePageChange}
-                  noDataComponent="No education details found"
-                />
-              ) : (
-                <div className={classes.noDataMargin}>
-                  No education details found
-                </div>
-              )
-            ) : (
-              <Spinner />
-            )}
+            <Table
+              data={formState.dataToShow}
+              column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
+              editEvent={editCell}
+              deleteEvent={deleteCell}
+              progressPending={formState.isDataLoading}
+              paginationTotalRows={formState.totalRows}
+              paginationRowsPerPageOptions={[10, 20, 50]}
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
+              noDataComponent="No education details found"
+            />
             <DeleteEducation
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}

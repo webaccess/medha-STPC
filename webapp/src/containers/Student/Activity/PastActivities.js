@@ -48,12 +48,11 @@ const PastActivities = props => {
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS +
-    `/${studentId}/past-activities`;
+    `/${studentId}/past-activity`;
   const ACTIVITY_FILTER = "id";
   const ACTIVITY_STATUS = "status";
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACTIVITY_URL)
       .then(res => {
@@ -105,11 +104,9 @@ const PastActivities = props => {
           pageCount: res.data.pageCount,
           isDataLoading: false
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
   };
 
@@ -174,10 +171,12 @@ const PastActivities = props => {
   };
 
   const viewCell = activity => {
+    setLoaderStatus(true);
     history.push({
       pathname: routeConstants.VIEW_ACTIVITY,
       dataForView: activity
     });
+    setLoaderStatus(false);
   };
   /** Columns to show in table */
   const column = [
@@ -277,28 +276,18 @@ const PastActivities = props => {
                 </Grid>
               </CardContent>
             </Card>
-            {formState.dataToShow ? (
-              formState.dataToShow.length ? (
-                <Table
-                  data={formState.dataToShow}
-                  column={column}
-                  defaultSortField="name"
-                  defaultSortAsc={formState.sortAscending}
-                  progressPending={formState.isDataLoading}
-                  paginationTotalRows={formState.totalRows}
-                  paginationRowsPerPageOptions={[10, 20, 50]}
-                  onChangeRowsPerPage={handlePerRowsChange}
-                  onChangePage={handlePageChange}
-                  noDataComponent="No education details found"
-                />
-              ) : (
-                <div className={classes.noDataMargin}>
-                  No activity details found
-                </div>
-              )
-            ) : (
-              <Spinner />
-            )}
+            <Table
+              data={formState.dataToShow}
+              column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
+              progressPending={formState.isDataLoading}
+              paginationTotalRows={formState.totalRows}
+              paginationRowsPerPageOptions={[10, 20, 50]}
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
+              noDataComponent="No Past Activities found"
+            />
           </Grid>
         </Grid>
       </CardContent>

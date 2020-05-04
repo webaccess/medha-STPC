@@ -95,6 +95,7 @@ const AddEditAcademicHistory = props => {
       }
       formState.counter += 1;
     }
+    setLoaderStatus(false);
   }
 
   const handleChangeAutoComplete = (eventName, event, value) => {

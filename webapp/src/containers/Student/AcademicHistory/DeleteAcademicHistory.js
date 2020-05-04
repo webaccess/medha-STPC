@@ -28,7 +28,7 @@ const DeleteAcademicHistory = props => {
     formState.isDeleteData = false;
   }
 
-  const handleCloseModal = () => {
+  const handleCloseModal = data => {
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -36,11 +36,11 @@ const DeleteAcademicHistory = props => {
       isValid: false,
       documentCounter: 0
     }));
-
+    console.log(formState.isDeleteData);
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.deleteEvent(true, data);
     } else {
-      props.deleteEvent(false);
+      props.deleteEvent(false, data);
     }
     props.closeModal();
   };
@@ -54,18 +54,19 @@ const DeleteAcademicHistory = props => {
   const deleteData = () => {
     serviceProviders
       .serviceProviderForDeleteRequest(DELETE_ACADEMIC_HISTORY_URL, props.id)
-      .then(() => {
+      .then(res => {
         setFormState(formState => ({
           ...formState,
           isValid: true
         }));
         formState.isDeleteData = true;
-        handleCloseModal();
+        console.log(res.data);
+        handleCloseModal(res.data.academic_year.name);
       })
       .catch(error => {
         console.log("error");
         formState.isDeleteData = false;
-        handleCloseModal();
+        handleCloseModal(error.response.data.message);
       });
   };
 
