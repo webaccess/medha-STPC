@@ -21,7 +21,13 @@ export const checkAllKeysPresent = (objectWithKeys, schema) => {
 };
 
 /** Function to check if required fields are not present then this returns all the requiured fields*/
-export const getListOfKeysNotPresent = (objectWithKeys, schema) => {
+export const getListOfKeysNotPresent = (
+  objectWithKeys,
+  schema,
+  isDatePresent,
+  dateFrom,
+  dateTo
+) => {
   Object.keys(schema).map(field => {
     if (schema[field]["required"] && !objectWithKeys.hasOwnProperty(field)) {
       objectWithKeys[field] = "";
@@ -35,8 +41,30 @@ export const checkEmpty = obj => {
   return !Object.keys(obj).length ? true : false;
 };
 
-/** returns errors of form */
-export const setErrors = (objectToCheck, schema) => {
+/** returns errors in form 
+ * Accepts 5 parameters.
+ * 1: the object to check i.e formState.values
+ * 2: The schema which contains all objects to check.
+ * 3: Is date present for date validation.
+ * 4: dateFrom: schema name for date from/ start date
+ * 5: dateTo: schema name for date to/ end date
+ * 
+ * Sample structure to call
+ * formState.errors = formUtilities.setErrors(
+        formState.values,
+        EventSchema,
+        true,
+        dateFrom,
+        dateTo
+      );
+*/
+export const setErrors = (
+  objectToCheck,
+  schema,
+  isDatePresent,
+  dateFrom,
+  dateTo
+) => {
   let formErrors = {};
   Object.keys(objectToCheck).map(field => {
     const errors = validateInput(
@@ -47,5 +75,27 @@ export const setErrors = (objectToCheck, schema) => {
       formErrors[field] = errors;
     }
   });
+  if (isDatePresent) {
+    if (
+      objectToCheck.hasOwnProperty(dateFrom) &&
+      objectToCheck[dateFrom] !== null
+    ) {
+      if (objectToCheck[dateFrom] > objectToCheck[dateTo]) {
+        if (!formErrors.hasOwnProperty(dateFrom)) {
+          formErrors[dateFrom] = ["Start date cannot be greater that end date"];
+        }
+      }
+    }
+    if (
+      objectToCheck.hasOwnProperty(dateTo) &&
+      objectToCheck[dateTo] !== null
+    ) {
+      if (objectToCheck[dateTo] < objectToCheck[dateFrom]) {
+        if (!formErrors.hasOwnProperty(dateTo)) {
+          formErrors[dateTo] = ["End date cannot be smaller that start date"];
+        }
+      }
+    }
+  }
   return formErrors;
 };
