@@ -433,6 +433,10 @@ const AddEditUser = props => {
         required: {
           value: "true",
           message: "password is required"
+        },
+        validatePasswordMinLength: {
+          value: "true",
+          message: "Password is too short"
         }
       };
     }
