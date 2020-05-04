@@ -615,6 +615,9 @@
               },
               "address": {
                 "type": "string"
+              },
+              "future_aspirations": {
+                "type": "string"
               }
             }
           },

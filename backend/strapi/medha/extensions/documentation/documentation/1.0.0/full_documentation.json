@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "04/27/2020 4:52:31 PM"
+    "x-generation-date": "05/04/2020 9:46:35 AM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -15877,6 +15877,9 @@
               },
               "address": {
                 "type": "string"
+              },
+              "future_aspirations": {
+                "type": "string"
               }
             }
           },
@@ -16065,6 +16068,9 @@
                 "type": "string"
               },
               "address": {
+                "type": "string"
+              },
+              "future_aspirations": {
                 "type": "string"
               }
             }
@@ -16883,6 +16889,9 @@
               },
               "address": {
                 "type": "string"
+              },
+              "future_aspirations": {
+                "type": "string"
               }
             }
           },
@@ -17037,6 +17046,9 @@
                 "type": "string"
               },
               "address": {
+                "type": "string"
+              },
+              "future_aspirations": {
                 "type": "string"
               }
             }
@@ -18332,6 +18344,18 @@
           },
           "address": {
             "type": "string"
+          },
+          "future_aspirations": {
+            "type": "string",
+            "enum": [
+              "private_job",
+              "others",
+              "higher_studies",
+              "marriage",
+              "entrepreneurship",
+              "government_jobs",
+              "apprenticeship"
+            ]
           }
         }
       },
@@ -18387,6 +18411,18 @@
           },
           "address": {
             "type": "string"
+          },
+          "future_aspirations": {
+            "type": "string",
+            "enum": [
+              "private_job",
+              "others",
+              "higher_studies",
+              "marriage",
+              "entrepreneurship",
+              "government_jobs",
+              "apprenticeship"
+            ]
           }
         }
       },
