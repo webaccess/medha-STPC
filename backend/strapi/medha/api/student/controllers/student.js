@@ -646,7 +646,6 @@ module.exports = {
 
     if (!activityBatch.length)
       return ctx.response.notFound("Student not Enrolled in any event");
-    console.log(activityBatch);
 
     const currentDate = new Date();
 

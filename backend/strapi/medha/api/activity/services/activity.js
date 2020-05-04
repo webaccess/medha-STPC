@@ -70,7 +70,7 @@ module.exports = {
           });
         }
 
-        return new Promise(resolve => resolve("Success"));
+        return new Promise(resolve => resolve(activityBatch));
       })
       .then(success => {
         return ctx.send(utils.getFindOneResponse(success));
