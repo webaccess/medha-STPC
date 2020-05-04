@@ -266,27 +266,15 @@ const ViewActivity = props => {
     }
   };
 
-  /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = () => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    setFormState(formState => ({
-      ...formState,
-      isDataDeleted: false,
-      showModalDelete: false
-    }));
-    if (formState.isDataDeleted) {
-      getActivityData(formState.pageSize, formState.page);
-    }
-  };
-
   /**
    * Redirect to Activity batch UI for given activity
    */
   const handleManageActivityBatchClick = activity => {
     setLoaderStatus(true);
     const manageActivityBatchURL = `/manage-activity-batch/${activity.id}`;
-    history.push(manageActivityBatchURL);
+    history.push({
+      pathname: manageActivityBatchURL
+    });
     setLoaderStatus(false);
   };
 
@@ -338,10 +326,11 @@ const ViewActivity = props => {
       .then(() => {
         setAlert(() => ({
           isOpen: true,
-          message: "Success",
+          message: `Activity ${activity.title} Deleted Successfully`,
           severity: "success"
         }));
         getActivityData(10, 1);
+        setLoaderStatus(false);
       })
       .catch(({ response }) => {
         setAlert(() => ({
@@ -349,8 +338,8 @@ const ViewActivity = props => {
           message: response.data.message,
           severity: "error"
         }));
+        setLoaderStatus(false);
       });
-    setLoaderStatus(false);
   };
 
   /** Columns to show in table */
@@ -494,7 +483,9 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              Activity{" "}
+              {formState.editedData ? `${formState.editedData.title} ` : ""}
+              has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -515,7 +506,7 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating activity. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -538,7 +529,9 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              Activity{" "}
+              {formState.addedData ? `${formState.addedData.title} ` : ""}
+              has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -559,7 +552,7 @@ const ViewActivity = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding activity. Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -637,12 +630,6 @@ const ViewActivity = props => {
         ) : (
           <Spinner />
         )}
-        {/* <DeleteActivity
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
-          deleteEvent={isDeleteCellCompleted}
-        /> */}
       </Grid>
     </Grid>
   );

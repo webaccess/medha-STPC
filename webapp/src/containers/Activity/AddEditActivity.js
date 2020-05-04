@@ -101,16 +101,11 @@ const AddEditActivity = props => {
   useEffect(() => {
     setLoaderStatus(true);
     getColleges();
-
     setLoaderStatus(false);
   }, []);
+
   useEffect(() => {
     setLoaderStatus(true);
-    console.log("in use effect");
-    console.log(formState.values.hasOwnProperty("college"));
-    console.log(stream);
-    console.log(formState.values["college"]);
-
     if (
       stream !== null &&
       stream !== undefined &&
@@ -118,14 +113,12 @@ const AddEditActivity = props => {
       formState.values["college"] !== null &&
       formState.values["college"] !== undefined
     ) {
-      console.log("if use effect");
       const list = stream
         .map(obj => {
           if (formState.values.college === obj.id) return obj.stream;
           else return undefined;
         })
         .filter(stream => stream);
-      console.log(list);
       setstreamlist(
         list[0].map(obj => {
           return { id: obj.stream.id, name: obj.stream.name };
@@ -233,20 +226,12 @@ const AddEditActivity = props => {
   const handleSubmit = event => {
     event.preventDefault();
     setLoaderStatus(true);
-    // if (formState.editActivity) {
-    //   schema = Object.assign(
-    //     {},
-    //     _.omit(registrationSchema, ["password", "otp"])
-    //   );
-    // } else {
-    //   schema = registrationSchema;
-    // }
+
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
       ActivityFormSchema
     );
-    console.log(checkAllFieldsValid);
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(
@@ -271,7 +256,6 @@ const AddEditActivity = props => {
     console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
-      console.log("postcall");
       postActivityData();
 
       /** Call axios from here */
@@ -314,8 +298,6 @@ const AddEditActivity = props => {
           postData
         )
         .then(response => {
-          console.log("Success");
-
           setFormState({ ...formState, isSuccess: true });
           history.push({
             pathname: routeConstants.MANAGE_ACTIVITY,
@@ -326,7 +308,6 @@ const AddEditActivity = props => {
           setLoaderStatus(false);
         })
         .catch(err => {
-          console.log(JSON.stringify(err));
           setIsFailed(true);
           setLoaderStatus(false);
         });
@@ -344,24 +325,21 @@ const AddEditActivity = props => {
         formState["stream"],
         formState.files
       );
-      console.log(postData);
       serviceProvider
         .serviceProviderForPostRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
           postData
         )
-        .then(response => {
-          console.log(response);
+        .then(({ data }) => {
           history.push({
             pathname: routeConstants.MANAGE_ACTIVITY,
             isDataAdded: true,
-            addedData: response,
+            addedData: data,
             fromAddActivity: true
           });
           setLoaderStatus(false);
         })
         .catch(err => {
-          console.log(err);
           setIsFailed(true);
           setLoaderStatus(false);
         });
@@ -432,8 +410,6 @@ const AddEditActivity = props => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
-    console.log("value is:  ");
-    console.log(value);
 
     if (value !== null) {
       if (eventName === "stream") {
@@ -474,7 +450,6 @@ const AddEditActivity = props => {
         formState.stream = [];
         setstreamlist([]);
       }
-      console.log(formState);
       delete formState.values[eventName];
     }
   };
@@ -483,8 +458,6 @@ const AddEditActivity = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
-      {console.log(streamlist)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.editActivity
@@ -809,26 +782,6 @@ const AddEditActivity = props => {
                 </Grid>
               </Grid>
               <Divider className={classes.divider} />
-              {/* <Grid item md={4} xs={12}>
-                <TextField
-                  label="Marks"
-                  name="marks"
-                  value={formState.values["marks"] || ""}
-                  variant="outlined"
-                  required
-                  fullWidth
-                  disabled={formState.editActivity ? true : false}
-                  onChange={handleChange}
-                  error={hasError("marks")}
-                  helperText={
-                    hasError("marks")
-                      ? formState.errors["marks"].map(error => {
-                          return error + " ";
-                        })
-                      : null
-                  }
-                />
-              </Grid> */}
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
