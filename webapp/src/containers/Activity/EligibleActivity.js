@@ -276,7 +276,6 @@ const EligibleActivity = props => {
                       <Grid item xs={12} md={11} justify="center">
                         <Button
                           variant="contained"
-                          greenButtonChecker={formState.greenButtonChecker}
                           disableElevation
                           onClick={() => {
                             routeToDisplayActivity(data);

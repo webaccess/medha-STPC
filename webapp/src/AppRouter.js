@@ -92,6 +92,7 @@ import ActivityDetails from "./containers/Activity/ActivityDetails";
 import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
+import PastActivitiesDetails from "./containers/Activity/PastActivitiesDetails";
 
 const AppRouter = props => {
   return (
@@ -241,6 +242,13 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.VIEW_ACTIVITY}
+        />
+
+        <RouteWithLayout
+          component={PastActivitiesDetails}
+          exact
+          layout={Layout}
+          path={routeConstants.PAST_ACTIVITY_DETAILS}
         />
         {/**Add  Activity */}
         <ActivityRoute

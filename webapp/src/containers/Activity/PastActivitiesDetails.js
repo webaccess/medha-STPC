@@ -28,7 +28,7 @@ import LoaderContext from "../../context/LoaderContext";
 const ACTIVITIES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
 
-const ActivityDetails = props => {
+const PastActivitiesDetails = props => {
   const history = useHistory();
   const classes = useStyles();
   const [formState, setFormState] = useState({
@@ -81,16 +81,9 @@ const ActivityDetails = props => {
         activityDetails: props["location"]["dataForView"]
       }));
     } else {
-      if (
-        auth.getUserInfo().role.name === "Medha Admin" ||
-        auth.getUserInfo().role.name === "College Admin"
-      ) {
+      if (auth.getUserInfo().role.name === "Student") {
         history.push({
-          pathname: routeConstants.MANAGE_ACTIVITY
-        });
-      } else if (auth.getUserInfo().role.name === "Student") {
-        history.push({
-          pathname: routeConstants.ELIGIBLE_ACTIVITY
+          pathname: routeConstants.VIEW_PAST_ACTIVITIES
         });
       } else {
         history.push({
@@ -104,20 +97,7 @@ const ActivityDetails = props => {
     setLoaderStatus(true);
     if (auth.getUserInfo().role.name === "Student") {
       history.push({
-        pathname: routeConstants.ELIGIBLE_ACTIVITY
-      });
-    } else if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
-      auth.getUserInfo().role.name === "College Admin"
-    ) {
-      history.push({
-        pathname: routeConstants.MANAGE_ACTIVITY
-      });
-    } else {
-      auth.clearToken();
-      auth.clearUserInfo();
-      history.push({
-        pathname: routeConstants.SIGN_IN_URL
+        pathname: routeConstants.VIEW_PAST_ACTIVITIES
       });
     }
     setLoaderStatus(false);
@@ -200,7 +180,7 @@ const ActivityDetails = props => {
           color="primary"
           disableElevation
           onClick={route}
-          to={routeConstants.MANAGE_ACTIVITY}
+          to={routeConstants.VIEW_PAST_ACTIVITIES}
           startIcon={<Icon>keyboard_arrow_left</Icon>}
           greenButtonChecker={formState.greenButtonChecker}
         >
@@ -220,32 +200,6 @@ const ActivityDetails = props => {
                           {formState.activityDetails["title"]}
                         </Typography>
                       </Grid>
-                      {auth.getUserInfo().role.name === "Student" ? (
-                        <Grid
-                          container
-                          md={6}
-                          justify="flex-end"
-                          alignItems="baseline"
-                          className={classes.CardHeader}
-                        >
-                          <Grid item xs={9} style={{ textAlign: "end" }}>
-                            <IconButton aria-label="is student registered">
-                              <Clock style={{ color: green[500] }} />
-                            </IconButton>
-                          </Grid>
-
-                          <Grid item xs={3}>
-                            <Typography
-                              className={classes.header}
-                              style={{
-                                color: green[500]
-                              }}
-                            >
-                              {getRemainingDays()}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      ) : null}
                     </Grid>
                     <Divider />
                     <Grid
@@ -349,4 +303,4 @@ const ActivityDetails = props => {
     </Grid>
   );
 };
-export default ActivityDetails;
+export default PastActivitiesDetails;
