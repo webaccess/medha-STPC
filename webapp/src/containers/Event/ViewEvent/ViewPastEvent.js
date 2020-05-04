@@ -45,7 +45,8 @@ const ViewPastEvent = props => {
     /**Filter */
     filterDataParameters: {},
     startDate: null,
-    endDate: null
+    endDate: null,
+    errors: {}
   });
 
   useEffect(() => {
@@ -127,7 +128,7 @@ const ViewPastEvent = props => {
           }
         })
         .catch(error => {
-          console.log("Error_evvent", error);
+          console.log("Error_event", error);
         });
     }
   };
@@ -158,10 +159,25 @@ const ViewPastEvent = props => {
     let startDate = moment(event).format("YYYY-MM-DDT00:00:00.000Z");
     if (startDate === "Invalid date") {
       startDate = null;
+      delete formState.filterDataParameters[START_DATE_FILTER];
+    } else {
+      formState.filterDataParameters[START_DATE_FILTER] = new Date(
+        startDate
+      ).toISOString();
+      if (
+        formState.filterDataParameters.hasOwnProperty(END_DATE_FILTER) &&
+        formState.filterDataParameters[START_DATE_FILTER] >
+          formState.filterDataParameters[END_DATE_FILTER]
+      ) {
+        formState.errors["dateFrom"] = [
+          "Start date cannot be greater than end date"
+        ];
+      } else {
+        delete formState.errors["dateTo"];
+        delete formState.errors["dateFrom"];
+      }
     }
-    formState.filterDataParameters[START_DATE_FILTER] = new Date(
-      startDate
-    ).toISOString();
+
     setFormState(formState => ({
       ...formState,
       startDate: event
@@ -175,15 +191,36 @@ const ViewPastEvent = props => {
       .format("YYYY-MM-DDT00:00:00.000Z");
     if (endDate === "Invalid date") {
       endDate = null;
+      delete formState.filterDataParameters[END_DATE_FILTER];
+    } else {
+      formState.filterDataParameters[END_DATE_FILTER] = new Date(
+        endDate
+      ).toISOString();
+      if (
+        formState.filterDataParameters.hasOwnProperty(START_DATE_FILTER) &&
+        formState.filterDataParameters[END_DATE_FILTER] <
+          formState.filterDataParameters[START_DATE_FILTER]
+      ) {
+        formState.errors["dateTo"] = [
+          "End date cannot be less than start date"
+        ];
+      } else {
+        delete formState.errors["dateFrom"];
+        delete formState.errors["dateTo"];
+      }
     }
-    formState.filterDataParameters[END_DATE_FILTER] = new Date(
-      endDate
-    ).toISOString();
+
     setFormState(formState => ({
       ...formState,
       endDate: event
     }));
   };
+
+  const checkEmpty = obj => {
+    return !Object.keys(obj).length ? true : false;
+  };
+
+  const hasError = field => (formState.errors[field] ? true : false);
 
   const handleFilterChangeForEventField = event => {
     setFormState(formState => ({
@@ -261,7 +298,8 @@ const ViewPastEvent = props => {
       /** Turns on the spinner */
       isDataLoading: true,
       startDate: null,
-      endDate: null
+      endDate: null,
+      errors: {}
     }));
     setStatusFilter([]);
     restoreData();
@@ -335,6 +373,14 @@ const ViewPastEvent = props => {
                   onChange={event =>
                     handleStartDateChange(START_DATE_FILTER, event)
                   }
+                  error={hasError("dateFrom")}
+                  helperText={
+                    hasError("dateFrom")
+                      ? formState.errors["dateFrom"].map(error => {
+                          return error + " ";
+                        })
+                      : null
+                  }
                 />
               </Grid>
               <Grid item>
@@ -346,6 +392,14 @@ const ViewPastEvent = props => {
                   name={END_DATE_FILTER}
                   onChange={event =>
                     handleEndDateChange(END_DATE_FILTER, event)
+                  }
+                  error={hasError("dateTo")}
+                  helperText={
+                    hasError("dateTo")
+                      ? formState.errors["dateTo"].map(error => {
+                          return error + " ";
+                        })
+                      : null
                   }
                 />
               </Grid>
@@ -388,6 +442,7 @@ const ViewPastEvent = props => {
                   variant="contained"
                   color="primary"
                   disableElevation
+                  disabled={checkEmpty(formState.errors) ? false : true}
                   onClick={event => {
                     event.persist();
                     searchFilter();
