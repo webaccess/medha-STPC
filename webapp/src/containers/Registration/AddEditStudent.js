@@ -101,16 +101,40 @@ const AddEditStudent = props => {
   const [districtlist, setdistrictlist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
+  const [stream, setStream] = useState([]);
 
   useEffect(() => {
     setLoaderStatus(true);
     getStates();
     getDistrict();
     getColleges();
-    getStreams();
     setLoaderStatus(false);
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
+
+  useEffect(() => {
+    setLoaderStatus(true);
+    if (
+      stream !== null &&
+      stream !== undefined &&
+      formState.values.hasOwnProperty("college") &&
+      formState.values["college"] !== null &&
+      formState.values["college"] !== undefined
+    ) {
+      const list = stream
+        .map(obj => {
+          if (formState.values.college === obj.id) return obj.stream;
+          else return undefined;
+        })
+        .filter(stream => stream);
+      setstreamlist(
+        list[0].map(obj => {
+          return { id: obj.stream.id, name: obj.stream.name };
+        })
+      );
+    }
+    setLoaderStatus(false);
+  }, [formState.values["college"]]);
 
   if (formState.dataForEdit && !formState.counter) {
     setLoaderStatus(true);
@@ -362,7 +386,6 @@ const AddEditStudent = props => {
           postData
         )
         .then(response => {
-          console.log(response);
           if (
             auth.getUserInfo().role.name === "Medha Admin" ||
             auth.getUserInfo().role.name === "College Admin"
@@ -380,20 +403,18 @@ const AddEditStudent = props => {
     }
   };
 
-  const getStreams = () => {
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS)
-      .then(res => {
-        setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
-  };
-
   const getColleges = () => {
     axios
       .get(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
+        const streams = res.data.result
+          .map(college => {
+            return { stream: college.stream_strength, id: college.id };
+          })
+          .filter(c => c);
+        setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
@@ -485,7 +506,6 @@ const AddEditStudent = props => {
   return (
     // <Layout>
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {formState.editStudent ? null : (
           <Typography variant="h4" gutterBottom>
@@ -653,7 +673,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       statelist[
-                        statelist.findIndex(function (item, i) {
+                        statelist.findIndex(function(item, i) {
                           return item.id === formState.values.state;
                         })
                       ] || null
@@ -687,7 +707,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       districtlist[
-                        districtlist.findIndex(function (item, i) {
+                        districtlist.findIndex(function(item, i) {
                           return item.id === formState.values.district;
                         })
                       ] || null
@@ -771,7 +791,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       genderlist[
-                        genderlist.findIndex(function (item, i) {
+                        genderlist.findIndex(function(item, i) {
                           return item.id === formState.values.gender;
                         })
                       ] || null
@@ -832,7 +852,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       collegelist[
-                        collegelist.findIndex(function (item, i) {
+                        collegelist.findIndex(function(item, i) {
                           return item.id === formState.values.college;
                         })
                       ] || null
@@ -868,7 +888,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       streamlist[
-                        streamlist.findIndex(function (item, i) {
+                        streamlist.findIndex(function(item, i) {
                           return item.id === formState.values.stream;
                         })
                       ] || null
@@ -927,7 +947,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       physicallyHandicappedlist[
-                        physicallyHandicappedlist.findIndex(function (item, i) {
+                        physicallyHandicappedlist.findIndex(function(item, i) {
                           return (
                             item.id === formState.values.physicallyHandicapped
                           );
