@@ -447,7 +447,13 @@ const AddEditStudent = props => {
         //       name: district.name
         //     };
         //   });
-        setdistrictlist(res.data.result.map(({ id, name }) => ({ id, name })));
+        setdistrictlist(
+          res.data.result.map(({ id, name, state }) => ({
+            id,
+            name,
+            state: state.id
+          }))
+        );
       });
   };
 
@@ -490,7 +496,14 @@ const AddEditStudent = props => {
         delete formState.errors[eventName];
       }
     } else {
+      console.log("1");
+      if (eventName === "state") {
+        delete formState.values["district"];
+      }
       delete formState.values[eventName];
+      setFormState(formState => ({
+        ...formState
+      }));
     }
   };
 
@@ -700,7 +713,9 @@ const AddEditStudent = props => {
                   <Autocomplete
                     id="combo-box-demo"
                     className={classes.root}
-                    options={districtlist}
+                    options={districtlist.filter(
+                      district => district.state === formState.values.state
+                    )}
                     getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("district", event, value);
