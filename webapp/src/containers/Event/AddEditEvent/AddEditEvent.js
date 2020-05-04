@@ -77,13 +77,16 @@ const AddEditEvent = props => {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
   const classes = useStyles();
   const history = useHistory();
   /** Initializiing form state value */
   const [formState, setFormState] = useState({
     isValid: false,
-    values: { dateFrom: moment(), dateTo: moment() },
+    values: {
+      dateFrom: moment(),
+      dateTo: moment()
+    },
     touched: {},
     errors: {},
     isSuccess: false,
@@ -111,10 +114,12 @@ const AddEditEvent = props => {
     dynamicEducationBarError: [],
     isCollegeAdmin:
       auth.getUserInfo().role.name === "College Admin" ? true : false,
-    isStateClearFilter: false
+    isStateClearFilter: false,
+    isContainDateValidation: true,
+    isDateValidated: false
   });
 
-  const [collegeInfo, setCollegeInfo] = useState({
+  const [collegeInfo] = useState({
     college:
       auth.getUserInfo().role.name === "College Admin"
         ? auth.getUserInfo().college
@@ -870,36 +875,54 @@ const AddEditEvent = props => {
       /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
+    if (formState.errors.hasOwnProperty(eventName)) {
+      delete formState.errors[eventName];
+    }
   };
 
   const handleSubmit = event => {
     event.preventDefault();
     setLoaderStatus(true);
+    let isValid = false;
     if (formState.isCollegeAdmin && !formState.isEditEvent) {
       setDataForCollegeAdmin();
     }
     /** Validate DynamicGrid */
     let isDynamicBarValid;
+    /** Check validity of dynamic bar */
     isDynamicBarValid = validateDynamicGridValues();
-    let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
       EventSchema
     );
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
-      formState.errors = formUtilities.setErrors(formState.values, EventSchema);
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        EventSchema,
+        true,
+        dateFrom,
+        dateTo
+      );
+      /** Check date validation */
 
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
+      /** */
     } else {
       /** This is used to find out which all required fields are not filled */
       formState.values = formUtilities.getListOfKeysNotPresent(
         formState.values,
         EventSchema
       );
-      formState.errors = formUtilities.setErrors(formState.values, EventSchema);
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        EventSchema,
+        true,
+        dateFrom,
+        dateTo
+      );
     }
     formState.descriptionError = false;
     if (
@@ -1078,16 +1101,19 @@ const AddEditEvent = props => {
     }
   };
 
-  const handleDateChange = (datefrom, event) => {
+  const handleDateChange = (dateObject, event) => {
+    if (formState.errors.hasOwnProperty(dateObject)) {
+      delete formState.errors[dateObject];
+    }
     setFormState(formState => ({
       ...formState,
       values: {
         ...formState.values,
-        [datefrom]: event
+        [dateObject]: event
       },
       touched: {
         ...formState.touched,
-        [datefrom]: true
+        [dateObject]: true
       },
       isStateClearFilter: false
     }));

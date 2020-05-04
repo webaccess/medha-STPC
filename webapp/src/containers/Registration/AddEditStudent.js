@@ -12,7 +12,8 @@ import {
   InputAdornment,
   OutlinedInput,
   Collapse,
-  CardActions
+  CardActions,
+  FormHelperText
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth, InlineDatePicker } from "../../components";
@@ -454,7 +455,13 @@ const AddEditStudent = props => {
         //       name: district.name
         //     };
         //   });
-        setdistrictlist(res.data.result.map(({ id, name }) => ({ id, name })));
+        setdistrictlist(
+          res.data.result.map(({ id, name, state }) => ({
+            id,
+            name,
+            state: state.id
+          }))
+        );
       });
   };
 
@@ -497,7 +504,14 @@ const AddEditStudent = props => {
         delete formState.errors[eventName];
       }
     } else {
+      console.log("1");
+      if (eventName === "state") {
+        delete formState.values["district"];
+      }
       delete formState.values[eventName];
+      setFormState(formState => ({
+        ...formState
+      }));
     }
   };
 
@@ -707,7 +721,9 @@ const AddEditStudent = props => {
                   <Autocomplete
                     id="combo-box-demo"
                     className={classes.root}
-                    options={districtlist}
+                    options={districtlist.filter(
+                      district => district.state === formState.values.state
+                    )}
                     getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("district", event, value);
@@ -1052,6 +1068,13 @@ const AddEditStudent = props => {
                           </InputAdornment>
                         }
                       />
+                       <FormHelperText error={hasError("password")}>
+                        {hasError("password")
+                          ? formState.errors["password"].map((error) => {
+                              return error + " ";
+                            })
+                          : null}
+                      </FormHelperText>
                     </FormControl>
                   </Grid>
                 )}

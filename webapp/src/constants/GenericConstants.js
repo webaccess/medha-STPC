@@ -139,3 +139,13 @@ export const EVENT_STATUS = [
   { name: "Missed", id: "false" },
   { name: "Attended", id: "true" }
 ];
+
+export const FUTURE_ASPIRATIONS = [
+  { name: "Private Jobs", id: "private_jobs" },
+  { name: "Higher Studies", id: "higher_studies" },
+  { name: "Marriage", id: "marriage" },
+  { name: "Entrepreneurship", id: "entrepreneurship" },
+  { name: "Government Jobs", id: "government_jobs" },
+  { name: "Apprenticeship", id: "apprenticeship" },
+  { name: "Others", id: "others" }
+];

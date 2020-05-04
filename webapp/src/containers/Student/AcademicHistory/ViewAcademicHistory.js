@@ -40,7 +40,7 @@ const ViewAcademicHistory = props => {
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
-    dataToShow: [],
+    dataToShow: null,
     academicHistory: [],
     academicHistoryFilters: [],
     filterDataParameters: {},

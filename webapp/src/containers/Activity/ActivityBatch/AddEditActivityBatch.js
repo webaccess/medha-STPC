@@ -78,11 +78,11 @@ const AddEditActivityBatches = props => {
     isValid: false,
     values: {},
     touched: {},
-    errors: {}
+    errors: {},
+    counter: 0
   });
 
-  if (formState.isEditActivityBatch) {
-    setLoaderStatus(true);
+  if (formState.isEditActivityBatch && !formState.counter) {
     if (formState.dataForEdit && formState.dataForEdit[activityBatchName]) {
       formState.values[activityBatchName] =
         formState.dataForEdit[activityBatchName];
@@ -99,13 +99,13 @@ const AddEditActivityBatches = props => {
         formState.dataForEdit["end_date_time"]
       );
     }
-    setLoaderStatus(false);
+    formState.counter += 1;
   }
 
   const [selectedStudents, setSeletedStudent] = useState([]);
   const [showStudentModal, setShowStudentModal] = useState(false);
   const [clearSelectedRows, setClearSelectedRows] = useState(false);
-  const [activityDetails, setActivityDetails] = useState({});
+  const [activityDetails, setActivityDetails] = useState(null);
 
   const { activity } = props.activity ? props : props.match.params;
   const ACTIVITY_URL =
@@ -136,7 +136,6 @@ const AddEditActivityBatches = props => {
     : ACTIVITY_BATCH_STUDENTS;
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_URL)
       .then(({ data }) => {
@@ -148,11 +147,9 @@ const AddEditActivityBatches = props => {
       .catch(() => {
         history.push("/404");
       });
-    setLoaderStatus(false);
   }, []);
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT)
       .then(res => {
@@ -168,7 +165,6 @@ const AddEditActivityBatches = props => {
       });
 
     getStudents(10, 1);
-    setLoaderStatus(false);
   }, []);
 
   /** This seperate function is used to get the Activity Batches data*/
@@ -208,11 +204,9 @@ const AddEditActivityBatches = props => {
           isDataLoading: false,
           streams: getStreams(res.data.result)
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
   };
 
@@ -403,7 +397,6 @@ const AddEditActivityBatches = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
-    setLoaderStatus(true);
     let isValid = false;
     /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -442,7 +435,6 @@ const AddEditActivityBatches = props => {
       }));
     }
     event.preventDefault();
-    setLoaderStatus(false);
   };
 
   const handleDateChange = (datefrom, event) => {
@@ -460,6 +452,7 @@ const AddEditActivityBatches = props => {
   };
 
   const postActivityBatchData = async () => {
+    setLoaderStatus(true);
     let postData = databaseUtilities.addActivityBatch(
       formState.values[activityBatchName],
       selectedStudents,
@@ -475,13 +468,13 @@ const AddEditActivityBatches = props => {
 
       serviceProviders
         .serviceProviderForPutRequest(URL, activityBatchId, postData)
-        .then(() => {
+        .then(({ data }) => {
           history.push({
             pathname: `/manage-activity-batch/${activity}`,
             fromEditActivityBatch: true,
             isDataEdited: true,
             addResponseMessage: "",
-            editedData: {}
+            editedData: data
           });
           setLoaderStatus(false);
         })
@@ -498,13 +491,14 @@ const AddEditActivityBatches = props => {
     } else {
       serviceProviders
         .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
-        .then(res => {
+        .then(({ data }) => {
+          console.log(data);
           history.push({
             pathname: `/manage-activity-batch/${activity}`,
             fromAddActivityBatch: true,
             isDataAdded: true,
             addResponseMessage: "",
-            addedData: {}
+            addedData: data.result
           });
           setLoaderStatus(false);
         })
@@ -615,7 +609,10 @@ const AddEditActivityBatches = props => {
 
   const breadcrumbs = [
     { title: "Activity", href: "/manage-activity" },
-    { title: "Activity Batches", href: `/manage-activity-batch/${activity}` },
+    {
+      title: `${activityDetails ? activityDetails.title : null} Batches`,
+      href: `/manage-activity-batch/${activity}`
+    },
     {
       title: formState.isEditActivityBatch
         ? formState.dataForEdit[activityBatchName]
@@ -624,8 +621,12 @@ const AddEditActivityBatches = props => {
     }
   ];
 
+  console.log(formState.values);
   return (
     <Grid>
+      <div className={classes.breadCrumbs}>
+        {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
+      </div>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_ACTIVITY_BATCHES}
@@ -805,9 +806,6 @@ const AddEditActivityBatches = props => {
             </Grid>
           </CardContent>
         </Card>
-        <div className={classes.breadCrumbs}>
-          <Breadcrumbs list={breadcrumbs} />
-        </div>
 
         <>
           <Table
@@ -864,8 +862,16 @@ const AddEditActivityBatches = props => {
                     value={formState.values[dateFrom]}
                     name={dateFrom}
                     label={get(AddActivityBatchSchema[dateFrom], "label")}
-                    minDate={new Date(activityDetails.start_date_time)}
-                    maxDate={new Date(activityDetails.end_date_time)}
+                    minDate={
+                      activityDetails
+                        ? new Date(activityDetails.start_date_time)
+                        : null
+                    }
+                    maxDate={
+                      activityDetails
+                        ? new Date(activityDetails.end_date_time)
+                        : null
+                    }
                     error={hasError(dateFrom)}
                     helperText={
                       hasError(dateFrom)
@@ -888,7 +894,11 @@ const AddEditActivityBatches = props => {
                     minDate={
                       formState.values[dateTo] ? formState.values[dateTo] : {}
                     }
-                    maxDate={new Date(activityDetails.end_date_time)}
+                    maxDate={
+                      activityDetails
+                        ? new Date(activityDetails.end_date_time)
+                        : null
+                    }
                     error={hasError(dateTo)}
                     helperText={
                       hasError(dateTo)
