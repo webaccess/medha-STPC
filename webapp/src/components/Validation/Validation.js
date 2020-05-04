@@ -54,6 +54,11 @@ const validation = (value, inputValidations = {}, type = "text") => {
           errors.push(validationValue.message);
         }
         break;
+        case "validatePasswordMinLength":
+        if(value.length !== 0 && value.length < 6){
+          errors.push(validationValue.message);
+        }
+        break;
       case "validateMobileNumber":
         if (value.length !== 0 && !phonenoRegx.test(value)) {
           errors.push(validationValue.message);

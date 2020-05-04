@@ -12,7 +12,8 @@ import {
   InputAdornment,
   OutlinedInput,
   Collapse,
-  CardActions
+  CardActions,
+  FormHelperText
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth, InlineDatePicker } from "../../components";
@@ -1060,6 +1061,13 @@ const AddEditStudent = props => {
                           </InputAdornment>
                         }
                       />
+                       <FormHelperText error={hasError("password")}>
+                        {hasError("password")
+                          ? formState.errors["password"].map((error) => {
+                              return error + " ";
+                            })
+                          : null}
+                      </FormHelperText>
                     </FormControl>
                   </Grid>
                 )}
