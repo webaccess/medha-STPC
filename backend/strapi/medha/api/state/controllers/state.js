@@ -107,5 +107,45 @@ module.exports = {
       .then(res => {
         return utils.getResponse(res);
       });
+  },
+
+  /**
+   * @return {Object}
+   */
+  async colleges(ctx) {
+    const { id } = ctx.params;
+
+    const state = await strapi.query("state").findOne({ id });
+    if (!state) {
+      return ctx.response.notFound("State does not exist");
+    }
+
+    /**
+     * Since we don't have direct relation from state and college
+     * we'll get zones and rpc under that state and query them
+     */
+
+    const zones = await strapi.query("zone").find({ state: id });
+    const rpcs = await strapi.query("rpc").find({ state: id });
+
+    const zoneIds = zones.map(z => z.id);
+    const rpcIds = rpcs.map(r => r.id);
+
+    const colleges = await strapi
+      .query("college")
+      .model.query(qb => {
+        qb.where("zone", "in", zoneIds).orWhere("rpc", "in", rpcIds);
+      })
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    const response = colleges.map(c => {
+      return {
+        id: c.id,
+        name: c.name
+      };
+    });
+
+    return utils.getFindOneResponse(response);
   }
 };
