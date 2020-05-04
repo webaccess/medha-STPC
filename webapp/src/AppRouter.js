@@ -93,6 +93,9 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 
+/** Import */
+import StudentsImport from "./containers/Import/StudentsImport/StudentsImport";
+
 const AppRouter = props => {
   return (
     <div>
@@ -480,6 +483,13 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.ADD_STUDENT_DRIVE}
+        />
+        {/** Import Students */}
+        <CollegeAdminRoute
+          component={StudentsImport}
+          exact
+          layout={Layout}
+          path={routeConstants.IMPORT_STUDENTS}
         />
 
         {/* Activities */}
