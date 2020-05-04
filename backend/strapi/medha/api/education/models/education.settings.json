@@ -22,8 +22,8 @@
       "required": true
     },
     "student": {
-      "model": "student",
-      "via": "educations"
+      "via": "educations",
+      "model": "student"
     },
     "percentage": {
       "type": "decimal"

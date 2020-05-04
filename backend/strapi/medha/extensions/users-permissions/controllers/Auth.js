@@ -370,5 +370,122 @@ module.exports = {
         })
       });
     }
+  },
+
+  async changePassword(ctx) {
+    const params = _.assign({}, ctx.request.body, ctx.params);
+
+    if (
+      params.username &&
+      params.oldPassword &&
+      params.password &&
+      params.passwordConfirmation &&
+      params.password === params.passwordConfirmation
+    ) {
+      // Get user details using username
+
+      const user = await strapi
+        .query("user", "users-permissions")
+        .findOne({ username: params.username });
+
+      if (!user) {
+        return ctx.badRequest(
+          null,
+          formatError({
+            id: "Auth.form.error.username.provide",
+            message: "Incorrect username provided."
+          })
+        );
+      }
+
+      const validPassword = strapi.plugins[
+        "users-permissions"
+      ].services.user.validatePassword(params.oldPassword, user.password);
+
+      if (!validPassword) {
+        return ctx.badRequest(
+          null,
+          formatError({
+            id: "Auth.form.error.invalid",
+            message: "Identifier or password invalid."
+          })
+        );
+      }
+
+      user.password = await strapi.plugins[
+        "users-permissions"
+      ].services.user.hashPassword(params);
+
+      // Update the user.
+      await strapi
+        .query("user", "users-permissions")
+        .update({ id: user.id }, user);
+
+      ctx.send({
+        result: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
+          model: strapi.query("user", "users-permissions").model
+        })
+      });
+    } else if (
+      params.password &&
+      params.passwordConfirmation &&
+      params.password === params.passwordConfirmation &&
+      params.code
+    ) {
+      const user = await strapi
+        .query("user", "users-permissions")
+        .findOne({ resetPasswordToken: `${params.code}` });
+
+      if (!user) {
+        return ctx.badRequest(
+          null,
+          formatError({
+            id: "Auth.form.error.code.provide",
+            message: "Incorrect code provided."
+          })
+        );
+      }
+
+      // Delete the current code
+      user.resetPasswordToken = null;
+
+      user.password = await strapi.plugins[
+        "users-permissions"
+      ].services.user.hashPassword(params);
+
+      // Update the user.
+      await strapi
+        .query("user", "users-permissions")
+        .update({ id: user.id }, user);
+
+      ctx.send({
+        jwt: strapi.plugins["users-permissions"].services.jwt.issue({
+          id: user.id
+        }),
+        user: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
+          model: strapi.query("user", "users-permissions").model
+        })
+      });
+    } else if (
+      params.password &&
+      params.passwordConfirmation &&
+      params.password !== params.passwordConfirmation
+    ) {
+      return ctx.badRequest(
+        null,
+        formatError({
+          id: "Auth.form.error.password.matching",
+          message: "Passwords do not match."
+        })
+      );
+    } else {
+      return ctx.badRequest(
+        null,
+        formatError({
+          id: "Auth.form.error.params.provide",
+          message: "Incorrect params provided."
+        })
+      );
+    }
   }
 };
