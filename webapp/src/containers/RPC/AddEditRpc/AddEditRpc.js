@@ -9,7 +9,7 @@ import {
   CardActions,
   Grid,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
@@ -27,12 +27,9 @@ const stateName = "stateName";
 const collegeName = "collegeName";
 
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
-const COLLEGE_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
-const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
-const AddEditRpc = props => {
+const AddEditRpc = (props) => {
   const history = useHistory();
   const classes = useStyles();
   const [states, setStates] = useState([]);
@@ -46,9 +43,10 @@ const AddEditRpc = props => {
     touched: {},
     errors: {},
     isSuccess: false,
+    isStateClearFilter: false,
     isEditRpc: props["editRpc"] ? props["editRpc"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0
+    counter: 0,
   });
 
   /** Part for editing college */
@@ -79,35 +77,46 @@ const AddEditRpc = props => {
     /* TO GET STATES AND COLLEGE IN AUTOCOMPLETE */
 
     let paramsForPageSize = {
-      pageSize: -1
+      pageSize: -1,
     };
 
     serviceProviders
       .serviceProviderForGetRequest(STATE_URL, paramsForPageSize)
-      .then(res => {
+      .then((res) => {
         setStates(res.data.result);
-      });
-    serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForPageSize)
-      .then(res => {
-        setGetColleges(res.data.result);
       });
   }, []);
 
+  useEffect(() => {
+    if (formState.values[stateName]) {
+      let COLLEGE_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_STATES +
+        "/" +
+        formState.values[stateName] +
+        "/" +
+        strapiConstants.STRAPI_COLLEGES;
+      serviceProviders.serviceProviderForGetRequest(COLLEGE_URL).then((res) => {
+        setGetColleges(res.data.result);
+      });
+    }
+    return () => {};
+  }, [formState.values[stateName]]);
+
   /** This handle change is used to handle changes to text field */
-  const handleChange = event => {
+  const handleChange = (event) => {
     /** TO SET VALUES IN FORMSTATE */
     event.persist();
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
       values: {
         ...formState.values,
-        [event.target.name]: event.target.value
+        [event.target.name]: event.target.value,
       },
       touched: {
         ...formState.touched,
-        [event.target.name]: true
-      }
+        [event.target.name]: true,
+      },
     }));
 
     /** This is used to remove any existing errors if present in text field */
@@ -120,16 +129,17 @@ const AddEditRpc = props => {
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (value !== null) {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
         values: {
           ...formState.values,
-          [eventName]: value.id
+          [eventName]: value.id,
         },
         touched: {
           ...formState.touched,
-          [eventName]: true
-        }
+          [eventName]: true,
+        },
+        isStateClearFilter: false,
       }));
 
       /** This is used to remove any existing errors if present in auto complete */
@@ -137,16 +147,34 @@ const AddEditRpc = props => {
         delete formState.errors[eventName];
       }
     } else {
+      let setStateFilterValue = false;
+      /** If we click cross for state the college should clear off! */
+      if (eventName === stateName) {
+        /** 
+        This flag is used to determine that state is cleared which clears 
+        off college by setting their value to null 
+        */
+        setStateFilterValue = true;
+        /** 
+        When state is cleared then clear college
+        */
+        setGetColleges([]);
+        delete formState.values[collegeName];
+      }
+      setFormState((formState) => ({
+        ...formState,
+        isStateClearFilter: setStateFilterValue,
+      }));
       /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
   };
 
   /** This checks if the corresponding field has errors */
-  const hasError = field => (formState.errors[field] ? true : false);
+  const hasError = (field) => (formState.errors[field] ? true : false);
 
   /** Handle submit handles the submit and performs all the validations */
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     let isValid = false;
     /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -179,9 +207,9 @@ const AddEditRpc = props => {
       /** CALL POST FUNCTION */
       postRpcData();
     } else {
-      setFormState(formState => ({
+      setFormState((formState) => ({
         ...formState,
-        isValid: false
+        isValid: false,
       }));
       setLoaderStatus(false);
     }
@@ -201,7 +229,7 @@ const AddEditRpc = props => {
           formState.dataForEdit["id"],
           postData
         )
-        .then(res => {
+        .then((res) => {
           setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_RPC,
@@ -209,10 +237,10 @@ const AddEditRpc = props => {
             isDataEdited: true,
             editedRPCData: res.data,
             editResponseMessage: "",
-            editedData: {}
+            editedData: {},
           });
         })
-        .catch(error => {
+        .catch((error) => {
           setLoaderStatus(false);
           console.log(error);
           history.push({
@@ -220,13 +248,13 @@ const AddEditRpc = props => {
             fromEditRpc: true,
             isDataEdited: false,
             editResponseMessage: "",
-            editedData: {}
+            editedData: {},
           });
         });
     } else {
       serviceProviders
         .serviceProviderForPostRequest(RPCS_URL, postData)
-        .then(res => {
+        .then((res) => {
           setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_RPC,
@@ -234,17 +262,17 @@ const AddEditRpc = props => {
             isDataAdded: true,
             addedRPCData: res.data,
             addResponseMessage: "",
-            addedData: {}
+            addedData: {},
           });
         })
-        .catch(error => {
+        .catch((error) => {
           setLoaderStatus(false);
           history.push({
             pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
             isDataAdded: false,
             addResponseMessage: "",
-            addedData: {}
+            addedData: {},
           });
         });
     }
@@ -287,7 +315,7 @@ const AddEditRpc = props => {
                     error={hasError(rpcName)}
                     helperText={
                       hasError(rpcName)
-                        ? formState.errors[rpcName].map(error => {
+                        ? formState.errors[rpcName].map((error) => {
                             return error + " ";
                           })
                         : null
@@ -300,19 +328,21 @@ const AddEditRpc = props => {
                   <Autocomplete
                     id={get(AddRpcSchema[stateName], "id")}
                     options={states}
-                    getOptionLabel={option => option.name}
+                    getOptionLabel={(option) => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(stateName, event, value);
                     }}
                     name={stateName}
                     value={
-                      states[
-                        states.findIndex(function (item, i) {
-                          return item.id === formState.values[stateName];
-                        })
-                      ] || null /** Please give a default " " blank value */
+                      formState.isStateClearFilter
+                        ? null
+                        : states[
+                            states.findIndex(function (item, i) {
+                              return item.id === formState.values[stateName];
+                            })
+                          ] || null /** Please give a default " " blank value */
                     }
-                    renderInput={params => (
+                    renderInput={(params) => (
                       <TextField
                         {...params}
                         error={hasError(stateName)}
@@ -322,14 +352,14 @@ const AddEditRpc = props => {
                         )}
                         helperText={
                           hasError(stateName)
-                            ? formState.errors[stateName].map(error => {
+                            ? formState.errors[stateName].map((error) => {
                                 return error + " ";
                               })
                             : null
                         }
-                        value={option => option.id}
+                        value={(option) => option.id}
                         name={stateName}
-                        key={option => option.id}
+                        key={(option) => option.id}
                         label={get(AddRpcSchema[stateName], "label")}
                         variant="outlined"
                       />
@@ -341,19 +371,21 @@ const AddEditRpc = props => {
                   <Autocomplete
                     id="combo-box-demo"
                     options={getColleges}
-                    getOptionLabel={option => option.name}
+                    getOptionLabel={(option) => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(collegeName, event, value);
                     }}
                     name={collegeName}
                     value={
-                      getColleges[
-                        getColleges.findIndex(function (item, i) {
-                          return item.id === formState.values[collegeName];
-                        })
-                      ] || null /** Please give a default " " blank value */
+                      formState.isStateClearFilter
+                        ? null
+                        : getColleges[
+                            getColleges.findIndex(function (item, i) {
+                              return item.id === formState.values[collegeName];
+                            })
+                          ] || null /** Please give a default " " blank value */
                     }
-                    renderInput={params => (
+                    renderInput={(params) => (
                       <TextField
                         {...params}
                         error={hasError(collegeName)}
@@ -363,14 +395,14 @@ const AddEditRpc = props => {
                         )}
                         helperText={
                           hasError(collegeName)
-                            ? formState.errors[collegeName].map(error => {
+                            ? formState.errors[collegeName].map((error) => {
                                 return error + " ";
                               })
                             : null
                         }
-                        value={option => option.id}
+                        value={(option) => option.id}
                         name={collegeName}
-                        key={option => option.id}
+                        key={(option) => option.id}
                         label={get(AddRpcSchema[collegeName], "label")}
                         variant="outlined"
                       />
