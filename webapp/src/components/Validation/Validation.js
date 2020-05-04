@@ -55,7 +55,7 @@ const validation = (value, inputValidations = {}, type = "text") => {
         }
         break;
         case "validatePasswordMinLength":
-        if(value.length !== 0 && value.length < 6){
+        if(value.length !== 0 && value.length < 5){
           errors.push(validationValue.message);
         }
         break;
