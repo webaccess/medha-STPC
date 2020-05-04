@@ -140,7 +140,6 @@ const AddEditEducation = props => {
       }));
     }
     event.preventDefault();
-    setLoaderStatus(false);
   };
 
   const postEducationData = async () => {
