@@ -178,7 +178,7 @@ const ActivityDetails = props => {
     return formState.activityDetails["address"];
   };
 
-  const getRemainingDays = () => {
+  const getRemainingDays = data => {
     let currentDate = new Date();
     let startDate = new Date(
       formState.activityDetails["activity_batch"]["start_date_time"]
@@ -233,13 +233,13 @@ const ActivityDetails = props => {
                           alignItems="baseline"
                           className={classes.CardHeader}
                         >
-                          <Grid item xs={10} style={{ textAlign: "end" }}>
+                          <Grid item xs={9} style={{ textAlign: "end" }}>
                             <IconButton aria-label="is student registered">
                               <Clock style={{ color: green[500] }} />
                             </IconButton>
                           </Grid>
 
-                          <Grid item xs={2}>
+                          <Grid item xs={3}>
                             <Typography
                               className={classes.header}
                               style={{

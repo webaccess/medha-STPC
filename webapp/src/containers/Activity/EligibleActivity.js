@@ -74,7 +74,8 @@ const EligibleActivity = props => {
         paramsForStudent +
         "/activity";
       let params = {
-        pageSize: -1
+        pageSize: -1,
+        _sort: "start_date_time"
       };
       await serviceProviders
         .serviceProviderForGetRequest(COLLEGES_URL, params)
@@ -109,19 +110,6 @@ const EligibleActivity = props => {
       }
     }
   }
-
-  const getTime = data => {
-    let startTime = new Date(data["start_date_time"]);
-    if (data["start_date_time"] && data["end_date_time"]) {
-      let endTime = new Date(data["end_date_time"]);
-      return (
-        startTime.toLocaleTimeString() + " to " + endTime.toLocaleTimeString()
-      );
-    } else {
-      startTime = new Date(data["start_date_time"]);
-      return startTime.toLocaleTimeString();
-    }
-  };
 
   const getDate = data => {
     let startDate = new Date(data["start_date_time"]);
@@ -167,20 +155,11 @@ const EligibleActivity = props => {
     let currentDate = new Date();
     let startDate = new Date(data["activity_batch"]["start_date_time"]);
     let remainingDays = startDate.getDay() - currentDate.getDay();
-    console.log(remainingDays);
     if (remainingDays >= 1) return parseInt(remainingDays) + " Days to go";
     else return "Today";
   };
   /** Show event registration model */
 
-  const handleCloseBlockModal = () => {
-    /** This restores all the data when we close the modal */
-    setFormState(formState => ({
-      ...formState,
-      showRegisterModel: false
-    }));
-  };
-  console.log(formState);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -219,22 +198,6 @@ const EligibleActivity = props => {
                           {getRemainingDays(data)}
                         </Typography>
                       </Grid>
-                      {/* {data["isRegistered"] ? (
-                        <React.Fragment>
-                          <Grid item xs={2}>
-                            <IconButton aria-label="is student registered">
-                              <CheckCircleIcon style={{ color: green[500] }} />
-                            </IconButton>
-                          </Grid>
-                          <Grid item xs={10}>
-                            <Typography style={{ color: green[500] }}>
-                              Registered
-                            </Typography>
-                          </Grid>
-                        </React.Fragment>
-                      ) : (
-                        <div className={classes.successTickDiv}></div>
-                      )} */}
                     </Grid>
                     {/* </CardHeader> */}
                     <Box className={classes.BoxPadding}>
@@ -332,24 +295,13 @@ const EligibleActivity = props => {
           ) : (
             <React.Fragment>
               {formState.NoActivityData === true ? (
-                <p className={classes.alignCenter}>No eligible Activity</p>
+                <p className={classes.alignCenter}>No upcoming Activity</p>
               ) : (
                 <Spinner />
               )}
             </React.Fragment>
           )}
         </Grid>
-        {/* <Card variant="outlined">
-          <RegisterEvent
-            showModal={formState.showRegisterModel}
-            modalClose={modalClose}
-            closeBlockModal={handleCloseBlockModal}
-            eventName={formState.registerUserId}
-            eventTitle={formState.eventtitle}
-            userRegistering={formState.authUserRegistering}
-            statusRegistartion={isRegistrationCompleted}
-          />
-        </Card> */}
       </Grid>
     </Grid>
   );

@@ -63,7 +63,8 @@ const ViewPastEvent = props => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        isRegistered: true
+        isRegistered: true,
+        _sort: "start_date_time:desc"
       };
       Object.keys(paramsForUsers).map(key => {
         defaultParams[key] = paramsForUsers[key];
@@ -73,7 +74,8 @@ const ViewPastEvent = props => {
       paramsForUsers = {
         page: page,
         pageSize: pageSize,
-        isRegistered: true
+        isRegistered: true,
+        _sort: "start_date_time:desc"
       };
     }
 

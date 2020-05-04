@@ -73,7 +73,8 @@ const PastActivities = props => {
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
+        _sort: "start_date_time:desc"
       };
       Object.keys(params).map(key => {
         defaultParams[key] = params[key];
@@ -82,7 +83,8 @@ const PastActivities = props => {
     } else {
       params = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
+        _sort: "start_date_time:desc"
       };
     }
     setFormState(formState => ({

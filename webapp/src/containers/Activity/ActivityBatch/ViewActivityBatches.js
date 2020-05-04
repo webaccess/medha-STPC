@@ -39,6 +39,7 @@ const ViewActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
+  console.log({ history, props });
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
@@ -83,6 +84,7 @@ const ViewActivityBatches = props => {
   });
 
   const { activity } = props.match.params;
+  const [activityDetails, setActivityDetails] = useState(null);
 
   const ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
@@ -102,6 +104,8 @@ const ViewActivityBatches = props => {
       .then(({ data }) => {
         if (data.result == null) {
           history.push("/404");
+        } else {
+          setActivityDetails(data.result);
         }
       })
       .catch(() => {
@@ -262,7 +266,7 @@ const ViewActivityBatches = props => {
       .then(() => {
         setAlert(() => ({
           isOpen: true,
-          message: "Success",
+          message: `Batch ${activityBatch.name} deleted successfully`,
           severity: "success"
         }));
         getActivityBatches(10, 1);
@@ -320,7 +324,10 @@ const ViewActivityBatches = props => {
 
   const breadcrumbs = [
     { title: "Activity", href: "/manage-activity" },
-    { title: "Activity Batch", href: "/" }
+    {
+      title: `${activityDetails ? activityDetails.title : ""} Batches`,
+      href: "/"
+    }
   ];
 
   const AlertAPIResponseMessage = () => {
@@ -349,6 +356,9 @@ const ViewActivityBatches = props => {
 
   return (
     <Grid>
+      <div className={classes.breadCrumbs}>
+        {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
+      </div>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_ACTIVITY_BATCHES}
@@ -385,7 +395,9 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
+              Batch
+              {formState.editedData ? ` ${formState.editedData.name} ` : " "}
+              has been updated successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -406,7 +418,8 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE}
+              An error has occured while updating activity batch. Kindly, try
+              again.
             </Alert>
           </Collapse>
         ) : null}
@@ -429,7 +442,8 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+              Batch {formState.addedData ? `${formState.addedData.name} ` : " "}
+              has been added successfully.
             </Alert>
           </Collapse>
         ) : null}
@@ -450,7 +464,8 @@ const ViewActivityBatches = props => {
                 </IconButton>
               }
             >
-              {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+              An error has occured while adding activity batch. Kindly, try
+              again.
             </Alert>
           </Collapse>
         ) : null}
@@ -510,9 +525,6 @@ const ViewActivityBatches = props => {
             </Grid>
           </CardContent>
         </Card>
-        <div className={classes.breadCrumbs}>
-          <Breadcrumbs list={breadcrumbs} />
-        </div>
         <Table
           data={formState.dataToShow}
           column={column}

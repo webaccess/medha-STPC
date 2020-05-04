@@ -243,7 +243,7 @@ const AddEditActivityBatches = props => {
           <Typography variant={"h2"} className={classes.textMargin}>
             {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
           </Typography>
-          <div className={classes.edit_dialog}>
+          <div className={classes.editDialogue}>
             <Grid item xs={12}>
               <Grid>
                 <Grid item xs={12} className={classes.formgrid}>
@@ -328,32 +328,19 @@ const AddEditActivityBatches = props => {
                       </Grid>
                     </CardContent>
                   </Card>
-                  {formState.dataToShow ? (
-                    formState.dataToShow.length ? (
-                      <div>
-                        <Table
-                          data={formState.dataToShow}
-                          column={column}
-                          defaultSortField="name"
-                          defaultSortAsc={formState.sortAscending}
-                          progressPending={formState.isDataLoading}
-                          paginationTotalRows={formState.totalRows}
-                          paginationRowsPerPageOptions={[10, 20, 50]}
-                          onChangeRowsPerPage={handlePerRowsChange}
-                          onChangePage={handlePageChange}
-                          onSelectedRowsChange={handleRowChange}
-                          noDataComponent="No Student Details found"
-                        />
-                      </div>
-                    ) : (
-                      <div className={classes.noDataMargin}>
-                        No Student details found
-                      </div>
-                    )
-                  ) : (
-                    <Spinner />
-                  )}
-
+                  <Table
+                    data={formState.dataToShow}
+                    column={column}
+                    defaultSortField="name"
+                    defaultSortAsc={formState.sortAscending}
+                    progressPending={formState.isDataLoading}
+                    paginationTotalRows={formState.totalRows}
+                    paginationRowsPerPageOptions={[10, 20, 50]}
+                    onChangeRowsPerPage={handlePerRowsChange}
+                    onChangePage={handlePageChange}
+                    onSelectedRowsChange={handleRowChange}
+                    noDataComponent="No Student Details found"
+                  />
                   <Card className={styles.noBorderNoShadow}>
                     <CardContent>
                       <Grid container spacing={2}>
