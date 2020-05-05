@@ -41,6 +41,7 @@ const StudentProfile = props => {
     email: "",
     contact: "",
     username: "",
+    dataofbirth: "",
     gender: "",
     physicallyHandicapped: null,
     college: null,
@@ -76,9 +77,6 @@ const StudentProfile = props => {
     eventId: props["location"]["eventId"],
     eventTitle: props["location"]["eventTitle"]
   });
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2000-01-01T21:11:54")
-  );
   const classes = useStyles();
   const { setIndex } = useContext(SetIndexContext);
   setIndex(0);
@@ -120,6 +118,16 @@ const StudentProfile = props => {
           )
           .then(res => {
             const data = res.data.result;
+            let date = new Date(data.studentInfo.date_of_birth);
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let dt = date.getDate();
+            if (dt < 10) {
+              dt = "0" + dt;
+            }
+            if (month < 10) {
+              month = "0" + month;
+            }
             setFormState({ ...formState, details: data });
             setUser({
               ...user,
@@ -134,6 +142,7 @@ const StudentProfile = props => {
               fatherLastName: data.studentInfo.father_last_name,
               address: data.studentInfo.address,
               rollnumber: data.studentInfo.roll_number.toString(),
+              dataofbirth: dt + "/" + month + "/" + year,
               gender: data.studentInfo.gender,
               district: data.studentInfo.district
                 ? data.studentInfo.district.name
@@ -147,7 +156,6 @@ const StudentProfile = props => {
                   })
                 ] || null
             });
-            setSelectedDate(new Date(data.studentInfo.date_of_birth));
             setLoaderStatus(false);
           })
           .catch(err => {
@@ -223,8 +231,7 @@ const StudentProfile = props => {
               </IconButton>
             }
           >
-            Student Date edited successfully
-            {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
+            {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
           </Alert>
         </Collapse>
       ) : null}
@@ -303,13 +310,7 @@ const StudentProfile = props => {
                   <ReadOnlyTextField
                     id="dateOfBirth"
                     label="Date Of Birth"
-                    defaultValue={
-                      selectedDate.getFullYear() +
-                      "-" +
-                      (selectedDate.getMonth() + 1) +
-                      "-" +
-                      selectedDate.getDate()
-                    }
+                    defaultValue={formState.values.dataofbirth}
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>

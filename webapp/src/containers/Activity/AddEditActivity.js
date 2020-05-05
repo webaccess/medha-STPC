@@ -39,9 +39,12 @@ import htmlToDraft from "html-to-draftjs";
 import useStyles from "../../containers/ContainerStyles/AddEditPageStyles.js";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import LoaderContext from "../../context/LoaderContext";
+import moment from "moment";
 
 const AddEditActivity = props => {
   let history = useHistory();
+  const dateFrom = "dateFrom";
+  const dateTo = "dateTo";
 
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
@@ -49,7 +52,10 @@ const AddEditActivity = props => {
 
   const [formState, setFormState] = useState({
     isValid: false,
-    values: {},
+    values: {
+      dateFrom: moment(),
+      dateTo: moment()
+    },
     touched: {},
     errors: {},
     isSuccess: false,
@@ -74,8 +80,9 @@ const AddEditActivity = props => {
       ? false
       : props.location.editActivity
   });
-  const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
-  const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
+
+  // const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
+  // const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const activitytypelist = [
@@ -195,13 +202,13 @@ const AddEditActivity = props => {
           props.location["dataForEdit"]["college"]["id"];
       }
       if (props.location["dataForEdit"]["start_date_time"]) {
-        setSelectedDateFrom(
-          new Date(props.location["dataForEdit"]["start_date_time"])
+        formState.values[dateFrom] = moment(
+          props.location["dataForEdit"]["start_date_time"]
         );
       }
       if (props.location["dataForEdit"]["end_date_time"]) {
-        setSelectedDateTo(
-          new Date(props.location["dataForEdit"]["end_date_time"])
+        formState.values[dateTo] = moment(
+          props.location["dataForEdit"]["end_date_time"]
         );
       }
       if (
@@ -237,9 +244,14 @@ const AddEditActivity = props => {
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(
         formState.values,
-        ActivityFormSchema
+        ActivityFormSchema,
+        true,
+        dateFrom,
+        dateTo
       );
 
+      console.log(formState.errors);
+      console.log(formState.values);
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
@@ -251,7 +263,10 @@ const AddEditActivity = props => {
       );
       formState.errors = formUtilities.setErrors(
         formState.values,
-        ActivityFormSchema
+        ActivityFormSchema,
+        true,
+        dateFrom,
+        dateTo
       );
     }
     console.log(isValid, formState);
@@ -281,8 +296,8 @@ const AddEditActivity = props => {
         formState.values["activityname"],
         formState.values["activitytype"],
         formState.values["college"],
-        selectedDateFrom,
-        selectedDateTo,
+        formState.values[dateFrom],
+        formState.values[dateTo],
         formState.values["educationyear"],
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -317,8 +332,8 @@ const AddEditActivity = props => {
         formState.values["activityname"],
         formState.values["activitytype"],
         formState.values["college"],
-        selectedDateFrom,
-        selectedDateTo,
+        formState.values[dateFrom],
+        formState.values[dateTo],
         formState.values["educationyear"],
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -455,6 +470,24 @@ const AddEditActivity = props => {
     }
   };
 
+  const handleDateChange = (dateObject, event) => {
+    if (formState.errors.hasOwnProperty(dateObject)) {
+      delete formState.errors[dateObject];
+    }
+    setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [dateObject]: event
+      },
+      touched: {
+        ...formState.touched,
+        [dateObject]: true
+      },
+      isStateClearFilter: false
+    }));
+  };
+
   const hasError = field => (formState.errors[field] ? true : false);
 
   return (
@@ -525,7 +558,7 @@ const AddEditActivity = props => {
                         />
                       ) : null}
                       {!formState.showPreview && !formState.showEditPreview ? (
-                        <div class={classes.DefaultNoImage}></div>
+                        <div className={classes.DefaultNoImage}></div>
                       ) : null}
                       {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
                       {formState.showEditPreview &&
@@ -643,48 +676,48 @@ const AddEditActivity = props => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
-                      variant="inline"
-                      format="dd/MM/yyyy HH:mm"
-                      margin="normal"
-                      required
-                      id="date-picker-inline"
-                      label="Date & Time From"
-                      value={selectedDateFrom}
-                      onChange={date => setSelectedDateFrom(date)}
-                      error={hasError("datefrom")}
+                      onChange={event => {
+                        handleDateChange(dateFrom, event);
+                      }}
+                      value={formState.values[dateFrom] || null}
+                      name={dateFrom}
+                      label={get(ActivityFormSchema[dateFrom], "label")}
+                      placeholder={get(
+                        ActivityFormSchema[dateFrom],
+                        "placeholder"
+                      )}
+                      fullWidth
+                      error={hasError(dateFrom)}
                       helperText={
-                        hasError("datefrom")
-                          ? formState.errors["datefrom"].map(error => {
+                        hasError(dateFrom)
+                          ? formState.errors[dateFrom].map(error => {
                               return error + " ";
                             })
                           : null
                       }
-                      KeyboardButtonProps={{
-                        "aria-label": "change date"
-                      }}
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
-                      variant="inline"
-                      format="dd/MM/yyyy HH:mm"
-                      margin="normal"
-                      required
-                      id="date-picker-inline"
-                      label="Date & Time To"
-                      value={selectedDateTo}
-                      onChange={date => setSelectedDateTo(date)}
-                      error={hasError("dateto")}
+                      onChange={event => {
+                        handleDateChange(dateTo, event);
+                      }}
+                      value={formState.values[dateTo] || null}
+                      name={dateTo}
+                      label={get(ActivityFormSchema[dateTo], "label")}
+                      placeholder={get(
+                        ActivityFormSchema[dateTo],
+                        "placeholder"
+                      )}
+                      fullWidth
+                      error={hasError(dateTo)}
                       helperText={
-                        hasError("dateto")
-                          ? formState.errors["dateto"].map(error => {
+                        hasError(dateTo)
+                          ? formState.errors[dateTo].map(error => {
                               return error + " ";
                             })
                           : null
                       }
-                      KeyboardButtonProps={{
-                        "aria-label": "change date"
-                      }}
                     />
                   </Grid>
                 </Grid>

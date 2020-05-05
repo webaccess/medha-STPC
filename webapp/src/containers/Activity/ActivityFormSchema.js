@@ -109,7 +109,7 @@ const ActivityFormSchema = {
     validations: {
       required: {
         value: "true",
-        message: "trainer Name is required"
+        message: "Trainer Name is required"
       }
     }
   },
@@ -140,6 +140,36 @@ const ActivityFormSchema = {
       required: {
         value: "true",
         message: "Education Year is required"
+      }
+    }
+  },
+  dateFrom: {
+    label: "Start Date",
+    id: "dateFrom",
+    autoComplete: "startDate",
+    required: true,
+    placeholder: "Start Date",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Start Date is required"
+      }
+    }
+  },
+  dateTo: {
+    label: "End Date",
+    id: "dateTo",
+    autoComplete: "endDate",
+    required: true,
+    placeholder: "End Date",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "End Date is required"
       }
     }
   }

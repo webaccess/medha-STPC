@@ -69,6 +69,8 @@ const AddEditStudent = props => {
     values: {},
     touched: {},
     errors: {},
+    isDateOfBirthPresent: true,
+    isdateOfBirthValid: true,
     isSuccess: false,
     showPassword: false,
     editStudent: props.location.editStudent
@@ -81,9 +83,7 @@ const AddEditStudent = props => {
   });
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2000-01-01T21:11:54")
-  );
+  const [selectedDate, setSelectedDate] = React.useState(null);
 
   const genderlist = [
     { name: "Male", id: "male" },
@@ -183,6 +183,14 @@ const AddEditStudent = props => {
       ) {
         formState.values["stream"] =
           props.location["dataForEdit"]["studentInfo"]["stream"]["id"];
+
+        const data = {
+          id: props.location["dataForEdit"]["college"]["id"],
+          stream: props.location["dataForEdit"]["college"]["stream_strength"]
+        };
+        const list = [];
+        list.push(data);
+        setStream(list);
       }
 
       if (
@@ -284,7 +292,21 @@ const AddEditStudent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, schema);
     }
-    if (isValid) {
+
+    if (selectedDate === null) {
+      formState.isDateOfBirthPresent = false;
+    } else {
+      formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
+        selectedDate
+      );
+      formState.isDateOfBirthPresent = true;
+    }
+
+    if (
+      isValid &&
+      formState.isDateOfBirthPresent &&
+      formState.isdateOfBirthValid
+    ) {
       /** CALL POST FUNCTION */
       postStudentData();
 
@@ -515,7 +537,6 @@ const AddEditStudent = props => {
         delete formState.errors[eventName];
       }
     } else {
-      console.log("1");
       if (eventName === "state") {
         delete formState.values["district"];
       }
@@ -799,12 +820,15 @@ const AddEditStudent = props => {
                     value={selectedDate}
                     className={classes.date}
                     onChange={date => setSelectedDate(date)}
-                    error={hasError("dateofbirth")}
+                    error={
+                      !formState.isDateOfBirthPresent ||
+                      !formState.isdateOfBirthValid
+                    }
                     helperText={
-                      hasError("dateofbirth")
-                        ? formState.errors["dateofbirth"].map(error => {
-                            return error + " ";
-                          })
+                      !formState.isDateOfBirthPresent
+                        ? "Date of Birth is required"
+                        : !formState.isdateOfBirthValid
+                        ? "Date of birth cannot be greater than current date"
                         : null
                     }
                     KeyboardButtonProps={{
