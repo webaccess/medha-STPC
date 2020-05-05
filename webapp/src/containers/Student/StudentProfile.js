@@ -45,9 +45,20 @@ const StudentProfile = props => {
     physicallyHandicapped: null,
     college: null,
     stream: null,
-    rollnumber: null
+    rollnumber: null,
+    futureAspirations: null
   });
   const { setLoaderStatus } = useContext(LoaderContext);
+
+  const futureAspirationsList = [
+    { id: "private_job", name: "Private Job" },
+    { id: "others", name: "Others" },
+    { id: "higher_studies", name: "Higher Studies" },
+    { id: "marriage", name: "Marriage" },
+    { id: "entrepreneurship", name: "Entrepreneurship" },
+    { id: "government_jobs", name: "Government Job" },
+    { id: "apprenticeship", name: "Apprenticeship" }
+  ];
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -128,7 +139,13 @@ const StudentProfile = props => {
                 ? data.studentInfo.district.name
                 : "",
               stream: data.studentInfo.stream.name,
-              physicallyHandicapped: data.studentInfo.physicallyHandicapped
+              physicallyHandicapped: data.studentInfo.physicallyHandicapped,
+              futureAspirations:
+                futureAspirationsList[
+                  futureAspirationsList.findIndex(function (item, i) {
+                    return item.id === data.studentInfo.future_aspirations;
+                  })
+                ] || null
             });
             setSelectedDate(new Date(data.studentInfo.date_of_birth));
             setLoaderStatus(false);
@@ -188,6 +205,7 @@ const StudentProfile = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       {success ? (
         <Collapse in={success}>
           <Alert
@@ -366,7 +384,17 @@ const StudentProfile = props => {
                     defaultValue={formState.values.username}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}></Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="futureAspirations"
+                    label="Future Aspirations"
+                    defaultValue={
+                      formState.values.futureAspirations
+                        ? formState.values.futureAspirations.name
+                        : null
+                    }
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </CardContent>

@@ -314,6 +314,7 @@ export const editStudent = (
   stream = null,
   rollNumber = null,
   id,
+  futureAspirations,
   password = undefined
 ) => {
   return {
@@ -334,7 +335,8 @@ export const editStudent = (
     roll_number: rollNumber,
     physicallyHandicapped: physicallyHandicapped,
     id: id,
-    password: password
+    password: password,
+    future_aspirations: futureAspirations
   };
 };
 export const addEducation = (
