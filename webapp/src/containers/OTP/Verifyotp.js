@@ -38,11 +38,11 @@ const VerifyOtp = props => {
   const [click, setclick] = useState(false);
 
   const validate = () => {
+    setLoaderStatus(true);
     const error = validateInput(otp, form["otp"]["validations"]);
 
     if (error[0]) setError(error);
     else {
-      setLoaderStatus(true);
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +
@@ -55,14 +55,16 @@ const VerifyOtp = props => {
             otp: otp,
             contactNumber: props.location.state.contactNumber
           });
+          setLoaderStatus(false);
         })
         .catch(err => {
           console.log(err.response.status);
           if (err.response.status === 403) {
             history.push(routeConstants.REQUIRED_CONFORMATION);
           } else if (err.response.status === 400) setError("Invalid OTP");
+
+          setLoaderStatus(false);
         });
-      setLoaderStatus(false);
     }
   };
 
@@ -76,12 +78,12 @@ const VerifyOtp = props => {
       )
       .then(res => {
         setclick(true);
-        console.log(click);
+        setLoaderStatus(false);
       })
       .catch(err => {
         console.log(err);
+        setLoaderStatus(false);
       });
-    setLoaderStatus(false);
   };
   if (!props.location.state) {
     return (
@@ -140,14 +142,16 @@ const VerifyOtp = props => {
                           setotp(event.target.value);
                         }}
                       />
-                      <Link
-                        href="javascript:void(0);"
-                        variant="body2"
-                        className={classes.linkColor}
-                        onClick={requestOtpAgain}
-                      >
-                        {authPageConstants.RESEND_OTP_BUTTON}
-                      </Link>
+                      {click ? null : (
+                        <Link
+                          href="javascript:void(0);"
+                          variant="body2"
+                          className={classes.linkColor}
+                          onClick={requestOtpAgain}
+                        >
+                          {authPageConstants.RESEND_OTP_BUTTON}
+                        </Link>
+                      )}
                       <Button
                         color="primary"
                         type="submit"

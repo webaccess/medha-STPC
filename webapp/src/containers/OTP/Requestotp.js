@@ -43,7 +43,6 @@ const RequestOtp = props => {
     else {
       postCall();
     }
-    setLoaderStatus(false);
   };
 
   const postCall = () => {
@@ -61,9 +60,11 @@ const RequestOtp = props => {
       .then(res => {
         console.log(res);
         history.push("/verifyotp", { contactNumber: contactNumber });
+        setLoaderStatus(false);
       })
       .catch(err => {
         console.log(err);
+        setLoaderStatus(false);
       });
   };
 

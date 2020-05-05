@@ -41,13 +41,25 @@ const StudentProfile = props => {
     email: "",
     contact: "",
     username: "",
+    dataofbirth: "",
     gender: "",
     physicallyHandicapped: null,
     college: null,
     stream: null,
-    rollnumber: null
+    rollnumber: null,
+    futureAspirations: null
   });
   const { setLoaderStatus } = useContext(LoaderContext);
+
+  const futureAspirationsList = [
+    { id: "private_job", name: "Private Job" },
+    { id: "others", name: "Others" },
+    { id: "higher_studies", name: "Higher Studies" },
+    { id: "marriage", name: "Marriage" },
+    { id: "entrepreneurship", name: "Entrepreneurship" },
+    { id: "government_jobs", name: "Government Job" },
+    { id: "apprenticeship", name: "Apprenticeship" }
+  ];
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -65,9 +77,6 @@ const StudentProfile = props => {
     eventId: props["location"]["eventId"],
     eventTitle: props["location"]["eventTitle"]
   });
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2000-01-01T21:11:54")
-  );
   const classes = useStyles();
   const { setIndex } = useContext(SetIndexContext);
   setIndex(0);
@@ -109,6 +118,16 @@ const StudentProfile = props => {
           )
           .then(res => {
             const data = res.data.result;
+            let date = new Date(data.studentInfo.date_of_birth);
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let dt = date.getDate();
+            if (dt < 10) {
+              dt = "0" + dt;
+            }
+            if (month < 10) {
+              month = "0" + month;
+            }
             setFormState({ ...formState, details: data });
             setUser({
               ...user,
@@ -123,14 +142,20 @@ const StudentProfile = props => {
               fatherLastName: data.studentInfo.father_last_name,
               address: data.studentInfo.address,
               rollnumber: data.studentInfo.roll_number.toString(),
+              dataofbirth: dt + "/" + month + "/" + year,
               gender: data.studentInfo.gender,
               district: data.studentInfo.district
                 ? data.studentInfo.district.name
                 : "",
               stream: data.studentInfo.stream.name,
-              physicallyHandicapped: data.studentInfo.physicallyHandicapped
+              physicallyHandicapped: data.studentInfo.physicallyHandicapped,
+              futureAspirations:
+                futureAspirationsList[
+                  futureAspirationsList.findIndex(function (item, i) {
+                    return item.id === data.studentInfo.future_aspirations;
+                  })
+                ] || null
             });
-            setSelectedDate(new Date(data.studentInfo.date_of_birth));
             setLoaderStatus(false);
           })
           .catch(err => {
@@ -188,6 +213,7 @@ const StudentProfile = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       {success ? (
         <Collapse in={success}>
           <Alert
@@ -284,13 +310,7 @@ const StudentProfile = props => {
                   <ReadOnlyTextField
                     id="dateOfBirth"
                     label="Date Of Birth"
-                    defaultValue={
-                      selectedDate.getFullYear() +
-                      "-" +
-                      (selectedDate.getMonth() + 1) +
-                      "-" +
-                      selectedDate.getDate()
-                    }
+                    defaultValue={formState.values.dataofbirth}
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
@@ -365,7 +385,17 @@ const StudentProfile = props => {
                     defaultValue={formState.values.username}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}></Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="futureAspirations"
+                    label="Future Aspirations"
+                    defaultValue={
+                      formState.values.futureAspirations
+                        ? formState.values.futureAspirations.name
+                        : null
+                    }
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </CardContent>

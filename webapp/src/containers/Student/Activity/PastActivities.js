@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TextField, Card, CardContent, Grid } from "@material-ui/core";
 
@@ -18,6 +18,7 @@ import {
   ViewGridIcon
 } from "../../../components";
 import { useHistory } from "react-router-dom";
+import LoaderContext from "../../../context/LoaderContext";
 
 const PastActivities = props => {
   const classes = useStyles();
@@ -37,6 +38,8 @@ const PastActivities = props => {
     pageCount: "",
     sortAscending: true
   });
+
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
@@ -170,10 +173,12 @@ const PastActivities = props => {
   };
 
   const viewCell = activity => {
+    setLoaderStatus(true);
     history.push({
-      pathname: routeConstants.VIEW_ACTIVITY,
+      pathname: routeConstants.PAST_ACTIVITY_DETAILS,
       dataForView: activity
     });
+    setLoaderStatus(false);
   };
   /** Columns to show in table */
   const column = [
@@ -273,28 +278,18 @@ const PastActivities = props => {
                 </Grid>
               </CardContent>
             </Card>
-            {formState.dataToShow ? (
-              formState.dataToShow.length ? (
-                <Table
-                  data={formState.dataToShow}
-                  column={column}
-                  defaultSortField="name"
-                  defaultSortAsc={formState.sortAscending}
-                  progressPending={formState.isDataLoading}
-                  paginationTotalRows={formState.totalRows}
-                  paginationRowsPerPageOptions={[10, 20, 50]}
-                  onChangeRowsPerPage={handlePerRowsChange}
-                  onChangePage={handlePageChange}
-                  noDataComponent="No education details found"
-                />
-              ) : (
-                <div className={classes.noDataMargin}>
-                  No activity details found
-                </div>
-              )
-            ) : (
-              <Spinner />
-            )}
+            <Table
+              data={formState.dataToShow}
+              column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
+              progressPending={formState.isDataLoading}
+              paginationTotalRows={formState.totalRows}
+              paginationRowsPerPageOptions={[10, 20, 50]}
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
+              noDataComponent="No Past Activities found"
+            />
           </Grid>
         </Grid>
       </CardContent>

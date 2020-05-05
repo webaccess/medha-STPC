@@ -44,7 +44,7 @@ const ViewActivity = props => {
   const classes = useStyles();
   let history = useHistory();
   const [formState, setFormState] = useState({
-    dataToShow: null,
+    dataToShow: [],
     activities: [],
     activityFilter: [],
     filterDataParameters: {},
@@ -605,31 +605,27 @@ const ViewActivity = props => {
             </Grid>
           </CardContent>
         </Card>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              noDataComponent="No Activity details found"
-              style={{ overflowX: "hidden !important" }}
-            />
-          ) : (
-            <div className={classes.noDataMargin}>
-              No Activity details found
-            </div>
-          )
-        ) : (
-          <Spinner />
-        )}
+        <Table
+          data={formState.dataToShow}
+          column={column}
+          defaultSortField="name"
+          defaultSortAsc={formState.sortAscending}
+          editEvent={editCell}
+          deleteEvent={deleteCell}
+          progressPending={formState.isDataLoading}
+          paginationTotalRows={formState.totalRows}
+          paginationRowsPerPageOptions={[10, 20, 50]}
+          onChangeRowsPerPage={handlePerRowsChange}
+          onChangePage={handlePageChange}
+          noDataComponent="No Activity details found"
+          style={{ overflowX: "hidden !important" }}
+        />
+        {/* <DeleteActivity
+          showModal={formState.showModalDelete}
+          closeModal={handleCloseDeleteModal}
+          id={formState.dataToDelete["id"]}
+          deleteEvent={isDeleteCellCompleted}
+        /> */}
       </Grid>
     </Grid>
   );

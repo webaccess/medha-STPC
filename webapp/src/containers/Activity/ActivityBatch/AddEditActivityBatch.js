@@ -38,6 +38,7 @@ import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import TickGridIcon from "../../../components/TickGridIcon";
 import CrossGridIcon from "../../../components/CrossGridIcon";
 import LoaderContext from "../../../context/LoaderContext";
+import moment from "moment";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
@@ -89,15 +90,13 @@ const AddEditActivityBatches = props => {
     }
 
     if (formState.dataForEdit && formState.dataForEdit["start_date_time"]) {
-      formState.values[dateFrom] = new Date(
+      formState.values[dateFrom] = moment(
         formState.dataForEdit["start_date_time"]
       );
     }
 
     if (formState.dataForEdit && formState.dataForEdit["end_date_time"]) {
-      formState.values[dateTo] = new Date(
-        formState.dataForEdit["end_date_time"]
-      );
+      formState.values[dateTo] = moment(formState.dataForEdit["end_date_time"]);
     }
     formState.counter += 1;
   }
@@ -407,7 +406,10 @@ const AddEditActivityBatches = props => {
       /** Evaluated only if all keys are valid inside formstate */
       formState.errors = formUtilities.setErrors(
         formState.values,
-        AddActivityBatchSchema
+        AddActivityBatchSchema,
+        true,
+        dateFrom,
+        dateTo
       );
       /** Checks if the form is empty */
       if (formUtilities.checkEmpty(formState.errors)) {
@@ -422,7 +424,10 @@ const AddEditActivityBatches = props => {
       /** This sets errors by comparing it with the json schema provided */
       formState.errors = formUtilities.setErrors(
         formState.values,
-        AddActivityBatchSchema
+        AddActivityBatchSchema,
+        true,
+        dateFrom,
+        dateTo
       );
     }
     if (isValid) {
@@ -536,7 +541,8 @@ const AddEditActivityBatches = props => {
               <TickGridIcon
                 id={cell.id}
                 value={cell.name}
-                onClick={() => handleVerifyMultipleStudents([cell.id])}
+                tooltip={"Un-Mark attendance"}
+                onClick={() => handleUnVerifyMultipleStudents([cell.id])}
                 style={{ color: "green" }}
               />
             </div>
@@ -545,12 +551,13 @@ const AddEditActivityBatches = props => {
               <TickGridIcon
                 id={cell.id}
                 value={cell.name}
+                tooltip={"Mark attendance"}
                 onClick={() => handleVerifyMultipleStudents([cell.id])}
                 style={{ color: "grey" }}
               />
             </div>
           )}
-          {!!cell.activityBatch.verified_by_college ? (
+          {/* {!!cell.activityBatch.verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
               <CrossGridIcon
                 id={cell.id}
@@ -558,7 +565,7 @@ const AddEditActivityBatches = props => {
                 onClick={() => handleUnVerifyMultipleStudents([cell.id])}
               />
             </div>
-          ) : null}
+          ) : null} */}
 
           <div style={{ marginLeft: "8px" }}>
             <DeleteGridIcon
@@ -892,11 +899,13 @@ const AddEditActivityBatches = props => {
                     name={dateTo}
                     label={get(AddActivityBatchSchema[dateTo], "label")}
                     minDate={
-                      formState.values[dateTo] ? formState.values[dateTo] : {}
+                      formState.values[dateTo]
+                        ? moment(formState.values[dateTo])
+                        : null
                     }
                     maxDate={
                       activityDetails
-                        ? new Date(activityDetails.end_date_time)
+                        ? moment(activityDetails.end_date_time)
                         : null
                     }
                     error={hasError(dateTo)}

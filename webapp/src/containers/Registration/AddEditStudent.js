@@ -60,7 +60,8 @@ const AddEditStudent = props => {
     stream: null,
     currentAcademicYear: null,
     collegeRollNumber: null,
-    otp: ""
+    otp: "",
+    futureAspirations: null
   });
 
   const [formState, setFormState] = useState({
@@ -68,6 +69,8 @@ const AddEditStudent = props => {
     values: {},
     touched: {},
     errors: {},
+    isDateOfBirthPresent: true,
+    isdateOfBirthValid: true,
     isSuccess: false,
     showPassword: false,
     editStudent: props.location.editStudent
@@ -80,15 +83,21 @@ const AddEditStudent = props => {
   });
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2000-01-01T21:11:54")
-  );
+  const [selectedDate, setSelectedDate] = React.useState(null);
 
   const genderlist = [
     { name: "Male", id: "male" },
     { name: "Female", id: "female" }
   ];
-
+  const futureAspirationsList = [
+    { id: "private_job", name: "Private Job" },
+    { id: "others", name: "Others" },
+    { id: "higher_studies", name: "Higher Studies" },
+    { id: "marriage", name: "Marriage" },
+    { id: "entrepreneurship", name: "Entrepreneurship" },
+    { id: "government_jobs", name: "Government Job" },
+    { id: "apprenticeship", name: "Apprenticeship" }
+  ];
   const physicallyHandicappedlist = [
     { name: "Yes", id: true },
     { name: "No", id: false }
@@ -115,29 +124,25 @@ const AddEditStudent = props => {
 
   useEffect(() => {
     setLoaderStatus(true);
+    if (
+      stream !== null &&
+      stream !== undefined &&
+      formState.values.hasOwnProperty("college") &&
+      formState.values["college"] !== null &&
+      formState.values["college"] !== undefined
+    ) {
+      const list = stream.reduce((result, obj) => {
+        if (formState.values.college === obj.id) {
+          result.push(...obj.stream);
+        }
+        return result;
+      }, []);
 
-    if (!formState.dataForEdit) {
-      if (
-        stream !== [] &&
-        stream !== undefined &&
-        formState.values.hasOwnProperty("college") &&
-        formState.values["college"] !== null &&
-        formState.values["college"] !== undefined
-      ) {
-        console.log("stream2222", stream);
-        const list = stream
-          .map(obj => {
-            if (formState.values.college === obj.id) return obj.stream;
-            else return undefined;
-          })
-          .filter(stream => stream);
-        console.log("list", list);
-        setstreamlist(
-          list[0].map(obj => {
-            return { id: obj.stream.id, name: obj.stream.name };
-          })
-        );
-      }
+      setstreamlist(
+        list.map(obj => {
+          return { id: obj.stream.id, name: obj.stream.name };
+        })
+      );
     }
 
     setLoaderStatus(false);
@@ -179,6 +184,14 @@ const AddEditStudent = props => {
       ) {
         formState.values["stream"] =
           props.location["dataForEdit"]["studentInfo"]["stream"]["id"];
+
+        const data = {
+          id: props.location["dataForEdit"]["college"]["id"],
+          stream: props.location["dataForEdit"]["college"]["stream_strength"]
+        };
+        const list = [];
+        list.push(data);
+        setStream(list);
       }
 
       if (
@@ -209,6 +222,10 @@ const AddEditStudent = props => {
       if (props.location["dataForEdit"]["studentInfo"]["roll_number"]) {
         formState.values["rollnumber"] =
           props.location["dataForEdit"]["studentInfo"]["roll_number"];
+      }
+      if (props.location["dataForEdit"]["studentInfo"]["future_aspirations"]) {
+        formState.values["futureAspirations"] =
+          props.location["dataForEdit"]["studentInfo"]["future_aspirations"];
       }
 
       if (props.location["dataForEdit"]["studentInfo"]) {
@@ -251,7 +268,10 @@ const AddEditStudent = props => {
         _.omit(registrationSchema, ["password", "otp"])
       );
     } else {
-      schema = registrationSchema;
+      schema = Object.assign(
+        {},
+        _.omit(registrationSchema, ["futureAspirations"])
+      );
     }
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -273,7 +293,21 @@ const AddEditStudent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, schema);
     }
-    if (isValid) {
+
+    if (selectedDate === null) {
+      formState.isDateOfBirthPresent = false;
+    } else {
+      formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
+        selectedDate
+      );
+      formState.isDateOfBirthPresent = true;
+    }
+
+    if (
+      isValid &&
+      formState.isDateOfBirthPresent &&
+      formState.isdateOfBirthValid
+    ) {
       /** CALL POST FUNCTION */
       postStudentData();
 
@@ -315,7 +349,8 @@ const AddEditStudent = props => {
         formState.values["college"],
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
-        formState.dataForEdit.id
+        formState.dataForEdit.id,
+        formState.values["futureAspirations"]
       );
       serviceProvider
         .serviceProviderForPutRequest(
@@ -504,7 +539,6 @@ const AddEditStudent = props => {
         delete formState.errors[eventName];
       }
     } else {
-      console.log("1");
       if (eventName === "state") {
         delete formState.values["district"];
       }
@@ -788,12 +822,15 @@ const AddEditStudent = props => {
                     value={selectedDate}
                     className={classes.date}
                     onChange={date => setSelectedDate(date)}
-                    error={hasError("dateofbirth")}
+                    error={
+                      !formState.isDateOfBirthPresent ||
+                      !formState.isdateOfBirthValid
+                    }
                     helperText={
-                      hasError("dateofbirth")
-                        ? formState.errors["dateofbirth"].map(error => {
-                            return error + " ";
-                          })
+                      !formState.isDateOfBirthPresent
+                        ? "Date of Birth is required"
+                        : !formState.isdateOfBirthValid
+                        ? "Date of birth cannot be greater than current date"
                         : null
                     }
                     KeyboardButtonProps={{
@@ -1023,7 +1060,50 @@ const AddEditStudent = props => {
                   />
                 </Grid>
 
-                {formState.editStudent ? null : (
+                {formState.editStudent ? (
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={futureAspirationsList}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(
+                          "futureAspirations",
+                          event,
+                          value
+                        );
+                      }}
+                      value={
+                        futureAspirationsList[
+                          futureAspirationsList.findIndex(function(item, i) {
+                            return (
+                              item.id === formState.values.futureAspirations
+                            );
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError("futureAspirations")}
+                          label="Future Aspirations"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("futureAspirations")
+                              ? formState.errors["futureAspirations"].map(
+                                  error => {
+                                    return error + " ";
+                                  }
+                                )
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                ) : (
                   <Grid item md={6} xs={12}>
                     <FormControl fullWidth variant="outlined">
                       <InputLabel
@@ -1068,9 +1148,9 @@ const AddEditStudent = props => {
                           </InputAdornment>
                         }
                       />
-                       <FormHelperText error={hasError("password")}>
+                      <FormHelperText error={hasError("password")}>
                         {hasError("password")
-                          ? formState.errors["password"].map((error) => {
+                          ? formState.errors["password"].map(error => {
                               return error + " ";
                             })
                           : null}

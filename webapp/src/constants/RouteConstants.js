@@ -91,6 +91,7 @@ export const ADD_ACTIVITY = "/add-activity";
 export const MANAGE_ACTIVITY = "/manage-activity";
 export const VIEW_ACTIVITY = "/view-activity";
 export const ELIGIBLE_ACTIVITY = "/eligible-activity";
+export const PAST_ACTIVITY_DETAILS = "/past-activtiy-details";
 
 /**Activty Batches */
 export const MANAGE_ACTIVITY_BATCH = "/manage-activity-batch/:activity";

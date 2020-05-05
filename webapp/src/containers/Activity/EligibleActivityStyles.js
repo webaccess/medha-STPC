@@ -24,7 +24,9 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "white",
     margin: "auto"
   },
-
+  alignCenter: {
+    margin: "auto"
+  },
   titleDiv: {
     width: "100%",
     height: "50px"

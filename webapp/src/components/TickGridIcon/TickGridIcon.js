@@ -6,7 +6,7 @@ const TickGridIcon = props => {
     <Tooltip
       title={
         <React.Fragment>
-          <Typography color="inherit">Mark attendance</Typography>
+          <Typography color="inherit">{props.tooltip}</Typography>
         </React.Fragment>
       }
       placement="top"

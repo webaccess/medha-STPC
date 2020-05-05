@@ -81,7 +81,8 @@ const AddEditStudentForCollegeAdmin = (props) => {
     values: {},
     touched: {},
     errors: {},
-    dateOfBirth: true,
+    isDateOfBirthPresent: true,
+    isdateOfBirthValid: true,
     isSuccess: false,
     showPassword: false,
     isStateClearFilter: false,
@@ -121,8 +122,8 @@ const AddEditStudentForCollegeAdmin = (props) => {
         },
         validatePasswordMinLength: {
           value: "true",
-          message: "Password is too short"
-        }
+          message: "Password is too short",
+        },
       };
     }
 
@@ -294,11 +295,19 @@ const AddEditStudentForCollegeAdmin = (props) => {
     }
 
     if (selectedDate === null) {
-      formState.dateOfBirth = false;
+      formState.isDateOfBirthPresent = false;
     } else {
-      formState.dateOfBirth = true;
+      formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
+        selectedDate
+      );
+      formState.isDateOfBirthPresent = true;
     }
-    if (isValid && formState.dateOfBirth) {
+
+    if (
+      isValid &&
+      formState.isDateOfBirthPresent &&
+      formState.isdateOfBirthValid
+    ) {
       /** CALL POST FUNCTION */
       postStudentData();
 
@@ -336,7 +345,9 @@ const AddEditStudentForCollegeAdmin = (props) => {
           (selectedDate.getMonth() + 1) +
           "-" +
           selectedDate.getDate(),
-        formState.values["physicallyHandicapped"] ? formState.values["physicallyHandicapped"] : null,
+        formState.values["physicallyHandicapped"]
+          ? formState.values["physicallyHandicapped"]
+          : null,
         formState.values["college"],
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
@@ -397,7 +408,9 @@ const AddEditStudentForCollegeAdmin = (props) => {
           (selectedDate.getMonth() + 1) +
           "-" +
           selectedDate.getDate(),
-          formState.values["physicallyHandicapped"] ? formState.values["physicallyHandicapped"] : null,
+        formState.values["physicallyHandicapped"]
+          ? formState.values["physicallyHandicapped"]
+          : null,
         formState.values["college"],
         formState.values["stream"],
         parseInt(formState.values["rollnumber"])
@@ -753,10 +766,15 @@ const AddEditStudentForCollegeAdmin = (props) => {
                       label={get(registrationSchema["dateofbirth"], "label")}
                       value={selectedDate}
                       onChange={(date) => setSelectedDate(date)}
-                      error={!formState.dateOfBirth}
+                      error={
+                        !formState.isDateOfBirthPresent ||
+                        !formState.isdateOfBirthValid
+                      }
                       helperText={
-                        !formState.dateOfBirth
+                        !formState.isDateOfBirthPresent
                           ? "Date of Birth is required"
+                          : !formState.isdateOfBirthValid
+                          ? "Date of birth cannot be greater than current date"
                           : null
                       }
                       KeyboardButtonProps={{

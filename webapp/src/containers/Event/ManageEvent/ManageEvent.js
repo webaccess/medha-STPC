@@ -516,7 +516,6 @@ const ManageEvent = props => {
       eventFilterData: [],
       errors: {}
     }));
-    selectedRowCleared(true);
 
     restoreData();
   };

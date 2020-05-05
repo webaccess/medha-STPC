@@ -71,6 +71,7 @@ const AddEditEducation = props => {
 
       formState.counter += 1;
     }
+    setLoaderStatus(false);
   }
 
   /** This handle change is used to handle changes to text field */
@@ -139,7 +140,6 @@ const AddEditEducation = props => {
       }));
     }
     event.preventDefault();
-    setLoaderStatus(false);
   };
 
   const postEducationData = async () => {
