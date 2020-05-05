@@ -13,7 +13,7 @@ import {
   OutlinedInput,
   Collapse,
   CardActions,
-  FormHelperText,
+  FormHelperText
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth, InlineDatePicker } from "../../components";
@@ -40,7 +40,7 @@ import * as serviceProvider from "../../api/Axios.js";
 import useStyles from "../ContainerStyles/AddEditPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
 
-const AddEditStudent = (props) => {
+const AddEditStudent = props => {
   let history = useHistory();
   const [user, setUser] = useState({
     firstName: "",
@@ -61,6 +61,7 @@ const AddEditStudent = (props) => {
     currentAcademicYear: null,
     collegeRollNumber: null,
     otp: "",
+    futureAspirations: null
   });
 
   const [formState, setFormState] = useState({
@@ -78,7 +79,7 @@ const AddEditStudent = (props) => {
     dataForEdit: props.location.dataForEdit
       ? props.location.dataForEdit
       : false,
-    counter: 0,
+    counter: 0
   });
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
@@ -86,12 +87,20 @@ const AddEditStudent = (props) => {
 
   const genderlist = [
     { name: "Male", id: "male" },
-    { name: "Female", id: "female" },
+    { name: "Female", id: "female" }
   ];
-
+  const futureAspirationsList = [
+    { id: "private_job", name: "Private Job" },
+    { id: "others", name: "Others" },
+    { id: "higher_studies", name: "Higher Studies" },
+    { id: "marriage", name: "Marriage" },
+    { id: "entrepreneurship", name: "Entrepreneurship" },
+    { id: "government_jobs", name: "Government Job" },
+    { id: "apprenticeship", name: "Apprenticeship" }
+  ];
   const physicallyHandicappedlist = [
     { name: "Yes", id: true },
-    { name: "No", id: false },
+    { name: "No", id: false }
   ];
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -130,7 +139,7 @@ const AddEditStudent = (props) => {
       }, []);
 
       setstreamlist(
-        list.map((obj) => {
+        list.map(obj => {
           return { id: obj.stream.id, name: obj.stream.name };
         })
       );
@@ -174,6 +183,14 @@ const AddEditStudent = (props) => {
       ) {
         formState.values["stream"] =
           props.location["dataForEdit"]["studentInfo"]["stream"]["id"];
+
+        const data = {
+          id: props.location["dataForEdit"]["college"]["id"],
+          stream: props.location["dataForEdit"]["college"]["stream_strength"]
+        };
+        const list = [];
+        list.push(data);
+        setStream(list);
       }
 
       if (
@@ -204,6 +221,10 @@ const AddEditStudent = (props) => {
       if (props.location["dataForEdit"]["studentInfo"]["roll_number"]) {
         formState.values["rollnumber"] =
           props.location["dataForEdit"]["studentInfo"]["roll_number"];
+      }
+      if (props.location["dataForEdit"]["studentInfo"]["future_aspirations"]) {
+        formState.values["futureAspirations"] =
+          props.location["dataForEdit"]["studentInfo"]["future_aspirations"];
       }
 
       if (props.location["dataForEdit"]["studentInfo"]) {
@@ -236,7 +257,7 @@ const AddEditStudent = (props) => {
     formState.counter += 1;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
     setLoaderStatus(true);
     let schema;
@@ -246,7 +267,10 @@ const AddEditStudent = (props) => {
         _.omit(registrationSchema, ["password", "otp"])
       );
     } else {
-      schema = registrationSchema;
+      schema = Object.assign(
+        {},
+        _.omit(registrationSchema, ["futureAspirations"])
+      );
     }
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -287,14 +311,14 @@ const AddEditStudent = (props) => {
       postStudentData();
 
       /** Call axios from here */
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: true,
+        isValid: true
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        isValid: false,
+        isValid: false
       }));
       setLoaderStatus(false);
     }
@@ -324,7 +348,8 @@ const AddEditStudent = (props) => {
         formState.values["college"],
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
-        formState.dataForEdit.id
+        formState.dataForEdit.id,
+        formState.values["futureAspirations"]
       );
       serviceProvider
         .serviceProviderForPutRequest(
@@ -332,7 +357,7 @@ const AddEditStudent = (props) => {
           formState.dataForEdit.studentInfo.id,
           postData
         )
-        .then((response) => {
+        .then(response => {
           let studentName =
             props.location["dataForEdit"]["first_name"] +
             " " +
@@ -350,23 +375,23 @@ const AddEditStudent = (props) => {
               pathname: routeConstants.MANAGE_STUDENT,
               fromeditStudent: true,
               isDataEdited: true,
-              editedStudentName: studentName,
+              editedStudentName: studentName
             });
           } else {
             history.push({
               pathname: routeConstants.VIEW_PROFILE,
-              success: true,
+              success: true
             });
           }
           setLoaderStatus(false);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(JSON.stringify(err));
           setIsFailed(true);
           history.push({
             pathname: routeConstants.MANAGE_STUDENT,
             fromeditStudent: true,
-            isDataEdited: false,
+            isDataEdited: false
           });
           setLoaderStatus(false);
         });
@@ -401,7 +426,7 @@ const AddEditStudent = (props) => {
             strapiApiConstants.STRAPI_REGISTER_STUDENT,
           postData
         )
-        .then((response) => {
+        .then(response => {
           if (
             auth.getUserInfo().role.name === "Medha Admin" ||
             auth.getUserInfo().role.name === "College Admin"
@@ -412,7 +437,7 @@ const AddEditStudent = (props) => {
           }
           setLoaderStatus(false);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
           setLoaderStatus(false);
         });
@@ -424,12 +449,12 @@ const AddEditStudent = (props) => {
       .get(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
-      .then((res) => {
+      .then(res => {
         const streams = res.data.result
-          .map((college) => {
+          .map(college => {
             return { stream: college.stream_strength, id: college.id };
           })
-          .filter((c) => c);
+          .filter(c => c);
         setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
@@ -438,7 +463,7 @@ const AddEditStudent = (props) => {
   const getStates = () => {
     axios
       .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
-      .then((res) => {
+      .then(res => {
         //   const sanitzedOptions = res.data.map(state => {
         //     return {
         //       id: state.id,
@@ -456,7 +481,7 @@ const AddEditStudent = (props) => {
           strapiApiConstants.STRAPI_DISTRICTS +
           "?pageSize=-1"
       )
-      .then((res) => {
+      .then(res => {
         //   const sanitzedOptions = res.data.map(district => {
         //     return {
         //       id: district.id,
@@ -467,27 +492,27 @@ const AddEditStudent = (props) => {
           res.data.result.map(({ id, name, state }) => ({
             id,
             name,
-            state: state.id,
+            state: state.id
           }))
         );
       });
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
     e.persist();
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
 
       values: {
         ...formState.values,
         [e.target.name]:
-          e.target.type === "checkbox" ? e.target.checked : e.target.value,
+          e.target.type === "checkbox" ? e.target.checked : e.target.value
       },
       touched: {
         ...formState.touched,
-        [e.target.name]: true,
-      },
+        [e.target.name]: true
+      }
     }));
     if (formState.errors.hasOwnProperty(e.target.name)) {
       delete formState.errors[e.target.name];
@@ -497,16 +522,16 @@ const AddEditStudent = (props) => {
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (value !== null) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         values: {
           ...formState.values,
-          [eventName]: value.id,
+          [eventName]: value.id
         },
         touched: {
           ...formState.touched,
-          [eventName]: true,
-        },
+          [eventName]: true
+        }
       }));
       if (formState.errors.hasOwnProperty(eventName)) {
         delete formState.errors[eventName];
@@ -516,8 +541,8 @@ const AddEditStudent = (props) => {
         delete formState.values["district"];
       }
       delete formState.values[eventName];
-      setFormState((formState) => ({
-        ...formState,
+      setFormState(formState => ({
+        ...formState
       }));
     }
   };
@@ -525,11 +550,11 @@ const AddEditStudent = (props) => {
   const handleClickShowPassword = () => {
     setFormState({
       ...formState,
-      showPassword: !formState.showPassword,
+      showPassword: !formState.showPassword
     });
   };
 
-  const hasError = (field) => (formState.errors[field] ? true : false);
+  const hasError = field => (formState.errors[field] ? true : false);
 
   return (
     // <Layout>
@@ -601,7 +626,7 @@ const AddEditStudent = (props) => {
                     onChange={handleChange}
                     helperText={
                       hasError("firstname")
-                        ? formState.errors["firstname"].map((error) => {
+                        ? formState.errors["firstname"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -620,7 +645,7 @@ const AddEditStudent = (props) => {
                     onChange={handleChange}
                     helperText={
                       hasError("lastname")
-                        ? formState.errors["lastname"].map((error) => {
+                        ? formState.errors["lastname"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -641,7 +666,7 @@ const AddEditStudent = (props) => {
                     error={hasError("fatherFirstName")}
                     helperText={
                       hasError("fatherFirstName")
-                        ? formState.errors["fatherFirstName"].map((error) => {
+                        ? formState.errors["fatherFirstName"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -660,7 +685,7 @@ const AddEditStudent = (props) => {
                     error={hasError("fatherLastName")}
                     helperText={
                       hasError("fatherLastName")
-                        ? formState.errors["fatherLastName"].map((error) => {
+                        ? formState.errors["fatherLastName"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -681,7 +706,7 @@ const AddEditStudent = (props) => {
                     error={hasError("address")}
                     helperText={
                       hasError("address")
-                        ? formState.errors["address"].map((error) => {
+                        ? formState.errors["address"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -695,7 +720,7 @@ const AddEditStudent = (props) => {
                     id="combo-box-demo"
                     className={classes.root}
                     options={statelist}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("state", event, value);
                     }}
@@ -706,7 +731,7 @@ const AddEditStudent = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError("state")}
@@ -715,7 +740,7 @@ const AddEditStudent = (props) => {
                         name="tester"
                         helperText={
                           hasError("state")
-                            ? formState.errors["state"].map((error) => {
+                            ? formState.errors["state"].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -729,9 +754,9 @@ const AddEditStudent = (props) => {
                     id="combo-box-demo"
                     className={classes.root}
                     options={districtlist.filter(
-                      (district) => district.state === formState.values.state
+                      district => district.state === formState.values.state
                     )}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("district", event, value);
                     }}
@@ -742,7 +767,7 @@ const AddEditStudent = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError("district")}
@@ -751,7 +776,7 @@ const AddEditStudent = (props) => {
                         name="tester"
                         helperText={
                           hasError("district")
-                            ? formState.errors["district"].map((error) => {
+                            ? formState.errors["district"].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -778,7 +803,7 @@ const AddEditStudent = (props) => {
                     error={hasError("contact")}
                     helperText={
                       hasError("contact")
-                        ? formState.errors["contact"].map((error) => {
+                        ? formState.errors["contact"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -794,7 +819,7 @@ const AddEditStudent = (props) => {
                     label="Date of Birth"
                     value={selectedDate}
                     className={classes.date}
-                    onChange={(date) => setSelectedDate(date)}
+                    onChange={date => setSelectedDate(date)}
                     error={
                       !formState.isDateOfBirthPresent ||
                       !formState.isdateOfBirthValid
@@ -807,7 +832,7 @@ const AddEditStudent = (props) => {
                         : null
                     }
                     KeyboardButtonProps={{
-                      "aria-label": "change date",
+                      "aria-label": "change date"
                     }}
                   />
                 </Grid>
@@ -818,7 +843,7 @@ const AddEditStudent = (props) => {
                     id="combo-box-demo"
                     className={classes.root}
                     options={genderlist}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("gender", event, value);
                     }}
@@ -829,7 +854,7 @@ const AddEditStudent = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError("gender")}
@@ -839,7 +864,7 @@ const AddEditStudent = (props) => {
                         name="tester"
                         helperText={
                           hasError("gender")
-                            ? formState.errors["gender"].map((error) => {
+                            ? formState.errors["gender"].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -861,7 +886,7 @@ const AddEditStudent = (props) => {
                     error={hasError("email")}
                     helperText={
                       hasError("email")
-                        ? formState.errors["email"].map((error) => {
+                        ? formState.errors["email"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -879,7 +904,7 @@ const AddEditStudent = (props) => {
                     className={classes.root}
                     options={collegelist}
                     disabled={formState.editStudent ? true : false}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("college", event, value);
                     }}
@@ -890,7 +915,7 @@ const AddEditStudent = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError("college")}
@@ -900,7 +925,7 @@ const AddEditStudent = (props) => {
                         name="tester"
                         helperText={
                           hasError("college")
-                            ? formState.errors["college"].map((error) => {
+                            ? formState.errors["college"].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -915,7 +940,7 @@ const AddEditStudent = (props) => {
                     className={classes.root}
                     options={streamlist}
                     disabled={formState.editStudent ? true : false}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("stream", event, value);
                     }}
@@ -926,7 +951,7 @@ const AddEditStudent = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError("stream")}
@@ -935,7 +960,7 @@ const AddEditStudent = (props) => {
                         name="tester"
                         helperText={
                           hasError("stream")
-                            ? formState.errors["stream"].map((error) => {
+                            ? formState.errors["stream"].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -958,7 +983,7 @@ const AddEditStudent = (props) => {
                     error={hasError("rollnumber")}
                     helperText={
                       hasError("rollnumber")
-                        ? formState.errors["rollnumber"].map((error) => {
+                        ? formState.errors["rollnumber"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -970,7 +995,7 @@ const AddEditStudent = (props) => {
                     id="combo-box-demo"
                     className={classes.root}
                     options={physicallyHandicappedlist}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(
                         "physicallyHandicapped",
@@ -987,7 +1012,7 @@ const AddEditStudent = (props) => {
                         })
                       ] || null
                     }
-                    renderInput={(params) => (
+                    renderInput={params => (
                       <TextField
                         {...params}
                         error={hasError("physicallyHandicapped")}
@@ -997,7 +1022,7 @@ const AddEditStudent = (props) => {
                         helperText={
                           hasError("physicallyHandicapped")
                             ? formState.errors["physicallyHandicapped"].map(
-                                (error) => {
+                                error => {
                                   return error + " ";
                                 }
                               )
@@ -1025,7 +1050,7 @@ const AddEditStudent = (props) => {
                     error={hasError("username")}
                     helperText={
                       hasError("username")
-                        ? formState.errors["username"].map((error) => {
+                        ? formState.errors["username"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -1033,7 +1058,50 @@ const AddEditStudent = (props) => {
                   />
                 </Grid>
 
-                {formState.editStudent ? null : (
+                {formState.editStudent ? (
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={futureAspirationsList}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(
+                          "futureAspirations",
+                          event,
+                          value
+                        );
+                      }}
+                      value={
+                        futureAspirationsList[
+                          futureAspirationsList.findIndex(function (item, i) {
+                            return (
+                              item.id === formState.values.futureAspirations
+                            );
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError("futureAspirations")}
+                          label="Future Aspirations"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("futureAspirations")
+                              ? formState.errors["futureAspirations"].map(
+                                  error => {
+                                    return error + " ";
+                                  }
+                                )
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                ) : (
                   <Grid item md={6} xs={12}>
                     <FormControl fullWidth variant="outlined">
                       <InputLabel
@@ -1054,7 +1122,7 @@ const AddEditStudent = (props) => {
                         error={hasError("password")}
                         helpertext={
                           hasError("password")
-                            ? formState.errors["password"].map((error) => {
+                            ? formState.errors["password"].map(error => {
                                 return error + " ";
                               })
                             : null
@@ -1080,7 +1148,7 @@ const AddEditStudent = (props) => {
                       />
                       <FormHelperText error={hasError("password")}>
                         {hasError("password")
-                          ? formState.errors["password"].map((error) => {
+                          ? formState.errors["password"].map(error => {
                               return error + " ";
                             })
                           : null}

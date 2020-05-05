@@ -4,7 +4,7 @@ import {
   Typography,
   YellowButton,
   GrayButton,
-  ReadOnlyTextField,
+  ReadOnlyTextField
 } from "../../components";
 import {
   Card,
@@ -12,7 +12,7 @@ import {
   CardActions,
   Grid,
   Collapse,
-  IconButton,
+  IconButton
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 
@@ -28,7 +28,7 @@ import useStyles from "../ContainerStyles/ViewPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
 import SetIndexContext from "../../context/SetIndexContext";
 
-const StudentProfile = (props) => {
+const StudentProfile = props => {
   let history = useHistory();
   const [user, setUser] = useState({
     firstname: "",
@@ -47,8 +47,19 @@ const StudentProfile = (props) => {
     college: null,
     stream: null,
     rollnumber: null,
+    futureAspirations: null
   });
   const { setLoaderStatus } = useContext(LoaderContext);
+
+  const futureAspirationsList = [
+    { id: "private_job", name: "Private Job" },
+    { id: "others", name: "Others" },
+    { id: "higher_studies", name: "Higher Studies" },
+    { id: "marriage", name: "Marriage" },
+    { id: "entrepreneurship", name: "Entrepreneurship" },
+    { id: "government_jobs", name: "Government Job" },
+    { id: "apprenticeship", name: "Apprenticeship" }
+  ];
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -64,7 +75,7 @@ const StudentProfile = (props) => {
     fromEventStudentList: props["location"]["fromEventStudentList"],
     fromManageStudentList: props["location"]["fromManageStudentList"],
     eventId: props["location"]["eventId"],
-    eventTitle: props["location"]["eventTitle"],
+    eventTitle: props["location"]["eventTitle"]
   });
   const classes = useStyles();
   const { setIndex } = useContext(SetIndexContext);
@@ -83,10 +94,10 @@ const StudentProfile = (props) => {
   }, []);
 
   useEffect(() => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
 
-      values: user,
+      values: user
     }));
   }, [user]);
   async function handleSetDetails() {
@@ -105,7 +116,7 @@ const StudentProfile = (props) => {
             strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
             paramsForEvent
           )
-          .then((res) => {
+          .then(res => {
             const data = res.data.result;
             let date = new Date(data.studentInfo.date_of_birth);
             let year = date.getFullYear();
@@ -138,16 +149,22 @@ const StudentProfile = (props) => {
                 : "",
               stream: data.studentInfo.stream.name,
               physicallyHandicapped: data.studentInfo.physicallyHandicapped,
+              futureAspirations:
+                futureAspirationsList[
+                  futureAspirationsList.findIndex(function (item, i) {
+                    return item.id === data.studentInfo.future_aspirations;
+                  })
+                ] || null
             });
             setLoaderStatus(false);
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err);
             setLoaderStatus(false);
           });
       } else {
         history.push({
-          pathname: routeConstants.DASHBOARD_URL,
+          pathname: routeConstants.DASHBOARD_URL
         });
         setLoaderStatus(false);
       }
@@ -160,42 +177,43 @@ const StudentProfile = (props) => {
       history.push({
         pathname: routeConstants.EDIT_PROFILE,
         editStudent: true,
-        dataForEdit: formState.details,
+        dataForEdit: formState.details
       });
     } else if (auth.getUserInfo().role.name === "College Admin") {
       history.push({
         pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
         dataForEdit: formState.details,
-        editStudent: true,
+        editStudent: true
       });
     }
   };
 
-  const handleClickCancel = (event) => {
+  const handleClickCancel = event => {
     event.preventDefault();
     if (formState.fromAddStudentToRecruitmentDrive) {
       history.push({
         pathname: routeConstants.ADD_STUDENT_DRIVE,
         eventId: formState.eventId,
-        eventTitle: formState.eventTitle,
+        eventTitle: formState.eventTitle
       });
     } else if (formState.fromEventStudentList) {
       history.push({
         pathname: routeConstants.EVENT_STUDENT_LIST,
         eventId: formState.eventId,
-        eventTitle: formState.eventTitle,
+        eventTitle: formState.eventTitle
       });
     } else if (formState.fromManageStudentList) {
       history.push({
         pathname: routeConstants.MANAGE_STUDENT,
         eventId: formState.eventId,
-        eventTitle: formState.eventTitle,
+        eventTitle: formState.eventTitle
       });
     }
   };
 
   return (
     <Grid>
+      {console.log(formState)}
       {success ? (
         <Collapse in={success}>
           <Alert
@@ -367,7 +385,17 @@ const StudentProfile = (props) => {
                     defaultValue={formState.values.username}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}></Grid>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="futureAspirations"
+                    label="Future Aspirations"
+                    defaultValue={
+                      formState.values.futureAspirations
+                        ? formState.values.futureAspirations.name
+                        : null
+                    }
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </CardContent>
