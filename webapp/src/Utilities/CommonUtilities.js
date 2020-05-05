@@ -21,11 +21,15 @@ export const setSideBarIndex = path => {
 
 function returnId(array, path) {
   let id = 0;
-  for (let index in array) {
-    if (array[index]["value"].indexOf(path) > -1) {
-      id = array[index]["key"];
-      break;
+  if (path === "/change-password") {
+    return null;
+  } else {
+    for (let index in array) {
+      if (array[index]["value"].indexOf(path) > -1) {
+        id = array[index]["key"];
+        break;
+      }
     }
+    return id;
   }
-  return id;
 }

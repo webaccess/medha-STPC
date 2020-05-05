@@ -6,33 +6,33 @@ import * as routeConstants from "../../constants/RouteConstants";
 import SwapHorizontalCircleOutlinedIcon from "@material-ui/icons/SwapHorizontalCircleOutlined";
 import { IconButton, Grid } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    minHeight: "100vh",
+    minHeight: "100vh"
   },
   main: {
     marginTop: theme.spacing(8),
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(2)
   },
   footer: {
     padding: theme.spacing(0, 2),
     marginTop: "auto",
     backgroundColor: "#000",
-    color: "#fff",
+    color: "#fff"
   },
   changePasswordButton: {
-    fontSize: "14px",
+    fontSize: "14px"
   },
   Iconroot: {
     display: "flex",
     alignSelf: "center",
-    marginRight: "10px",
+    marginRight: "10px"
   },
   flexGrow: {
-    flexGrow: 1,
-  },
+    flexGrow: 1
+  }
 }));
 
 export default function StickyFooter() {
@@ -41,19 +41,7 @@ export default function StickyFooter() {
   return (
     <div>
       <footer className={classes.footer}>
-        <Grid container md={12} justify="flex-end">
-          <IconButton
-            className={classes.changePasswordButton}
-            color="inherit"
-            component={CustomRouterLink}
-            to={routeConstants.CHANGE_PASSWORD}
-          >
-            <div className={classes.Iconroot}>
-              <SwapHorizontalCircleOutlinedIcon />
-            </div>
-            Change Password
-          </IconButton>
-        </Grid>
+        <Grid container md={12} justify="flex-end"></Grid>
       </footer>
     </div>
   );

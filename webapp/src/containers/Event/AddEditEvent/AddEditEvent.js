@@ -61,6 +61,7 @@ const education = "education";
 const field = "upload_logo";
 const ref = "event";
 const files = "files";
+const regexForPercentage = new RegExp("^[1-9][0-9]*$");
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
@@ -149,7 +150,7 @@ const AddEditEvent = props => {
     { id: 2, value: "HSC" },
     { id: 3, value: "Diploma" }
   ]);
-  const [qualificationsDataBackup, setQualificationsDataBackup] = useState([
+  const [qualificationsDataBackup] = useState([
     { id: 1, value: "SSC" },
     { id: 2, value: "HSC" },
     { id: 3, value: "Diploma" }
@@ -160,7 +161,7 @@ const AddEditEvent = props => {
     { id: 3, value: "Third" },
     { id: 4, value: "Fourth" }
   ]);
-  const [educationsDataBackup, setEducationsDataBackup] = useState([
+  const [educationsDataBackup] = useState([
     { id: 1, value: "First" },
     { id: 2, value: "Second" },
     { id: 3, value: "Third" },
@@ -639,20 +640,27 @@ const AddEditEvent = props => {
         }
       }
       if (isTextBox) {
-        setFormState(formState => ({
-          ...formState,
-          dynamicBar: formState.dynamicBar.map(r => {
-            if (r["index"] === dynamicGridValue["index"]) {
-              r[eventName] = event.target.value;
-              if (r[eventName] === "") {
-                delete r[eventName];
-              }
-              return r;
-            } else {
-              return r;
-            }
-          })
-        }));
+        if (
+          event.target.value === "" ||
+          regexForPercentage.test(event.target.value)
+        ) {
+          if (event.target.value.length <= 2) {
+            setFormState(formState => ({
+              ...formState,
+              dynamicBar: formState.dynamicBar.map(r => {
+                if (r["index"] === dynamicGridValue["index"]) {
+                  r[eventName] = event.target.value;
+                  if (r[eventName] === "") {
+                    delete r[eventName];
+                  }
+                  return r;
+                } else {
+                  return r;
+                }
+              })
+            }));
+          }
+        }
       }
       /** Clear errors if any */
       formState.dynamicBarError.map(errorValues => {
@@ -711,20 +719,27 @@ const AddEditEvent = props => {
         }
       }
       if (isTextBox) {
-        setFormState(formState => ({
-          ...formState,
-          dynamicEducationBar: formState.dynamicEducationBar.map(r => {
-            if (r["index"] === dynamicGridValue["index"]) {
-              r[eventName] = event.target.value;
-              if (r[eventName] === "") {
-                delete r[eventName];
-              }
-              return r;
-            } else {
-              return r;
-            }
-          })
-        }));
+        if (
+          event.target.value === "" ||
+          regexForPercentage.test(event.target.value)
+        ) {
+          if (event.target.value.length <= 2) {
+            setFormState(formState => ({
+              ...formState,
+              dynamicEducationBar: formState.dynamicEducationBar.map(r => {
+                if (r["index"] === dynamicGridValue["index"]) {
+                  r[eventName] = event.target.value;
+                  if (r[eventName] === "") {
+                    delete r[eventName];
+                  }
+                  return r;
+                } else {
+                  return r;
+                }
+              })
+            }));
+          }
+        }
       }
       /** Clear errors if any */
       formState.dynamicBarError.map(errorValues => {
@@ -1632,7 +1647,7 @@ const AddEditEvent = props => {
                             id="outlined-stream-card"
                             fullwidth={true.toString()}
                             className={classes.streamcardcontent}
-                            key={Math.random()}
+                            key={idx}
                           >
                             <CardContent>
                               <Grid container spacing={1}>
@@ -1846,7 +1861,7 @@ const AddEditEvent = props => {
                             id="outlined-stream-card"
                             fullwidth={true.toString()}
                             className={classes.streamcardcontent}
-                            key={Math.random()}
+                            key={idx}
                           >
                             <CardContent>
                               <Grid container spacing={1}>
