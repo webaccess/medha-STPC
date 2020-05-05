@@ -32,6 +32,7 @@ import * as serviceProviders from "../../../api/Axios";
 import ChangePasswordSchema from "./ChangePasswordSchema";
 import LoaderContext from "../../../context/LoaderContext";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
+import SetIndexContext from "../../../context/SetIndexContext";
 
 const OLDPASSWORD = "oldPassword";
 const NEWPASSWORD = "newPassword";
@@ -41,7 +42,8 @@ const ChangePassword = props => {
   const [open, setOpen] = React.useState(true);
   const changePasswordClasses = ChangePasswordStyles();
   const { setLoaderStatus } = useContext(LoaderContext);
-
+  const { setIndex } = useContext(SetIndexContext);
+  setIndex(null);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},

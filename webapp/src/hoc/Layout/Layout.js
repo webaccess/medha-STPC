@@ -7,28 +7,27 @@ import auth from "../../components/Auth/Auth";
 import LoaderContext from "../../context/LoaderContext";
 import useStyles from "./LayoutStyles";
 
-const Layout = (props) => {
+const Layout = props => {
   const { children } = props;
 
   const classes = useStyles();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"), {
-    defaultMatches: true,
+    defaultMatches: true
   });
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { loaderStatus } = useContext(LoaderContext);
   if (auth.getToken() != null && isDesktop) {
     return (
       <React.Fragment>
         <div
           className={clsx({
             [classes.root]: true,
-            [classes.shiftContent]: isDesktop,
+            [classes.shiftContent]: isDesktop
           })}
         >
           <SideAndTopNavBar />
           <main className={classes.content}>{children}</main>
         </div>
-        <StickyFooter />
         <Backdrop className={classes.backdrop} open={loaderStatus}>
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -40,7 +39,7 @@ const Layout = (props) => {
         <div
           className={clsx({
             [classes.root]: true,
-            [classes.shiftContent]: false,
+            [classes.shiftContent]: false
           })}
         >
           <SideAndTopNavBar />

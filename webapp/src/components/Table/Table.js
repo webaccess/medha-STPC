@@ -9,6 +9,7 @@ import React from "react";
 import DataTable from "react-data-table-component";
 import Checkbox from "@material-ui/core/Checkbox";
 import Spinner from "../Spinner/Spinner";
+import "./table.css";
 
 const Table = props => {
   /**
@@ -25,7 +26,8 @@ const Table = props => {
       style: {
         backgroundColor: "#EEEEEE",
         fontWeight: 700,
-        fontSize: "13px"
+        fontSize: "13px",
+        height: "auto"
       }
     }
   };

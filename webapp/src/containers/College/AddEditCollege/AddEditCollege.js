@@ -50,6 +50,7 @@ const principal = "principal";
 const tpos = "tpos";
 const district = "district";
 const block = "block";
+const regexForPercentage = new RegExp("^[1-9][0-9]*$");
 
 /** Dynamic Bar */
 const streams = "streams";
@@ -521,20 +522,25 @@ const AddEditCollege = props => {
       }
     }
     if (isTextBox) {
-      setFormState(formState => ({
-        ...formState,
-        dynamicBar: formState.dynamicBar.map(r => {
-          if (r["index"] === dynamicGridValue["index"]) {
-            r[eventName] = event.target.value;
-            if (r[eventName] === "") {
-              delete r[eventName];
+      if (
+        event.target.value === "" ||
+        regexForPercentage.test(event.target.value)
+      ) {
+        setFormState(formState => ({
+          ...formState,
+          dynamicBar: formState.dynamicBar.map(r => {
+            if (r["index"] === dynamicGridValue["index"]) {
+              r[eventName] = event.target.value;
+              if (r[eventName] === "") {
+                delete r[eventName];
+              }
+              return r;
+            } else {
+              return r;
             }
-            return r;
-          } else {
-            return r;
-          }
-        })
-      }));
+          })
+        }));
+      }
     }
     /** Clear errors if any */
     formState.dynamicBarError.map(errorValues => {
@@ -1264,7 +1270,7 @@ const AddEditCollege = props => {
                           id="outlined-stream-card"
                           fullwidth={true.toString()}
                           className={classes.streamcardcontent}
-                          key={Math.random()}
+                          key={idx}
                         >
                           <CardContent>
                             <Grid container spacing={1}>
