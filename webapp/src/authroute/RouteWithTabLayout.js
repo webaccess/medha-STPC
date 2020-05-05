@@ -10,6 +10,7 @@ import { get } from "lodash";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Typography } from "../components";
+import { includes } from "lodash";
 
 const StyledTabs = withStyles({
   root: {},
@@ -72,14 +73,6 @@ const RouteWithTabLayout = props => {
   const { layout: Layout, component: Component, title, ...rest } = props;
   let history = useHistory();
   const classes = useStyles();
-  // Default selected tab view-profile
-  const [selectedTab, setSelectedTab] = useState("/view-profile");
-
-  useEffect(() => {
-    if (selectedTab) {
-      history.push(selectedTab);
-    }
-  }, [selectedTab]);
 
   const menu = get(
     MenuItems(),
@@ -91,6 +84,23 @@ const RouteWithTabLayout = props => {
    * Get tabs for only sub menu items from menu only for profile
    */
   const tabs = menu ? menu[0].tabItems : menu;
+
+  const isURLValid = includes(
+    tabs.map(t => t.link),
+    props.path
+  );
+  console.log(isURLValid);
+
+  // Default selected tab view-profile
+  const [selectedTab, setSelectedTab] = useState(
+    isURLValid ? props.path : "/view-profile"
+  );
+
+  useEffect(() => {
+    if (selectedTab) {
+      history.push(selectedTab);
+    }
+  }, [selectedTab]);
 
   const NavBar = () => {
     const handleTabChange = val => {
