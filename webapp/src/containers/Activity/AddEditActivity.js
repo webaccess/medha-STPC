@@ -113,14 +113,15 @@ const AddEditActivity = props => {
       formState.values["college"] !== null &&
       formState.values["college"] !== undefined
     ) {
-      const list = stream
-        .map(obj => {
-          if (formState.values.college === obj.id) return obj.stream;
-          else return undefined;
-        })
-        .filter(stream => stream);
+      const list = stream.reduce((result, obj) => {
+        if (formState.values.college === obj.id) {
+          result.push(...obj.stream);
+        }
+        return result;
+      }, []);
+
       setstreamlist(
-        list[0].map(obj => {
+        list.map(obj => {
           return { id: obj.stream.id, name: obj.stream.name };
         })
       );

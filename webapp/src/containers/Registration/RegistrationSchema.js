@@ -260,6 +260,10 @@ const RegistrationSchema = {
       required: {
         value: "true",
         message: "Password is required"
+      },
+      validatePasswordMinLength: {
+        value: "true",
+        message: "Password is too short"
       }
     }
   },

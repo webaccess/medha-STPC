@@ -12,7 +12,8 @@ import {
   InputAdornment,
   OutlinedInput,
   Collapse,
-  CardActions
+  CardActions,
+  FormHelperText
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth, InlineDatePicker } from "../../components";
@@ -110,16 +111,41 @@ const AddEditStudent = props => {
   const [districtlist, setdistrictlist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
+  const [stream, setStream] = useState([]);
 
   useEffect(() => {
     setLoaderStatus(true);
     getStates();
     getDistrict();
     getColleges();
-    getStreams();
     setLoaderStatus(false);
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
+
+  useEffect(() => {
+    setLoaderStatus(true);
+    if (
+      stream !== null &&
+      stream !== undefined &&
+      formState.values.hasOwnProperty("college") &&
+      formState.values["college"] !== null &&
+      formState.values["college"] !== undefined
+    ) {
+      const list = stream.reduce((result, obj) => {
+        if (formState.values.college === obj.id) {
+          result.push(...obj.stream);
+        }
+        return result;
+      }, []);
+
+      setstreamlist(
+        list.map(obj => {
+          return { id: obj.stream.id, name: obj.stream.name };
+        })
+      );
+    }
+    setLoaderStatus(false);
+  }, [formState.values["college"]]);
 
   if (formState.dataForEdit && !formState.counter) {
     setLoaderStatus(true);
@@ -379,7 +405,6 @@ const AddEditStudent = props => {
           postData
         )
         .then(response => {
-          console.log(response);
           if (
             auth.getUserInfo().role.name === "Medha Admin" ||
             auth.getUserInfo().role.name === "College Admin"
@@ -397,20 +422,18 @@ const AddEditStudent = props => {
     }
   };
 
-  const getStreams = () => {
-    axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS)
-      .then(res => {
-        setstreamlist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
-  };
-
   const getColleges = () => {
     axios
       .get(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
+        const streams = res.data.result
+          .map(college => {
+            return { stream: college.stream_strength, id: college.id };
+          })
+          .filter(c => c);
+        setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
@@ -443,7 +466,13 @@ const AddEditStudent = props => {
         //       name: district.name
         //     };
         //   });
-        setdistrictlist(res.data.result.map(({ id, name }) => ({ id, name })));
+        setdistrictlist(
+          res.data.result.map(({ id, name, state }) => ({
+            id,
+            name,
+            state: state.id
+          }))
+        );
       });
   };
 
@@ -486,7 +515,14 @@ const AddEditStudent = props => {
         delete formState.errors[eventName];
       }
     } else {
+      console.log("1");
+      if (eventName === "state") {
+        delete formState.values["district"];
+      }
       delete formState.values[eventName];
+      setFormState(formState => ({
+        ...formState
+      }));
     }
   };
 
@@ -502,7 +538,6 @@ const AddEditStudent = props => {
   return (
     // <Layout>
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {formState.editStudent ? null : (
           <Typography variant="h4" gutterBottom>
@@ -697,7 +732,9 @@ const AddEditStudent = props => {
                   <Autocomplete
                     id="combo-box-demo"
                     className={classes.root}
-                    options={districtlist}
+                    options={districtlist.filter(
+                      district => district.state === formState.values.state
+                    )}
                     getOptionLabel={option => option.name}
                     onChange={(event, value) => {
                       handleChangeAutoComplete("district", event, value);
@@ -1085,6 +1122,13 @@ const AddEditStudent = props => {
                           </InputAdornment>
                         }
                       />
+                      <FormHelperText error={hasError("password")}>
+                        {hasError("password")
+                          ? formState.errors["password"].map(error => {
+                              return error + " ";
+                            })
+                          : null}
+                      </FormHelperText>
                     </FormControl>
                   </Grid>
                 )}
