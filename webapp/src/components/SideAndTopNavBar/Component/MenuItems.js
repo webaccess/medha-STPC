@@ -77,7 +77,7 @@ const MenuItems = props => {
           },
           {
             name: "Import Students",
-            link: routeConstants.NOT_FOUND_URL
+            link: routeConstants.IMPORT_STUDENTS
           }
         ]
       },

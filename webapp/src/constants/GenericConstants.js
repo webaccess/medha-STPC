@@ -108,6 +108,10 @@ export const EVENT_HISTORY = "EVENT HISTORY";
 
 export const QUALIFICATIONANDPERCENTAGE = "Qualification and Percentage";
 
+/**Import */
+
+export const STUDENTS_IMPORT = "Import Students";
+
 export const QUALIFICATIONS = [
   { id: 1, value: "SSC" },
   { id: 2, value: "HSC" },

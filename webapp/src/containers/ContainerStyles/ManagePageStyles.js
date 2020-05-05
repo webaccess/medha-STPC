@@ -1,63 +1,100 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: "100%",
+    maxWidth: "100%"
   },
   content: {
-    display: "content",
+    display: "content"
   },
   title: {
     display: "flex",
     marginBottom: theme.spacing(1),
     "& h4": {
       flex: "1",
-      fontWeight: "700",
-    },
+      fontWeight: "700"
+    }
   },
   filterButtonsMargin: {
     alignSelf: "center",
-    marginLeft: "10px",
+    marginLeft: "10px"
   },
   tabledata: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(3)
   },
   autoCompleteField: {
-    width: 200,
+    width: 200
   },
   noDataMargin: {
-    margin: "auto",
+    margin: "auto"
   },
   Cardtheming: {
-    paddingBottom: "16px !important",
+    paddingBottom: "16px !important"
   },
   filterButton: {
     width: "100%",
-    marginBottom: "24px",
+    marginBottom: "24px"
   },
   /**css for datatable action buttons */
   DisplayFlex: {
-    display: "flex",
+    display: "flex"
   },
   PaddingActionButton: {
     padding: "2px 8px 0px 8px",
-    cursor: "pointer",
+    cursor: "pointer"
   },
   PaddingFirstActionButton: {
     padding: "3px 8px 0px 0px",
-    cursor: "pointer",
+    cursor: "pointer"
   },
   PaddingSomeActionButton: {
     padding: "0px 8px 0px 0px",
-    cursor: "pointer",
+    cursor: "pointer"
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: "#fff",
+    color: "#fff"
   },
   paddingDate: {
-    paddingTop: "21px !important",
+    paddingTop: "21px !important"
   },
+
+  container: {
+    alignSelf: "center",
+    padding: "20px",
+    margin: "10px auto"
+  },
+
+  csvInput: {
+    alignSelf: "center",
+    padding: "30px",
+    display: "block",
+    border: "2px solid #ccc",
+    borderRadius: "10px",
+    width: "100%",
+    fontSize: "20px"
+  },
+
+  importButtonMargin: {
+    alignSelf: "center",
+    width: "100%",
+    margin: "10px auto"
+  },
+
+  InputFileButton: {
+    color: "#353535",
+    backgroundColor: "#f6c80a",
+    fontSize: "13px",
+    fontWeight: "700",
+    marginLeft: "2%",
+    width: "96%",
+    borderRadius: "0 !important",
+    "&:hover,&:focus": {
+      color: "#353535",
+      backgroundColor: "#f6c80a"
+    }
+  }
+
   /** */
 }));
 
