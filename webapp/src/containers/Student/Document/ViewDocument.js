@@ -64,6 +64,12 @@ const ViewDocument = props => {
   });
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    message: "",
+    severity: ""
+  });
+
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
     : null;
@@ -76,7 +82,6 @@ const ViewDocument = props => {
   const DOCUMENT_FILTER = "id";
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_DOCUMENT_URL)
       .then(res => {
@@ -109,11 +114,9 @@ const ViewDocument = props => {
           dataToShow: res.data.result,
           isDataLoading: false
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
   };
 
@@ -142,16 +145,34 @@ const ViewDocument = props => {
     getDocuments();
   };
 
-  const isDeleteCellCompleted = status => {
+  const isDeleteCellCompleted = (status, message) => {
     formState.isDataDeleted = status;
+
+    if (typeof message === typeof "") {
+      if (status) {
+        setAlert(() => ({
+          isOpen: true,
+          message: "Document " + message + " is deleted",
+          severity: "success"
+        }));
+      } else {
+        setAlert(() => ({
+          isOpen: true,
+          message: message,
+          severity: "error"
+        }));
+      }
+    }
   };
 
   const deleteCell = event => {
+    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: { id: event.target.id },
       showModalDelete: true
     }));
+    setLoaderStatus(false);
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
@@ -220,6 +241,30 @@ const ViewDocument = props => {
     });
   };
 
+  const AlertAPIResponseMessage = () => {
+    return (
+      <Collapse in={alert.isOpen}>
+        <Alert
+          severity={alert.severity || "warning"}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlert(() => ({ isOpen: false }));
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alert.message}
+        </Alert>
+      </Collapse>
+    );
+  };
+
   console.log(formState.dataToShow);
   return (
     <Card style={{ padding: "8px" }}>
@@ -258,7 +303,9 @@ const ViewDocument = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE}
+                  {" "}
+                  Documents uploaded successfully
+                  {/* {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -279,11 +326,12 @@ const ViewDocument = props => {
                     </IconButton>
                   }
                 >
-                  {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE}
+                  Error in Uploading Documents.
+                  {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
-
+            <AlertAPIResponseMessage />
             <Card className={styles.filterButton}>
               <CardContent className={classes.Cardtheming}>
                 <Grid className={classes.filterOptions} container spacing={1}>
@@ -332,26 +380,17 @@ const ViewDocument = props => {
                 </Grid>
               </CardContent>
             </Card>
-            {formState.dataToShow ? (
-              formState.dataToShow.length ? (
-                <Table
-                  data={formState.dataToShow}
-                  column={column}
-                  defaultSortField="name"
-                  defaultSortAsc={formState.sortAscending}
-                  deleteEvent={deleteCell}
-                  progressPending={formState.isDataLoading}
-                  pagination={false}
-                  selectableRows={false}
-                />
-              ) : (
-                <div className={classes.noDataMargin}>
-                  No documents details found
-                </div>
-              )
-            ) : (
-              <Spinner />
-            )}
+            <Table
+              data={formState.dataToShow}
+              column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
+              deleteEvent={deleteCell}
+              progressPending={formState.isDataLoading}
+              pagination={false}
+              selectableRows={false}
+              noDataComponent="No Documents found"
+            />
             <DeleteDocument
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}

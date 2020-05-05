@@ -28,7 +28,7 @@ const DeleteEducation = props => {
     formState.isDeleteData = false;
   }
 
-  const handleCloseModal = () => {
+  const handleCloseModal = data => {
     setFormState(formState => ({
       ...formState,
       values: {},
@@ -38,9 +38,9 @@ const DeleteEducation = props => {
     }));
 
     if (formState.isDeleteData) {
-      props.deleteEvent(true);
+      props.deleteEvent(true, data);
     } else {
-      props.deleteEvent(false);
+      props.deleteEvent(false, data);
     }
     props.closeModal();
   };
@@ -54,18 +54,19 @@ const DeleteEducation = props => {
   const deleteData = () => {
     serviceProviders
       .serviceProviderForDeleteRequest(EDUCATION_URL, props.id)
-      .then(() => {
+      .then(res => {
         setFormState(formState => ({
           ...formState,
           isValid: true
         }));
         formState.isDeleteData = true;
-        handleCloseModal();
+        console.log(res.data);
+        handleCloseModal(res.data.qualification);
       })
       .catch(error => {
         console.log("error");
         formState.isDeleteData = false;
-        handleCloseModal();
+        handleCloseModal(error.response.data.message);
       });
   };
 

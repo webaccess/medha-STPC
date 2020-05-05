@@ -129,7 +129,6 @@ const ViewActivityBatches = props => {
       });
 
     getActivityBatches(10, 1);
-    setLoaderStatus(false);
   }, []);
 
   const [alert, setAlert] = useState({
@@ -174,11 +173,12 @@ const ViewActivityBatches = props => {
           pageCount: res.data.pageCount,
           isDataLoading: false
         }));
+        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
+        setLoaderStatus(false);
       });
-    setLoaderStatus(false);
   };
 
   /** Pagination */
@@ -525,7 +525,6 @@ const ViewActivityBatches = props => {
             </Grid>
           </CardContent>
         </Card>
-
         <Table
           data={formState.dataToShow}
           column={column}

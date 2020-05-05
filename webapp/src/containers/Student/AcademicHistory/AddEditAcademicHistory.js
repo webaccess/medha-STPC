@@ -65,7 +65,6 @@ const AddEditAcademicHistory = props => {
   const [academicYears, setAcademicYearList] = useState([]);
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACADEMIC_YEAR_URL)
       .then(res => {
@@ -73,7 +72,6 @@ const AddEditAcademicHistory = props => {
           res.data.result.map(({ id, name }) => ({ id, name }))
         );
       });
-    setLoaderStatus(false);
   }, []);
 
   /** Part for editing Education */
@@ -95,6 +93,7 @@ const AddEditAcademicHistory = props => {
       }
       formState.counter += 1;
     }
+    setLoaderStatus(false);
   }
 
   const handleChangeAutoComplete = (eventName, event, value) => {
@@ -180,7 +179,7 @@ const AddEditAcademicHistory = props => {
         isValid: false
       }));
     }
-    setLoaderStatus(false);
+
     event.preventDefault();
   };
 

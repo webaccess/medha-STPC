@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import useStyles from "../StudentStyles.js";
 import { get } from "lodash";
 import { Card, CardActions, Grid, TextField, Button } from "@material-ui/core";
@@ -14,6 +14,7 @@ import DocumentSchema from "../DocumentSchema.js";
 import auth from "../../../components/Auth/Auth.js";
 import Img from "react-image";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
+import LoaderContext from "../../../context/LoaderContext";
 
 const field = "documents";
 const ref = "student";
@@ -25,6 +26,7 @@ const AddEditDocument = props => {
   const DOCUMENT_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_UPLOAD;
 
+  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [formState, setFormState] = useState({
@@ -71,6 +73,7 @@ const AddEditDocument = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
+    setLoaderStatus(true);
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -136,6 +139,7 @@ const AddEditDocument = props => {
           addResponseMessage: "",
           addedData: {}
         });
+        setLoaderStatus(false);
       })
       .catch(error => {
         history.push({
@@ -145,6 +149,7 @@ const AddEditDocument = props => {
           addResponseMessage: "",
           addedData: {}
         });
+        setLoaderStatus(false);
       });
   };
 
