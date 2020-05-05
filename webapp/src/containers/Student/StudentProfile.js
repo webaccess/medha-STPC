@@ -4,7 +4,7 @@ import {
   Typography,
   YellowButton,
   GrayButton,
-  ReadOnlyTextField
+  ReadOnlyTextField,
 } from "../../components";
 import {
   Card,
@@ -12,7 +12,7 @@ import {
   CardActions,
   Grid,
   Collapse,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 
@@ -28,7 +28,7 @@ import useStyles from "../ContainerStyles/ViewPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
 import SetIndexContext from "../../context/SetIndexContext";
 
-const StudentProfile = props => {
+const StudentProfile = (props) => {
   let history = useHistory();
   const [user, setUser] = useState({
     firstname: "",
@@ -41,11 +41,12 @@ const StudentProfile = props => {
     email: "",
     contact: "",
     username: "",
+    dataofbirth: "",
     gender: "",
     physicallyHandicapped: null,
     college: null,
     stream: null,
-    rollnumber: null
+    rollnumber: null,
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -63,11 +64,8 @@ const StudentProfile = props => {
     fromEventStudentList: props["location"]["fromEventStudentList"],
     fromManageStudentList: props["location"]["fromManageStudentList"],
     eventId: props["location"]["eventId"],
-    eventTitle: props["location"]["eventTitle"]
+    eventTitle: props["location"]["eventTitle"],
   });
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2000-01-01T21:11:54")
-  );
   const classes = useStyles();
   const { setIndex } = useContext(SetIndexContext);
   setIndex(0);
@@ -85,10 +83,10 @@ const StudentProfile = props => {
   }, []);
 
   useEffect(() => {
-    setFormState(formState => ({
+    setFormState((formState) => ({
       ...formState,
 
-      values: user
+      values: user,
     }));
   }, [user]);
   async function handleSetDetails() {
@@ -107,8 +105,18 @@ const StudentProfile = props => {
             strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
             paramsForEvent
           )
-          .then(res => {
+          .then((res) => {
             const data = res.data.result;
+            let date = new Date(data.studentInfo.date_of_birth);
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let dt = date.getDate();
+            if (dt < 10) {
+              dt = "0" + dt;
+            }
+            if (month < 10) {
+              month = "0" + month;
+            }
             setFormState({ ...formState, details: data });
             setUser({
               ...user,
@@ -123,23 +131,23 @@ const StudentProfile = props => {
               fatherLastName: data.studentInfo.father_last_name,
               address: data.studentInfo.address,
               rollnumber: data.studentInfo.roll_number.toString(),
+              dataofbirth: dt + "/" + month + "/" + year,
               gender: data.studentInfo.gender,
               district: data.studentInfo.district
                 ? data.studentInfo.district.name
                 : "",
               stream: data.studentInfo.stream.name,
-              physicallyHandicapped: data.studentInfo.physicallyHandicapped
+              physicallyHandicapped: data.studentInfo.physicallyHandicapped,
             });
-            setSelectedDate(new Date(data.studentInfo.date_of_birth));
             setLoaderStatus(false);
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
             setLoaderStatus(false);
           });
       } else {
         history.push({
-          pathname: routeConstants.DASHBOARD_URL
+          pathname: routeConstants.DASHBOARD_URL,
         });
         setLoaderStatus(false);
       }
@@ -152,36 +160,36 @@ const StudentProfile = props => {
       history.push({
         pathname: routeConstants.EDIT_PROFILE,
         editStudent: true,
-        dataForEdit: formState.details
+        dataForEdit: formState.details,
       });
     } else if (auth.getUserInfo().role.name === "College Admin") {
       history.push({
         pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
         dataForEdit: formState.details,
-        editStudent: true
+        editStudent: true,
       });
     }
   };
 
-  const handleClickCancel = event => {
+  const handleClickCancel = (event) => {
     event.preventDefault();
     if (formState.fromAddStudentToRecruitmentDrive) {
       history.push({
         pathname: routeConstants.ADD_STUDENT_DRIVE,
         eventId: formState.eventId,
-        eventTitle: formState.eventTitle
+        eventTitle: formState.eventTitle,
       });
     } else if (formState.fromEventStudentList) {
       history.push({
         pathname: routeConstants.EVENT_STUDENT_LIST,
         eventId: formState.eventId,
-        eventTitle: formState.eventTitle
+        eventTitle: formState.eventTitle,
       });
     } else if (formState.fromManageStudentList) {
       history.push({
         pathname: routeConstants.MANAGE_STUDENT,
         eventId: formState.eventId,
-        eventTitle: formState.eventTitle
+        eventTitle: formState.eventTitle,
       });
     }
   };
@@ -205,8 +213,7 @@ const StudentProfile = props => {
               </IconButton>
             }
           >
-            Student Date edited successfully
-            {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
+            {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE}
           </Alert>
         </Collapse>
       ) : null}
@@ -285,13 +292,7 @@ const StudentProfile = props => {
                   <ReadOnlyTextField
                     id="dateOfBirth"
                     label="Date Of Birth"
-                    defaultValue={
-                      selectedDate.getFullYear() +
-                      "-" +
-                      (selectedDate.getMonth() + 1) +
-                      "-" +
-                      selectedDate.getDate()
-                    }
+                    defaultValue={formState.values.dataofbirth}
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>

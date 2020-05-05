@@ -68,6 +68,8 @@ const AddEditStudent = props => {
     values: {},
     touched: {},
     errors: {},
+    isDateOfBirthPresent: true,
+    isdateOfBirthValid: true,
     isSuccess: false,
     showPassword: false,
     editStudent: props.location.editStudent
@@ -80,9 +82,7 @@ const AddEditStudent = props => {
   });
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2000-01-01T21:11:54")
-  );
+  const [selectedDate, setSelectedDate] = React.useState(null);
 
   const genderlist = [
     { name: "Male", id: "male" },
@@ -268,7 +268,43 @@ const AddEditStudent = props => {
       );
       formState.errors = formUtilities.setErrors(formState.values, schema);
     }
-    if (isValid) {
+
+    if (selectedDate === null) {
+      formState.isDateOfBirthPresent = false;
+    } else {
+      let date = new Date();
+      let year = date.getFullYear();
+      let month = date.getMonth() + 1;
+      let dt = date.getDate();
+      if (dt < 10) {
+        dt = "0" + dt;
+      }
+      if (month < 10) {
+        month = "0" + month;
+      }
+      let currentDate = year + "-" + month + "-" + dt;
+      let selectYear = selectedDate.getFullYear();
+      let selectedMonth = selectedDate.getMonth() + 1;
+      let selectedDay = selectedDate.getDate();
+      if (selectedDay < 10) {
+        selectedDay = "0" + selectedDay;
+      }
+      if (selectedMonth < 10) {
+        selectedMonth = "0" + selectedMonth;
+      }
+      let selectDate = selectYear + "-" + selectedMonth + "-" + selectedDay;
+      formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
+        selectDate,
+        currentDate
+      );
+      formState.isDateOfBirthPresent = true;
+    }
+
+    if (
+      isValid &&
+      formState.isDateOfBirthPresent &&
+      formState.isdateOfBirthValid
+    ) {
       /** CALL POST FUNCTION */
       postStudentData();
 
@@ -498,7 +534,7 @@ const AddEditStudent = props => {
         delete formState.errors[eventName];
       }
     } else {
-      console.log("1");
+      
       if (eventName === "state") {
         delete formState.values["district"];
       }
@@ -781,13 +817,16 @@ const AddEditStudent = props => {
                     label="Date of Birth"
                     value={selectedDate}
                     className={classes.date}
-                    onChange={date => setSelectedDate(date)}
-                    error={hasError("dateofbirth")}
+                    onChange={(date) => setSelectedDate(date)}
+                    error={
+                      !formState.isDateOfBirthPresent ||
+                      !formState.isdateOfBirthValid
+                    }
                     helperText={
-                      hasError("dateofbirth")
-                        ? formState.errors["dateofbirth"].map(error => {
-                            return error + " ";
-                          })
+                      !formState.isDateOfBirthPresent
+                        ? "Date of Birth is required"
+                        : !formState.isdateOfBirthValid
+                        ? "Date of birth cannot be greater than current date"
                         : null
                     }
                     KeyboardButtonProps={{

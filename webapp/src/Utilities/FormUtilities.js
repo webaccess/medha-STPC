@@ -99,3 +99,11 @@ export const setErrors = (
   }
   return formErrors;
 };
+
+export const validateDateOfBirth = (selectedDate, currentDate) => {
+      if (selectedDate >= currentDate) {
+        return false;
+      } else {
+        return true;
+      }
+}
