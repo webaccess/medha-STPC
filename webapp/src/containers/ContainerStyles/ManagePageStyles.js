@@ -66,12 +66,35 @@ const useStyles = makeStyles(theme => ({
   },
 
   csvInput: {
-    padding: "20px",
+    alignSelf: "center",
+    padding: "30px",
     display: "block",
-    margin: "10px auto",
     border: "2px solid #ccc",
-    borderRadius: "10px"
+    borderRadius: "10px",
+    width: "100%",
+    fontSize: "20px"
+  },
+
+  importButtonMargin: {
+    alignSelf: "center",
+    width: "100%",
+    margin: "10px auto"
+  },
+
+  InputFileButton: {
+    color: "#353535",
+    backgroundColor: "#f6c80a",
+    fontSize: "13px",
+    fontWeight: "700",
+    marginLeft: "2%",
+    width: "96%",
+    borderRadius: "0 !important",
+    "&:hover,&:focus": {
+      color: "#353535",
+      backgroundColor: "#f6c80a"
+    }
   }
+
   /** */
 }));
 
