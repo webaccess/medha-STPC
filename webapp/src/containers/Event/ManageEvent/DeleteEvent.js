@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Grid,
   Typography,
   IconButton,
   Modal,
   Backdrop,
-  Fade,
+  Fade
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -14,17 +14,19 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
+import LoaderContext from "../../../context/LoaderContext";
 
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_ID = "UserName";
 
-const DeleteUser = (props) => {
+const DeleteUser = props => {
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
     values: {},
-    dataToDelete: {},
+    dataToDelete: {}
   });
 
   if (props.showModal && !formState.stateCounter) {
@@ -39,12 +41,12 @@ const DeleteUser = (props) => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0,
+      stateCounter: 0
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -53,8 +55,9 @@ const DeleteUser = (props) => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     /** CALL Put FUNCTION */
+    setLoaderStatus(true);
     props.clearSelectedRow(true);
     deleteData();
     event.preventDefault();
@@ -64,15 +67,17 @@ const DeleteUser = (props) => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(EVENT_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setLoaderStatus(false);
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDeleteData = true;
           handleCloseModal("Events has been deleted successfully");
         })
-        .catch((error) => {
+        .catch(error => {
+          setLoaderStatus(false);
           console.log("error", error);
           formState.isDeleteData = false;
           handleCloseModal(
@@ -82,10 +87,11 @@ const DeleteUser = (props) => {
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(EVENT_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setLoaderStatus(false);
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDeleteData = true;
           handleCloseModal(
@@ -94,7 +100,8 @@ const DeleteUser = (props) => {
               " has been deleted successfully"
           );
         })
-        .catch((error) => {
+        .catch(error => {
+          setLoaderStatus(false);
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -106,7 +113,7 @@ const DeleteUser = (props) => {
     }
   };
 
-  const handleClose = async (event) => {
+  const handleClose = async event => {
     props.clearSelectedRow(true);
     props.closeModal();
   };
@@ -122,7 +129,7 @@ const DeleteUser = (props) => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500,
+        timeout: 500
       }}
     >
       <Fade in={props.showModal}>

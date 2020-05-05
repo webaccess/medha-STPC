@@ -119,6 +119,10 @@ const AddEditStudentForCollegeAdmin = (props) => {
           value: "true",
           message: "Password is required",
         },
+        validatePasswordMinLength: {
+          value: "true",
+          message: "Password is too short"
+        }
       };
     }
 
