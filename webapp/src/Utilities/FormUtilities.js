@@ -4,7 +4,7 @@ import { Validation as validateInput } from "../components";
 export const checkAllKeysPresent = (objectWithKeys, schema) => {
   let areFieldsValid = false;
   let checkIfFieldsValidatorIsFalseCounter = 0;
-  Object.keys(schema).map(field => {
+  Object.keys(schema).map((field) => {
     if (schema[field]["required"] && objectWithKeys.hasOwnProperty(field)) {
       areFieldsValid = true;
     } else if (
@@ -28,7 +28,7 @@ export const getListOfKeysNotPresent = (
   dateFrom,
   dateTo
 ) => {
-  Object.keys(schema).map(field => {
+  Object.keys(schema).map((field) => {
     if (schema[field]["required"] && !objectWithKeys.hasOwnProperty(field)) {
       objectWithKeys[field] = "";
     }
@@ -37,7 +37,7 @@ export const getListOfKeysNotPresent = (
 };
 
 /** returns true if json is empty */
-export const checkEmpty = obj => {
+export const checkEmpty = (obj) => {
   return !Object.keys(obj).length ? true : false;
 };
 
@@ -66,7 +66,7 @@ export const setErrors = (
   dateTo
 ) => {
   let formErrors = {};
-  Object.keys(objectToCheck).map(field => {
+  Object.keys(objectToCheck).map((field) => {
     const errors = validateInput(
       objectToCheck[field],
       schema[field]["validations"]
@@ -99,11 +99,34 @@ export const setErrors = (
   }
   return formErrors;
 };
-
-export const validateDateOfBirth = (selectedDate, currentDate) => {
-      if (selectedDate >= currentDate) {
-        return false;
-      } else {
-        return true;
-      }
-}
+/**This function is used to check if selected date for date of birth field is greater or same than current field.
+ * if selected date is greater or same in compare to current date this function will return false and
+ * if selected date is less than current date then this function will return true */
+export const validateDateOfBirth = (selectedDate) => {
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let dt = date.getDate();
+  if (dt < 10) {
+    dt = "0" + dt;
+  }
+  if (month < 10) {
+    month = "0" + month;
+  }
+  let currentDate = year + "-" + month + "-" + dt;
+  let selectYear = selectedDate.getFullYear();
+  let selectedMonth = selectedDate.getMonth() + 1;
+  let selectedDay = selectedDate.getDate();
+  if (selectedDay < 10) {
+    selectedDay = "0" + selectedDay;
+  }
+  if (selectedMonth < 10) {
+    selectedMonth = "0" + selectedMonth;
+  }
+  let dateOfBirth = selectYear + "-" + selectedMonth + "-" + selectedDay;
+  if (dateOfBirth >= currentDate) {
+    return false;
+  } else {
+    return true;
+  }
+};

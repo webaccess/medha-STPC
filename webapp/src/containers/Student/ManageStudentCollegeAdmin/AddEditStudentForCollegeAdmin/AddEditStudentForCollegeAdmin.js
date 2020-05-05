@@ -297,35 +297,17 @@ const AddEditStudentForCollegeAdmin = (props) => {
     if (selectedDate === null) {
       formState.isDateOfBirthPresent = false;
     } else {
-      let date = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let dt = date.getDate();
-      if (dt < 10) {
-        dt = "0" + dt;
-      }
-      if (month < 10) {
-        month = "0" + month;
-      }
-      let currentDate = year + "-" + month + "-" + dt;
-      let selectYear = selectedDate.getFullYear();
-      let selectedMonth = selectedDate.getMonth() + 1;
-      let selectedDay = selectedDate.getDate();
-      if (selectedDay < 10) {
-        selectedDay = "0" + selectedDay;
-      }
-      if (selectedMonth < 10) {
-        selectedMonth = "0" + selectedMonth;
-      }
-      let selectDate = selectYear + "-" + selectedMonth + "-" + selectedDay;
       formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
-        selectDate,
-        currentDate
+        selectedDate
       );
       formState.isDateOfBirthPresent = true;
     }
 
-    if (isValid && formState.isDateOfBirthPresent && formState.isdateOfBirthValid) {
+    if (
+      isValid &&
+      formState.isDateOfBirthPresent &&
+      formState.isdateOfBirthValid
+    ) {
       /** CALL POST FUNCTION */
       postStudentData();
 
@@ -785,7 +767,8 @@ const AddEditStudentForCollegeAdmin = (props) => {
                       value={selectedDate}
                       onChange={(date) => setSelectedDate(date)}
                       error={
-                        !formState.isDateOfBirthPresent || !formState.isdateOfBirthValid
+                        !formState.isDateOfBirthPresent ||
+                        !formState.isdateOfBirthValid
                       }
                       helperText={
                         !formState.isDateOfBirthPresent
