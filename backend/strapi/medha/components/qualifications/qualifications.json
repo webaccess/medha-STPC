@@ -12,9 +12,7 @@
       "enum": [
         "SSC",
         "HSC",
-        "BSc",
-        "MSc",
-        "BE"
+        "Diploma"
       ]
     },
     "percentage": {
