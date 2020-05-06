@@ -258,6 +258,7 @@ const ViewRpc = (props) => {
       /**Clear filters */
       rpcsFilterData: [],
     }));
+    selectedRowCleared(true);
     /**Need to confirm this thing for resetting the data */
     restoreData();
   };
