@@ -26,10 +26,10 @@ const educationYear = "educationYear";
 const percentage = "percentage";
 
 const educationYearList = [
-  { name: "First", id: "First" },
-  { name: "Second", id: "Second" },
-  { name: "Third", id: "Third" },
-  { name: "Fourth", id: "Fourth" }
+  { value: "First", id: 1 },
+  { value: "Second", id: 2 },
+  { value: "Third", id: 3 },
+  { value: "Fourth", id: 4 }
 ];
 
 const AddEditAcademicHistory = props => {
@@ -39,7 +39,7 @@ const AddEditAcademicHistory = props => {
   const studentInfo = auth.getUserInfo()
     ? auth.getUserInfo().studentInfo
     : null;
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const ACADEMIC_HISTORY_URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACADEMIC_HISTORY;
@@ -48,7 +48,7 @@ const AddEditAcademicHistory = props => {
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACADEMIC_YEARS;
 
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
+  const [isFailed] = useState(false);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -103,6 +103,24 @@ const AddEditAcademicHistory = props => {
       values: {
         ...formState.values,
         [eventName]: value ? value.id : ""
+      },
+      touched: {
+        ...formState.touched,
+        [eventName]: true
+      }
+    }));
+    if (formState.errors.hasOwnProperty(eventName)) {
+      delete formState.errors[eventName];
+    }
+  };
+
+  const handleChangeAutoCompleteForEducation = (eventName, event, value) => {
+    /**TO SET VALUES OF AUTOCOMPLETE */
+    setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        [eventName]: value ? value.value : ""
       },
       touched: {
         ...formState.touched,
@@ -307,14 +325,18 @@ const AddEditAcademicHistory = props => {
                     id="education-year-list"
                     className={classes.elementroot}
                     options={educationYearList}
-                    getOptionLabel={option => option.name}
+                    getOptionLabel={option => option.value}
                     onChange={(event, value) => {
-                      handleChangeAutoComplete(educationYear, event, value);
+                      handleChangeAutoCompleteForEducation(
+                        educationYear,
+                        event,
+                        value
+                      );
                     }}
                     value={
                       educationYearList[
                         educationYearList.findIndex(function (item, i) {
-                          return item.id === formState.values[educationYear];
+                          return item.value === formState.values[educationYear];
                         })
                       ] || null
                     }
