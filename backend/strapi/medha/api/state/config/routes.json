@@ -63,6 +63,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/colleges",
+      "handler": "state.colleges",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
