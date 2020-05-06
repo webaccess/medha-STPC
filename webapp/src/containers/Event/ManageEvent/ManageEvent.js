@@ -502,6 +502,8 @@ const ManageEvent = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
+    selectedRowCleared(true);
+
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -516,7 +518,6 @@ const ManageEvent = props => {
       eventFilterData: [],
       errors: {}
     }));
-
     restoreData();
   };
 

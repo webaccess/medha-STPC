@@ -99,6 +99,9 @@ export const ADD_ACTIVITY_BATCH = "/add-activity-batch/:activity";
 export const EDIT_ACTIVITY_BATCH = "/edit-activity-batch/:activity";
 export const VIEW_ACTIVITY_BATCH = "/view-activity-batch/:activity";
 
+/** FeedBack */
+export const ADD_FEEDBACK = "/add-feedback";
+
 /** Medha Admin */
 
 let dashboard_medha_admin = [];
