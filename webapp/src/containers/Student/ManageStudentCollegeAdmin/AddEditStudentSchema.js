@@ -84,7 +84,7 @@ const RegistrationSchema = {
     type: "text",
     validations: {}
   },
-  district: { 
+  district: {
     label: "District",
     id: "district",
     autoComplete: "district",
@@ -192,6 +192,16 @@ const RegistrationSchema = {
         message: "College Roll is required"
       }
     }
+  },
+  futureAspirations: {
+    label: "Future Aspirations",
+    id: "futureAspirations",
+    autoComplete: "futureAspirations",
+    required: false,
+    placeholder: "futureAspirations",
+    autoFocus: true,
+    type: "text",
+    validations: {}
   },
   email: {
     label: "Email",
