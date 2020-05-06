@@ -477,12 +477,14 @@ const AppRouter = props => {
           path={routeConstants.VIEW_STUDENT_PROFILE}
         />
 
+        {/** FeedBack  */}
         <MedhaCollegeAdminRoute
           component={AddEditFeedBack}
           exact
           layout={Layout}
           path={routeConstants.ADD_FEEDBACK}
         />
+
         <CollegeAdminRoute
           component={AddEditStudentForCollegeAdmin}
           exact
