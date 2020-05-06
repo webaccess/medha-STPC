@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "05/04/2020 5:50:22 PM"
+    "x-generation-date": "05/06/2020 4:22:31 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -17351,9 +17351,7 @@
                   "enum": [
                     "SSC",
                     "HSC",
-                    "BSc",
-                    "MSc",
-                    "BE"
+                    "Diploma"
                   ]
                 },
                 "percentage": {
@@ -17473,9 +17471,7 @@
                   "enum": [
                     "SSC",
                     "HSC",
-                    "BSc",
-                    "MSc",
-                    "BE"
+                    "Diploma"
                   ]
                 },
                 "percentage": {
