@@ -187,7 +187,8 @@ module.exports = {
         "college",
         "verifiedByCollege",
         "documents",
-        "educations"
+        "educations",
+        "future_aspirations"
       ])
     );
     const studentRequestData = Object.assign(
@@ -256,7 +257,8 @@ module.exports = {
               date_of_birth: studentRequestData.date_of_birth,
               gender: studentRequestData.gender,
               roll_number: studentRequestData.roll_number,
-              district: studentRequestData.district
+              district: studentRequestData.district,
+              future_aspirations: studentRequestData.future_aspirations
             },
             { patch: true, transacting: t }
           )
