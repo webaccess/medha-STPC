@@ -41,7 +41,7 @@ const AddEditFeedBack = props => {
                 </Typography>
               </Grid>
               <Grid item md={6} xs={12}>
-                <Rating name="half-rating" defaultValue={2.5} precision={0.5} />
+                <Rating name="question1" defaultValue={2.5} precision={0.5} />
               </Grid>
             </Grid>
             <Grid container spacing={3} className={classes.formgrid}>
@@ -51,7 +51,39 @@ const AddEditFeedBack = props => {
                 </Typography>
               </Grid>
               <Grid item md={6} xs={12}>
-                <Rating name="half-rating" defaultValue={2.5} precision={0.5} />
+                <Rating name="question2" defaultValue={2.5} precision={0.5} />
+              </Grid>
+            </Grid>
+            <Grid container spacing={3} className={classes.formgrid}>
+              <Grid item md={6} xs={12}>
+                <Typography variant="h5" gutterBottom>
+                  The trainers were well prepared and able to answer any
+                  question
+                </Typography>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <Rating name="question3" defaultValue={2.5} precision={0.5} />
+              </Grid>
+            </Grid>
+            <Grid container spacing={3} className={classes.formgrid}>
+              <Grid item md={6} xs={12}>
+                <Typography variant="h5" gutterBottom>
+                  The pace of the course was appropriate to the content and
+                  attendees{" "}
+                </Typography>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <Rating name="question4" defaultValue={2.5} precision={0.5} />
+              </Grid>
+            </Grid>
+            <Grid container spacing={3} className={classes.formgrid}>
+              <Grid item md={6} xs={12}>
+                <Typography variant="h5" gutterBottom>
+                  The venue was appropriate for the event{" "}
+                </Typography>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <Rating name="question5" defaultValue={2.5} precision={0.5} />
               </Grid>
             </Grid>
           </Grid>
