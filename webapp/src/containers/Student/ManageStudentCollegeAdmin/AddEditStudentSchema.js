@@ -10,9 +10,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "First Name is required"
-      }
-    }
+        message: "First Name is required",
+      },
+    },
   },
   lastname: {
     label: "Last Name",
@@ -25,9 +25,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Last Name is required"
-      }
-    }
+        message: "Last Name is required",
+      },
+    },
   },
   fatherFirstName: {
     label: "Father's First Name",
@@ -40,9 +40,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Father's First Name is required"
-      }
-    }
+        message: "Father's First Name is required",
+      },
+    },
   },
   fatherLastName: {
     label: "Father's Last Name",
@@ -55,9 +55,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: " Father's Last Name is required"
-      }
-    }
+        message: " Father's Last Name is required",
+      },
+    },
   },
   address: {
     label: "Address",
@@ -70,9 +70,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Address is required"
-      }
-    }
+        message: "Address is required",
+      },
+    },
   },
   state: {
     label: "State",
@@ -82,9 +82,9 @@ const RegistrationSchema = {
     placeholder: "State",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {},
   },
-  district: { 
+  district: {
     label: "District",
     id: "district",
     autoComplete: "district",
@@ -92,7 +92,7 @@ const RegistrationSchema = {
     placeholder: "District",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {},
   },
   dateofbirth: {
     label: "Date of Birth",
@@ -102,7 +102,7 @@ const RegistrationSchema = {
     placeholder: "Date of Birth",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {},
   },
   contact: {
     label: "Contact Number",
@@ -115,13 +115,13 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Contact Number is required"
+        message: "Contact Number is required",
       },
       validateMobileNumber: {
         value: "true",
-        message: "Not an Contact Number"
-      }
-    }
+        message: "Not an Contact Number",
+      },
+    },
   },
   gender: {
     label: "Gender",
@@ -134,9 +134,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Gender is required"
-      }
-    }
+        message: "Gender is required",
+      },
+    },
   },
   physicallyHandicapped: {
     label: "Physically Handicapped",
@@ -146,7 +146,7 @@ const RegistrationSchema = {
     placeholder: "Physically Handicapped",
     autoFocus: true,
     type: "checkbox",
-    validations: {}
+    validations: {},
   },
   college: {
     label: "College",
@@ -159,9 +159,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "College is required"
-      }
-    }
+        message: "College is required",
+      },
+    },
   },
   stream: {
     label: "Stream",
@@ -174,9 +174,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Stream is required"
-      }
-    }
+        message: "Stream is required",
+      },
+    },
   },
   rollnumber: {
     label: "College Roll Number",
@@ -189,9 +189,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "College Roll is required"
-      }
-    }
+        message: "College Roll is required",
+      },
+    },
   },
   email: {
     label: "Email",
@@ -204,15 +204,24 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Email is required"
+        message: "Email is required",
       },
       validateEmailRegex: {
         value: "true",
-        message: "Invalid Email"
-      }
-    }
+        message: "Invalid Email",
+      },
+    },
   },
-
+  futureAspirations: {
+    label: "Future Aspirations",
+    id: "futureAspirations",
+    autoComplete: "futureAspirations",
+    required: false,
+    placeholder: "futureAspirations",
+    autoFocus: true,
+    type: "text",
+    validations: {},
+  },
   username: {
     label: "Username",
     id: "username",
@@ -224,9 +233,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "User Name is required"
-      }
-    }
+        message: "User Name is required",
+      },
+    },
   },
   password: {
     label: "Password",
@@ -239,9 +248,9 @@ const RegistrationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Password is required"
-      }
-    }
-  }
+        message: "Password is required",
+      },
+    },
+  },
 };
 export default RegistrationSchema;
