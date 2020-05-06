@@ -144,6 +144,7 @@ const AddEditStudent = props => {
         })
       );
     }
+
     setLoaderStatus(false);
   }, [formState.values["college"]]);
 
@@ -455,6 +456,7 @@ const AddEditStudent = props => {
             return { stream: college.stream_strength, id: college.id };
           })
           .filter(c => c);
+        console.log("stream", streams);
         setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
@@ -726,7 +728,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       statelist[
-                        statelist.findIndex(function (item, i) {
+                        statelist.findIndex(function(item, i) {
                           return item.id === formState.values.state;
                         })
                       ] || null
@@ -762,7 +764,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       districtlist[
-                        districtlist.findIndex(function (item, i) {
+                        districtlist.findIndex(function(item, i) {
                           return item.id === formState.values.district;
                         })
                       ] || null
@@ -849,7 +851,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       genderlist[
-                        genderlist.findIndex(function (item, i) {
+                        genderlist.findIndex(function(item, i) {
                           return item.id === formState.values.gender;
                         })
                       ] || null
@@ -910,7 +912,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       collegelist[
-                        collegelist.findIndex(function (item, i) {
+                        collegelist.findIndex(function(item, i) {
                           return item.id === formState.values.college;
                         })
                       ] || null
@@ -946,7 +948,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       streamlist[
-                        streamlist.findIndex(function (item, i) {
+                        streamlist.findIndex(function(item, i) {
                           return item.id === formState.values.stream;
                         })
                       ] || null
@@ -1005,7 +1007,7 @@ const AddEditStudent = props => {
                     }}
                     value={
                       physicallyHandicappedlist[
-                        physicallyHandicappedlist.findIndex(function (item, i) {
+                        physicallyHandicappedlist.findIndex(function(item, i) {
                           return (
                             item.id === formState.values.physicallyHandicapped
                           );
@@ -1074,7 +1076,7 @@ const AddEditStudent = props => {
                       }}
                       value={
                         futureAspirationsList[
-                          futureAspirationsList.findIndex(function (item, i) {
+                          futureAspirationsList.findIndex(function(item, i) {
                             return (
                               item.id === formState.values.futureAspirations
                             );

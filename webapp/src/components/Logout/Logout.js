@@ -10,10 +10,6 @@ import * as routeConstants from "../../constants/RouteConstants";
 
 /** For Logout */
 export default function Logout(props) {
-  if (auth.getToken() !== null) {
-    auth.clearToken();
-    return <Redirect to={{ pathname: routeConstants.SIGN_IN_URL }} />;
-  } else {
-    return <Redirect to={{ pathname: routeConstants.SIGN_IN_URL }} />;
-  }
+  auth.clearAppStorage();
+  return <Redirect to={{ pathname: routeConstants.SIGN_IN_URL }} />;
 }

@@ -14,9 +14,9 @@ import {
   Collapse,
   Button,
   InputLabel,
-  ListItemIcon,
+  ListItemIcon
 } from "@material-ui/core";
-
+import SwapHorizontalCircleOutlinedIcon from "@material-ui/icons/SwapHorizontalCircleOutlined";
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
 import MenuIcon from "@material-ui/icons/Menu";
 import InputIcon from "@material-ui/icons/Input";
@@ -28,13 +28,13 @@ import { Auth as auth, CustomRouterLink } from "../../components";
 import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
 import SetIndexContext from "../../context/SetIndexContext";
 
-const useDrawerStyles = makeStyles((theme) => ({
+const useDrawerStyles = makeStyles(theme => ({
   drawer: {
     width: 240,
     [theme.breakpoints.up("lg")]: {
       marginTop: 64,
-      height: "calc(100% - 128px)",
-    },
+      height: "calc(100% - 128px)"
+    }
   },
   root: {
     backgroundColor: theme.palette.white,
@@ -42,58 +42,61 @@ const useDrawerStyles = makeStyles((theme) => ({
     flexDirection: "column",
     height: "100%",
     boxShadow: "none",
-    marginTop: "25px",
+    marginTop: "25px"
   },
   navigationpanel: {
-    margin: theme.spacing(0),
+    margin: theme.spacing(0)
   },
   divider: {
-    margin: theme.spacing(2, 0),
+    margin: theme.spacing(2, 0)
   },
   nav: {
-    marginBottom: theme.spacing(2),
-  },
+    marginBottom: theme.spacing(2)
+  }
 }));
 
-const useTopBarStyles = makeStyles((theme) => ({
+const useTopBarStyles = makeStyles(theme => ({
   root: {
     boxShadow: "none",
-    backgroundColor: "#000000",
+    backgroundColor: "#000000"
   },
   flexGrow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   signOutButton: {
-    fontSize: "14px",
+    fontSize: "14px"
   },
   loginButtonFlex: {
     display: "flex",
     flexGrow: "1",
     "& icon": {
       display: "flex",
-      alignSelf: "center",
+      alignSelf: "center"
     },
     "& label": {
       color: "#fff",
       alignItems: "center",
       display: "flex",
-      marginRight: "15px",
-    },
+      marginRight: "15px"
+    }
   },
   Iconroot: {
     display: "flex",
     alignSelf: "center",
-    marginRight: "10px",
+    marginRight: "10px"
   },
+  changePasswordButton: {
+    fontSize: "14px"
+  }
 }));
 
-const useListStyles = makeStyles((theme) => ({
+const useListStyles = makeStyles(theme => ({
   root: {},
   item: {
     display: "flex",
     paddingTop: "0",
     paddingBottom: "0",
-    margin: "0px",
+    margin: "0px"
   },
   button: {
     color: colors.blueGrey[800],
@@ -111,18 +114,18 @@ const useListStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#fff7d8",
       color: "010101",
-      borderLeft: "4px solid #f6c80a",
-    },
+      borderLeft: "4px solid #f6c80a"
+    }
   },
   activeItem: {
     backgroundColor: "#666",
     color: "#f6c80a",
-    borderLeft: "4px solid #f6c80a",
+    borderLeft: "4px solid #f6c80a"
   },
   active: {
     color: "#010101",
     backgroundColor: "#f1f1f1",
-    fontWeight: theme.typography.fontWeightBold,
+    fontWeight: theme.typography.fontWeightBold
   },
   nested: {
     paddingLeft: theme.spacing(0),
@@ -137,22 +140,22 @@ const useListStyles = makeStyles((theme) => ({
       color: "010101",
       "&:active": {
         backgroundColor: "#f1f1f1",
-        color: "010101",
+        color: "010101"
       },
       "&:hover": {
         backgroundColor: "#f1f1f1",
         color: "010101",
-        borderLeft: "4px solid #f1f1f1",
-      },
-    },
+        borderLeft: "4px solid #f1f1f1"
+      }
+    }
   },
   padding: {
     paddingTop: "0px",
-    paddingBottom: "0px",
+    paddingBottom: "0px"
   },
   expandPadding: {
-    paddingRight: "10px",
-  },
+    paddingRight: "10px"
+  }
 }));
 
 function SideAndTopNavBar(props) {
@@ -172,7 +175,7 @@ function SideAndTopNavBar(props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleClick = (name) => {
+  const handleClick = name => {
     setSubListState({ ...subListState, [name]: !get(subListState, name) });
   };
 
@@ -201,7 +204,7 @@ function SideAndTopNavBar(props) {
                   className={listClasses.button}
                   disableGutters
                   key={list.name}
-                  onClick={(e) => handleClick(list.name)}
+                  onClick={e => handleClick(list.name)}
                   selected={index === id}
                 >
                   <ListItemIcon>{list.Icon}</ListItemIcon>
@@ -221,7 +224,7 @@ function SideAndTopNavBar(props) {
                   unmountOnExit
                 >
                   <List component="div" disablePadding>
-                    {list.items.map((subList) => {
+                    {list.items.map(subList => {
                       return (
                         <ListItem
                           className={(listClasses.item, listClasses.nested)}
@@ -291,6 +294,17 @@ function SideAndTopNavBar(props) {
                     auth.getUserInfo()["last_name"]}
                 </InputLabel>
                 <IconButton
+                  className={topBarClasses.changePasswordButton}
+                  color="inherit"
+                  component={CustomRouterLink}
+                  to={routeConstants.CHANGE_PASSWORD}
+                >
+                  <div className={topBarClasses.Iconroot}>
+                    <SwapHorizontalCircleOutlinedIcon />
+                  </div>
+                  Change Password
+                </IconButton>
+                <IconButton
                   className={topBarClasses.signOutButton}
                   color="inherit"
                   component={CustomRouterLink}
@@ -304,7 +318,7 @@ function SideAndTopNavBar(props) {
 
                 <Drawer
                   classes={{
-                    paper: classes.drawer,
+                    paper: classes.drawer
                   }}
                   anchor="left"
                   variant="permanent"
@@ -324,10 +338,10 @@ function SideAndTopNavBar(props) {
                   open={mobileOpen}
                   onClose={handleDrawerToggle}
                   classes={{
-                    paper: classes.drawerPaper,
+                    paper: classes.drawerPaper
                   }}
                   ModalProps={{
-                    keepMounted: true, // Better open performance on mobile.
+                    keepMounted: true // Better open performance on mobile.
                   }}
                 >
                   {drawer}
