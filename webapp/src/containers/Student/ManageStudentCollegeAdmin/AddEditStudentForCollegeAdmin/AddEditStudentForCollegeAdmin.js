@@ -53,6 +53,15 @@ const AddEditStudentForCollegeAdmin = (props) => {
     { name: "Yes", id: true },
     { name: "No", id: false },
   ];
+  const futureAspirationsList = [
+    { id: "private_job", name: "Private Job" },
+    { id: "others", name: "Others" },
+    { id: "higher_studies", name: "Higher Studies" },
+    { id: "marriage", name: "Marriage" },
+    { id: "entrepreneurship", name: "Entrepreneurship" },
+    { id: "government_jobs", name: "Government Job" },
+    { id: "apprenticeship", name: "Apprenticeship" },
+  ];
 
   let history = useHistory();
   const [user, setUser] = useState({
@@ -242,6 +251,10 @@ const AddEditStudentForCollegeAdmin = (props) => {
         formState.values["rollnumber"] =
           props.location["dataForEdit"]["studentInfo"]["roll_number"];
       }
+      if (props.location["dataForEdit"]["studentInfo"]["future_aspirations"]) {
+        formState.values["futureAspirations"] =
+          props.location["dataForEdit"]["studentInfo"]["future_aspirations"];
+      }
 
       if (props.location["dataForEdit"]["studentInfo"]) {
         formState.values["physicallyHandicapped"] =
@@ -352,7 +365,9 @@ const AddEditStudentForCollegeAdmin = (props) => {
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
-        formState.values["password"] ? formState.values["password"] : undefined
+        formState.values["futureAspirations"]
+          ? formState.values["futureAspirations"]
+          : null
       );
       let studentName =
         props.location["dataForEdit"]["first_name"] +
@@ -413,7 +428,10 @@ const AddEditStudentForCollegeAdmin = (props) => {
           : null,
         formState.values["college"],
         formState.values["stream"],
-        parseInt(formState.values["rollnumber"])
+        parseInt(formState.values["rollnumber"]),
+        formState.values["futureAspirations"]
+          ? formState.values["futureAspirations"]
+          : null
       );
       let url =
         strapiApiConstants.STRAPI_DB_URL +
@@ -1025,6 +1043,50 @@ const AddEditStudentForCollegeAdmin = (props) => {
                             })
                           : null
                       }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={futureAspirationsList}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(
+                          "futureAspirations",
+                          event,
+                          value
+                        );
+                      }}
+                      value={
+                        futureAspirationsList[
+                          futureAspirationsList.findIndex(function (item, i) {
+                            return (
+                              item.id === formState.values.futureAspirations
+                            );
+                          })
+                        ] || null
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={hasError("futureAspirations")}
+                          label="Future Aspirations"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("futureAspirations")
+                              ? formState.errors["futureAspirations"].map(
+                                  (error) => {
+                                    return error + " ";
+                                  }
+                                )
+                              : null
+                          }
+                        />
+                      )}
                     />
                   </Grid>
                 </Grid>
