@@ -97,6 +97,9 @@ import PastActivitiesDetails from "./containers/Activity/PastActivitiesDetails";
 /** Import */
 import StudentsImport from "./containers/Import/StudentsImport/StudentsImport";
 
+/** FeedBack */
+import AddEditFeedBack from "./containers/Feedback/AddFeedback/AddFeedback";
+
 const AppRouter = props => {
   return (
     <div>
@@ -473,6 +476,15 @@ const AppRouter = props => {
           layout={Layout}
           path={routeConstants.VIEW_STUDENT_PROFILE}
         />
+
+        {/** FeedBack  */}
+        <MedhaCollegeAdminRoute
+          component={AddEditFeedBack}
+          exact
+          layout={Layout}
+          path={routeConstants.ADD_FEEDBACK}
+        />
+
         <CollegeAdminRoute
           component={AddEditStudentForCollegeAdmin}
           exact

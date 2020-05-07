@@ -308,6 +308,7 @@ const ManageCollege = props => {
   const clearFilter = () => {
     formState.filterDataParameters = {};
     // formState.filterDataParameters["name_contains"] = "";
+    selectedRowCleared(true);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -318,6 +319,7 @@ const ManageCollege = props => {
       /** Turns on the spinner */
       isDataLoading: true
     }));
+
     setRpcs([]);
     setZones([]);
     formState.filterDataParameters[COLLEGE_FILTER] = "";
