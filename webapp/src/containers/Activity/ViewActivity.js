@@ -30,7 +30,8 @@ import {
   EditGridIcon,
   ViewStudentGridIcon,
   DeleteGridIcon,
-  DownloadIcon
+  DownloadIcon,
+  ThumbsUpDownIcon
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -342,6 +343,18 @@ const ViewActivity = props => {
       });
   };
 
+  const handleAddFeedback = event => {
+    console.log("feedback----", event.title);
+    console.log("event", event);
+    setLoaderStatus(true);
+    history.push({
+      pathname: routeConstants.ADD_FEEDBACK,
+      eventId: event.id,
+      eventTitle: event.title
+    });
+    setLoaderStatus(false);
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Training and Activities", sortable: true, selector: "title" },
@@ -394,6 +407,17 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
+          {roleName === "Student" || roleName === "College Admin" ? (
+            <div className={classes.PaddingActionButton}>
+              <ThumbsUpDownIcon
+                id={cell.id}
+                value={cell.name}
+                title="Add FeedBack"
+                onClick={() => handleAddFeedback(cell)}
+              />
+            </div>
+          ) : null}
+
           {roleName === "Medha Admin" ? (
             <div className={classes.PaddingActionButton}>
               <DeleteGridIcon
