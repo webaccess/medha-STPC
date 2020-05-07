@@ -40,3 +40,4 @@ export const STRAPI_EVENT_REGISTRATION = "event-registrations";
 export const STRAPI_ADMIN = "admins";
 export const STRAPI_PAST_EVENTS = "past-events";
 export const STRAPI_CHANGE_PASSWORD = "auth/reset-password";
+export const STRAPI_CURRENT_USER = "users/me";

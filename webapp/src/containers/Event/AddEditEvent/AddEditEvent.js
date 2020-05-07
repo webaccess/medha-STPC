@@ -210,18 +210,6 @@ const AddEditEvent = props => {
         formState.values[state] = props["dataForEdit"]["state"]["id"];
       }
       if (
-        props["dataForEdit"]["colleges"] &&
-        props["dataForEdit"]["colleges"].length
-      ) {
-        formState.dataToShowForCollegeMultiSelect =
-          props["dataForEdit"]["colleges"];
-        let finalData = [];
-        for (let i in props["dataForEdit"]["colleges"]) {
-          finalData.push(props["dataForEdit"]["colleges"][i]["id"]);
-        }
-        formState.values[college] = finalData;
-      }
-      if (
         props["dataForEdit"] &&
         props["dataForEdit"]["educations"] &&
         props["dataForEdit"]["educations"].length
@@ -290,6 +278,61 @@ const AddEditEvent = props => {
     formState.counter += 1;
   }
 
+  /** Streams data for Prepopulating */
+  const prePopulateStreamsData = streamsData => {
+    if (props["editEvent"]) {
+      if (
+        props["dataForEdit"]["streams"] &&
+        props["dataForEdit"]["streams"].length
+      ) {
+        let array = [];
+        streamsData.map(stream => {
+          for (let i in props["dataForEdit"]["streams"]) {
+            if (props["dataForEdit"]["streams"][i]["id"] === stream["id"]) {
+              array.push(stream);
+            }
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          dataToShowForStreamMultiSelect: array
+        }));
+        let finalDataStream = [];
+        for (let i in props["dataForEdit"]["streams"]) {
+          finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
+        }
+        formState.values[stream] = finalDataStream;
+      }
+    }
+  };
+
+  const prePopulateCollegeData = collegeData => {
+    if (props["editEvent"]) {
+      if (
+        props["dataForEdit"]["colleges"] &&
+        props["dataForEdit"]["colleges"].length
+      ) {
+        let array = [];
+        collegeData.map(college => {
+          for (let i in props["dataForEdit"]["colleges"]) {
+            if (props["dataForEdit"]["colleges"][i]["id"] === college["id"]) {
+              array.push(college);
+            }
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          dataToShowForCollegeMultiSelect: array
+        }));
+        let finalData = [];
+        for (let i in props["dataForEdit"]["colleges"]) {
+          finalData.push(props["dataForEdit"]["colleges"][i]["id"]);
+        }
+        formState.values[college] = finalData;
+      }
+    }
+  };
+
   /** Setting educations and qualifications */
   useEffect(() => {
     setLoaderStatus(true);
@@ -352,32 +395,7 @@ const AddEditEvent = props => {
         .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
         .then(res => {
           setStreams(res.data.result);
-          if (props["editEvent"]) {
-            if (
-              props["dataForEdit"]["streams"] &&
-              props["dataForEdit"]["streams"].length
-            ) {
-              let array = [];
-              res.data.result.map(stream => {
-                for (let i in props["dataForEdit"]["streams"]) {
-                  if (
-                    props["dataForEdit"]["streams"][i]["id"] === stream["id"]
-                  ) {
-                    array.push(stream);
-                  }
-                }
-              });
-              setFormState(formState => ({
-                ...formState,
-                dataToShowForStreamMultiSelect: array
-              }));
-              let finalDataStream = [];
-              for (let i in props["dataForEdit"]["streams"]) {
-                finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
-              }
-              formState.values[stream] = finalDataStream;
-            }
-          }
+          prePopulateStreamsData(res.data.result);
         })
 
         .catch(error => {
@@ -389,6 +407,7 @@ const AddEditEvent = props => {
         streamData.push(data["stream"]);
       });
       setStreams(streamData);
+      prePopulateStreamsData(streamData);
     }
     setLoaderStatus(false);
   }, []);
@@ -478,12 +497,14 @@ const AddEditEvent = props => {
         .serviceProviderForGetRequest(COLLEGE_URL, params)
         .then(res => {
           setColleges(res.data.result);
+          prePopulateCollegeData(res.data.result);
         })
         .catch(error => {
           console.log("error", error);
         });
     } else if (formState.isCollegeAdmin) {
       setColleges([collegeInfo.college]);
+      prePopulateCollegeData([collegeInfo.college]);
     }
     setLoaderStatus(false);
   }

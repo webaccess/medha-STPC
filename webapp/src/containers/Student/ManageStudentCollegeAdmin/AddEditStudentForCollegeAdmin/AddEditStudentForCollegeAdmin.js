@@ -1054,50 +1054,6 @@ const AddEditStudentForCollegeAdmin = props => {
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={futureAspirationsList}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(
-                          "futureAspirations",
-                          event,
-                          value
-                        );
-                      }}
-                      value={
-                        futureAspirationsList[
-                          futureAspirationsList.findIndex(function (item, i) {
-                            return (
-                              item.id === formState.values.futureAspirations
-                            );
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError("futureAspirations")}
-                          label="Future Aspirations"
-                          variant="outlined"
-                          name="tester"
-                          helperText={
-                            hasError("futureAspirations")
-                              ? formState.errors["futureAspirations"].map(
-                                  error => {
-                                    return error + " ";
-                                  }
-                                )
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
                     <TextField
                       label={get(registrationSchema["username"], "label")}
                       placeholder={get(

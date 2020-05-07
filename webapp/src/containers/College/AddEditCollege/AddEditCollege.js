@@ -8,6 +8,7 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as commonUtilities from "../../../Utilities/CommonUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import {
   YellowButton,
@@ -190,17 +191,7 @@ const AddEditCollege = props => {
         }
         formState.dynamicBar = dynamicBar;
       }
-      if (
-        props["dataForEdit"]["tpos"] &&
-        props["dataForEdit"]["tpos"].length !== 0
-      ) {
-        formState.dataToShowForMultiSelect = props["dataForEdit"]["tpos"];
-        let finalData = [];
-        for (let i in props["dataForEdit"]["tpos"]) {
-          finalData.push(props["dataForEdit"]["tpos"][i]["id"]);
-        }
-        formState.values[tpos] = finalData;
-      }
+
       formState.counter += 1;
     }
   }
@@ -253,6 +244,7 @@ const AddEditCollege = props => {
     setLoaderStatus(false);
   }, []);
 
+  /** Gets data for Principals and tpos */
   useEffect(() => {
     fetchCollegeAdminData();
     return () => {};
@@ -271,6 +263,7 @@ const AddEditCollege = props => {
           .serviceProviderForGetRequest(user_url)
           .then(res => {
             setUser(res.data.result);
+            prePopulateDataForTpo(res.data.result);
           })
           .catch(error => {
             console.log("error", error);
@@ -289,12 +282,40 @@ const AddEditCollege = props => {
         .serviceProviderForGetRequest(user_url)
         .then(res => {
           setUser(res.data.result);
+          prePopulateDataForTpo(res.data.result);
         })
         .catch(error => {
           console.log("error", error);
         });
     }
   }
+
+  const prePopulateDataForTpo = tpoData => {
+    if (formState.isEditCollege) {
+      if (
+        props["dataForEdit"]["tpos"] &&
+        props["dataForEdit"]["tpos"].length !== 0
+      ) {
+        let array = [];
+        tpoData.map(tpo => {
+          for (let i in props["dataForEdit"]["tpos"]) {
+            if (props["dataForEdit"]["tpos"][i]["id"] === tpo["id"]) {
+              array.push(tpo);
+            }
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          dataToShowForMultiSelect: array
+        }));
+        let finalData = [];
+        for (let i in props["dataForEdit"]["tpos"]) {
+          finalData.push(props["dataForEdit"]["tpos"][i]["id"]);
+        }
+        formState.values[tpos] = finalData;
+      }
+    }
+  };
 
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
@@ -693,6 +714,7 @@ const AddEditCollege = props => {
               editedData: {}
             });
           } else if (auth.getUserInfo().role.name === "College Admin") {
+            commonUtilities.updateUser();
             history.push({
               pathname: routeConstants.VIEW_COLLEGE,
               fromeditCollege: true,

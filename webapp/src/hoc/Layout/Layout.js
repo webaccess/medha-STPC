@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import clsx from "clsx";
-import { SideAndTopNavBar, StickyFooter } from "../../components";
+import { SideAndTopNavBar } from "../../components";
 import { useTheme } from "@material-ui/core/styles";
 import { useMediaQuery, Backdrop, CircularProgress } from "@material-ui/core";
 import auth from "../../components/Auth/Auth";
