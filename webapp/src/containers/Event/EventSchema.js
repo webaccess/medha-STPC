@@ -111,7 +111,7 @@ const EventSchema = {
     id: "college",
     autoComplete: "college",
     required: false,
-    placeholder: "College",
+    placeholder: "Select Colleges",
     autoFocus: true,
     type: "text",
     validations: {}
@@ -121,7 +121,7 @@ const EventSchema = {
     id: "stream",
     autoComplete: "stream",
     required: false,
-    placeholder: "Stream",
+    placeholder: "Select Streams",
     autoFocus: true,
     type: "text",
     validations: {}

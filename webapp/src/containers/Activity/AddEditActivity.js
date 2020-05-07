@@ -220,6 +220,7 @@ const AddEditActivity = props => {
         //        props.location["dataForEdit"]["upload_logo"]["name"];
       }
     }
+    setLoaderStatus(false);
     formState.counter += 1;
   }
 
@@ -249,9 +250,6 @@ const AddEditActivity = props => {
         dateFrom,
         dateTo
       );
-
-      console.log(formState.errors);
-      console.log(formState.values);
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
@@ -280,12 +278,12 @@ const AddEditActivity = props => {
         isValid: true
       }));
     } else {
+      setLoaderStatus(false);
       setFormState(formState => ({
         ...formState,
         isValid: false
       }));
     }
-    setLoaderStatus(false);
   };
 
   const postActivityData = () => {
@@ -368,13 +366,11 @@ const AddEditActivity = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
-        console.log(res);
         const streams = res.data.result
           .map(college => {
             return { stream: college.stream_strength, id: college.id };
           })
           .filter(c => c);
-        console.log(streams);
         setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
