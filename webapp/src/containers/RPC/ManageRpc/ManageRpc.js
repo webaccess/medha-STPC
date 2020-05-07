@@ -146,7 +146,6 @@ const ViewRpc = (props) => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc",
       };
       Object.keys(paramsForRpc).map((key) => {
         defaultParams[key] = paramsForRpc[key];
@@ -452,6 +451,20 @@ const ViewRpc = (props) => {
       },
     },
   ];
+
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    // simulate server sort
+
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getRpcStateData(perPage, page, formState.filterDataParameters);
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -669,6 +682,8 @@ const ViewRpc = (props) => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                onSort={handleSort}
+                sortServer
                 clearSelectedRows={formState.toggleCleared}
               />
             ) : (
