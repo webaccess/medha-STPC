@@ -253,6 +253,10 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["rollnumber"] =
           props.location["dataForEdit"]["studentInfo"]["roll_number"];
       }
+      if (props.location["dataForEdit"]["studentInfo"]["future_aspirations"]) {
+        formState.values["futureAspirations"] =
+          props.location["dataForEdit"]["studentInfo"]["future_aspirations"];
+      }
 
       if (props.location["dataForEdit"]["studentInfo"]) {
         formState.values["physicallyHandicapped"] =
@@ -368,7 +372,9 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
-        formState.values["futureAspirations"],
+        formState.values["futureAspirations"]
+          ? formState.values["futureAspirations"]
+          : null,
         formState.values["password"] ? formState.values["password"] : undefined
       );
       let studentName =
@@ -425,12 +431,13 @@ const AddEditStudentForCollegeAdmin = props => {
           (selectedDate.getMonth() + 1) +
           "-" +
           selectedDate.getDate(),
-        formState.values["physicallyHandicapped"]
-          ? formState.values["physicallyHandicapped"]
-          : null,
+        formState.values["physicallyHandicapped"] ? true : false,
         formState.values["college"],
         formState.values["stream"],
-        parseInt(formState.values["rollnumber"])
+        parseInt(formState.values["rollnumber"]),
+        formState.values["futureAspirations"]
+          ? formState.values["futureAspirations"]
+          : null
       );
       let url =
         strapiApiConstants.STRAPI_DB_URL +
@@ -1042,6 +1049,50 @@ const AddEditStudentForCollegeAdmin = props => {
                             })
                           : null
                       }
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      className={classes.root}
+                      options={futureAspirationsList}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(
+                          "futureAspirations",
+                          event,
+                          value
+                        );
+                      }}
+                      value={
+                        futureAspirationsList[
+                          futureAspirationsList.findIndex(function (item, i) {
+                            return (
+                              item.id === formState.values.futureAspirations
+                            );
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError("futureAspirations")}
+                          label="Future Aspirations"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("futureAspirations")
+                              ? formState.errors["futureAspirations"].map(
+                                  error => {
+                                    return error + " ";
+                                  }
+                                )
+                              : null
+                          }
+                        />
+                      )}
                     />
                   </Grid>
                 </Grid>

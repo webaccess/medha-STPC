@@ -7,7 +7,7 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton,
+  IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -25,7 +25,7 @@ import {
   GrayButton,
   Alert,
   EditGridIcon,
-  DeleteGridIcon,
+  DeleteGridIcon
 } from "../../../components";
 import DeleteState from "./DeleteState";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -38,7 +38,7 @@ const STATES_URL =
 
 const SORT_FIELD_KEY = "_sort";
 
-const ViewStates = (props) => {
+const ViewStates = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
@@ -101,22 +101,22 @@ const ViewStates = (props) => {
     /** Message to show */
     fromDeleteModal: false,
     messageToShow: "",
-    toggleCleared: false,
+    toggleCleared: false
   });
 
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: -1,
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
-      .then((res) => {
-        setFormState((formState) => ({
+      .then(res => {
+        setFormState(formState => ({
           ...formState,
-          statesFilter: res.data.result,
+          statesFilter: res.data.result
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error > ", error);
       });
 
@@ -129,9 +129,9 @@ const ViewStates = (props) => {
       let defaultParams = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:ASC",
+        [SORT_FIELD_KEY]: "name:ASC"
       };
-      Object.keys(paramsForState).map((key) => {
+      Object.keys(paramsForState).map(key => {
         defaultParams[key] = paramsForState[key];
       });
       paramsForState = defaultParams;
@@ -139,17 +139,17 @@ const ViewStates = (props) => {
       paramsForState = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:ASC",
+        [SORT_FIELD_KEY]: "name:ASC"
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForState)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
         let tempCollegeData = [];
         let college_data = res.data.result;
@@ -158,7 +158,7 @@ const ViewStates = (props) => {
          * a float structure and store it in data
          */
         tempCollegeData = convertCollegeData(college_data);
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           states: res.data.result,
           dataToShow: tempCollegeData,
@@ -166,16 +166,16 @@ const ViewStates = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
 
   /** Converting college unstructured data into structred flat format for passing it into datatable */
-  const convertCollegeData = (data) => {
+  const convertCollegeData = data => {
     let collegeDataArray = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -203,7 +203,7 @@ const ViewStates = (props) => {
   };
 
   /** Pagination to handle page change */
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStateData(formState.pageSize, page);
     } else {
@@ -228,7 +228,7 @@ const ViewStates = (props) => {
   /** This is used for clearing filter */
   const clearFilter = () => {
     setStatesFilter([""]);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       filterState: "",
       // filterStateData: "",
@@ -237,8 +237,9 @@ const ViewStates = (props) => {
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
+    selectedRowCleared(true);
     restoreData();
   };
 
@@ -248,41 +249,41 @@ const ViewStates = (props) => {
   };
 
   /** Edit -------------------------------------------------------*/
-  const getDataForEdit = async (id) => {
+  const getDataForEdit = async id => {
     setLoaderStatus(true);
     let paramsForStates = {
-      id: id,
+      id: id
     };
     await serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForStates)
-      .then((res) => {
+      .then(res => {
         let editData = res.data.result[0];
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_STATE,
           editState: true,
-          dataForEdit: editData,
+          dataForEdit: editData
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error");
       });
     setLoaderStatus(false);
   };
 
-  const editCell = (event) => {
+  const editCell = event => {
     getDataForEdit(event.target.id);
   };
 
   /** Delete cell ------------------ */
 
-  const deleteCell = (event) => {
+  const deleteCell = event => {
     setLoaderStatus(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       dataToDelete: {
         id: event.target.id,
-        name: event.target.getAttribute("value"),
+        name: event.target.getAttribute("value")
       },
       showModalDelete: true,
       isDataDeleted: false,
@@ -290,14 +291,14 @@ const ViewStates = (props) => {
       messageToShow: "",
       fromAddState: false,
       fromEditState: false,
-      isMultiDelete: false,
+      isMultiDelete: false
     }));
   };
 
   const modalClose = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      showModalDelete: false,
+      showModalDelete: false
     }));
   };
 
@@ -306,13 +307,13 @@ const ViewStates = (props) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
       messageToShow: statusToShow,
-      isMultiDelete: false,
+      isMultiDelete: false
     }));
     if (status) {
       getStateData(formState.pageSize, 1);
@@ -324,11 +325,11 @@ const ViewStates = (props) => {
   const deleteMulUserById = () => {
     let arrayId = [];
 
-    selectedRows.forEach((d) => {
+    selectedRows.forEach(d => {
       arrayId.push(d.id);
     });
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
@@ -337,28 +338,28 @@ const ViewStates = (props) => {
       isMultiDelete: true,
       MultiDeleteID: arrayId,
       fromAddState: false,
-      fromEditState: false,
+      fromEditState: false
     }));
   };
 
   /** On select multiple rows */
-  const handleRowSelected = useCallback((state) => {
+  const handleRowSelected = useCallback(state => {
     if (state.selectedCount >= 1) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         selectedRowFilter: false,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        selectedRowFilter: true,
+        selectedRowFilter: true
       }));
     }
     setSelectedRows(state.selectedRows);
   }, []);
 
-  const handleFilterChange = (event) => {
+  const handleFilterChange = event => {
     setStatesFilter(event.target.value);
   };
 
@@ -369,7 +370,7 @@ const ViewStates = (props) => {
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES + params;
     serviceProviders
       .serviceProviderForGetRequest(FilterStateURL)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
         let tempCollegeData = [];
         let college_data = res.data.result;
@@ -379,7 +380,7 @@ const ViewStates = (props) => {
          */
 
         tempCollegeData = convertCollegeData(college_data);
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           states: res.data.result,
           dataToShow: tempCollegeData,
@@ -387,20 +388,20 @@ const ViewStates = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
 
-  const selectedRowCleared = (data) => {
+  const selectedRowCleared = data => {
     formState.toggleCleared = data;
     setTimeout(() => {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     }, 2000);
   };
@@ -411,11 +412,11 @@ const ViewStates = (props) => {
     {
       name: "Name",
       sortable: true,
-      selector: "name",
+      selector: "name"
     },
     {
       name: "Actions",
-      cell: (cell) => (
+      cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
@@ -432,9 +433,9 @@ const ViewStates = (props) => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%",
-      },
-    },
+        maxWidth: "18%"
+      }
+    }
   ];
 
   return (

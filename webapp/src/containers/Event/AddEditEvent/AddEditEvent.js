@@ -9,7 +9,8 @@ import {
   TextField,
   Typography,
   FormHelperText,
-  Button
+  Button,
+  Chip
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
@@ -221,18 +222,6 @@ const AddEditEvent = props => {
         formState.values[college] = finalData;
       }
       if (
-        props["dataForEdit"]["streams"] &&
-        props["dataForEdit"]["streams"].length
-      ) {
-        formState.dataToShowForStreamMultiSelect =
-          props["dataForEdit"]["streams"];
-        let finalDataStream = [];
-        for (let i in props["dataForEdit"]["streams"]) {
-          finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
-        }
-        formState.values[stream] = finalDataStream;
-      }
-      if (
         props["dataForEdit"] &&
         props["dataForEdit"]["educations"] &&
         props["dataForEdit"]["educations"].length
@@ -363,6 +352,32 @@ const AddEditEvent = props => {
         .serviceProviderForGetRequest(STREAM_URL, paramsForPageSize)
         .then(res => {
           setStreams(res.data.result);
+          if (props["editEvent"]) {
+            if (
+              props["dataForEdit"]["streams"] &&
+              props["dataForEdit"]["streams"].length
+            ) {
+              let array = [];
+              res.data.result.map(stream => {
+                for (let i in props["dataForEdit"]["streams"]) {
+                  if (
+                    props["dataForEdit"]["streams"][i]["id"] === stream["id"]
+                  ) {
+                    array.push(stream);
+                  }
+                }
+              });
+              setFormState(formState => ({
+                ...formState,
+                dataToShowForStreamMultiSelect: array
+              }));
+              let finalDataStream = [];
+              for (let i in props["dataForEdit"]["streams"]) {
+                finalDataStream.push(props["dataForEdit"]["streams"][i]["id"]);
+              }
+              formState.values[stream] = finalDataStream;
+            }
+          }
         })
 
         .catch(error => {

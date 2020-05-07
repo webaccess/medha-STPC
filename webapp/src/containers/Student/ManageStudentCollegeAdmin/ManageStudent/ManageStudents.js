@@ -442,6 +442,7 @@ const ManageStudents = props => {
   /** To reset search filter */
   const refreshPage = () => {
     formState.filterDataParameters = {};
+    selectedRowCleared(true);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
