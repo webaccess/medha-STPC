@@ -9,13 +9,13 @@
 const _ = require("lodash");
 const { sanitizeEntity } = require("strapi-utils");
 
-const sanitizeUser = (user) =>
+const sanitizeUser = user =>
   sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model,
+    model: strapi.query("user", "users-permissions").model
   });
 
-const formatError = (error) => [
-  { messages: [{ id: error.id, message: error.message, field: error.field }] },
+const formatError = error => [
+  { messages: [{ id: error.id, message: error.message, field: error.field }] }
 ];
 
 const { validate } = require("../validate.js");
@@ -33,7 +33,7 @@ module.exports = {
 
     if (!user) {
       return ctx.badRequest(null, [
-        { messages: [{ id: "No authorization header was found" }] },
+        { messages: [{ id: "No authorization header was found" }] }
       ]);
     }
 
@@ -53,7 +53,7 @@ module.exports = {
         environment: "",
         type: "plugin",
         name: "users-permissions",
-        key: "advanced",
+        key: "advanced"
       })
       .get();
 
@@ -63,7 +63,7 @@ module.exports = {
       password,
       contact_number,
       first_name,
-      last_name,
+      last_name
     } = ctx.request.body;
 
     if (!email) return ctx.badRequest("missing.email");
@@ -83,7 +83,7 @@ module.exports = {
         formatError({
           id: "Auth.form.error.username.taken",
           message: "Username already taken.",
-          field: ["username"],
+          field: ["username"]
         })
       );
     }
@@ -100,7 +100,7 @@ module.exports = {
           formatError({
             id: "Auth.form.error.email.taken",
             message: "Email already taken.",
-            field: ["email"],
+            field: ["email"]
           })
         );
       }
@@ -108,7 +108,7 @@ module.exports = {
 
     const params = {
       ...ctx.request.body,
-      provider: "local",
+      provider: "local"
     };
 
     const { isError, error } = await validate(params);
@@ -132,8 +132,8 @@ module.exports = {
       ctx.send({
         jwt,
         user: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
-          model: strapi.query("user", "users-permissions").model,
-        }),
+          model: strapi.query("user", "users-permissions").model
+        })
       });
     } catch (err) {
       ctx.response.badRequest("Something went wrong...");
@@ -152,7 +152,7 @@ module.exports = {
       .model.query(
         buildQuery({
           model: strapi.query("user", "users-permissions").model,
-          filters,
+          filters
         })
       )
       .fetchPage({
@@ -160,9 +160,9 @@ module.exports = {
         pageSize:
           pageSize < 0
             ? await strapi.query("user", "users-permissions").count()
-            : pageSize,
+            : pageSize
       })
-      .then(async (u) => {
+      .then(async u => {
         const response = utils.getPaginatedResponse(u);
         await utils.asyncForEach(response.result, async (user, index) => {
           const { id } = user;
@@ -214,7 +214,7 @@ module.exports = {
         environment: "",
         type: "plugin",
         name: "users-permissions",
-        key: "advanced",
+        key: "advanced"
       })
       .get();
 
@@ -222,7 +222,7 @@ module.exports = {
     const { email, username, password } = ctx.request.body;
     const usr = ctx.state.user;
     const user = await strapi.plugins["users-permissions"].services.user.fetch({
-      id,
+      id
     });
 
     if (_.has(ctx.request.body, "email") && !email) {
@@ -252,7 +252,7 @@ module.exports = {
           formatError({
             id: "Auth.form.error.username.taken",
             message: "username.alreadyTaken.",
-            field: ["username"],
+            field: ["username"]
           })
         );
       }
@@ -269,26 +269,31 @@ module.exports = {
           formatError({
             id: "Auth.form.error.email.taken",
             message: "Email already taken",
-            field: ["email"],
+            field: ["email"]
           })
         );
       }
     }
 
     let updateData = {
-      ...ctx.request.body,
+      ...ctx.request.body
     };
-
+    let validPassword;
+    if (_.has(ctx.request.body, "password")) {
+      validPassword = strapi.plugins[
+        "users-permissions"
+      ].services.user.validatePassword(password, user.password);
+    }
     if (
       _.has(ctx.request.body, "password") &&
-      password !== user.password &&
+      !validPassword &&
       usr.role.name === "Medha Admin"
     ) {
       updateData.password = await strapi.plugins[
         "users-permissions"
       ].services.user.hashPassword(updateData);
     }
-    if (_.has(ctx.request.body, "password") && password === user.password) {
+    if (_.has(ctx.request.body, "password") && validPassword) {
       delete updateData.password;
     }
 
@@ -297,5 +302,5 @@ module.exports = {
       .update({ id: id }, updateData);
 
     return utils.getFindOneResponse(sanitizeUser(data));
-  },
+  }
 };

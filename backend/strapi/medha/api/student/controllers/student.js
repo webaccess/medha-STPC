@@ -172,6 +172,8 @@ module.exports = {
 
   async edit(ctx) {
     const requestBody = ctx.request.body;
+    const admin = ctx.state.user;
+
     const userRequestBody = Object.assign(
       {},
       _.omit(requestBody, [
@@ -191,6 +193,7 @@ module.exports = {
         "future_aspirations"
       ])
     );
+
     const studentRequestData = Object.assign(
       { user: userRequestBody.id },
       _.omit(ctx.request.body, [
@@ -210,36 +213,102 @@ module.exports = {
         "role"
       ])
     );
+    const user = await strapi.plugins["users-permissions"].services.user.fetch({
+      id: userRequestBody.id
+    });
 
-    //console.log(userRequestBody);
+    let validPassword;
+    if (_.has(userRequestBody, "password") && user.password == null) {
+      validPassword = false;
+    }
+
+    if (_.has(userRequestBody, "password") && user.password != null) {
+      validPassword = strapi.plugins[
+        "users-permissions"
+      ].services.user.validatePassword(userRequestBody.password, user.password);
+    }
+
     await bookshelf
       .transaction(async t => {
         const userModel = await bookshelf
           .model("user")
           .where({ id: userRequestBody.id })
           .fetch({ lock: "forUpdate", transacting: t, require: false });
-        userModel
-          .save(
-            {
-              username: userRequestBody.username,
-              email: userRequestBody.email,
-              role: userRequestBody.role,
-              first_name: userRequestBody.first_name,
-              last_name: userRequestBody.last_name,
-              contact_number: userRequestBody.contact_number,
-              state: userRequestBody.state,
-              zone: userRequestBody.zone,
-              rpc: userRequestBody.rpc,
 
-              confirmed: userRequestBody.confirmed,
-              blocked: userRequestBody.blocked
-            },
-            { patch: true, transacting: t }
-          )
-          .catch(err => {
-            return Promise.reject({ Error: err });
-          });
+        if (validPassword == undefined) {
+          userModel
+            .save(
+              {
+                username: userRequestBody.username,
+                email: userRequestBody.email,
+                role: userRequestBody.role,
+                first_name: userRequestBody.first_name,
+                last_name: userRequestBody.last_name,
+                contact_number: userRequestBody.contact_number,
+                state: userRequestBody.state,
+                zone: userRequestBody.zone,
+                rpc: userRequestBody.rpc,
 
+                confirmed: userRequestBody.confirmed,
+                blocked: userRequestBody.blocked
+              },
+              { patch: true, transacting: t }
+            )
+            .catch(err => {
+              return Promise.reject({ Error: err });
+            });
+        }
+
+        if (validPassword == false && admin.role.name === "College Admin") {
+          userRequestBody.password = await strapi.plugins[
+            "users-permissions"
+          ].services.user.hashPassword(userRequestBody);
+          userModel
+            .save(
+              {
+                username: userRequestBody.username,
+                email: userRequestBody.email,
+                role: userRequestBody.role,
+                first_name: userRequestBody.first_name,
+                last_name: userRequestBody.last_name,
+                contact_number: userRequestBody.contact_number,
+                state: userRequestBody.state,
+                zone: userRequestBody.zone,
+                rpc: userRequestBody.rpc,
+                password: userRequestBody.password,
+                confirmed: userRequestBody.confirmed,
+                blocked: userRequestBody.blocked
+              },
+              { patch: true, transacting: t }
+            )
+            .catch(err => {
+              return Promise.reject({ Error: err });
+            });
+        }
+        if (validPassword) {
+          console.log("password matched");
+          userModel
+            .save(
+              {
+                username: userRequestBody.username,
+                email: userRequestBody.email,
+                role: userRequestBody.role,
+                first_name: userRequestBody.first_name,
+                last_name: userRequestBody.last_name,
+                contact_number: userRequestBody.contact_number,
+                state: userRequestBody.state,
+                zone: userRequestBody.zone,
+                rpc: userRequestBody.rpc,
+
+                confirmed: userRequestBody.confirmed,
+                blocked: userRequestBody.blocked
+              },
+              { patch: true, transacting: t }
+            )
+            .catch(err => {
+              return Promise.reject({ Error: err });
+            });
+        }
         const studentModel = await bookshelf
           .model("student")
           .where({ id: ctx.params.id })
