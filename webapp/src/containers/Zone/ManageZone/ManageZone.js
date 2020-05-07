@@ -8,7 +8,7 @@ import {
   Typography,
   Collapse,
   IconButton,
-  Tooltip,
+  Tooltip
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -31,7 +31,7 @@ const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 
 const SORT_FIELD_KEY = "_sort";
 
-const ViewZone = (props) => {
+const ViewZone = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
@@ -92,7 +92,7 @@ const ViewZone = (props) => {
     /** Message to show */
     fromDeleteModal: false,
     messageToShow: "",
-    toggleCleared: false,
+    toggleCleared: false
   });
 
   /** Pre-populate the data with zones data and state data. State data is used while editing the data */
@@ -106,9 +106,9 @@ const ViewZone = (props) => {
     if (paramsForZones !== null && !formUtilities.checkEmpty(paramsForZones)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
+        pageSize: pageSize
       };
-      Object.keys(paramsForZones).map((key) => {
+      Object.keys(paramsForZones).map(key => {
         defaultParams[key] = paramsForZones[key];
       });
       paramsForZones = defaultParams;
@@ -116,16 +116,16 @@ const ViewZone = (props) => {
       paramsForZones = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc",
+        [SORT_FIELD_KEY]: "name:asc"
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
     await serviceProviders
       .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
@@ -133,7 +133,7 @@ const ViewZone = (props) => {
          * a float structure and store it in data
          */
         temp = convertZoneData(res.data.result);
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           zones: res.data.result,
           dataToShow: temp,
@@ -142,15 +142,15 @@ const ViewZone = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
 
-  const convertZoneData = (data) => {
+  const convertZoneData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -178,7 +178,7 @@ const ViewZone = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getZoneData(formState.pageSize, page);
     } else {
@@ -202,14 +202,14 @@ const ViewZone = (props) => {
 
   const clearFilter = () => {
     setZonesFilter([""]);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       isClearResetFilter: true,
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true,
+      isDataLoading: true
     }));
     selectedRowCleared(true);
     /**Need to confirm this thing for resetting the data */
@@ -228,37 +228,37 @@ const ViewZone = (props) => {
   };
   */
 
-  const getDataForEdit = async (id) => {
+  const getDataForEdit = async id => {
     setLoaderStatus(true);
     let paramsForZones = {
-      id: id,
+      id: id
     };
     await serviceProviders
       .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
-      .then((res) => {
+      .then(res => {
         let editData = res.data.result[0];
         history.push({
           pathname: routeConstants.EDIT_ZONES,
           editZone: true,
-          dataForEdit: editData,
+          dataForEdit: editData
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
     setLoaderStatus(false);
   };
-  const editCell = (event) => {
+  const editCell = event => {
     getDataForEdit(event.target.id);
   };
 
-  const deleteCell = (event) => {
+  const deleteCell = event => {
     setLoaderStatus(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       dataToDelete: {
         id: event.target.id,
-        name: event.target.getAttribute("value"),
+        name: event.target.getAttribute("value")
       },
       showModalDelete: true,
       isDataDeleted: false,
@@ -266,7 +266,7 @@ const ViewZone = (props) => {
       messageToShow: "",
       fromAddZone: false,
       fromEditZone: false,
-      isMultiDelete: false,
+      isMultiDelete: false
     }));
     setLoaderStatus(false);
   };
@@ -276,13 +276,13 @@ const ViewZone = (props) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
       messageToShow: statusToShow,
-      isMultiDelete: false,
+      isMultiDelete: false
     }));
     if (status) {
       getZoneData(formState.pageSize, 1);
@@ -290,9 +290,9 @@ const ViewZone = (props) => {
   };
 
   const modalClose = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      showModalDelete: false,
+      showModalDelete: false
     }));
   };
 
@@ -301,11 +301,11 @@ const ViewZone = (props) => {
   const deleteMulUserById = () => {
     let arrayId = [];
 
-    selectedRows.forEach((d) => {
+    selectedRows.forEach(d => {
       arrayId.push(d.id);
     });
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
@@ -314,28 +314,28 @@ const ViewZone = (props) => {
       isDataDeleted: false,
       fromDeleteModal: false,
       fromAddZone: false,
-      fromEditZone: false,
+      fromEditZone: false
     }));
   };
 
   /** On select multiple rows */
-  const handleRowSelected = useCallback((state) => {
+  const handleRowSelected = useCallback(state => {
     if (state.selectedCount >= 1) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         selectedRowFilter: false,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        selectedRowFilter: true,
+        selectedRowFilter: true
       }));
     }
     setSelectedRows(state.selectedRows);
   }, []);
 
-  const handleFilterChange = (event) => {
+  const handleFilterChange = event => {
     setZonesFilter(event.target.value);
   };
 
@@ -347,7 +347,7 @@ const ViewZone = (props) => {
 
     serviceProviders
       .serviceProviderForGetRequest(FilterZoneURL)
-      .then((res) => {
+      .then(res => {
         formState.dataToShow = [];
         formState.tempData = [];
         let temp = [];
@@ -355,7 +355,7 @@ const ViewZone = (props) => {
          * a float structure and store it in data
          */
         temp = convertZoneData(res.data.result);
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           zones: res.data.result,
           dataToShow: temp,
@@ -364,20 +364,20 @@ const ViewZone = (props) => {
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
   };
 
-  const selectedRowCleared = (data) => {
+  const selectedRowCleared = data => {
     formState.toggleCleared = data;
     setTimeout(() => {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     }, 2000);
   };
@@ -388,7 +388,7 @@ const ViewZone = (props) => {
     { name: "State", sortable: true, selector: "state" },
     {
       name: "Actions",
-      cell: (cell) => (
+      cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <Tooltip title="Edit" placement="top">
@@ -421,9 +421,9 @@ const ViewZone = (props) => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%",
-      },
-    },
+        maxWidth: "18%"
+      }
+    }
   ];
 
   /** Set zone data to data in formState */
