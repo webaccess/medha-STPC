@@ -1563,6 +1563,13 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.31.tgz#d6b4f9645fee17f11319b508fb1001797425da51"
   integrity sha512-T+wnJno8uh27G9c+1T+a1/WYCHzLeDqtsGJkoEdSp2X8RTh3oOCZQcUnjAx90CS8cmmADX51O0FI/tu9s0yssg==
 
+"@types/papaparse@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@types/papaparse/-/papaparse-5.0.3.tgz#7cedc1ebc9484819af8306a8b42f9f08ca9bdb44"
+  integrity sha512-SgWGWnBGxl6XgjKDM2eoDg163ZFQtH6m6C2aOuaAf1T2gUB3rjaiPDDARbY9WlacRgZqieRG9imAfJaJ+5ouDA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -7939,6 +7946,11 @@ pako@~1.0.5:
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
 
+papaparse@^5.1.1:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-5.2.0.tgz#97976a1b135c46612773029153dc64995caa3b7b"
+  integrity sha512-ylq1wgUSnagU+MKQtNeVqrPhZuMYBvOSL00DHycFTCxownF95gpLAk1HiHdUW77N8yxRq1qHXLdlIPyBSG9NSA==
+
 parallel-transform@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/parallel-transform/-/parallel-transform-1.2.0.tgz#9049ca37d6cb2182c3b1d2c720be94d14a5814fc"
@@ -9203,6 +9215,14 @@ react-beautiful-dnd@11.0.3:
     tiny-invariant "^1.0.4"
     use-memo-one "^1.1.0"
 
+react-csv-reader@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/react-csv-reader/-/react-csv-reader-3.0.6.tgz#cfd618ba56dec747c9a6721dacdb48e6e85e8fcc"
+  integrity sha512-xxkbHgN0Uy1xkFJsyCfdagG6JJKSZ6QRmVisKNzl/LwvF+uMMUqLKebQC0+SPLxIUXOWjIZo7P+Ob+MtHrWn4Q==
+  dependencies:
+    "@types/papaparse" "^5.0.3"
+    papaparse "^5.1.1"
+
 react-data-table-component@^6.3.0:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/react-data-table-component/-/react-data-table-component-6.3.1.tgz#acbde0a34652b39ad9dcee9526d6d18d66acd6b6"
@@ -9331,6 +9351,14 @@ react-multi-carousel@^2.5.3:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/react-multi-carousel/-/react-multi-carousel-2.5.3.tgz#c7268d17099a8ad483eb11d6ad7243716ee3158c"
   integrity sha512-unjDa96C4W7CFmBNjhO+z1J2r5tphaVLxyhdBFP3ucQ1b6+jW6BHjX1p5UBZ9tBKDVtomlgHYyH7w2HZ6Yvyrg==
+
+react-papaparse@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/react-papaparse/-/react-papaparse-3.1.2.tgz#9f419679ca753df26037f600a1f9b93ccc72df5c"
+  integrity sha512-bMNkfNDBToyeBSV/J5WdCPL3MDDJecF2Wfls2MxRL+gMrsgCUmddzpd6Pz46MbTG5W/6EHq4w6zFDI6ORNPQkQ==
+  dependencies:
+    papaparse "^5.1.1"
+    prop-types "^15.7.2"
 
 react-redux@^7.0.3:
   version "7.2.0"
