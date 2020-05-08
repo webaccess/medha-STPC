@@ -54,6 +54,7 @@ const ViewStates = props => {
     statesFilter: [],
     filterDataParameters: {},
     isFilterSearch: false,
+    isSorting: false,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromEditState"]
       ? props["location"]["isDataEdited"]
@@ -193,6 +194,9 @@ const ViewStates = props => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStateData(perPage, page);
     } else {
+      if (formState.isSorting) {
+        getStateData(perPage, page, formState.filterDataParameters);
+      }
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
@@ -206,6 +210,9 @@ const ViewStates = props => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStateData(formState.pageSize, page);
     } else {
+      if (formState.isSorting) {
+        getStateData(formState.pageSize, page, formState.filterDataParameters);
+      }
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
@@ -437,18 +444,20 @@ const ViewStates = props => {
     }
   ];
 
-  const handleSort = (
+  const handleSort = async (
     column,
     sortDirection,
     perPage = formState.pageSize,
-    page = 1
+    page = formState.page
   ) => {
     // simulate server sort
-
+    setFormState(formState => ({
+      ...formState,
+      isSorting: true
+    }));
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
-
-    getStateData(perPage, page, formState.filterDataParameters);
+    await getStateData(perPage, page, formState.filterDataParameters);
   };
 
   return (
