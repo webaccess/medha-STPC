@@ -18,7 +18,7 @@ const UserSchema = {
     label: "Password",
     id: "password",
     autoComplete: "password",
-    required: true,
+    required: false,
     placeholder: "Password",
     autoFocus: true,
     type: "password",
@@ -26,10 +26,6 @@ const UserSchema = {
       required: {
         value: "true",
         message: "password is required"
-      },
-      validatePasswordMinLength: {
-        value: "true",
-        message: "Password is too short"
       }
     }
   },
