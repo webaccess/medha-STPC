@@ -123,7 +123,12 @@ const AddEditStudentForCollegeAdmin = props => {
 
     if (formState.editStudent) {
       registrationSchema["password"]["required"] = false;
-      registrationSchema["password"]["validations"] = {};
+      registrationSchema["password"]["validations"] = {
+        validatePasswordMinLength: {
+          value: "true",
+          message: "Password is too short"
+        }
+      };
     } else if (formState.addStudent) {
       registrationSchema["password"]["required"] = true;
       registrationSchema["password"]["validations"] = {
