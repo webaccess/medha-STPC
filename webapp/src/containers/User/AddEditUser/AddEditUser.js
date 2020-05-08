@@ -119,7 +119,6 @@ const AddEditUser = props => {
   if (formState.isEditUser && !formState.counter) {
     setLoaderStatus(true);
     if (props["dataForEdit"]) {
-      formState.values[password] = undefined;
       if (props["dataForEdit"]["first_name"]) {
         formState.values[firstname] = props["dataForEdit"]["first_name"];
       }
@@ -423,23 +422,9 @@ const AddEditUser = props => {
     event.preventDefault();
     setLoaderStatus(true);
     if (formState.isEditUser) {
-      UserSchema[password]["required"] = false;
-      UserSchema[password]["validations"] = {};
       if (formState.values[role]) {
         setValidationsForDifferentRoles(formState.values[role]);
       }
-    } else {
-      UserSchema[password]["required"] = true;
-      UserSchema[password]["validations"] = {
-        required: {
-          value: "true",
-          message: "password is required"
-        },
-        validatePasswordMinLength: {
-          value: "true",
-          message: "Password is too short"
-        }
-      };
     }
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
