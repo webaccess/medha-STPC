@@ -95,7 +95,7 @@ const AddEditUser = props => {
   /** Initializing all the hooks */
   const classes = useStyles();
   const history = useHistory();
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -421,6 +421,7 @@ const AddEditUser = props => {
   };
   const handleSubmit = event => {
     event.preventDefault();
+    setLoaderStatus(true);
     if (formState.isEditUser) {
       UserSchema[password]["required"] = false;
       UserSchema[password]["validations"] = {};
@@ -469,6 +470,7 @@ const AddEditUser = props => {
         isValid: true
       }));
     } else {
+      setLoaderStatus(false);
       setFormState(formState => ({
         ...formState,
         isValid: false

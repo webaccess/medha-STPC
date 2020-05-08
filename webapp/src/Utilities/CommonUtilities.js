@@ -1,5 +1,7 @@
 import { Auth as auth } from "../components";
 import * as routeConstants from "../constants/RouteConstants";
+import * as serviceProvider from "../api/Axios";
+import * as apiConstants from "../constants/StrapiApiConstants";
 
 export const setSideBarIndex = path => {
   let id = 0;
@@ -33,3 +35,16 @@ function returnId(array, path) {
     return id;
   }
 }
+
+export const updateUser = async () => {
+  await serviceProvider
+    .serviceProviderForGetRequest(
+      apiConstants.STRAPI_DB_URL + apiConstants.STRAPI_CURRENT_USER
+    )
+    .then(res => {
+      auth.setUserInfo(res.data.result, true);
+    })
+    .catch(error => {
+      console.log("Failed updating user");
+    });
+};
