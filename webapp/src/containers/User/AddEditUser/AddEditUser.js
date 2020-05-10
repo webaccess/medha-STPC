@@ -424,7 +424,12 @@ const AddEditUser = props => {
     setLoaderStatus(true);
     if (formState.isEditUser) {
       UserSchema[password]["required"] = false;
-      UserSchema[password]["validations"] = {};
+      UserSchema[password]["validations"] = {
+        validatePasswordMinLength: {
+          value: "true",
+          message: "Password is too short"
+        }
+      };
       if (formState.values[role]) {
         setValidationsForDifferentRoles(formState.values[role]);
       }
