@@ -106,8 +106,7 @@ const ViewZone = props => {
     if (paramsForZones !== null && !formUtilities.checkEmpty(paramsForZones)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
+        pageSize: pageSize
       };
       Object.keys(paramsForZones).map(key => {
         defaultParams[key] = paramsForZones[key];
@@ -124,7 +123,6 @@ const ViewZone = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(ZONES_URL, paramsForZones)
       .then(res => {
@@ -433,6 +431,19 @@ const ViewZone = props => {
   /** Empty the initial nested zones array as we have already added our data in the formState.data array*/
   //formState.zones = [];
 
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    // simulate server sort
+
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getZoneData(perPage, page, formState.filterDataParameters);
+  };
+
   const classes = useStyles();
   return (
     <Grid>
@@ -648,6 +659,8 @@ const ViewZone = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                onSort={handleSort}
+                sortServer
                 clearSelectedRows={formState.toggleCleared}
               />
             ) : (

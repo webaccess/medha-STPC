@@ -6,7 +6,7 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton,
+  IconButton
 } from "@material-ui/core";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
@@ -17,7 +17,7 @@ import {
   YellowButton,
   Alert,
   EditGridIcon,
-  DeleteGridIcon,
+  DeleteGridIcon
 } from "../../../components";
 import DeleteRpc from "./DeleteRpc";
 import * as formUtilities from "../../../Utilities/FormUtilities";
@@ -37,7 +37,7 @@ const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 
 const SORT_FIELD_KEY = "_sort";
 
-const ViewRpc = (props) => {
+const ViewRpc = props => {
   /** Value to set for Rpc filter */
   const [value, setValue] = React.useState(null);
 
@@ -110,21 +110,21 @@ const ViewRpc = (props) => {
     /**Filter RPC's */
     rpcsFilterValueToStore: "",
     rpcsFilterData: [],
-    toggleCleared: false,
+    toggleCleared: false
   });
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: -1,
+      pageSize: -1
     };
     serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
-      .then((res) => {
-        setFormState((formState) => ({
+      .then(res => {
+        setFormState(formState => ({
           ...formState,
-          rpcFilter: res.data.result,
+          rpcFilter: res.data.result
         }));
       })
-      .catch((error) => [console.log("error", error)]);
+      .catch(error => [console.log("error", error)]);
 
     getRpcStateData(10, 1);
   }, []);
@@ -134,9 +134,9 @@ const ViewRpc = (props) => {
       formState.rpcsFilterValueToStore === null ||
       formState.rpcsFilterValueToStore === ""
     ) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        rpcsFilterData: [],
+        rpcsFilterData: []
       }));
     }
   }, [formState.rpcsFilterValueToStore]);
@@ -145,10 +145,9 @@ const ViewRpc = (props) => {
     if (paramsForRpc !== null && !formUtilities.checkEmpty(paramsForRpc)) {
       let defaultParams = {
         page: page,
-        pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc",
+        pageSize: pageSize
       };
-      Object.keys(paramsForRpc).map((key) => {
+      Object.keys(paramsForRpc).map(key => {
         defaultParams[key] = paramsForRpc[key];
       });
       paramsForRpc = defaultParams;
@@ -156,17 +155,17 @@ const ViewRpc = (props) => {
       paramsForRpc = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc",
+        [SORT_FIELD_KEY]: "name:asc"
       };
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      isDataLoading: true,
+      isDataLoading: true
     }));
 
     await serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForRpc)
-      .then((res) => {
+      .then(res => {
         let currentPage = res.data.page;
         let totalRows = res.data.rowCount;
         let currentPageSize = res.data.pageSize;
@@ -175,7 +174,7 @@ const ViewRpc = (props) => {
         formState.tempData = [];
         let temp = [];
         temp = convertRpcData(res.data.result);
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           rpcs: res.data.result,
           dataToShow: temp,
@@ -184,15 +183,15 @@ const ViewRpc = (props) => {
           totalRows: totalRows,
           page: currentPage,
           pageCount: pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("rpcerror", error);
       });
   };
 
-  const convertRpcData = (data) => {
+  const convertRpcData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
@@ -220,7 +219,7 @@ const ViewRpc = (props) => {
     }
   };
 
-  const handlePageChange = async (page) => {
+  const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getRpcStateData(formState.pageSize, page);
     } else {
@@ -245,7 +244,7 @@ const ViewRpc = (props) => {
   /**---------------------------clear filter------------------------ */
   const clearFilter = () => {
     setRpcsFilter([""]);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
       isClearResetFilter: true,
@@ -256,7 +255,7 @@ const ViewRpc = (props) => {
       /** Clear filter */
       rpcsFilterValueToStore: null,
       /**Clear filters */
-      rpcsFilterData: [],
+      rpcsFilterData: []
     }));
     selectedRowCleared(true);
     /**Need to confirm this thing for resetting the data */
@@ -268,26 +267,26 @@ const ViewRpc = (props) => {
   };
 
   /**-----------edit ----------- */
-  const editCell = (event) => {
+  const editCell = event => {
     getDataForEdit(event.target.id);
   };
 
-  const getDataForEdit = async (id) => {
+  const getDataForEdit = async id => {
     setLoaderStatus(true);
     let paramsForRpcs = {
-      id: id,
+      id: id
     };
     await serviceProviders
       .serviceProviderForGetRequest(RPC_URL, paramsForRpcs)
-      .then((res) => {
+      .then(res => {
         let editData = res.data.result[0];
         history.push({
           pathname: routeConstants.EDIT_RPC,
           editRpc: true,
-          dataForEdit: editData,
+          dataForEdit: editData
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
       });
     setLoaderStatus(false);
@@ -295,13 +294,13 @@ const ViewRpc = (props) => {
 
   /** ---------Delete -------- */
 
-  const deleteCell = (event) => {
+  const deleteCell = event => {
     setLoaderStatus(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       dataToDelete: {
         id: event.target.id,
-        name: event.target.getAttribute("value"),
+        name: event.target.getAttribute("value")
       },
       showModalDelete: true,
       isDataDeleted: false,
@@ -309,7 +308,7 @@ const ViewRpc = (props) => {
       messageToShow: "",
       fromAddRpc: false,
       fromEditRpc: false,
-      isMultiDelete: false,
+      isMultiDelete: false
     }));
     setLoaderStatus(false);
   };
@@ -319,13 +318,13 @@ const ViewRpc = (props) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
       messageToShow: statusToShow,
-      isMultiDelete: false,
+      isMultiDelete: false
     }));
     if (status) {
       getRpcStateData(formState.pageSize, 1);
@@ -333,9 +332,9 @@ const ViewRpc = (props) => {
   };
 
   const modalClose = () => {
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
-      showModalDelete: false,
+      showModalDelete: false
     }));
   };
 
@@ -344,11 +343,11 @@ const ViewRpc = (props) => {
   const deleteMulUserById = () => {
     let arrayId = [];
 
-    selectedRows.forEach((d) => {
+    selectedRows.forEach(d => {
       arrayId.push(d.id);
     });
 
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       showEditModal: false,
       showModalDelete: true,
@@ -357,29 +356,29 @@ const ViewRpc = (props) => {
       isDataDeleted: false,
       fromDeleteModal: false,
       fromAddRpc: false,
-      fromEditRpc: false,
+      fromEditRpc: false
     }));
   };
 
   /** On select multiple rows */
-  const handleRowSelected = useCallback((state) => {
+  const handleRowSelected = useCallback(state => {
     if (state.selectedCount >= 1) {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
         selectedRowFilter: false,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     } else {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        selectedRowFilter: true,
+        selectedRowFilter: true
       }));
     }
     setSelectedRows(state.selectedRows);
   }, []);
 
   /** Filter methods and functions */
-  const handleFilterChange = (event) => {
+  const handleFilterChange = event => {
     setRpcsFilter(event.target.value);
   };
 
@@ -390,7 +389,7 @@ const ViewRpc = (props) => {
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS + params;
     serviceProviders
       .serviceProviderForGetRequest(FilterRpcURL)
-      .then((res) => {
+      .then(res => {
         let currentPage = res.data.page;
         let totalRows = res.data.rowCount;
         let currentPageSize = res.data.pageSize;
@@ -399,7 +398,7 @@ const ViewRpc = (props) => {
         formState.tempData = [];
         let temp = [];
         temp = convertRpcData(res.data.result);
-        setFormState((formState) => ({
+        setFormState(formState => ({
           ...formState,
           rpcs: res.data.result,
           dataToShow: temp,
@@ -408,20 +407,20 @@ const ViewRpc = (props) => {
           totalRows: totalRows,
           page: currentPage,
           pageCount: pageCount,
-          isDataLoading: false,
+          isDataLoading: false
         }));
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("filterRpcDataError", error);
       });
   };
 
-  const selectedRowCleared = (data) => {
+  const selectedRowCleared = data => {
     formState.toggleCleared = data;
     setTimeout(() => {
-      setFormState((formState) => ({
+      setFormState(formState => ({
         ...formState,
-        toggleCleared: false,
+        toggleCleared: false
       }));
     }, 2000);
   };
@@ -431,7 +430,7 @@ const ViewRpc = (props) => {
     { name: "State", sortable: true, selector: "state" },
     {
       name: "Actions",
-      cell: (cell) => (
+      cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
             <EditGridIcon id={cell.id} value={cell.name} onClick={editCell} />
@@ -448,10 +447,24 @@ const ViewRpc = (props) => {
       width: "18%",
       cellStyle: {
         width: "18%",
-        maxWidth: "18%",
-      },
-    },
+        maxWidth: "18%"
+      }
+    }
   ];
+
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    // simulate server sort
+
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getRpcStateData(perPage, page, formState.filterDataParameters);
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -632,7 +645,7 @@ const ViewRpc = (props) => {
                   variant="contained"
                   color="primary"
                   disableElevation
-                  onClick={(event) => {
+                  onClick={event => {
                     event.persist();
                     filterRpcData();
                   }}
@@ -669,6 +682,8 @@ const ViewRpc = (props) => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                onSort={handleSort}
+                sortServer
                 clearSelectedRows={formState.toggleCleared}
               />
             ) : (
