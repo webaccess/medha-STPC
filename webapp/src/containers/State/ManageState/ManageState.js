@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
   Card,
@@ -9,6 +8,7 @@ import {
   Collapse,
   IconButton
 } from "@material-ui/core";
+import orderBy from "lodash/orderBy";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
@@ -37,6 +37,7 @@ const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 
 const SORT_FIELD_KEY = "_sort";
+const STATE_FILTER = "name_contains";
 
 const ViewStates = props => {
   const [open, setOpen] = React.useState(true);
@@ -54,7 +55,6 @@ const ViewStates = props => {
     statesFilter: [],
     filterDataParameters: {},
     isFilterSearch: false,
-    isSorting: false,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromEditState"]
       ? props["location"]["isDataEdited"]
@@ -127,10 +127,19 @@ const ViewStates = props => {
   /** This seperate function is used to get the zone data*/
   const getStateData = async (pageSize, page, paramsForState = null) => {
     if (paramsForState !== null && !formUtilities.checkEmpty(paramsForState)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize
-      };
+      let defaultParams = {};
+      if (paramsForState.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "name:ASC"
+        };
+      }
       Object.keys(paramsForState).map(key => {
         defaultParams[key] = paramsForState[key];
       });
@@ -146,7 +155,6 @@ const ViewStates = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForState)
       .then(res => {
@@ -194,29 +202,23 @@ const ViewStates = props => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getStateData(perPage, page);
     } else {
-      if (formState.isSorting) {
-        getStateData(perPage, page, formState.filterDataParameters);
-      }
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getStateData(perPage, page);
+        await getStateData(perPage, page, formState.filterDataParameters);
       }
     }
   };
 
   /** Pagination to handle page change */
-  const handlePageChange = async page => {
+  const handlePageChange = page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      await getStateData(formState.pageSize, page);
+      getStateData(formState.pageSize, page);
     } else {
-      if (formState.isSorting) {
-        getStateData(formState.pageSize, page, formState.filterDataParameters);
-      }
       if (formState.isFilterSearch) {
-        await searchFilter(formState.pageSize, page);
+        searchFilter(formState.pageSize, page);
       } else {
-        await getStateData(formState.pageSize, page);
+        getStateData(formState.pageSize, page, formState.filterDataParameters);
       }
     }
   };
@@ -233,7 +235,6 @@ const ViewStates = props => {
 
   /** This is used for clearing filter */
   const clearFilter = () => {
-    setStatesFilter([""]);
     setFormState(formState => ({
       ...formState,
       filterState: "",
@@ -366,40 +367,22 @@ const ViewStates = props => {
   }, []);
 
   const handleFilterChange = event => {
-    setStatesFilter(event.target.value);
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [STATE_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
 
   const filterStateData = () => {
-    let params = "?name_contains=" + statesFilter;
-
-    let FilterStateURL =
-      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES + params;
-    serviceProviders
-      .serviceProviderForGetRequest(FilterStateURL)
-      .then(res => {
-        formState.dataToShow = [];
-        let tempCollegeData = [];
-        let college_data = res.data.result;
-
-        /** As college data is in nested form we first convert it into
-         * a float structure and store it in data
-         */
-
-        tempCollegeData = convertCollegeData(college_data);
-        setFormState(formState => ({
-          ...formState,
-          states: res.data.result,
-          dataToShow: tempCollegeData,
-          pageSize: res.data.pageSize,
-          totalRows: res.data.rowCount,
-          page: res.data.page,
-          pageCount: res.data.pageCount,
-          isDataLoading: false
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+    getStateData(
+      formState.pageSize,
+      formState.page,
+      formState.filterDataParameters
+    );
   };
 
   const selectedRowCleared = data => {
@@ -444,20 +427,15 @@ const ViewStates = props => {
     }
   ];
 
-  const handleSort = async (
+  const handleSort = (
     column,
     sortDirection,
     perPage = formState.pageSize,
-    page = formState.page
+    page = 1
   ) => {
-    // simulate server sort
-    setFormState(formState => ({
-      ...formState,
-      isSorting: true
-    }));
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
-    await getStateData(perPage, page, formState.filterDataParameters);
+    getStateData(perPage, page, formState.filterDataParameters);
   };
 
   return (
@@ -630,7 +608,7 @@ const ViewStates = props => {
                 <TextField
                   label={"Name"}
                   placeholder="Name"
-                  value={statesFilter}
+                  value={formState.filterDataParameters[STATE_FILTER] || ""}
                   variant="outlined"
                   onChange={handleFilterChange}
                 />
@@ -669,12 +647,14 @@ const ViewStates = props => {
               editEvent={editCell}
               deleteEvent={deleteCell}
               progressPending={formState.isDataLoading}
+              onSort={handleSort}
+              sortServer={true}
+              paginationDefaultPage={formState.page}
+              paginationPerPage={formState.pageSize}
               paginationTotalRows={formState.totalRows}
               paginationRowsPerPageOptions={[10, 20, 50]}
               onChangeRowsPerPage={handlePerRowsChange}
               onChangePage={handlePageChange}
-              onSort={handleSort}
-              sortServer
               clearSelectedRows={formState.toggleCleared}
             />
           ) : (

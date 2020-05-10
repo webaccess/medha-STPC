@@ -41,6 +41,9 @@ const Table = props => {
         /** Sort */
         defaultSortField={props.defaultSortField}
         defaultSortAsc={props.defaultSortAsc}
+        onSort={props.onSort}
+        sortFunction={props.sortFunction}
+        sortServer={props.sortServer}
         /** pagination */
         pagination={allowPagination}
         paginationServer
