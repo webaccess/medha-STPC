@@ -7,10 +7,13 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "test": "mocha --require co-mocha test/bootstrap.js test/**/*.test.js"
   },
   "devDependencies": {},
   "dependencies": {
+    "axios": "^0.19.2",
+    "bookshelf": "^1.1.0",
     "knex": "<0.20.0",
     "pg": "latest",
     "sqlite3": "latest",

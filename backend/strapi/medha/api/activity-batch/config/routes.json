@@ -45,6 +45,47 @@
       "path": "/activity-batches/:id",
       "handler": "activity-batch.delete",
       "config": {
+        "policies": ["checkIfStudentExist"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activity-batches/:id/students",
+      "handler": "activity-batch.student",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/remove-students",
+      "handler": "activity-batch.removeStudents",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/invalidate-activity-batch",
+      "handler": "activity-batch.inValidateActivityBatchStudents",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/validate-activity-batch",
+      "handler": "activity-batch.validateActivityBatchStudents",
+      "config": {
+        "policies": []
+      }
+    },
+
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/add-students",
+      "handler": "activity-batch.addStudentsToActivityBatch",
+      "config": {
         "policies": []
       }
     }

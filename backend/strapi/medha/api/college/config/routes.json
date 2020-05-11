@@ -9,6 +9,38 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/colleges/block",
+      "handler": "college.block",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/colleges/:id/studentregister",
+      "handler": "college.studentregister",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/colleges/unblock",
+      "handler": "college.unblock",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/colleges/:id/students",
+      "handler": "college.showStudents",
+      "config": {
+        "policies": ["isAllowed"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/colleges/count",
       "handler": "college.count",
@@ -21,7 +53,7 @@
       "path": "/colleges/:id",
       "handler": "college.findOne",
       "config": {
-        "policies": []
+        "policies": ["isAllowed"]
       }
     },
     {
@@ -29,7 +61,7 @@
       "path": "/colleges",
       "handler": "college.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -37,7 +69,39 @@
       "path": "/colleges/:id",
       "handler": "college.update",
       "config": {
+        "policies": ["validate"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/colleges/:id/event",
+      "handler": "college.event",
+      "config": {
         "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/colleges/:id/activity",
+      "handler": "college.activity",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/colleges/:id/admins",
+      "handler": "college.admins",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": " /colleges/:id/delete-students",
+      "handler": "college.deleteStudents",
+      "config": {
+        "policies": ["isAllowedDelete"]
       }
     },
     {

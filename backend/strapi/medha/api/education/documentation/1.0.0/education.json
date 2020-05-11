@@ -518,7 +518,8 @@
         "required": [
           "id",
           "qualification",
-          "board"
+          "board",
+          "year_of_passing"
         ],
         "properties": {
           "id": {
@@ -533,18 +534,15 @@
           "year_of_passing": {
             "type": "integer"
           },
-          "marks": {
-            "type": "number"
-          },
           "student": {
             "required": [
               "id",
               "father_first_name",
               "father_last_name",
-              "address",
               "date_of_birth",
               "gender",
-              "role_number"
+              "roll_number",
+              "address"
             ],
             "properties": {
               "id": {
@@ -553,7 +551,7 @@
               "user": {
                 "type": "string"
               },
-              "Stream": {
+              "stream": {
                 "type": "string"
               },
               "documents": {
@@ -574,16 +572,13 @@
               "father_last_name": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "date_of_birth": {
-                "type": "string"
+                "type": "datetime"
               },
               "gender": {
                 "type": "string"
               },
-              "role_number": {
+              "roll_number": {
                 "type": "integer"
               },
               "educations": {
@@ -591,15 +586,28 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "district": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "future_aspirations": {
+                "type": "string"
               }
             }
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       },
       "NewEducation": {
         "required": [
           "qualification",
-          "board"
+          "board",
+          "year_of_passing"
         ],
         "properties": {
           "qualification": {
@@ -611,11 +619,11 @@
           "year_of_passing": {
             "type": "integer"
           },
-          "marks": {
-            "type": "number"
-          },
           "student": {
             "type": "string"
+          },
+          "percentage": {
+            "type": "number"
           }
         }
       }

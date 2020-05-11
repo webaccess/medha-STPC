@@ -23,6 +23,9 @@
         "Third",
         "Fourth"
       ]
+    },
+    "percentage": {
+      "type": "decimal"
     }
   }
 }

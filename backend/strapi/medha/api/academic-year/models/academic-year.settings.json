@@ -10,13 +10,16 @@
   },
   "attributes": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
-    "startDate": {
-      "type": "date"
+    "start_date": {
+      "type": "datetime",
+      "required": true
     },
-    "endDate": {
-      "type": "date"
+    "end_date": {
+      "type": "datetime",
+      "required": true
     }
   }
 }

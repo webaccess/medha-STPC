@@ -19,12 +19,8 @@
       "via": "question_set"
     },
     "activities": {
-      "collection": "activity",
-      "via": "question_set"
-    },
-    "events": {
-      "collection": "event",
-      "via": "question_set"
+      "via": "question_set",
+      "collection": "activity"
     }
   }
 }

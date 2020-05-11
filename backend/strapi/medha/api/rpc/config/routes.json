@@ -21,7 +21,15 @@
       "path": "/rpcs/:id",
       "handler": "rpc.findOne",
       "config": {
-        "policies": []
+        "policies": ["isAllowed"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/rpcs/:id/colleges",
+      "handler": "rpc.colleges",
+      "config": {
+        "policies": ["isAllowed"]
       }
     },
     {
@@ -29,7 +37,7 @@
       "path": "/rpcs",
       "handler": "rpc.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -37,7 +45,7 @@
       "path": "/rpcs/:id",
       "handler": "rpc.update",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -45,7 +53,7 @@
       "path": "/rpcs/:id",
       "handler": "rpc.delete",
       "config": {
-        "policies": []
+        "policies": ["allowDelete"]
       }
     }
   ]

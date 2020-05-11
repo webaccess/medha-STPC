@@ -1,0 +1,22 @@
+{
+  "connection": "default",
+  "collectionName": "components_qualifications_qualifications",
+  "info": {
+    "name": "qualifications",
+    "icon": "asterisk"
+  },
+  "options": {},
+  "attributes": {
+    "qualification": {
+      "type": "enumeration",
+      "enum": [
+        "SSC",
+        "HSC",
+        "Diploma"
+      ]
+    },
+    "percentage": {
+      "type": "decimal"
+    }
+  }
+}

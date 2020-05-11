@@ -1190,7 +1190,8 @@
           "username",
           "email",
           "first_name",
-          "last_name"
+          "last_name",
+          "contact_number"
         ],
         "properties": {
           "id": {
@@ -1258,7 +1259,8 @@
           },
           "state": {
             "required": [
-              "id"
+              "id",
+              "name"
             ],
             "properties": {
               "id": {
@@ -1271,7 +1273,8 @@
           },
           "zone": {
             "required": [
-              "id"
+              "id",
+              "name"
             ],
             "properties": {
               "id": {
@@ -1287,7 +1290,8 @@
           },
           "rpc": {
             "required": [
-              "id"
+              "id",
+              "name"
             ],
             "properties": {
               "id": {
@@ -1296,10 +1300,10 @@
               "name": {
                 "type": "string"
               },
-              "zone": {
+              "main_college": {
                 "type": "string"
               },
-              "main_college": {
+              "state": {
                 "type": "string"
               }
             }
@@ -1307,18 +1311,16 @@
           "college": {
             "required": [
               "id",
+              "name",
               "college_code",
-              "address",
-              "college_email"
+              "college_email",
+              "address"
             ],
             "properties": {
               "id": {
                 "type": "string"
               },
               "name": {
-                "type": "string"
-              },
-              "admins": {
                 "type": "string"
               },
               "rpc": {
@@ -1327,19 +1329,31 @@
               "college_code": {
                 "type": "string"
               },
-              "address": {
-                "type": "string"
-              },
               "contact_number": {
                 "type": "string"
               },
               "college_email": {
                 "type": "string"
               },
-              "streams": {
+              "principal": {
                 "type": "string"
               },
-              "principal": {
+              "district": {
+                "type": "string"
+              },
+              "blocked": {
+                "type": "boolean"
+              },
+              "stream_strength": {
+                "type": "component"
+              },
+              "zone": {
+                "type": "string"
+              },
+              "tpos": {
+                "type": "string"
+              },
+              "address": {
                 "type": "string"
               }
             }
@@ -1351,7 +1365,8 @@
           "username",
           "email",
           "first_name",
-          "last_name"
+          "last_name",
+          "contact_number"
         ],
         "properties": {
           "username": {

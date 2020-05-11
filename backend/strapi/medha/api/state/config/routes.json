@@ -29,7 +29,7 @@
       "path": "/states",
       "handler": "state.create",
       "config": {
-        "policies": []
+        "policies": ["validate"]
       }
     },
     {
@@ -44,6 +44,30 @@
       "method": "DELETE",
       "path": "/states/:id",
       "handler": "state.delete",
+      "config": {
+        "policies": ["isDeleteAllowed"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/zones",
+      "handler": "state.zones",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/rpcs",
+      "handler": "state.rpcs",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/colleges",
+      "handler": "state.colleges",
       "config": {
         "policies": []
       }

@@ -14,7 +14,7 @@
       "plugin": "users-permissions",
       "model": "user"
     },
-    "Stream": {
+    "stream": {
       "model": "stream"
     },
     "documents": {
@@ -37,12 +37,8 @@
       "type": "string",
       "required": true
     },
-    "address": {
-      "type": "richtext",
-      "required": true
-    },
     "date_of_birth": {
-      "type": "date",
+      "type": "datetime",
       "required": true
     },
     "gender": {
@@ -53,13 +49,32 @@
       ],
       "required": true
     },
-    "role_number": {
+    "roll_number": {
       "type": "integer",
       "required": true
     },
     "educations": {
-      "via": "student",
-      "collection": "education"
+      "collection": "education",
+      "via": "student"
+    },
+    "district": {
+      "model": "district"
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "future_aspirations": {
+      "type": "enumeration",
+      "enum": [
+        "private_job",
+        "others",
+        "higher_studies",
+        "marriage",
+        "entrepreneurship",
+        "government_jobs",
+        "apprenticeship"
+      ]
     }
   }
 }

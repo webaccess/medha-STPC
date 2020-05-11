@@ -10,13 +10,15 @@
   },
   "attributes": {
     "name": {
-      "type": "string"
-    },
-    "zone": {
-      "model": "zone"
+      "type": "string",
+      "required": true,
+      "unique": true
     },
     "main_college": {
       "model": "college"
+    },
+    "state": {
+      "model": "state"
     }
   }
 }

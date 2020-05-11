@@ -1,4 +1,6 @@
 {
+  "connection": "default",
+  "collectionName": "educations",
   "info": {
     "name": "Education"
   },
@@ -16,16 +18,15 @@
       "required": true
     },
     "year_of_passing": {
-      "type": "integer"
-    },
-    "marks": {
-      "type": "decimal"
+      "type": "integer",
+      "required": true
     },
     "student": {
-      "model": "student",
-      "via": "educations"
+      "via": "educations",
+      "model": "student"
+    },
+    "percentage": {
+      "type": "decimal"
     }
-  },
-  "connection": "default",
-  "collectionName": "educations"
+  }
 }

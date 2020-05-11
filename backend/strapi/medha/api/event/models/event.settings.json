@@ -9,11 +9,9 @@
     "timestamps": true
   },
   "attributes": {
-    "Title": {
-      "type": "string"
-    },
-    "description": {
-      "type": "richtext"
+    "title": {
+      "type": "string",
+      "required": true
     },
     "start_date_time": {
       "type": "datetime",
@@ -22,9 +20,6 @@
     "end_date_time": {
       "type": "datetime",
       "required": true
-    },
-    "address": {
-      "type": "richtext"
     },
     "rpc": {
       "model": "rpc"
@@ -35,19 +30,38 @@
     "streams": {
       "collection": "stream"
     },
-    "age": {
-      "type": "integer",
-      "required": true
-    },
     "upload_logo": {
       "model": "file",
       "via": "related",
       "plugin": "upload",
       "required": false
     },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "description": {
+      "type": "richtext",
+      "required": true
+    },
     "question_set": {
-      "via": "events",
       "model": "question-set"
+    },
+    "qualifications": {
+      "type": "component",
+      "repeatable": true,
+      "component": "qualifications.qualifications"
+    },
+    "educations": {
+      "type": "component",
+      "repeatable": true,
+      "component": "educations.educations"
+    },
+    "zone": {
+      "model": "zone"
+    },
+    "state": {
+      "model": "state"
     }
   }
 }

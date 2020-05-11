@@ -10,15 +10,13 @@
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "activity_type": {
       "type": "enumeration",
-      "enum": [
-        "workshop",
-        "industrialVisit",
-        "training"
-      ]
+      "enum": ["workshop", "industrialVisit", "training"],
+      "required": true
     },
     "academic_year": {
       "model": "academic-year"
@@ -26,30 +24,20 @@
     "college": {
       "model": "college"
     },
-    "start_datetime": {
-      "type": "datetime"
+    "start_date_time": {
+      "type": "datetime",
+      "required": true
     },
-    "end_datetime": {
-      "type": "datetime"
+    "end_date_time": {
+      "type": "datetime",
+      "required": true
     },
     "education_year": {
       "type": "enumeration",
-      "enum": [
-        "First",
-        "Second",
-        "Third",
-        "Fourth"
-      ]
+      "enum": ["First", "Second", "Third", "Fourth"]
     },
     "streams": {
       "collection": "stream"
-    },
-    "address": {
-      "type": "richtext",
-      "required": true
-    },
-    "description": {
-      "type": "richtext"
     },
     "upload_logo": {
       "model": "file",
@@ -57,16 +45,20 @@
       "plugin": "upload",
       "required": false
     },
-    "age": {
-      "type": "integer",
-      "required": true
-    },
     "trainer_name": {
       "type": "string"
     },
     "question_set": {
-      "via": "activities",
-      "model": "question-set"
+      "model": "question-set",
+      "via": "activities"
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "description": {
+      "type": "richtext",
+      "required": true
     }
   }
 }

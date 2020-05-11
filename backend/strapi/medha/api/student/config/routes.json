@@ -1,6 +1,14 @@
 {
   "routes": [
     {
+      "method": "POST",
+      "path": "/students/register",
+      "handler": "student.register",
+      "config": {
+        "policies": ["validate"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/students",
       "handler": "student.find",
@@ -12,6 +20,38 @@
       "method": "GET",
       "path": "/students/count",
       "handler": "student.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/students/unapprove",
+      "handler": "student.unapprove",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/students/approve",
+      "handler": "student.approve",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/activity",
+      "handler": "student.activity",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/past-activities",
+      "handler": "student.pastActivity",
       "config": {
         "policies": []
       }
@@ -35,9 +75,9 @@
     {
       "method": "PUT",
       "path": "/students/:id",
-      "handler": "student.update",
+      "handler": "student.edit",
       "config": {
-        "policies": []
+        "policies": ["isOwner", "isValidCollegeAdmin"]
       }
     },
     {
@@ -46,6 +86,62 @@
       "handler": "student.delete",
       "config": {
         "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/education",
+      "handler": "student.education",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/document",
+      "handler": "student.document",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/academic-history",
+      "handler": "student.academicHistory",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/registeredEvents",
+      "handler": "student.registeredEvents",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/students/:id/file/:fileId",
+      "handler": "student.deleteDocument",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/past-events",
+      "handler": "student.pastEvents",
+      "config": {
+        "policies": ["isOwner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/:id/events",
+      "handler": "student.events",
+      "config": {
+        "policies": ["isOwner"]
       }
     }
   ]
