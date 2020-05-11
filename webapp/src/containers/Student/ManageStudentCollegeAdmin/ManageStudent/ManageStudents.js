@@ -47,6 +47,7 @@ const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_FILTER = "user.first_name_contains";
 const STREAM_FILTER = "stream.id";
 const VERIFIEDBYCOLLEGE = "verifiedByCollege";
+const SORT_FIELD_KEY = "_sort";
 
 const ManageStudents = props => {
   const history = useHistory();
@@ -115,10 +116,19 @@ const ManageStudents = props => {
 
   const getStudentData = async (pageSize, page, paramsForUsers = null) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize
-      };
+      let defaultParams = {};
+      if (paramsForUsers.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "user.first_name:asc"
+        };
+      }
       Object.keys(paramsForUsers).map(key => {
         defaultParams[key] = paramsForUsers[key];
       });
@@ -126,10 +136,10 @@ const ManageStudents = props => {
     } else {
       paramsForUsers = {
         page: page,
-        pageSize: pageSize
+        pageSize: pageSize,
+        [SORT_FIELD_KEY]: "user.first_name:asc"
       };
     }
-
     if (
       auth.getUserInfo().role.name === "College Admin" &&
       auth.getUserInfo().college !== null &&
@@ -224,7 +234,6 @@ const ManageStudents = props => {
         studentDataArray.push(tempIndividualStudentData);
         tempIndividualStudentData["Approved"] = data[i]["verifiedByCollege"];
       }
-
       return studentDataArray;
     }
   };
@@ -352,7 +361,6 @@ const ManageStudents = props => {
   const handleCloseDeleteModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
     setOpen(true);
-    clearFilter();
     setFormState(formState => ({
       ...formState,
       isDataDeleted: status,
@@ -362,7 +370,7 @@ const ManageStudents = props => {
       messageToShow: statusToShow
     }));
     if (status) {
-      getStudentData(formState.pageSize, 1);
+      getStudentData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
@@ -422,7 +430,7 @@ const ManageStudents = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getStudentData(perPage, page);
+        await getStudentData(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -434,9 +442,27 @@ const ManageStudents = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getStudentData(formState.pageSize, page);
+        await getStudentData(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
+  };
+
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    if (column.selector === "stream") {
+      column.selector = "stream.name";
+    }
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getStudentData(perPage, page, formState.filterDataParameters);
   };
 
   /** To reset search filter */
@@ -487,7 +513,6 @@ const ManageStudents = props => {
   const handleCloseApproveUnapproveModal = (status, statusToShow = "") => {
     /** This restores all the data when we close the modal */
     setOpen(true);
-    clearFilter();
     setFormState(formState => ({
       ...formState,
       isDataApproveUnapprove: status,
@@ -500,7 +525,11 @@ const ManageStudents = props => {
       messageToShow: statusToShow
     }));
     if (status) {
-      getStudentData(formState.pageSize, 1);
+      getStudentData(
+        formState.pageSize,
+        formState.page,
+        formState.filterDataParameters
+      );
     }
   };
 
@@ -605,19 +634,12 @@ const ManageStudents = props => {
     });
   };
 
-  const clearFilter = () => {
-    setFormState(formState => ({
-      ...formState,
-      checked: false,
-      filterDataParameters: {}
-    }));
-  };
   /** Columns to show in table */
   const column = [
     {
       name: "Name",
       sortable: true,
-      selector: "name",
+      selector: "user.first_name",
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
@@ -987,12 +1009,16 @@ const ManageStudents = props => {
               <Table
                 data={formState.student}
                 column={column}
-                defaultSortField="name"
+                defaultSortField="user.first_name"
                 defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}
+                onSort={handleSort}
+                sortServer={true}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
