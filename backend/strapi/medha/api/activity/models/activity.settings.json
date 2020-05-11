@@ -1,0 +1,72 @@
+{
+  "connection": "default",
+  "collectionName": "activities",
+  "info": {
+    "name": "Activity"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "activity_type": {
+      "type": "enumeration",
+      "enum": [
+        "workshop",
+        "industrialVisit",
+        "training"
+      ]
+    },
+    "academic_year": {
+      "model": "academic-year"
+    },
+    "college": {
+      "model": "college"
+    },
+    "start_datetime": {
+      "type": "datetime"
+    },
+    "end_datetime": {
+      "type": "datetime"
+    },
+    "education_year": {
+      "type": "enumeration",
+      "enum": [
+        "First",
+        "Second",
+        "Third",
+        "Fourth"
+      ]
+    },
+    "streams": {
+      "collection": "stream"
+    },
+    "address": {
+      "type": "richtext",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "upload_logo": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "age": {
+      "type": "integer",
+      "required": true
+    },
+    "trainer_name": {
+      "type": "string"
+    },
+    "question_set": {
+      "via": "activities",
+      "model": "question-set"
+    }
+  }
+}

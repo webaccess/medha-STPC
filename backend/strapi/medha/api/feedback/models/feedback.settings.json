@@ -1,0 +1,26 @@
+{
+  "connection": "default",
+  "collectionName": "feedbacks",
+  "info": {
+    "name": "Feedback"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "activity": {
+      "model": "activity"
+    },
+    "event": {
+      "model": "event"
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "question_set": {
+      "model": "question-set"
+    }
+  }
+}

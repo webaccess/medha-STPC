@@ -1,0 +1,25 @@
+{
+  "info": {
+    "name": "Activity Batch Attendance"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "activity_batch": {
+      "model": "activity-batch"
+    },
+    "student": {
+      "model": "student"
+    },
+    "markedByStudent": {
+      "type": "boolean"
+    },
+    "verifiedByCollege": {
+      "type": "boolean"
+    }
+  },
+  "connection": "default",
+  "collectionName": "activity_batch_attendances"
+}

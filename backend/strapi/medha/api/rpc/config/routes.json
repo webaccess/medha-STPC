@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/rpcs",
+      "handler": "rpc.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/rpcs/count",
+      "handler": "rpc.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/rpcs/:id",
+      "handler": "rpc.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/rpcs",
+      "handler": "rpc.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/rpcs/:id",
+      "handler": "rpc.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/rpcs/:id",
+      "handler": "rpc.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

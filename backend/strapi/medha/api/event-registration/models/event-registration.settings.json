@@ -1,0 +1,28 @@
+{
+  "connection": "default",
+  "collectionName": "event_registrations",
+  "info": {
+    "name": "Event Registration"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "event": {
+      "model": "event"
+    },
+    "student": {
+      "model": "student"
+    },
+    "attendance_verified": {
+      "type": "boolean"
+    },
+    "hired_at_event": {
+      "type": "boolean"
+    },
+    "plan_on_attending": {
+      "type": "boolean"
+    }
+  }
+}

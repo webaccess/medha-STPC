@@ -1,0 +1,31 @@
+{
+  "info": {
+    "name": "Education"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "qualification": {
+      "type": "string",
+      "required": true
+    },
+    "board": {
+      "type": "string",
+      "required": true
+    },
+    "year_of_passing": {
+      "type": "integer"
+    },
+    "marks": {
+      "type": "decimal"
+    },
+    "student": {
+      "model": "student",
+      "via": "educations"
+    }
+  },
+  "connection": "default",
+  "collectionName": "educations"
+}

@@ -1,0 +1,53 @@
+{
+  "connection": "default",
+  "collectionName": "events",
+  "info": {
+    "name": "Event"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "start_date_time": {
+      "type": "datetime",
+      "required": true
+    },
+    "end_date_time": {
+      "type": "datetime",
+      "required": true
+    },
+    "address": {
+      "type": "richtext"
+    },
+    "rpc": {
+      "model": "rpc"
+    },
+    "colleges": {
+      "collection": "college"
+    },
+    "streams": {
+      "collection": "stream"
+    },
+    "age": {
+      "type": "integer",
+      "required": true
+    },
+    "upload_logo": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "question_set": {
+      "via": "events",
+      "model": "question-set"
+    }
+  }
+}
