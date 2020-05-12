@@ -39,6 +39,7 @@ import { useHistory } from "react-router-dom";
 import moment from "moment";
 import XLSX from "xlsx";
 import LoaderContext from "../../context/LoaderContext";
+import AddEditFeedBack from "../../containers/Feedback/AddFeedback/AddFeedback";
 
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
@@ -81,7 +82,11 @@ const ViewActivity = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    /** FeedBack */
+    showModalFeedback: false,
+    activityTitle: "",
+    activityID: ""
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -343,16 +348,24 @@ const ViewActivity = props => {
       });
   };
 
-  const handleAddFeedback = event => {
+  const addFeedbackHandler = event => {
     console.log("feedback----", event.title);
     console.log("event", event);
     setLoaderStatus(true);
-    history.push({
-      pathname: routeConstants.ADD_FEEDBACK,
-      eventId: event.id,
-      eventTitle: event.title
-    });
+    setFormState(formState => ({
+      ...formState,
+      showModalFeedback: true,
+      activityTitle: event.title,
+      activityID: event.id
+    }));
+
     setLoaderStatus(false);
+  };
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalFeedback: false
+    }));
   };
 
   /** Columns to show in table */
@@ -413,7 +426,7 @@ const ViewActivity = props => {
                 id={cell.id}
                 value={cell.name}
                 title="Add FeedBack"
-                onClick={() => handleAddFeedback(cell)}
+                onClick={() => addFeedbackHandler(cell)}
               />
             </div>
           ) : null}
@@ -650,6 +663,11 @@ const ViewActivity = props => {
           id={formState.dataToDelete["id"]}
           deleteEvent={isDeleteCellCompleted}
         /> */}
+        <AddEditFeedBack
+          showModal={formState.showModalFeedback}
+          modalClose={modalClose}
+          activityTitle={formState.activityTitle}
+        />
       </Grid>
     </Grid>
   );
