@@ -813,7 +813,7 @@ const ManageEvent = props => {
                   onChange={handleFilterChangeForEventField}
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <InlineDatePicker
                   id="startDate"
                   label="Start Date"
@@ -833,7 +833,7 @@ const ManageEvent = props => {
                   }
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <InlineDatePicker
                   id="endDate"
                   label="End Date"
