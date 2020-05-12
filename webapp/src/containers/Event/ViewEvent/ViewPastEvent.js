@@ -14,7 +14,8 @@ import {
   GrayButton,
   YellowButton,
   InlineDatePicker,
-  PastEventStatus
+  PastEventStatus,
+  FeedBack
 } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import auth from "../../../components/Auth";
@@ -23,14 +24,19 @@ import * as serviceProviders from "../../../api/Axios";
 import moment from "moment";
 import * as genericConstants from "../../../constants/GenericConstants";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import AddEditFeedBack from "../../Feedback/AddFeedback/AddFeedback";
+import LoaderContext from "../../../context/LoaderContext";
+import { useContext } from "react";
 
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
 const END_DATE_FILTER = "end_date_time_lt";
 const STATUS_FILTER = "hasAttended";
+const SORT_FIELD_KEY = "_sort";
 
 const ViewPastEvent = props => {
   const classes = useStyles();
+  const { setLoaderStatus } = useContext(LoaderContext);
   const [statusFilter, setStatusFilter] = useState([]);
   const [formState, setFormState] = useState({
     PastEvent: [],
@@ -46,7 +52,11 @@ const ViewPastEvent = props => {
     filterDataParameters: {},
     startDate: null,
     endDate: null,
-    errors: {}
+    errors: {},
+    showModalFeedback: false,
+    EventTitle: null,
+    activityID: null,
+    isGiveFeedback: false
   });
 
   useEffect(() => {
@@ -59,20 +69,32 @@ const ViewPastEvent = props => {
     setStatusFilter(genericConstants.EVENT_STATUS);
   };
 
-  const getPastEvent = async (pageSize, page, paramsForUsers = null) => {
-    if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize,
-        isRegistered: true,
-        _sort: "start_date_time:desc"
-      };
-      Object.keys(paramsForUsers).map(key => {
-        defaultParams[key] = paramsForUsers[key];
+  const getPastEvent = async (pageSize, page, paramsForEvents = null) => {
+    if (
+      paramsForEvents !== null &&
+      !formUtilities.checkEmpty(paramsForEvents)
+    ) {
+      let defaultParams = {};
+      if (paramsForEvents.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          isRegistered: true
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          isRegistered: true,
+          [SORT_FIELD_KEY]: "start_date_time:desc"
+        };
+      }
+      Object.keys(paramsForEvents).map(key => {
+        defaultParams[key] = paramsForEvents[key];
       });
-      paramsForUsers = defaultParams;
+      paramsForEvents = defaultParams;
     } else {
-      paramsForUsers = {
+      paramsForEvents = {
         page: page,
         pageSize: pageSize,
         isRegistered: true,
@@ -99,7 +121,7 @@ const ViewPastEvent = props => {
       }));
 
       serviceProviders
-        .serviceProviderForGetRequest(PASTEVENT_URL, paramsForUsers)
+        .serviceProviderForGetRequest(PASTEVENT_URL, paramsForEvents)
         .then(res => {
           let currentPage = res.data.page;
           let totalRows = res.data.rowCount;
@@ -242,7 +264,7 @@ const ViewPastEvent = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getPastEvent(perPage, page);
+        await getPastEvent(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -254,7 +276,11 @@ const ViewPastEvent = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getPastEvent(formState.pageSize, page);
+        await getPastEvent(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
   };
@@ -286,6 +312,17 @@ const ViewPastEvent = props => {
     }
   };
 
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getPastEvent(perPage, page, formState.filterDataParameters);
+  };
+
   /** Filter methods and functions */
   /** This restores all the data when we clear the filters*/
 
@@ -311,11 +348,40 @@ const ViewPastEvent = props => {
     getStatusFilterData();
   };
 
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalFeedback: true,
+      EventTitle: null,
+      activityID: null,
+      isGiveFeedback: false
+    }));
+    getPastEvent(
+      formState.pageSize,
+      formState.page,
+      formState.filterDataParameters
+    );
+  };
+
+  const giveFeedback = event => {
+    setLoaderStatus(true);
+    setFormState(formState => ({
+      ...formState,
+      showModalFeedback: true,
+      EventTitle: event.eventName,
+      activityID: event.id,
+      isGiveFeedback: true
+    }));
+
+    setLoaderStatus(false);
+  };
+
   /** Columns to show in table */
   const column = [
     {
       name: "Name",
       sortable: true,
+      selector: "title",
       cell: row => (
         <Tooltip
           title={
@@ -338,6 +404,16 @@ const ViewPastEvent = props => {
           <div className={classes.PaddingFirstActionButton}>
             <PastEventStatus style={cell.status} />
           </div>
+          {cell.status ? (
+            <div className={classes.PaddingActionButton}>
+              <FeedBack
+                isGiveFeedback={true}
+                id={cell.id}
+                value={cell.eventName}
+                onClick={() => giveFeedback(cell)}
+              />
+            </div>
+          ) : null}
         </div>
       )
     }
@@ -363,7 +439,7 @@ const ViewPastEvent = props => {
                   onChange={handleFilterChangeForEventField}
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <InlineDatePicker
                   id="startDate"
                   label="Start Date"
@@ -383,7 +459,7 @@ const ViewPastEvent = props => {
                   }
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <InlineDatePicker
                   id="endDate"
                   label="End Date"
@@ -470,9 +546,14 @@ const ViewPastEvent = props => {
               <Table
                 data={formState.PastEvent}
                 column={column}
-                defaultSortAsc={formState.sortAscending}
+                defaultSortField="start_date_time"
+                onSort={handleSort}
+                sortServer={true}
+                defaultSortAsc={false}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
@@ -485,7 +566,13 @@ const ViewPastEvent = props => {
               {genericConstants.NO_DATA_TO_SHOW_TEXT}
             </div>
           )}
-
+          {formState.isGiveFeedback ? (
+            <AddEditFeedBack
+              showModal={formState.showModalFeedback}
+              modalClose={modalClose}
+              Title={formState.EventTitle}
+            />
+          ) : null}
           {/* Action button component */}
         </Card>
       </Grid>
