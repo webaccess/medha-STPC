@@ -1,9 +1,22 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
 const HowToReg = props => {
   return (
-    <Tooltip title={props.style ? "Absent" : "Present"} placement="top">
+    <Tooltip
+      title={
+        props.style ? (
+          <React.Fragment>
+            <Typography color="inherit">Absent</Typography>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography color="inherit">Present</Typography>
+          </React.Fragment>
+        )
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}
