@@ -224,11 +224,19 @@ const ManageUser = props => {
 
   const getUserData = async (pageSize, page, paramsForUsers = null) => {
     if (paramsForUsers !== null && !formUtilities.checkEmpty(paramsForUsers)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize,
-        [SORT_FIELD_KEY]: "username:asc"
-      };
+      let defaultParams = {};
+      if (paramsForUsers.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "title:asc"
+        };
+      }
       Object.keys(paramsForUsers).map(key => {
         defaultParams[key] = paramsForUsers[key];
       });
@@ -296,7 +304,7 @@ const ManageUser = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getUserData(perPage, page);
+        await getUserData(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -308,7 +316,11 @@ const ManageUser = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getUserData(formState.pageSize, page);
+        await getUserData(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
   };
@@ -396,7 +408,7 @@ const ManageUser = props => {
       messageToShow: statusToShow
     }));
     if (status) {
-      getUserData(formState.pageSize, 1);
+      getUserData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
@@ -642,7 +654,11 @@ const ManageUser = props => {
       messageToShow: statusToShow
     }));
     if (status) {
-      getUserData(formState.pageSize, 1);
+      getUserData(
+        formState.pageSize,
+        formState.page,
+        formState.filterDataParameters
+      );
     }
   };
 
@@ -792,6 +808,17 @@ const ManageUser = props => {
       }
     }
   ];
+
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getUserData(perPage, page, formState.filterDataParameters);
+  };
 
   return (
     <Grid>
@@ -1234,6 +1261,10 @@ const ManageUser = props => {
                 defaultSortField="username"
                 defaultSortAsc={formState.sortAscending}
                 progressPending={formState.isDataLoading}
+                onSort={handleSort}
+                sortServer={true}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}

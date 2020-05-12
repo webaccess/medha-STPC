@@ -89,6 +89,7 @@ const ViewZone = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
+    resetPagination: false,
     /** Message to show */
     fromDeleteModal: false,
     messageToShow: "",
@@ -104,10 +105,19 @@ const ViewZone = props => {
   /** This seperate function is used to get the zone data*/
   const getZoneData = async (pageSize, page, paramsForZones = null) => {
     if (paramsForZones !== null && !formUtilities.checkEmpty(paramsForZones)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize
-      };
+      let defaultParams = {};
+      if (paramsForZones.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "name:asc"
+        };
+      }
       Object.keys(paramsForZones).map(key => {
         defaultParams[key] = paramsForZones[key];
       });
@@ -173,7 +183,7 @@ const ViewZone = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getZoneData(perPage, page);
+        await getZoneData(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -185,7 +195,11 @@ const ViewZone = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getZoneData(formState.pageSize, page);
+        await getZoneData(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
   };
@@ -285,7 +299,7 @@ const ViewZone = props => {
       isMultiDelete: false
     }));
     if (status) {
-      getZoneData(formState.pageSize, 1);
+      getZoneData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
@@ -437,8 +451,6 @@ const ViewZone = props => {
     perPage = formState.pageSize,
     page = 1
   ) => {
-    // simulate server sort
-
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
     getZoneData(perPage, page, formState.filterDataParameters);
@@ -652,15 +664,18 @@ const ViewZone = props => {
                 defaultSortField="name"
                 onSelectedRowsChange={handleRowSelected}
                 defaultSortAsc={formState.sortAscending}
+                paginationResetDefaultPage={formState.resetPagination}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
                 onSort={handleSort}
-                sortServer
+                sortServer={true}
                 clearSelectedRows={formState.toggleCleared}
               />
             ) : (
