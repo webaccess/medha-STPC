@@ -40,6 +40,7 @@ import moment from "moment";
 import XLSX from "xlsx";
 import LoaderContext from "../../context/LoaderContext";
 import AddEditFeedBack from "../../containers/Feedback/AddFeedback/AddFeedback";
+import ViewFeedBack from "../../containers/Feedback/ViewFeedback/ViewFeedback";
 
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
@@ -86,7 +87,8 @@ const ViewActivity = props => {
     /** FeedBack */
     showModalFeedback: false,
     activityTitle: "",
-    activityID: ""
+    activityID: "",
+    showViewFeedbackModal: false
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -361,10 +363,22 @@ const ViewActivity = props => {
 
     setLoaderStatus(false);
   };
+
+  const viewFeedbackHandler = event => {
+    setLoaderStatus(true);
+    setFormState(formState => ({
+      ...formState,
+      showViewFeedbackModal: true,
+      activityTitle: event.title,
+      activityID: event.id
+    }));
+  };
+
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
-      showModalFeedback: false
+      showModalFeedback: false,
+      showViewFeedbackModal: false
     }));
   };
 
@@ -427,6 +441,16 @@ const ViewActivity = props => {
                 value={cell.name}
                 title="Add FeedBack"
                 onClick={() => addFeedbackHandler(cell)}
+              />
+            </div>
+          ) : null}
+          {roleName === "College Admin" ? (
+            <div className={classes.PaddingActionButton}>
+              <ThumbsUpDownIcon
+                id={cell.id}
+                value={cell.name}
+                title="View FeedBack"
+                onClick={() => viewFeedbackHandler(cell)}
               />
             </div>
           ) : null}
@@ -668,6 +692,7 @@ const ViewActivity = props => {
           modalClose={modalClose}
           activityTitle={formState.activityTitle}
         />
+        <ViewFeedBack modalClose={modalClose} />
       </Grid>
     </Grid>
   );
