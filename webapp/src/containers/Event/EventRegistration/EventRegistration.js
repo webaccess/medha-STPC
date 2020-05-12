@@ -35,7 +35,6 @@ const RegisterEvent = props => {
     isErrorAddingStudentToEvent: false,
     fromAddStudentToRecruitmentDrive: false
   });
-
   if (props.showModal && !formState.stateCounter) {
     formState.stateCounter = 0;
     formState.values[EVENT_ID] = props.eventId;
@@ -46,9 +45,11 @@ const RegisterEvent = props => {
     formState.fromAddStudentToRecruitmentDrive = props.fromAddStudentToRecruitmentDrive
       ? true
       : false;
+    formState.stateCounter += 1;
   }
 
   const handleSubmit = async event => {
+    props.clearSelectedRow(true);
     event.persist();
     setOpen(true);
     if (formState.fromAddStudentToRecruitmentDrive) {
@@ -93,7 +94,7 @@ const RegisterEvent = props => {
               "'",
             true
           );
-          props.modalClose();
+          handleCloseModal();
         } else {
           props.setStatusDataWhileClosingModal(
             true,
@@ -104,7 +105,7 @@ const RegisterEvent = props => {
               "'",
             true
           );
-          props.modalClose();
+          handleCloseModal();
         }
       } else {
         if (formState.isErrorAddingStudentToEvent) {
@@ -113,7 +114,7 @@ const RegisterEvent = props => {
             "Error registering student to the event '" + props.eventTitle + "'",
             true
           );
-          props.modalClose();
+          handleCloseModal();
         } else {
           props.setStatusDataWhileClosingModal(
             true,
@@ -122,7 +123,7 @@ const RegisterEvent = props => {
               "'",
             true
           );
-          props.modalClose();
+          handleCloseModal();
         }
       }
 
@@ -159,6 +160,18 @@ const RegisterEvent = props => {
         });
     }
   };
+
+  const handleCloseModal = () => {
+    setFormState(formState => ({
+      ...formState,
+      isValid: false,
+      values: {},
+      stateCounter: 0,
+      isMultipleAdding: false
+    }));
+    props.modalClose();
+  };
+
   const classes = useStyles();
   return (
     <Modal
@@ -166,7 +179,7 @@ const RegisterEvent = props => {
       aria-describedby="transition-modal-description"
       className={classes.modal}
       open={props.showModal}
-      onClose={props.modalClose}
+      onClose={handleCloseModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
@@ -201,8 +214,8 @@ const RegisterEvent = props => {
                       </p>
                     ) : (
                       <p>
-                        Are you sure you want to register {props.name}{" "}
-                        for the event "{props.eventTitle}" ?
+                        Are you sure you want to register {props.name} for the
+                        event "{props.eventTitle}" ?
                       </p>
                     )
                   ) : (

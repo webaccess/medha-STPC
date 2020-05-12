@@ -71,6 +71,7 @@ const ManageEvent = props => {
     toggleCleared: false,
     isEventCleared: "",
     /** Pagination and sortinig data */
+    resetPagination: false,
     isDataLoading: false,
     pageSize: "",
     totalRows: "",
@@ -117,25 +118,33 @@ const ManageEvent = props => {
     }
   }, []);
 
-  const getEventData = async (pageSize, page, paramsForevents = null) => {
+  const getEventData = async (pageSize, page, paramsForEvents = null) => {
     if (
-      paramsForevents !== null &&
-      !formUtilities.checkEmpty(paramsForevents)
+      paramsForEvents !== null &&
+      !formUtilities.checkEmpty(paramsForEvents)
     ) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize,
-        [SORT_FIELD_KEY]: "start_date_time:asc"
-      };
-      Object.keys(paramsForevents).map(key => {
-        defaultParams[key] = paramsForevents[key];
+      let defaultParams = {};
+      if (paramsForEvents.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "title:asc"
+        };
+      }
+      Object.keys(paramsForEvents).map(key => {
+        defaultParams[key] = paramsForEvents[key];
       });
-      paramsForevents = defaultParams;
+      paramsForEvents = defaultParams;
     } else {
-      paramsForevents = {
+      paramsForEvents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "start_date_time:asc"
+        [SORT_FIELD_KEY]: "title:asc"
       };
     }
     setFormState(formState => ({
@@ -153,7 +162,7 @@ const ManageEvent = props => {
         await serviceProviders
           .serviceProviderForGetRequest(
             EVENTS_FOR_COLLEGE_ADMIN,
-            paramsForevents
+            paramsForEvents
           )
           .then(res => {
             formState.dataToShow = [];
@@ -177,7 +186,7 @@ const ManageEvent = props => {
           });
       } else if (auth.getUserInfo().role.name === "Medha Admin") {
         await serviceProviders
-          .serviceProviderForGetRequest(EVENT_URL, paramsForevents)
+          .serviceProviderForGetRequest(EVENT_URL, paramsForEvents)
           .then(res => {
             formState.dataToShow = [];
             formState.tempData = [];
@@ -275,7 +284,7 @@ const ManageEvent = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getEventData(perPage, page);
+        await getEventData(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -287,7 +296,11 @@ const ManageEvent = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getEventData(formState.pageSize, page);
+        await getEventData(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
   };
@@ -323,7 +336,7 @@ const ManageEvent = props => {
       messageToShow: statusToShow
     }));
     if (status) {
-      getEventData(formState.pageSize, 1);
+      getEventData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
@@ -438,6 +451,7 @@ const ManageEvent = props => {
     {
       name: "Name",
       sortable: true,
+      selector: "title",
       cell: row => (
         <Tooltip
           title={
@@ -451,8 +465,8 @@ const ManageEvent = props => {
         </Tooltip>
       )
     },
-    { name: "Start Date", selector: "start_date_time" },
-    { name: "End Date", selector: "end_date_time" },
+    { name: "Start Date", sortable: true, selector: "start_date_time" },
+    { name: "End Date", sortable: true, selector: "end_date_time" },
     {
       name: "Actions",
       cell: cell => (
@@ -606,6 +620,17 @@ const ManageEvent = props => {
     } else {
       await getEventData(perPage, page);
     }
+  };
+
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getEventData(perPage, page, formState.filterDataParameters);
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
@@ -861,9 +886,15 @@ const ManageEvent = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
+                defaultSortField="title"
+                defaultSortAsc={formState.sortAscending}
+                paginationResetDefaultPage={formState.resetPagination}
                 onSelectedRowsChange={handleRowSelected}
                 deleteEvent={deleteCell}
-                defaultSortAsc={formState.sortAscending}
+                onSort={handleSort}
+                sortServer={true}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 progressPending={formState.isDataLoading}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}

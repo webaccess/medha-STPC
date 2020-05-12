@@ -22,12 +22,7 @@ const UserSchema = {
     placeholder: "Password",
     autoFocus: true,
     type: "password",
-    validations: {
-      required: {
-        value: "true",
-        message: "password is required"
-      }
-    }
+    validations: {}
   },
   firstname: {
     label: "First Name",
