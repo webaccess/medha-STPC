@@ -195,11 +195,19 @@ const ManageCollege = props => {
       paramsForCollege !== null &&
       !formUtilities.checkEmpty(paramsForCollege)
     ) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize,
-        [SORT_FIELD_KEY]: "name:asc"
-      };
+      let defaultParams = {};
+      if (paramsForCollege.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "title:asc"
+        };
+      }
       Object.keys(paramsForCollege).map(key => {
         defaultParams[key] = paramsForCollege[key];
       });
@@ -258,7 +266,7 @@ const ManageCollege = props => {
         tempIndividualCollegeData["rpc"] = data[i]["rpc"]
           ? data[i]["rpc"]["name"]
           : "";
-        tempIndividualCollegeData["zone_name"] = data[i]["zone"]
+        tempIndividualCollegeData["zone"] = data[i]["zone"]
           ? data[i]["zone"]["name"]
           : "";
         collegeDataArray.push(tempIndividualCollegeData);
@@ -276,7 +284,7 @@ const ManageCollege = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getCollegeData(perPage, page);
+        await getCollegeData(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -288,7 +296,11 @@ const ManageCollege = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getCollegeData(formState.pageSize, page);
+        await getCollegeData(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
   };
@@ -465,7 +477,11 @@ const ManageCollege = props => {
       messageToShow: statusToShow
     }));
     if (status) {
-      getCollegeData(formState.pageSize, 1);
+      getCollegeData(
+        formState.pageSize,
+        formState.page,
+        formState.filterDataParameters
+      );
     }
   };
 
@@ -545,7 +561,7 @@ const ManageCollege = props => {
       messageToShow: statusToShow
     }));
     if (status) {
-      getCollegeData(formState.pageSize, 1);
+      getCollegeData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
@@ -645,6 +661,7 @@ const ManageCollege = props => {
     {
       name: "Name",
       sortable: true,
+      selector: "name",
       cell: row => (
         <Tooltip
           title={
@@ -661,6 +678,7 @@ const ManageCollege = props => {
     {
       name: "State",
       sortable: true,
+      selector: "state",
       cell: row => (
         <Tooltip
           title={
@@ -677,22 +695,24 @@ const ManageCollege = props => {
     {
       name: "Zone",
       sortable: true,
+      selector: "zone",
       cell: row => (
         <Tooltip
           title={
             <React.Fragment>
-              <Typography color="inherit">{`${row.zone_name}`}</Typography>
+              <Typography color="inherit">{`${row.zone}`}</Typography>
             </React.Fragment>
           }
           placement="top"
         >
-          <div>{`${row.zone_name}`}</div>
+          <div>{`${row.zone}`}</div>
         </Tooltip>
       )
     },
     {
       name: "RPC",
       sortable: true,
+      selector: "rpc",
       cell: row => (
         <Tooltip
           title={
@@ -741,6 +761,18 @@ const ManageCollege = props => {
       }
     }
   ];
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    if (column.selector !== "state") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        column.selector + ":" + sortDirection;
+      getCollegeData(perPage, page, formState.filterDataParameters);
+    }
+  };
 
   const classes = useStyles();
   return (
@@ -1113,10 +1145,14 @@ const ManageCollege = props => {
                 editEvent={editCell}
                 deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                onSort={handleSort}
+                sortServer={true}
                 clearSelectedRows={formState.toggleCleared}
               />
             ) : (

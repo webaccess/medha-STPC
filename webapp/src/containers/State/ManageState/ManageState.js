@@ -323,7 +323,7 @@ const ViewStates = props => {
       isMultiDelete: false
     }));
     if (status) {
-      getStateData(formState.pageSize, 1);
+      getStateData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
