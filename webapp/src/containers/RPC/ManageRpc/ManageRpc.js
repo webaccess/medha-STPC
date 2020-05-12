@@ -102,6 +102,7 @@ const ViewRpc = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
+    resetPagination: false,
     /** Message to show */
     fromDeleteModal: false,
     messageToShow: "",
@@ -143,10 +144,19 @@ const ViewRpc = props => {
 
   const getRpcStateData = async (pageSize, page, paramsForRpc = null) => {
     if (paramsForRpc !== null && !formUtilities.checkEmpty(paramsForRpc)) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize
-      };
+      let defaultParams = {};
+      if (paramsForRpc.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "title:asc"
+        };
+      }
       Object.keys(paramsForRpc).map(key => {
         defaultParams[key] = paramsForRpc[key];
       });
@@ -214,7 +224,7 @@ const ViewRpc = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getRpcStateData(perPage, page);
+        await getRpcStateData(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -226,7 +236,11 @@ const ViewRpc = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getRpcStateData(formState.pageSize, page);
+        await getRpcStateData(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
   };
@@ -327,7 +341,7 @@ const ViewRpc = props => {
       isMultiDelete: false
     }));
     if (status) {
-      getRpcStateData(formState.pageSize, 1);
+      getRpcStateData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
@@ -458,8 +472,6 @@ const ViewRpc = props => {
     perPage = formState.pageSize,
     page = 1
   ) => {
-    // simulate server sort
-
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
     getRpcStateData(perPage, page, formState.filterDataParameters);
@@ -674,16 +686,19 @@ const ViewRpc = props => {
                 column={column}
                 defaultSortField="name"
                 onSelectedRowsChange={handleRowSelected}
+                paginationResetDefaultPage={formState.resetPagination}
                 defaultSortAsc={formState.sortAscending}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
                 onSort={handleSort}
-                sortServer
+                sortServer={true}
                 clearSelectedRows={formState.toggleCleared}
               />
             ) : (
