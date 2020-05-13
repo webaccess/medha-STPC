@@ -26,9 +26,10 @@ module.exports = {
       filters = _.omit(filters, ["sort"]);
     }
 
-    const role = ctx.state.user ? ctx.state.user.role.name : null;
-
-    let zones = await strapi.services.zone.getRoleWiseZones(role, filters);
+    let zones = await strapi.services.zone.getRoleWiseZones(
+      ctx.state.user,
+      filters
+    );
 
     // Sorting ascending or descending on one or multiple fields
     if (sort && sort.length) {

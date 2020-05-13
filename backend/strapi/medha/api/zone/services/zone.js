@@ -14,7 +14,14 @@ const {
 } = require("../../../config/constants.js");
 
 module.exports = {
-  getRoleWiseZones: async (role, filters) => {
+  getRoleWiseZones: async (user, filters) => {
+    let zone, role;
+    if (user) {
+      zone = user.zone;
+      role = user.role.name;
+    } else {
+      role = "Public";
+    }
     switch (role) {
       case ROLE_MEDHA_ADMIN:
       case ROLE_ADMIN:

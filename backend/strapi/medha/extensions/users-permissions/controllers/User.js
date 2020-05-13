@@ -69,9 +69,9 @@ module.exports = {
     if (!email) return ctx.badRequest("missing.email");
     if (!username) return ctx.badRequest("missing.username");
     if (!password) return ctx.badRequest("missing.password");
-    if (!first_name) return ctx.badRequest("missing.first_name");
-    if (!last_name) return ctx.badRequest("missing.last_name");
-    if (!contact_number) return ctx.badRequest("missing.contact_number");
+    // if (!first_name) return ctx.badRequest("missing.first_name");
+    // if (!last_name) return ctx.badRequest("missing.last_name");
+    // if (!contact_number) return ctx.badRequest("missing.contact_number");
 
     const userWithSameUsername = await strapi
       .query("user", "users-permissions")

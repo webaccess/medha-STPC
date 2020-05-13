@@ -316,16 +316,16 @@ module.exports = {
         /**
          * If role is student add student object to user info
          */
-        const studentInfo = await strapi
-          .query("student")
-          .findOne({ user: user.id });
+        // const contactInfo = await strapi
+        //   .query("contacts")
+        //   .findOne({ user: user.id });
 
-        // Removing users details from student object
-        if (studentInfo) {
-          delete studentInfo.user;
-        }
+        // // Removing users details from contact object
+        // if (contactInfo) {
+        //   delete contactInfo.user;
+        // }
 
-        user.studentInfo = studentInfo;
+        // user.contactInfo = contactInfo;
 
         ctx.send({
           jwt: strapi.plugins["users-permissions"].services.jwt.issue({
