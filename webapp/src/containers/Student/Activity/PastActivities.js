@@ -11,14 +11,15 @@ import * as routeConstants from "../../../constants/RouteConstants";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 import {
   Table,
-  Spinner,
   YellowButton,
   GrayButton,
   Auth,
-  ViewGridIcon
+  ViewGridIcon,
+  FeedBack
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
+import AddEditFeedBack from "../../Feedback/AddFeedback/AddFeedback";
 
 const PastActivities = props => {
   const classes = useStyles();
@@ -36,10 +37,14 @@ const PastActivities = props => {
     totalRows: "",
     page: "",
     pageCount: "",
-    sortAscending: true
+    sortAscending: true,
+    showModalFeedback: false,
+    activityTitle: null,
+    activityID: null,
+    isGiveFeedback: false
   });
 
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const studentInfo = Auth.getUserInfo()
     ? Auth.getUserInfo().studentInfo
@@ -180,6 +185,30 @@ const PastActivities = props => {
     });
     setLoaderStatus(false);
   };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalFeedback: true,
+      activityTitle: null,
+      activityID: null,
+      isGiveFeedback: false
+    }));
+  };
+
+  const giveFeedback = event => {
+    setLoaderStatus(true);
+    setFormState(formState => ({
+      ...formState,
+      showModalFeedback: true,
+      activityTitle: event.title,
+      activityID: event.id,
+      isGiveFeedback: true
+    }));
+
+    setLoaderStatus(false);
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Training & Activity", sortable: true, selector: "title" },
@@ -194,6 +223,14 @@ const PastActivities = props => {
               id={cell.id}
               value={cell.name}
               onClick={() => viewCell(cell)}
+            />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <FeedBack
+              isGiveFeedback={true}
+              id={cell.id}
+              value={cell.name}
+              onClick={() => giveFeedback(cell)}
             />
           </div>
         </div>
@@ -290,6 +327,13 @@ const PastActivities = props => {
               onChangePage={handlePageChange}
               noDataComponent="No Past Activities found"
             />
+            {formState.isGiveFeedback ? (
+              <AddEditFeedBack
+                showModal={formState.showModalFeedback}
+                modalClose={modalClose}
+                Title={formState.activityTitle}
+              />
+            ) : null}
           </Grid>
         </Grid>
       </CardContent>

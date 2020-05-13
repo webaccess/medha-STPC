@@ -1,17 +1,17 @@
 import React from "react";
 import { Tooltip, Typography } from "@material-ui/core";
 
-const HowToReg = props => {
+const FeedBack = props => {
   return (
     <Tooltip
       title={
-        props.style ? (
+        props.isGiveFeedback ? (
           <React.Fragment>
-            <Typography color="inherit">Absent</Typography>
+            <Typography color="inherit">Give FeedBack</Typography>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Typography color="inherit">Present</Typography>
+            <Typography color="inherit">View FeedBack</Typography>
           </React.Fragment>
         )
       }
@@ -22,16 +22,12 @@ const HowToReg = props => {
         id={props.id}
         value={props.value}
         onClick={props.onClick}
-        style={
-          props.style
-            ? { color: "green", fontSize: "23px" }
-            : { color: "grey", fontSize: "23px" }
-        }
+        style={{ color: "green", fontSize: "20px" }}
       >
-        how_to_reg
+        feedback
       </i>
     </Tooltip>
   );
 };
 
-export default HowToReg;
+export default FeedBack;

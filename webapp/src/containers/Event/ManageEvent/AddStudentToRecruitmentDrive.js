@@ -87,7 +87,8 @@ const AddStudentToRecruitmentDrive = props => {
     isSingleReg: false,
     regUserId: null,
     isRegButtonClicked: false,
-    regStudentName: ""
+    regStudentName: "",
+    toggleCleared: false
   });
 
   useEffect(() => {
@@ -113,11 +114,19 @@ const AddStudentToRecruitmentDrive = props => {
       paramsForStudent !== null &&
       !formUtilities.checkEmpty(paramsForStudent)
     ) {
-      let defaultParams = {
-        page: page,
-        pageSize: pageSize,
-        [SORT_FIELD_KEY]: "father_first_name:asc"
-      };
+      let defaultParams = {};
+      if (paramsForStudent.hasOwnProperty(SORT_FIELD_KEY)) {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        defaultParams = {
+          page: page,
+          pageSize: pageSize,
+          [SORT_FIELD_KEY]: "user.first_name:asc"
+        };
+      }
       Object.keys(paramsForStudent).map(key => {
         defaultParams[key] = paramsForStudent[key];
       });
@@ -126,7 +135,7 @@ const AddStudentToRecruitmentDrive = props => {
       paramsForStudent = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "father_first_name:asc"
+        [SORT_FIELD_KEY]: "user.first_name:asc"
       };
     }
     setFormState(formState => ({
@@ -243,7 +252,7 @@ const AddStudentToRecruitmentDrive = props => {
       if (formState.isFilterSearch) {
         await searchFilter(perPage, page);
       } else {
-        await getStudentList(perPage, page);
+        await getStudentList(perPage, page, formState.filterDataParameters);
       }
     }
   };
@@ -255,7 +264,11 @@ const AddStudentToRecruitmentDrive = props => {
       if (formState.isFilterSearch) {
         await searchFilter(formState.pageSize, page);
       } else {
-        await getStudentList(formState.pageSize, page);
+        await getStudentList(
+          formState.pageSize,
+          page,
+          formState.filterDataParameters
+        );
       }
     }
   };
@@ -272,6 +285,7 @@ const AddStudentToRecruitmentDrive = props => {
   /** This restores all the data when we clear the filters*/
 
   const clearFilter = () => {
+    selectedRowCleared(true);
     setFormState(formState => ({
       ...formState,
       isFilterSearch: false,
@@ -288,7 +302,7 @@ const AddStudentToRecruitmentDrive = props => {
   };
 
   const restoreData = () => {
-    getStudentList(formState.pageSize, 1);
+    getStudentList(10, 1);
   };
 
   const handleClick = event => {
@@ -330,7 +344,8 @@ const AddStudentToRecruitmentDrive = props => {
     if (state.selectedCount >= 1) {
       setFormState(formState => ({
         ...formState,
-        selectedRowFilter: false
+        selectedRowFilter: false,
+        toggleCleared: false
       }));
     } else {
       setFormState(formState => ({
@@ -363,15 +378,37 @@ const AddStudentToRecruitmentDrive = props => {
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
-      showRegisterModel: false
+      showRegisterModel: false,
+      isSingleReg: false,
+      isRegButtonClicked: false,
+      regUserId: null
     }));
   };
 
   const setStatusDataWhileClosingModal = (status, messsage, fromModal) => {
-    formState.status = status;
-    formState.message = messsage;
-    formState.fromModal = fromModal;
+    selectedRowCleared(true);
+    setFormState(formState => ({
+      ...formState,
+      status: status,
+      isSingleReg: false,
+      message: messsage,
+      fromModal: fromModal
+    }));
     getStudentList(formState.pageSize, 1);
+  };
+
+  const handleSort = (
+    column,
+    sortDirection,
+    perPage = formState.pageSize,
+    page = 1
+  ) => {
+    if (column.selector === "stream") {
+      column.selector = "stream.name";
+    }
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getStudentList(perPage, page, formState.filterDataParameters);
   };
 
   /** Table Data */
@@ -379,6 +416,7 @@ const AddStudentToRecruitmentDrive = props => {
     {
       name: "Name",
       sortable: true,
+      selector: "user.first_name",
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
@@ -441,6 +479,16 @@ const AddStudentToRecruitmentDrive = props => {
         isClearResetFilter: false
       }));
     }
+  };
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState(formState => ({
+        ...formState,
+        toggleCleared: false
+      }));
+    }, 2000);
   };
 
   return (
@@ -616,13 +664,19 @@ const AddStudentToRecruitmentDrive = props => {
               <Table
                 data={formState.dataToShow}
                 column={column}
-                onSelectedRowsChange={handleRowSelected}
+                defaultSortField="user.first_name"
                 defaultSortAsc={formState.sortAscending}
+                onSelectedRowsChange={handleRowSelected}
                 progressPending={formState.isDataLoading}
+                onSort={handleSort}
+                sortServer={true}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
                 paginationTotalRows={formState.totalRows}
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -650,6 +704,7 @@ const AddStudentToRecruitmentDrive = props => {
             formState.fromAddStudentToRecruitmentDrive
           }
           name={formState.regStudentName}
+          clearSelectedRow={selectedRowCleared}
         />
       ) : null}
     </Grid>
