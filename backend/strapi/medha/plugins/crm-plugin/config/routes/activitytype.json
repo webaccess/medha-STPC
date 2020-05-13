@@ -1,0 +1,44 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/activitytypes",
+      "handler": "activitytype.find",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activitytypes/:id",
+      "handler": "activitytype.findOne",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activitytypes",
+      "handler": "activitytype.create",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/activitytypes/:id",
+      "handler": "activitytype.create",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/activitytypes/:id",
+      "handler": "activitytype.delete",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    }
+  ]
+}

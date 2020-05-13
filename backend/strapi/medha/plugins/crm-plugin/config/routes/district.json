@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/districts",
+      "handler": "district.find",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/districts/count",
+      "handler": "district.count",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/districts/:id",
+      "handler": "district.findOne",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/districts",
+      "handler": "district.create",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/districts/:id",
+      "handler": "district.create",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/districts/:id",
+      "handler": "district.delete",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    }
+  ]
+}

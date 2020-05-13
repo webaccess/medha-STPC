@@ -1,0 +1,44 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/activityassignees",
+      "handler": "activityassignee.find",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activityassignees/:id",
+      "handler": "activityassignee.findOne",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activityassignees",
+      "handler": "activityassignee.create",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/activityassignees/:id",
+      "handler": "activityassignee.create",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/activityassignees/:id",
+      "handler": "activityassignee.delete",
+      "config": {
+        "policies": ["plugins::users-permissions.isAuthenticated"]
+      }
+    }
+  ]
+}
