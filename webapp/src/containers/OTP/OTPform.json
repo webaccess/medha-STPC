@@ -1,0 +1,37 @@
+{
+  "contactNumber": {
+    "label": "Contact Number",
+    "id": "contactNumber",
+    "required": true,
+    "autoFocus": true,
+    "type": "text",
+    "validations": {
+      "required": {
+        "value": "true",
+        "message": "Contact Number is required"
+      },
+      "validateMobileNumber": {
+        "value": "true",
+        "message": "Invalid Contact Number"
+      }
+    }
+  },
+
+  "otp": {
+    "label": "OTP",
+    "id": "otp",
+    "required": true,
+    "autoFocus": true,
+    "type": "text",
+    "validations": {
+      "required": {
+        "value": "true",
+        "message": "OTP is required"
+      },
+      "validateOtp": {
+        "value": "6",
+        "message": "Invalid OTP "
+      }
+    }
+  }
+}
