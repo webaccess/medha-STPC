@@ -822,7 +822,11 @@ const AddEditStudent = props => {
                     label="Date of Birth"
                     value={selectedDate}
                     className={classes.date}
-                    onChange={date => setSelectedDate(date)}
+                    onChange={date => {
+                      formState.isDateOfBirthPresent = true;
+                      formState.isdateOfBirthValid = true;
+                      setSelectedDate(date);
+                    }}
                     error={
                       !formState.isDateOfBirthPresent ||
                       !formState.isdateOfBirthValid
