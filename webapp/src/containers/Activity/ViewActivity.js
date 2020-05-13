@@ -20,7 +20,6 @@ import * as genericConstants from "../../constants/GenericConstants";
 import * as formUtilities from "../../Utilities/FormUtilities";
 import {
   Table,
-  Spinner,
   GreenButton,
   YellowButton,
   GrayButton,
@@ -85,7 +84,6 @@ const ViewActivity = props => {
     pageCount: "",
     sortAscending: true,
     /** FeedBack */
-    showModalFeedback: false,
     activityTitle: "",
     activityID: "",
     showViewFeedbackModal: false
@@ -365,6 +363,7 @@ const ViewActivity = props => {
   };
 
   const viewFeedbackHandler = event => {
+    console.log("event", event);
     setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
@@ -372,6 +371,7 @@ const ViewActivity = props => {
       activityTitle: event.title,
       activityID: event.id
     }));
+    setLoaderStatus(false);
   };
 
   const modalClose = () => {
@@ -434,7 +434,7 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
-          {roleName === "Student" || roleName === "College Admin" ? (
+          {/* {roleName === "Student" || roleName === "College Admin" ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon
                 id={cell.id}
@@ -443,8 +443,8 @@ const ViewActivity = props => {
                 onClick={() => addFeedbackHandler(cell)}
               />
             </div>
-          ) : null}
-          {roleName === "College Admin" ? (
+          ) : null} */}
+          {roleName === "College Admin" || roleName === "Medha Admin" ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon
                 id={cell.id}
@@ -687,12 +687,11 @@ const ViewActivity = props => {
           id={formState.dataToDelete["id"]}
           deleteEvent={isDeleteCellCompleted}
         /> */}
-        <AddEditFeedBack
-          showModal={formState.showModalFeedback}
+        <ViewFeedBack
+          showModal={formState.showViewFeedbackModal}
           modalClose={modalClose}
           activityTitle={formState.activityTitle}
         />
-        <ViewFeedBack modalClose={modalClose} />
       </Grid>
     </Grid>
   );

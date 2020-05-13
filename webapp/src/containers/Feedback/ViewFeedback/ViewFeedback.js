@@ -4,6 +4,13 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import CloseIcon from "@material-ui/icons/Close";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
 
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import {
@@ -28,13 +35,25 @@ const ViewFeedBack = props => {
     ratings: 3
   });
 
-  const editFeedBack = () => {
-    console.log("edit");
-  };
-
   const handleClose = () => {
     props.modalClose();
   };
+
+  const data = [
+    { id: 1, question: "The objective of the training were meet" },
+    { id: 2, question: "The presentation material were relevent" },
+    {
+      id: 3,
+      question:
+        "The trainers were well prepared and able to answer any questions"
+    },
+    {
+      id: 4,
+      question:
+        "The pace of the course was appropriate to the content and pace of the attendees"
+    },
+    { id: 5, question: "The venue was appropriate for the event" }
+  ];
 
   return (
     <Modal
@@ -42,7 +61,6 @@ const ViewFeedBack = props => {
       aria-describedby="transition-modal-description"
       className={classes.modal}
       open={props.showModal}
-      // onClose={handleCloseModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
@@ -53,7 +71,7 @@ const ViewFeedBack = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {genericConstants.ADD_FEEDBACK}
+              {genericConstants.VIEW_FEEDBACK}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -76,142 +94,72 @@ const ViewFeedBack = props => {
                   </Grid>
                   <Card>
                     <CardContent>
-                      <Grid item xs={12} md={6}>
-                        <Grid
-                          container
-                          spacing={3}
-                          className={classes.formgrid}
-                        >
-                          <Typography variant="h5" gutterBottom>
-                            How satisfied were you with:*
-                          </Typography>
-                        </Grid>
-
-                        <Grid
-                          container
-                          spacing={3}
-                          className={classes.formgrid}
-                        >
-                          <Grid item lg>
-                            <Typography variant="h5" gutterBottom>
-                              The objective of the training were meet
-                            </Typography>
-                          </Grid>
-                          <Grid item lg>
-                            <Rating
-                              name="question1"
-                              value={formState.rating}
-                              precision={0.5}
-                              readOnly
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          container
-                          spacing={3}
-                          className={classes.formgrid}
-                        >
-                          <Grid item md={6} xs={12}>
-                            <Typography variant="h5" gutterBottom>
-                              The presentation material were relevant
-                            </Typography>
-                          </Grid>
-                          <Grid item md={6} xs={12}>
-                            <Rating
-                              name="question2"
-                              value={formState.rating}
-                              precision={0.5}
-                              readOnly
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          container
-                          spacing={3}
-                          className={classes.formgrid}
-                        >
-                          <Grid item md={6} xs={12}>
-                            <Typography variant="h5" gutterBottom>
-                              The trainers were well prepared and able to answer
-                              any question
-                            </Typography>
-                          </Grid>
-                          <Grid item md={6} xs={12}>
-                            <Rating
-                              name="question3"
-                              value={formState.rating}
-                              precision={0.5}
-                              readOnly
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          container
-                          spacing={3}
-                          className={classes.formgrid}
-                        >
-                          <Grid item md={6} xs={12}>
-                            <Typography variant="h5" gutterBottom>
-                              The pace of the course was appropriate to the
-                              content and attendees{" "}
-                            </Typography>
-                          </Grid>
-                          <Grid item md={6} xs={12}>
-                            <Rating
-                              name="question4"
-                              value={formState.rating}
-                              precision={0.5}
-                              readOnly
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          container
-                          spacing={3}
-                          className={classes.formgrid}
-                        >
-                          <Grid item md={6} xs={12}>
-                            <Typography variant="h5" gutterBottom>
-                              The venue was appropriate for the event{" "}
-                            </Typography>
-                          </Grid>
-                          <Grid item md={6} xs={12}>
-                            <Rating
-                              name="question5"
-                              value={formState.rating}
-                              precision={0.5}
-                              readOnly
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          container
-                          spacing={3}
-                          className={classes.MarginBottom}
-                        >
-                          <Grid item md={12} xs={12}>
-                            <ReadOnlyTextField
-                              label="Comment"
-                              id="comment"
-                              placeholder="Add Comment"
-                              variant="outlined"
-                              multiline
-                              fullWidth
-                            />
-                          </Grid>
-                        </Grid>
+                      <Grid item xs={12} md={12}>
+                        <div style={{ overflow: "auto" }}>
+                          <TableContainer
+                            className={classes.container}
+                            component={Paper}
+                          >
+                            <Table
+                              className={classes.table}
+                              stickyHeader
+                              aria-label="feedback table"
+                            >
+                              <TableHead>
+                                <TableRow
+                                  style={{
+                                    backgroundColor: "#f5f5f5",
+                                    height: "35px"
+                                  }}
+                                >
+                                  <TableCell>Questions</TableCell>
+                                  <TableCell align="right">Ratings</TableCell>
+                                </TableRow>
+                              </TableHead>
+                            </Table>
+                            <div style={{ overflow: "auto", height: "200px" }}>
+                              <Table>
+                                <TableBody>
+                                  {data.map(row => (
+                                    <TableRow key={row.id}>
+                                      <TableCell component="th" scope="row">
+                                        {row.question}
+                                      </TableCell>
+                                      <TableCell align="right">
+                                        <Rating
+                                          name={row.id}
+                                          precision={1}
+                                          value={formState.ratings}
+                                          readOnly
+                                        />
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </TableContainer>
+                        </div>
                       </Grid>
                     </CardContent>
+                    <Grid item className={classes.fullWidth}>
+                      <ReadOnlyTextField
+                        label="Comment"
+                        id="comment"
+                        variant="outlined"
+                        multiline
+                      />
+                    </Grid>
                     <Grid item xs={12}>
                       <CardActions justify="flex-end">
-                        <YellowButton
+                        {/* <YellowButton
                           type="submit"
                           color="primary"
                           variant="contained"
-                          onClick={editFeedBack}
+                          //onClick={handleSubmit}
                         >
-                          {genericConstants.EDIT_TEXT}
-                        </YellowButton>
+                          {genericConstants.SAVE_BUTTON_TEXT}
+                        </YellowButton> */}
                         <GrayButton
                           type="submit"
                           color="primary"
