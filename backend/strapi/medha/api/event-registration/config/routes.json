@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/event-registrations",
+      "handler": "event-registration.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/event-registrations/count",
+      "handler": "event-registration.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/event-registrations/:id",
+      "handler": "event-registration.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/event-registrations",
+      "handler": "event-registration.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/event-registrations/:id",
+      "handler": "event-registration.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/event-registrations/:id",
+      "handler": "event-registration.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "connection": "default",
+  "collectionName": "otps",
+  "info": {
+    "name": "OTP"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "contact_number": {
+      "type": "string",
+      "required": true
+    },
+    "is_verified": {
+      "type": "boolean",
+      "required": false
+    },
+    "otp": {
+      "type": "biginteger",
+      "required": true,
+      "unique": false
+    }
+  }
+}

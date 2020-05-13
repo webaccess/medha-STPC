@@ -1,0 +1,32 @@
+{
+  "connection": "default",
+  "collectionName": "educations",
+  "info": {
+    "name": "Education"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "qualification": {
+      "type": "string",
+      "required": true
+    },
+    "board": {
+      "type": "string",
+      "required": true
+    },
+    "year_of_passing": {
+      "type": "integer",
+      "required": true
+    },
+    "student": {
+      "via": "educations",
+      "model": "student"
+    },
+    "percentage": {
+      "type": "decimal"
+    }
+  }
+}

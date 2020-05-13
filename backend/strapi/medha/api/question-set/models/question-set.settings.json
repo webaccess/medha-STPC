@@ -1,0 +1,26 @@
+{
+  "connection": "default",
+  "collectionName": "question_sets",
+  "info": {
+    "name": "Question Set"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "questions": {
+      "collection": "question",
+      "via": "question_set"
+    },
+    "activities": {
+      "via": "question_set",
+      "collection": "activity"
+    }
+  }
+}

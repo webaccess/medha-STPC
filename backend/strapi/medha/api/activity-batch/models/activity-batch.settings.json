@@ -1,0 +1,25 @@
+{
+  "connection": "default",
+  "collectionName": "activity_batches",
+  "info": {
+    "name": "Activity Batch"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "activity": {
+      "model": "activity"
+    },
+    "name": {
+      "type": "string"
+    },
+    "start_date_time": {
+      "type": "datetime"
+    },
+    "end_date_time": {
+      "type": "datetime"
+    }
+  }
+}

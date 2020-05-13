@@ -1,0 +1,17 @@
+{
+  "connection": "default",
+  "collectionName": "college_stream_strengths",
+  "info": {
+    "name": "streams_strength",
+    "icon": "atom"
+  },
+  "options": {},
+  "attributes": {
+    "stream": {
+      "model": "stream"
+    },
+    "strength": {
+      "type": "integer"
+    }
+  }
+}

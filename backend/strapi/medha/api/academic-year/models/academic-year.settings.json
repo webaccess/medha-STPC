@@ -1,0 +1,25 @@
+{
+  "connection": "default",
+  "collectionName": "academic_years",
+  "info": {
+    "name": "Academic Year"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "start_date": {
+      "type": "datetime",
+      "required": true
+    },
+    "end_date": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}
