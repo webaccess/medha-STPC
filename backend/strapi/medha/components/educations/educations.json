@@ -1,0 +1,23 @@
+{
+  "info": {
+    "name": "educations",
+    "icon": "university"
+  },
+  "options": {},
+  "attributes": {
+    "education_year": {
+      "type": "enumeration",
+      "enum": [
+        "First",
+        "Second",
+        "Third",
+        "Fourth"
+      ]
+    },
+    "percentage": {
+      "type": "decimal"
+    }
+  },
+  "connection": "default",
+  "collectionName": "components_educations_educations"
+}

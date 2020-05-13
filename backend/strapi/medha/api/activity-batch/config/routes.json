@@ -1,0 +1,93 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/activity-batches",
+      "handler": "activity-batch.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activity-batches/count",
+      "handler": "activity-batch.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activity-batches/:id",
+      "handler": "activity-batch.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches",
+      "handler": "activity-batch.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/activity-batches/:id",
+      "handler": "activity-batch.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/activity-batches/:id",
+      "handler": "activity-batch.delete",
+      "config": {
+        "policies": ["checkIfStudentExist"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activity-batches/:id/students",
+      "handler": "activity-batch.student",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/remove-students",
+      "handler": "activity-batch.removeStudents",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/invalidate-activity-batch",
+      "handler": "activity-batch.inValidateActivityBatchStudents",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/validate-activity-batch",
+      "handler": "activity-batch.validateActivityBatchStudents",
+      "config": {
+        "policies": []
+      }
+    },
+
+    {
+      "method": "POST",
+      "path": "/activity-batches/:id/add-students",
+      "handler": "activity-batch.addStudentsToActivityBatch",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

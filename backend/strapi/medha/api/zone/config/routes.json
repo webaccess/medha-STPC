@@ -1,0 +1,60 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/zones",
+      "handler": "zone.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/zones/count",
+      "handler": "zone.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/zones/:id",
+      "handler": "zone.findOne",
+      "config": {
+        "policies": ["isAllowed"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/zones",
+      "handler": "zone.create",
+      "config": {
+        "policies": ["validate"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/zones/:id",
+      "handler": "zone.update",
+      "config": {
+        "policies": ["validate"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/zones/:id",
+      "handler": "zone.delete",
+      "config": {
+        "policies": ["isDeleteAllowed"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/zones/:id/colleges",
+      "handler": "zone.colleges",
+      "config": {
+        "policies": ["isAllowed"]
+      }
+    }
+  ]
+}

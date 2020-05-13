@@ -1,0 +1,24 @@
+{
+  "connection": "default",
+  "collectionName": "rpcs",
+  "info": {
+    "name": "RPC"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "main_college": {
+      "model": "college"
+    },
+    "state": {
+      "model": "state"
+    }
+  }
+}

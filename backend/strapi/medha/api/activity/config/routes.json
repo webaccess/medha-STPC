@@ -1,0 +1,84 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/activities",
+      "handler": "activity.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/count",
+      "handler": "activity.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id",
+      "handler": "activity.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activities",
+      "handler": "activity.create",
+      "config": {
+        "policies": ["create"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/activities/:id",
+      "handler": "activity.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/activities/:id",
+      "handler": "activity.delete",
+      "config": {
+        "policies": ["checkIfBatchExist"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id/students",
+      "handler": "activity.student",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id/activity-batches",
+      "handler": "activity.activityBatch",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activities/:id/create-activity-batch",
+      "handler": "activity.createActivityBatch",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id/download",
+      "handler": "activity.download",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

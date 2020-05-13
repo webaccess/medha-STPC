@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/academic-histories",
+      "handler": "academic-history.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/academic-histories/count",
+      "handler": "academic-history.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/academic-histories/:id",
+      "handler": "academic-history.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/academic-histories",
+      "handler": "academic-history.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/academic-histories/:id",
+      "handler": "academic-history.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/academic-histories/:id",
+      "handler": "academic-history.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

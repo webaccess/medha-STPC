@@ -1,0 +1,80 @@
+{
+  "connection": "default",
+  "collectionName": "students",
+  "info": {
+    "name": "Student"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "user": {
+      "unique": true,
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "stream": {
+      "model": "stream"
+    },
+    "documents": {
+      "collection": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "verifiedByCollege": {
+      "type": "boolean"
+    },
+    "physicallyHandicapped": {
+      "type": "boolean"
+    },
+    "father_first_name": {
+      "type": "string",
+      "required": true
+    },
+    "father_last_name": {
+      "type": "string",
+      "required": true
+    },
+    "date_of_birth": {
+      "type": "datetime",
+      "required": true
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "male",
+        "female"
+      ],
+      "required": true
+    },
+    "roll_number": {
+      "type": "integer",
+      "required": true
+    },
+    "educations": {
+      "collection": "education",
+      "via": "student"
+    },
+    "district": {
+      "model": "district"
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "future_aspirations": {
+      "type": "enumeration",
+      "enum": [
+        "private_job",
+        "others",
+        "higher_studies",
+        "marriage",
+        "entrepreneurship",
+        "government_jobs",
+        "apprenticeship"
+      ]
+    }
+  }
+}
