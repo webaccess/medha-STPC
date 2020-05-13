@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "rpcs",
   "info": {
     "name": "RPC"
@@ -11,14 +11,15 @@
   "attributes": {
     "name": {
       "type": "string",
-      "required": true,
-      "unique": true
-    },
-    "main_college": {
-      "model": "college"
+      "required": true
     },
     "state": {
+      "plugin": "crm-plugin",
       "model": "state"
+    },
+    "main_college": {
+      "plugin": "crm-plugin",
+      "model": "contact"
     }
   }
 }

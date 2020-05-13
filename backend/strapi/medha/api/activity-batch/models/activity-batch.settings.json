@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "activity_batches",
   "info": {
     "name": "Activity Batch"
@@ -9,17 +9,21 @@
     "timestamps": true
   },
   "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
     "activity": {
+      "plugin": "crm-plugin",
       "model": "activity"
     },
-    "name": {
-      "type": "string"
+    "start_datetime": {
+      "type": "datetime",
+      "required": true
     },
-    "start_date_time": {
-      "type": "datetime"
-    },
-    "end_date_time": {
-      "type": "datetime"
+    "end_datetime": {
+      "type": "datetime",
+      "required": true
     }
   }
 }

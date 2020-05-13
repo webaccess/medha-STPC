@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "feedbacks",
   "info": {
     "name": "Feedback"
@@ -9,18 +9,17 @@
     "timestamps": true
   },
   "attributes": {
-    "activity": {
-      "model": "activity"
+    "feedback_set": {
+      "model": "feedback-set"
     },
-    "event": {
-      "model": "event"
+    "question": {
+      "model": "question"
     },
-    "user": {
-      "plugin": "users-permissions",
-      "model": "user"
+    "answer_text": {
+      "type": "string"
     },
-    "question_set": {
-      "model": "question-set"
+    "answer_int": {
+      "type": "integer"
     }
   }
 }

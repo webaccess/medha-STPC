@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "questions",
   "info": {
     "name": "Question"
@@ -11,12 +11,7 @@
   "attributes": {
     "title": {
       "type": "string",
-      "required": true,
-      "unique": true
-    },
-    "question_set": {
-      "via": "questions",
-      "model": "question-set"
+      "required": true
     },
     "type": {
       "type": "enumeration",
@@ -24,6 +19,10 @@
         "Rating",
         "Comment"
       ]
+    },
+    "question_set": {
+      "via": "questions",
+      "model": "question-set"
     }
   }
 }

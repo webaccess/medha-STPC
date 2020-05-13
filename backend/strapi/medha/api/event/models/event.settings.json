@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "events",
   "info": {
     "name": "Event"
@@ -13,39 +13,47 @@
       "type": "string",
       "required": true
     },
-    "start_date_time": {
-      "type": "datetime",
-      "required": true
+    "start_datetime": {
+      "type": "datetime"
     },
     "end_date_time": {
       "type": "datetime",
       "required": true
     },
-    "rpc": {
-      "model": "rpc"
-    },
-    "colleges": {
-      "collection": "college"
-    },
-    "streams": {
-      "collection": "stream"
-    },
-    "upload_logo": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
-    },
     "address": {
-      "type": "text",
+      "type": "string",
       "required": true
     },
     "description": {
       "type": "richtext",
       "required": true
     },
+    "upload_logo": {
+      "model": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "plugin": "upload",
+      "required": false
+    },
     "question_set": {
       "model": "question-set"
+    },
+    "state": {
+      "plugin": "crm-plugin",
+      "model": "state"
+    },
+    "zone": {
+      "model": "zone"
+    },
+    "rpc": {
+      "model": "rpc"
+    },
+    "streams": {
+      "collection": "stream"
     },
     "qualifications": {
       "type": "component",
@@ -55,13 +63,11 @@
     "educations": {
       "type": "component",
       "repeatable": true,
-      "component": "educations.educations"
+      "component": "educations.education"
     },
-    "zone": {
-      "model": "zone"
-    },
-    "state": {
-      "model": "state"
+    "contacts": {
+      "plugin": "crm-plugin",
+      "collection": "contact"
     }
   }
 }

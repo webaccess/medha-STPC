@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "event_registrations",
   "info": {
     "name": "Event Registration"
@@ -12,17 +12,21 @@
     "event": {
       "model": "event"
     },
-    "student": {
-      "model": "student"
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
     },
-    "attendance_verified": {
-      "type": "boolean"
+    "is_attendance_verified": {
+      "type": "boolean",
+      "default": false
     },
-    "hired_at_event": {
-      "type": "boolean"
+    "is_hired_at_event": {
+      "type": "boolean",
+      "default": false
     },
-    "plan_on_attending": {
-      "type": "boolean"
+    "is_plan_on_attending": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

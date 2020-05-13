@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "zones",
   "info": {
     "name": "Zone"
@@ -11,10 +11,10 @@
   "attributes": {
     "name": {
       "type": "string",
-      "required": true,
-      "unique": true
+      "required": true
     },
     "state": {
+      "plugin": "crm-plugin",
       "model": "state"
     }
   }

@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "otps",
   "info": {
     "name": "OTP"
@@ -11,16 +11,16 @@
   "attributes": {
     "contact_number": {
       "type": "string",
+      "maxLength": 10,
+      "minLength": 10,
       "required": true
     },
     "is_verified": {
       "type": "boolean",
-      "required": false
+      "default": false
     },
     "otp": {
-      "type": "biginteger",
-      "required": true,
-      "unique": false
+      "type": "integer"
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "users-permissions_user",
   "info": {
     "name": "user",
@@ -53,20 +53,8 @@
       "plugin": "users-permissions",
       "configurable": false
     },
-    "first_name": {
-      "type": "string",
-      "required": true
-    },
-    "last_name": {
-      "type": "string",
-      "required": true
-    },
-    "contact_number": {
-      "type": "string",
-      "required": true,
-      "unique": true
-    },
     "state": {
+      "plugin": "crm-plugin",
       "model": "state"
     },
     "zone": {
@@ -75,8 +63,10 @@
     "rpc": {
       "model": "rpc"
     },
-    "college": {
-      "model": "college"
+    "contact": {
+      "via": "user",
+      "plugin": "crm-plugin",
+      "model": "contact"
     }
   }
 }
