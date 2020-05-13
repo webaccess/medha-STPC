@@ -112,6 +112,7 @@ export const STUDENTS_IMPORT = "Import Students";
 
 /**FeedBack */
 export const ADD_FEEDBACK = "Feedback";
+export const VIEW_FEEDBACK = "View Feedback";
 
 export const QUALIFICATIONS = [
   { id: 1, value: "SSC" },
