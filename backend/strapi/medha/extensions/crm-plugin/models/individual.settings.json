@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "individuals",
+  "info": {
+    "name": "Individual"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "first_name": {
+      "type": "string",
+      "required": true
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "contact": {
+      "via": "individual",
+      "plugin": "crm-plugin",
+      "model": "contact"
+    },
+    "stream": {
+      "model": "stream"
+    },
+    "documents": {
+      "collection": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "plugin": "upload",
+      "required": false
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_physically_challenged": {
+      "type": "boolean",
+      "default": false
+    },
+    "father_first_name": {
+      "type": "string",
+      "required": true
+    },
+    "father_last_name": {
+      "type": "string",
+      "required": true
+    },
+    "date_of_birth": {
+      "type": "datetime"
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "male",
+        "female"
+      ],
+      "required": true
+    },
+    "roll_number": {
+      "type": "integer",
+      "required": true
+    }
+  }
+}
