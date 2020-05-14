@@ -240,6 +240,9 @@ const ManageStudents = props => {
 
   /** Edit Student */
   const editCell = event => {
+    auth.setStudentInfoForEditingFromCollegeAdmin(
+      event.target.getAttribute("userId")
+    );
     setFormState(formState => ({
       ...formState,
       editedStudentName: event.target.getAttribute("value")
@@ -254,8 +257,9 @@ const ManageStudents = props => {
       .then(res => {
         setLoaderStatus(false);
         history.push({
-          pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
+          pathname: routeConstants.EDIT_PROFILE,
           dataForEdit: res.data.result,
+          collegeAdminRoute: true,
           editStudent: true
         });
       })
@@ -625,8 +629,9 @@ const ManageStudents = props => {
   );
 
   const handleClickViewStudent = event => {
+    auth.setStudentInfoForEditingFromCollegeAdmin(event.target.id);
     history.push({
-      pathname: routeConstants.VIEW_STUDENT_PROFILE,
+      pathname: routeConstants.VIEW_PROFILE,
       dataForStudent: event.target.id,
       fromAddStudentToRecruitmentDrive: false,
       fromEventStudentList: false,

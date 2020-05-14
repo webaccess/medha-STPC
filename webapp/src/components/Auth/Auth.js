@@ -69,6 +69,10 @@ const auth = {
     return auth.get(userInfo);
   },
 
+  getStudentInfoForEditingFromCollegeAdmin() {
+    return auth.get("StudentProfile");
+  },
+
   /**
    * Set data in storage
    * @param {String|Object}  value    The data to store
@@ -93,6 +97,10 @@ const auth = {
 
   setToken(value = "", isLocalStorage = false, tokenKey = TOKEN_KEY) {
     return auth.set(value, tokenKey, isLocalStorage);
+  },
+
+  setStudentInfoForEditingFromCollegeAdmin(studentInfoForEditing) {
+    localStorage.setItem("StudentProfile", studentInfoForEditing);
   },
 
   setUserInfo(value = "", isLocalStorage = false, userInfo = USER_INFO) {

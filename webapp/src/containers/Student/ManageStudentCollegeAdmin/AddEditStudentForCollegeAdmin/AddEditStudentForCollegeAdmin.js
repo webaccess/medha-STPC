@@ -564,11 +564,7 @@ const AddEditStudentForCollegeAdmin = props => {
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
-        {formState.editStudent ? (
-          <Typography variant="h4" gutterBottom>
-            Edit Student
-          </Typography>
-        ) : (
+        {formState.editStudent ? null : (
           <Typography variant="h4" gutterBottom>
             Add Student
           </Typography>
