@@ -14,12 +14,8 @@ const {
 module.exports = {
   getRoleWiseRpcs: async (user, filters) => {
     let rpc, role;
-    if (user) {
-      rpc = user.rpc;
-      role = user.role.name;
-    } else {
-      role = "Public";
-    }
+    rpc = user ? user.rpc : null;
+    role = user ? user.role.name : "Public";
     switch (role) {
       case ROLE_MEDHA_ADMIN:
       case ROLE_ADMIN:

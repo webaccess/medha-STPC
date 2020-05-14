@@ -26,6 +26,10 @@ function getFindOneResponse(response) {
   };
 }
 
+function getTotalPLuginRecord(model, plugin) {
+  return strapi.query(model, plugin).count();
+}
+
 function getTotalRecords(model) {
   return strapi.query(model).count();
 }
@@ -102,6 +106,7 @@ module.exports = {
   getResponse,
   getFindOneResponse,
   getTotalRecords,
+  getTotalPLuginRecord,
   asyncForEach,
   paginate,
   getErrorResponse,
