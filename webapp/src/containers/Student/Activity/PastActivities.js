@@ -46,14 +46,14 @@ const PastActivities = props => {
 
   const { setLoaderStatus } = useContext(LoaderContext);
 
-  const studentInfo = Auth.getUserInfo()
-    ? Auth.getUserInfo().studentInfo
-    : null;
-  const studentId = studentInfo ? studentInfo.id : null;
+  const studentInfo =
+    Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
+      ? Auth.getUserInfo().studentInfo.id
+      : Auth.getStudentIdFromCollegeAdmin();
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS +
-    `/${studentId}/past-activities`;
+    `/${studentInfo}/past-activities`;
   const ACTIVITY_FILTER = "id";
   const ACTIVITY_STATUS = "status";
 

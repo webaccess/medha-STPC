@@ -70,15 +70,15 @@ const ViewDocument = props => {
     severity: ""
   });
 
-  const studentInfo = Auth.getUserInfo()
-    ? Auth.getUserInfo().studentInfo
-    : null;
-  const studentId = studentInfo ? studentInfo.id : null;
+  const studentInfo =
+    Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
+      ? Auth.getUserInfo().studentInfo.id
+      : Auth.getStudentIdFromCollegeAdmin();
 
   const STUDENT_DOCUMENT_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS +
-    `/${studentId}/document`;
+    `/${studentInfo}/document`;
   const DOCUMENT_FILTER = "id";
 
   useEffect(() => {
@@ -176,7 +176,6 @@ const ViewDocument = props => {
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
-    console.log(filterName, event, value);
     if (value === null) {
       delete formState.filterDataParameters[filterName];
       //restoreData();
@@ -265,7 +264,6 @@ const ViewDocument = props => {
     );
   };
 
-  console.log(formState.dataToShow);
   return (
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>

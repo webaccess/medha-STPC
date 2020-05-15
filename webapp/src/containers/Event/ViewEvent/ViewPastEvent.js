@@ -102,19 +102,26 @@ const ViewPastEvent = props => {
       };
     }
 
-    if (
-      auth.getUserInfo().role.name === "Student" &&
-      auth.getUserInfo().studentInfo !== null &&
-      auth.getUserInfo().studentInfo.id !== null
-    ) {
-      const PASTEVENT_URL =
-        strapiConstants.STRAPI_DB_URL +
-        strapiConstants.STRAPI_STUDENTS +
-        "/" +
-        auth.getUserInfo().studentInfo.id +
-        "/" +
-        strapiConstants.STRAPI_PAST_EVENTS;
+    const studentInfo =
+      auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+        ? auth.getUserInfo().studentInfo.id
+        : auth.getStudentIdFromCollegeAdmin();
 
+    const PASTEVENT_URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_STUDENTS +
+      "/" +
+      studentInfo +
+      "/" +
+      strapiConstants.STRAPI_PAST_EVENTS;
+
+    if (
+      (auth.getUserInfo() !== null &&
+        auth.getUserInfo().role !== null &&
+        auth.getUserInfo().role.name !== null &&
+        auth.getUserInfo().role.name === "Student") ||
+      auth.getUserInfo().role.name === "College Admin"
+    ) {
       setFormState(formState => ({
         ...formState,
         isDataLoading: true

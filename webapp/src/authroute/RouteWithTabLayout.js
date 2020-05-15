@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Typography } from "../components";
 import { includes } from "lodash";
+import AddEditStudentForCollegeAdmin from "../containers/Student/ManageStudentCollegeAdmin/AddEditStudentForCollegeAdmin/AddEditStudentForCollegeAdmin";
 
 const StyledTabs = withStyles({
   root: {},
@@ -74,11 +75,7 @@ const RouteWithTabLayout = props => {
   let history = useHistory();
   const classes = useStyles();
 
-  const menu = get(
-    MenuItems(),
-    auth.getUserInfo() ? auth.getUserInfo()["role"]["name"] : "",
-    []
-  );
+  const menu = get(MenuItems(), "Student", []);
 
   /**
    * Get tabs for only sub menu items from menu only for profile
@@ -89,22 +86,18 @@ const RouteWithTabLayout = props => {
     tabs.map(t => t.link),
     props.path
   );
-  console.log(isURLValid);
 
   // Default selected tab view-profile
   const [selectedTab, setSelectedTab] = useState(
-    isURLValid ? props.path : "/view-profile"
+    isURLValid || props.location["collegeAdminRoute"]
+      ? props.path
+      : "/view-profile"
   );
-
-  useEffect(() => {
-    if (selectedTab) {
-      history.push(selectedTab);
-    }
-  }, [selectedTab]);
 
   const NavBar = () => {
     const handleTabChange = val => {
       setSelectedTab(val);
+      history.push(val);
     };
 
     return (
@@ -126,17 +119,31 @@ const RouteWithTabLayout = props => {
   };
 
   if (auth.getToken() !== null) {
-    return (
-      <Route
-        {...rest}
-        render={matchProps => (
-          <Layout>
-            <NavBar />
-            <Component {...matchProps} />
-          </Layout>
-        )}
-      />
-    );
+    if (props.location["collegeAdminRoute"]) {
+      return (
+        <Route
+          {...rest}
+          render={matchProps => (
+            <Layout>
+              <NavBar />
+              <AddEditStudentForCollegeAdmin {...matchProps} />
+            </Layout>
+          )}
+        />
+      );
+    } else {
+      return (
+        <Route
+          {...rest}
+          render={matchProps => (
+            <Layout>
+              <NavBar />
+              <Component {...matchProps} />
+            </Layout>
+          )}
+        />
+      );
+    }
   } else {
     return (
       <Redirect

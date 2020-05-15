@@ -108,7 +108,9 @@ const StudentProfile = props => {
       } else if (auth.getUserInfo().role.name === "Student") {
         paramsForEvent = props.data ? props.data.id : auth.getUserInfo().id;
       } else if (auth.getUserInfo().role.name === "College Admin") {
-        paramsForEvent = props["location"]["dataForStudent"];
+        paramsForEvent = props["location"]["dataForStudent"]
+          ? props["location"]["dataForStudent"]
+          : auth.getStudentInfoForEditingFromCollegeAdmin();
       }
       if (paramsForEvent !== null && paramsForEvent !== undefined) {
         await serviceProvider
@@ -181,9 +183,10 @@ const StudentProfile = props => {
       });
     } else if (auth.getUserInfo().role.name === "College Admin") {
       history.push({
-        pathname: routeConstants.EDIT_STUDENT_FROM_COLLEGE_ADMIN,
+        pathname: routeConstants.EDIT_PROFILE,
         dataForEdit: formState.details,
-        editStudent: true
+        editStudent: true,
+        collegeAdminRoute: true
       });
     }
   };
@@ -208,12 +211,15 @@ const StudentProfile = props => {
         eventId: formState.eventId,
         eventTitle: formState.eventTitle
       });
+    } else {
+      history.push({
+        pathname: routeConstants.MANAGE_STUDENT
+      });
     }
   };
 
   return (
     <Grid>
-      {console.log(formState)}
       {success ? (
         <Collapse in={success}>
           <Alert
@@ -238,7 +244,7 @@ const StudentProfile = props => {
       <Grid item xs={12} className={classes.title}>
         {auth.getUserInfo().role.name === "College Admin" ? (
           <Typography variant="h4" gutterBottom>
-            View Student
+            {/* View Student */}
           </Typography>
         ) : null}
       </Grid>
@@ -334,7 +340,12 @@ const StudentProfile = props => {
                     id="physicallyHandicapped"
                     label="Physically Handicapped"
                     defaultValue={
-                      formState.values.physicallyHandicapped ? "Yes" : "No"
+                      formState.values.physicallyHandicapped !== undefined &&
+                      formState.values.physicallyHandicapped !== null
+                        ? formState.values.physicallyHandicapped
+                          ? "Yes"
+                          : "No"
+                        : null
                     }
                   />
                 </Grid>
