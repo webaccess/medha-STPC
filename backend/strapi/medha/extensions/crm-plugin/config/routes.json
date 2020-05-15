@@ -1,0 +1,16 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations",
+      "handler": "contact.organizations",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/create-organization",
+      "handler": "contact.createOrganization",
+      "config": { "policies": [] }
+    }
+  ]
+}
