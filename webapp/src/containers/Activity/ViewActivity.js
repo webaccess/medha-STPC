@@ -20,7 +20,6 @@ import * as genericConstants from "../../constants/GenericConstants";
 import * as formUtilities from "../../Utilities/FormUtilities";
 import {
   Table,
-  Spinner,
   GreenButton,
   YellowButton,
   GrayButton,
@@ -40,6 +39,7 @@ import moment from "moment";
 import XLSX from "xlsx";
 import LoaderContext from "../../context/LoaderContext";
 import AddEditFeedBack from "../../containers/Feedback/AddFeedback/AddFeedback";
+import ViewFeedBack from "../../containers/Feedback/ViewFeedback/ViewFeedback";
 
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
@@ -84,9 +84,9 @@ const ViewActivity = props => {
     pageCount: "",
     sortAscending: true,
     /** FeedBack */
-    showModalFeedback: false,
     activityTitle: "",
-    activityID: ""
+    activityID: "",
+    showViewFeedbackModal: false
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -361,10 +361,24 @@ const ViewActivity = props => {
 
     setLoaderStatus(false);
   };
+
+  const viewFeedbackHandler = event => {
+    console.log("event", event);
+    setLoaderStatus(true);
+    setFormState(formState => ({
+      ...formState,
+      showViewFeedbackModal: true,
+      activityTitle: event.title,
+      activityID: event.id
+    }));
+    setLoaderStatus(false);
+  };
+
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
-      showModalFeedback: false
+      showModalFeedback: false,
+      showViewFeedbackModal: false
     }));
   };
 
@@ -420,13 +434,23 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
-          {roleName === "Student" || roleName === "College Admin" ? (
+          {/* {roleName === "Student" || roleName === "College Admin" ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon
                 id={cell.id}
                 value={cell.name}
                 title="Add FeedBack"
                 onClick={() => addFeedbackHandler(cell)}
+              />
+            </div>
+          ) : null} */}
+          {roleName === "College Admin" || roleName === "Medha Admin" ? (
+            <div className={classes.PaddingActionButton}>
+              <ThumbsUpDownIcon
+                id={cell.id}
+                value={cell.name}
+                title="View FeedBack"
+                onClick={() => viewFeedbackHandler(cell)}
               />
             </div>
           ) : null}
@@ -663,8 +687,8 @@ const ViewActivity = props => {
           id={formState.dataToDelete["id"]}
           deleteEvent={isDeleteCellCompleted}
         /> */}
-        <AddEditFeedBack
-          showModal={formState.showModalFeedback}
+        <ViewFeedBack
+          showModal={formState.showViewFeedbackModal}
           modalClose={modalClose}
           activityTitle={formState.activityTitle}
         />
