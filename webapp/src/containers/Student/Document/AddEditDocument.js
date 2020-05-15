@@ -44,7 +44,6 @@ const AddEditDocument = props => {
   /** This handle change is used to handle changes to text field */
   const handleChange = event => {
     /** TO SET VALUES IN FORMSTATE */
-    console.log(event);
     event.persist();
     setFormState(formState => ({
       ...formState,
@@ -115,11 +114,11 @@ const AddEditDocument = props => {
   };
 
   const postUploadData = async () => {
-    const studentInfo = auth.getUserInfo()
-      ? auth.getUserInfo().studentInfo
-      : null;
-
-    const id = studentInfo ? studentInfo.id : null;
+    const studentInfo =
+      auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+        ? auth.getUserInfo().studentInfo.id
+        : auth.getStudentIdFromCollegeAdmin();
+    const id = studentInfo;
     let postData = databaseUtilities.uploadDocument(
       formState.files,
       ref,
@@ -130,7 +129,6 @@ const AddEditDocument = props => {
     serviceProviders
       .serviceProviderForPostRequest(DOCUMENT_URL, postData)
       .then(res => {
-        console.log(res);
         setIsSuccess(true);
         history.push({
           pathname: routeConstants.VIEW_DOCUMENTS,
@@ -155,7 +153,6 @@ const AddEditDocument = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {isSuccess ? (
           <Alert severity="success">

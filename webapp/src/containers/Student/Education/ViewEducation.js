@@ -83,14 +83,14 @@ const ViewEducation = props => {
     message: "",
     severity: ""
   });
-  const studentInfo = Auth.getUserInfo()
-    ? Auth.getUserInfo().studentInfo
-    : null;
-  const studentId = studentInfo ? studentInfo.id : null;
+  const studentInfo =
+    Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
+      ? Auth.getUserInfo().studentInfo.id
+      : Auth.getStudentIdFromCollegeAdmin();
   const STUDENT_EDUCATION_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS +
-    `/${studentId}/education`;
+    `/${studentInfo}/education`;
   const EDUCATION_FILTER = "id";
 
   useEffect(() => {
