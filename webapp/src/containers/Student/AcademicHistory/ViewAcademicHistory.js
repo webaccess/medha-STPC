@@ -33,6 +33,7 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
 import { string } from "prop-types";
+import auth from "../../../components/Auth";
 
 const ViewAcademicHistory = props => {
   const [open, setOpen] = React.useState(true);
@@ -82,14 +83,14 @@ const ViewAcademicHistory = props => {
     severity: ""
   });
 
-  const studentInfo = Auth.getUserInfo()
-    ? Auth.getUserInfo().studentInfo
-    : null;
-  const studentId = studentInfo ? studentInfo.id : null;
+  const studentInfo =
+    Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
+      ? Auth.getUserInfo().studentInfo.id
+      : auth.getStudentIdFromCollegeAdmin();
   const STUDENT_ACADEMIC_YEAR_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS +
-    `/${studentId}/academic-history`;
+    `/${studentInfo}/academic-history`;
   const ACADEMIC_YEAR_FILTER = "id";
 
   useEffect(() => {
@@ -194,7 +195,6 @@ const ViewAcademicHistory = props => {
   };
 
   const handleChangeAutoComplete = (filterName, event, value) => {
-    console.log(filterName, event, value);
     if (value === null) {
       delete formState.filterDataParameters[filterName];
       //restoreData();
