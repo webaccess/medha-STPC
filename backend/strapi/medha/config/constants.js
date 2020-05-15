@@ -5,11 +5,14 @@ const ROLE_RPC_ADMIN = "RPC Admin";
 const ROLE_COLLEGE_ADMIN = "College Admin";
 const ROLE_STUDENT = "Student";
 
+const PLUGIN = "crm-plugin";
+
 module.exports = {
   ROLE_MEDHA_ADMIN,
   ROLE_ADMIN,
   ROLE_ZONAL_ADMIN,
   ROLE_RPC_ADMIN,
   ROLE_COLLEGE_ADMIN,
-  ROLE_STUDENT
+  ROLE_STUDENT,
+  PLUGIN
 };

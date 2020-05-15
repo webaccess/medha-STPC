@@ -96,6 +96,11 @@ function sort(data, sort) {
   return result;
 }
 
+function rename(object, newKey, oldKey) {
+  object[newKey] = object[oldKey];
+  delete object[oldKey];
+}
+
 module.exports = {
   getRequestParams,
   getPaginatedResponse,
@@ -105,5 +110,7 @@ module.exports = {
   asyncForEach,
   paginate,
   getErrorResponse,
-  sort
+  sort,
+  rename,
+  merge: _.merge
 };
