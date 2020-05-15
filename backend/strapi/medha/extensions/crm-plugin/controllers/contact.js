@@ -144,6 +144,11 @@ module.exports = {
           return Promise.reject("Something went wrong while creating Contact");
         }
 
+        await orgModel.save(
+          { contact: contact.id },
+          { transacting: t, require: false }
+        );
+
         return new Promise(resolve => resolve(contact));
       })
       .then(success => {
@@ -178,5 +183,12 @@ module.exports = {
       result: response.result,
       ...response.pagination
     };
+  },
+
+  createIndividual: async ctx => {
+    /**
+     * TODO
+     * Add policy to check foreign keys
+     */
   }
 };

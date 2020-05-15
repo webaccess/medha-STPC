@@ -63,9 +63,9 @@
       "model": "district"
     },
     "individual": {
+      "via": "contact",
       "plugin": "crm-plugin",
-      "model": "individual",
-      "via": "contact"
+      "model": "individual"
     },
     "user": {
       "plugin": "users-permissions",
