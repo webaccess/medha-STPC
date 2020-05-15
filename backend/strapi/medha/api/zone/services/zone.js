@@ -16,12 +16,10 @@ const {
 module.exports = {
   getRoleWiseZones: async (user, filters) => {
     let zone, role;
-    if (user) {
-      zone = user.zone;
-      role = user.role.name;
-    } else {
-      role = "Public";
-    }
+
+    zone = user ? user.zone : null;
+
+    role = user ? user.role.name : "Public";
     switch (role) {
       case ROLE_MEDHA_ADMIN:
       case ROLE_ADMIN:
