@@ -59,4 +59,14 @@ bookshelf.model("role", {
   tableName: "users-permissions_role"
 });
 
+bookshelf.model("college-stream-strength", {
+  requireFetch: false,
+  tableName: "college_stream_strengths"
+});
+
+bookshelf.model("organization-component", {
+  requireFetch: false,
+  tableName: "organizations_components"
+});
+
 module.exports = bookshelf;
