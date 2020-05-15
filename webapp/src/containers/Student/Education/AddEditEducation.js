@@ -29,9 +29,10 @@ const percentage = "percentage";
 const AddEditEducation = props => {
   const history = useHistory();
   const classes = useStyles();
-  const studentInfo = auth.getUserInfo()
-    ? auth.getUserInfo().studentInfo
-    : null;
+  const studentInfo =
+    auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+      ? auth.getUserInfo().studentInfo.id
+      : auth.getStudentIdFromCollegeAdmin();
 
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
@@ -143,7 +144,7 @@ const AddEditEducation = props => {
   };
 
   const postEducationData = async () => {
-    const id = studentInfo ? studentInfo.id : null;
+    // const id = studentInfo ? studentInfo.id : null;
 
     let postData = databaseUtilities.addEducation(
       formState.values[qualification],
@@ -152,7 +153,8 @@ const AddEditEducation = props => {
       formState.values[percentage]
     );
     // Adding student id to post data
-    postData.student = id;
+    postData.student = studentInfo;
+    console.log("EDucationURL---->>>", EDUCATION_URL, postData);
     if (formState.isEditEducation) {
       serviceProviders
         .serviceProviderForPutRequest(
@@ -196,6 +198,7 @@ const AddEditEducation = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
+          console.log("POSTEDUCATION", error);
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,
             fromAddEducation: true,
