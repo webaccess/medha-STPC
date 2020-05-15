@@ -53,13 +53,12 @@ const DeleteDocument = props => {
   };
 
   const deleteData = () => {
-    const studentInfo = auth.getUserInfo()
-      ? auth.getUserInfo().studentInfo
-      : null;
+    const studentInfo =
+      auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+        ? auth.getUserInfo().studentInfo.id
+        : auth.getStudentIdFromCollegeAdmin();
 
-    const studentId = studentInfo ? studentInfo.id : null;
-
-    const API_URL = `${DELETE_DOCUMENT_URL}/${studentId}/file`;
+    const API_URL = `${DELETE_DOCUMENT_URL}/${studentInfo}/file`;
     serviceProviders
       .serviceProviderForDeleteRequest(API_URL, props.id)
       .then(res => {
@@ -68,7 +67,6 @@ const DeleteDocument = props => {
           isValid: true
         }));
         formState.isDeleteData = true;
-        console.log(res.data);
         handleCloseModal(res.data.name);
       })
       .catch(error => {

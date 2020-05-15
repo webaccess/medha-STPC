@@ -36,9 +36,10 @@ const AddEditAcademicHistory = props => {
   const history = useHistory();
   const classes = useStyles();
 
-  const studentInfo = auth.getUserInfo()
-    ? auth.getUserInfo().studentInfo
-    : null;
+  const studentInfo =
+    auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+      ? auth.getUserInfo().studentInfo.id
+      : auth.getStudentIdFromCollegeAdmin();
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const ACADEMIC_HISTORY_URL =
@@ -71,6 +72,9 @@ const AddEditAcademicHistory = props => {
         setAcademicYearList(
           res.data.result.map(({ id, name }) => ({ id, name }))
         );
+      })
+      .catch(error => {
+        console.log("ERRORACADEMICYEAR", error);
       });
   }, []);
 
@@ -202,7 +206,7 @@ const AddEditAcademicHistory = props => {
   };
 
   const postAcademicHistoryData = async () => {
-    const id = studentInfo ? studentInfo.id : null;
+    // const id = studentInfo ? studentInfo.id : null;
 
     let postData = databaseUtilities.addAcademicHistory(
       formState.values[academicYear],
@@ -211,7 +215,7 @@ const AddEditAcademicHistory = props => {
     );
 
     // Adding student id to post data
-    postData.student = id;
+    postData.student = studentInfo;
     if (formState.isEditAcademicHistory) {
       serviceProviders
         .serviceProviderForPutRequest(
