@@ -9,7 +9,7 @@ const _ = require("lodash");
 const bookshelf = require("../../../config/bookshelf");
 const utils = require("../../../config/utils");
 const { PLUGIN } = require("../../../config/constants");
-const { convertRestQueryParams } = require("strapi-utils");
+const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 
 module.exports = {
   /**
@@ -184,7 +184,43 @@ module.exports = {
       ...response.pagination
     };
   },
+  education: async ctx => {
+    const { id } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
 
+    return strapi
+      .query("education")
+      .model.query(
+        buildQuery({
+          model: strapi.models["education"],
+          filters
+        })
+      )
+      .where({ contact: id })
+      .fetchPage({
+        page: page,
+        pageSize:
+          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
+      })
+      .then(res => {
+        return utils.getPaginatedResponse(res);
+      });
+  },
+  academicHistory: async ctx => {
+    console.log("In academic history");
+    const { id } = ctx.params;
+    const academicHistoryId = ctx.query ? ctx.query.id : null;
+    console.log(academicHistoryId);
+    let response = await strapi
+      .query("academic-history")
+      .find({ contact: id }, ["academic_year"]);
+
+    if (academicHistoryId && response && response.length > 0) {
+      response = response.filter(ah => ah.id === parseInt(academicHistoryId));
+    }
+    return utils.getFindOneResponse(response);
+  },
   createIndividual: async ctx => {
     /**
      * TODO
