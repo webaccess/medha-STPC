@@ -101,14 +101,17 @@ try {
   console.log(error);
 }
 
-let allAPIsControllerActions = Object.assign({}, apiControllerActions);
-allAPIsControllerActions = Object.assign(
-  apiControllerActions,
-  pluginControllerActions
-);
-allAPIsControllerActions = Object.assign(
-  apiControllerActions,
+const mergedPluginControllerAction = utils.merge(
+  {},
+  pluginControllerActions,
   extendPluginControllerAction
+);
+
+let allAPIsControllerActions = Object.assign({}, apiControllerActions);
+
+allAPIsControllerActions = Object.assign(
+  apiControllerActions,
+  mergedPluginControllerAction
 );
 
 const rolesAndPermissions = Object.keys(ROLES).map(r => {
