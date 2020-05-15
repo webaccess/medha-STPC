@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "connection": "default",
   "collectionName": "contacts",
   "info": {
@@ -43,9 +42,9 @@
       "required": true
     },
     "organization": {
+      "via": "contact",
       "plugin": "crm-plugin",
-      "model": "organization",
-      "via": "contact"
+      "model": "organization"
     },
     "country": {
       "plugin": "crm-plugin",

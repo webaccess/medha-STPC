@@ -39,7 +39,7 @@
     "stream_strength": {
       "type": "component",
       "repeatable": true,
-      "component": "college-stream-strength.college-stream-strength"
+      "component": "college-stream-strength.streams-strength"
     },
     "is_blocked": {
       "type": "boolean",

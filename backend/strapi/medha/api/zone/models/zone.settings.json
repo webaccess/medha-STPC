@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "collectionName": "zones",
   "info": {
     "name": "Zone"
