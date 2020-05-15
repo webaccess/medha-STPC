@@ -278,24 +278,25 @@ module.exports = {
     let updateData = {
       ...ctx.request.body
     };
-    let validPassword;
-    if (_.has(ctx.request.body, "password")) {
-      validPassword = strapi.plugins[
-        "users-permissions"
-      ].services.user.validatePassword(password, user.password);
-    }
-    if (
-      _.has(ctx.request.body, "password") &&
-      !validPassword &&
-      usr.role.name === "Medha Admin"
-    ) {
-      updateData.password = await strapi.plugins[
-        "users-permissions"
-      ].services.user.hashPassword(updateData);
-    }
-    if (_.has(ctx.request.body, "password") && validPassword) {
-      delete updateData.password;
-    }
+
+    // let validPassword;
+    // if (_.has(ctx.request.body, "password")) {
+    //   validPassword = strapi.plugins[
+    //     "users-permissions"
+    //   ].services.user.validatePassword(password, user.password);
+    // }
+    // if (
+    //   _.has(ctx.request.body, "password") &&
+    //   !validPassword &&
+    //   usr.role.name === "Medha Admin"
+    // ) {
+    //   updateData.password = await strapi.plugins[
+    //     "users-permissions"
+    //   ].services.user.hashPassword(updateData);
+    // }
+    // if (_.has(ctx.request.body, "password") && validPassword) {
+    //   delete updateData.password;
+    // }
 
     const data = await strapi
       .query("user", "users-permissions")

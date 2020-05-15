@@ -7,9 +7,51 @@
       "config": { "policies": [] }
     },
     {
+      "method": "GET",
+      "path": "/contact/individual/:id/academic-history",
+      "handler": "contact.academicHistory",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/individual/:id/education",
+      "handler": "contact.education",
+      "config": { "policies": [] }
+    },
+    {
       "method": "POST",
       "path": "/contact/create-organization",
       "handler": "contact.createOrganization",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/create-individual",
+      "handler": "contact.createIndividual",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-individuals",
+      "handler": "contact.individuals",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations/:orgId",
+      "handler": "contact.organizationDetails",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-individuals/:individualId",
+      "handler": "contact.individualDetails",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations/:orgId/students",
+      "handler": "contact.organizationStudents",
       "config": { "policies": [] }
     }
   ]

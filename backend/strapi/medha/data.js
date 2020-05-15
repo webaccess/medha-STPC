@@ -1056,7 +1056,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["findone"],
+        action: ["findone", "education", "academichistory"],
         type: PLUGIN_NAME
       },
       {
@@ -1241,6 +1241,8 @@ const ROLES = {
 
 const ALLOWED_MEDHA_ADMIN_ROUTES = ["getroles", "getrole"];
 
+const uploadPermissions = ["upload"];
+
 const PUBLIC_ROUTES = {
   controllers: [
     {
@@ -1284,6 +1286,7 @@ module.exports = {
   ACADEMIC_YEARS,
   COUNTRIES,
   STREAMS,
+  uploadPermissions,
   ROLES,
   ALLOWED_MEDHA_ADMIN_ROUTES,
   PUBLIC_ROUTES

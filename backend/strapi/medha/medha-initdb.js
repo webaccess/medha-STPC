@@ -6,7 +6,8 @@ const {
   STREAMS,
   ALLOWED_MEDHA_ADMIN_ROUTES,
   ROLES,
-  PUBLIC_ROUTES
+  PUBLIC_ROUTES,
+  uploadPermissions
 } = require("./data");
 
 (async () => {
@@ -23,6 +24,8 @@ const {
   await addCustomMedhaAdminPermission();
   console.log("\n");
   await addPublicRoutes();
+  console.log("\n");
+  await addUploadRoutes();
 })();
 
 const fs = require("fs");
@@ -480,7 +483,48 @@ async function deleteAllPublicRoute(role) {
       console.log("\nDeleting all CRM public routes...");
     });
 }
+async function addUploadRoutes() {
+  const userDefinedRoles = Object.keys(ROLES);
+  const roles = await bookshelf
+    .model("role")
+    .where("name", "in", userDefinedRoles)
+    .fetchAll()
+    .then(res => res.toJSON());
 
+  await utils.asyncForEach(uploadPermissions, async action => {
+    await utils.asyncForEach(roles, async role => {
+      const permission = await bookshelf
+        .model("permission")
+        .where({
+          type: "upload",
+          controller: "upload",
+          action: action,
+          role: role.id
+        })
+        .fetch({
+          require: false
+        });
+
+      if (!permission) {
+        await bookshelf
+          .model("permission")
+          .forge({
+            type: "upload",
+            controller: "upload",
+            action: action,
+            enabled: true,
+            role: role.id
+          })
+          .save()
+          .then(() => {
+            console.log(`${action} added for role ${role.name}`);
+          });
+      } else {
+        console.log(`Skipping ${action} for role ${role.name}`);
+      }
+    });
+  });
+}
 async function addPublicRoutes() {
   const role = await getPublicRole();
   await deleteAllPublicRoute(role);

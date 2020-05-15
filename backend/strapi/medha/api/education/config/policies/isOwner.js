@@ -4,19 +4,19 @@
  * `isOwner` policy.
  * Only Medha admin and owner of education can create/update/delete entries
  */
-
+const { PLUGIN } = require("../../../../config/constants");
 module.exports = async (ctx, next) => {
   const { role, id } = ctx.state.user;
 
   if (ctx.request.method === "POST") {
     const {
-      student: studentId,
+      contact: contact,
       qualification,
       percentage,
-      year_of_passing: yearOfPassing,
+      year_of_passing: yearOfPassing
     } = ctx.request.body;
 
-    if (!studentId) {
+    if (!contact) {
       return ctx.response.badRequest("Student is compulsory");
     }
     if (!qualification) {
@@ -29,7 +29,9 @@ module.exports = async (ctx, next) => {
       return ctx.response.badRequest("Year Of Passing is compulsory");
     }
 
-    const student = await strapi.query("student").findOne({ id: studentId });
+    const student = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: contact });
 
     if (!student) {
       return ctx.response.notFound("Student does not exist");
@@ -47,8 +49,7 @@ module.exports = async (ctx, next) => {
     const education = await strapi
       .query("education")
       .findOne({ id: ctx.params.id });
-
-    if (!(role.name === "Medha Admin" || education.student.user === id)) {
+    if (!(role.name === "Medha Admin" || education.contact.user === id)) {
       return ctx.response.unauthorized("You don't have permission to do this");
     }
   }

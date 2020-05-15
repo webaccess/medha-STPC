@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "connection": "default",
   "collectionName": "individuals",
   "info": {
@@ -18,9 +17,9 @@
       "type": "string"
     },
     "contact": {
-      "via": "individual",
       "plugin": "crm-plugin",
-      "model": "contact"
+      "model": "contact",
+      "via": "individual"
     },
     "stream": {
       "model": "stream"
@@ -28,11 +27,6 @@
     "documents": {
       "collection": "file",
       "via": "related",
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ],
       "plugin": "upload",
       "required": false
     },
@@ -66,6 +60,10 @@
     "roll_number": {
       "type": "integer",
       "required": true
+    },
+    "organization": {
+      "plugin": "crm-plugin",
+      "model": "organization"
     }
   }
 }
