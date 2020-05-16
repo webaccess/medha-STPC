@@ -33,6 +33,7 @@ module.exports = {
       "name",
       "phone",
       "email",
+      "state",
       "address_1",
       "district"
     ]);
@@ -252,7 +253,8 @@ module.exports = {
       "role",
       "state",
       "zone",
-      "rpc"
+      "rpc",
+      "blocked"
     ]);
 
     userRequestBody.provider = "local";

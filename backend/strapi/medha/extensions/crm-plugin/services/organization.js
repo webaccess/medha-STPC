@@ -11,7 +11,16 @@ module.exports = {
           filters
         })
       )
-      .fetchAll()
+      .fetchAll({
+        withRelated: [
+          "contact.state",
+          "contact.district",
+          "zone",
+          "rpc",
+          "tpos",
+          "stream_strength"
+        ]
+      })
       .then(res => res.toJSON());
 
     return orgs;
