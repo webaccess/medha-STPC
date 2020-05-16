@@ -36,7 +36,8 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import { setCollege, setRole } from "../../../Utilities/StrapiUtilities";
 import LoaderContext from "../../../context/LoaderContext";
 
-const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_VIEW_USERS;
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;

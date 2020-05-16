@@ -9,6 +9,9 @@ export const STRAPI_COLLEGES = "crm-plugin/contact/get-organizations";
 export const STRAPI_COLLEGES_INDERIECT_URL = "colleges";
 export const STRAPI_STREAMS = "streams";
 export const STRAPI_USERS = "users";
+export const STRAPI_CREATE_USERS = "crm-plugin/contact/create-individual";
+export const STRAPI_VIEW_USERS = "crm-plugin/contact/get-individuals";
+
 export const STRAPI_DISTRICTS = "districts";
 export const STRAPI_QUALIFICATIONS = "qualifications";
 export const STRAPI_ROLES = "users-permissions/roles";
