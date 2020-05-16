@@ -18,7 +18,9 @@ module.exports = {
           "zone",
           "rpc",
           "tpos",
-          "stream_strength"
+          "principal",
+          "stream_strength",
+          "stream_strength.stream"
         ]
       })
       .then(res => res.toJSON());
