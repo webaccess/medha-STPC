@@ -148,7 +148,7 @@ const AddStudentToRecruitmentDrive = props => {
       "/" +
       formState.eventId +
       "/" +
-      strapiConstants.STRAPI_COLLEGES +
+      strapiConstants.STRAPI_COLLEGES_INDERIECT_URL +
       "/" +
       formState.collegeId +
       "/" +

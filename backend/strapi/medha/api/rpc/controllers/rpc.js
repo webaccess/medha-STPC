@@ -7,6 +7,8 @@
 
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
+const _ = require("lodash");
+
 module.exports = {
   /**
    * Retrieve RPCs.
@@ -18,7 +20,7 @@ module.exports = {
    */
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
     /**
      * Public route
      */
