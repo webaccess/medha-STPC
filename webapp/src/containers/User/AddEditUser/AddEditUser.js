@@ -126,20 +126,42 @@ const AddEditUser = props => {
       if (props["dataForEdit"]["last_name"]) {
         formState.values[lastname] = props["dataForEdit"]["last_name"];
       }
-      if (props["dataForEdit"]["email"]) {
-        formState.values[email] = props["dataForEdit"]["email"];
+      if (
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["email"]
+      ) {
+        formState.values[email] = props["dataForEdit"]["contact"]["email"];
       }
-      if (props["dataForEdit"]["contact_number"]) {
-        formState.values[contact] = props["dataForEdit"]["contact_number"];
+      if (
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["phone"]
+      ) {
+        formState.values[contact] = props["dataForEdit"]["contact"]["phone"];
       }
-      if (props["dataForEdit"]["username"]) {
-        formState.values[username] = props["dataForEdit"]["username"];
+      if (
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["user"] &&
+        props["dataForEdit"]["contact"]["user"]["username"]
+      ) {
+        formState.values[username] =
+          props["dataForEdit"]["contact"]["user"]["username"];
       }
-      if (props["dataForEdit"]["blocked"]) {
-        formState.values[blocked] = props["dataForEdit"]["blocked"];
+      if (
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["user"] &&
+        props["dataForEdit"]["contact"]["user"]["blocked"]
+      ) {
+        formState.values[blocked] =
+          props["dataForEdit"]["contact"]["user"]["blocked"];
       }
-      if (props["dataForEdit"]["role"] && props["dataForEdit"]["role"]["id"]) {
-        formState.values[role] = props["dataForEdit"]["role"]["id"];
+      if (
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["user"] &&
+        props["dataForEdit"]["contact"]["user"]["role"] &&
+        props["dataForEdit"]["contact"]["user"]["role"]["id"]
+      ) {
+        formState.values[role] =
+          props["dataForEdit"]["contact"]["user"]["role"]["id"];
       }
       if (
         props["dataForEdit"]["state"] &&

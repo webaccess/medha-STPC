@@ -282,13 +282,13 @@ const ManageUser = props => {
       for (let i in data) {
         var temp = {};
         temp["id"] = data[i]["id"];
-        temp["username"] = data[i]["username"];
-        temp["blocked"] = data[i]["blocked"];
-        temp["role"] = data[i]["role"]["name"];
-        temp["state"] = data[i]["state"] ? data[i]["state"]["name"] : "";
-        temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
-        temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
-        temp["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
+        temp["username"] = data[i]["contact"]["user"]["username"];
+        temp["blocked"] = data[i]["contact"]["user"]["blocked"];
+        temp["role"] = data[i]["contact"]["user"]["role"]["name"];
+        temp["state"] = data[i]["contact"]["user"]["state"]["name"];
+        temp["zone"] = data[i]["contact"]["user"]["zone"]["name"];
+        temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];
+        temp["college"] = data[i]["organization"]["name"];
 
         x.push(temp);
       }
