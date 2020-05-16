@@ -109,6 +109,8 @@ const ManageStudents = props => {
     toggleCleared: false
   });
 
+  console.log("collegeID", auth.getUserInfo());
+
   useEffect(() => {
     getStudentData(10, 1);
     getStreamData();
@@ -142,14 +144,14 @@ const ManageStudents = props => {
     }
     if (
       auth.getUserInfo().role.name === "College Admin" &&
-      auth.getUserInfo().college !== null &&
-      auth.getUserInfo().college.id !== null
+      auth.getUserInfo().studentInfo.organization !== null &&
+      auth.getUserInfo().studentInfo.organization.id !== null
     ) {
       const STUDENTS_URL =
         strapiConstants.STRAPI_DB_URL +
-        strapiConstants.STRAPI_COLLEGES +
+        strapiConstants.STRAPI_COLLEGES_INDERIECT_URL +
         "/" +
-        auth.getUserInfo().college.id +
+        auth.getUserInfo().studentInfo.organization.id +
         "/" +
         strapiConstants.STRAPI_STUDENTS;
 

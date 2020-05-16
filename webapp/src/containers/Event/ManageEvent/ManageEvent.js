@@ -157,7 +157,7 @@ const ManageEvent = props => {
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_COLLEGES +
           "/" +
-          auth.getUserInfo().college.id +
+          auth.getUserInfo().studentInfo.organization.id +
           "/event";
         await serviceProviders
           .serviceProviderForGetRequest(
@@ -257,7 +257,8 @@ const ManageEvent = props => {
           if (
             data[i]["colleges"] &&
             data[i]["colleges"].length === 1 &&
-            data[i]["colleges"][0]["id"] === auth.getUserInfo().college.id
+            data[i]["colleges"][0]["id"] ===
+              auth.getUserInfo().studentInfo.organization.id
           ) {
             colleges = true;
           }

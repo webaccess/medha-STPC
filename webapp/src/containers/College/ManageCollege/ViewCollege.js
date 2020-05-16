@@ -75,7 +75,7 @@ const ViewCollege = props => {
     let paramsForCollege;
     if (auth.getUserInfo().role.name === "College Admin") {
       paramsForCollege = {
-        id: auth.getUserInfo().college.id
+        id: auth.getUserInfo().studentInfo.organization.id
       };
     } else if (auth.getUserInfo().role.name === "Medha Admin") {
       paramsForCollege = {

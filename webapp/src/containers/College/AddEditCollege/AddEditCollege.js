@@ -103,7 +103,7 @@ const AddEditCollege = props => {
   const [collegeInfo, setCollegeInfo] = useState({
     college:
       auth.getUserInfo().role.name === "College Admin"
-        ? auth.getUserInfo().college
+        ? auth.getUserInfo().studentInfo.organization
         : {},
     state:
       auth.getUserInfo().role.name === "College Admin"
@@ -275,7 +275,7 @@ const AddEditCollege = props => {
       let user_url =
         COLLEGES_URL +
         "/" +
-        auth.getUserInfo().college.id +
+        auth.getUserInfo().studentInfo.organization.id +
         "/" +
         strapiConstants.STRAPI_ADMIN;
       serviceProviders
