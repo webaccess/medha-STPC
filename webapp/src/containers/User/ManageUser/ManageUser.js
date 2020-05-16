@@ -235,7 +235,7 @@ const ManageUser = props => {
         defaultParams = {
           page: page,
           pageSize: pageSize,
-          [SORT_FIELD_KEY]: "title:asc"
+          [SORT_FIELD_KEY]: "contact.user.username:asc"
         };
       }
       Object.keys(paramsForUsers).map(key => {
@@ -246,7 +246,7 @@ const ManageUser = props => {
       paramsForUsers = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "username:asc"
+        [SORT_FIELD_KEY]: "contact.user.username:asc"
       };
     }
     setFormState(formState => ({
@@ -285,11 +285,26 @@ const ManageUser = props => {
         temp["username"] = data[i]["contact"]["user"]["username"];
         temp["blocked"] = data[i]["contact"]["user"]["blocked"];
         temp["role"] = data[i]["contact"]["user"]["role"]["name"];
-        temp["state"] = data[i]["contact"]["user"]["state"]["name"];
-        temp["zone"] = data[i]["contact"]["user"]["zone"]["name"];
-        temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];
-        temp["college"] = data[i]["organization"]["name"];
-
+        if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["state"]) {
+          temp["state"] = data[i]["contact"]["user"]["state"]["name"];
+        } else {
+          temp["state"] = "";
+        }
+        if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["zone"]) {
+          temp["zone"] = data[i]["contact"]["user"]["zone"]["name"];
+        } else {
+          temp["zone"] = "";
+        }
+        if (data[i]["contact"]["rpc"] && data[i]["contact"]["user"]["rpc"]) {
+          temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];
+        } else {
+          temp["rpc"] = "";
+        }
+        if (data[i]["organization"] && data[i]["organization"]["name"]) {
+          temp["college"] = data[i]["organization"]["name"];
+        } else {
+          temp["college"] = "";
+        }
         x.push(temp);
       }
       return x;
