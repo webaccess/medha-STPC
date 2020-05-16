@@ -52,7 +52,7 @@ const blocked = "blocked";
 
 /** URLS */
 const USERS_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS;
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_CREATE_USERS;
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;

@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Modal,
   Backdrop,
-  Fade,
+  Fade
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -15,15 +15,16 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
-const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_CREATE_USERS;
 
-const BlockUser = (props) => {
+const BlockUser = props => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDataBlockUnblock: false,
     isValid: false,
     stateCounter: 0,
-    values: {},
+    values: {}
   });
 
   const handleCloseModal = (message = "") => {
@@ -33,12 +34,12 @@ const BlockUser = (props) => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {},
       isDataBlockUnblock: false,
       isValid: false,
-      stateCounter: 0,
+      stateCounter: 0
     }));
     if (formState.isDataBlockUnblock) {
       props.closeModal(true, message);
@@ -47,7 +48,7 @@ const BlockUser = (props) => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     setOpen(true);
     /** CALL Put FUNCTION */
     blockUser();
@@ -58,22 +59,22 @@ const BlockUser = (props) => {
     var body;
     if (props.isUnBlocked || props.isMultiUnblock) {
       body = {
-        blocked: false,
+        blocked: false
       };
     }
     if (props.isBlocked || props.isMulBlocked) {
       body = {
-        blocked: true,
+        blocked: true
       };
     }
 
     if (props.isMulBlocked || props.isMultiUnblock) {
       serviceProviders
         .serviceProviderForAllBlockRequest(USER_URL, props.id, body)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDataBlockUnblock = true;
           if (props.isMultiUnblock) {
@@ -82,7 +83,7 @@ const BlockUser = (props) => {
             handleCloseModal("Users has been blocked");
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error");
           formState.isDataBlockUnblock = false;
           if (props.isMultiUnblock) {
@@ -94,7 +95,7 @@ const BlockUser = (props) => {
     } else {
       serviceProviders
         .serviceProviderForPutRequest(USER_URL, props.id, body)
-        .then((res) => {
+        .then(res => {
           formState.isDataBlockUnblock = true;
           if (props.dataToBlockUnblock["isUserBlock"]) {
             handleCloseModal(
@@ -106,7 +107,7 @@ const BlockUser = (props) => {
             );
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error", error);
           formState.isDataBlockUnblock = false;
           handleCloseModal("user unblock successfully");
@@ -114,7 +115,7 @@ const BlockUser = (props) => {
     }
   };
 
-  const handleBlock = async (event) => {
+  const handleBlock = async event => {
     props.clearSelectedRow(true);
     props.closeModal();
   };
@@ -130,7 +131,7 @@ const BlockUser = (props) => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500,
+        timeout: 500
       }}
     >
       <Fade in={props.getModel}>

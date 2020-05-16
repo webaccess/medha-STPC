@@ -11,7 +11,7 @@
   "attributes": {
     "first_name": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "last_name": {
       "type": "string"
@@ -40,11 +40,11 @@
     },
     "father_first_name": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "father_last_name": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "date_of_birth": {
       "type": "datetime"
@@ -55,7 +55,7 @@
         "male",
         "female"
       ],
-      "required": true
+      "required": false
     },
     "roll_number": {
       "type": "integer",
