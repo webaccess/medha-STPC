@@ -1,2 +1,18 @@
 {
+  "editor.multiCursorModifier": "alt",
+  "window.zoomLevel": 0,
+  "editor.maxTokenizationLineLength": 100000000,
+  "explorer.confirmDelete": false,
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.useEditorConfig": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "prettier.trailingComma": "none",
+  "prettier.arrowParens": "avoid"
 }
