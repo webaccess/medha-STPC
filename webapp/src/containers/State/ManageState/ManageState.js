@@ -44,7 +44,6 @@ const ViewStates = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [statesFilter, setStatesFilter] = useState([]);
   const { setLoaderStatus } = useContext(LoaderContext);
 
   /** Form state variables */
@@ -52,7 +51,6 @@ const ViewStates = props => {
     filterState: "",
     dataToShow: [],
     states: [],
-    statesFilter: [],
     filterDataParameters: {},
     isFilterSearch: false,
     /** This is when we return from edit page */
@@ -106,21 +104,6 @@ const ViewStates = props => {
   });
 
   useEffect(() => {
-    let paramsForPageSize = {
-      pageSize: -1
-    };
-    serviceProviders
-      .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          statesFilter: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error > ", error);
-      });
-
     getStateData(10, 1);
   }, []);
 
@@ -178,7 +161,7 @@ const ViewStates = props => {
         }));
       })
       .catch(error => {
-        console.log("error", error);
+        console.log("errorStates", error);
       });
   };
 

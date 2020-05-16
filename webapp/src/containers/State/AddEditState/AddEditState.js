@@ -21,6 +21,9 @@ import {
 import LoaderContext from "../../../context/LoaderContext";
 import { useContext } from "react";
 
+const STATES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
+
 const AddEditState = props => {
   const history = useHistory();
   const state = "state";
@@ -112,7 +115,7 @@ const AddEditState = props => {
     if (formState.isEditState) {
       serviceProviders
         .serviceProviderForPutRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
+          STATES_URL,
           formState.dataForEdit["id"],
           postData
         )
@@ -144,10 +147,7 @@ const AddEditState = props => {
       }));
     } else {
       serviceProviders
-        .serviceProviderForPostRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
-          postData
-        )
+        .serviceProviderForPostRequest(STATES_URL, postData)
         .then(res => {
           setLoaderStatus(false);
           history.push({
