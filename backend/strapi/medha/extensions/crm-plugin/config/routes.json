@@ -53,6 +53,24 @@
       "path": "/contact/get-organizations/:orgId/students",
       "handler": "contact.organizationStudents",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations/:orgId/admins",
+      "handler": "contact.organizationAdmins",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/zones",
+      "handler": "state.zones",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/rpcs",
+      "handler": "state.rpcs",
+      "config": { "policies": [] }
     }
   ]
 }
