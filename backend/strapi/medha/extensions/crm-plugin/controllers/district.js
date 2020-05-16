@@ -25,7 +25,7 @@ module.exports = {
         page: page,
         pageSize:
           pageSize < 0
-            ? await utils.getTotalPluginRecord("district", "crm-plugin")
+            ? await strapi.query("district", "crm-plugin").count()
             : pageSize
       })
       .then(res => {
