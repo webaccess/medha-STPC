@@ -314,18 +314,19 @@ module.exports = {
         );
       } else {
         /**
-         * If role is student add student object to user info
+         * Adding Individual Information to login
          */
-        // const contactInfo = await strapi
-        //   .query("contacts")
-        //   .findOne({ user: user.id });
 
-        // // Removing users details from contact object
-        // if (contactInfo) {
-        //   delete contactInfo.user;
-        // }
-
-        // user.contactInfo = contactInfo;
+        if (user.contact) {
+          const individualInfo = await strapi
+            .query("individual", "crm-plugin")
+            .findOne({ contact: user.contact.id });
+          user.studentInfo = individualInfo;
+          if (individualInfo) {
+            user.first_name = individualInfo.first_name;
+            user.last_name = individualInfo.last_name;
+          }
+        }
 
         ctx.send({
           jwt: strapi.plugins["users-permissions"].services.jwt.issue({
