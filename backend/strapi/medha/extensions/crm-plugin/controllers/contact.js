@@ -440,5 +440,40 @@ module.exports = {
       result: response.result,
       ...response.pagination
     };
+  },
+
+  organizationAdmins: async ctx => {
+    const { orgId } = ctx.params;
+    const org = await strapi
+      .query("organization", PLUGIN)
+      .findOne({ id: orgId });
+
+    if (!org) {
+      return ctx.response.badRequest("Organization does not exist");
+    }
+
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    let filters = convertRestQueryParams(query);
+
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
+    }
+
+    let individuals = await strapi.plugins[
+      "crm-plugin"
+    ].services.individual.fetchCollegeAdmins(orgId, filters);
+
+    // Sorting ascending or descending on one or multiple fields
+    if (sort && sort.length) {
+      individuals = utils.sort(individuals, sort);
+    }
+
+    const response = utils.paginate(individuals, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
   }
 };
