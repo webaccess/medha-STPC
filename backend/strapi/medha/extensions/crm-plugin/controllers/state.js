@@ -25,7 +25,7 @@ module.exports = {
         page: page,
         pageSize:
           pageSize < 0
-            ? await strapi.query("state", "crm-plugin").cout()
+            ? await strapi.query("state", "crm-plugin").count()
             : pageSize
       })
       .then(res => {
