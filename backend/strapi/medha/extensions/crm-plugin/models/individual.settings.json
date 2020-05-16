@@ -59,7 +59,7 @@
     },
     "roll_number": {
       "type": "integer",
-      "required": true
+      "required": false
     },
     "organization": {
       "plugin": "crm-plugin",
