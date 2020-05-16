@@ -16,7 +16,9 @@ module.exports = async (ctx, next) => {
 
   if (state) {
     const stateId = typeof state === "number" ? state : state.id;
-    const isStateValid = await strapi.query("state").findOne({ id: stateId });
+    const isStateValid = await strapi
+      .query("state", "crm-plugin")
+      .findOne({ id: stateId });
 
     if (!isStateValid) return ctx.response.badRequest("State is invalid");
   }
