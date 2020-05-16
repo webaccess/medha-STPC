@@ -36,5 +36,48 @@ module.exports = {
     const { id } = ctx.params;
     const response = await strapi.query("state", "crm-plugin").findOne({ id });
     return utils.getFindOneResponse(response);
+  },
+
+  async zones(ctx) {
+    const { id } = ctx.params;
+    const { query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    return strapi
+      .query("zone")
+      .model.query(
+        buildQuery({
+          model: strapi.models.zone,
+          filters
+        })
+      )
+      .where({ state: id })
+      .fetchAll()
+      .then(res => {
+        return utils.getResponse(res);
+      });
+  },
+
+  /**
+   * @return {Object}
+   */
+  async rpcs(ctx) {
+    const { id } = ctx.params;
+    const { query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    return strapi
+      .query("rpc")
+      .model.query(
+        buildQuery({
+          model: strapi.models.rpc,
+          filters
+        })
+      )
+      .where({ state: id })
+      .fetchAll()
+      .then(res => {
+        return utils.getResponse(res);
+      });
   }
 };
