@@ -105,6 +105,18 @@
       "path": "/contact/:id/get-organization-activites",
       "handler": "contact.getOrganizationActivities",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/individuals/:id/activities",
+      "handler": "contact.eligibleActivity",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/individuals/:id/events",
+      "handler": "contact.eligibleEvents",
+      "config": { "policies": [] }
     }
   ]
 }

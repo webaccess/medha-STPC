@@ -747,5 +747,247 @@ module.exports = {
       .save({ is_verified: true }, { patch: true, require: false });
 
     return utils.getFindOneResponse({});
+  },
+  async eligibleActivity(ctx) {
+    const { id } = ctx.params;
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const contact = await strapi.query("contact", PLUGIN).findOne({ id });
+
+    if (!contact) return ctx.response.notFound("Student does not exist");
+
+    let activityBatch = await strapi
+      .query("activityassignee", PLUGIN)
+      .find({ contact: id });
+
+    if (!activityBatch.length)
+      return ctx.response.notFound("Student not Enrolled in any event");
+
+    const currentDate = new Date();
+
+    activityBatch = activityBatch.filter(activityBatch => {
+      const endTime = new Date(activityBatch.activity_batch.end_datetime);
+
+      if (endTime.getTime() > currentDate.getTime()) return activityBatch;
+    });
+
+    if (activityBatch) {
+      const activityIds = activityBatch.map(
+        activityBatch => activityBatch.activity_batch.activity
+      );
+
+      const activity = await strapi
+        .query("activity", PLUGIN)
+        .model.query(
+          buildQuery({
+            model: strapi.plugins["crm-plugin"].models["activity"],
+            filters
+          })
+        )
+        .where("id", "in", activityIds)
+        .fetchAll()
+        .then(model => model.toJSON());
+      // console.log(activity);
+
+      const result = activity
+        .map(activity => {
+          let flag = 0;
+          // for (let i = 0; i < activityBatch.length; i++) {
+          activityBatch.forEach(activityBatch => {
+            if (activity.id === activityBatch.activity_batch.activity) {
+              activity["activity_batch"] = activityBatch.activity_batch;
+              flag = 1;
+            }
+          });
+
+          if (flag) return activity;
+        })
+        .filter(activity => activity);
+
+      const response = utils.paginate(result, page, pageSize);
+      return {
+        result: response.result,
+        ...response.pagination
+      };
+    }
+  },
+  async eligibleEvents(ctx) {
+    const { id } = ctx.params;
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+
+    // Extrating the details for query params
+    let isRegistered, hasAttended, isHired;
+
+    /**
+     * Removing isRegistered,hasAttended, isHired since those
+     * are custom fields added and strapi won't allow custom fields if present
+     * in query params
+     */
+
+    if (_.has(query, "isRegistered")) {
+      isRegistered = query.isRegistered;
+      delete query.isRegistered;
+    }
+
+    if (_.has(query, "hasAttended")) {
+      hasAttended = query.hasAttended;
+      delete query.hasAttended;
+    }
+
+    if (_.has(query, "isHired")) {
+      isHired = query.isHired;
+      delete query.isHired;
+    }
+
+    const filters = convertRestQueryParams(query);
+
+    const student = await strapi.query("contact", PLUGIN).findOne({ id });
+
+    if (!student) {
+      return ctx.response.notFound("Student does not exist");
+    }
+
+    const { organization } = student;
+    const { stream } = student;
+
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    let result;
+    /**Filtering organization */
+    if (organization) {
+      // Get student organization events
+      result = await strapi.services.events.getEvents(organization, events);
+    } else {
+      result = events;
+    }
+
+    /**Filtering stream */
+
+    if (stream) {
+      result = result.filter(event => {
+        const { streams } = event;
+        const streamIds = streams.map(s => s.id);
+        if (streamIds.length == 0 || _.includes(streamIds, stream)) {
+          return event;
+        }
+      });
+    }
+
+    /** Filtering qualifications */
+    const studentEducations = await strapi
+      .query("education")
+      .find({ contact: id });
+    result = result.filter(event => {
+      const { qualifications } = event;
+      let isEligible = true;
+      qualifications.forEach(q => {
+        const isQualificationPresent = studentEducations.find(
+          e =>
+            e.qualification == q.qualification && e.percentage >= q.percentage
+        );
+
+        if (!isQualificationPresent) {
+          isEligible = false;
+        }
+      });
+
+      if (isEligible) {
+        return event;
+      }
+    });
+
+    /**Filtering educations */
+    const academicHistory = await strapi
+      .query("academic-history")
+      .find({ contact: id });
+
+    result = result.filter(event => {
+      const { educations } = event;
+
+      let isEligible = true;
+
+      educations.forEach(edu => {
+        const isEducationPresent = academicHistory.find(
+          ah =>
+            ah.education_year == edu.education_year &&
+            ah.percentage >= edu.percentage
+        );
+
+        if (!isEducationPresent) {
+          isEligible = false;
+        }
+      });
+
+      if (isEligible) {
+        return event;
+      }
+    });
+
+    /**
+     * Since event object don't have information regarding
+     * student has registered or attended we are getting
+     * that information from event registration and then adding that details to
+     * original event object
+     */
+    await utils.asyncForEach(result, async event => {
+      const eventRegistrationInfo = await strapi
+        .query("event-registration")
+        .findOne({ contact: id, event: event.id });
+      event.isRegistered = eventRegistrationInfo ? true : false;
+      event.isHired =
+        eventRegistrationInfo && eventRegistrationInfo.hired_at_event
+          ? true
+          : false;
+      event.hasAttended =
+        eventRegistrationInfo && eventRegistrationInfo.attendance_verified
+          ? true
+          : false;
+    });
+
+    /**
+     * Filtering for custom filters hasAttended, isHired and isRegistered
+     */
+    if (isRegistered) {
+      const _val = isRegistered == "true";
+      result = result.filter(event => {
+        if (event.isRegistered == _val) return event;
+      });
+    }
+
+    if (isHired) {
+      const _val = isHired == "true";
+      result = result.filter(event => {
+        if (event.isHired == _val) return event;
+      });
+    }
+
+    if (hasAttended) {
+      const _val = hasAttended == "true";
+      result = result.filter(event => {
+        if (event.hasAttended == _val) return event;
+      });
+    }
+
+    const currentDate = new Date();
+    result = result.filter(event => {
+      const endDate = new Date(event.end_datetime);
+
+      if (endDate.getTime() > currentDate.getTime()) return event;
+    });
+    const response = utils.paginate(result, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
   }
 };

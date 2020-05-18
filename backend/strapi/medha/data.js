@@ -851,8 +851,8 @@ const ROLES = {
         action: [
           "create",
           "findone",
-          "students",
-          "eligibleCollegeStudents",
+          "individual",
+          "eligibleOrganizationIndividual",
           "update",
           "delete"
         ]
@@ -1066,7 +1066,13 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["findone", "education", "academichistory"],
+        action: [
+          "findone",
+          "education",
+          "academichistory",
+          "eligibleEvents",
+          "eligibleActivity"
+        ],
         type: PLUGIN_NAME
       },
       {

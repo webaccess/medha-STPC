@@ -64,7 +64,7 @@ module.exports = {
    *
    * get student using event id
    */
-  async students(ctx) {
+  async individual(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query);
@@ -85,7 +85,6 @@ module.exports = {
       .query("event-registration")
       .find({ event: event.id });
 
-    console.log(registrations);
     const contactIds = registrations.map(r => r.contact.id);
     let contact = await strapi
       .query("contact", PLUGIN)
@@ -97,26 +96,25 @@ module.exports = {
       )
       .fetchAll()
       .then(model => model.toJSON());
-
     contact = contact
-      .map(student => {
-        if (_.includes(contactIds, student.id)) {
-          student.user = sanitizeUser(student.user);
-          return student;
+      .map(contact => {
+        if (_.includes(contactIds, contact.id)) {
+          contact.user = sanitizeUser(contact.user);
+          return contact;
         }
       })
       .filter(a => a);
-    let filtered = [];
 
-    await utils.asyncForEach(contact, async student => {
-      if (_.includes(contactIds, student.id)) {
+    let filtered = [];
+    await utils.asyncForEach(contact, async contact => {
+      if (_.includes(contactIds, contact.id)) {
         const qualifications = await strapi
           .query("academic-history")
           .find({ contact: contact.id }, []);
 
-        student.user = sanitizeUser(student.user);
-        student.qualifications = qualifications;
-        filtered.push(student);
+        // contact.user = sanitizeUser(contact.user);
+        contact.qualifications = qualifications;
+        filtered.push(contact);
       }
     });
 
@@ -172,8 +170,8 @@ module.exports = {
     ctx.send(file);
   },
 
-  async eligibleCollegeStudents(ctx) {
-    const { id, collegeId } = ctx.params;
+  async eligibleOrganizationIndividual(ctx) {
+    const { id, organizationId } = ctx.params;
 
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query);
@@ -185,7 +183,9 @@ module.exports = {
     }
 
     const event = await strapi.query("event").findOne({ id });
-    const college = await strapi.query("college").findOne({ id: collegeId });
+    const college = await strapi
+      .query("organization", PLUGIN)
+      .findOne({ id: organizationId });
 
     if (!event) {
       return ctx.response.notFound("Event does not exist");
@@ -204,28 +204,28 @@ module.exports = {
      */
 
     // Getting students under that college
-    const userIds = await strapi.services.college.getUsers(collegeId);
+    let students = await strapi.services.event.getIndividuals(organizationId);
 
     // Getting student data for given userIds
-    let students = await strapi
-      .query("student")
-      .model.query(
-        buildQuery({
-          model: strapi.models["student"],
-          filters
-        })
-      )
-      .fetchAll()
-      .then(model => model.toJSON());
+    //  students = await strapi
+    //   .query("individual",PLUGIN)
+    //   .model.query(
+    //     buildQuery({
+    //       model: strapi.plugins["crm-plugin"].models["individual"],
+    //       filters
+    //     })
+    //   )
+    //   .fetchAll()
+    //   .then(model => model.toJSON());
 
-    students = students
-      .map(student => {
-        if (student.user && _.includes(userIds, student.user.id)) {
-          student.user = sanitizeUser(student.user);
-          return student;
-        }
-      })
-      .filter(a => a);
+    // students = students
+    //   .map(student => {
+    //     if (student.user && _.includes(userIds, student.user.id)) {
+    //       student.user = sanitizeUser(student.user);
+    //       return student;
+    //     }
+    //   })
+    //   .filter(a => a);
 
     //Filter students who passes the given criteria for college
     let filtered = [];
@@ -250,7 +250,7 @@ module.exports = {
       /** Filtering qualifications */
       const studentEducations = await strapi
         .query("education")
-        .find({ student: student.id });
+        .find({ contact: student.contact.id });
 
       const { qualifications } = event;
       isQualificationEligible = true;
@@ -268,7 +268,7 @@ module.exports = {
       /**Filtering educations */
       const academicHistory = await strapi
         .query("academic-history")
-        .find({ student: student.id });
+        .find({ contact: student.contact.id });
 
       const { educations } = event;
       isEducationEligible = true;
@@ -288,7 +288,7 @@ module.exports = {
       if (isStreamEligible && isQualificationEligible && isEducationEligible) {
         const qualifications = await strapi
           .query("academic-history")
-          .find({ student: student.id }, []);
+          .find({ contact: student.contact.id }, []);
         student.qualifications = qualifications;
         filtered.push(student);
       }
