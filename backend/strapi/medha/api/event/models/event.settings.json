@@ -16,7 +16,7 @@
     "start_datetime": {
       "type": "datetime"
     },
-    "end_date_time": {
+    "end_datetime": {
       "type": "datetime",
       "required": true
     },
