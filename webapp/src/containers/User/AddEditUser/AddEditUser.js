@@ -164,22 +164,99 @@ const AddEditUser = props => {
           props["dataForEdit"]["contact"]["user"]["role"]["id"];
       }
       if (
-        props["dataForEdit"]["state"] &&
-        props["dataForEdit"]["state"]["id"]
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["user"] &&
+        props["dataForEdit"]["contact"]["user"]["role"] &&
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] === "Student"
       ) {
-        formState.values[state] = props["dataForEdit"]["state"]["id"];
-      }
-      if (props["dataForEdit"]["zone"] && props["dataForEdit"]["zone"]["id"]) {
-        formState.values[zone] = props["dataForEdit"]["zone"]["id"];
-      }
-      if (props["dataForEdit"]["rpc"] && props["dataForEdit"]["rpc"]["id"]) {
-        formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
-      }
-      if (
-        props["dataForEdit"]["college"] &&
-        props["dataForEdit"]["college"]["id"]
-      ) {
-        formState.values[college] = props["dataForEdit"]["college"]["id"];
+        /** For populating state */
+        if (
+          props["dataForEdit"]["organization"] &&
+          props["dataForEdit"]["organization"]["contact"] &&
+          props["dataForEdit"]["organization"]["contact"]["state"]
+        ) {
+          formState.values[state] =
+            props["dataForEdit"]["organization"]["contact"]["state"];
+        } else {
+          formState.values[state] = "";
+        }
+
+        /** For populating zone */
+        if (
+          props["dataForEdit"]["organization"] &&
+          props["dataForEdit"]["organization"]["zone"]
+        ) {
+          formState.values[zone] =
+            props["dataForEdit"]["organization"]["zone"]["id"];
+        } else {
+          formState.values[zone] = "";
+        }
+
+        /** For populating rpc */
+        if (
+          props["dataForEdit"]["organization"] &&
+          props["dataForEdit"]["organization"]["rpc"]
+        ) {
+          formState.values[rpc] =
+            props["dataForEdit"]["organization"]["rpc"]["id"];
+        } else {
+          formState.values[rpc] = "";
+        }
+
+        /** For populating ipc */
+        if (props["dataForEdit"]["organization"]) {
+          formState.values[college] =
+            props["dataForEdit"]["organization"]["id"];
+        } else {
+          formState.values[college] = "";
+        }
+      } else {
+        /** For populating state */
+        if (
+          props["dataForEdit"] &&
+          props["dataForEdit"]["contact"] &&
+          props["dataForEdit"]["contact"]["user"] &&
+          props["dataForEdit"]["contact"]["user"]["state"]
+        ) {
+          formState.values[state] =
+            props["dataForEdit"]["contact"]["user"]["state"]["id"];
+        } else {
+          formState.values[state] = "";
+        }
+
+        /** For populating zone */
+        if (
+          props["dataForEdit"] &&
+          props["dataForEdit"]["contact"] &&
+          props["dataForEdit"]["contact"]["user"] &&
+          props["dataForEdit"]["contact"]["user"]["zone"]
+        ) {
+          formState.values[zone] =
+            props["dataForEdit"]["contact"]["user"]["zone"]["id"];
+        } else {
+          formState.values[zone] = "";
+        }
+
+        /** For populating rpc */
+        if (
+          props["dataForEdit"] &&
+          props["dataForEdit"]["contact"] &&
+          props["dataForEdit"]["contact"]["user"] &&
+          props["dataForEdit"]["contact"]["user"]["rpc"]
+        ) {
+          formState.values[rpc] =
+            props["dataForEdit"]["contact"]["user"]["rpc"]["id"];
+        } else {
+          formState.values[rpc] = "";
+        }
+
+        /** For populating ipc */
+        if (props["dataForEdit"]["organization"]) {
+          formState.values[college] =
+            props["dataForEdit"]["organization"]["id"];
+        } else {
+          formState.values[college] = "";
+        }
       }
     }
     formState.counter += 1;
