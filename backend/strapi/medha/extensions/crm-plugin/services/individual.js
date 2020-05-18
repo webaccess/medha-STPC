@@ -27,7 +27,9 @@ module.exports = {
           "contact.user.role",
           "contact.user.state",
           "contact.user.zone",
-          "contact.user.rpc"
+          "contact.user.rpc",
+          "organization.zone",
+          "organization.rpc"
         ]
       })
       .then(res => {
@@ -56,6 +58,7 @@ module.exports = {
       )
       .fetchAll({
         withRelated: [
+          "stream",
           "contact.user",
           "organization",
           "contact.user.role",
@@ -67,7 +70,14 @@ module.exports = {
       .then(res => {
         return res
           .toJSON()
-          .filter(individual => (individual.organization.id = orgId))
+          .filter(individual => {
+            if (
+              individual.organization !== null &&
+              individual.organization.id !== null
+            ) {
+              return (individual.organization.id = orgId);
+            }
+          })
           .reduce((result, individual) => {
             const user = individual.contact && individual.contact.user;
             if (user && user.role.name == ROLE_STUDENT) {

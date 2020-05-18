@@ -50,7 +50,7 @@ const ViewEvent = props => {
     if (auth.getUserInfo().role.name === "Student") {
       const apiToCheckStudentRegistration =
         strapiConstants.STRAPI_DB_URL +
-        strapiConstants.STRAPI_STUDENTS +
+        strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
         "/" +
         auth.getUserInfo().studentInfo.id +
         "/registeredevents";

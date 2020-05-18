@@ -169,26 +169,57 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query);
 
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
+    // TODO add college admins to list
+    /**
+     * public route for colleges
+     */
+    if (!ctx.state.user) {
+      let orgs = await strapi.plugins[
+        "crm-plugin"
+      ].services.organization.fetchAllOrgs(filters);
+
+      orgs = orgs.map(res => {
+        return {
+          id: res.id,
+          name: res.name,
+          stream_strength: res.stream_strength,
+          tpos: res.tpos
+        };
+      });
+
+      console.log(orgs);
+
+      let new_pageSize =
+        pageSize < 0
+          ? await utils.getTotalPLuginRecord("organization", "crm-plugin")
+          : pageSize;
+      const response = utils.paginate(orgs, page, new_pageSize);
+      return {
+        result: response.result,
+        ...response.pagination
+      };
+    } else {
+      let sort;
+      if (filters.sort) {
+        sort = filters.sort;
+        filters = _.omit(filters, ["sort"]);
+      }
+
+      let orgs = await strapi.plugins[
+        "crm-plugin"
+      ].services.organization.fetchAllOrgs(filters);
+
+      // Sorting ascending or descending on one or multiple fields
+      if (sort && sort.length) {
+        orgs = utils.sort(orgs, sort);
+      }
+
+      const response = utils.paginate(orgs, page, pageSize);
+      return {
+        result: response.result,
+        ...response.pagination
+      };
     }
-
-    let orgs = await strapi.plugins[
-      "crm-plugin"
-    ].services.organization.fetchAllOrgs(filters);
-
-    // Sorting ascending or descending on one or multiple fields
-    if (sort && sort.length) {
-      orgs = utils.sort(orgs, sort);
-    }
-
-    const response = utils.paginate(orgs, page, pageSize);
-    return {
-      result: response.result,
-      ...response.pagination
-    };
   },
 
   education: async ctx => {
@@ -284,6 +315,15 @@ module.exports = {
       "roll_number",
       "organization"
     ]);
+
+    if (
+      individualRequestBody.hasOwnProperty("date_of_birth") &&
+      individualRequestBody["date_of_birth"]
+    ) {
+      var d = new Date(individualRequestBody["date_of_birth"]);
+      var n = d.toISOString();
+      individualRequestBody["date_of_birth"] = n;
+    }
 
     const contactBody = _.pick(ctx.request.body, [
       "phone",
@@ -638,5 +678,73 @@ module.exports = {
           ...response.pagination
         };
       });
+  },
+
+  /**
+   *
+   * @param {ids} ctx
+   * This will unapprove single or multiple students
+   */
+  async unapprove(ctx) {
+    const { ids } = ctx.request.body;
+    let idsToUnApprove;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToUnApprove = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToUnApprove = ids;
+    }
+
+    if (!idsToUnApprove.length) {
+      return ctx.response.badRequest("Student Ids are empty");
+    }
+
+    await strapi
+      .query("individual", PLUGIN)
+      .model.query(qb => {
+        qb.whereIn("id", idsToUnApprove);
+      })
+      .save({ is_verified: false }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
+  },
+
+  /**
+   *
+   * @param {ids} ctx
+   * This will approve single or multiple students
+   */
+  async approve(ctx) {
+    const { ids } = ctx.request.body;
+    let idsToApprove;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToApprove = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToApprove = ids;
+    }
+
+    if (!idsToApprove.length) {
+      return ctx.response.badRequest("Student Ids are empty");
+    }
+
+    await strapi
+      .query("individual", PLUGIN)
+      .model.query(qb => {
+        qb.whereIn("id", idsToApprove);
+      })
+      .save({ is_verified: true }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
   }
 };

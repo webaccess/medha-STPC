@@ -12,7 +12,7 @@ import { YellowButton } from "../../../components";
 import auth from "../../../components/Auth";
 
 const DELETE_DOCUMENT_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS_DIRECT_URL;
 const DOCUMENT_ID = "document";
 
 const DeleteDocument = props => {

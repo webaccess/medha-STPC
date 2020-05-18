@@ -67,6 +67,9 @@ const COLLEGES_URL =
 const DISTRICTS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_DISTRICTS;
 
+const ADD_COLLEGES_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ADD_COLLEGE;
+
 const AddEditCollege = props => {
   const history = useHistory();
   const classes = useStyles();
@@ -103,7 +106,7 @@ const AddEditCollege = props => {
   const [collegeInfo, setCollegeInfo] = useState({
     college:
       auth.getUserInfo().role.name === "College Admin"
-        ? auth.getUserInfo().college
+        ? auth.getUserInfo().studentInfo.organization
         : {},
     state:
       auth.getUserInfo().role.name === "College Admin"
@@ -143,18 +146,24 @@ const AddEditCollege = props => {
       if (props["dataForEdit"]["college_code"]) {
         formState.values[collegeCode] = props["dataForEdit"]["college_code"];
       }
-      if (props["dataForEdit"]["address"]) {
-        formState.values[address] = props["dataForEdit"]["address"];
+      if (props["dataForEdit"]["contact"]) {
+        formState.values[address] =
+          props["dataForEdit"]["contact"]["address_1"];
       }
-      if (props["dataForEdit"]["contact_number"]) {
+      if (props["dataForEdit"]["contact"]) {
         formState.values[contactNumber] =
-          props["dataForEdit"]["contact_number"];
+          props["dataForEdit"]["contact"]["phone"];
       }
-      if (props["dataForEdit"]["college_email"]) {
-        formState.values[collegeEmail] = props["dataForEdit"]["college_email"];
+      if (props["dataForEdit"]["contact"]) {
+        formState.values[collegeEmail] =
+          props["dataForEdit"]["contact"]["email"];
       }
-      if (props["dataForEdit"]["state"]) {
-        formState.values[state] = props["dataForEdit"]["state"]["id"];
+      if (
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["state"]
+      ) {
+        formState.values[state] =
+          props["dataForEdit"]["contact"]["state"]["id"];
       }
       if (props["dataForEdit"]["district"]) {
         formState.values[district] = props["dataForEdit"]["district"]["id"];
@@ -275,7 +284,7 @@ const AddEditCollege = props => {
       let user_url =
         COLLEGES_URL +
         "/" +
-        auth.getUserInfo().college.id +
+        auth.getUserInfo().studentInfo.organization.id +
         "/" +
         strapiConstants.STRAPI_ADMIN;
       serviceProviders
@@ -689,6 +698,7 @@ const AddEditCollege = props => {
       formState.values[collegeEmail].toLowerCase(),
       formState.values[block] ? formState.values[block] : false,
       formState.values[principal] ? formState.values[principal] : null,
+      formState.values[state] ? formState.values[state] : null,
       formState.values[rpc] ? formState.values[rpc] : null,
       formState.values[zone] ? formState.values[zone] : null,
       formState.values[district] ? formState.values[district] : null,
@@ -740,7 +750,7 @@ const AddEditCollege = props => {
         });
     } else {
       serviceProviders
-        .serviceProviderForPostRequest(COLLEGES_URL, postData)
+        .serviceProviderForPostRequest(ADD_COLLEGES_URL, postData)
         .then(res => {
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,

@@ -12,7 +12,8 @@ import {
   Grid,
   Collapse,
   IconButton,
-  Typography
+  Typography,
+  Tooltip
 } from "@material-ui/core";
 
 import { Table, Spinner, Alert } from "../../../components";
@@ -36,7 +37,8 @@ import * as formUtilities from "../../../Utilities/FormUtilities";
 import { setCollege, setRole } from "../../../Utilities/StrapiUtilities";
 import LoaderContext from "../../../context/LoaderContext";
 
-const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_VIEW_USERS;
 const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
@@ -234,7 +236,7 @@ const ManageUser = props => {
         defaultParams = {
           page: page,
           pageSize: pageSize,
-          [SORT_FIELD_KEY]: "title:asc"
+          [SORT_FIELD_KEY]: "contact.user.username:asc"
         };
       }
       Object.keys(paramsForUsers).map(key => {
@@ -245,7 +247,7 @@ const ManageUser = props => {
       paramsForUsers = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "username:asc"
+        [SORT_FIELD_KEY]: "contact.user.username:asc"
       };
     }
     setFormState(formState => ({
@@ -281,14 +283,42 @@ const ManageUser = props => {
       for (let i in data) {
         var temp = {};
         temp["id"] = data[i]["id"];
-        temp["username"] = data[i]["username"];
-        temp["blocked"] = data[i]["blocked"];
-        temp["role"] = data[i]["role"]["name"];
-        temp["state"] = data[i]["state"] ? data[i]["state"]["name"] : "";
-        temp["zone"] = data[i]["zone"] ? data[i]["zone"]["name"] : "";
-        temp["rpc"] = data[i]["rpc"] ? data[i]["rpc"]["name"] : "";
-        temp["college"] = data[i]["college"] ? data[i]["college"]["name"] : "";
+        temp["username"] = data[i]["contact"]["user"]["username"];
+        temp["blocked"] = data[i]["contact"]["user"]["blocked"];
+        temp["role"] = data[i]["contact"]["user"]["role"]["name"];
+        if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["state"]) {
+          temp["state"] = data[i]["contact"]["user"]["state"]["name"];
+        } else {
+          temp["state"] = "";
+        }
+        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+          temp["zone"] = data[i]["organization"]["zone"]["name"];
+        } else {
+          if (
+            data[i]["contact"]["user"] &&
+            data[i]["contact"]["user"]["zone"]
+          ) {
+            temp["zone"] = data[i]["contact"]["user"]["zone"]["name"];
+          } else {
+            temp["zone"] = "";
+          }
+        }
 
+        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+          temp["rpc"] = data[i]["organization"]["rpc"]["name"];
+        } else {
+          if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["rpc"]) {
+            temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];
+          } else {
+            temp["rpc"] = "";
+          }
+        }
+
+        if (data[i]["organization"] && data[i]["organization"]["name"]) {
+          temp["college"] = data[i]["organization"]["name"];
+        } else {
+          temp["college"] = "";
+        }
         x.push(temp);
       }
       return x;
@@ -767,12 +797,108 @@ const ManageUser = props => {
 
   /** Table Data */
   const column = [
-    { name: "User Name", sortable: true, selector: "username" },
-    { name: "Role", sortable: true, selector: "role" },
-    { name: "State", sortable: true, selector: "state" },
-    { name: "Zone", sortable: true, selector: "zone" },
-    { name: "RPC", sortable: true, selector: "rpc" },
-    { name: "IPC", sortable: true, selector: "college" },
+    {
+      name: "User Name",
+      sortable: true,
+      selector: "username",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.username}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.username}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "Role",
+      sortable: true,
+      selector: "role",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.role}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.role}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "State",
+      sortable: true,
+      selector: "state",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.state}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.state}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "Zone",
+      sortable: true,
+      selector: "zone",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.zone}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.zone}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "RPC",
+      sortable: true,
+      selector: "rpc",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.rpc}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.rpc}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "IPC",
+      sortable: true,
+      selector: "college",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.college}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.college}`}</div>
+        </Tooltip>
+      )
+    },
     {
       name: "Actions",
       cell: cell => (
@@ -815,8 +941,11 @@ const ManageUser = props => {
     perPage = formState.pageSize,
     page = 1
   ) => {
-    formState.filterDataParameters[SORT_FIELD_KEY] =
-      column.selector + ":" + sortDirection;
+    if (column.selector === "username") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        "contact.user.username:" + sortDirection;
+    }
+
     getUserData(perPage, page, formState.filterDataParameters);
   };
 

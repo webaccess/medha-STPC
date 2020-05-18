@@ -89,7 +89,7 @@ const ViewEducation = props => {
       : Auth.getStudentIdFromCollegeAdmin();
   const STUDENT_EDUCATION_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_STUDENTS +
+    strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
     `/${studentInfo}/education`;
   const EDUCATION_FILTER = "id";
 

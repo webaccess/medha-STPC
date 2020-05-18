@@ -240,12 +240,12 @@ const LogIn = props => {
       .then(response => {
         if (response.data.user.role.name === "Student") {
           /** This check whether the college is blocked or not then it checks whether the user is blocked or not */
-          if (response.data.user.college.blocked) {
+          if (response.data.user.studentInfo.organization.is_blocked) {
             moveToErrorPageForBlocked();
           } else {
             if (response.data.user.blocked) {
               moveToErrorPageForBlocked();
-            } else if (!response.data.user.studentInfo.verifiedByCollege) {
+            } else if (!response.data.user.studentInfo.is_verified) {
               history.push(routeConstants.REQUIRED_CONFORMATION);
             } else {
               setUserData(response.data.jwt, response.data.user);
@@ -253,7 +253,7 @@ const LogIn = props => {
           }
           setOpenSpinner(false);
         } else if (response.data.user.role.name === "College Admin") {
-          if (response.data.user.college.blocked) {
+          if (response.data.user.studentInfo.organization.is_blocked) {
             moveToErrorPageForBlocked();
           } else {
             if (response.data.user.blocked) {

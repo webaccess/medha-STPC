@@ -57,12 +57,12 @@ const ApprovedStudents = props => {
       if (props.isMultiUnapprove) {
         urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENT +
+          strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
           "/unapprove";
       } else {
         urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENT +
+          strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
           "/approve";
       }
       let postData = {
@@ -100,12 +100,12 @@ const ApprovedStudents = props => {
       if (props.verifiedByCollege) {
         urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENT +
+          strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
           "/unapprove";
       } else {
         urlForApproveUnapprove =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENT +
+          strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
           "/approve";
       }
       let ids = [];

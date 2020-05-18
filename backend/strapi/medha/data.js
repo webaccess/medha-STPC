@@ -832,11 +832,11 @@ const ROLES = {
     controllers: [
       {
         name: "academic-history",
-        action: []
+        action: ["create", "update"]
       },
       {
         name: "academic-year",
-        action: []
+        action: ["find", "create", "update"]
       },
       {
         name: "activity-batch",
@@ -844,7 +844,7 @@ const ROLES = {
       },
       {
         name: "education",
-        action: []
+        action: ["create", "update"]
       },
       {
         name: "event",
@@ -910,7 +910,17 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: [],
+        action: [
+          "organizationstudents",
+          "organizationadmins",
+          "findone",
+          "createindividual",
+          "individualdetails",
+          "organizationdetails",
+          "approve",
+          "unapprove",
+          "individuals"
+        ],
         type: PLUGIN_NAME
       },
       {
@@ -1270,6 +1280,11 @@ const PUBLIC_ROUTES = {
     //   name: "student",
     //   action: ["register"],
     // },
+    {
+      name: "contact",
+      action: ["organizations", "createindividual"],
+      type: PLUGIN_NAME
+    },
     {
       name: "district",
       action: ["find"],

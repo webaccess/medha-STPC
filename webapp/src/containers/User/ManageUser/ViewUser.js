@@ -25,7 +25,8 @@ import {
 import * as genericConstants from "../../../constants/GenericConstants";
 import LoaderContext from "../../../context/LoaderContext";
 
-const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_VIEW_USERS;
 
 const ViewUser = props => {
   const classes = useStyles();
