@@ -105,6 +105,24 @@
       "path": "/contact/:id/get-organization-activites",
       "handler": "contact.getOrganizationActivities",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/activity/:id/activities-batches",
+      "handler": "activity.activityBatch",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/activity/:id/create-activity-batch",
+      "handler": "activity.createActivityBatch",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/activity/:id/download",
+      "handler": "activity.download",
+      "config": { "policies": [] }
     }
   ]
 }

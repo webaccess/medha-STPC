@@ -19,6 +19,8 @@ const sanitizeUser = user =>
 
 const _ = require("lodash");
 
+const { PLUGIN } = require("../../../config/constants");
+
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
@@ -32,15 +34,13 @@ module.exports = {
           filters
         })
       )
-      .fetchPage({
-        page: page,
-        pageSize:
-          pageSize < 0
-            ? await utils.getTotalRecords("activity-batch")
-            : pageSize
-      })
+      .fetchAll()
       .then(res => {
-        return utils.getPaginatedResponse(res);
+        const response = utils.pagination(res.toJSON(), page, pageSize);
+        return {
+          result: response.result,
+          ...result.pagination
+        };
       });
   },
 
@@ -58,7 +58,6 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query);
 
-    const { student_id, stream_id } = query;
     let sort;
     if (filters.sort) {
       sort = filters.sort;
@@ -71,17 +70,16 @@ module.exports = {
     }
 
     const activityBatchStudents = await strapi
-      .query("activity-batch-attendance")
-
+      .query("activityassignee", PLUGIN)
       .find({ activity_batch: id });
 
-    const studentIds = activityBatchStudents.map(ab => ab.student.id);
+    const studentIds = activityBatchStudents.map(ab => ab.contact.id);
 
     let students = await strapi
-      .query("student")
+      .query("contact", PLUGIN)
       .model.query(
         buildQuery({
-          model: strapi.models["student"],
+          model: strapi.query("contact", PLUGIN).model,
           filters
         })
       )
@@ -96,19 +94,11 @@ module.exports = {
 
     await utils.asyncForEach(students, async student => {
       const activityBatch = await strapi
-        .query("activity-batch-attendance")
-        .findOne({ activity_batch: id, student: student.id }, []);
+        .query("activityassignee", PLUGIN)
+        .findOne({ activity_batch: id, contact: student.id }, []);
       student.user = sanitizeUser(student.user);
       student.activityBatch = activityBatch;
     });
-
-    if (student_id) {
-      students = students.filter(student => student.id == student_id);
-    }
-
-    if (stream_id) {
-      students = students.filter(student => (student.stream.id = stream_id));
-    }
 
     // Sorting ascending or descending on one or multiple fields
     if (sort && sort.length) {
@@ -136,9 +126,9 @@ module.exports = {
     }
 
     await strapi
-      .query("activity-batch-attendance")
+      .query("activityassignee", PLUGIN)
       .model.query(qb => {
-        qb.whereIn("student", students).andWhere("activity_batch", id);
+        qb.whereIn("contact", students).andWhere("activity_batch", id);
       })
       .destroy({ require: false });
 
@@ -170,7 +160,7 @@ module.exports = {
 
     const studentsResponse = await Promise.all(
       students.map(studentId =>
-        strapi.query("student").findOne({ id: studentId })
+        strapi.query("contact", PLUGIN).findOne({ id: studentId })
       )
     );
 
@@ -185,8 +175,8 @@ module.exports = {
     const areStudentPresentInActivityBatch = await Promise.all(
       students.map(studentId =>
         strapi
-          .query("activity-batch-attendance")
-          .findOne({ activity_batch: id, student: studentId })
+          .query("activityassignee", PLUGIN)
+          .findOne({ activity_batch: id, contact: studentId })
       )
     );
 
@@ -200,6 +190,7 @@ module.exports = {
       ctx
     );
   },
+
   async inValidateActivityBatchStudents(ctx) {
     const { id } = ctx.params;
     const activityBatch = await strapi.query("activity-batch").findOne({ id });
@@ -215,7 +206,7 @@ module.exports = {
 
     const studentsResponse = await Promise.all(
       students.map(studentId =>
-        strapi.query("student").findOne({ id: studentId })
+        strapi.query("contact", PLUGIN).findOne({ id: studentId })
       )
     );
 
@@ -230,8 +221,8 @@ module.exports = {
     const areStudentPresentInActivityBatch = await Promise.all(
       students.map(studentId =>
         strapi
-          .query("activity-batch-attendance")
-          .findOne({ activity_batch: id, student: studentId })
+          .query("activityassignee", PLUGIN)
+          .findOne({ activity_batch: id, contact: studentId })
       )
     );
 

@@ -7,6 +7,7 @@
 
 const bookshelf = require("../../../config/config.js");
 const utils = require("../../../config/utils.js");
+const { PLUGIN } = require("../../../config/constants");
 module.exports = {
   /**
    * Validate all student for given activity batch and student Ids
@@ -16,11 +17,11 @@ module.exports = {
     const { id } = ctx.params;
 
     await strapi
-      .query("activity-batch-attendance")
+      .query("activityassignee", PLUGIN)
       .model.query(qb => {
-        qb.where("activity_batch", id).whereIn("student", students);
+        qb.where("activity_batch", id).whereIn("contact", students);
       })
-      .save({ verified_by_college: true }, { patch: true, require: false });
+      .save({ is_verified_by_college: true }, { patch: true, require: false });
     return ctx.send(utils.getFindOneResponse("success"));
   },
 
@@ -29,11 +30,11 @@ module.exports = {
     const { id } = ctx.params;
 
     await strapi
-      .query("activity-batch-attendance")
+      .query("activityassignee", PLUGIN)
       .model.query(qb => {
-        qb.where("activity_batch", id).whereIn("student", students);
+        qb.where("activity_batch", id).whereIn("contact", students);
       })
-      .save({ verified_by_college: false }, { patch: true, require: false });
+      .save({ is_verified_by_college: false }, { patch: true, require: false });
     return ctx.send(utils.getFindOneResponse("success"));
   },
 
