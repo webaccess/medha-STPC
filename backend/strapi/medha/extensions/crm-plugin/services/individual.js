@@ -114,7 +114,14 @@ module.exports = {
       .then(res => {
         return res
           .toJSON()
-          .filter(individual => (individual.organization.id = orgId))
+          .filter(individual => {
+            if (
+              individual.organization !== null &&
+              individual.organization.id !== null
+            ) {
+              return (individual.organization.id = orgId);
+            }
+          })
           .reduce((result, individual) => {
             const user = individual.contact && individual.contact.user;
             if (user && user.role.name == ROLE_COLLEGE_ADMIN) {
