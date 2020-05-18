@@ -204,7 +204,11 @@ const ViewCollege = props => {
                   <ReadOnlyTextField
                     id="Email"
                     label={Email}
-                    defaultValue={formState.collegeDetails.college_email}
+                    defaultValue={
+                      formState.collegeDetails.length !== 0
+                        ? formState.collegeDetails.contact.email
+                        : ""
+                    }
                   />
                 </Grid>
               </Grid>
@@ -214,8 +218,10 @@ const ViewCollege = props => {
                     id="State"
                     label={State}
                     defaultValue={
-                      formState.collegeDetails.state &&
-                      formState.collegeDetails.state.name
+                      formState.collegeDetails.length !== 0
+                        ? formState.collegeDetails.contact.state &&
+                          formState.collegeDetails.contact.state.name
+                        : ""
                     }
                   />
                 </Grid>
@@ -246,8 +252,10 @@ const ViewCollege = props => {
                     id="District"
                     label={District}
                     defaultValue={
-                      formState.collegeDetails.district &&
-                      formState.collegeDetails.district.name
+                      formState.collegeDetails.length !== 0
+                        ? formState.collegeDetails.contact.district &&
+                          formState.collegeDetails.contact.district.name
+                        : ""
                     }
                   />
                 </Grid>
@@ -257,7 +265,11 @@ const ViewCollege = props => {
                   <ReadOnlyTextField
                     id="CollegeAddress"
                     label={CollegeAddress}
-                    defaultValue={formState.collegeDetails.address}
+                    defaultValue={
+                      formState.collegeDetails.length !== 0
+                        ? formState.collegeDetails.contact.address_1
+                        : 0
+                    }
                   />
                 </Grid>
               </Grid>
@@ -269,7 +281,11 @@ const ViewCollege = props => {
                   <ReadOnlyTextField
                     id="ContactNumber"
                     label={ContactNumber}
-                    defaultValue={formState.collegeDetails.contact_number}
+                    defaultValue={
+                      formState.collegeDetails.length !== 0
+                        ? formState.collegeDetails.contact.phone
+                        : ""
+                    }
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>

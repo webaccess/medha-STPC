@@ -6,6 +6,7 @@ export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "crm-plugin/states";
 export const STRAPI_RPCS = "rpcs";
 export const STRAPI_COLLEGES = "crm-plugin/contact/get-organizations";
+export const STRAPI_ADD_COLLEGE = "crm-plugin/contact/create-organization";
 export const STRAPI_COLLEGES_INDERIECT_URL = "colleges";
 export const STRAPI_STREAMS = "streams";
 export const STRAPI_USERS = "users";
