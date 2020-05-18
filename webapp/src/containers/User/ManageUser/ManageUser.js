@@ -402,8 +402,6 @@ const ManageUser = props => {
 
   const deleteCell = event => {
     setLoaderStatus(true);
-    let dataId = event.target.id;
-
     setFormState(formState => ({
       ...formState,
       dataToDelete: {

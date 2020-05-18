@@ -258,7 +258,7 @@ const ManageCollege = props => {
       for (let i in data) {
         var tempIndividualCollegeData = {};
         tempIndividualCollegeData["id"] = data[i]["id"];
-        tempIndividualCollegeData["blocked"] = data[i]["blocked"];
+        tempIndividualCollegeData["blocked"] = data[i]["is_blocked"];
         tempIndividualCollegeData["name"] = data[i]["name"];
         tempIndividualCollegeData["state"] =
           data[i]["contact"]["state"] !== null
