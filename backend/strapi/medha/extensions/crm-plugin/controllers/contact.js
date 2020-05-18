@@ -463,7 +463,8 @@ module.exports = {
         "rpc",
         "principal",
         "tpos",
-        "stream_strength"
+        "stream_strength",
+        "stream_strength.stream"
       ]);
 
     if (!response) {
