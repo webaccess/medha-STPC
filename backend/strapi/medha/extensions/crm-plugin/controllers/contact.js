@@ -605,5 +605,38 @@ module.exports = {
       .save({ is_blocked: false }, { patch: true, require: false });
 
     return utils.getFindOneResponse({});
+  },
+
+  /**
+   * Get Activities for given Organization
+   * TODO policy only medha admin and college admin can view activites under give colleges
+   */
+  getOrganizationActivities: async ctx => {
+    const { id } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const contact = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!contact) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    return strapi
+      .query("activity", PLUGIN)
+      .model.query(
+        buildQuery({
+          model: strapi.query("activity", PLUGIN).model,
+          filters
+        })
+      )
+      .fetchAll()
+      .then(res => {
+        const data = res.toJSON().filter(activty => activty.contact.id == id);
+        const response = utils.paginate(data, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
+      });
   }
 };

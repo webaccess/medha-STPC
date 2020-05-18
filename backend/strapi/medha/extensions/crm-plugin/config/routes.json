@@ -83,6 +83,12 @@
       "path": "/contact/unblock-organization",
       "handler": "contact.unblockOrganizations",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/:id/get-organization-activites",
+      "handler": "contact.getOrganizationActivities",
+      "config": { "policies": [] }
     }
   ]
 }
