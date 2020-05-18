@@ -7,7 +7,8 @@ const {
   ALLOWED_MEDHA_ADMIN_ROUTES,
   ROLES,
   PUBLIC_ROUTES,
-  uploadPermissions
+  uploadPermissions,
+  ACTIVITY_TYPES
 } = require("./data");
 
 (async () => {
@@ -26,6 +27,8 @@ const {
   await addPublicRoutes();
   console.log("\n");
   await addUploadRoutes();
+  console.log("\n");
+  await addActivityTypes();
 })();
 
 const fs = require("fs");
@@ -525,6 +528,7 @@ async function addUploadRoutes() {
     });
   });
 }
+
 async function addPublicRoutes() {
   const role = await getPublicRole();
   await deleteAllPublicRoute(role);
@@ -574,5 +578,26 @@ async function addPublicRoutes() {
           console.log(`Added ${act} to controller ${name}`);
         });
     });
+  });
+}
+
+async function addActivityTypes() {
+  await utils.asyncForEach(ACTIVITY_TYPES, async activity => {
+    const activityType = await bookshelf
+      .model("activity_type")
+      .where({ name: activity })
+      .fetch();
+
+    if (!activityType) {
+      await bookshelf
+        .model("activity_type")
+        .forge({ name: activity, is_active: true })
+        .save()
+        .then(() => {
+          console.log(`Added Activity Type ${activity}`);
+        });
+    } else {
+      console.log(`Skipping Activity Type ${activity}...`);
+    }
   });
 }

@@ -69,4 +69,9 @@ bookshelf.model("organization-component", {
   tableName: "organizations_components"
 });
 
+bookshelf.model("activity_type", {
+  requireFetch: false,
+  tableName: "activitytypes"
+});
+
 module.exports = bookshelf;

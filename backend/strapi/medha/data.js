@@ -1282,6 +1282,8 @@ const PUBLIC_ROUTES = {
   ]
 };
 
+const ACTIVITY_TYPES = ["Training", "Workshop", "Industrial Visit"];
+
 module.exports = {
   ACADEMIC_YEARS,
   COUNTRIES,
@@ -1289,5 +1291,6 @@ module.exports = {
   uploadPermissions,
   ROLES,
   ALLOWED_MEDHA_ADMIN_ROUTES,
-  PUBLIC_ROUTES
+  PUBLIC_ROUTES,
+  ACTIVITY_TYPES
 };
