@@ -89,7 +89,7 @@ const EligibleEvents = props => {
         /** This will give all the eligible events for a student */
         const ELIGIBLE_EVENTS =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENTS +
+          strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
           "/" +
           auth.getUserInfo().studentInfo.id +
           "/" +
@@ -97,7 +97,7 @@ const EligibleEvents = props => {
 
         const apiToCheckStudentRegistration =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENTS +
+          strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
           "/" +
           auth.getUserInfo().studentInfo.id +
           "/registeredevents";

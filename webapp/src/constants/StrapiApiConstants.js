@@ -25,6 +25,9 @@ export const STRAPI_REQUEST_OTP = "otps/requestotp";
 export const STRAPI_VALIDATE_OTP = "otps/validateotp";
 export const STRAPI_CHANGE_PASS_URL = "auth/reset-password";
 export const STRAPI_STUDENTS = "students";
+export const STRAPI_STUDENTS_DIRECT_URL = "crm-plugin/contact/get-individuals";
+export const STRAPI_STUDENTS_INDIVIDUAL_URL = "crm-plugin/contact/individual";
+
 export const STRAPI_UPLOAD = "upload";
 export const STRAPI_DELETE_UPLOAD = "file";
 export const STRAPI_ACADEMIC_YEARS = "academic-years";

@@ -77,7 +77,7 @@ const ViewDocument = props => {
 
   const STUDENT_DOCUMENT_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_STUDENTS +
+    strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
     `/${studentInfo}/document`;
   const DOCUMENT_FILTER = "id";
 

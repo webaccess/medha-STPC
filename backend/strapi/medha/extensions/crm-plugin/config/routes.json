@@ -31,6 +31,22 @@
       "config": { "policies": [] }
     },
     {
+      "method": "POST",
+      "path": "/contact/individual/unapprove",
+      "handler": "contact.unapprove",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/individual/approve",
+      "handler": "contact.approve",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/contact/get-individuals",
       "handler": "contact.individuals",
