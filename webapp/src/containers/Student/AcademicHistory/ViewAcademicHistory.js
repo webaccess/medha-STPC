@@ -89,7 +89,7 @@ const ViewAcademicHistory = props => {
       : auth.getStudentIdFromCollegeAdmin();
   const STUDENT_ACADEMIC_YEAR_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_STUDENTS +
+    strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
     `/${studentInfo}/academic-history`;
   const ACADEMIC_YEAR_FILTER = "id";
 

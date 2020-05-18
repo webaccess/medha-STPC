@@ -12,7 +12,8 @@ import {
   Grid,
   Collapse,
   IconButton,
-  Typography
+  Typography,
+  Tooltip
 } from "@material-ui/core";
 
 import { Table, Spinner, Alert } from "../../../components";
@@ -290,16 +291,29 @@ const ManageUser = props => {
         } else {
           temp["state"] = "";
         }
-        if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["zone"]) {
-          temp["zone"] = data[i]["contact"]["user"]["zone"]["name"];
+        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+          temp["zone"] = data[i]["organization"]["zone"]["name"];
         } else {
-          temp["zone"] = "";
+          if (
+            data[i]["contact"]["user"] &&
+            data[i]["contact"]["user"]["zone"]
+          ) {
+            temp["zone"] = data[i]["contact"]["user"]["zone"]["name"];
+          } else {
+            temp["zone"] = "";
+          }
         }
-        if (data[i]["contact"]["rpc"] && data[i]["contact"]["user"]["rpc"]) {
-          temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];
+
+        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+          temp["rpc"] = data[i]["organization"]["rpc"]["name"];
         } else {
-          temp["rpc"] = "";
+          if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["rpc"]) {
+            temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];
+          } else {
+            temp["rpc"] = "";
+          }
         }
+
         if (data[i]["organization"] && data[i]["organization"]["name"]) {
           temp["college"] = data[i]["organization"]["name"];
         } else {
@@ -783,12 +797,108 @@ const ManageUser = props => {
 
   /** Table Data */
   const column = [
-    { name: "User Name", sortable: true, selector: "username" },
-    { name: "Role", sortable: true, selector: "role" },
-    { name: "State", sortable: true, selector: "state" },
-    { name: "Zone", sortable: true, selector: "zone" },
-    { name: "RPC", sortable: true, selector: "rpc" },
-    { name: "IPC", sortable: true, selector: "college" },
+    {
+      name: "User Name",
+      sortable: true,
+      selector: "username",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.username}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.username}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "Role",
+      sortable: true,
+      selector: "role",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.role}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.role}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "State",
+      sortable: true,
+      selector: "state",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.state}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.state}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "Zone",
+      sortable: true,
+      selector: "zone",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.zone}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.zone}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "RPC",
+      sortable: true,
+      selector: "rpc",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.rpc}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.rpc}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "IPC",
+      sortable: true,
+      selector: "college",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.college}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.college}`}</div>
+        </Tooltip>
+      )
+    },
     {
       name: "Actions",
       cell: cell => (
@@ -831,8 +941,11 @@ const ManageUser = props => {
     perPage = formState.pageSize,
     page = 1
   ) => {
-    formState.filterDataParameters[SORT_FIELD_KEY] =
-      column.selector + ":" + sortDirection;
+    if (column.selector === "username") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        "contact.user.username:" + sortDirection;
+    }
+
     getUserData(perPage, page, formState.filterDataParameters);
   };
 

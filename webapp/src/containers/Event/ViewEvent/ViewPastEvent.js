@@ -109,7 +109,7 @@ const ViewPastEvent = props => {
 
     const PASTEVENT_URL =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_STUDENTS +
+      strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
       "/" +
       studentInfo +
       "/" +

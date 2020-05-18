@@ -224,7 +224,7 @@ export const addStudent = (
   district,
   email,
   contactNumber,
-  userName,
+  username,
   password,
   gender,
   dateofbirth,
@@ -235,24 +235,25 @@ export const addStudent = (
   otp
 ) => {
   return {
-    contact_number: contactNumber,
+    phone: contactNumber,
     otp: otp,
-    username: userName,
+    username: username,
     password: password,
     email: email,
-    college_id: college,
+    organization: college,
     first_name: firstname,
     last_name: lastname,
     father_first_name: fatherfirstname,
     father_last_name: fatherlastname,
-    address: address,
+    address_1: address,
     state: state,
     district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
-    physicallyHandicapped: physicallyHandicapped
+    is_physically_challenged: physicallyHandicapped,
+    role: 7
   };
 };
 
@@ -277,7 +278,7 @@ export const addStudentFromCollege = (
   futureAspirations
 ) => {
   return {
-    contact_number: contactNumber,
+    phone: contactNumber,
     username: userName,
     password: password,
     email: email,
@@ -286,15 +287,16 @@ export const addStudentFromCollege = (
     last_name: lastname,
     father_first_name: fatherfirstname,
     father_last_name: fatherlastname,
-    address: address,
+    address_1: address,
     state: state,
     district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
-    physicallyHandicapped: physicallyHandicapped,
-    future_aspirations: futureAspirations
+    is_physically_challenged: physicallyHandicapped,
+    future_aspirations: futureAspirations,
+    role: 7
   };
 };
 

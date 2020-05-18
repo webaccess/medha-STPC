@@ -128,7 +128,7 @@ const ManageStudents = props => {
         defaultParams = {
           page: page,
           pageSize: pageSize,
-          [SORT_FIELD_KEY]: "user.first_name:asc"
+          [SORT_FIELD_KEY]: "first_name:asc"
         };
       }
       Object.keys(paramsForUsers).map(key => {
@@ -139,7 +139,7 @@ const ManageStudents = props => {
       paramsForUsers = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "user.first_name:asc"
+        [SORT_FIELD_KEY]: "first_name:asc"
       };
     }
     if (
@@ -149,7 +149,7 @@ const ManageStudents = props => {
     ) {
       const STUDENTS_URL =
         strapiConstants.STRAPI_DB_URL +
-        strapiConstants.STRAPI_COLLEGES_INDERIECT_URL +
+        strapiConstants.STRAPI_COLLEGES +
         "/" +
         auth.getUserInfo().studentInfo.organization.id +
         "/" +
@@ -215,27 +215,25 @@ const ManageStudents = props => {
         var tempIndividualStudentData = {};
         let educationYear = [];
         tempIndividualStudentData["id"] = data[i]["id"];
-        tempIndividualStudentData["userId"] = data[i]["user"]["id"];
+        tempIndividualStudentData["userId"] = data[i]["contact"]["user"]["id"];
         tempIndividualStudentData["name"] =
-          data[i]["user"]["first_name"] +
-          " " +
-          data[i]["father_first_name"] +
-          " " +
-          data[i]["user"]["last_name"];
-        tempIndividualStudentData["first_name"] = data[i]["user"]["first_name"];
+          data[i]["first_name"] + " " + data[i]["last_name"];
+        tempIndividualStudentData["first_name"] = data[i]["first_name"];
         tempIndividualStudentData["streamId"] = data[i]["stream"]["id"];
         tempIndividualStudentData["stream"] = data[i]["stream"]["name"];
-        if (data[i]["qualifications"]) {
-          for (let j in data[i]["qualifications"]) {
-            educationYear.push(data[i]["qualifications"][j]["education_year"]);
-          }
-          tempIndividualStudentData["qualifications"] = educationYear;
-        } else {
-          tempIndividualStudentData["qualifications"] = [];
-        }
+        // if (data[i]["qualifications"]) {
+        //   for (let j in data[i]["qualifications"]) {
+        //     educationYear.push(data[i]["qualifications"][j]["education_year"]);
+        //   }
+        //   tempIndividualStudentData["qualifications"] = educationYear;
+        // } else {
+        //   tempIndividualStudentData["qualifications"] = [];
+        // }
+        tempIndividualStudentData["qualifications"] = [];
+        tempIndividualStudentData["Approved"] = data[i]["is_verified"];
         studentDataArray.push(tempIndividualStudentData);
-        tempIndividualStudentData["Approved"] = data[i]["verifiedByCollege"];
       }
+      console.log(studentDataArray);
       return studentDataArray;
     }
   };
@@ -310,17 +308,18 @@ const ManageStudents = props => {
       id: id
     };
     var STUDENTAPPROVEDATA =
-      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS;
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_STUDENTS_DIRECT_URL;
     await serviceProviders
       .serviceProviderForGetRequest(STUDENTAPPROVEDATA, paramsForStudent)
       .then(res => {
         setLoaderStatus(false);
         /** This we will use as final data for edit we send to modal */
-        let editData = res.data[0];
+        let editData = res.data.result;
         setFormState(formState => ({
           ...formState,
-          dataToApproveUnapprove: editData,
-          dataVerifiedByCollege: res.data[0].verifiedByCollege,
+          dataToApproveUnapprove: editData[0],
+          dataVerifiedByCollege: editData[0].is_verified,
           isMultiApprove: false,
           isMultiUnapprove: false,
           showModalApproveUnapprove: true,
@@ -653,7 +652,7 @@ const ManageStudents = props => {
     {
       name: "Name",
       sortable: true,
-      selector: "user.first_name",
+      selector: "first_name",
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
