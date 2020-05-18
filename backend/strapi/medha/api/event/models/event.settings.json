@@ -16,7 +16,7 @@
     "start_datetime": {
       "type": "datetime"
     },
-    "end_date_time": {
+    "end_datetime": {
       "type": "datetime",
       "required": true
     },
@@ -31,11 +31,7 @@
     "upload_logo": {
       "model": "file",
       "via": "related",
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ],
+      "allowedTypes": ["images", "files", "videos"],
       "plugin": "upload",
       "required": false
     },
@@ -63,7 +59,7 @@
     "educations": {
       "type": "component",
       "repeatable": true,
-      "component": "educations.education"
+      "component": "educations.educations"
     },
     "contacts": {
       "plugin": "crm-plugin",

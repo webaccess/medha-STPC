@@ -11,6 +11,7 @@ const {
   buildQuery,
   sanitizeEntity
 } = require("strapi-utils");
+const { PLUGIN } = require("../../../config/constants");
 const utils = require("../../../config/utils.js");
 
 const sanitizeUser = user =>
@@ -44,7 +45,18 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    const response = await strapi.query("event").findOne({ id });
+    let response = await strapi.query("event").findOne({ id });
+    console.log(response);
+
+    const org = response.contacts.map(contact => {
+      return contact.organization;
+    });
+
+    const organization = await strapi
+      .query("organization", PLUGIN)
+      .find({ id: org });
+
+    response.contacts = organization;
     return utils.getFindOneResponse(response);
   },
 
@@ -73,21 +85,22 @@ module.exports = {
       .query("event-registration")
       .find({ event: event.id });
 
-    const studentIds = registrations.map(r => r.student.id);
-    let students = await strapi
-      .query("student")
+    console.log(registrations);
+    const contactIds = registrations.map(r => r.contact.id);
+    let contact = await strapi
+      .query("contact", PLUGIN)
       .model.query(
         buildQuery({
-          model: strapi.models["student"],
+          model: strapi.plugins["crm-plugin"].models["contact"],
           filters
         })
       )
       .fetchAll()
       .then(model => model.toJSON());
 
-    students = students
+    contact = contact
       .map(student => {
-        if (_.includes(studentIds, student.id)) {
+        if (_.includes(contactIds, student.id)) {
           student.user = sanitizeUser(student.user);
           return student;
         }
@@ -95,11 +108,11 @@ module.exports = {
       .filter(a => a);
     let filtered = [];
 
-    await utils.asyncForEach(students, async student => {
-      if (_.includes(studentIds, student.id)) {
+    await utils.asyncForEach(contact, async student => {
+      if (_.includes(contactIds, student.id)) {
         const qualifications = await strapi
           .query("academic-history")
-          .find({ student: student.id }, []);
+          .find({ contact: contact.id }, []);
 
         student.user = sanitizeUser(student.user);
         student.qualifications = qualifications;
