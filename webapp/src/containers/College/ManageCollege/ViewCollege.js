@@ -47,8 +47,7 @@ const ViewCollege = props => {
   const classes = useStyles();
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
-  const COLLEGE_URL =
-    strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
+
   const [formState, setFormState] = useState({
     collegeDetails: [],
     streams: [],
@@ -72,21 +71,25 @@ const ViewCollege = props => {
 
   async function getCollegeData() {
     setLoaderStatus(true);
-    let paramsForCollege;
-    if (auth.getUserInfo().role.name === "College Admin") {
-      paramsForCollege = {
-        id: auth.getUserInfo().studentInfo.organization.id
-      };
-    } else if (auth.getUserInfo().role.name === "Medha Admin") {
-      paramsForCollege = {
-        id: props["location"]["dataForEdit"]
-      };
-    }
-    if (paramsForCollege.id !== undefined) {
+  const studentInfo =
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role.name === "College Admin"
+        ? auth.getUserInfo().studentInfo.id
+        : auth.getUserInfo() !== null &&
+          auth.getUserInfo().role.name === "Medha Admin"
+        ? props["location"]["dataForEdit"]
+        : null;
+
+    if (studentInfo !== undefined) {
+      let COLLEGE_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_COLLEGES +
+        "/" +
+        studentInfo;
       await serviceProviders
-        .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
+        .serviceProviderForGetRequest(COLLEGE_URL)
         .then(res => {
-          let viewData = res.data.result[0];
+          let viewData = res.data.result;
           let dataConverter = [];
           dataConverter = convertStudentData(viewData.tpos);
           setFormState(formState => ({
