@@ -190,6 +190,7 @@ module.exports = {
       ...response.pagination
     };
   },
+
   education: async ctx => {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
@@ -213,6 +214,7 @@ module.exports = {
         return utils.getPaginatedResponse(res);
       });
   },
+
   academicHistory: async ctx => {
     console.log("In academic history");
     const { id } = ctx.params;
@@ -227,6 +229,10 @@ module.exports = {
     }
     return utils.getFindOneResponse(response);
   },
+
+  /**
+   * Student self registration and medha admin can create indivisuals
+   */
   createIndividual: async ctx => {
     /**
      * TODO
@@ -370,6 +376,10 @@ module.exports = {
       });
   },
 
+  /**
+   * Get all individuals
+   * TODO policy Only medha admin can get all individual details
+   */
   individuals: async ctx => {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query);
@@ -396,6 +406,11 @@ module.exports = {
     };
   },
 
+  /**
+   * Get organization details
+   * TODO only medha admin and college admin can get his details
+   * also only college admin of his college can get this details not the college admin of other college
+   */
   organizationDetails: async ctx => {
     const { orgId } = ctx.params;
     const response = await strapi
@@ -418,6 +433,10 @@ module.exports = {
     return utils.getFindOneResponse(response);
   },
 
+  /**
+   * Get individual details
+   * TODO only medha admin and individual can get his details
+   */
   individualDetails: async ctx => {
     const { individualId } = ctx.params;
 
@@ -443,6 +462,10 @@ module.exports = {
     return utils.getFindOneResponse(response);
   },
 
+  /**
+   * College students
+   * TODO policy to check college admin only requestion students for his college
+   */
   organizationStudents: async ctx => {
     const { orgId } = ctx.params;
     const org = await strapi
@@ -478,6 +501,10 @@ module.exports = {
     };
   },
 
+  /**
+   * College admins
+   * TODO policy to check college admin only requesting admins for his college
+   */
   organizationAdmins: async ctx => {
     const { orgId } = ctx.params;
     const org = await strapi
@@ -511,5 +538,72 @@ module.exports = {
       result: response.result,
       ...response.pagination
     };
+  },
+
+  /**
+   * Block organization
+   * TODO policy:Only medha admin can block
+   */
+  blockOrganizations: async ctx => {
+    const { ids } = ctx.request.body;
+    console.log(ctx.request.body);
+    let idsToBlock;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToBlock = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToBlock = ids;
+    }
+
+    if (!idsToBlock.length) {
+      return ctx.response.badRequest("College Ids are empty");
+    }
+
+    await strapi
+      .query("organization", PLUGIN)
+      .model.query(qb => {
+        qb.whereIn("id", idsToBlock);
+      })
+      .save({ is_blocked: true }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
+  },
+
+  /**
+   * UnBlock organization
+   * TODO policy only medha admin can unblock
+   */
+  unblockOrganizations: async ctx => {
+    const { ids } = ctx.request.body;
+    let idsToBlock;
+    if (!ids) {
+      return ctx.response.badRequest("Missing ids field");
+    }
+
+    if (typeof ids === "number") {
+      idsToBlock = [ids];
+    }
+
+    if (typeof ids === "object") {
+      idsToBlock = ids;
+    }
+
+    if (!idsToBlock.length) {
+      return ctx.response.badRequest("College Ids are empty");
+    }
+
+    await strapi
+      .query("organization", PLUGIN)
+      .model.query(qb => {
+        qb.whereIn("id", idsToBlock);
+      })
+      .save({ is_blocked: false }, { patch: true, require: false });
+
+    return utils.getFindOneResponse({});
   }
 };

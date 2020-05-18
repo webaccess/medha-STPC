@@ -71,6 +71,18 @@
       "path": "/states/:id/rpcs",
       "handler": "state.rpcs",
       "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/block-organization",
+      "handler": "contact.blockOrganizations",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/unblock-organization",
+      "handler": "contact.unblockOrganizations",
+      "config": { "policies": [] }
     }
   ]
 }
