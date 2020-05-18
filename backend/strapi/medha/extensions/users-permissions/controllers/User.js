@@ -69,9 +69,9 @@ module.exports = {
     if (!email) return ctx.badRequest("missing.email");
     if (!username) return ctx.badRequest("missing.username");
     if (!password) return ctx.badRequest("missing.password");
-    if (!first_name) return ctx.badRequest("missing.first_name");
-    if (!last_name) return ctx.badRequest("missing.last_name");
-    if (!contact_number) return ctx.badRequest("missing.contact_number");
+    // if (!first_name) return ctx.badRequest("missing.first_name");
+    // if (!last_name) return ctx.badRequest("missing.last_name");
+    // if (!contact_number) return ctx.badRequest("missing.contact_number");
 
     const userWithSameUsername = await strapi
       .query("user", "users-permissions")
@@ -278,24 +278,25 @@ module.exports = {
     let updateData = {
       ...ctx.request.body
     };
-    let validPassword;
-    if (_.has(ctx.request.body, "password")) {
-      validPassword = strapi.plugins[
-        "users-permissions"
-      ].services.user.validatePassword(password, user.password);
-    }
-    if (
-      _.has(ctx.request.body, "password") &&
-      !validPassword &&
-      usr.role.name === "Medha Admin"
-    ) {
-      updateData.password = await strapi.plugins[
-        "users-permissions"
-      ].services.user.hashPassword(updateData);
-    }
-    if (_.has(ctx.request.body, "password") && validPassword) {
-      delete updateData.password;
-    }
+
+    // let validPassword;
+    // if (_.has(ctx.request.body, "password")) {
+    //   validPassword = strapi.plugins[
+    //     "users-permissions"
+    //   ].services.user.validatePassword(password, user.password);
+    // }
+    // if (
+    //   _.has(ctx.request.body, "password") &&
+    //   !validPassword &&
+    //   usr.role.name === "Medha Admin"
+    // ) {
+    //   updateData.password = await strapi.plugins[
+    //     "users-permissions"
+    //   ].services.user.hashPassword(updateData);
+    // }
+    // if (_.has(ctx.request.body, "password") && validPassword) {
+    //   delete updateData.password;
+    // }
 
     const data = await strapi
       .query("user", "users-permissions")

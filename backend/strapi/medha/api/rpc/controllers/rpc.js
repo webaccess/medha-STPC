@@ -7,6 +7,8 @@
 
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
+const _ = require("lodash");
+
 module.exports = {
   /**
    * Retrieve RPCs.
@@ -18,88 +20,53 @@ module.exports = {
    */
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
     /**
      * Public route
      */
-    if (!ctx.state.user) {
-      return strapi
-        .query("rpc")
-        .model.query(
-          buildQuery({
-            model: strapi.models.rpc,
-            filters
-          })
-        )
-        .fetchPage({
-          page: page,
-          pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("rpc") : pageSize,
-          columns: ["id", "name"]
-        })
-        .then(res => {
-          return utils.getPaginatedResponse(res);
-        });
+
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
     }
+
     /**
      * For authenticated user
      */
-    const { role, rpc, zone } = ctx.state.user;
-    if (role.name === "Medha Admin" || role.name === "Admin") {
-      return strapi
-        .query("rpc")
-        .model.query(
-          buildQuery({
-            model: strapi.models.rpc,
-            filters
-          })
-        )
-        .fetchPage({
-          page: page,
-          pageSize: pageSize < 0 ? await utils.getTotalRecords("rpc") : pageSize
-        })
-        .then(res => {
-          return utils.getPaginatedResponse(res);
-        });
+    let rpc = await strapi.services.rpc.getRoleWiseRpcs(
+      ctx.state.user,
+      filters
+    );
+
+    // Sorting ascending or descending on one or multiple fields
+    if (sort && sort.length) {
+      rpc = utils.sort(rpc, sort);
     }
 
-    if (role.name === "Zonal Admin") {
-      return strapi
-        .query("rpc")
-        .model.query(
-          buildQuery({
-            model: strapi.models.rpc,
-            filters
-          })
-        )
-        .where({ zone: zone })
-        .fetchPage({
-          page: page,
-          pageSize: pageSize < 0 ? await utils.getTotalRecords("rpc") : pageSize
-        })
-        .then(res => {
-          return utils.getPaginatedResponse(res);
-        });
-    }
-
-    if (role.name === "RPC Admin") {
-      return strapi
-        .query("rpc")
-        .model.query(
-          buildQuery({
-            model: strapi.models.rpc,
-            filters
-          })
-        )
-        .where({ id: rpc })
-        .fetchPage({
-          page: page,
-          pageSize: pageSize < 0 ? await utils.getTotalRecords("rpc") : pageSize
-        })
-        .then(res => {
-          return utils.getPaginatedResponse(res);
-        });
-    }
+    const response = utils.paginate(rpc, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
+    // if (role.name === "Zonal Admin") {
+    //   return strapi
+    //     .query("rpc")
+    //     .model.query(
+    //       buildQuery({
+    //         model: strapi.models.rpc,
+    //         filters
+    //       })
+    //     )
+    //     .where({ zone: zone })
+    //     .fetchPage({
+    //       page: page,
+    //       pageSize: pageSize < 0 ? await utils.getTotalRecords("rpc") : pageSize
+    //     })
+    //     .then(res => {
+    //       return utils.getPaginatedResponse(res);
+    //     });
+    // }
   },
 
   async findOne(ctx) {

@@ -1,0 +1,78 @@
+{
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "activities",
+  "info": {
+    "name": "activity"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "start_datetime": {
+      "type": "datetime"
+    },
+    "end_datetime": {
+      "type": "datetime"
+    },
+    "activitytype": {
+      "plugin": "crm-plugin",
+      "model": "activitytype"
+    },
+    "activityassignees": {
+      "plugin": "crm-plugin",
+      "collection": "activityassignee",
+      "via": "activity"
+    },
+    "academic_year": {
+      "model": "academic-year"
+    },
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
+    },
+    "education_year": {
+      "type": "enumeration",
+      "enum": [
+        "First",
+        "Second",
+        "Third",
+        "Fourth"
+      ]
+    },
+    "streams": {
+      "collection": "stream"
+    },
+    "address": {
+      "type": "string",
+      "required": true
+    },
+    "upload_logo": {
+      "model": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "plugin": "upload",
+      "required": false
+    },
+    "trainer_name": {
+      "type": "string",
+      "required": true
+    },
+    "question_set": {
+      "model": "question-set",
+      "via": "activities"
+    },
+    "description": {
+      "type": "richtext"
+    }
+  }
+}

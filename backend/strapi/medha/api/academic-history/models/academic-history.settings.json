@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "academic_histories",
   "info": {
     "name": "Academic History"
@@ -9,23 +9,18 @@
     "timestamps": true
   },
   "attributes": {
-    "student": {
-      "model": "student"
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
     },
     "academic_year": {
       "model": "academic-year"
     },
     "education_year": {
-      "type": "enumeration",
-      "enum": [
-        "First",
-        "Second",
-        "Third",
-        "Fourth"
-      ]
+      "type": "integer"
     },
     "percentage": {
-      "type": "decimal"
+      "type": "float"
     }
   }
 }

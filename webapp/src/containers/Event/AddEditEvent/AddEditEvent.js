@@ -124,7 +124,7 @@ const AddEditEvent = props => {
   const [collegeInfo] = useState({
     college:
       auth.getUserInfo().role.name === "College Admin"
-        ? auth.getUserInfo().college
+        ? auth.getUserInfo().studentInfo.organization
         : {},
     state:
       auth.getUserInfo().role.name === "College Admin"
@@ -403,8 +403,8 @@ const AddEditEvent = props => {
         });
     } else if (formState.isCollegeAdmin) {
       let streamData = [];
-      auth.getUserInfo().college.stream_strength.map(data => {
-        streamData.push(data["stream"]);
+      auth.getUserInfo().studentInfo.stream.map(data => {
+        streamData.push(data["name"]);
       });
       setStreams(streamData);
       prePopulateStreamsData(streamData);

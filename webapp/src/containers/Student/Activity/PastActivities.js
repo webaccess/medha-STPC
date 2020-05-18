@@ -52,7 +52,7 @@ const PastActivities = props => {
       : Auth.getStudentIdFromCollegeAdmin();
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_STUDENTS +
+    strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
     `/${studentInfo}/past-activities`;
   const ACTIVITY_FILTER = "id";
   const ACTIVITY_STATUS = "status";

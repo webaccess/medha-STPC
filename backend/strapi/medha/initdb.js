@@ -1,577 +1,139 @@
-const fs = require("fs");
-const bookshelf = require("./config/config.js");
-const utils = require("./config/utils.js");
-const apiFolder = "./api/";
-const _data = require("./data.js");
-const minimist = require("minimist");
-const args = minimist(process.argv.slice(2), {
-  "--": true
-});
-const _skip = args["--"].length > 0;
-const skip = new RegExp(args["--"].join("|"), "i");
-let controllerActionWithoutUser = fs
-  .readdirSync(apiFolder, { withFileTypes: true })
-  .filter(api => api.isDirectory())
-  .reduce((acc, folder) => {
-    const { name } = folder;
-    const raw = fs.readFileSync(`./api/${name}/config/routes.json`);
-    const route = JSON.parse(raw);
-    const actionObj = route.routes.reduce((result, r) => {
-      const action = r.handler.split(".")[1].toLowerCase();
-      result[action] = { enabled: false };
-      return result;
-    }, {});
-    acc[name] = actionObj;
-    return acc;
-  }, {});
-const allControllerActions = Object.assign(controllerActionWithoutUser, {
-  user: {
-    find: { enabled: false },
-    count: { enabled: false },
-    findone: { enabled: false },
-    create: { enabled: false },
-    update: { enabled: false },
-    destroy: { enabled: false },
-    me: { enabled: false }
-  }
-});
-const roles = _data.roles;
-const _roleRequestData = Object.keys(roles).map(r => {
-  const { controllers, grantAllPermissions } = roles[r];
-  const updatedController = controllers.reduce((result, controller) => {
-    const { name, action } = controller;
-    if (grantAllPermissions) {
-      const controllerWithAction = allControllerActions[name];
-      const updatedActions = Object.keys(controllerWithAction).reduce(
-        (acc, a) => {
-          acc[a] = { enabled: true };
-          return acc;
-        },
-        {}
-      );
-      result[name] = updatedActions;
-      return result;
-    } else {
-      const controllerWithAction = allControllerActions[name];
-      let updatedActions;
-      if (action.length) {
-        const regex = new RegExp(action.join("|"), "i");
-        updatedActions = Object.keys(controllerWithAction).reduce((acc, a) => {
-          acc[a] = { enabled: regex.test(a) };
-          return acc;
-        }, {});
-      } else {
-        updatedActions = Object.keys(controllerWithAction).reduce((acc, a) => {
-          acc[a] = { enabled: false };
-          return acc;
-        }, {});
-      }
-      result[name] = updatedActions;
-      return result;
-    }
-  }, {});
-  return {
-    name: r,
-    description: r,
-    permissions: {
-      application: {
-        controllers: updatedController
-      }
-    }
-  };
-});
-function addPermissionsToGivenRole(role, id) {
-  /**
-   * Creating permissions WRT to controllers and mapping to created role
-   */
-  Object.keys(role.permissions || {}).forEach(type => {
-    Object.keys(role.permissions[type].controllers).forEach(controller => {
-      console.log(`Adding permission for ${controller} for role ${role.name}`);
-      Object.keys(role.permissions[type].controllers[controller]).forEach(
-        action => {
-          bookshelf
-            .model("permission")
-            .forge({
-              role: id,
-              type: controller === "user" ? "users-permissions" : type,
-              controller: controller,
-              action: action.toLowerCase(),
-              ...role.permissions[type].controllers[controller][action]
-            })
-            .save();
-        }
-      );
-    });
-    console.log("\n");
-  });
-}
-/**
- * If args presents roles then skip role creation
- */
-if (!(_skip && skip.test("roles"))) {
-  _roleRequestData.forEach(role => {
-    bookshelf
-      .model("role")
-      .fetchAll()
-      .then(model => {
-        const response = model.toJSON();
-        const isRolePresent = response.find(r => r.name === role.name);
-        if (isRolePresent) {
-          bookshelf
-            .model("permission")
-            .where({ role: isRolePresent.id })
-            .destroy()
-            .then(() => {
-              console.log(
-                `Deleting existing permissions for role ${isRolePresent.name}\nAdding new permissions\n`
-              );
-              addPermissionsToGivenRole(role, isRolePresent.id);
-            });
-        } else {
-          // Creating role
-          bookshelf
-            .model("role")
-            .forge({
-              name: role.name,
-              description: role.description,
-              type: role.name
-            })
-            .save()
-            .then(r => {
-              const _role = r.toJSON();
-              addPermissionsToGivenRole(role, _role.id);
-            })
-            .catch(error => {
-              console.log(error);
-            });
-        }
-      })
-      .catch(failed => {
-        console.log({ failed });
-      });
-  });
-}
-/**
- * If args presents states then skip state creation
- */
-if (!(_skip && skip.test("states"))) {
-  const states = _data.states;
-  const _stateRequestData = Object.keys(states).map(state => {
-    const { zones, districts, rpcs } = states[state];
-
-    return {
-      name: state,
-      districts: districts,
-      zones: zones,
-      rpcs: rpcs
-    };
-  });
-  /**
-   * Creating all states
-   */
-  async function allStates() {
-    return await bookshelf
-      .model("state")
-      .fetchAll()
-      .then(res => res.toJSON());
-  }
-  async function allZones() {
-    return await bookshelf
-      .model("zone")
-      .fetchAll()
-      .then(res => res.toJSON());
-  }
-  async function allRPCs() {
-    return await bookshelf
-      .model("rpc")
-      .fetchAll()
-      .then(res => res.toJSON());
-  }
-  async function allDistricts() {
-    return await bookshelf
-      .model("district")
-      .fetchAll()
-      .then(res => res.toJSON());
-  }
-  (async () => {
-    var _allState = await allStates();
-    var _allZones = await allZones();
-    var _allRPCs = await allRPCs();
-    var _allDistricts = await allDistricts();
-
-    _stateRequestData.forEach(state => {
-      const isStateNew = _allState.find(
-        d => d.name.toLowerCase() === state.name.toLowerCase()
-      );
-      if (!isStateNew) {
-        bookshelf
-          .model("state")
-          .forge({
-            name: state.name
-          })
-          .save()
-          .then(() => {
-            console.log(`Added state ${state.name}`);
-          });
-      } else {
-        console.log(`Skipping state ${state.name}...`);
-      }
-    });
-
-    _stateRequestData.forEach(state => {
-      const { zones } = state;
-      zones.forEach(zone => {
-        const isZoneNew = _allZones.find(
-          z => z.name.toLowerCase() === zone.toLowerCase()
-        );
-        if (!isZoneNew) {
-          bookshelf
-            .model("zone")
-            .forge({
-              name: zone
-            })
-            .save()
-            .then(() => {
-              console.log(`Added zone ${zone}`);
-            });
-        } else {
-          console.log(`Skipping zone ${zone}...`);
-        }
-      });
-    });
-
-    _stateRequestData.forEach(state => {
-      const { districts } = state;
-      districts.forEach(district => {
-        const isDistrictNew = _allDistricts.find(
-          d => d.name.toLowerCase() === district.toLowerCase()
-        );
-        if (!isDistrictNew) {
-          bookshelf
-            .model("district")
-            .forge({
-              name: district
-            })
-            .save()
-            .then(() => {
-              console.log(`Added district ${district}`);
-            });
-        } else {
-          console.log(`Skipping district ${district}...`);
-        }
-      });
-    });
-
-    _stateRequestData.forEach(state => {
-      const { rpcs } = state;
-      rpcs.forEach(rpc => {
-        const isRPCNew = _allRPCs.find(
-          r => r.name.toLowerCase() === rpc.toLowerCase()
-        );
-        if (!isRPCNew) {
-          bookshelf
-            .model("rpc")
-            .forge({
-              name: rpc
-            })
-            .save()
-            .then(() => {
-              console.log(`Added RPC ${rpc}`);
-            });
-        } else {
-          console.log(`Skipping RPC ${rpc}...`);
-        }
-      });
-    });
-
-    _allState = await allStates();
-    _allZones = await allZones();
-    _allRPCs = await allRPCs();
-    _allDistricts = await allDistricts();
-    /**
-     * Mapping zone to state and rpc to zone
-     */
-    _stateRequestData.forEach(state => {
-      const { zones, districts, rpcs } = state;
-      const _state = _allState.find(
-        s => s.name.toLowerCase() === state.name.toLowerCase()
-      );
-      /**
-       * Mapping zones to state
-       */
-      zones.forEach(zone => {
-        const _zone = _allZones.find(
-          z => z.name.toLowerCase() === zone.toLowerCase()
-        );
-        bookshelf
-          .model("zone")
-          .where({
-            id: _zone.id
-          })
-          .save(
-            {
-              state: _state.id
-            },
-            { patch: true }
-          )
-          .then(() => {
-            console.log(`Mapped Zone ${zone} to ${state.name}`);
-          });
-      });
-      /**
-       * Mapping district to state
-       */
-      districts.forEach(district => {
-        const _district = _allDistricts.find(
-          d => d.name.toLowerCase() === district.toLowerCase()
-        );
-        bookshelf
-          .model("district")
-          .where({
-            id: _district.id
-          })
-          .save(
-            {
-              state: _state.id
-            },
-            { patch: true }
-          )
-          .then(() => {
-            console.log(`Mapped district ${district} to ${state.name}`);
-          });
-      });
-
-      /**
-       * Mapping rpc to state
-       */
-      rpcs.forEach(rpc => {
-        const _rpc = _allRPCs.find(
-          r => r.name.toLowerCase() === rpc.toLowerCase()
-        );
-        bookshelf
-          .model("rpc")
-          .where({
-            id: _rpc.id
-          })
-          .save(
-            {
-              state: _state.id
-            },
-            { patch: true }
-          )
-          .then(() => {
-            console.log(`Mapped RPC ${rpc} to ${state.name}`);
-          });
-      });
-    });
-  })();
-}
-
-async function destroyAllUserPermissionsForMedhaAdmin(role) {
-  try {
-    return await bookshelf
-      .model("permission")
-      .where({
-        controller: "userspermissions",
-        type: "users-permissions",
-        role: role
-      })
-      .destroy()
-      .then(() => {
-        console.log(
-          "\nRemoving all custom user permissions for medha admin role"
-        );
-      });
-  } catch (error) {
-    console.log("\nNo custom user permissions found for medha admin role");
-  }
-}
-
-async function getMedhaAdminRole() {
-  return await bookshelf
-    .model("role")
-    .where({
-      name: "Medha Admin"
-    })
-    .fetch()
-    .then(model => model.toJSON());
-}
+const bookshelf = require("./config/bookshelf");
+const utils = require("./config/utils");
+const { COUNTRIES } = require("./data");
 
 (async () => {
-  /**
-   * If streams are present it will skip otherwise create new stream
-   */
-
-  _data.streams.forEach(stream => {
-    bookshelf
-      .model("stream")
-      .where({ name: stream })
-      .fetch()
-      .then(model => {
-        if (!model) {
-          bookshelf
-            .model("stream")
-            .forge({
-              name: stream
-            })
-            .save()
-            .then(() => {
-              console.log(`Added ${stream} to streams`);
-            });
-        }
-      });
-  });
-  /**
-   * Creating custom api routes for medha admin role
-   * Remove all custom permissions and add new
-   */
-  const medhaAdmin = await getMedhaAdminRole();
-  await destroyAllUserPermissionsForMedhaAdmin(medhaAdmin.id);
-  _data.allowedMedhaAdminRoutes.forEach(action => {
-    bookshelf
-      .model("permission")
-      .where({
-        type: "users-permissions",
-        controller: "userspermissions",
-        action: action,
-        role: medhaAdmin.id
-      })
-      .fetch()
-      .then(res => {
-        if (!res) {
-          bookshelf
-            .model("permission")
-            .forge({
-              type: "users-permissions",
-              controller: "userspermissions",
-              action: action,
-              role: medhaAdmin.id,
-              enabled: true
-            })
-            .save()
-            .then(() => {
-              console.log(`${action} permission added to Medha Admin`);
-            });
-        }
-      });
-  });
+  await countries();
+  console.log("\n");
+  await states();
+  console.log("\n");
+  await districts();
 })();
 
-async function getPublicRole() {
-  return await bookshelf
-    .model("role")
-    .where({ name: "Public" })
-    .fetch()
-    .then(res => res.toJSON());
-}
-
-async function deleteAllPublicRoute(role) {
-  return await bookshelf
-    .model("permission")
-    .where({
-      role: role.id,
-      type: "application"
-    })
-    .destroy({ require: false })
-    .then(() => {
-      console.log("\nDeleting all public routes...");
-    });
-}
-
-/**
- * Public routes for dropdown(State, Zone, RPC and College)
- * Also for student self registration
- */
-(async () => {
-  const role = await getPublicRole();
-  await deleteAllPublicRoute(role);
-  _data.publicRoutes.controllers.forEach(controller => {
-    const { action, name } = controller;
-    action.forEach(act => {
-      bookshelf
-        .model("permission")
-        .forge({
-          role: role.id,
-          type: "application",
-          controller: name,
-          action: act,
-          enabled: true
-        })
-        .save()
-        .then(() => {
-          console.log(`Added ${act} to controller ${name}`);
-        });
-    });
-  });
-})();
-
-/**
- * Upload route for all user defined roles
- */
-(async () => {
-  const userDefinedRoles = Object.keys(_data.roles);
-  const roles = await bookshelf
-    .model("role")
-    .where("name", "in", userDefinedRoles)
-    .fetchAll()
-    .then(res => res.toJSON());
-
-  await utils.asyncForEach(_data.uploadPermissions, async action => {
-    await utils.asyncForEach(roles, async role => {
-      const permission = await bookshelf
-        .model("permission")
-        .where({
-          type: "upload",
-          controller: "upload",
-          action: action,
-          role: role.id
-        })
-        .fetch({
-          require: false
-        });
-
-      if (!permission) {
-        await bookshelf
-          .model("permission")
-          .forge({
-            type: "upload",
-            controller: "upload",
-            action: action,
-            enabled: true,
-            role: role.id
-          })
-          .save()
-          .then(() => {
-            console.log(`${action} added for role ${role.name}`);
-          });
-      } else {
-        console.log(`Skipping ${action} for role ${role.name}`);
-      }
-    });
-  });
-})();
-
-(async () => {
-  await utils.asyncForEach(_data.academicYears, async ay => {
-    const isAYPresent = await bookshelf
-      .model("academic_year")
-      .where({ name: ay.name })
+async function countries() {
+  console.log("Countries");
+  await utils.asyncForEach(COUNTRIES, async c => {
+    const isCountryPresent = await bookshelf
+      .model("country")
+      .where({ name: c.name })
       .fetch();
 
-    if (isAYPresent) {
-      console.log(`Skipping Academic Year ${ay.name}...`);
+    if (isCountryPresent) {
+      console.log(`Skipping Country ${c.name}...`);
     } else {
       await bookshelf
-        .model("academic_year")
+        .model("country")
         .forge({
-          name: ay.name,
-          start_date: ay.start_date,
-          end_date: ay.end_date
+          name: c.name,
+          abbreviation: c.abbreviation,
+          identifier: c.identifier,
+          is_active: c.isActive
         })
         .save()
         .then(() => {
-          console.log(`Added Academic Year ${ay.name}`);
+          console.log(`Added Country ${c.name}`);
         });
     }
   });
-})();
+}
+
+async function states() {
+  console.log("States");
+  await utils.asyncForEach(COUNTRIES, async c => {
+    const { states } = c;
+    const isCountryPresent = await bookshelf
+      .model("country")
+      .where({ name: c.name })
+      .fetch();
+
+    if (isCountryPresent) {
+      await utils.asyncForEach(states, async state => {
+        const isStatePresent = await bookshelf
+          .model("state")
+          .where({ name: state.name })
+          .fetch();
+
+        if (isStatePresent) {
+          console.log(`Skipping State ${state.name}...`);
+        } else {
+          const country = isCountryPresent.toJSON
+            ? isCountryPresent.toJSON()
+            : isCountryPresent;
+
+          await bookshelf
+            .model("state")
+            .forge({
+              name: state.name,
+              abbreviation: state.abbreviation,
+              identifier: state.identifier,
+              is_active: state.isActive,
+              country: country.id
+            })
+            .save()
+            .then(() => {
+              console.log(`Added State ${state.name} to ${country.name}`);
+            });
+        }
+      });
+    }
+  });
+}
+
+async function districts() {
+  console.log("Districts");
+  await utils.asyncForEach(COUNTRIES, async c => {
+    const { states } = c;
+    const isCountryPresent = await bookshelf
+      .model("country")
+      .where({ name: c.name })
+      .fetch();
+
+    if (isCountryPresent) {
+      await utils.asyncForEach(states, async s => {
+        const { districts } = s;
+        const isStatePresent = await bookshelf
+          .model("state")
+          .where({ name: s.name })
+          .fetch();
+
+        if (isStatePresent) {
+          const state = isStatePresent.toJSON
+            ? isStatePresent.toJSON()
+            : isStatePresent;
+
+          // Districts
+          try {
+            await utils.asyncForEach(districts, async district => {
+              const isDistrictPresent = await bookshelf
+                .model("district")
+                .where({ name: district.name, state: state.id })
+                .fetch();
+
+              if (isDistrictPresent) {
+                console.log(`Skipping District ${district.name}...`);
+              } else {
+                await bookshelf
+                  .model("district")
+                  .forge({
+                    name: district.name,
+                    state: state.id,
+                    abbreviation: district.abbreviation,
+                    identifier: district.identifier,
+                    is_active: district.is_active
+                  })
+                  .save()
+                  .then(() => {
+                    console.log(
+                      `Added District ${district.name} to ${state.name}`
+                    );
+                  });
+              }
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      });
+    }
+  });
+}

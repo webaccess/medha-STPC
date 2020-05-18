@@ -1,5 +1,5 @@
 {
-  "connection": "default",
+  "kind": "collectionType",
   "collectionName": "educations",
   "info": {
     "name": "Education"
@@ -18,15 +18,14 @@
       "required": true
     },
     "year_of_passing": {
-      "type": "integer",
-      "required": true
-    },
-    "student": {
-      "via": "educations",
-      "model": "student"
+      "type": "integer"
     },
     "percentage": {
-      "type": "decimal"
+      "type": "float"
+    },
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
     }
   }
 }

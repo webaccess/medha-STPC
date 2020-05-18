@@ -111,7 +111,7 @@ const AddEditStudentForCollegeAdmin = props => {
   const [statelist, setstatelist] = useState([]);
   const [districtlist, setdistrictlist] = useState([]);
   const [streamlist, setStreamlist] = useState([]);
-  const [collegelist] = useState([auth.getUserInfo().college]);
+  const [collegelist] = useState([auth.getUserInfo().studentInfo.organization]);
 
   useEffect(() => {
     if (!formState.editStudent && !formState.addStudent) {
@@ -119,7 +119,9 @@ const AddEditStudentForCollegeAdmin = props => {
         pathname: routeConstants.MANAGE_STUDENT
       });
     } else if (formState.addStudent) {
-      formState.values["college"] = auth.getUserInfo().college.id;
+      formState.values[
+        "college"
+      ] = auth.getUserInfo().studentInfo.organization.id;
     }
 
     if (formState.editStudent) {
@@ -150,9 +152,9 @@ const AddEditStudentForCollegeAdmin = props => {
 
   const getStreams = () => {
     let streamsArray = [];
-    for (let i in auth.getUserInfo().college.stream_strength) {
+    for (let i in auth.getUserInfo().studentInfo.organization.stream_strength) {
       streamsArray.push(
-        auth.getUserInfo().college.stream_strength[i]["stream"]
+        auth.getUserInfo().studentInfo.organization.stream_strength[i]["stream"]
       );
     }
     setStreamlist(streamsArray);
@@ -449,7 +451,7 @@ const AddEditStudentForCollegeAdmin = props => {
         strapiApiConstants.STRAPI_DB_URL +
         strapiApiConstants.STRAPI_COLLEGES +
         "/" +
-        auth.getUserInfo().college.id +
+        auth.getUserInfo().studentInfo.organization.id +
         "/studentregister";
       serviceProvider
         .serviceProviderForPostRequest(url, postData)

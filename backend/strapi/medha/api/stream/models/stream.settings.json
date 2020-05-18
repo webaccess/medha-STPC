@@ -1,5 +1,4 @@
 {
-  "connection": "default",
   "collectionName": "streams",
   "info": {
     "name": "Stream"
@@ -11,8 +10,7 @@
   "attributes": {
     "name": {
       "type": "string",
-      "required": true,
-      "unique": true
+      "required": true
     }
   }
 }

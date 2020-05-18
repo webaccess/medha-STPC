@@ -425,17 +425,19 @@ const AddEditStudent = props => {
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +
-            strapiApiConstants.STRAPI_REGISTER_STUDENT,
+            strapiApiConstants.STRAPI_CREATE_USERS,
           postData
         )
         .then(response => {
-          if (
-            auth.getUserInfo().role.name === "Medha Admin" ||
-            auth.getUserInfo().role.name === "College Admin"
-          ) {
-            history.push(routeConstants.MANAGE_STUDENT);
-          } else {
+          if (auth.getToken() === null || auth.getUserInfo() === null) {
             history.push(routeConstants.REGISTERED);
+          } else {
+            if (
+              auth.getUserInfo().role.name === "Medha Admin" ||
+              auth.getUserInfo().role.name === "College Admin"
+            ) {
+              history.push(routeConstants.MANAGE_STUDENT);
+            }
           }
           setLoaderStatus(false);
         })

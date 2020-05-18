@@ -1,0 +1,48 @@
+{
+  "connection": "default",
+  "collectionName": "organizations",
+  "info": {
+    "name": "organization"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "contact": {
+      "via": "organization",
+      "plugin": "crm-plugin",
+      "model": "contact"
+    },
+    "zone": {
+      "model": "zone"
+    },
+    "rpc": {
+      "model": "rpc"
+    },
+    "college_code": {
+      "type": "string"
+    },
+    "principal": {
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "tpos": {
+      "plugin": "users-permissions",
+      "collection": "user"
+    },
+    "stream_strength": {
+      "type": "component",
+      "repeatable": true,
+      "component": "college-stream-strength.streams-strength"
+    },
+    "is_blocked": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

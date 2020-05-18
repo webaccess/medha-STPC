@@ -1,0 +1,110 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations",
+      "handler": "contact.organizations",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/individual/:id/academic-history",
+      "handler": "contact.academicHistory",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/individual/:id/education",
+      "handler": "contact.education",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/create-organization",
+      "handler": "contact.createOrganization",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/create-individual",
+      "handler": "contact.createIndividual",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/individual/unapprove",
+      "handler": "contact.unapprove",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/individual/approve",
+      "handler": "contact.approve",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-individuals",
+      "handler": "contact.individuals",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations/:orgId",
+      "handler": "contact.organizationDetails",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-individuals/:individualId",
+      "handler": "contact.individualDetails",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations/:orgId/students",
+      "handler": "contact.organizationStudents",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-organizations/:orgId/admins",
+      "handler": "contact.organizationAdmins",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/zones",
+      "handler": "state.zones",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/rpcs",
+      "handler": "state.rpcs",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/block-organization",
+      "handler": "contact.blockOrganizations",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/unblock-organization",
+      "handler": "contact.unblockOrganizations",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/:id/get-organization-activites",
+      "handler": "contact.getOrganizationActivities",
+      "config": { "policies": [] }
+    }
+  ]
+}

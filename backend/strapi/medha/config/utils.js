@@ -26,6 +26,10 @@ function getFindOneResponse(response) {
   };
 }
 
+function getTotalPLuginRecord(model, plugin) {
+  return strapi.query(model, plugin).count();
+}
+
 function getTotalRecords(model) {
   return strapi.query(model).count();
 }
@@ -96,14 +100,22 @@ function sort(data, sort) {
   return result;
 }
 
+function rename(object, newKey, oldKey) {
+  object[newKey] = object[oldKey];
+  delete object[oldKey];
+}
+
 module.exports = {
   getRequestParams,
   getPaginatedResponse,
   getResponse,
   getFindOneResponse,
   getTotalRecords,
+  getTotalPLuginRecord,
   asyncForEach,
   paginate,
   getErrorResponse,
-  sort
+  sort,
+  rename,
+  merge: _.merge
 };

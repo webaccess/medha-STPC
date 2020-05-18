@@ -4,8 +4,10 @@
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/controllers.html#core-controllers)
  * to customize this controller
  */
-const utils = require("../../../config/utils.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
+const _ = require("lodash");
+const utils = require("../../../config/utils");
+
 module.exports = {
   /**
    * Retrieve Zones.
@@ -16,76 +18,29 @@ module.exports = {
    */
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
 
-    /**
-     * Public role for zones
-     */
-    if (!ctx.state.user) {
-      return strapi
-        .query("zone")
-        .model.query(
-          buildQuery({
-            model: strapi.models.zone,
-            filters
-          })
-        )
-        .fetchPage({
-          page: page,
-          pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("zone") : pageSize,
-          columns: ["id", "name"]
-        })
-        .then(res => {
-          return utils.getPaginatedResponse(res);
-        });
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
     }
 
-    /**
-     * Authenticated Role
-     */
+    let zones = await strapi.services.zone.getRoleWiseZones(
+      ctx.state.user,
+      filters
+    );
 
-    const { role, zone } = ctx.state.user;
-    if (role.name === "Medha Admin" || role.name === "Admin") {
-      return strapi
-        .query("zone")
-        .model.query(
-          buildQuery({
-            model: strapi.models.zone,
-            filters
-          })
-        )
-        .fetchPage({
-          page: page,
-          pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("zone") : pageSize
-        })
-        .then(res => {
-          return utils.getPaginatedResponse(res);
-        });
+    // Sorting ascending or descending on one or multiple fields
+    if (sort && sort.length) {
+      zones = utils.sort(zones, sort);
     }
 
-    if (role.name === "Zonal Admin") {
-      return strapi
-        .query("zone")
-        .model.query(
-          buildQuery({
-            model: strapi.models.zone,
-            filters
-          })
-        )
-        .where({
-          id: zone
-        })
-        .fetchPage({
-          page: page,
-          pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("zone") : pageSize
-        })
-        .then(res => {
-          return utils.getPaginatedResponse(res);
-        });
-    }
+    const response = utils.paginate(zones, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
   },
 
   /**

@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "feedback_sets",
+  "info": {
+    "name": "Feedback Set"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "activity": {
+      "plugin": "crm-plugin",
+      "model": "activity"
+    },
+    "event": {
+      "model": "event"
+    },
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
+    },
+    "question_set": {
+      "model": "question-set"
+    }
+  }
+}
