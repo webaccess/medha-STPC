@@ -10,6 +10,11 @@ const bookshelf = require("../../../config/bookshelf");
 const utils = require("../../../config/utils");
 const { PLUGIN } = require("../../../config/constants");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
+const { sanitizeEntity } = require("strapi-utils");
+const sanitizeUser = user =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model
+  });
 
 module.exports = {
   /**
@@ -395,15 +400,46 @@ module.exports = {
     const { orgId } = ctx.params;
     const response = await strapi
       .query("organization", PLUGIN)
-      .findOne({ id: orgId });
+      .findOne({ id: orgId }, [
+        "contact",
+        "contact.state",
+        "contact.district",
+        "zone",
+        "rpc",
+        "principal",
+        "tpos",
+        "stream_strength"
+      ]);
+
+    if (!response) {
+      return ctx.response.badRequest("College does not exist");
+    }
+
     return utils.getFindOneResponse(response);
   },
 
   individualDetails: async ctx => {
     const { individualId } = ctx.params;
+
     const response = await strapi
       .query("individual", PLUGIN)
-      .findOne({ id: individualId });
+      .findOne({ id: individualId }, [
+        "contact.user",
+        "organization",
+        "contact.user.role",
+        "contact.user.state",
+        "contact.user.zone",
+        "contact.user.rpc"
+      ]);
+
+    if (!response) {
+      return ctx.response.badRequest("User does not exist");
+    }
+
+    if (response.contact) {
+      response.contact.user = sanitizeUser(response.contact.user);
+    }
+
     return utils.getFindOneResponse(response);
   },
 
