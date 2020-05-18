@@ -29,7 +29,8 @@ module.exports = {
           "contact.user.zone",
           "contact.user.rpc",
           "organization.zone",
-          "organization.rpc"
+          "organization.rpc",
+          "organization.contact"
         ]
       })
       .then(res => {
