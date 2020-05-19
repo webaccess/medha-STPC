@@ -85,12 +85,14 @@ const ViewEducation = props => {
   });
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
-      ? Auth.getUserInfo().studentInfo.id
-      : Auth.getStudentIdFromCollegeAdmin();
+      ? Auth.getUserInfo().studentInfo.contact.id
+      : null;
+  console.log("studentID", studentInfo);
   const STUDENT_EDUCATION_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
-    `/${studentInfo}/education`;
+    strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
+    `/${studentInfo}/` +
+    strapiConstants.STRAPI_STUDENT_EDUCATION;
   const EDUCATION_FILTER = "id";
 
   useEffect(() => {
@@ -234,10 +236,14 @@ const ViewEducation = props => {
   };
 
   const deleteCell = event => {
+    console.log("deleteEducation", event.target);
     setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: event.target.id },
+      dataToDelete: {
+        id: event.target.id,
+        education: event.target.getAttribute("value")
+      },
       showModalDelete: true
     }));
     setLoaderStatus(false);
@@ -286,7 +292,7 @@ const ViewEducation = props => {
           <div className={classes.PaddingActionButton}>
             <DeleteGridIcon
               id={cell.id}
-              value={cell.title}
+              value={cell.qualification}
               onClick={deleteCell}
             />
           </div>
@@ -506,7 +512,7 @@ const ViewEducation = props => {
             <DeleteEducation
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}
-              id={formState.dataToDelete["id"]}
+              data={formState.dataToDelete}
               deleteEvent={isDeleteCellCompleted}
             />
           </Grid>

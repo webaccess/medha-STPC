@@ -94,7 +94,8 @@ const DeleteAcademicHistory = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Do yo want to delete academic year {props.data.academicYear}?
+                  Are you sure you want to delete academic year{" "}
+                  {props.data.academicYear}?
                 </Grid>
                 <Grid item xs>
                   <YellowButton
