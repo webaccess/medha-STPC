@@ -1,13 +1,14 @@
 export const STRAPI_LOGIN_PATH = "auth/local";
-export const STRAPI_DB_URL = process.env.REACT_APP_SERVER_URL;
-export const STRAPI_DB_URL_WITHOUT_HASH =
-  process.env.REACT_APP_SERVER_URL_WITHOUT_HASH;
+export const STRAPI_DB_URL = "http://localhost:1337/";
+export const STRAPI_DB_URL_WITHOUT_HASH = "http://localhost:1337";
 export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "crm-plugin/states";
 export const STRAPI_RPCS = "rpcs";
 export const STRAPI_COLLEGES = "crm-plugin/contact/get-organizations";
 export const STRAPI_ADD_COLLEGE = "crm-plugin/contact/create-organization";
 export const STRAPI_COLLEGES_INDERIECT_URL = "colleges";
+export const STRAPI_BLOCK_COLLEGE = "crm-plugin/contact/block-organization";
+export const STRAPI_UNBLOCK_COLLEGE = "crm-plugin/contact/unblock-organization";
 export const STRAPI_STREAMS = "streams";
 export const STRAPI_USERS = "users";
 export const STRAPI_CREATE_USERS = "crm-plugin/contact/create-individual";
