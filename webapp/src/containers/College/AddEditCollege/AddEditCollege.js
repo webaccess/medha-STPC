@@ -165,8 +165,12 @@ const AddEditCollege = props => {
         formState.values[state] =
           props["dataForEdit"]["contact"]["state"]["id"];
       }
-      if (props["dataForEdit"]["district"]) {
-        formState.values[district] = props["dataForEdit"]["district"]["id"];
+      if (
+        props["dataForEdit"]["contact"] &&
+        props["dataForEdit"]["contact"]["district"]
+      ) {
+        formState.values[district] =
+          props["dataForEdit"]["contact"]["district"]["id"];
       }
       if (props["dataForEdit"]["blocked"]) {
         formState.values[block] = props["dataForEdit"]["blocked"];
@@ -308,7 +312,9 @@ const AddEditCollege = props => {
         let array = [];
         tpoData.map(tpo => {
           for (let i in props["dataForEdit"]["tpos"]) {
-            if (props["dataForEdit"]["tpos"][i]["id"] === tpo["id"]) {
+            if (
+              props["dataForEdit"]["tpos"][i]["id"] === tpo["contact"]["id"]
+            ) {
               array.push(tpo);
             }
           }
@@ -418,7 +424,7 @@ const AddEditCollege = props => {
     if (get(CollegeFormSchema[eventName], "type") === "multi-select") {
       let finalValues = [];
       for (let i in value) {
-        finalValues.push(value[i]["id"]);
+        finalValues.push(value[i]["contact"]["id"]);
       }
       value = {
         id: finalValues
@@ -437,6 +443,20 @@ const AddEditCollege = props => {
         },
         isStateClearFilter: false
       }));
+      if (eventName === principal) {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value.contact.id
+          },
+          touched: {
+            ...formState.touched,
+            [eventName]: true
+          },
+          isStateClearFilter: false
+        }));
+      }
       if (eventName === state) {
         fetchZoneRpcDistrictData();
       }
@@ -1209,7 +1229,7 @@ const AddEditCollege = props => {
                       id={get(CollegeFormSchema[tpos], "id")}
                       multiple
                       options={user}
-                      getOptionLabel={option => option.username}
+                      getOptionLabel={option => option.contact.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(tpos, event, value);
                       }}
@@ -1242,7 +1262,7 @@ const AddEditCollege = props => {
                     <Autocomplete
                       id={get(CollegeFormSchema[principal], "id")}
                       options={user}
-                      getOptionLabel={option => option.username}
+                      getOptionLabel={option => option.contact.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(principal, event, value);
                       }}
@@ -1250,7 +1270,9 @@ const AddEditCollege = props => {
                       value={
                         user[
                           user.findIndex(function (item, i) {
-                            return item.id === formState.values[principal];
+                            return (
+                              item.contact.id === formState.values[principal]
+                            );
                           })
                         ] || null /** Please give a default " " blank value */
                       }
