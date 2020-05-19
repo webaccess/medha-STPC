@@ -919,7 +919,8 @@ const ROLES = {
           "organizationdetails",
           "approve",
           "unapprove",
-          "individuals"
+          "individuals",
+          "organizationevents"
         ],
         type: PLUGIN_NAME
       },

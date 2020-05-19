@@ -155,10 +155,10 @@ const ManageEvent = props => {
       if (auth.getUserInfo().role.name === "College Admin") {
         const EVENTS_FOR_COLLEGE_ADMIN =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_COLLEGES +
+          strapiConstants.STRAPI_CONTACTS +
           "/" +
-          auth.getUserInfo().studentInfo.organization.id +
-          "/event";
+          auth.getUserInfo().studentInfo.organization.contact.id +
+          "/get-organization-events";
         await serviceProviders
           .serviceProviderForGetRequest(
             EVENTS_FOR_COLLEGE_ADMIN,
@@ -255,10 +255,10 @@ const ManageEvent = props => {
           }
           let colleges = false;
           if (
-            data[i]["colleges"] &&
-            data[i]["colleges"].length === 1 &&
-            data[i]["colleges"][0]["id"] ===
-              auth.getUserInfo().studentInfo.organization.id
+            data[i]["contacts"] &&
+            data[i]["contacts"].length === 1 &&
+            data[i]["contacts"][0]["id"] ===
+              auth.getUserInfo().studentInfo.organization.contact.id
           ) {
             colleges = true;
           }

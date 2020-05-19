@@ -49,3 +49,4 @@ export const STRAPI_CHANGE_PASSWORD = "auth/reset-password";
 export const STRAPI_CURRENT_USER = "users/me";
 export const STRAPI_BLOCK_COLLEGE = "crm-plugin/contact/block-organization";
 export const STRAPI_UNBLOCK_COLLEGE = "crm-plugin/contact/unblock-organization";
+export const STRAPI_CONTACTS = "crm-plugin/contact";
