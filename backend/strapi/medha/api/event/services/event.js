@@ -54,13 +54,14 @@ module.exports = {
         state && Object.keys(state).length > 0 ? true : false;
 
       if (isRPCExist && isZoneExist && !isCollegesExist) {
-        if (rpc.id == college.rpc && zone.id == college.zone) return event;
+        if (rpc.id == college.rpc.id && zone.id == college.zone.id)
+          return event;
       } else if (isRPCExist && !isCollegesExist) {
-        if (rpc.id == college.rpc) return event;
+        if (rpc.id == college.rpc.id) return event;
       } else if (isZoneExist && !isCollegesExist) {
-        if (zone.id == college.zone) return event;
+        if (zone.id == college.zone.id) return event;
       } else if (isCollegesExist) {
-        const isExist = contacts.filter(c => c.id == college.id);
+        const isExist = contacts.filter(c => c.organization == college.id);
         if (isExist && isExist.length > 0) return event;
       } else {
         return event;

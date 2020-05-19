@@ -43,7 +43,7 @@ const STREAM_URL =
 
 const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
-const STUDENT_URL = strapiConstants.STRAPI_STUDENTS;
+const STUDENT_URL = strapiConstants.STRAPI_CONTACT_INDIVIDUAL;
 const SORT_FIELD_KEY = "_sort";
 const STUDENT_FILTER = "user.first_name_contains";
 const STREAM_FILTER = "stream.id";
