@@ -13,7 +13,7 @@ module.exports = async (ctx, next) => {
   if (!collegeId) {
     return ctx.response.badRequest("College id is missing");
   }
-
+  console.log(ctx.state.user);
   const { college, role } = ctx.state.user;
   if (role.name == "College Admin" && (!college || college != collegeId)) {
     console.log("1");
