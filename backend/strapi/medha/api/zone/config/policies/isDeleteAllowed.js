@@ -3,7 +3,7 @@
 /**
  * `isDeleteAllowed` policy.
  */
-
+const { PLUGIN } = require("../../../../config/constants");
 module.exports = async (ctx, next) => {
   const { id } = ctx.params;
   const zone = await strapi.query("zone").findOne({ id });
@@ -11,7 +11,9 @@ module.exports = async (ctx, next) => {
     return ctx.response.notFound("Zone does not exist");
   }
 
-  const college = await strapi.query("college").findOne({ zone: id });
+  const college = await strapi
+    .query("organization", PLUGIN)
+    .findOne({ zone: id });
   const user = await strapi
     .query("user", "users-permissions")
     .findOne({ zone: id });
