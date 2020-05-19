@@ -748,6 +748,7 @@ module.exports = {
 
     return utils.getFindOneResponse({});
   },
+
   async eligibleActivity(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
@@ -812,6 +813,7 @@ module.exports = {
       };
     }
   },
+
   async eligibleEvents(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
@@ -989,5 +991,40 @@ module.exports = {
       result: response.result,
       ...response.pagination
     };
+  },
+
+  /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async organizationEvents(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const college = await strapi.query("contact", PLUGIN).findOne({ id }, []);
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    /**
+     * Get all events for specific college
+     */
+    const filtered = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getEvents(college, events);
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
   }
 };

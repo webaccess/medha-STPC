@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "collectionName": "academic_years",
   "info": {
     "name": "Academic Year"
