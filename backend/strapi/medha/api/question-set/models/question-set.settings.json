@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "collectionName": "question_sets",
   "info": {
     "name": "Question Set"
