@@ -383,10 +383,10 @@ export const addActivity = (
 ) => {
   const data = {
     title: title,
-    activity_type: activity_type,
-    college: college,
-    start_date_time: start_date_time,
-    end_date_time: end_date_time,
+    activitytype: activity_type,
+    contact: college,
+    start_datetime: start_date_time,
+    end_datetime: end_date_time,
     education_year: education_year,
     address: address,
     description: description,
