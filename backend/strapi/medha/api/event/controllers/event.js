@@ -46,7 +46,6 @@ module.exports = {
   async findOne(ctx) {
     const { id } = ctx.params;
     let response = await strapi.query("event").findOne({ id });
-    console.log(response);
 
     const org = response.contacts.map(contact => {
       return contact.organization;
@@ -69,7 +68,6 @@ module.exports = {
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query);
 
-    console.log(filters);
     let sort;
     if (filters.sort) {
       sort = filters.sort;

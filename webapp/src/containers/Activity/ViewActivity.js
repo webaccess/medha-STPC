@@ -111,7 +111,7 @@ const ViewActivity = props => {
       const collegeId = college ? college.organization.id : null;
       url =
         strapiConstants.STRAPI_DB_URL +
-        strapiConstants.STRAPI_CONTACT +
+        strapiConstants.STRAPI_CONTACTS +
         `/${collegeId}/` +
         strapiConstants.STRAPI_COLLEGE_ACTIVITY;
     }
