@@ -902,7 +902,6 @@ module.exports = {
           isEligible = false;
         }
       });
-
       if (isEligible) {
         return event;
       }
@@ -979,13 +978,15 @@ module.exports = {
         if (event.hasAttended == _val) return event;
       });
     }
+    console.log(result);
 
     const currentDate = new Date();
     result = result.filter(event => {
-      const endDate = new Date(event.end_datetime);
+      const endDate = new Date(event.end_date_time);
 
       if (endDate.getTime() > currentDate.getTime()) return event;
     });
+
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
