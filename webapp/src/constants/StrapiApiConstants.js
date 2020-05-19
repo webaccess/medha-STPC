@@ -28,7 +28,6 @@ export const STRAPI_CHANGE_PASS_URL = "auth/reset-password";
 export const STRAPI_STUDENTS = "students";
 export const STRAPI_STUDENTS_DIRECT_URL = "crm-plugin/contact/get-individuals";
 export const STRAPI_STUDENTS_INDIVIDUAL_URL = "crm-plugin/contact/individual";
-
 export const STRAPI_UPLOAD = "upload";
 export const STRAPI_DELETE_UPLOAD = "file";
 export const STRAPI_ACADEMIC_YEARS = "academic-years";
@@ -49,3 +48,5 @@ export const STRAPI_ADMIN = "admins";
 export const STRAPI_PAST_EVENTS = "past-events";
 export const STRAPI_CHANGE_PASSWORD = "auth/reset-password";
 export const STRAPI_CURRENT_USER = "users/me";
+export const STRAPI_BLOCK_COLLEGE = "crm-plugin/contact/block-organization";
+export const STRAPI_UNBLOCK_COLLEGE = "crm-plugin/contact/unblock-organization";

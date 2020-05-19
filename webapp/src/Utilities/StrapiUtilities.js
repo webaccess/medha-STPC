@@ -162,8 +162,8 @@ export const addEvent = (
   return {
     title: title,
     description: description,
-    start_date_time: start_date_time,
-    end_date_time: end_date_time,
+    start_datetime: start_date_time,
+    end_datetime: end_date_time,
     address: address,
     zone: zone,
     rpc: rpc,

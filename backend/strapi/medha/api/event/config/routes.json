@@ -50,8 +50,8 @@
     },
     {
       "method": "GET",
-      "path": "/events/:id/students",
-      "handler": "event.students",
+      "path": "/events/:id/contact/individuals",
+      "handler": "event.individual",
       "config": {
         "policies": []
       }
@@ -66,10 +66,10 @@
     },
     {
       "method": "GET",
-      "path": "/events/:id/colleges/:collegeId/students",
-      "handler": "event.eligibleCollegeStudents",
+      "path": "/events/:id/organization/:organizationId/individuals",
+      "handler": "event.eligibleOrganizationIndividual",
       "config": {
-        "policies": ["isCollegeEventOwner"]
+        "policies": []
       }
     }
   ]
