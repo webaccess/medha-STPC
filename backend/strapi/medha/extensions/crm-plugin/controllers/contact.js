@@ -466,7 +466,6 @@ module.exports = {
         "stream_strength",
         "stream_strength.stream"
       ]);
-
     if (!response) {
       return ctx.response.badRequest("College does not exist");
     }
@@ -748,6 +747,7 @@ module.exports = {
 
     return utils.getFindOneResponse({});
   },
+
   async eligibleActivity(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
@@ -812,6 +812,7 @@ module.exports = {
       };
     }
   },
+
   async eligibleEvents(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
@@ -847,9 +848,11 @@ module.exports = {
     if (!student) {
       return ctx.response.notFound("Student does not exist");
     }
-
-    const { organization } = student;
     const { stream } = student;
+
+    const organization = await strapi
+      .query("organization", PLUGIN)
+      .findOne({ id: student.individual.organization });
 
     const events = await strapi
       .query("event")
@@ -866,11 +869,10 @@ module.exports = {
     /**Filtering organization */
     if (organization) {
       // Get student organization events
-      result = await strapi.services.events.getEvents(organization, events);
+      result = await strapi.services.event.getEvents(organization, events);
     } else {
       result = events;
     }
-
     /**Filtering stream */
 
     if (stream) {
@@ -900,7 +902,6 @@ module.exports = {
           isEligible = false;
         }
       });
-
       if (isEligible) {
         return event;
       }
@@ -977,17 +978,54 @@ module.exports = {
         if (event.hasAttended == _val) return event;
       });
     }
+    console.log(result);
 
     const currentDate = new Date();
     result = result.filter(event => {
-      const endDate = new Date(event.end_datetime);
+      const endDate = new Date(event.end_date_time);
 
       if (endDate.getTime() > currentDate.getTime()) return event;
     });
+
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
       ...response.pagination
     };
+  },
+
+  /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async organizationEvents(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    const college = await strapi.query("contact", PLUGIN).findOne({ id }, []);
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    /**
+     * Get all events for specific college
+     */
+    const filtered = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getEvents(college, events);
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
   }
 };

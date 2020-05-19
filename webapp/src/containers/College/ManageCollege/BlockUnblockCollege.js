@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Modal,
   Backdrop,
-  Fade,
+  Fade
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -17,15 +17,18 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
 import * as formUtilities from "../../../Utilities/FormUtilities";
 
-const COLLEGE_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
+const COLLEGE_BLOCK_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_BLOCK_COLLEGE;
 
-const BlockUnblockCollege = (props) => {
+const COLLEGE_UNBLOCK_URL =
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_UNBLOCK_COLLEGE;
+
+const BlockUnblockCollege = props => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDataBlockUnblock: false,
     isValid: false,
-    stateCounter: 0,
+    stateCounter: 0
   });
 
   /** Part for editing college */
@@ -41,12 +44,12 @@ const BlockUnblockCollege = (props) => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {},
       isDataBlockUnblock: false,
       isValid: false,
-      stateCounter: 0,
+      stateCounter: 0
     }));
     if (formState.isDataBlockUnblock) {
       props.closeModal(true, message);
@@ -55,7 +58,7 @@ const BlockUnblockCollege = (props) => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     /** CALL Put FUNCTION */
     setOpen(true);
     event.preventDefault();
@@ -68,21 +71,21 @@ const BlockUnblockCollege = (props) => {
 
   const blockUnblockData = () => {
     if (props.isMultiBlock || props.isMultiUnblock) {
-      let blockUnblock = "";
+      let COLLEGE_URL = "";
       if (props.isMultiUnblock) {
-        blockUnblock = "/unblock";
+        COLLEGE_URL = COLLEGE_UNBLOCK_URL;
       } else {
-        blockUnblock = "/block";
+        COLLEGE_URL = COLLEGE_BLOCK_URL;
       }
       let postData = {
-        ids: props.multiBlockCollegeIds,
+        ids: props.multiBlockCollegeIds
       };
       serviceProviders
-        .serviceProviderForPostRequest(COLLEGE_URL + blockUnblock, postData)
-        .then((res) => {
-          setFormState((formState) => ({
+        .serviceProviderForPostRequest(COLLEGE_URL, postData)
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDataBlockUnblock = true;
           if (props.isMultiUnblock) {
@@ -91,7 +94,7 @@ const BlockUnblockCollege = (props) => {
             handleCloseModal("Colleges have been blocked successfully");
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error");
           formState.isDataBlockUnblock = false;
           if (props.isMultiUnblock) {
@@ -105,60 +108,69 @@ const BlockUnblockCollege = (props) => {
           }
         });
     } else {
-      let blockUnblock = "";
-      if (props.dataToBlockUnblock["blocked"]) {
-        blockUnblock = "/unblock";
-      } else {
-        blockUnblock = "/block";
-      }
-      let ids = [];
-      ids.push(props.dataToBlockUnblock["id"]);
-      let postData = {
-        ids: ids,
-      };
-      serviceProviders
-        .serviceProviderForPostRequest(COLLEGE_URL + blockUnblock, postData)
-        .then((res) => {
-          setFormState((formState) => ({
-            ...formState,
-            isValid: true,
-          }));
-          formState.isDataBlockUnblock = true;
-          if (props.dataToBlockUnblock["blocked"]) {
+      if (props.dataToBlockUnblock["is_blocked"]) {
+        let ids = [];
+        ids.push(props.dataToBlockUnblock["id"]);
+        let postData = {
+          ids: ids
+        };
+        serviceProviders
+          .serviceProviderForPostRequest(COLLEGE_UNBLOCK_URL, postData)
+          .then(res => {
+            setFormState(formState => ({
+              ...formState,
+              isValid: true
+            }));
+            formState.isDataBlockUnblock = true;
             handleCloseModal(
               "College " +
                 props.dataToBlockUnblock["name"] +
                 " has been unblocked."
             );
-          } else {
-            handleCloseModal(
-              "College " +
-                props.dataToBlockUnblock["name"] +
-                " has been blocked."
-            );
-          }
-        })
-        .catch((error) => {
-          console.log("error");
-          formState.isDataBlockUnblock = false;
-          if (props.dataToBlockUnblock["blocked"]) {
+          })
+          .catch(error => {
+            console.log("error");
+            formState.isDataBlockUnblock = false;
             handleCloseModal(
               "An error has occured while unblocking college" +
                 props.dataToBlockUnblock["name"] +
                 ". Kindly, try again."
             );
-          } else {
+          });
+      } else {
+        let ids = [];
+        ids.push(props.dataToBlockUnblock["id"]);
+        let postData = {
+          ids: ids
+        };
+        serviceProviders
+          .serviceProviderForPostRequest(COLLEGE_BLOCK_URL, postData)
+          .then(res => {
+            setFormState(formState => ({
+              ...formState,
+              isValid: true
+            }));
+            formState.isDataBlockUnblock = true;
+            handleCloseModal(
+              "College " +
+                props.dataToBlockUnblock["name"] +
+                " has been blocked."
+            );
+          })
+          .catch(error => {
+            console.log("error");
+            formState.isDataBlockUnblock = false;
             handleCloseModal(
               "An error has occured while blocking college" +
                 props.dataToBlockUnblock["name"] +
                 ". Kindly, try again."
             );
-          }
-        });
+          });
+      }
     }
   };
 
-  const handleBlock = async (event) => {
+  const handleBlock = async event => {
     props.clearSelectedRow(true);
     props.closeModal();
   };
@@ -177,7 +189,7 @@ const BlockUnblockCollege = (props) => {
           closeAfterTransition
           BackdropComponent={Backdrop}
           BackdropProps={{
-            timeout: 500,
+            timeout: 500
           }}
         >
           <Fade in={props.showModal}>
@@ -190,7 +202,7 @@ const BlockUnblockCollege = (props) => {
                       : genericConstants.UNBLOCK_BUTTON_TEXT
                     : null}
                   {!props.isMultiBlock && !props.isMultiUnblock
-                    ? props.dataToBlockUnblock["blocked"]
+                    ? props.dataToBlockUnblock["is_blocked"]
                       ? genericConstants.UNBLOCK_BUTTON_TEXT
                       : genericConstants.BLOCK_BUTTON_TEXT
                     : null}
@@ -215,7 +227,7 @@ const BlockUnblockCollege = (props) => {
                           : "Are you sure you want to unblock all selected colleges"
                         : null}
                       {!props.isMultiBlock && !props.isMultiUnblock
-                        ? props.dataToBlockUnblock["blocked"]
+                        ? props.dataToBlockUnblock["is_blocked"]
                           ? "Are you sure you want to unblock college " +
                             props.dataToBlockUnblock["name"]
                           : "Are you sure you want to block college " +

@@ -135,6 +135,12 @@
       "path": "/activity/:id/download",
       "handler": "activity.download",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/:id/get-organization-events",
+      "handler": "contact.organizationEvents",
+      "config": { "policies": [] }
     }
   ]
 }

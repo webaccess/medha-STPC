@@ -1,33 +1,7 @@
 "use strict";
 
-/**
- * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/services.html#core-services)
- * to customize this service
- */
-const _ = require("lodash");
-const { PLUGIN } = require("../../../config/constants");
 module.exports = {
-  getIndividuals: async collegeId => {
-    const studentRole = await strapi
-      .query("role", "users-permissions")
-      .findOne({ name: "Student" });
-
-    // console.log(response);
-    //const userIds = response.map(user => user.contact.user);
-    //console.log(userIds);
-    const user = await strapi
-      .query("user", "users-permissions")
-      .find({ role: studentRole.id });
-
-    const userIds = user.map(user => user.contact.id);
-
-    let response = await strapi
-      .query("individual", PLUGIN)
-      .find({ contact: userIds, organization: collegeId });
-
-    return response;
-  },
-  getEvents: async (college, events) => {
+  getEvents: async (contact, events) => {
     const filtered = events.filter(event => {
       const { contacts, rpc, zone, state } = event;
 
@@ -54,14 +28,17 @@ module.exports = {
         state && Object.keys(state).length > 0 ? true : false;
 
       if (isRPCExist && isZoneExist && !isCollegesExist) {
-        if (rpc.id == college.rpc.id && zone.id == college.zone.id)
+        if (
+          rpc.id == contact.organization.rpc &&
+          zone.id == contact.organization.zone
+        )
           return event;
       } else if (isRPCExist && !isCollegesExist) {
-        if (rpc.id == college.rpc.id) return event;
+        if (rpc.id == contact.organization.rpc) return event;
       } else if (isZoneExist && !isCollegesExist) {
-        if (zone.id == college.zone.id) return event;
+        if (zone.id == contact.organization.zone) return event;
       } else if (isCollegesExist) {
-        const isExist = contacts.filter(c => c.organization == college.id);
+        const isExist = contacts.filter(c => c.id == contact.id);
         if (isExist && isExist.length > 0) return event;
       } else {
         return event;
