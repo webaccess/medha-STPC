@@ -9,8 +9,7 @@ import {
   TextField,
   Typography,
   FormHelperText,
-  Button,
-  Chip
+  Button
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
@@ -259,21 +258,6 @@ const AddEditEvent = props => {
         formState.showPreviewNoImage = true;
         formState.showAddPreviewNoImage = true;
       }
-
-      if (
-        formState.isCollegeAdmin &&
-        formState.isEditEvent &&
-        formState.values[state] &&
-        formState.values[rpc] &&
-        formState.values[zone] &&
-        formState.values.hasOwnProperty(college) &&
-        formState.values[college].length === 1 &&
-        formState.values[college].indexOf(collegeInfo.college.id) !== -1
-      ) {
-        formState.isCollegeAdminDoesNotHaveEditPreviliges = false;
-      } else {
-        formState.isCollegeAdminDoesNotHaveEditPreviliges = true;
-      }
     }
     formState.counter += 1;
   }
@@ -309,13 +293,13 @@ const AddEditEvent = props => {
   const prePopulateCollegeData = collegeData => {
     if (props["editEvent"]) {
       if (
-        props["dataForEdit"]["colleges"] &&
-        props["dataForEdit"]["colleges"].length
+        props["dataForEdit"]["contacts"] &&
+        props["dataForEdit"]["contacts"].length
       ) {
         let array = [];
         collegeData.map(college => {
-          for (let i in props["dataForEdit"]["colleges"]) {
-            if (props["dataForEdit"]["colleges"][i]["id"] === college["id"]) {
+          for (let i in props["dataForEdit"]["contacts"]) {
+            if (props["dataForEdit"]["contacts"][i]["id"] === college["id"]) {
               array.push(college);
             }
           }
@@ -325,8 +309,8 @@ const AddEditEvent = props => {
           dataToShowForCollegeMultiSelect: array
         }));
         let finalData = [];
-        for (let i in props["dataForEdit"]["colleges"]) {
-          finalData.push(props["dataForEdit"]["colleges"][i]["id"]);
+        for (let i in props["dataForEdit"]["contacts"]) {
+          finalData.push(props["dataForEdit"]["contacts"][i]["contact"]["id"]);
         }
         formState.values[college] = finalData;
       }
@@ -403,8 +387,8 @@ const AddEditEvent = props => {
         });
     } else if (formState.isCollegeAdmin) {
       let streamData = [];
-      auth.getUserInfo().studentInfo.stream.map(data => {
-        streamData.push(data["name"]);
+      auth.getUserInfo().studentInfo.organization.stream_strength.map(data => {
+        streamData.push(data["stream"]);
       });
       setStreams(streamData);
       prePopulateStreamsData(streamData);
@@ -1015,15 +999,20 @@ const AddEditEvent = props => {
   const setDataForCollegeAdmin = () => {
     formState.values[zone] = collegeInfo.zone.id;
     formState.values[rpc] = collegeInfo.rpc.id;
-    formState.values[college] = [collegeInfo.college.id];
+    formState.values[college] = [collegeInfo.college.contact.id];
     formState.values[state] = collegeInfo.state.id;
   };
 
   const postEventData = () => {
+    /** Setting quaalifications */
     let qualificationPercentageArray = [];
     qualificationPercentageArray = getDynamicBarData();
+
+    /** Setting educations */
     let educationPercentageArray = [];
     educationPercentageArray = getDynamicEducationData();
+
+    /** Data to post */
     let postData = databaseUtilities.addEvent(
       formState.values[eventName],
       draftToHtml(convertToRaw(editorState.getCurrentContent())),
@@ -1038,6 +1027,7 @@ const AddEditEvent = props => {
       formState.values[stream] ? formState.values[stream] : null,
       formState.values[state] ? formState.values[state] : null
     );
+    console.log(postData);
     if (formState.isEditEvent) {
       serviceProvider
         .serviceProviderForPutRequest(
@@ -1171,16 +1161,21 @@ const AddEditEvent = props => {
   };
 
   const handleMultiSelectChange = (eventName, event, value) => {
+    let multiarray = [];
+
     if (eventName === college) {
       formState.dataToShowForCollegeMultiSelect = value;
+      for (var i = 0; i < value.length; i++) {
+        multiarray.push(value[i]["contact"].id);
+      }
     }
     if (eventName === stream) {
       formState.dataToShowForStreamMultiSelect = value;
+      for (var i = 0; i < value.length; i++) {
+        multiarray.push(value[i].id);
+      }
     }
-    let multiarray = [];
-    for (var i = 0; i < value.length; i++) {
-      multiarray.push(value[i].id);
-    }
+
     if (value !== null) {
       setFormState(formState => ({
         ...formState,

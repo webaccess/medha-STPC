@@ -76,7 +76,7 @@ module.exports = {
               individual.organization !== null &&
               individual.organization.id !== null
             ) {
-              return (individual.organization.id = orgId);
+              return individual.organization.id == orgId;
             }
           })
           .reduce((result, individual) => {
@@ -119,7 +119,7 @@ module.exports = {
               individual.organization !== null &&
               individual.organization.id !== null
             ) {
-              return (individual.organization.id = orgId);
+              return individual.organization.id == orgId;
             }
           })
           .reduce((result, individual) => {

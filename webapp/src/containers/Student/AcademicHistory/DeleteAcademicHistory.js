@@ -24,7 +24,7 @@ const DeleteAcademicHistory = props => {
 
   if (props.showModal && !formState.documentCounter) {
     formState.documentCounter = 0;
-    formState.values[ACADEMIC_HISTORY_ID] = props.id;
+    formState.values[ACADEMIC_HISTORY_ID] = props.data.id;
     formState.isDeleteData = false;
   }
 
@@ -36,7 +36,6 @@ const DeleteAcademicHistory = props => {
       isValid: false,
       documentCounter: 0
     }));
-    console.log(formState.isDeleteData);
     if (formState.isDeleteData) {
       props.deleteEvent(true, data);
     } else {
@@ -53,14 +52,16 @@ const DeleteAcademicHistory = props => {
 
   const deleteData = () => {
     serviceProviders
-      .serviceProviderForDeleteRequest(DELETE_ACADEMIC_HISTORY_URL, props.id)
+      .serviceProviderForDeleteRequest(
+        DELETE_ACADEMIC_HISTORY_URL,
+        props.data.id
+      )
       .then(res => {
         setFormState(formState => ({
           ...formState,
           isValid: true
         }));
         formState.isDeleteData = true;
-        console.log(res.data);
         handleCloseModal(res.data.academic_year.name);
       })
       .catch(error => {
@@ -93,7 +94,8 @@ const DeleteAcademicHistory = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Do yo want to delete this field?
+                  Are you sure you want to delete academic year{" "}
+                  {props.data.academicYear}?
                 </Grid>
                 <Grid item xs>
                   <YellowButton

@@ -328,6 +328,26 @@ module.exports = {
           }
         }
 
+        if (
+          user.studentInfo.hasOwnProperty("organization") &&
+          user.studentInfo.organization !== null &&
+          user.studentInfo.organization.id
+        ) {
+          const orgInfo = await strapi
+            .query("organization", "crm-plugin")
+            .findOne({ id: user.studentInfo.organization.id }, [
+              "contact",
+              "contact.state",
+              "contact.district",
+              "zone",
+              "rpc",
+              "principal",
+              "tpos",
+              "stream_strength",
+              "stream_strength.stream"
+            ]);
+          user.studentInfo.organization = orgInfo;
+        }
         ctx.send({
           jwt: strapi.plugins["users-permissions"].services.jwt.issue({
             id: user.id

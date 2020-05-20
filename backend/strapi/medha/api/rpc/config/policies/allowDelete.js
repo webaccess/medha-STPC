@@ -3,13 +3,13 @@
 /**
  * `allowDelete` policy.
  */
-
+const { PLUGIN } = require("../../../../config/constants");
 module.exports = async (ctx, next) => {
   // Add your own logic here.
   console.log("In allowDelete policy.");
   const id = ctx.params.id;
 
-  const college = await strapi.query("college").find({ rpc: id });
+  const college = await strapi.query("organization", PLUGIN).find({ rpc: id });
 
   const user_1 = await strapi
     .query("user", "users-permissions")

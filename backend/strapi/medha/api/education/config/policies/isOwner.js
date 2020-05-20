@@ -29,16 +29,16 @@ module.exports = async (ctx, next) => {
       return ctx.response.badRequest("Year Of Passing is compulsory");
     }
 
-    const student = await strapi
+    const contact_1 = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: contact });
 
-    if (!student) {
-      return ctx.response.notFound("Student does not exist");
+    if (!contact_1) {
+      return ctx.response.notFound("Individual does not exist");
     }
 
     if (
-      !(student.user.id === ctx.state.user.id || role.name === "Medha Admin")
+      !(contact_1.user.id === ctx.state.user.id || role.name === "Medha Admin")
     ) {
       return ctx.response.unauthorized("You don't have permission to do this");
     }

@@ -3,7 +3,7 @@
 /**
  * `checkIfStudentExist` policy.
  */
-
+const { PLUGIN } = require("../../../../config/constants");
 module.exports = async (ctx, next) => {
   // Add your own logic here.
   const { id } = ctx.params;
@@ -14,7 +14,7 @@ module.exports = async (ctx, next) => {
   }
 
   const activityBatchAttendance = await strapi
-    .query("activity-batch-attendance")
+    .query("activityassignee", PLUGIN)
     .find({ activity_batch: id });
 
   if (activityBatchAttendance.length > 0) {

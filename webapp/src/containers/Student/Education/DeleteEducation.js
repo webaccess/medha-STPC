@@ -22,9 +22,10 @@ const DeleteEducation = props => {
     values: {}
   });
 
+  console.log("props----->", props);
   if (props.showModal && !formState.educationCounter) {
     formState.educationCounter = 0;
-    formState.values[EDUCATION_ID] = props.id;
+    formState.values[EDUCATION_ID] = props.data.id;
     formState.isDeleteData = false;
   }
 
@@ -53,14 +54,13 @@ const DeleteEducation = props => {
 
   const deleteData = () => {
     serviceProviders
-      .serviceProviderForDeleteRequest(EDUCATION_URL, props.id)
+      .serviceProviderForDeleteRequest(EDUCATION_URL, props.data.id)
       .then(res => {
         setFormState(formState => ({
           ...formState,
           isValid: true
         }));
         formState.isDeleteData = true;
-        console.log(res.data);
         handleCloseModal(res.data.qualification);
       })
       .catch(error => {
@@ -93,7 +93,8 @@ const DeleteEducation = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Do yo want to delete this field?
+                  Are you sure you want to delete education{" "}
+                  {props.data.education} ?
                 </Grid>
                 <Grid item xs>
                   <YellowButton

@@ -47,7 +47,6 @@ const ViewCollege = props => {
   const classes = useStyles();
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
-
   const [formState, setFormState] = useState({
     collegeDetails: [],
     streams: [],
@@ -71,7 +70,7 @@ const ViewCollege = props => {
 
   async function getCollegeData() {
     setLoaderStatus(true);
-  const studentInfo =
+    const studentInfo =
       auth.getUserInfo() !== null &&
       auth.getUserInfo().role.name === "College Admin"
         ? auth.getUserInfo().studentInfo.id

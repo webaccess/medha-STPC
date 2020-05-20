@@ -466,7 +466,6 @@ module.exports = {
         "stream_strength",
         "stream_strength.stream"
       ]);
-
     if (!response) {
       return ctx.response.badRequest("College does not exist");
     }
@@ -849,9 +848,11 @@ module.exports = {
     if (!student) {
       return ctx.response.notFound("Student does not exist");
     }
-
-    const { organization } = student;
     const { stream } = student;
+
+    const organization = await strapi
+      .query("organization", PLUGIN)
+      .findOne({ id: student.individual.organization });
 
     const events = await strapi
       .query("event")
@@ -868,11 +869,10 @@ module.exports = {
     /**Filtering organization */
     if (organization) {
       // Get student organization events
-      result = await strapi.services.events.getEvents(organization, events);
+      result = await strapi.services.event.getEvents(organization, events);
     } else {
       result = events;
     }
-
     /**Filtering stream */
 
     if (stream) {
@@ -902,7 +902,6 @@ module.exports = {
           isEligible = false;
         }
       });
-
       if (isEligible) {
         return event;
       }
@@ -979,13 +978,15 @@ module.exports = {
         if (event.hasAttended == _val) return event;
       });
     }
+    console.log(result);
 
     const currentDate = new Date();
     result = result.filter(event => {
-      const endDate = new Date(event.end_datetime);
+      const endDate = new Date(event.end_date_time);
 
       if (endDate.getTime() > currentDate.getTime()) return event;
     });
+
     const response = utils.paginate(result, page, pageSize);
     return {
       result: response.result,
