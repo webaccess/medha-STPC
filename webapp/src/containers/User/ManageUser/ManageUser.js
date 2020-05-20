@@ -760,13 +760,11 @@ const ManageUser = props => {
 
   const getDataForEdit = async id => {
     setLoaderStatus(true);
-    let paramsForUsers = {
-      id: id
-    };
+    let EDIT_USER_URL = USER_URL + "/" + id;
     await serviceProviders
-      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
+      .serviceProviderForGetRequest(EDIT_USER_URL)
       .then(res => {
-        let editData = res.data.result[0];
+        let editData = res.data.result;
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_USER,

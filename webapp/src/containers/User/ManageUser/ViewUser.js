@@ -45,17 +45,16 @@ const ViewUser = props => {
     let paramsForUser;
 
     if (auth.getUserInfo().role.name === "Medha Admin") {
-      paramsForUser = {
-        id: props["location"]["dataForEdit"]
-      };
+      paramsForUser = props["location"]["dataForEdit"];
     }
-    if (paramsForUser.id !== undefined) {
+    let VIEW_USER_URL = USER_URL + "/" + paramsForUser;
+    if (paramsForUser !== undefined) {
       await serviceProviders
-        .serviceProviderForGetRequest(USER_URL, paramsForUser)
+        .serviceProviderForGetRequest(VIEW_USER_URL)
         .then(res => {
           setFormState(formState => ({
             ...formState,
-            userDetails: res.data.result[0]
+            userDetails: res.data.result
           }));
         })
         .catch(error => {
@@ -75,13 +74,11 @@ const ViewUser = props => {
 
   const getDataForEdit = async id => {
     setLoaderStatus(true);
-    let paramsForUsers = {
-      id: id
-    };
+    let EDIT_USER_URL = USER_URL + "/" + id;
     await serviceProviders
-      .serviceProviderForGetRequest(USER_URL, paramsForUsers)
+      .serviceProviderForGetRequest(EDIT_USER_URL)
       .then(res => {
-        let editData = res.data.result[0];
+        let editData = res.data.result;
         /** move to edit page */
         history.push({
           pathname: routeConstants.EDIT_USER,
@@ -94,7 +91,6 @@ const ViewUser = props => {
       });
     setLoaderStatus(false);
   };
-  console.log(formState.userDetails);
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -127,7 +123,15 @@ const ViewUser = props => {
                   <ReadOnlyTextField
                     id="email"
                     label="Email"
-                    defaultValue={formState.userDetails.email}
+                    defaultValue={
+                      formState.userDetails.contact
+                        ? formState.userDetails.contact.user
+                          ? formState.userDetails.contact.user.email
+                            ? formState.userDetails.contact.user.email
+                            : ""
+                          : ""
+                        : ""
+                    }
                   />
                 </Grid>
               </Grid>
@@ -136,7 +140,13 @@ const ViewUser = props => {
                   <ReadOnlyTextField
                     id="contact"
                     label="Contact"
-                    defaultValue={formState.userDetails.contact_number}
+                    defaultValue={
+                      formState.userDetails.contact
+                        ? formState.userDetails.contact.phone
+                          ? formState.userDetails.contact.phone
+                          : ""
+                        : ""
+                    }
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
@@ -144,8 +154,13 @@ const ViewUser = props => {
                     id="role"
                     label="Role"
                     defaultValue={
-                      formState.userDetails.role &&
-                      formState.userDetails.role.name
+                      formState.userDetails.contact
+                        ? formState.userDetails.contact.user
+                          ? formState.userDetails.contact.user.role
+                            ? formState.userDetails.contact.user.role.name
+                            : ""
+                          : ""
+                        : ""
                     }
                   />
                 </Grid>
@@ -158,7 +173,15 @@ const ViewUser = props => {
                   <ReadOnlyTextField
                     id="username"
                     label="Username"
-                    defaultValue={formState.userDetails.username}
+                    defaultValue={
+                      formState.userDetails.contact
+                        ? formState.userDetails.contact.user
+                          ? formState.userDetails.contact.user.username
+                            ? formState.userDetails.contact.user.username
+                            : ""
+                          : ""
+                        : ""
+                    }
                   />
                 </Grid>
                 <Grid item md={6} xs={12}></Grid>
@@ -169,13 +192,32 @@ const ViewUser = props => {
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={formState.userDetails.blocked || false}
-                      value={formState.userDetails.blocked}
+                      checked={
+                        formState.userDetails.contact
+                          ? formState.userDetails.contact.user
+                            ? formState.userDetails.contact.user.blocked ||
+                              false
+                            : ""
+                          : ""
+                      }
+                      value={
+                        formState.userDetails.contact
+                          ? formState.userDetails.contact.user
+                            ? formState.userDetails.contact.user.blocked
+                            : ""
+                          : ""
+                      }
                       disabled={true}
                     />
                   }
                   label={
-                    formState.userDetails.blocked ? "Blocked" : "Unblocked"
+                    formState.userDetails.contact
+                      ? formState.userDetails.contact.user
+                        ? formState.userDetails.contact.user.blocked
+                          ? "Blocked"
+                          : "Unblocked"
+                        : ""
+                      : ""
                   }
                 />
               </FormGroup>
@@ -188,8 +230,13 @@ const ViewUser = props => {
                     id="state"
                     label="State"
                     defaultValue={
-                      formState.userDetails.state &&
-                      formState.userDetails.state.name
+                      formState.userDetails.contact
+                        ? formState.userDetails.contact.user
+                          ? formState.userDetails.contact.user.state
+                            ? formState.userDetails.contact.user.state.name
+                            : ""
+                          : ""
+                        : ""
                     }
                   />
                 </Grid>
@@ -198,8 +245,13 @@ const ViewUser = props => {
                     id="zone"
                     label="Zone"
                     defaultValue={
-                      formState.userDetails.zone &&
-                      formState.userDetails.zone.name
+                      formState.userDetails.contact
+                        ? formState.userDetails.contact.user
+                          ? formState.userDetails.contact.user.zone
+                            ? formState.userDetails.contact.user.zone.name
+                            : ""
+                          : ""
+                        : ""
                     }
                   />
                 </Grid>
@@ -210,8 +262,13 @@ const ViewUser = props => {
                     id="rpc"
                     label="RPC"
                     defaultValue={
-                      formState.userDetails.rpc &&
-                      formState.userDetails.rpc.name
+                      formState.userDetails.contact
+                        ? formState.userDetails.contact.user
+                          ? formState.userDetails.contact.user.rpc
+                            ? formState.userDetails.contact.user.rpc.name
+                            : ""
+                          : ""
+                        : ""
                     }
                   />
                 </Grid>
@@ -220,8 +277,11 @@ const ViewUser = props => {
                     id="college"
                     label="College"
                     defaultValue={
-                      formState.userDetails.college &&
-                      formState.userDetails.college.name
+                      formState.userDetails.organization
+                        ? formState.userDetails.organization.name
+                          ? formState.userDetails.organization.name
+                          : ""
+                        : ""
                     }
                   />
                 </Grid>
