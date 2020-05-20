@@ -7,7 +7,7 @@
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const _ = require("lodash");
 const utils = require("../../../config/utils");
-
+const { PLUGIN } = require("../../../config/constants");
 module.exports = {
   /**
    * Retrieve Zones.
@@ -53,10 +53,10 @@ module.exports = {
     const filters = convertRestQueryParams(query);
 
     return strapi
-      .query("college")
+      .query("organization", PLUGIN)
       .model.query(
         buildQuery({
-          model: strapi.models.college,
+          model: strapi.plugins["crm-plugin"].models["organization"],
           filters
         })
       )
