@@ -144,8 +144,26 @@
     },
     {
       "method": "GET",
+      "path": "/contact/:id/get-individual-registered-events",
+      "handler": "contact.individualRegisteredEvents",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
       "path": "/activity/:id/students",
       "handler": "activity.student",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/block-individual",
+      "handler": "contact.blockIndividuals",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "POST",
+      "path": "/contact/unblock-individual",
+      "handler": "contact.unblockIndividuals",
       "config": { "policies": [] }
     }
   ]
