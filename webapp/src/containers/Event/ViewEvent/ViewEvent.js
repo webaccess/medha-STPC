@@ -50,15 +50,15 @@ const ViewEvent = props => {
     if (auth.getUserInfo().role.name === "Student") {
       const apiToCheckStudentRegistration =
         strapiConstants.STRAPI_DB_URL +
-        strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
+        strapiConstants.STRAPI_CONTACT_URL +
         "/" +
-        auth.getUserInfo().studentInfo.id +
-        "/registeredevents";
+        auth.getUserInfo().studentInfo.contact.id +
+        "/get-individual-registered-events";
       await serviceProviders
         .serviceProviderForGetRequest(apiToCheckStudentRegistration)
         .then(res => {
           let registeredEvents = [];
-          res.data.map(data => {
+          res.data.result.map(data => {
             registeredEvents.push(data.event.id);
           });
           let isEventRegistered = checkEventRegistered(registeredEvents);
@@ -77,11 +77,11 @@ const ViewEvent = props => {
   async function getEventDetails() {
     let paramsForEvent = null;
     if (auth.getUserInfo() && auth.getUserInfo().role) {
-      if (auth.getUserInfo().role.name === "Medha Admin") {
-        paramsForEvent = props["location"]["dataForView"];
-      } else if (auth.getUserInfo().role.name === "Student") {
-        paramsForEvent = props["location"]["dataForView"];
-      } else if (auth.getUserInfo().role.name === "College Admin") {
+      if (
+        auth.getUserInfo().role.name === "Medha Admin" ||
+        auth.getUserInfo().role.name === "Student" ||
+        auth.getUserInfo().role.name === "College Admin"
+      ) {
         paramsForEvent = props["location"]["dataForView"];
       }
       if (paramsForEvent !== null && paramsForEvent !== undefined) {
@@ -372,7 +372,7 @@ const ViewEvent = props => {
           modalClose={modalClose}
           eventId={props["location"]["dataForView"]}
           eventTitle={formState.eventDetails["title"]}
-          userId={auth.getUserInfo().studentInfo.id}
+          userId={auth.getUserInfo().studentInfo.contact.id}
         />
       ) : null}
     </Grid>

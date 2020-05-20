@@ -61,7 +61,7 @@ const AddStudentToRecruitmentDrive = props => {
     isClearResetFilter: false,
     isFilterSearch: false,
     texttvalue: "",
-    collegeId: auth.getUserInfo()["college"]["id"],
+    collegeId: auth.getUserInfo()["studentInfo"]["organization"]["id"],
     /*** Hire */
     dataToHire: {},
     isHired: false,
@@ -142,24 +142,28 @@ const AddStudentToRecruitmentDrive = props => {
       ...formState,
       isDataLoading: true
     }));
+
+    /** Url which gives eligible students for an event */
     let get_student_list =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_EVENTS +
       "/" +
       formState.eventId +
       "/" +
-      strapiConstants.STRAPI_COLLEGES_INDERIECT_URL +
+      strapiConstants.STRAPI_ORGANIZATION +
       "/" +
       formState.collegeId +
       "/" +
-      strapiConstants.STRAPI_STUDENTS;
+      strapiConstants.STRAPI_INDIVIDUALS;
+
+    /** Url to check for registered students of an event */
     let url_for_check_registration =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_EVENTS +
       "/" +
       formState.eventId +
       "/" +
-      strapiConstants.STRAPI_STUDENTS;
+      strapiConstants.STRAPI_CONTACT_INDIVIDUAL;
     if (formState.eventId !== undefined && formState.eventId !== null) {
       let params = {
         pageSize: -1
@@ -171,7 +175,7 @@ const AddStudentToRecruitmentDrive = props => {
           res.data.result.map(data => {
             alreadyRegisteredStudentsId.push(data["id"]);
           });
-          paramsForStudent["id_nin"] = alreadyRegisteredStudentsId;
+          paramsForStudent["contact.id_nin"] = alreadyRegisteredStudentsId;
           await serviceProvider
             .serviceProviderForGetRequest(get_student_list, paramsForStudent)
             .then(res => {

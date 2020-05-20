@@ -458,6 +458,6 @@ export const addActivityBatch = (name, students, dateFrom, dateTo) => {
 export const studentEventRegistration = (event, student) => {
   return {
     event: event,
-    student: student
+    contact: student
   };
 };

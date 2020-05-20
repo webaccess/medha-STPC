@@ -58,12 +58,12 @@ const MarkAttaindance = props => {
     var body;
     if (props.isPresent) {
       body = {
-        attendance_verified: true
+        is_attendance_verified: true
       };
     }
     if (props.isAbsent) {
       body = {
-        attendance_verified: false
+        is_attendance_verified: false
       };
     }
     serviceProviders

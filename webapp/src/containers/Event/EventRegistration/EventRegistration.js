@@ -45,11 +45,11 @@ const RegisterEvent = props => {
     formState.fromAddStudentToRecruitmentDrive = props.fromAddStudentToRecruitmentDrive
       ? true
       : false;
+    console.log(formState.values[EVENT_ID], formState.values[STUDENT_ID]);
     formState.stateCounter += 1;
   }
 
   const handleSubmit = async event => {
-    props.clearSelectedRow(true);
     event.persist();
     setOpen(true);
     if (formState.fromAddStudentToRecruitmentDrive) {
