@@ -160,5 +160,12 @@ module.exports = {
       "crm-plugin"
     ].services.activity.createBatchWiseStudentList(activityBatches);
     return utils.getFindOneResponse(batchWiseStudentList);
+  },
+  async delete(ctx) {
+    console.log("IN controller");
+    const { id } = ctx.params;
+    const activity = await strapi.query("activity", PLUGIN).delete({ id });
+
+    return utils.getFindOneResponse(activity);
   }
 };
