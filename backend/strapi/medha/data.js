@@ -1072,7 +1072,9 @@ const ROLES = {
           "education",
           "academichistory",
           "eligibleEvents",
-          "eligibleActivity"
+          "eligibleActivity",
+          "individualregisteredevents",
+          "individualdetails"
         ],
         type: PLUGIN_NAME
       },

@@ -488,7 +488,9 @@ module.exports = {
         "contact.user.role",
         "contact.user.state",
         "contact.user.zone",
-        "contact.user.rpc"
+        "contact.user.rpc",
+        "contact.district",
+        "stream"
       ]);
 
     if (!response) {
