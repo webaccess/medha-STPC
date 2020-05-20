@@ -141,6 +141,12 @@
       "path": "/contact/:id/get-organization-events",
       "handler": "contact.organizationEvents",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/activity/:id/students",
+      "handler": "activity.student",
+      "config": { "policies": [] }
     }
   ]
 }

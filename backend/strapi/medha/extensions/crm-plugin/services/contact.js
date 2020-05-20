@@ -46,5 +46,35 @@ module.exports = {
     });
 
     return filtered;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all student for given college id
+   */
+  getUsers: async collegeId => {
+    const studentRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Student" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: studentRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(
+        user =>
+          user.contact.individual &&
+          user.contact.individual.organization &&
+          user.contact.individual.organization.contact == collegeId
+      )
+      .map(user => user.id);
+    return userIds;
   }
 };
