@@ -329,6 +329,7 @@ module.exports = {
         }
 
         if (
+          user.hasOwnProperty("studentInfo") &&
           user.studentInfo.hasOwnProperty("organization") &&
           user.studentInfo.organization !== null &&
           user.studentInfo.organization.id

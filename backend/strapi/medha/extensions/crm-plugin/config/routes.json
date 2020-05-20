@@ -10,13 +10,15 @@
       "method": "GET",
       "path": "/contact/individual/:id/academic-history",
       "handler": "contact.academicHistory",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.isIndividual"] }
     },
     {
       "method": "GET",
       "path": "/contact/individual/:id/education",
       "handler": "contact.education",
-      "config": { "policies": [] }
+      "config": {
+        "policies": ["global.isIndividual"]
+      }
     },
     {
       "method": "POST",
@@ -28,7 +30,7 @@
       "method": "POST",
       "path": "/contact/create-individual",
       "handler": "contact.createIndividual",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.validateIndividual"] }
     },
     {
       "method": "POST",
@@ -110,7 +112,7 @@
       "method": "GET",
       "path": "/contact/individuals/:id/activities",
       "handler": "contact.eligibleActivity",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.isIndividual"] }
     },
     {
       "method": "GET",
@@ -128,7 +130,7 @@
       "method": "GET",
       "path": "/contact/individuals/:id/events",
       "handler": "contact.eligibleEvents",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.isIndividual"] }
     },
     {
       "method": "GET",
@@ -141,6 +143,22 @@
       "path": "/contact/:id/get-organization-events",
       "handler": "contact.organizationEvents",
       "config": { "policies": [] }
+    },
+    {
+      "method": "DELETE",
+      "path": "/activities/:id",
+      "handler": "activity.delete",
+      "config": {
+        "policies": ["global.checkIfBatchExist"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/activities",
+      "handler": "activity.create",
+      "config": {
+        "policies": ["global.addAcademicYear"]
+      }
     },
     {
       "method": "GET",
