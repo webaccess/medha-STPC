@@ -73,7 +73,7 @@ const ViewCollege = props => {
     const studentInfo =
       auth.getUserInfo() !== null &&
       auth.getUserInfo().role.name === "College Admin"
-        ? auth.getUserInfo().studentInfo.id
+        ? auth.getUserInfo().studentInfo.organization.id
         : auth.getUserInfo() !== null &&
           auth.getUserInfo().role.name === "Medha Admin"
         ? props["location"]["dataForEdit"]
