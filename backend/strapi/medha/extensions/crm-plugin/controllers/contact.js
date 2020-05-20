@@ -1027,5 +1027,48 @@ module.exports = {
     ].services.contact.getEvents(college, events);
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
     return { result, ...pagination };
+  },
+
+  /**
+   * Registered events info
+   *
+   */
+  async individualRegisteredEvents(ctx) {
+    const { id } = ctx.params;
+
+    const contact = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!contact) {
+      return ctx.response.notFound("Contact does not exist");
+    }
+
+    const response = await strapi
+      .query("event-registration")
+      .find({ contact: id });
+
+    return utils.getFindOneResponse(response);
+  },
+
+  /**
+   * Blocking user will block individual from login
+   * user.blocked = true
+   * @param {Object} ctx
+   */
+  async blockIndividuals(ctx) {
+    return await strapi.plugins[PLUGIN].services.contact.blockUnblockUsers(
+      ctx,
+      true
+    );
+  },
+
+  /**
+   * Unblocking user will unblock individual from login
+   * user.blocked = false
+   * @param {Object} ctx
+   */
+  async unblockIndividuals(ctx) {
+    return await strapi.plugins[PLUGIN].services.contact.blockUnblockUsers(
+      ctx,
+      false
+    );
   }
 };

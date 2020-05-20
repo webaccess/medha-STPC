@@ -9,6 +9,12 @@ const {
   sanitizeEntity
 } = require("strapi-utils");
 
+const sanitizeUser = user =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model
+  });
+
+const _ = require("lodash");
 module.exports = {
   /**
    * TODO policy to check required fields
@@ -160,5 +166,138 @@ module.exports = {
       "crm-plugin"
     ].services.activity.createBatchWiseStudentList(activityBatches);
     return utils.getFindOneResponse(batchWiseStudentList);
+  },
+
+  /**
+   *
+   * @param {*} ctx
+   * @return {Array}
+   *
+   * 1) Get all students if no activity batch is created
+   * 2) If activity batch is created return student who are not in that batch
+   */
+  async student(ctx) {
+    const { id } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+
+    const { student_id, stream_id } = query;
+
+    const activity = await strapi.query("activity", PLUGIN).findOne({ id });
+
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+
+    const collegeId = activity.contact && activity.contact.id;
+    const college = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: collegeId });
+
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    /**
+     * Check no activity batch is created for given activity then return all students
+     * If activity batch exist then return student other than activity batch students
+     */
+    const activityBatch = await strapi
+      .query("activity-batch")
+      .find({ activity: activity.id });
+
+    const activityBatchIds = activityBatch.map(ab => ab.id);
+
+    const activityBatchAttendance = await strapi
+      .query("activityassignee", PLUGIN)
+      .find({ activity_batch_in: activityBatchIds });
+
+    let allStudents;
+    if (activityBatch.length && activityBatchAttendance.length) {
+      // Only get college student for given college Id
+      // Get all student who are not in any activity batch
+      const userIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getUsers(collegeId);
+      const studentIds = activityBatchAttendance.map(ab => ab.contact.id);
+
+      let students = await strapi
+        .query("contact", PLUGIN)
+        .find({ user_in: userIds, id_nin: studentIds });
+
+      students = students.map(student => {
+        student.user = sanitizeUser(student.user);
+        return student;
+      });
+
+      allStudents = students;
+    } else {
+      // Get all users Ids belongs to college
+      const userIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getUsers(collegeId);
+
+      let students = await strapi
+        .query("contact", PLUGIN)
+        .find({ user_in: userIds });
+
+      console.log(students);
+      students = students.map(student => {
+        student.user = sanitizeUser(student.user);
+        return student;
+      });
+
+      allStudents = students;
+    }
+
+    console.log(allStudents);
+    // Filter student with stream and education year
+    let isStreamEligible, isEducationEligible;
+
+    let filtered = [];
+    await utils.asyncForEach(allStudents, async student => {
+      const { stream } = student.individual;
+
+      if (stream) {
+        const { streams } = activity;
+        const streamIds = streams.map(s => s.id);
+        if (streamIds.length == 0 || _.includes(streamIds, stream)) {
+          isStreamEligible = true;
+        } else {
+          isStreamEligible = false;
+        }
+      } else {
+        isStreamEligible = false;
+      }
+
+      const academicHistory = await strapi
+        .query("academic-history")
+        .find({ contact: student.id });
+
+      const { education_year } = activity;
+      isEducationEligible = true;
+
+      const isEducationPresent = academicHistory.find(
+        ah => ah.education_year == education_year
+      );
+
+      if (!isEducationPresent) {
+        isEducationEligible = false;
+      }
+
+      if (isStreamEligible && isEducationEligible) {
+        filtered.push(student);
+      }
+    });
+
+    if (student_id) {
+      filtered = filtered.filter(student => student.id == student_id);
+    }
+
+    if (stream_id) {
+      filtered = filtered.filter(student => student.stream.id == stream_id);
+    }
+
+    const response = utils.paginate(filtered, page, pageSize);
+    return { result: response.result, ...response.pagination };
   }
 };
