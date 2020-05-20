@@ -43,7 +43,7 @@ import LoaderContext from "../../../../context/LoaderContext";
 
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
-const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+// const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_FILTER = "user.first_name_contains";
 const STREAM_FILTER = "stream.id";
 const VERIFIEDBYCOLLEGE = "verifiedByCollege";
@@ -109,8 +109,6 @@ const ManageStudents = props => {
     toggleCleared: false
   });
 
-  console.log("collegeID", auth.getUserInfo());
-
   useEffect(() => {
     getStudentData(10, 1);
     getStreamData();
@@ -159,7 +157,6 @@ const ManageStudents = props => {
         ...formState,
         isDataLoading: true
       }));
-
       serviceProviders
         .serviceProviderForGetRequest(STUDENTS_URL, paramsForUsers)
         .then(res => {
@@ -217,23 +214,23 @@ const ManageStudents = props => {
         tempIndividualStudentData["id"] = data[i]["id"];
         tempIndividualStudentData["userId"] = data[i]["contact"]["user"]["id"];
         tempIndividualStudentData["name"] =
-          data[i]["first_name"] + " " + data[i]["last_name"];
+          data[i]["contact"] && data[i]["contact"]["name"]
+            ? data[i]["contact"]["name"]
+            : "";
         tempIndividualStudentData["first_name"] = data[i]["first_name"];
-        tempIndividualStudentData["streamId"] = data[i]["stream"]["id"];
-        tempIndividualStudentData["stream"] = data[i]["stream"]["name"];
-        // if (data[i]["qualifications"]) {
-        //   for (let j in data[i]["qualifications"]) {
-        //     educationYear.push(data[i]["qualifications"][j]["education_year"]);
-        //   }
-        //   tempIndividualStudentData["qualifications"] = educationYear;
-        // } else {
-        //   tempIndividualStudentData["qualifications"] = [];
-        // }
+        tempIndividualStudentData["streamId"] =
+          data[i]["stream"] && data[i]["stream"]["id"]
+            ? data[i]["stream"]["id"]
+            : "";
+        tempIndividualStudentData["stream"] =
+          data[i]["stream"] && data[i]["stream"]["name"]
+            ? data[i]["stream"]["name"]
+            : "";
+
         tempIndividualStudentData["qualifications"] = [];
         tempIndividualStudentData["Approved"] = data[i]["is_verified"];
         studentDataArray.push(tempIndividualStudentData);
       }
-      console.log(studentDataArray);
       return studentDataArray;
     }
   };
@@ -241,33 +238,41 @@ const ManageStudents = props => {
   /** Edit Student */
   const editCell = event => {
     auth.setStudentInfoForEditingFromCollegeAdmin(
-      event.target.getAttribute("userId")
+      event.target.getAttribute("id")
     );
     auth.setStudentIdFromCollegeAdmin(event.target.getAttribute("id"));
     setFormState(formState => ({
       ...formState,
       editedStudentName: event.target.getAttribute("value")
     }));
-    getEditStudentData(event.target.getAttribute("userId"));
+    getEditStudentData(event.target.getAttribute("id"));
   };
 
   const getEditStudentData = async userId => {
     setLoaderStatus(true);
-    await serviceProviders
-      .serviceProviderForGetOneRequest(USERS_URL, userId)
-      .then(res => {
-        setLoaderStatus(false);
-        history.push({
-          pathname: routeConstants.EDIT_PROFILE,
-          dataForEdit: res.data.result,
-          collegeAdminRoute: true,
-          editStudent: true
+    if (userId !== null) {
+      let USERS_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_VIEW_USERS +
+        "/" +
+        userId;
+
+      await serviceProviders
+        .serviceProviderForGetRequest(USERS_URL)
+        .then(res => {
+          setLoaderStatus(false);
+          history.push({
+            pathname: routeConstants.EDIT_PROFILE,
+            dataForEdit: res.data.result,
+            collegeAdminRoute: true,
+            editStudent: true
+          });
+        })
+        .catch(error => {
+          setLoaderStatus(false);
+          console.log("erroredit student", error);
         });
-      })
-      .catch(error => {
-        setLoaderStatus(false);
-        console.log("erroredit student", error);
-      });
+    }
   };
 
   /** Add Student */
@@ -637,10 +642,12 @@ const ManageStudents = props => {
 
   const handleClickViewStudent = event => {
     auth.setStudentIdFromCollegeAdmin(event.target.getAttribute("userId"));
-    auth.setStudentInfoForEditingFromCollegeAdmin(event.target.id);
+    auth.setStudentInfoForEditingFromCollegeAdmin(
+      event.target.getAttribute("userId")
+    );
     history.push({
       pathname: routeConstants.VIEW_PROFILE,
-      dataForStudent: event.target.id,
+      dataForStudent: event.target.getAttribute("userId"),
       fromAddStudentToRecruitmentDrive: false,
       fromEventStudentList: false,
       fromManageStudentList: true

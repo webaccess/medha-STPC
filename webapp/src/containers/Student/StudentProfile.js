@@ -70,6 +70,9 @@ const StudentProfile = props => {
     editable: false,
     showPassword: false,
     counter: 0,
+    studentId: props["location"]["dataForStudent"]
+      ? props["location"]["dataForStudent"]
+      : null,
     fromAddStudentToRecruitmentDrive:
       props["location"]["fromAddStudentToRecruitmentDrive"],
     fromEventStudentList: props["location"]["fromEventStudentList"],
@@ -106,21 +109,26 @@ const StudentProfile = props => {
       if (auth.getUserInfo().role.name === "Medha Admin") {
         paramsForEvent = props["location"]["dataForStudent"];
       } else if (auth.getUserInfo().role.name === "Student") {
-        paramsForEvent = props.data ? props.data.id : auth.getUserInfo().id;
+        paramsForEvent = props.data
+          ? props.data.id
+          : auth.getUserInfo().studentInfo.id;
       } else if (auth.getUserInfo().role.name === "College Admin") {
         paramsForEvent = props["location"]["dataForStudent"]
-          ? props["location"]["dataForStudent"]
-          : auth.getStudentInfoForEditingFromCollegeAdmin();
+          ? formState.studentId
+          : auth.getStudentIdFromCollegeAdmin();
       }
+
+      let VIEW_STUDENT_URL =
+        strapiApiConstants.STRAPI_DB_URL +
+        strapiApiConstants.STRAPI_VIEW_USERS +
+        "/" +
+        paramsForEvent;
       if (paramsForEvent !== null && paramsForEvent !== undefined) {
         await serviceProvider
-          .serviceProviderForGetOneRequest(
-            strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_USERS,
-            paramsForEvent
-          )
+          .serviceProviderForGetRequest(VIEW_STUDENT_URL)
           .then(res => {
             const data = res.data.result;
-            let date = new Date(data.studentInfo.date_of_birth);
+            let date = new Date(data.date_of_birth);
             let year = date.getFullYear();
             let month = date.getMonth() + 1;
             let dt = date.getDate();
@@ -135,28 +143,35 @@ const StudentProfile = props => {
               ...user,
               firstname: data.first_name,
               lastname: data.last_name,
-              username: data.username,
-              email: data.email,
-              state: data.state ? data.state.name : "",
-              college: data.college.name,
-              contact: data.contact_number,
-              fatherFirstName: data.studentInfo.father_first_name,
-              fatherLastName: data.studentInfo.father_last_name,
-              address: data.studentInfo.address,
-              rollnumber: data.studentInfo.roll_number.toString(),
-              dataofbirth: dt + "/" + month + "/" + year,
-              gender: data.studentInfo.gender,
-              district: data.studentInfo.district
-                ? data.studentInfo.district.name
+              username: data.contact.user.username,
+              email: data.contact.user
+                ? data.contact.user.email
+                  ? data.contact.user.email
+                  : ""
                 : "",
-              stream: data.studentInfo.stream.name,
-              physicallyHandicapped: data.studentInfo.physicallyHandicapped,
-              futureAspirations:
-                futureAspirationsList[
-                  futureAspirationsList.findIndex(function (item, i) {
-                    return item.id === data.studentInfo.future_aspirations;
-                  })
-                ] || null
+              state: data.contact.user
+                ? data.contact.user.state
+                  ? data.contact.user.state.name
+                  : ""
+                : "",
+              college: data.organization.name,
+              contact: data.contact.phone ? data.contact.phone : "",
+              fatherFirstName: data.father_first_name,
+              fatherLastName: data.father_last_name,
+              address: data.contact.address_1,
+              rollnumber: data.roll_number.toString(),
+              dataofbirth: dt + "/" + month + "/" + year,
+              gender: data.gender,
+              district: data.contact.district ? data.contact.district.name : "",
+              stream: data.stream.name,
+              physicallyHandicapped: data.is_physically_challenged,
+              futureAspirations: data.contact.future_aspirations
+                ? futureAspirationsList[
+                    futureAspirationsList.findIndex(function (item, i) {
+                      return item.id === data.contact.future_aspirations;
+                    })
+                  ] || null
+                : ""
             });
             setLoaderStatus(false);
           })
