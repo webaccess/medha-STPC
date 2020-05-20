@@ -45,8 +45,8 @@ const REGISTRATION_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENT_REGISTRATION;
 const STUDENT_URL = strapiConstants.STRAPI_CONTACT_INDIVIDUAL;
 const SORT_FIELD_KEY = "_sort";
-const STUDENT_FILTER = "user.first_name_contains";
-const STREAM_FILTER = "stream.id";
+const STUDENT_FILTER = "name_contains";
+const STREAM_FILTER = "individual.stream.id";
 
 const StudentList = props => {
   const [open, setOpen] = React.useState(true);
@@ -120,7 +120,7 @@ const StudentList = props => {
         defaultParams = {
           page: page,
           pageSize: pageSize,
-          [SORT_FIELD_KEY]: "user.first_name:asc"
+          [SORT_FIELD_KEY]: "name:asc"
         };
       }
       Object.keys(paramsForevents).map(key => {
@@ -131,7 +131,7 @@ const StudentList = props => {
       paramsForevents = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "user.first_name:asc"
+        [SORT_FIELD_KEY]: "name:asc"
       };
     }
     setFormState(formState => ({
@@ -147,7 +147,9 @@ const StudentList = props => {
       EVENT_ID = formState.eventId;
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
       if (auth.getUserInfo().role.name === "College Admin") {
-        paramsForevents["user.college"] = auth.getUserInfo()["college"]["id"];
+        paramsForevents["individual.organization"] = auth.getUserInfo()[
+          "studentInfo"
+        ]["organization"]["id"];
       }
     }
     if (
@@ -203,7 +205,7 @@ const StudentList = props => {
     for (let data in studentData) {
       let paramsForHire = {
         "event.id": props["location"]["eventId"],
-        "student.id": studentData[data]["id"]
+        "contact.id": studentData[data]["id"]
       };
       await serviceProvider
         .serviceProviderForGetRequest(REGISTRATION_URL, paramsForHire)
@@ -211,9 +213,9 @@ const StudentList = props => {
           for (let i in res.data.result) {
             var attaindandeAndHire = {};
             attaindandeAndHire["Attaindance"] =
-              res.data.result[i]["attendance_verified"];
+              res.data.result[i]["is_attendance_verified"];
             attaindandeAndHire["HireDehire"] =
-              res.data.result[i]["hired_at_event"];
+              res.data.result[i]["is_hired_at_event"];
             studentEventData.push(attaindandeAndHire);
           }
         })
@@ -231,22 +233,21 @@ const StudentList = props => {
         var eventIndividualData = {};
         let educationYear = [];
         eventIndividualData["id"] = data[i]["id"];
-        eventIndividualData["studentid"] = data[i]["user"]
-          ? data[i]["user"]["id"]
-          : "";
+        eventIndividualData["studentid"] = data[i]["id"];
         eventIndividualData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";
-        eventIndividualData["name"] = data[i]["user"]
-          ? data[i]["user"]["first_name"] +
-            " " +
-            data[i]["father_first_name"] +
-            " " +
-            data[i]["user"]["last_name"]
-          : "";
-        eventIndividualData["stream"] = data[i]["stream"]
-          ? data[i]["stream"]["name"]
-          : "";
+        eventIndividualData["name"] = data[i]["name"];
+        if (data[i]["individual"]) {
+        } else {
+          eventIndividualData["stream"] = "";
+        }
+        eventIndividualData["stream"] =
+          data[i]["individual"] &&
+          data[i]["individual"]["stream"] &&
+          data[i]["individual"]["stream"]["name"]
+            ? data[i]["individual"]["stream"]["name"]
+            : "";
         if (data[i]["qualifications"]) {
           for (let j in data[i]["qualifications"]) {
             educationYear.push(data[i]["qualifications"][j]["education_year"]);
@@ -255,8 +256,8 @@ const StudentList = props => {
         } else {
           eventIndividualData["educations"] = [];
         }
-        eventIndividualData["mobile"] = data[i]["user"]
-          ? data[i]["user"]["contact_number"]
+        eventIndividualData["mobile"] = data[i]["phone"]
+          ? data[i]["phone"]
           : "";
 
         eventIndividualData["attaindance"] = hiredIds[i]["Attaindance"];
@@ -322,7 +323,7 @@ const StudentList = props => {
 
   const getEventRegistrationData = async id => {
     let paramsForHire = {
-      "student.id": id,
+      "contact.id": id,
       "event.id": formState.eventId
     };
     serviceProvider
@@ -330,7 +331,7 @@ const StudentList = props => {
       .then(res => {
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
-        if (registerData.hired_at_event) {
+        if (registerData.is_hired_at_event) {
           registerCellData(regUserID, false, "");
         } else {
           registerCellData(regUserID, true, "");
@@ -378,7 +379,7 @@ const StudentList = props => {
 
   const markStudentAttaindance = async id => {
     let paramsForHire = {
-      "student.id": id,
+      "contact.id": id,
       "event.id": formState.eventId
     };
     serviceProvider
@@ -386,7 +387,7 @@ const StudentList = props => {
       .then(res => {
         let registerData = res.data.result[0];
         let regUserID = registerData.id;
-        if (registerData.attendance_verified) {
+        if (registerData.is_attendance_verified) {
           attaindanceCellData(regUserID, false, "");
         } else {
           attaindanceCellData(regUserID, true, "");
@@ -594,7 +595,7 @@ const StudentList = props => {
     page = 1
   ) => {
     if (column.selector === "stream") {
-      column.selector = "stream.name";
+      column.selector = "individual.stream.name";
     }
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
@@ -606,7 +607,7 @@ const StudentList = props => {
     {
       name: "Name",
       sortable: true,
-      selector: "user.first_name",
+      selector: "name",
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },
@@ -626,7 +627,7 @@ const StudentList = props => {
         </Tooltip>
       )
     },
-    { name: "Mobile", sortable: true, selector: "mobile" },
+    { name: "Mobile", selector: "mobile" },
 
     {
       name: "Actions",

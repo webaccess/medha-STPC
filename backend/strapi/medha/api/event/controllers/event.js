@@ -92,7 +92,16 @@ module.exports = {
           filters
         })
       )
-      .fetchAll()
+      .fetchAll({
+        withRelated: [
+          "state",
+          "district",
+          "individual.stream",
+          "user",
+          "activityassignees",
+          "contacttags"
+        ]
+      })
       .then(model => model.toJSON());
     contact = contact
       .map(contact => {
