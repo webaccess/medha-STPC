@@ -165,6 +165,12 @@
       "path": "/contact/unblock-individual",
       "handler": "contact.unblockIndividuals",
       "config": { "policies": [] }
+    },
+    {
+      "method": "PUT",
+      "path": "/contact/:id/edit-organization",
+      "handler": "contact.editOrganization",
+      "config": { "policies": [] }
     }
   ]
 }
