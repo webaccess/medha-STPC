@@ -83,11 +83,12 @@ const ViewEducation = props => {
     message: "",
     severity: ""
   });
+
+  console.log("studentInfo", Auth.getUserInfo());
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
       ? Auth.getUserInfo().studentInfo.contact.id
       : null;
-  console.log("studentID", studentInfo);
   const STUDENT_EDUCATION_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
@@ -214,12 +215,8 @@ const ViewEducation = props => {
 
   const isDeleteCellCompleted = (status, message) => {
     formState.isDataDeleted = status;
-    console.log(typeof message);
-    console.log(typeof status);
     if (typeof message === typeof "") {
-      console.log("In 1 if");
       if (status) {
-        console.log("In if");
         setAlert(() => ({
           isOpen: true,
           message: "Education " + message + " is deleted",
@@ -236,7 +233,6 @@ const ViewEducation = props => {
   };
 
   const deleteCell = event => {
-    console.log("deleteEducation", event.target);
     setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
