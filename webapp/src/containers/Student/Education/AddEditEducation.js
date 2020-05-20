@@ -31,8 +31,8 @@ const AddEditEducation = props => {
   const classes = useStyles();
   const studentInfo =
     auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
-      ? auth.getUserInfo().studentInfo.id
-      : auth.getStudentIdFromCollegeAdmin();
+      ? auth.getUserInfo().studentInfo.contact.id
+      : null;
 
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
@@ -153,8 +153,7 @@ const AddEditEducation = props => {
       formState.values[percentage]
     );
     // Adding student id to post data
-    postData.student = studentInfo;
-    console.log("EDucationURL---->>>", EDUCATION_URL, postData);
+    postData.contact = studentInfo;
     if (formState.isEditEducation) {
       serviceProviders
         .serviceProviderForPutRequest(
