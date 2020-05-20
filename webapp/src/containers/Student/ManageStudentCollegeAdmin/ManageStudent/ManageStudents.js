@@ -43,7 +43,6 @@ import LoaderContext from "../../../../context/LoaderContext";
 
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
-// const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
 const USER_FILTER = "user.first_name_contains";
 const STREAM_FILTER = "stream.id";
 const VERIFIEDBYCOLLEGE = "verifiedByCollege";
