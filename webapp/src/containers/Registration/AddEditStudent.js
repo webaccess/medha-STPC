@@ -134,14 +134,14 @@ const AddEditStudent = props => {
     ) {
       const list = stream.reduce((result, obj) => {
         if (formState.values.college === obj.id) {
-          result.push(...obj.stream);
+          result.push(obj.stream);
         }
         return result;
       }, []);
 
       setstreamlist(
         list.map(obj => {
-          return { id: obj.stream.id, name: obj.stream.name };
+          return { id: obj.id, name: obj.name };
         })
       );
     }
@@ -160,35 +160,48 @@ const AddEditStudent = props => {
         formState.values["lastname"] =
           props.location["dataForEdit"]["last_name"];
       }
-      if (props.location["dataForEdit"]["email"]) {
-        formState.values["email"] = props.location["dataForEdit"]["email"];
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["user"] &&
+        props.location["dataForEdit"]["contact"]["user"]["email"]
+      ) {
+        formState.values["email"] =
+          props.location["dataForEdit"]["contact"]["user"]["email"];
       }
-      if (props.location["dataForEdit"]["contact_number"]) {
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["phone"]
+      ) {
         formState.values["contact"] =
-          props.location["dataForEdit"]["contact_number"];
+          props.location["dataForEdit"]["contact"]["phone"];
       }
-      if (props.location["dataForEdit"]["username"]) {
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["user"] &&
+        props.location["dataForEdit"]["contact"]["user"]["username"]
+      ) {
         formState.values["username"] =
-          props.location["dataForEdit"]["username"];
+          props.location["dataForEdit"]["contact"]["user"]["username"];
       }
 
       if (
-        props.location["dataForEdit"]["state"] &&
-        props.location["dataForEdit"]["state"]["id"]
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["user"] &&
+        props.location["dataForEdit"]["contact"]["user"]["state"]
       ) {
         formState.values["state"] =
-          props.location["dataForEdit"]["state"]["id"];
+          props.location["dataForEdit"]["contact"]["user"]["state"]["id"];
       }
       if (
-        props.location["dataForEdit"]["studentInfo"]["stream"] &&
-        props.location["dataForEdit"]["studentInfo"]["stream"]["id"]
+        props.location["dataForEdit"]["stream"] &&
+        props.location["dataForEdit"]["stream"]["id"]
       ) {
         formState.values["stream"] =
-          props.location["dataForEdit"]["studentInfo"]["stream"]["id"];
+          props.location["dataForEdit"]["stream"]["id"];
 
         const data = {
-          id: props.location["dataForEdit"]["college"]["id"],
-          stream: props.location["dataForEdit"]["college"]["stream_strength"]
+          id: props.location["dataForEdit"]["organization"]["id"],
+          stream: props.location["dataForEdit"]["stream"]
         };
         const list = [];
         list.push(data);
@@ -196,55 +209,52 @@ const AddEditStudent = props => {
       }
 
       if (
-        props.location["dataForEdit"]["studentInfo"]["district"] &&
-        props.location["dataForEdit"]["studentInfo"]["district"]["id"]
+        props.location["dataForEdit"]["contact"]["district"] &&
+        props.location["dataForEdit"]["contact"]["district"]["id"]
       ) {
         formState.values["district"] =
-          props.location["dataForEdit"]["studentInfo"]["district"]["id"];
+          props.location["dataForEdit"]["contact"]["district"]["id"];
       }
 
-      if (props.location["dataForEdit"]["studentInfo"]["father_first_name"]) {
+      if (props.location["dataForEdit"]["father_first_name"]) {
         formState.values["fatherFirstName"] =
-          props.location["dataForEdit"]["studentInfo"]["father_first_name"];
+          props.location["dataForEdit"]["father_first_name"];
       }
-      if (props.location["dataForEdit"]["studentInfo"]["father_last_name"]) {
+      if (props.location["dataForEdit"]["father_last_name"]) {
         formState.values["fatherLastName"] =
-          props.location["dataForEdit"]["studentInfo"]["father_last_name"];
+          props.location["dataForEdit"]["father_last_name"];
       }
-      if (props.location["dataForEdit"]["studentInfo"]["address"]) {
+      if (props.location["dataForEdit"]["contact"]["address_1"]) {
         formState.values["address"] =
-          props.location["dataForEdit"]["studentInfo"]["address"];
+          props.location["dataForEdit"]["contact"]["address_1"];
       }
-      if (props.location["dataForEdit"]["studentInfo"]["gender"]) {
-        formState.values["gender"] =
-          props.location["dataForEdit"]["studentInfo"]["gender"];
+      if (props.location["dataForEdit"]["gender"]) {
+        formState.values["gender"] = props.location["dataForEdit"]["gender"];
       }
 
-      if (props.location["dataForEdit"]["studentInfo"]["roll_number"]) {
+      if (props.location["dataForEdit"]["roll_number"]) {
         formState.values["rollnumber"] =
-          props.location["dataForEdit"]["studentInfo"]["roll_number"];
+          props.location["dataForEdit"]["roll_number"];
       }
-      if (props.location["dataForEdit"]["studentInfo"]["future_aspirations"]) {
+      if (props.location["dataForEdit"]["future_aspirations"]) {
         formState.values["futureAspirations"] =
-          props.location["dataForEdit"]["studentInfo"]["future_aspirations"];
+          props.location["dataForEdit"]["future_aspirations"];
       }
 
-      if (props.location["dataForEdit"]["studentInfo"]) {
+      if (props.location["dataForEdit"]) {
         formState.values["physicallyHandicapped"] =
-          props.location["dataForEdit"]["studentInfo"]["physicallyHandicapped"];
+          props.location["dataForEdit"]["is_physically_challenged"];
       }
       if (
-        props.location["dataForEdit"]["college"] &&
-        props.location["dataForEdit"]["college"]["id"]
+        props.location["dataForEdit"]["organization"] &&
+        props.location["dataForEdit"]["organization"]["id"]
       ) {
         formState.values["college"] =
-          props.location["dataForEdit"]["college"]["id"];
+          props.location["dataForEdit"]["organization"]["id"];
       }
-      if (props.location["dataForEdit"]["studentInfo"]["date_of_birth"]) {
+      if (props.location["dataForEdit"]["date_of_birth"]) {
         setSelectedDate(
-          new Date(
-            props.location["dataForEdit"]["studentInfo"]["date_of_birth"]
-          )
+          new Date(props.location["dataForEdit"]["date_of_birth"])
         );
       }
     }
@@ -356,7 +366,7 @@ const AddEditStudent = props => {
       serviceProvider
         .serviceProviderForPutRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-          formState.dataForEdit.studentInfo.id,
+          formState.dataForEdit.id,
           postData
         )
         .then(response => {
