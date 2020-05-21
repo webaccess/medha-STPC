@@ -134,6 +134,12 @@
     },
     {
       "method": "GET",
+      "path": "/contact/individuals/:id/past-events",
+      "handler": "contact.eligiblePastEvents",
+      "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "GET",
       "path": "/activity/:id/download",
       "handler": "activity.download",
       "config": { "policies": [] }

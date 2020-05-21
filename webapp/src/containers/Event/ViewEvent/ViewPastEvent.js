@@ -104,12 +104,12 @@ const ViewPastEvent = props => {
 
     const studentInfo =
       auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
-        ? auth.getUserInfo().studentInfo.id
+        ? auth.getUserInfo().studentInfo.contact.id
         : auth.getStudentIdFromCollegeAdmin();
 
     const PASTEVENT_URL =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
+      strapiConstants.STRAPI_INDIVIDUAL_URL +
       "/" +
       studentInfo +
       "/" +

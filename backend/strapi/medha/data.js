@@ -920,7 +920,9 @@ const ROLES = {
           "approve",
           "unapprove",
           "individuals",
-          "organizationevents"
+          "organizationevents",
+          "eligiblepastevents",
+          "eligibleEvents"
         ],
         type: PLUGIN_NAME
       },
@@ -1074,7 +1076,8 @@ const ROLES = {
           "eligibleEvents",
           "eligibleActivity",
           "individualregisteredevents",
-          "individualdetails"
+          "individualdetails",
+          "eligiblepastevents"
         ],
         type: PLUGIN_NAME
       },
