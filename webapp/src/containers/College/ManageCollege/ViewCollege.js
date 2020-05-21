@@ -270,7 +270,7 @@ const ViewCollege = props => {
                     defaultValue={
                       formState.collegeDetails.length !== 0
                         ? formState.collegeDetails.contact.address_1
-                        : 0
+                        : ""
                     }
                   />
                 </Grid>
