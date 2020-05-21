@@ -488,7 +488,9 @@ module.exports = {
         "contact.user.role",
         "contact.user.state",
         "contact.user.zone",
-        "contact.user.rpc"
+        "contact.user.rpc",
+        "contact.district",
+        "stream"
       ]);
 
     if (!response) {
@@ -1149,61 +1151,67 @@ module.exports = {
 
         // Removing old tpos and adding new tpos
 
-        await orgModel.tpos().detach();
-        await orgModel.tpos().attach(ctx.request.body.tpos);
-
-        await orgModel
-          .related("stream_strength")
-          .fetch()
-          .then(model => {
-            model.forEach(a => {
-              a.destroy();
-            });
-          });
-
-        const streamStrengthModel = await Promise.all(
-          ctx.request.body.stream_strength.map(async stream => {
-            return await bookshelf
-              .model("college-stream-strength")
-              .forge(stream)
-              .save(null, { transacting: t })
-              .then(model => model)
-              .catch(error => {
-                console.log(error);
-                return null;
-              });
-          })
-        );
-
-        if (streamStrengthModel.some(s => s === null)) {
-          return Promise.reject(
-            "Something went wrong while creating Stream & Strength"
-          );
+        if (ctx.request.body.hasOwnProperty("tpos")) {
+          await orgModel.tpos().detach();
+          await orgModel.tpos().attach(ctx.request.body.tpos);
         }
 
-        const _orgStreamStrength = await Promise.all(
-          streamStrengthModel.map(async (model, index) => {
-            return await bookshelf
-              .model("organization-component")
-              .forge({
-                field: "stream_strength",
-                order: index,
-                component_type: "college_stream_strengths",
-                component_id: model.toJSON().id,
-                organization_id: org.id
-              })
-              .save(null, { transacting: t })
-              .catch(error => {
-                console.log(error);
-                return null;
+        if (ctx.request.body.hasOwnProperty("stream_strength")) {
+          // Removing stream and strengths
+          await orgModel
+            .related("stream_strength")
+            .fetch()
+            .then(model => {
+              model.forEach(a => {
+                a.destroy();
               });
-          })
-        );
+            });
 
-        if (_orgStreamStrength.some(oss => oss === null)) {
-          return Promise.reject(
-            "Error while mapping stream strength to Organization"
+          // Adding new streams and strength
+          const streamStrengthModel = await Promise.all(
+            ctx.request.body.stream_strength.map(async stream => {
+              return await bookshelf
+                .model("college-stream-strength")
+                .forge(stream)
+                .save(null, { transacting: t })
+                .then(model => model)
+                .catch(error => {
+                  console.log(error);
+                  return null;
+                });
+            })
           );
+
+          if (streamStrengthModel.some(s => s === null)) {
+            return Promise.reject(
+              "Something went wrong while creating Stream & Strength"
+            );
+          }
+
+          const _orgStreamStrength = await Promise.all(
+            streamStrengthModel.map(async (model, index) => {
+              return await bookshelf
+                .model("organization-component")
+                .forge({
+                  field: "stream_strength",
+                  order: index,
+                  component_type: "college_stream_strengths",
+                  component_id: model.toJSON().id,
+                  organization_id: org.id
+                })
+                .save(null, { transacting: t })
+                .catch(error => {
+                  console.log(error);
+                  return null;
+                });
+            })
+          );
+
+          if (_orgStreamStrength.some(oss => oss === null)) {
+            return Promise.reject(
+              "Error while mapping stream strength to Organization"
+            );
+          }
         }
 
         contactReqBody.organization = org.id;

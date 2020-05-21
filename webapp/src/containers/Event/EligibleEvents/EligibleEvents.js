@@ -53,25 +53,12 @@ const EligibleEvents = props => {
       auth.getUserInfo().studentInfo.id !== null
     ) {
       getEventDetails();
-      getRegisteredEvents();
     } else {
       history.push({
         pathname: routeConstants.NOT_FOUND_URL
       });
     }
   }, []);
-
-  /** Check if a student is registered for a event */
-  const getRegisteredEvents = async () => {};
-
-  /** Check if a student is registered for a event */
-  const checkEventRegistered = (eventId, registeredEvents) => {
-    if (registeredEvents.indexOf(eventId) !== -1) {
-      return true;
-    } else {
-      return false;
-    }
-  };
 
   /** This gets events details */
   async function getEventDetails() {
@@ -81,65 +68,42 @@ const EligibleEvents = props => {
       auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === "Student" &&
       auth.getUserInfo().studentInfo !== null &&
-      auth.getUserInfo().studentInfo.id !== null
+      auth.getUserInfo().studentInfo.contact !== null &&
+      auth.getUserInfo().studentInfo.contact.id !== null
     ) {
-      studentId = auth.getUserInfo().studentInfo.id;
+      studentId = auth.getUserInfo().studentInfo.contact.id;
       formState.authUserRegistering = studentId;
       if (studentId !== null && studentId !== undefined) {
         /** This will give all the eligible events for a student */
         const ELIGIBLE_EVENTS =
           strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
+          strapiConstants.STRAPI_INDIVIDUAL_URL +
           "/" +
-          auth.getUserInfo().studentInfo.id +
+          auth.getUserInfo().studentInfo.contact.id +
           "/" +
           strapiConstants.STRAPI_EVENTS;
 
-        const apiToCheckStudentRegistration =
-          strapiConstants.STRAPI_DB_URL +
-          strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
-          "/" +
-          auth.getUserInfo().studentInfo.id +
-          "/registeredevents";
         let params = {
           pageSize: -1,
           _sort: "start_date_time"
         };
 
-        /** First api call to genrate all the regestered event ids */
         await serviceProviders
-          .serviceProviderForGetRequest(apiToCheckStudentRegistration)
-          .then(async res => {
-            let registeredEvents = [];
-            res.data.map(data => {
-              registeredEvents.push(data.event.id);
-            });
-            /** This gets us the registered events ids with the students */
-            formState.registeredEventsIds = registeredEvents;
-            /** This api gets all the eligible events and then we check with the retrieved events that with witch event is the student registered with */
-            await serviceProviders
-              .serviceProviderForGetRequest(ELIGIBLE_EVENTS, params)
-              .then(res => {
-                let viewData = [];
-                if (res.data.result.length === 0) {
-                  setFormState(formState => ({
-                    ...formState,
-                    NoEventsData: true
-                  }));
-                } else {
-                  viewData = convertDataAndGetRegisteredStatus(
-                    res.data.result,
-                    registeredEvents
-                  );
-                }
-                setFormState(formState => ({
-                  ...formState,
-                  eventDetails: viewData
-                }));
-              })
-              .catch(error => {
-                console.log("error", error);
-              });
+          .serviceProviderForGetRequest(ELIGIBLE_EVENTS, params)
+          .then(res => {
+            let viewData = [];
+            if (res.data.result.length === 0) {
+              setFormState(formState => ({
+                ...formState,
+                NoEventsData: true
+              }));
+            } else {
+              viewData = res.data.result;
+            }
+            setFormState(formState => ({
+              ...formState,
+              eventDetails: viewData
+            }));
           })
           .catch(error => {
             console.log("error", error);
@@ -157,24 +121,6 @@ const EligibleEvents = props => {
       });
     }
   }
-
-  /** Function which get stuatus of events as registered or not */
-  const convertDataAndGetRegisteredStatus = (
-    originalEventData,
-    registeredEvents
-  ) => {
-    originalEventData.map(data => {
-      if (formState.registeredEventsIds.length === 0) {
-        data["isRegistered"] = false;
-      } else {
-        data["isRegistered"] = checkEventRegistered(
-          data["id"],
-          registeredEvents
-        );
-      }
-    });
-    return originalEventData;
-  };
 
   const getTime = data => {
     let startTime = new Date(data["start_date_time"]);
