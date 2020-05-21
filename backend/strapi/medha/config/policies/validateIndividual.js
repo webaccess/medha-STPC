@@ -50,18 +50,18 @@ module.exports = async (ctx, next) => {
       return ctx.response.badRequest("First Name field is missing");
     if (!individual.last_name)
       return ctx.response.badRequest("Last Name field is missing");
-    if (!individual.address_1)
-      return ctx.response.badRequest("Address field is missing");
+    // if (!individual.address_1)
+    //   return ctx.response.badRequest("Address field is missing");
     if (!individual.username)
       return ctx.response.badRequest("Username field is missing");
     if (!individual.email)
       return ctx.response.badRequest("Email field is missing");
     if (!individual.phone)
       return ctx.response.badRequest("Contact Number field is missing");
-    if (!individual.date_of_birth)
-      return ctx.response.badRequest("Date Of Birth field is missing");
-    if (!individual.gender)
-      return ctx.response.badRequest("Gender field is missing");
+    // if (!individual.date_of_birth)
+    //   return ctx.response.badRequest("Date Of Birth field is missing");
+    // if (!individual.gender)
+    //   return ctx.response.badRequest("Gender field is missing");
     await next();
   }
 };
