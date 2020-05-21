@@ -163,7 +163,7 @@ const StudentProfile = props => {
               dataofbirth: dt + "/" + month + "/" + year,
               gender: data.gender,
               district: data.contact.district ? data.contact.district.name : "",
-              stream: data.stream.name,
+              stream: data.stream ? data.stream.name : "",
               physicallyHandicapped: data.is_physically_challenged,
               futureAspirations: data.contact.future_aspirations
                 ? futureAspirationsList[

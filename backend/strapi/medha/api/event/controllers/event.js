@@ -92,7 +92,16 @@ module.exports = {
           filters
         })
       )
-      .fetchAll()
+      .fetchAll({
+        withRelated: [
+          "state",
+          "district",
+          "individual.stream",
+          "user",
+          "activityassignees",
+          "contacttags"
+        ]
+      })
       .then(model => model.toJSON());
     contact = contact
       .map(contact => {
@@ -202,35 +211,17 @@ module.exports = {
      */
 
     // Getting students under that college
-    let students = await strapi.services.event.getIndividuals(organizationId);
-
-    // Getting student data for given userIds
-    //  students = await strapi
-    //   .query("individual",PLUGIN)
-    //   .model.query(
-    //     buildQuery({
-    //       model: strapi.plugins["crm-plugin"].models["individual"],
-    //       filters
-    //     })
-    //   )
-    //   .fetchAll()
-    //   .then(model => model.toJSON());
-
-    // students = students
-    //   .map(student => {
-    //     if (student.user && _.includes(userIds, student.user.id)) {
-    //       student.user = sanitizeUser(student.user);
-    //       return student;
-    //     }
-    //   })
-    //   .filter(a => a);
-
+    let students = await strapi.services.event.getIndividuals(
+      id,
+      organizationId,
+      filters
+    );
     //Filter students who passes the given criteria for college
     let filtered = [];
 
     await utils.asyncForEach(students, async student => {
       /**Filtering stream */
-      const { stream } = student;
+      const { stream } = student.individual;
       let isStreamEligible, isEducationEligible, isQualificationEligible;
 
       if (stream) {
@@ -248,7 +239,7 @@ module.exports = {
       /** Filtering qualifications */
       const studentEducations = await strapi
         .query("education")
-        .find({ contact: student.contact.id });
+        .find({ contact: student.id });
 
       const { qualifications } = event;
       isQualificationEligible = true;
@@ -266,7 +257,7 @@ module.exports = {
       /**Filtering educations */
       const academicHistory = await strapi
         .query("academic-history")
-        .find({ contact: student.contact.id });
+        .find({ contact: student.id });
 
       const { educations } = event;
       isEducationEligible = true;
@@ -286,7 +277,7 @@ module.exports = {
       if (isStreamEligible && isQualificationEligible && isEducationEligible) {
         const qualifications = await strapi
           .query("academic-history")
-          .find({ contact: student.contact.id }, []);
+          .find({ contact: student.id }, []);
         student.qualifications = qualifications;
         filtered.push(student);
       }
