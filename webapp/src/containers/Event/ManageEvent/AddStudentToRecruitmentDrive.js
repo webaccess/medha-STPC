@@ -35,8 +35,8 @@ const REGISTRATION_URL =
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const SORT_FIELD_KEY = "_sort";
-const USER_FILTER = "user.first_name_contains";
-const STREAM_FILTER = "stream.id";
+const USER_FILTER = "name_contains";
+const STREAM_FILTER = "individual.stream.id";
 
 const AddStudentToRecruitmentDrive = props => {
   const history = useHistory();
@@ -124,7 +124,7 @@ const AddStudentToRecruitmentDrive = props => {
         defaultParams = {
           page: page,
           pageSize: pageSize,
-          [SORT_FIELD_KEY]: "user.first_name:asc"
+          [SORT_FIELD_KEY]: "name:asc"
         };
       }
       Object.keys(paramsForStudent).map(key => {
@@ -135,7 +135,7 @@ const AddStudentToRecruitmentDrive = props => {
       paramsForStudent = {
         page: page,
         pageSize: pageSize,
-        [SORT_FIELD_KEY]: "user.first_name:asc"
+        [SORT_FIELD_KEY]: "name:asc"
       };
     }
     setFormState(formState => ({
@@ -143,60 +143,38 @@ const AddStudentToRecruitmentDrive = props => {
       isDataLoading: true
     }));
 
-    /** Url which gives eligible students for an event */
-    let get_student_list =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
-      "/" +
-      formState.eventId +
-      "/" +
-      strapiConstants.STRAPI_ORGANIZATION +
-      "/" +
-      formState.collegeId +
-      "/" +
-      strapiConstants.STRAPI_INDIVIDUALS;
-
-    /** Url to check for registered students of an event */
-    let url_for_check_registration =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
-      "/" +
-      formState.eventId +
-      "/" +
-      strapiConstants.STRAPI_CONTACT_INDIVIDUAL;
     if (formState.eventId !== undefined && formState.eventId !== null) {
-      let params = {
-        pageSize: -1
-      };
+      /** Url which gives eligible students for an event */
+      let get_student_list =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_EVENTS +
+        "/" +
+        formState.eventId +
+        "/" +
+        strapiConstants.STRAPI_ORGANIZATION +
+        "/" +
+        formState.collegeId +
+        "/" +
+        strapiConstants.STRAPI_INDIVIDUALS;
       await serviceProvider
-        .serviceProviderForGetRequest(url_for_check_registration, params)
-        .then(async res => {
-          let alreadyRegisteredStudentsId = [];
-          res.data.result.map(data => {
-            alreadyRegisteredStudentsId.push(data["id"]);
-          });
-          paramsForStudent["contact.id_nin"] = alreadyRegisteredStudentsId;
-          await serviceProvider
-            .serviceProviderForGetRequest(get_student_list, paramsForStudent)
-            .then(res => {
-              formState.dataToShow = [];
-              let eventData = [];
-              eventData = convertStudentData(res.data.result);
-              setFormState(formState => ({
-                ...formState,
-                pageSize: res.data.pageSize,
-                totalRows: res.data.rowCount,
-                page: res.data.page,
-                pageCount: res.data.pageCount,
-                dataToShow: eventData,
-                isDataLoading: false
-              }));
-            })
-            .catch(error => {
-              console.log("error", error);
-            });
+        .serviceProviderForGetRequest(get_student_list, paramsForStudent)
+        .then(res => {
+          formState.dataToShow = [];
+          let eventData = [];
+          eventData = convertStudentData(res.data.result);
+          setFormState(formState => ({
+            ...formState,
+            pageSize: res.data.pageSize,
+            totalRows: res.data.rowCount,
+            page: res.data.page,
+            pageCount: res.data.pageCount,
+            dataToShow: eventData,
+            isDataLoading: false
+          }));
         })
-        .catch(error => {});
+        .catch(error => {
+          console.log("error", error);
+        });
     } else {
       history.push({
         pathname: routeConstants.MANAGE_EVENT
@@ -211,27 +189,19 @@ const AddStudentToRecruitmentDrive = props => {
         var individualStudentData = {};
         let educationYear = [];
         individualStudentData["id"] = data[i]["id"];
-        individualStudentData["studentid"] = data[i]["user"]
-          ? data[i]["user"]["id"]
-          : "";
+        individualStudentData["studentid"] = data[i]["id"];
         individualStudentData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";
-        individualStudentData["name"] = data[i]["user"]
-          ? data[i]["user"]["first_name"] +
-            " " +
-            data[i]["father_first_name"] +
-            " " +
-            data[i]["user"]["last_name"]
-          : "";
-        individualStudentData["stream"] = data[i]["stream"]
-          ? data[i]["stream"]["name"]
-          : "";
-        individualStudentData["qualifications"] = data[i]["educations"][0]
-          ? data[i]["educations"][0]["year_of_passing"]
-          : "";
-        individualStudentData["mobile"] = data[i]["user"]
-          ? data[i]["user"]["contact_number"]
+        individualStudentData["name"] = data[i]["name"];
+        individualStudentData["stream"] =
+          data[i]["individual"] &&
+          data[i]["individual"]["stream"] &&
+          data[i]["individual"]["stream"]["name"]
+            ? data[i]["individual"]["stream"]["name"]
+            : "";
+        individualStudentData["mobile"] = data[i]["phone"]
+          ? data[i]["phone"]
           : "";
         if (data[i]["qualifications"]) {
           for (let j in data[i]["qualifications"]) {
@@ -408,7 +378,7 @@ const AddStudentToRecruitmentDrive = props => {
     page = 1
   ) => {
     if (column.selector === "stream") {
-      column.selector = "stream.name";
+      column.selector = "individual.stream.name";
     }
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
@@ -420,7 +390,7 @@ const AddStudentToRecruitmentDrive = props => {
     {
       name: "Name",
       sortable: true,
-      selector: "user.first_name",
+      selector: "name",
       cell: row => <CustomLink row={row} />
     },
     { name: "Stream", sortable: true, selector: "stream" },

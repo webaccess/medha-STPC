@@ -216,7 +216,6 @@ module.exports = {
       organizationId,
       filters
     );
-
     //Filter students who passes the given criteria for college
     let filtered = [];
 
@@ -228,7 +227,7 @@ module.exports = {
       if (stream) {
         const { streams } = event;
         const streamIds = streams.map(s => s.id);
-        if (streamIds.length == 0 || _.includes(streamIds, stream)) {
+        if (streamIds.length == 0 || _.includes(streamIds, stream.id)) {
           isStreamEligible = true;
         } else {
           isStreamEligible = false;

@@ -187,8 +187,6 @@ module.exports = {
         };
       });
 
-      console.log(orgs);
-
       let new_pageSize =
         pageSize < 0
           ? await utils.getTotalPLuginRecord("organization", "crm-plugin")
@@ -247,10 +245,8 @@ module.exports = {
   },
 
   academicHistory: async ctx => {
-    console.log("In academic history");
     const { id } = ctx.params;
     const academicHistoryId = ctx.query ? ctx.query.id : null;
-    console.log(academicHistoryId);
     let response = await strapi
       .query("academic-history")
       .find({ contact: id }, ["academic_year"]);
@@ -588,7 +584,6 @@ module.exports = {
    */
   blockOrganizations: async ctx => {
     const { ids } = ctx.request.body;
-    console.log(ctx.request.body);
     let idsToBlock;
     if (!ids) {
       return ctx.response.badRequest("Missing ids field");
@@ -948,11 +943,11 @@ module.exports = {
         .findOne({ contact: id, event: event.id });
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
-        eventRegistrationInfo && eventRegistrationInfo.hired_at_event
+        eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
           ? true
           : false;
       event.hasAttended =
-        eventRegistrationInfo && eventRegistrationInfo.attendance_verified
+        eventRegistrationInfo && eventRegistrationInfo.is_attendance_verified
           ? true
           : false;
     });
@@ -980,7 +975,6 @@ module.exports = {
         if (event.hasAttended == _val) return event;
       });
     }
-    console.log(result);
 
     const currentDate = new Date();
     result = result.filter(event => {
@@ -1129,11 +1123,11 @@ module.exports = {
         .findOne({ contact: id, event: event.id });
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
-        eventRegistrationInfo && eventRegistrationInfo.hired_at_event
+        eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
           ? true
           : false;
       event.hasAttended =
-        eventRegistrationInfo && eventRegistrationInfo.attendance_verified
+        eventRegistrationInfo && eventRegistrationInfo.is_attendance_verified
           ? true
           : false;
     });
@@ -1167,7 +1161,6 @@ module.exports = {
       const endDate = new Date(event.end_date_time);
 
       if (endDate < currentDate) {
-        console.log("bbaksdbkd", endDate, currentDate);
         return (event["currentDate"] = currentDate);
       }
     });
