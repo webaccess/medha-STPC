@@ -69,13 +69,14 @@ export const serviceProviderForPutRequest = async (
   url,
   id,
   body,
+  editURL = null,
   headers = {
     "content-type": "application/json",
     Authorization: `Bearer ${auth.getToken()}`
   }
 ) => {
-  const URL = url;
-  return await axios(URL + "/" + id, {
+  const URL = editURL ? url + "/" + id + "/" + editURL : url + "/" + id;
+  return await axios(URL, {
     method: "PUT",
     headers: headers,
     data: body
