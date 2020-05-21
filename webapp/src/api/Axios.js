@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Auth as auth } from "../components";
-import Img from "react-image";
 
 const HEADERS = {
   "content-type": "application/json",
