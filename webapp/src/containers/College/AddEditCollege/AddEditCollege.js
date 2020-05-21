@@ -312,9 +312,7 @@ const AddEditCollege = props => {
         let array = [];
         tpoData.map(tpo => {
           for (let i in props["dataForEdit"]["tpos"]) {
-            if (
-              props["dataForEdit"]["tpos"][i]["id"] === tpo["contact"]["id"]
-            ) {
+            if (props["dataForEdit"]["tpos"][i]["id"] === tpo["id"]) {
               array.push(tpo);
             }
           }
@@ -424,7 +422,7 @@ const AddEditCollege = props => {
     if (get(CollegeFormSchema[eventName], "type") === "multi-select") {
       let finalValues = [];
       for (let i in value) {
-        finalValues.push(value[i]["contact"]["id"]);
+        finalValues.push(value[i]["id"]);
       }
       value = {
         id: finalValues
@@ -448,7 +446,7 @@ const AddEditCollege = props => {
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value.contact.id
+            [eventName]: value.id
           },
           touched: {
             ...formState.touched,
@@ -727,11 +725,15 @@ const AddEditCollege = props => {
     );
     setLoaderStatus(true);
     if (formState.isEditCollege) {
+      let EDIT_COLLEGE_URL =
+        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_CONTACT_URL;
+      let EDIT_URL = strapiConstants.STRAPI_EDIT_COLLEGE;
       serviceProviders
         .serviceProviderForPutRequest(
-          COLLEGES_URL,
-          formState.dataForEdit["id"],
-          postData
+          EDIT_COLLEGE_URL,
+          formState.dataForEdit.contact["id"],
+          postData,
+          EDIT_URL
         )
         .then(res => {
           if (auth.getUserInfo().role.name === "Medha Admin") {
@@ -1270,9 +1272,7 @@ const AddEditCollege = props => {
                       value={
                         user[
                           user.findIndex(function (item, i) {
-                            return (
-                              item.contact.id === formState.values[principal]
-                            );
+                            return item.id === formState.values[principal];
                           })
                         ] || null /** Please give a default " " blank value */
                       }
