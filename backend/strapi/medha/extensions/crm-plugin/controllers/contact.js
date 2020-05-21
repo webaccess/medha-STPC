@@ -1072,5 +1072,172 @@ module.exports = {
       ctx,
       false
     );
+  },
+
+  /**
+   * Creating organization ie college
+   * Steps:
+   * Create Organization
+   * Create Contact
+   * Map contact with organization
+   */
+  editOrganization: async ctx => {
+    const { id } = ctx.params;
+
+    const contact = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!contact) {
+      return ctx.response.notFound("Contact does not exist");
+    }
+
+    const orgId = (contact.organization && contact.organization.id) || null;
+    if (!orgId) {
+      return ctx.response.notFound("Organization does not exist");
+    }
+
+    const organizationReqBody = _.pick(ctx.request.body, [
+      "name",
+      "college_code",
+      "is_blocked",
+      "zone",
+      "rpc",
+      "principal"
+    ]);
+
+    const contactReqBody = _.pick(ctx.request.body, [
+      "name",
+      "phone",
+      "email",
+      "state",
+      "address_1",
+      "district"
+    ]);
+
+    await bookshelf
+      .transaction(async t => {
+        /**
+         * Creating organization
+         */
+        const orgModel = await strapi
+          .query("organization", PLUGIN)
+          .model.where({ id: orgId })
+          .save(organizationReqBody, { transacting: t, patch: true })
+          .then(model => model)
+          .catch(error => {
+            console.log(error);
+            return null;
+          });
+
+        if (!orgModel) {
+          return Promise.reject("Something went wrong while updating College");
+        }
+
+        const org = orgModel.toJSON ? orgModel.toJSON() : orgModel;
+
+        /**
+         * Add this to policy
+         */
+
+        const tpos = await Promise.all(
+          ctx.request.body.tpos.map(async tpo => {
+            return await strapi
+              .query("user", "users-permissions")
+              .findOne({ id: tpo });
+          })
+        );
+
+        if (tpos.some(tpo => tpo === null)) {
+          return Promise.reject("TPO does not exist");
+        }
+
+        // Removing old tpos and adding new tpos
+
+        if (ctx.request.body.hasOwnProperty("tpos")) {
+          await orgModel.tpos().detach();
+          await orgModel.tpos().attach(ctx.request.body.tpos);
+        }
+
+        if (ctx.request.body.hasOwnProperty("stream_strength")) {
+          // Removing stream and strengths
+          await orgModel
+            .related("stream_strength")
+            .fetch()
+            .then(model => {
+              model.forEach(a => {
+                a.destroy();
+              });
+            });
+
+          // Adding new streams and strength
+          const streamStrengthModel = await Promise.all(
+            ctx.request.body.stream_strength.map(async stream => {
+              return await bookshelf
+                .model("college-stream-strength")
+                .forge(stream)
+                .save(null, { transacting: t })
+                .then(model => model)
+                .catch(error => {
+                  console.log(error);
+                  return null;
+                });
+            })
+          );
+
+          if (streamStrengthModel.some(s => s === null)) {
+            return Promise.reject(
+              "Something went wrong while creating Stream & Strength"
+            );
+          }
+
+          const _orgStreamStrength = await Promise.all(
+            streamStrengthModel.map(async (model, index) => {
+              return await bookshelf
+                .model("organization-component")
+                .forge({
+                  field: "stream_strength",
+                  order: index,
+                  component_type: "college_stream_strengths",
+                  component_id: model.toJSON().id,
+                  organization_id: org.id
+                })
+                .save(null, { transacting: t })
+                .catch(error => {
+                  console.log(error);
+                  return null;
+                });
+            })
+          );
+
+          if (_orgStreamStrength.some(oss => oss === null)) {
+            return Promise.reject(
+              "Error while mapping stream strength to Organization"
+            );
+          }
+        }
+
+        contactReqBody.organization = org.id;
+        contactReqBody.contact_type = "organization";
+
+        const contact = await strapi
+          .query("contact", PLUGIN)
+          .model.where({ id: id })
+          .save(contactReqBody, { transacting: t, patch: true })
+          .then(model => model.toJSON())
+          .catch(error => {
+            console.log(error);
+            return null;
+          });
+
+        if (!contact) {
+          return Promise.reject("Something went wrong while creating Contact");
+        }
+
+        return new Promise(resolve => resolve(contact));
+      })
+      .then(success => {
+        return ctx.send(utils.getFindOneResponse(success));
+      })
+      .catch(error => {
+        return ctx.response.badRequest(error);
+      });
   }
 };
