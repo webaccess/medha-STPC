@@ -48,15 +48,17 @@ const PastActivities = props => {
 
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
-      ? Auth.getUserInfo().studentInfo.id
-      : Auth.getStudentIdFromCollegeAdmin();
+      ? Auth.getUserInfo().studentInfo.contact.id
+      : null;
+  console.log("studentID", studentInfo);
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
-    `/${studentInfo}/past-activities`;
+    strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_ACTIVITY_URL +
+    `/${studentInfo}/` +
+    strapiConstants.STRAPI_STUDENT_ACTIVITIES;
   const ACTIVITY_FILTER = "id";
   const ACTIVITY_STATUS = "status";
-
+  console.log("studentActivityURL", STUDENT_ACTIVITY_URL);
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACTIVITY_URL)
