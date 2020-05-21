@@ -292,11 +292,17 @@ const ManageUser = props => {
           temp["state"] = "";
         }
         if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
-          temp["zone"] = data[i]["organization"]["zone"]["name"];
+          temp["zone"] =
+            data[i]["organization"] &&
+            data[i]["organization"]["zone"] &&
+            data[i]["organization"]["zone"]["name"]
+              ? data[i]["organization"]["zone"]["name"]
+              : "";
         } else {
           if (
             data[i]["contact"]["user"] &&
-            data[i]["contact"]["user"]["zone"]
+            data[i]["contact"]["user"]["zone"] &&
+            data[i]["contact"]["user"]["zone"]["name"]
           ) {
             temp["zone"] = data[i]["contact"]["user"]["zone"]["name"];
           } else {
@@ -305,7 +311,12 @@ const ManageUser = props => {
         }
 
         if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
-          temp["rpc"] = data[i]["organization"]["rpc"]["name"];
+          temp["rpc"] =
+            data[i]["organization"] &&
+            data[i]["organization"]["rpc"] &&
+            data[i]["organization"]["rpc"]["name"]
+              ? data[i]["organization"]["rpc"]["name"]
+              : "";
         } else {
           if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["rpc"]) {
             temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];

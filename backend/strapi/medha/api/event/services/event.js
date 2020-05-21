@@ -6,27 +6,64 @@
  */
 const _ = require("lodash");
 const { PLUGIN } = require("../../../config/constants");
+const { sanitizeEntity, buildQuery } = require("strapi-utils");
+const sanitizeUser = user =>
+  sanitizeEntity(user, {
+    model: strapi.query("user", "users-permissions").model
+  });
+
 module.exports = {
-  getIndividuals: async collegeId => {
+  getIndividuals: async (eventId, collegeId, filters) => {
     const studentRole = await strapi
       .query("role", "users-permissions")
       .findOne({ name: "Student" });
 
-    // console.log(response);
-    //const userIds = response.map(user => user.contact.user);
-    //console.log(userIds);
-    const user = await strapi
-      .query("user", "users-permissions")
-      .find({ role: studentRole.id });
+    const registeredStudentsForEvent = await strapi
+      .query("event-registration")
+      .find({
+        event: eventId
+      });
 
-    const userIds = user.map(user => user.contact.id);
+    const registeredStudentContactIds = registeredStudentsForEvent.map(
+      rsfe => rsfe.contact.id
+    );
 
     let response = await strapi
-      .query("individual", PLUGIN)
-      .find({ contact: userIds, organization: collegeId });
+      .query("contact", PLUGIN)
+      .model.query(
+        buildQuery({
+          model: strapi.query("contact", PLUGIN).model,
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
 
-    return response;
+    /**
+     * Filtering student with user role
+     * then with organization Id
+     * then with is_verified to true
+     */
+    const filtered = response.reduce((result, contact) => {
+      const { user, individual } = contact;
+      if (
+        user &&
+        individual &&
+        user.role == studentRole.id &&
+        individual.organization == collegeId &&
+        individual.is_verified &&
+        !_.includes(registeredStudentContactIds, contact.id)
+      ) {
+        contact.user = sanitizeUser(user);
+        delete contact.activityassignees;
+        result.push(contact);
+      }
+      return result;
+    }, []);
+
+    return filtered;
   },
+
   getEvents: async (college, events) => {
     const filtered = events.filter(event => {
       const { contacts, rpc, zone, state } = event;
