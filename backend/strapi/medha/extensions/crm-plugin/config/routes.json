@@ -189,6 +189,12 @@
       "path": "/contact/:id/edit-organization",
       "handler": "contact.editOrganization",
       "config": { "policies": [] }
+    },
+    {
+      "method": "PUT",
+      "path": "/contact/:id/edit-individual",
+      "handler": "contact.editIndividual",
+      "config": { "policies": [] }
     }
   ]
 }

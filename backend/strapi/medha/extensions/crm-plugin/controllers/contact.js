@@ -8,7 +8,11 @@
 const _ = require("lodash");
 const bookshelf = require("../../../config/bookshelf");
 const utils = require("../../../config/utils");
-const { PLUGIN } = require("../../../config/constants");
+const {
+  PLUGIN,
+  ROLE_COLLEGE_ADMIN,
+  ROLE_MEDHA_ADMIN
+} = require("../../../config/constants");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const { sanitizeEntity } = require("strapi-utils");
 const sanitizeUser = user =>
@@ -1077,9 +1081,11 @@ module.exports = {
   /**
    * Creating organization ie college
    * Steps:
-   * Create Organization
-   * Create Contact
-   * Map contact with organization
+   * Update Organization
+   * Update TPOs if necessary
+   * Update Stream if necessary
+   * Update Contact
+   *
    */
   editOrganization: async ctx => {
     const { id } = ctx.params;
@@ -1232,6 +1238,147 @@ module.exports = {
         }
 
         return new Promise(resolve => resolve(contact));
+      })
+      .then(success => {
+        return ctx.send(utils.getFindOneResponse(success));
+      })
+      .catch(error => {
+        return ctx.response.badRequest(error);
+      });
+  },
+
+  /**
+   * Student self registration and medha admin can create indivisuals
+   */
+  editIndividual: async ctx => {
+    const role = await strapi.plugins[PLUGIN].services.contact.getUserRole(ctx);
+    if (!role) {
+      return ctx.response.badRequest(
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const { id } = ctx.params;
+
+    const contact = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!contact) {
+      return ctx.response.notFound("Contact does not exist");
+    }
+
+    const userId = (contact.user && contact.user.id) || null;
+    if (!userId) {
+      return ctx.response.notFound("User does not exist");
+    }
+
+    const individualId = (contact.individual && contact.individual.id) || null;
+    if (!individualId) {
+      return ctx.response.notFound("Individual does not exist");
+    }
+
+    const userRequestBody = _.pick(ctx.request.body, [
+      "username",
+      "email",
+      "password",
+      "role",
+      "state",
+      "zone",
+      "rpc",
+      "blocked"
+    ]);
+
+    if (
+      (role.name == ROLE_COLLEGE_ADMIN || role.name == ROLE_MEDHA_ADMIN) &&
+      ctx.request.body.hasOwnProperty("password") &&
+      ctx.request.body.password
+    ) {
+      userRequestBody.password = await strapi.plugins[
+        "users-permissions"
+      ].services.user.hashPassword(userRequestBody);
+    }
+
+    const individualRequestBody = _.pick(ctx.request.body, [
+      "first_name",
+      "last_name",
+      "stream",
+      "father_first_name",
+      "father_last_name",
+      "date_of_birth",
+      "gender",
+      "roll_number",
+      "organization"
+    ]);
+
+    if (
+      individualRequestBody.hasOwnProperty("date_of_birth") &&
+      individualRequestBody["date_of_birth"]
+    ) {
+      var d = new Date(individualRequestBody["date_of_birth"]);
+      var n = d.toISOString();
+      individualRequestBody["date_of_birth"] = n;
+    }
+
+    const contactBody = _.pick(ctx.request.body, [
+      "phone",
+      "email",
+      "address_1",
+      "state",
+      "district"
+    ]);
+
+    contactBody.name = `${individualRequestBody.first_name} ${individualRequestBody.last_name}`;
+    contactBody.contact_type = "individual";
+
+    await bookshelf
+      .transaction(async t => {
+        // Step 1 updating user object
+        const user = await strapi
+          .query("user", "users-permissions")
+          .model.where({ id: userId })
+          .save(userRequestBody, { transacting: t, patch: true })
+          .then(model => model)
+          .catch(err => {
+            console.log(err);
+            return null;
+          });
+
+        if (!user) {
+          return Promise.reject("Something went wrong while updating User");
+        }
+
+        // Step 2 updating individual
+        const individual = await strapi
+          .query("individual", PLUGIN)
+          .model.where({ id: individualId })
+          .save(individualRequestBody, { transacting: t, patch: true })
+          .then(model => model)
+          .catch(error => {
+            console.log(error);
+            return null;
+          });
+
+        if (!individual) {
+          return Promise.reject(
+            "Something went wrong while updating Individual"
+          );
+        }
+
+        // Step 3 updating contact details
+        const contact = await strapi
+          .query("contact", PLUGIN)
+          .model.where({ id })
+          .save(contactBody, { transacting: t, patch: true })
+          .then(model => model)
+          .catch(error => {
+            console.log(error);
+            return null;
+          });
+
+        if (!contact) {
+          return Promise.reject("Something went wrong while updating Contact");
+        }
+
+        // Add user object
+        return new Promise(resolve => resolve(user));
       })
       .then(success => {
         return ctx.send(utils.getFindOneResponse(success));
