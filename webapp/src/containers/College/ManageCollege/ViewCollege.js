@@ -72,7 +72,10 @@ const ViewCollege = props => {
     setLoaderStatus(true);
     const studentInfo =
       auth.getUserInfo() !== null &&
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === "College Admin" &&
+      auth.getUserInfo().studentInfo &&
+      auth.getUserInfo().studentInfo.organization &&
+      auth.getUserInfo().studentInfo.organization.id
         ? auth.getUserInfo().studentInfo.organization.id
         : auth.getUserInfo() !== null &&
           auth.getUserInfo().role.name === "Medha Admin"
