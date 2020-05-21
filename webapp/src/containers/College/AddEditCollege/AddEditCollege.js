@@ -71,7 +71,6 @@ const ADD_COLLEGES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ADD_COLLEGE;
 
 const AddEditCollege = props => {
-  console.log("PROPS", props);
   const history = useHistory();
   const classes = useStyles();
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
