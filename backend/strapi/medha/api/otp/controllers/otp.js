@@ -5,122 +5,137 @@
  * to customize this controller
  */
 var crypto = require("crypto");
-const bookshelf = require("../../../config/config.js");
 const utils = require("../../../config/utils.js");
+const { PLUGIN } = require("../../../config/constants");
+const bookshelf = require("../../../config/bookshelf");
 
 module.exports = {
   async requestOTP(ctx) {
     const num = ctx.request.body.contact_number;
-
-    // const buffer = crypto.randomBytes(2);
     const OTP = Math.floor(100000 + Math.random() * 900000);
-    // OTP = parseInt(buffer.toString("hex"), 16)
-    //   .toString()
-    //   .substr(0, 6);
-    console.log(OTP);
-
     await strapi.services.otp.sendOTP(num, OTP);
-    return bookshelf
-      .model("otp")
-      .forge({ contact_number: num, otp: OTP })
+    return await strapi
+      .query("otp")
+      .model.forge({ contact_number: num, otp: OTP })
       .save()
-      .then((model) => {
-        const response = utils.getResponse(model);
-        response.result = { status: "Ok" };
-        return response;
+      .then(() => {
+        return {
+          result: { status: "Ok" }
+        };
       });
   },
+
   async validateOTP(ctx) {
     const { otp, contact_number } = ctx.request.body;
     let today = new Date();
 
-    try {
-      const data = await bookshelf
-        .model("otp")
-        .where({ contact_number: contact_number, otp: otp, is_verified: null })
-        .fetch();
+    const otpModel = await strapi
+      .query("otp")
+      .model.query(qb => {
+        qb.where({
+          contact_number: contact_number,
+          otp: otp,
+          is_verified: null
+        });
+        qb.orWhere({
+          contact_number: contact_number,
+          otp: otp,
+          is_verified: false
+        });
+      })
+      .fetch()
+      .then(model => model);
 
-      const result = data.toJSON();
-      let createdAt = new Date(result.created_at);
+    const result = otpModel.toJSON ? otpModel.toJSON() : otpModel;
+    let createdAt = new Date(result.created_at);
 
-      const diff = (today.getTime() - createdAt.getTime()) / 60000;
-      if (diff > 60.0) {
-        ctx.response.badRequest("OTP has expired");
-      } else {
-        data.save({ is_verified: true }, { patch: true });
+    const diff = (today.getTime() - createdAt.getTime()) / 60000;
+    if (diff > 60.0) {
+      return ctx.response.badRequest("OTP has expired");
+    } else {
+      await bookshelf
+        .transaction(async t => {
+          await otpModel.save(
+            { is_verified: true },
+            { patch: true, transacting: t }
+          );
 
-        const resetPasswordToken = crypto.randomBytes(64).toString("hex");
+          const resetPasswordToken = crypto.randomBytes(64).toString("hex");
 
-        await bookshelf
-          .model("user")
-          .where({ contact_number: contact_number })
-          .fetch()
-          .then((usr) => {
-            usr.save(
+          const contact = await strapi
+            .query("contact", PLUGIN)
+            .findOne({ phone: contact_number });
+
+          if (!contact) {
+            return Promise.reject("Contact does not exist");
+          }
+
+          await strapi
+            .query("user", "users-permissions")
+            .model.where({ id: contact.user.id })
+            .save(
               { resetPasswordToken: resetPasswordToken },
-              { pach: true }
+              { patch: true, transacting: t }
             );
-          });
 
-        const response = utils.getResponse(null);
-        response.result = { resetPasswordToken };
-        ctx.body = response;
-      }
-    } catch (err) {
-      console.log(err);
-      ctx.body = err;
+          return new Promise(resolve => resolve(resetPasswordToken));
+        })
+        .then(success => {
+          return ctx.send(utils.getFindOneResponse(success));
+        })
+        .catch(error => {
+          return ctx.response.badRequest(error);
+        });
     }
   },
+
   async requestOTPForStudent(ctx) {
     const { contact_number } = ctx.request.body;
-    let OTP, buffer;
-    try {
-      // buffer = crypto.randomBytes(3);
-      // OTP = parseInt(buffer.toString("hex"), 16)
-      //   .toString()
-      //   .substr(0, 6);
-      OTP = Math.floor(100000 + Math.random() * 900000);
-      console.log(OTP);
-      await bookshelf
-        .model("otp")
-        .forge({ contact_number: contact_number, otp: OTP })
-        .save();
-      const response = utils.getResponse(null);
-      response.result = { status: "Ok " };
-      ctx.body = response;
-    } catch (err) {
-      console.log(err);
-    }
+    const OTP = Math.floor(100000 + Math.random() * 900000);
+    await strapi
+      .query("otp")
+      .model.forge({ contact_number: contact_number, otp: OTP })
+      .save();
+    return {
+      result: { status: "Ok" }
+    };
   },
+
   async checkOtp(ctx) {
     const { contact_number, otp } = ctx.request.body;
 
-    try {
-      await bookshelf
-        .model("user")
-        .where({ contact_number: contact_number })
-        .fetch()
-        .then((data) => {
-          if (data) ctx.response.forbidden("User already registered.");
-          else throw "not a user";
-        });
-    } catch (err) {
-      try {
-        await bookshelf
-          .model("otp")
-          .where({
+    const contact = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ phone: contact_number });
+
+    console.log(contact_number, contact);
+    if (contact) {
+      return ctx.response.badRequest("User already registered");
+    } else {
+      const verifyOTP = await strapi
+        .query("otp")
+        .model.query(qb => {
+          qb.where({
             contact_number: contact_number,
             otp: otp,
-            is_verified: null,
-          })
-          .fetch();
-        const response = utils.getResponse(null);
-        response.result = { status: "Ok" };
-        ctx.body = response;
-      } catch (err) {
-        console.log(err);
-        ctx.response.badRequest("Invalid OTP");
+            is_verified: null
+          });
+          qb.orWhere({
+            contact_number: contact_number,
+            otp: otp,
+            is_verified: false
+          });
+        })
+        .fetch()
+        .then(model => model);
+
+      if (!verifyOTP) {
+        return ctx.response.badRequest("OTP is invalid");
       }
+
+      return {
+        result: { status: "Ok" }
+      };
     }
-  },
+  }
 };
