@@ -923,7 +923,8 @@ const ROLES = {
           "individuals",
           "organizationevents",
           "eligiblepastevents",
-          "eligibleEvents"
+          "eligibleEvents",
+          "getOrganizationActivities"
         ],
         type: PLUGIN_NAME
       },
