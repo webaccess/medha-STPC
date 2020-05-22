@@ -201,6 +201,12 @@
       "path": "/contact/:id/edit-individual",
       "handler": "contact.editIndividual",
       "config": { "policies": [] }
+    },
+    {
+      "method": "PUT",
+      "path": "/activity/:id",
+      "handler": "activity.update",
+      "config": { "policies": [] }
     }
   ]
 }
