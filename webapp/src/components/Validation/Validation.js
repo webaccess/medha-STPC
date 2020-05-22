@@ -40,12 +40,12 @@ const validation = (value, inputValidations = {}, type = "text") => {
         }
         break;
       case "required":
-        if (value.length === 0) {
+        if (value !== null && value.length === 0) {
           errors.push(validationValue.message);
         }
         break;
       case "validateEmailRegex":
-        if (value.length !== 0 && !emailRegex.test(value)) {
+        if (value !== null && value.length !== 0 && !emailRegex.test(value)) {
           errors.push(validationValue.message);
         }
         break;

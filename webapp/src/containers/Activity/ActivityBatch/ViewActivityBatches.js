@@ -39,7 +39,6 @@ const ViewActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
-  console.log({ history, props });
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
@@ -93,9 +92,9 @@ const ViewActivityBatches = props => {
 
   const ACTIVITY_BATCH_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_ACTIVITY +
+    strapiConstants.STRAPI_INDIVIDUAL_ACTIVITY +
     `/${activity}/` +
-    strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
+    strapiConstants.STRAPI_ACTIVITIES_BATCHES_URL;
 
   useEffect(() => {
     setLoaderStatus(true);

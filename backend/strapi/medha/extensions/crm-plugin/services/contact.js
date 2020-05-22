@@ -131,5 +131,12 @@ module.exports = {
       .save({ blocked: block }, { patch: true, require: false });
 
     return utils.getFindOneResponse({});
+  },
+
+  /**
+   * Get user role from contact
+   */
+  getUserRole: async ctx => {
+    return (ctx.state.user && ctx.state.user.role) || null;
   }
 };

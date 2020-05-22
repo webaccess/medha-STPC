@@ -58,12 +58,12 @@ const HireStudent = props => {
     var body;
     if (props.isHired) {
       body = {
-        hired_at_event: true
+        is_hired_at_event: true
       };
     }
     if (props.isUnHired) {
       body = {
-        hired_at_event: false
+        is_hired_at_event: false
       };
     }
     serviceProviders

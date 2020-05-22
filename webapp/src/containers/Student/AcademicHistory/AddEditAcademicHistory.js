@@ -38,8 +38,8 @@ const AddEditAcademicHistory = props => {
 
   const studentInfo =
     auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
-      ? auth.getUserInfo().studentInfo.id
-      : auth.getStudentIdFromCollegeAdmin();
+      ? auth.getUserInfo().studentInfo.contact.id
+      : null;
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const ACADEMIC_HISTORY_URL =
@@ -215,7 +215,7 @@ const AddEditAcademicHistory = props => {
     );
 
     // Adding student id to post data
-    postData.student = studentInfo;
+    postData.contact = studentInfo;
     if (formState.isEditAcademicHistory) {
       serviceProviders
         .serviceProviderForPutRequest(

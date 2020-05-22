@@ -152,7 +152,6 @@ const AddEditActivityBatches = props => {
     serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT)
       .then(res => {
-        console.log(res);
         setFormState(formState => ({
           ...formState,
           studentsFilter: res.data.result,
@@ -497,7 +496,6 @@ const AddEditActivityBatches = props => {
       serviceProviders
         .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
         .then(({ data }) => {
-          console.log(data);
           history.push({
             pathname: `/manage-activity-batch/${activity}`,
             fromAddActivityBatch: true,
@@ -628,7 +626,6 @@ const AddEditActivityBatches = props => {
     }
   ];
 
-  console.log(formState.values);
   return (
     <Grid>
       <div className={classes.breadCrumbs}>

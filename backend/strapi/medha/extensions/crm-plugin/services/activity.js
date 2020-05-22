@@ -7,7 +7,7 @@ module.exports = {
    * Create Activity batch for students
    */
   createBatchForStudents: async (activityId, ctx) => {
-    const { students, name, start_datetime, end_datetime } = ctx.request.body;
+    const { students, name, start_date_time, end_date_time } = ctx.request.body;
     await bookshelf
       .transaction(async t => {
         /**
@@ -19,8 +19,8 @@ module.exports = {
           .model.forge({
             activity: activityId,
             name,
-            start_datetime,
-            end_datetime
+            start_date_time,
+            end_date_time
           })
           .save(null, { transacting: t })
           .then(model => model.toJSON());
@@ -117,7 +117,7 @@ module.exports = {
           Stream: stream.name,
           "Attended?": !!batch.is_verified_by_college ? "Yes" : "No",
           Trainer: batch.activity.trainer_name,
-          "Activity Date": moment(batch.activity_batch.start_datetime).format(
+          "Activity Date": moment(batch.activity_batch.start_date_time).format(
             "DD MMM YYYY hh:mm"
           )
         };

@@ -22,7 +22,6 @@ const DeleteEducation = props => {
     values: {}
   });
 
-  console.log("props----->", props);
   if (props.showModal && !formState.educationCounter) {
     formState.educationCounter = 0;
     formState.values[EDUCATION_ID] = props.data.id;

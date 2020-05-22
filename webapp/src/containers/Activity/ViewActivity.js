@@ -108,14 +108,14 @@ const ViewActivity = props => {
 
     if (roleName === "College Admin") {
       const college = user ? user.studentInfo : null;
-      const collegeId = college ? college.organization.id : null;
+      const collegeId = college ? college.contact.id : null;
+
       url =
         strapiConstants.STRAPI_DB_URL +
         strapiConstants.STRAPI_CONTACTS +
         `/${collegeId}/` +
         strapiConstants.STRAPI_COLLEGE_ACTIVITY;
     }
-    console.log("collegeAdminUrl", url);
     return url;
   };
 
@@ -124,7 +124,6 @@ const ViewActivity = props => {
     serviceProviders
       .serviceProviderForGetRequest(URL)
       .then(res => {
-        console.log("activityFilter", res);
         setFormState(formState => ({
           ...formState,
           activityFilter: res.data.result
@@ -141,7 +140,6 @@ const ViewActivity = props => {
   const getActivityData = async (pageSize, page, params = null) => {
     setLoaderStatus(true);
     const URL = url();
-    console.log("activityDataUrl", URL);
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
@@ -151,13 +149,11 @@ const ViewActivity = props => {
         defaultParams[key] = params[key];
       });
       params = defaultParams;
-      console.log("params1", params);
     } else {
       params = {
         page: page,
         pageSize: pageSize
       };
-      console.log("params2", params);
     }
     setFormState(formState => ({
       ...formState,
@@ -167,7 +163,6 @@ const ViewActivity = props => {
     await serviceProviders
       .serviceProviderForGetRequest(URL, params)
       .then(res => {
-        console.log("ActivityData", res);
         formState.dataToShow = [];
         setFormState(formState => ({
           ...formState,
@@ -293,8 +288,10 @@ const ViewActivity = props => {
     setLoaderStatus(true);
     const URL =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_ACTIVITY +
-      `/${activity.id}/download`;
+      strapiConstants.STRAPI_INDIVIDUAL_ACTIVITY +
+      `/${activity.id}/` +
+      strapiConstants.STRAPI_DOWNLOAD;
+
     serviceProviders
       .serviceProviderForGetRequest(URL)
       .then(({ data }) => {
@@ -353,22 +350,7 @@ const ViewActivity = props => {
       });
   };
 
-  const addFeedbackHandler = event => {
-    console.log("feedback----", event.title);
-    console.log("event", event);
-    setLoaderStatus(true);
-    setFormState(formState => ({
-      ...formState,
-      showModalFeedback: true,
-      activityTitle: event.title,
-      activityID: event.id
-    }));
-
-    setLoaderStatus(false);
-  };
-
   const viewFeedbackHandler = event => {
-    console.log("event", event);
     setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
@@ -439,16 +421,6 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
-          {/* {roleName === "Student" || roleName === "College Admin" ? (
-            <div className={classes.PaddingActionButton}>
-              <ThumbsUpDownIcon
-                id={cell.id}
-                value={cell.name}
-                title="Add FeedBack"
-                onClick={() => addFeedbackHandler(cell)}
-              />
-            </div>
-          ) : null} */}
           {roleName === "College Admin" || roleName === "Medha Admin" ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon

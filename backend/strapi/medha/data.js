@@ -916,11 +916,15 @@ const ROLES = {
           "findone",
           "createindividual",
           "individualdetails",
+          "editorganization",
           "organizationdetails",
           "approve",
           "unapprove",
           "individuals",
-          "organizationevents"
+          "organizationevents",
+          "eligiblepastevents",
+          "eligibleEvents",
+          "getOrganizationActivities"
         ],
         type: PLUGIN_NAME
       },
@@ -1074,7 +1078,8 @@ const ROLES = {
           "eligibleEvents",
           "eligibleActivity",
           "individualregisteredevents",
-          "individualdetails"
+          "individualdetails",
+          "eligiblepastevents"
         ],
         type: PLUGIN_NAME
       },

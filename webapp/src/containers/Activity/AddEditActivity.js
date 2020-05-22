@@ -339,6 +339,7 @@ const AddEditActivity = props => {
         formState["stream"],
         formState.files
       );
+      console.log("postActivity", postData);
       serviceProvider
         .serviceProviderForPostRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
@@ -366,6 +367,7 @@ const AddEditActivity = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
+        console.log("getOrganisation", res);
         const streams = res.data.result
           .map(college => {
             return { stream: college.stream_strength, id: college.id };

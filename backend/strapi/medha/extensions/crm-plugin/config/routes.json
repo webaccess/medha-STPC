@@ -134,6 +134,12 @@
     },
     {
       "method": "GET",
+      "path": "/contact/individuals/:id/past-events",
+      "handler": "contact.eligiblePastEvents",
+      "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "GET",
       "path": "/activity/:id/download",
       "handler": "activity.download",
       "config": { "policies": [] }
@@ -182,6 +188,18 @@
       "method": "POST",
       "path": "/contact/unblock-individual",
       "handler": "contact.unblockIndividuals",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "PUT",
+      "path": "/contact/:id/edit-organization",
+      "handler": "contact.editOrganization",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "PUT",
+      "path": "/contact/:id/edit-individual",
+      "handler": "contact.editIndividual",
       "config": { "policies": [] }
     }
   ]
