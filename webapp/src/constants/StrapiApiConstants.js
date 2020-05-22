@@ -63,3 +63,4 @@ export const STRAPI_ORGANIZATION = "organization";
 export const STRAPI_INDIVIDUALS = "individuals";
 export const STRAPI_INDIVIDUAL_ACTIVITY = "crm-plugin/activity";
 export const STRAPI_ACTIVITIES_BATCHES_URL = "activities-batches";
+export const STRAPI_DOWNLOAD = "download";
