@@ -14,10 +14,10 @@
       "type": "string",
       "required": true
     },
-    "start_datetime": {
+    "start_date_time": {
       "type": "datetime"
     },
-    "end_datetime": {
+    "end_date_time": {
       "type": "datetime"
     },
     "description": {
