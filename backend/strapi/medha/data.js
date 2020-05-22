@@ -916,6 +916,7 @@ const ROLES = {
           "findone",
           "createindividual",
           "individualdetails",
+          "editorganization",
           "organizationdetails",
           "approve",
           "unapprove",
