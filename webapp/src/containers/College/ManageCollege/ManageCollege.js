@@ -768,11 +768,16 @@ const ManageCollege = props => {
     perPage = formState.pageSize,
     page = 1
   ) => {
-    if (column.selector !== "state") {
-      formState.filterDataParameters[SORT_FIELD_KEY] =
-        column.selector + ":" + sortDirection;
-      getCollegeData(perPage, page, formState.filterDataParameters);
+    if (column.selector === "state") {
+      column.selector = "contact.state.name";
+    } else if (column.selector === "zone") {
+      column.selector = "zone.name";
+    } else if (column.selector === "rpc") {
+      column.selector = "rpc.name";
     }
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getCollegeData(perPage, page, formState.filterDataParameters);
   };
 
   const classes = useStyles();
