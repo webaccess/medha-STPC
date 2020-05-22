@@ -30,7 +30,8 @@ import {
   ViewStudentGridIcon,
   DeleteGridIcon,
   DownloadIcon,
-  ThumbsUpDownIcon
+  ThumbsUpDownIcon,
+  Spinner
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -115,7 +116,6 @@ const ViewActivity = props => {
         `/${collegeId}/` +
         strapiConstants.STRAPI_COLLEGE_ACTIVITY;
     }
-    console.log("collegeAdminUrl", url);
     return url;
   };
 
@@ -671,32 +671,38 @@ const ViewActivity = props => {
             </Grid>
           </CardContent>
         </Card>
-        <Table
-          data={formState.dataToShow}
-          column={column}
-          defaultSortField="name"
-          defaultSortAsc={formState.sortAscending}
-          editEvent={editCell}
-          deleteEvent={deleteCell}
-          progressPending={formState.isDataLoading}
-          paginationTotalRows={formState.totalRows}
-          paginationRowsPerPageOptions={[10, 20, 50]}
-          onChangeRowsPerPage={handlePerRowsChange}
-          onChangePage={handlePageChange}
-          noDataComponent="No Activity details found"
-          style={{ overflowX: "hidden !important" }}
-        />
-        {/* <DeleteActivity
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={formState.dataToDelete["id"]}
-          deleteEvent={isDeleteCellCompleted}
-        /> */}
-        <ViewFeedBack
-          showModal={formState.showViewFeedbackModal}
-          modalClose={modalClose}
-          activityTitle={formState.activityTitle}
-        />
+        {formState.dataToShow ? (
+          formState.dataToShow.length ? (
+            <Table
+              data={formState.dataToShow}
+              column={column}
+              defaultSortField="name"
+              defaultSortAsc={formState.sortAscending}
+              editEvent={editCell}
+              deleteEvent={deleteCell}
+              progressPending={formState.isDataLoading}
+              paginationTotalRows={formState.totalRows}
+              paginationRowsPerPageOptions={[10, 20, 50]}
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
+            />
+          ) : (
+            <React.Fragment>
+              <div className={classes.noDataMargin}>No data to show</div>
+            </React.Fragment>
+          )
+        ) : (
+          <React.Fragment>
+            <div className={classes.noDataMargin}>No data to show</div>
+          </React.Fragment>
+        )}
+        {formState.showViewFeedbackModal ? (
+          <ViewFeedBack
+            showModal={formState.showViewFeedbackModal}
+            modalClose={modalClose}
+            activityTitle={formState.activityTitle}
+          />
+        ) : null}
       </Grid>
     </Grid>
   );

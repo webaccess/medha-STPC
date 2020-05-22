@@ -368,11 +368,17 @@ const AddEditActivity = props => {
       .then(res => {
         const streams = res.data.result
           .map(college => {
-            return { stream: college.stream_strength, id: college.id };
+            return { stream: college.stream_strength, id: college.contact.id };
           })
           .filter(c => c);
         setStream(streams);
-        setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
+        setcollegelist(
+          res.data.result.map(({ id, name, contact }) => ({
+            id,
+            name,
+            contact
+          }))
+        );
       });
   };
 
@@ -421,6 +427,7 @@ const AddEditActivity = props => {
   };
 
   const handleChangeAutoComplete = (eventName, event, value) => {
+    console.log(value);
     /**TO SET VALUES OF AUTOCOMPLETE */
 
     if (value !== null) {
@@ -439,6 +446,18 @@ const AddEditActivity = props => {
             [eventName]: true
           },
           stream: id
+        }));
+      } else if (eventName === "college") {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value.contact.id
+          },
+          touched: {
+            ...formState.touched,
+            [eventName]: true
+          }
         }));
       } else {
         setFormState(formState => ({
@@ -626,7 +645,7 @@ const AddEditActivity = props => {
                     <TextField
                       label="Activity Name"
                       name="activityname"
-                      value={formState.values["activityname"]}
+                      value={formState.values["activityname"] || ""}
                       variant="outlined"
                       error={hasError("activityname")}
                       required
