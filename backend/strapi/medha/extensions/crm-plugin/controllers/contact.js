@@ -764,7 +764,7 @@ module.exports = {
     const currentDate = new Date();
 
     activityBatch = activityBatch.filter(activityBatch => {
-      const endTime = new Date(activityBatch.activity_batch.end_datetime);
+      const endTime = new Date(activityBatch.activity_batch.end_date_time);
 
       if (endTime.getTime() > currentDate.getTime()) return activityBatch;
     });

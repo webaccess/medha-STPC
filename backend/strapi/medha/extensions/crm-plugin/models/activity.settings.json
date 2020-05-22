@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "connection": "default",
   "collectionName": "activities",
   "info": {
@@ -14,10 +13,10 @@
       "type": "string",
       "required": true
     },
-    "start_datetime": {
+    "start_date_time": {
       "type": "datetime"
     },
-    "end_datetime": {
+    "end_date_time": {
       "type": "datetime"
     },
     "activitytype": {
@@ -55,11 +54,6 @@
     "upload_logo": {
       "model": "file",
       "via": "related",
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ],
       "plugin": "upload",
       "required": false
     },
