@@ -288,8 +288,11 @@ const ViewActivity = props => {
     setLoaderStatus(true);
     const URL =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_ACTIVITY +
-      `/${activity.id}/download`;
+      strapiConstants.STRAPI_INDIVIDUAL_ACTIVITY +
+      `/${activity.id}/` +
+      strapiConstants.STRAPI_DOWNLOAD;
+
+    console.log("DownloadURL", URL);
     serviceProviders
       .serviceProviderForGetRequest(URL)
       .then(({ data }) => {

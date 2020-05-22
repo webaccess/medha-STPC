@@ -1,7 +1,6 @@
 export const STRAPI_LOGIN_PATH = "auth/local";
-export const STRAPI_DB_URL = process.env.REACT_APP_SERVER_URL;
-export const STRAPI_DB_URL_WITHOUT_HASH =
-  process.env.REACT_APP_SERVER_URL_WITHOUT_HASH;
+export const STRAPI_DB_URL = "http://104.236.28.24:1339/";
+export const STRAPI_DB_URL_WITHOUT_HASH = "http://104.236.28.24:1339";
 export const STRAPI_ZONES = "zones";
 export const STRAPI_STATES = "crm-plugin/states";
 export const STRAPI_RPCS = "rpcs";
@@ -63,3 +62,4 @@ export const STRAPI_ORGANIZATION = "organization";
 export const STRAPI_INDIVIDUALS = "individuals";
 export const STRAPI_INDIVIDUAL_ACTIVITY = "crm-plugin/activity";
 export const STRAPI_ACTIVITIES_BATCHES_URL = "activities-batches";
+export const STRAPI_DOWNLOAD = "download";
