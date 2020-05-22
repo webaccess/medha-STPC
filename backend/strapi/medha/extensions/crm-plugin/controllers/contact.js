@@ -1278,6 +1278,7 @@ module.exports = {
     const userRequestBody = _.pick(ctx.request.body, [
       "username",
       "email",
+      "password",
       "role",
       "state",
       "zone",
