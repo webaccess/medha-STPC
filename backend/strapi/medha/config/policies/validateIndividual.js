@@ -3,7 +3,7 @@
 /**
  * `validateIndividual` policy.
  */
-
+const { PLUGIN } = require("../constants");
 module.exports = async (ctx, next) => {
   // Add your own logic here.
   console.log("In validateIndividual policy.");
@@ -32,16 +32,45 @@ module.exports = async (ctx, next) => {
       return ctx.response.badRequest("Date Of Birth field is missing");
     if (!individual.gender)
       return ctx.response.badRequest("Gender field is missing");
-    if (!individual.roll_number)
-      return ctx.response.badRequest("Roll Number field is missing");
+
     if (!individual.organization)
       return ctx.response.badRequest("College field is missing");
+    if (!individual.roll_number)
+      return ctx.response.badRequest("Roll Number field is missing");
+    else {
+      const user = await strapi.query("individual", PLUGIN).findOne({
+        organization: individual.organization,
+        roll_number: individual.roll_number
+      });
+      if (user) return ctx.response.badRequest("Roll number already taken");
+    }
+
     if (!individual.username)
       return ctx.response.badRequest("Username field is missing");
+    else {
+      const contact = await strapi
+        .query("user", "users-permissions")
+        .findOne({ username: individual.username });
+      if (contact) return ctx.response.badRequest("Username already taken");
+    }
     if (!individual.email)
       return ctx.response.badRequest("Email field is missing");
+    else {
+      const contact = await strapi
+        .query("user", "users-permissions")
+        .findOne({ email: individual.email });
+      if (contact) return ctx.response.badRequest("Email already taken");
+    }
     if (!individual.phone)
       return ctx.response.badRequest("Contact Number field is missing");
+    else {
+      const contact = await strapi
+        .query("contact", PLUGIN)
+        .findOne({ phone: individual.phone });
+      if (contact)
+        return ctx.response.badRequest("Contact number already taken");
+    }
+
     await next();
   } else {
     if (!individual.password)
@@ -54,10 +83,29 @@ module.exports = async (ctx, next) => {
     //   return ctx.response.badRequest("Address field is missing");
     if (!individual.username)
       return ctx.response.badRequest("Username field is missing");
+    else {
+      const contact = await strapi
+        .query("user", "users-permissions")
+        .findOne({ username: individual.username });
+      if (contact) return ctx.response.badRequest("Username already taken");
+    }
     if (!individual.email)
       return ctx.response.badRequest("Email field is missing");
+    else {
+      const contact = await strapi
+        .query("user", "users-permissions")
+        .findOne({ email: individual.email });
+      if (contact) return ctx.response.badRequest("Email already taken");
+    }
     if (!individual.phone)
       return ctx.response.badRequest("Contact Number field is missing");
+    else {
+      const contact = await strapi
+        .query("contact", PLUGIN)
+        .findOne({ phone: individual.phone });
+      if (contact)
+        return ctx.response.badRequest("Contact number already taken");
+    }
     // if (!individual.date_of_birth)
     //   return ctx.response.badRequest("Date Of Birth field is missing");
     // if (!individual.gender)
