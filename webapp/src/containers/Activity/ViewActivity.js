@@ -109,6 +109,7 @@ const ViewActivity = props => {
     if (roleName === "College Admin") {
       const college = user ? user.studentInfo : null;
       const collegeId = college ? college.contact.id : null;
+
       url =
         strapiConstants.STRAPI_DB_URL +
         strapiConstants.STRAPI_CONTACTS +
@@ -418,16 +419,6 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
-          {/* {roleName === "Student" || roleName === "College Admin" ? (
-            <div className={classes.PaddingActionButton}>
-              <ThumbsUpDownIcon
-                id={cell.id}
-                value={cell.name}
-                title="Add FeedBack"
-                onClick={() => addFeedbackHandler(cell)}
-              />
-            </div>
-          ) : null} */}
           {roleName === "College Admin" || roleName === "Medha Admin" ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon
