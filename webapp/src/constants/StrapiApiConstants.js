@@ -39,13 +39,13 @@ export const STRAPI_ACADEMIC_YEARS = "academic-years";
 export const STRAPI_ACADEMIC_HISTORY = "academic-histories";
 export const STRAPI_STUDENT_ACADEMIC_HISTORY = "academic-history";
 export const STRAPI_EVENTS = "events";
-export const STRAPI_ACTIVITY = "crm-plugin/activities/";
+export const STRAPI_ACTIVITY = "crm-plugin/activities";
 export const STRAPI_COLLEGE_ACTIVITY = "get-organization-activites";
 export const STRAPI_ACTIVITY_BATCH_URL = "activity-batches";
 export const STRAPI_CREATE_ACTIVITY_BATCH_URL = "create-activity-batch";
 export const STRAPI_MANAGE_ACTIVITY_BATCH_URL = "manage-activity-batch";
 export const STRAPI_DELETE_STUDENT_ACTIVITY_BATCH_URL = "remove-students";
-export const STRAPI_ADD_STUDENT_ACTIVITY_BATCH = "add-students";
+export const STRAPI_ADD_STUDENT_ACTIVITY_BATCH = "create-activity-batch";
 export const STRAPI_VALIDATE_STUDENT_ACTIVITY_BATCH = "validate-activity-batch";
 export const STRAPI_UNVALIDATE_STUDENT_ACTIVITY_BATCH =
   "invalidate-activity-batch";
@@ -56,5 +56,10 @@ export const STRAPI_CHANGE_PASSWORD = "auth/reset-password";
 export const STRAPI_CURRENT_USER = "users/me";
 export const STRAPI_CONTACTS = "crm-plugin/contact";
 export const STRAPI_STUDENT_EDUCATION = "education";
+export const STRAPI_STUDENT_ACTIVITIES = "activities";
+export const STRAPI_STUDENTS_INDIVIDUAL_ACTIVITY_URL =
+  "crm-plugin/contact/individuals";
 export const STRAPI_ORGANIZATION = "organization";
 export const STRAPI_INDIVIDUALS = "individuals";
+export const STRAPI_INDIVIDUAL_ACTIVITY = "crm-plugin/activity";
+export const STRAPI_ACTIVITIES_BATCHES_URL = "activities-batches";

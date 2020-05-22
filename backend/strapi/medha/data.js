@@ -916,13 +916,15 @@ const ROLES = {
           "findone",
           "createindividual",
           "individualdetails",
+          "editorganization",
           "organizationdetails",
           "approve",
           "unapprove",
           "individuals",
           "organizationevents",
           "eligiblepastevents",
-          "eligibleEvents"
+          "eligibleEvents",
+          "getOrganizationActivities"
         ],
         type: PLUGIN_NAME
       },
