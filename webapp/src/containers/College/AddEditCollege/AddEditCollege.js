@@ -102,11 +102,13 @@ const AddEditCollege = props => {
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
-
   const [collegeInfo, setCollegeInfo] = useState({
     college:
       auth.getUserInfo().role.name === "College Admin"
-        ? auth.getUserInfo().studentInfo.organization
+        ? auth.getUserInfo().studentInfo &&
+          auth.getUserInfo().studentInfo.organization
+          ? auth.getUserInfo().studentInfo.organization
+          : {}
         : {},
     state:
       auth.getUserInfo().role.name === "College Admin"
@@ -285,12 +287,15 @@ const AddEditCollege = props => {
         setUser([]);
       }
     } else if (auth.getUserInfo().role.name === "College Admin") {
+      const studentId =
+        auth.getUserInfo() !== null &&
+        auth.getUserInfo().studentInfo &&
+        auth.getUserInfo().studentInfo.organization &&
+        auth.getUserInfo().studentInfo.organization.id
+          ? auth.getUserInfo().studentInfo.organization.id
+          : null;
       let user_url =
-        COLLEGES_URL +
-        "/" +
-        auth.getUserInfo().studentInfo.organization.id +
-        "/" +
-        strapiConstants.STRAPI_ADMIN;
+        COLLEGES_URL + "/" + studentId + "/" + strapiConstants.STRAPI_ADMIN;
       serviceProviders
         .serviceProviderForGetRequest(user_url)
         .then(res => {
@@ -312,9 +317,7 @@ const AddEditCollege = props => {
         let array = [];
         tpoData.map(tpo => {
           for (let i in props["dataForEdit"]["tpos"]) {
-            if (
-              props["dataForEdit"]["tpos"][i]["id"] === tpo["contact"]["id"]
-            ) {
+            if (props["dataForEdit"]["tpos"][i]["id"] === tpo["id"]) {
               array.push(tpo);
             }
           }
@@ -424,7 +427,7 @@ const AddEditCollege = props => {
     if (get(CollegeFormSchema[eventName], "type") === "multi-select") {
       let finalValues = [];
       for (let i in value) {
-        finalValues.push(value[i]["contact"]["id"]);
+        finalValues.push(value[i]["id"]);
       }
       value = {
         id: finalValues
@@ -448,7 +451,7 @@ const AddEditCollege = props => {
           ...formState,
           values: {
             ...formState.values,
-            [eventName]: value.contact.id
+            [eventName]: value.id
           },
           touched: {
             ...formState.touched,
@@ -727,11 +730,15 @@ const AddEditCollege = props => {
     );
     setLoaderStatus(true);
     if (formState.isEditCollege) {
+      let EDIT_COLLEGE_URL =
+        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_CONTACT_URL;
+      let EDIT_URL = strapiConstants.STRAPI_EDIT_COLLEGE;
       serviceProviders
         .serviceProviderForPutRequest(
-          COLLEGES_URL,
-          formState.dataForEdit["id"],
-          postData
+          EDIT_COLLEGE_URL,
+          formState.dataForEdit.contact["id"],
+          postData,
+          EDIT_URL
         )
         .then(res => {
           if (auth.getUserInfo().role.name === "Medha Admin") {
@@ -1270,9 +1277,7 @@ const AddEditCollege = props => {
                       value={
                         user[
                           user.findIndex(function (item, i) {
-                            return (
-                              item.contact.id === formState.values[principal]
-                            );
+                            return item.id === formState.values[principal];
                           })
                         ] || null /** Please give a default " " blank value */
                       }

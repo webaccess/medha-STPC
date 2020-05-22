@@ -29,18 +29,51 @@ module.exports = {
    * @return {Object|Array}
    */
   async me(ctx) {
-    const user = ctx.state.user;
+    const request = ctx.state.user;
 
-    if (!user) {
+    if (!request) {
       return ctx.badRequest(null, [
         { messages: [{ id: "No authorization header was found" }] }
       ]);
     }
 
-    const response = await strapi
+    const user = await strapi
       .query("user", "users-permissions")
-      .findOne({ id: user.id });
-    return utils.getFindOneResponse(sanitizeUser(response));
+      .findOne({ id: request.id });
+
+    if (user.contact) {
+      const individualInfo = await strapi
+        .query("individual", "crm-plugin")
+        .findOne({ contact: user.contact.id });
+      user.studentInfo = individualInfo;
+      if (individualInfo) {
+        user.first_name = individualInfo.first_name;
+        user.last_name = individualInfo.last_name;
+      }
+    }
+
+    if (
+      user.hasOwnProperty("studentInfo") &&
+      user.studentInfo.hasOwnProperty("organization") &&
+      user.studentInfo.organization !== null &&
+      user.studentInfo.organization.id
+    ) {
+      const orgInfo = await strapi
+        .query("organization", "crm-plugin")
+        .findOne({ id: user.studentInfo.organization.id }, [
+          "contact",
+          "contact.state",
+          "contact.district",
+          "zone",
+          "rpc",
+          "principal",
+          "tpos",
+          "stream_strength",
+          "stream_strength.stream"
+        ]);
+      user.studentInfo.organization = orgInfo;
+    }
+    return utils.getFindOneResponse(sanitizeUser(user));
   },
 
   /**

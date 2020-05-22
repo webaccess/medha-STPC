@@ -3,7 +3,7 @@ import {
   Grid,
   Typography,
   IconButton,
-  CircularProgress,
+  CircularProgress
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Modal from "@material-ui/core/Modal";
@@ -18,14 +18,14 @@ import * as strapiConstants from "../../../constants/StrapiApiConstants";
 
 const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 
-const DeleteZone = (props) => {
+const DeleteZone = props => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
     values: {},
-    dataToDelete: {},
+    dataToDelete: {}
   });
 
   if (props.showModal && !formState.stateCounter) {
@@ -40,12 +40,12 @@ const DeleteZone = (props) => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0,
+      stateCounter: 0
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -54,7 +54,7 @@ const DeleteZone = (props) => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     /** CALL Put FUNCTION */
     setOpen(true);
     event.preventDefault();
@@ -97,34 +97,39 @@ const DeleteZone = (props) => {
   };
 
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfZoneCanBeDelete = async (id) => {
+  const checkIfZoneCanBeDelete = async id => {
     let dataToReturn = {};
+
     let collegesCheckUrl =
-      ZONES_URL + "/" + id + "/" + strapiConstants.STRAPI_COLLEGES;
+      ZONES_URL +
+      "/" +
+      id +
+      "/" +
+      strapiConstants.STRAPI_COLLEGES_INDERIECT_URL;
     await serviceProviders
       .serviceProviderForGetRequest(collegesCheckUrl)
-      .then((res) => {
+      .then(res => {
         if (res.data.result.length) {
           dataToReturn = {
             status: false,
             message:
               "Cannot delete Zone " +
               formState.dataToDelete["name"] +
-              " as it is linked to other College's",
+              " as it is linked to other College's"
           };
         } else {
           dataToReturn = {
             status: true,
-            message: "Success",
+            message: "Success"
           };
         }
       })
-      .catch((error) => {
-        console.log("error", error);
+      .catch(error => {
+        console.log("errorZoneIdColleges", error);
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting Zone " + formState.dataToDelete["name"],
+          message: "Error deleting Zone " + formState.dataToDelete["name"]
         };
       });
     return dataToReturn;
@@ -134,16 +139,15 @@ const DeleteZone = (props) => {
     if (props.isMultiDelete) {
       serviceProviders
         .serviceProviderForAllDeleteRequest(ZONES_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
-          console.log(res);
           formState.isDeleteData = true;
           handleCloseModal("Zones have been deleted successfully.");
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -153,10 +157,10 @@ const DeleteZone = (props) => {
     } else {
       serviceProviders
         .serviceProviderForDeleteRequest(ZONES_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDeleteData = true;
           handleCloseModal(
@@ -165,7 +169,7 @@ const DeleteZone = (props) => {
               " has been deleted successfully."
           );
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -177,7 +181,7 @@ const DeleteZone = (props) => {
     }
   };
 
-  const handleClose = async (event) => {
+  const handleClose = async event => {
     props.clearSelectedRow(true);
     props.closeModal();
   };
@@ -193,7 +197,7 @@ const DeleteZone = (props) => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500,
+        timeout: 500
       }}
     >
       <Fade in={props.showModal}>

@@ -451,6 +451,9 @@ const ViewZone = props => {
     perPage = formState.pageSize,
     page = 1
   ) => {
+    if (column.selector === "state") {
+      column.selector = "state.name";
+    }
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
     getZoneData(perPage, page, formState.filterDataParameters);

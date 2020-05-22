@@ -191,8 +191,6 @@ module.exports = {
         };
       });
 
-      console.log(orgs);
-
       let new_pageSize =
         pageSize < 0
           ? await utils.getTotalPLuginRecord("organization", "crm-plugin")
@@ -251,10 +249,8 @@ module.exports = {
   },
 
   academicHistory: async ctx => {
-    console.log("In academic history");
     const { id } = ctx.params;
     const academicHistoryId = ctx.query ? ctx.query.id : null;
-    console.log(academicHistoryId);
     let response = await strapi
       .query("academic-history")
       .find({ contact: id }, ["academic_year"]);
@@ -592,7 +588,6 @@ module.exports = {
    */
   blockOrganizations: async ctx => {
     const { ids } = ctx.request.body;
-    console.log(ctx.request.body);
     let idsToBlock;
     if (!ids) {
       return ctx.response.badRequest("Missing ids field");
@@ -773,7 +768,7 @@ module.exports = {
     const currentDate = new Date();
 
     activityBatch = activityBatch.filter(activityBatch => {
-      const endTime = new Date(activityBatch.activity_batch.end_datetime);
+      const endTime = new Date(activityBatch.activity_batch.end_date_time);
 
       if (endTime.getTime() > currentDate.getTime()) return activityBatch;
     });
@@ -952,11 +947,11 @@ module.exports = {
         .findOne({ contact: id, event: event.id });
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
-        eventRegistrationInfo && eventRegistrationInfo.hired_at_event
+        eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
           ? true
           : false;
       event.hasAttended =
-        eventRegistrationInfo && eventRegistrationInfo.attendance_verified
+        eventRegistrationInfo && eventRegistrationInfo.is_attendance_verified
           ? true
           : false;
     });
@@ -984,13 +979,194 @@ module.exports = {
         if (event.hasAttended == _val) return event;
       });
     }
-    console.log(result);
 
     const currentDate = new Date();
     result = result.filter(event => {
       const endDate = new Date(event.end_date_time);
 
-      if (endDate.getTime() > currentDate.getTime()) return event;
+      if (endDate.getTime() >= currentDate.getTime()) return event;
+    });
+
+    const response = utils.paginate(result, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
+  },
+
+  async eligiblePastEvents(ctx) {
+    const { id } = ctx.params;
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+
+    // Extrating the details for query params
+    let isRegistered, hasAttended, isHired;
+
+    /**
+     * Removing isRegistered,hasAttended, isHired since those
+     * are custom fields added and strapi won't allow custom fields if present
+     * in query params
+     */
+
+    if (_.has(query, "isRegistered")) {
+      isRegistered = query.isRegistered;
+      delete query.isRegistered;
+    }
+
+    if (_.has(query, "hasAttended")) {
+      hasAttended = query.hasAttended;
+      delete query.hasAttended;
+    }
+
+    if (_.has(query, "isHired")) {
+      isHired = query.isHired;
+      delete query.isHired;
+    }
+
+    const filters = convertRestQueryParams(query);
+
+    const student = await strapi.query("contact", PLUGIN).findOne({ id });
+
+    if (!student) {
+      return ctx.response.notFound("Student does not exist");
+    }
+    const { stream } = student;
+
+    const organization = await strapi
+      .query("organization", PLUGIN)
+      .findOne({ id: student.individual.organization });
+
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    let result;
+    /**Filtering organization */
+    if (organization) {
+      // Get student organization events
+      result = await strapi.services.event.getEvents(organization, events);
+    } else {
+      result = events;
+    }
+    /**Filtering stream */
+
+    if (stream) {
+      result = result.filter(event => {
+        const { streams } = event;
+        const streamIds = streams.map(s => s.id);
+        if (streamIds.length == 0 || _.includes(streamIds, stream)) {
+          return event;
+        }
+      });
+    }
+
+    /** Filtering qualifications */
+    const studentEducations = await strapi
+      .query("education")
+      .find({ contact: id });
+    result = result.filter(event => {
+      const { qualifications } = event;
+      let isEligible = true;
+      qualifications.forEach(q => {
+        const isQualificationPresent = studentEducations.find(
+          e =>
+            e.qualification == q.qualification && e.percentage >= q.percentage
+        );
+
+        if (!isQualificationPresent) {
+          isEligible = false;
+        }
+      });
+      if (isEligible) {
+        return event;
+      }
+    });
+
+    /**Filtering educations */
+    const academicHistory = await strapi
+      .query("academic-history")
+      .find({ contact: id });
+
+    result = result.filter(event => {
+      const { educations } = event;
+
+      let isEligible = true;
+
+      educations.forEach(edu => {
+        const isEducationPresent = academicHistory.find(
+          ah =>
+            ah.education_year == edu.education_year &&
+            ah.percentage >= edu.percentage
+        );
+
+        if (!isEducationPresent) {
+          isEligible = false;
+        }
+      });
+
+      if (isEligible) {
+        return event;
+      }
+    });
+
+    /**
+     * Since event object don't have information regarding
+     * student has registered or attended we are getting
+     * that information from event registration and then adding that details to
+     * original event object
+     */
+    await utils.asyncForEach(result, async event => {
+      const eventRegistrationInfo = await strapi
+        .query("event-registration")
+        .findOne({ contact: id, event: event.id });
+      event.isRegistered = eventRegistrationInfo ? true : false;
+      event.isHired =
+        eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
+          ? true
+          : false;
+      event.hasAttended =
+        eventRegistrationInfo && eventRegistrationInfo.is_attendance_verified
+          ? true
+          : false;
+    });
+
+    /**
+     * Filtering for custom filters hasAttended, isHired and isRegistered
+     */
+    if (isRegistered) {
+      const _val = isRegistered == "true";
+      result = result.filter(event => {
+        if (event.isRegistered == _val) return event;
+      });
+    }
+
+    if (isHired) {
+      const _val = isHired == "true";
+      result = result.filter(event => {
+        if (event.isHired == _val) return event;
+      });
+    }
+
+    if (hasAttended) {
+      const _val = hasAttended == "true";
+      result = result.filter(event => {
+        if (event.hasAttended == _val) return event;
+      });
+    }
+
+    const currentDate = new Date();
+    result = result.filter(event => {
+      const endDate = new Date(event.end_date_time);
+
+      if (endDate < currentDate) {
+        return (event["currentDate"] = currentDate);
+      }
     });
 
     const response = utils.paginate(result, page, pageSize);

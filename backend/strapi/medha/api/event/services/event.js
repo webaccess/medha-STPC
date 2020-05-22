@@ -32,13 +32,21 @@ module.exports = {
       .query("contact", PLUGIN)
       .model.query(
         buildQuery({
-          model: strapi.query("contact", PLUGIN).model,
+          model: strapi.plugins["crm-plugin"].models["contact"],
           filters
         })
       )
-      .fetchAll()
+      .fetchAll({
+        withRelated: [
+          "state",
+          "district",
+          "individual.stream",
+          "user",
+          "activityassignees",
+          "contacttags"
+        ]
+      })
       .then(model => model.toJSON());
-
     /**
      * Filtering student with user role
      * then with organization Id
