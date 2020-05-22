@@ -292,7 +292,6 @@ const ViewActivity = props => {
       `/${activity.id}/` +
       strapiConstants.STRAPI_DOWNLOAD;
 
-    console.log("DownloadURL", URL);
     serviceProviders
       .serviceProviderForGetRequest(URL)
       .then(({ data }) => {
