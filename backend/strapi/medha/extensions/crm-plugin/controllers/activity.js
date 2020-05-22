@@ -20,18 +20,19 @@ module.exports = {
    * TODO policy to check required fields
    */
   create: async ctx => {
-    let { data } = ctx.request.body;
     const files = ctx.request.files;
-
-    data = JSON.parse(data);
-    const entry = await strapi.query("activity", PLUGIN).create(data);
-
-    if (files) {
+    let entry;
+    if (ctx.request.files && ctx.request.body.data) {
+      let { data } = ctx.request.body;
+      data = JSON.parse(data);
+      entry = await strapi.query("activity", PLUGIN).create(data);
       // automatically uploads the files based on the entry and the model
       await strapi.entityService.uploadFiles(entry, files, {
         model: "activity",
         plugin: PLUGIN
       });
+    } else {
+      entry = await strapi.query("activity", PLUGIN).create(ctx.request.body);
     }
 
     return entry;
