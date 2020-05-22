@@ -306,5 +306,53 @@ module.exports = {
 
     const response = utils.paginate(filtered, page, pageSize);
     return { result: response.result, ...response.pagination };
+  },
+
+  async update(ctx) {
+    const { id } = ctx.params;
+    const activity = await strapi.query("activity", PLUGIN).findOne({ id });
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+
+    if (ctx.request.files && ctx.request.body.data) {
+      const data = JSON.parse(ctx.request.body.data);
+      const body = _.pick(data, [
+        "title",
+        "start_date_time",
+        "end_date_time",
+        "activitytype",
+        "academic_year",
+        "contact",
+        "education_year",
+        "address",
+        "trainer_name",
+        "question_set",
+        "description"
+      ]);
+    } else {
+      const body = _.pick(ctx.request.body, [
+        "title",
+        "start_date_time",
+        "end_date_time",
+        "activitytype",
+        "academic_year",
+        "contact",
+        "education_year",
+        "address",
+        "trainer_name",
+        "question_set",
+        "description"
+      ]);
+      return await strapi
+        .query("activity", PLUGIN)
+        .model.where({ id })
+        .save(body, { patch: true })
+        .then(async model => {
+          await model.related("streams").detach();
+          await model.related("streams").attach(ctx.request.body.streams);
+          return model;
+        });
+    }
   }
 };
