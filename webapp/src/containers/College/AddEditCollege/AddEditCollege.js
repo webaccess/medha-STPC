@@ -102,11 +102,13 @@ const AddEditCollege = props => {
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const inputLabel = React.useRef(null);
-
   const [collegeInfo, setCollegeInfo] = useState({
     college:
       auth.getUserInfo().role.name === "College Admin"
-        ? auth.getUserInfo().studentInfo.organization
+        ? auth.getUserInfo().studentInfo &&
+          auth.getUserInfo().studentInfo.organization
+          ? auth.getUserInfo().studentInfo.organization
+          : {}
         : {},
     state:
       auth.getUserInfo().role.name === "College Admin"
@@ -285,12 +287,15 @@ const AddEditCollege = props => {
         setUser([]);
       }
     } else if (auth.getUserInfo().role.name === "College Admin") {
+      const studentId =
+        auth.getUserInfo() !== null &&
+        auth.getUserInfo().studentInfo &&
+        auth.getUserInfo().studentInfo.organization &&
+        auth.getUserInfo().studentInfo.organization.id
+          ? auth.getUserInfo().studentInfo.organization.id
+          : null;
       let user_url =
-        COLLEGES_URL +
-        "/" +
-        auth.getUserInfo().studentInfo.organization.id +
-        "/" +
-        strapiConstants.STRAPI_ADMIN;
+        COLLEGES_URL + "/" + studentId + "/" + strapiConstants.STRAPI_ADMIN;
       serviceProviders
         .serviceProviderForGetRequest(user_url)
         .then(res => {
