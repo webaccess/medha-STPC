@@ -96,7 +96,7 @@ const ViewActivity = props => {
     severity: ""
   });
 
-  const ACTIVITY_FILTER = "id";
+  const ACTIVITY_FILTER = "title_contains";
   const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
   const role = user ? user.role : null;
   const roleName = role ? role.name : null;
@@ -109,7 +109,7 @@ const ViewActivity = props => {
 
     if (roleName === "College Admin") {
       const college = user ? user.studentInfo : null;
-      const collegeId = college ? college.contact.id : null;
+      const collegeId = college ? college.organization.contact.id : null;
 
       url =
         strapiConstants.STRAPI_DB_URL +
@@ -139,7 +139,6 @@ const ViewActivity = props => {
 
   /** This seperate function is used to get the Activity data*/
   const getActivityData = async (pageSize, page, params = null) => {
-    setLoaderStatus(true);
     const URL = url();
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
@@ -179,7 +178,6 @@ const ViewActivity = props => {
       .catch(error => {
         console.log("error", error);
       });
-    setLoaderStatus(false);
   };
 
   /** Pagination */
@@ -271,6 +269,17 @@ const ViewActivity = props => {
     } else {
       formState.filterDataParameters[filterName] = value["id"];
     }
+  };
+
+  const handleFilterChangeForActivityField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [ACTIVITY_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
 
   /**
@@ -444,7 +453,7 @@ const ViewActivity = props => {
           ) : null}
         </div>
       ),
-      width: "18%",
+      width: "auto",
       cellStyle: {
         width: "18%",
         maxWidth: "18%"
@@ -490,7 +499,7 @@ const ViewActivity = props => {
           {genericConstants.VIEW_ACTIVITY_TEXT}
         </Typography>
 
-        <GreenButton
+        {/* <GreenButton
           variant="contained"
           color="primary"
           onClick={handleAddActivityClick}
@@ -500,7 +509,7 @@ const ViewActivity = props => {
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
           {genericConstants.ADD_ACTIVITY_TEXT}
-        </GreenButton>
+        </GreenButton> */}
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
@@ -600,22 +609,14 @@ const ViewActivity = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  options={formState.activityFilter}
+                <TextField
+                  label="Activity Title"
+                  margin="normal"
+                  variant="outlined"
+                  value={formState.filterDataParameters[ACTIVITY_FILTER] || ""}
+                  placeholder="Activity Title"
                   className={classes.autoCompleteField}
-                  getOptionLabel={option => option.title}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(ACTIVITY_FILTER, event, value)
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Activity Title"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                  onChange={handleFilterChangeForActivityField}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>

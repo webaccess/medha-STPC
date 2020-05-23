@@ -50,7 +50,18 @@ module.exports = {
           filters
         })
       )
-      .fetchAll()
+      .fetchAll({
+        withRelated: [
+          "activitytype",
+          "academic_year",
+          "contact",
+          "contact.organization",
+          "contact.organization.stream_strength",
+          "contact.organization.stream_strength.stream",
+          "streams",
+          "upload_logo"
+        ]
+      })
       .then(res => {
         const response = utils.paginate(res, page, pageSize);
         return {
@@ -169,7 +180,6 @@ module.exports = {
     return utils.getFindOneResponse(batchWiseStudentList);
   },
   async delete(ctx) {
-    console.log("IN controller");
     const { id } = ctx.params;
     const activity = await strapi.query("activity", PLUGIN).delete({ id });
 
@@ -190,6 +200,7 @@ module.exports = {
     const { student_id, stream_id } = query;
 
     const activity = await strapi.query("activity", PLUGIN).findOne({ id });
+    console.log("activity", activity);
 
     if (!activity) {
       return ctx.response.notFound("Activity does not exist");
@@ -247,7 +258,6 @@ module.exports = {
         .query("contact", PLUGIN)
         .find({ user_in: userIds });
 
-      console.log(students);
       students = students.map(student => {
         student.user = sanitizeUser(student.user);
         return student;
@@ -256,7 +266,6 @@ module.exports = {
       allStudents = students;
     }
 
-    console.log(allStudents);
     // Filter student with stream and education year
     let isStreamEligible, isEducationEligible;
 
