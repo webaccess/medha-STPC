@@ -40,6 +40,7 @@ import moment from "moment";
 import XLSX from "xlsx";
 import LoaderContext from "../../context/LoaderContext";
 import ViewFeedBack from "../../containers/Feedback/ViewFeedback/ViewFeedback";
+import auth from "../../components/Auth";
 
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
@@ -499,17 +500,19 @@ const ViewActivity = props => {
           {genericConstants.VIEW_ACTIVITY_TEXT}
         </Typography>
 
-        {/* <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={handleAddActivityClick}
-          disableElevation
-          greenButtonChecker
-          to={routeConstants.ADD_ACTIVITY}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_ACTIVITY_TEXT}
-        </GreenButton> */}
+        {auth.getUserInfo().role.name === "Medha Admin" ? (
+          <GreenButton
+            variant="contained"
+            color="primary"
+            onClick={handleAddActivityClick}
+            disableElevation
+            greenButtonChecker
+            to={routeConstants.ADD_ACTIVITY}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+          >
+            {genericConstants.ADD_ACTIVITY_TEXT}
+          </GreenButton>
+        ) : null}
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
