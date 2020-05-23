@@ -24,7 +24,7 @@
       "method": "POST",
       "path": "/contact/create-organization",
       "handler": "contact.createOrganization",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.validateOrganization"] }
     },
     {
       "method": "POST",
@@ -58,7 +58,7 @@
       "method": "GET",
       "path": "/contact/get-organizations/:orgId",
       "handler": "contact.organizationDetails",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.isOrganizationAllowed"] }
     },
     {
       "method": "GET",
@@ -70,7 +70,7 @@
       "method": "GET",
       "path": "/contact/get-organizations/:orgId/students",
       "handler": "contact.organizationStudents",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.isOrganizationAllowed"] }
     },
     {
       "method": "GET",
@@ -200,6 +200,12 @@
       "method": "PUT",
       "path": "/contact/:id/edit-individual",
       "handler": "contact.editIndividual",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "PUT",
+      "path": "/activity/:id",
+      "handler": "activity.update",
       "config": { "policies": [] }
     }
   ]
