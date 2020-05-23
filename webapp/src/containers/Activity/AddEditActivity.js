@@ -85,12 +85,6 @@ const AddEditActivity = props => {
   // const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
   const { setLoaderStatus } = useContext(LoaderContext);
 
-  const activitytypelist = [
-    { name: "Workshop", id: "workshop" },
-    { name: "Training", id: "training" },
-    { name: "Industrial Visit", id: "industrialVisit" }
-  ];
-
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
@@ -104,12 +98,28 @@ const AddEditActivity = props => {
 
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
+  const [activityType, setActivityType] = useState([]);
 
   useEffect(() => {
     setLoaderStatus(true);
     getColleges();
+    getActivityTypes();
     setLoaderStatus(false);
   }, []);
+
+  const getActivityTypes = async () => {
+    const activityTypeUrl =
+      strapiApiConstants.STRAPI_DB_URL +
+      strapiApiConstants.STRAPI_ACTIVITY_TYPE;
+    await serviceProvider
+      .serviceProviderForGetRequest(activityTypeUrl)
+      .then(res => {
+        setActivityType(res.data);
+      })
+      .catch(error => {
+        console.log("error while getting activity type");
+      });
+  };
 
   useEffect(() => {
     setLoaderStatus(true);
@@ -143,9 +153,9 @@ const AddEditActivity = props => {
         formState.values["activityname"] =
           props.location["dataForEdit"]["title"];
       }
-      if (props.location["dataForEdit"]["activity_type"]) {
+      if (props.location["dataForEdit"]["activitytype"]) {
         formState.values["activitytype"] =
-          props.location["dataForEdit"]["activity_type"];
+          props.location["dataForEdit"]["activitytype"]["id"];
       }
       if (
         props.location["dataForEdit"]["academic_year"] &&
@@ -160,8 +170,11 @@ const AddEditActivity = props => {
           return stream.id;
         });
         const data = {
-          id: props.location["dataForEdit"]["college"]["id"],
-          stream: props.location["dataForEdit"]["college"]["stream_strength"]
+          id: props.location["dataForEdit"]["contact"]["id"],
+          stream:
+            props.location["dataForEdit"]["contact"]["organization"][
+              "stream_strength"
+            ]
         };
         const list = [];
         list.push(data);
@@ -195,11 +208,11 @@ const AddEditActivity = props => {
       }
 
       if (
-        props.location["dataForEdit"]["college"] &&
-        props.location["dataForEdit"]["college"]["id"]
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["id"]
       ) {
         formState.values["college"] =
-          props.location["dataForEdit"]["college"]["id"];
+          props.location["dataForEdit"]["contact"]["id"];
       }
       if (props.location["dataForEdit"]["start_date_time"]) {
         formState.values[dateFrom] = moment(
@@ -267,7 +280,6 @@ const AddEditActivity = props => {
         dateTo
       );
     }
-    console.log(isValid, formState);
     if (isValid) {
       /** CALL POST FUNCTION */
       postActivityData();
@@ -339,7 +351,6 @@ const AddEditActivity = props => {
         formState["stream"],
         formState.files
       );
-      console.log("postActivity", postData);
       serviceProvider
         .serviceProviderForPostRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
@@ -361,20 +372,25 @@ const AddEditActivity = props => {
     }
   };
 
-  const getColleges = () => {
-    serviceProvider
+  const getColleges = async () => {
+    await serviceProvider
       .serviceProviderForGetRequest(
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
-        console.log("getOrganisation", res);
         const streams = res.data.result
           .map(college => {
-            return { stream: college.stream_strength, id: college.id };
+            return { stream: college.stream_strength, id: college.contact.id };
           })
           .filter(c => c);
         setStream(streams);
-        setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
+        setcollegelist(
+          res.data.result.map(({ id, name, contact }) => ({
+            id,
+            name,
+            contact
+          }))
+        );
       });
   };
 
@@ -424,7 +440,6 @@ const AddEditActivity = props => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
-
     if (value !== null) {
       if (eventName === "stream") {
         const id = value.map(stream => {
@@ -441,6 +456,18 @@ const AddEditActivity = props => {
             [eventName]: true
           },
           stream: id
+        }));
+      } else if (eventName === "college") {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value.contact.id
+          },
+          touched: {
+            ...formState.touched,
+            [eventName]: true
+          }
         }));
       } else {
         setFormState(formState => ({
@@ -628,7 +655,7 @@ const AddEditActivity = props => {
                     <TextField
                       label="Activity Name"
                       name="activityname"
-                      value={formState.values["activityname"]}
+                      value={formState.values["activityname"] || ""}
                       variant="outlined"
                       error={hasError("activityname")}
                       required
@@ -755,7 +782,7 @@ const AddEditActivity = props => {
                       value={
                         collegelist[
                           collegelist.findIndex(function (item, i) {
-                            return item.id === formState.values.college;
+                            return item.contact.id === formState.values.college;
                           })
                         ] || null
                       }
@@ -854,14 +881,14 @@ const AddEditActivity = props => {
                     <Autocomplete
                       id="combo-box-demo"
                       className={classes.root}
-                      options={activitytypelist}
+                      options={activityType}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete("activitytype", event, value);
                       }}
                       value={
-                        activitytypelist[
-                          activitytypelist.findIndex(function (item, i) {
+                        activityType[
+                          activityType.findIndex(function (item, i) {
                             return item.id === formState.values.activitytype;
                           })
                         ] || null

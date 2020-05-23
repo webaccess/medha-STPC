@@ -1,6 +1,12 @@
 const PLUGIN_NAME = "crm-plugin";
 
 const ACADEMIC_YEARS = [
+  { name: "AY 13-14", start_date: "2013-06-01", end_date: "2014-05-31" },
+  { name: "AY 14-15", start_date: "2014-06-01", end_date: "2015-05-31" },
+  { name: "AY 15-16", start_date: "2015-06-01", end_date: "2016-05-31" },
+  { name: "AY 16-17", start_date: "2016-06-01", end_date: "2017-05-31" },
+  { name: "AY 17-18", start_date: "2017-06-01", end_date: "2018-05-31" },
+  { name: "AY 18-19", start_date: "2018-06-01", end_date: "2019-05-31" },
   { name: "AY 19-20", start_date: "2019-06-01", end_date: "2020-05-31" },
   { name: "AY 20-21", start_date: "2020-06-01", end_date: "2021-05-31" },
   { name: "AY 21-22", start_date: "2021-06-01", end_date: "2022-05-31" },
