@@ -40,7 +40,7 @@ const validation = (value, inputValidations = {}, type = "text") => {
         }
         break;
       case "required":
-        if (value !== null && value.length === 0) {
+        if (value !== undefined && value !== null && value.length === 0) {
           errors.push(validationValue.message);
         }
         break;
