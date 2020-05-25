@@ -92,7 +92,6 @@ let VALIDATIONFORCOLLEGE = {
 };
 
 const AddEditUser = props => {
-  console.log("AddEditUser", props);
   /** Initializing all the hooks */
   const classes = useStyles();
   const history = useHistory();
