@@ -359,12 +359,13 @@ export const addEducation = (
   };
 };
 
-export const uploadDocument = (files, ref, refId, field) => {
+export const uploadDocument = (files, ref, refId, field, source) => {
   const formData = new FormData();
   formData.append("files", files);
   formData.append("ref", ref);
   formData.append("refId", refId);
   formData.append("field", field);
+  formData.append("source", source);
   return formData;
 };
 
