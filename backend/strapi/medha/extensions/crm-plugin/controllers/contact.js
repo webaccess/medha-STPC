@@ -314,7 +314,8 @@ module.exports = {
       "gender",
       "roll_number",
       "organization",
-      "future_aspirations"
+      "future_aspirations",
+      "is_physically_challenged"
     ]);
 
     if (
@@ -1481,6 +1482,7 @@ module.exports = {
       "father_last_name",
       "date_of_birth",
       "gender",
+      "is_physically_challenged",
       "roll_number",
       "organization",
       "future_aspirations"

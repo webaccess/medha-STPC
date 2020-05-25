@@ -364,9 +364,10 @@ const AddEditStudent = props => {
       );
       serviceProvider
         .serviceProviderForPutRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-          formState.dataForEdit.id,
-          postData
+          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_CONTACTS,
+          formState.dataForEdit.contact.id,
+          postData,
+          "edit-individual"
         )
         .then(response => {
           let studentName =
