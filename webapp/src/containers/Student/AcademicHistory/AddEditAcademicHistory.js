@@ -7,8 +7,8 @@ import {
   Grid,
   TextField
 } from "@material-ui/core";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { get } from "lodash";
 import useStyles from "../../ContainerStyles/AddEditPageStyles";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import StateSchema from "../StateSchema";
 import * as routeConstants from "../../../constants/RouteConstants";

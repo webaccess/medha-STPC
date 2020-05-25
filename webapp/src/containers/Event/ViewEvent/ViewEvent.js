@@ -20,7 +20,7 @@ import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import Img from "react-image";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import ReactHtmlParser from "react-html-parser";
 import "../../../assets/cssstylesheet/ImageCssStyles.css";
 import RegisterEvent from "../EventRegistration/EventRegistration";

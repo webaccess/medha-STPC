@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import * as routeConstants from "../../../constants/RouteConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import {
   Auth as auth,
   Spinner,

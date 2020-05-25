@@ -3,12 +3,12 @@ import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import CollegeFormSchema from "../CollegeFormSchema";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
-import * as commonUtilities from "../../../Utilities/CommonUtilities";
+import * as commonUtilities from "../../../utilities/CommonUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import {
   YellowButton,

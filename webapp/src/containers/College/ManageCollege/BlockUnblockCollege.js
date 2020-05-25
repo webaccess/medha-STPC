@@ -15,7 +15,7 @@ import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 
 const COLLEGE_BLOCK_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_BLOCK_COLLEGE;

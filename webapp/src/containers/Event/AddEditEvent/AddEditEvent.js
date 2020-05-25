@@ -27,9 +27,9 @@ import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
 import EventSchema from "../EventSchema";
 import { get } from "lodash";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import { useHistory } from "react-router-dom";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { Editor } from "react-draft-wysiwyg";
