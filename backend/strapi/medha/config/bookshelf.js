@@ -19,6 +19,11 @@ bookshelf.model("academic_year", {
   requireFetch: false
 });
 
+bookshelf.model("uploadMorph", {
+  requireFetch: false,
+  tableName: "upload_file_morph"
+});
+
 bookshelf.model("country", {
   tableName: "countries",
   requireFetch: false
