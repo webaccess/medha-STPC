@@ -8,8 +8,8 @@
         "database": "medha-CRM",
         "host": "127.0.0.1",
         "port": 5432,
-        "username": "medha",
-        "password": "medha",
+        "username": "postgres",
+        "password": "root",
         "ssl": false
       },
       "options": {}

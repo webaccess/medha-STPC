@@ -313,6 +313,7 @@ module.exports = {
       "date_of_birth",
       "gender",
       "roll_number",
+      "is_physically_challenged",
       "organization"
     ]);
 
@@ -1480,6 +1481,7 @@ module.exports = {
       "father_last_name",
       "date_of_birth",
       "gender",
+      "is_physically_challenged",
       "roll_number",
       "organization"
     ]);
