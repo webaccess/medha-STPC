@@ -26,7 +26,7 @@ import {
   FormHelperText,
   Collapse
 } from "@material-ui/core";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProviders from "../../../api/Axios";
 import ChangePasswordSchema from "./ChangePasswordSchema";

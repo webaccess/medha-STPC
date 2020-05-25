@@ -12,7 +12,7 @@ import {
   Tooltip
 } from "@material-ui/core";
 import * as routeConstants from "../../../constants/RouteConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import {
   Spinner,
   GreenButton,

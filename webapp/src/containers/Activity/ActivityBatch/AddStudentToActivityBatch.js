@@ -13,7 +13,7 @@ import useStyles from "../ViewActivityStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import { Table, Spinner, YellowButton, GrayButton } from "../../../components";
 import { uniqBy } from "lodash";
 import Modal from "@material-ui/core/Modal";

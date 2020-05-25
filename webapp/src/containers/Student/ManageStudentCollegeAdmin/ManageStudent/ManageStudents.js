@@ -17,7 +17,7 @@ import {
 import ApprovedStudents from "./ApprovedStudents";
 import DeleteStudents from "./DeleteStudents";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import * as formUtilities from "../../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../../utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as genericConstants from "../../../../constants/GenericConstants";
 import * as routeConstants from "../../../../constants/RouteConstants";

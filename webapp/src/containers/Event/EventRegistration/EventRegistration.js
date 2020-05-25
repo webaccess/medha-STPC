@@ -9,7 +9,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";

@@ -40,7 +40,7 @@ import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { useTheme } from "@material-ui/core/styles";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import image from "../../../assets/images/login-img.png";
 import CardIcon from "../../../components/Card/CardIcon.js";
 import { useHistory } from "react-router-dom";

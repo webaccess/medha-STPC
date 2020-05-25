@@ -4,8 +4,8 @@ import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import { get, set } from "lodash";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "../../ContainerStyles/AddEditPageStyles";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import {

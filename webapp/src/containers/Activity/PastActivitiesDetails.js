@@ -21,7 +21,7 @@ import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../constants/RouteConstants";
 import Img from "react-image";
-import * as formUtilities from "../../Utilities/FormUtilities.js";
+import * as formUtilities from "../../utilities/FormUtilities.js";
 import moment from "moment";
 import LoaderContext from "../../context/LoaderContext";
 

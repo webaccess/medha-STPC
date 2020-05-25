@@ -16,7 +16,7 @@ import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import {
   Table,
   Spinner,
@@ -84,7 +84,6 @@ const ViewEducation = props => {
     severity: ""
   });
 
-  console.log("studentInfo", Auth.getUserInfo());
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
       ? Auth.getUserInfo().studentInfo.contact.id

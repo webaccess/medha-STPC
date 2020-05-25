@@ -21,7 +21,6 @@ import { Auth as auth, InlineDatePicker } from "../../components";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
-import * as commonUtilities from "../../Utilities/CommonUtilities";
 
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
@@ -33,8 +32,8 @@ import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
-import * as formUtilities from "../../Utilities/FormUtilities.js";
-import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
+import * as formUtilities from "../../utilities/FormUtilities.js";
+import * as databaseUtilities from "../../utilities/StrapiUtilities.js";
 import registrationSchema from "./RegistrationSchema.js";
 import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
@@ -365,9 +364,10 @@ const AddEditStudent = props => {
       );
       serviceProvider
         .serviceProviderForPutRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-          formState.dataForEdit.id,
-          postData
+          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_CONTACTS,
+          formState.dataForEdit.contact.id,
+          postData,
+          "edit-individual"
         )
         .then(response => {
           let studentName =

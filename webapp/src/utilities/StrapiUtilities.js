@@ -386,13 +386,14 @@ export const addActivity = (
     title: title,
     activitytype: activity_type,
     contact: college,
-    start_datetime: start_date_time,
-    end_datetime: end_date_time,
+    start_date_time: start_date_time,
+    end_date_time: end_date_time,
     education_year: education_year,
     address: address,
     description: description,
     trainer_name: trainer_name,
-    streams: streams
+    streams: streams,
+    question_set: null
   };
 
   if (files) {
@@ -420,8 +421,8 @@ export const editActivity = (
 ) => {
   const data = {
     title: title,
-    activity_type: activity_type,
-    college: college,
+    activitytype: activity_type,
+    contact: college,
     start_date_time: start_date_time,
     end_date_time: end_date_time,
     education_year: education_year,

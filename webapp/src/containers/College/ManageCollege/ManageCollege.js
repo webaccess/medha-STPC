@@ -31,7 +31,7 @@ import DeleteCollege from "./DeleteCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import BlockUnblockCollege from "./BlockUnblockCollege";
 import DeleteIcon from "@material-ui/icons/Delete";
 import LoaderContext from "../../../context/LoaderContext";
@@ -768,11 +768,16 @@ const ManageCollege = props => {
     perPage = formState.pageSize,
     page = 1
   ) => {
-    if (column.selector !== "state") {
-      formState.filterDataParameters[SORT_FIELD_KEY] =
-        column.selector + ":" + sortDirection;
-      getCollegeData(perPage, page, formState.filterDataParameters);
+    if (column.selector === "state") {
+      column.selector = "contact.state.name";
+    } else if (column.selector === "zone") {
+      column.selector = "zone.name";
+    } else if (column.selector === "rpc") {
+      column.selector = "rpc.name";
     }
+    formState.filterDataParameters[SORT_FIELD_KEY] =
+      column.selector + ":" + sortDirection;
+    getCollegeData(perPage, page, formState.filterDataParameters);
   };
 
   const classes = useStyles();

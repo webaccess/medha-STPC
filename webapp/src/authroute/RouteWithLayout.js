@@ -6,7 +6,7 @@ import * as routeConstants from "../constants/RouteConstants";
 
 const RouteWithLayout = props => {
   const { layout: Layout, component: Component, ...rest } = props;
-  if (auth.getToken() !== null) {
+  if (auth.getToken() !== null && auth.getUserInfo() !== null) {
     return (
       <Route
         {...rest}

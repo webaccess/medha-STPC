@@ -8,7 +8,7 @@ import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import {
   Table,
   YellowButton,
@@ -50,7 +50,6 @@ const PastActivities = props => {
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
       ? Auth.getUserInfo().studentInfo.contact.id
       : null;
-  console.log("studentID", studentInfo);
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_ACTIVITY_URL +
@@ -58,7 +57,6 @@ const PastActivities = props => {
     strapiConstants.STRAPI_STUDENT_ACTIVITIES;
   const ACTIVITY_FILTER = "id";
   const ACTIVITY_STATUS = "status";
-  console.log("studentActivityURL", STUDENT_ACTIVITY_URL);
   useEffect(() => {
     serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACTIVITY_URL)
@@ -214,7 +212,7 @@ const PastActivities = props => {
   /** Columns to show in table */
   const column = [
     { name: "Training & Activity", sortable: true, selector: "title" },
-    { name: "Type", sortable: true, selector: "activity_type" },
+    { name: "Type", sortable: true, selector: "activitytype.name" },
     { name: "Batch", sortable: true, selector: "activity_batch.name" },
     {
       name: "Actions",

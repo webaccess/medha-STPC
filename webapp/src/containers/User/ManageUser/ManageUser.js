@@ -33,8 +33,8 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import DeleteUser from "./DeleteUser";
 import BlockUser from "./BlockUser";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import { setCollege, setRole } from "../../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
+import { setCollege, setRole } from "../../../utilities/StrapiUtilities";
 import LoaderContext from "../../../context/LoaderContext";
 
 const USER_URL =
@@ -45,12 +45,12 @@ const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const IPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
 const ROLE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ROLES;
 
-const STATE_FILTER = "rpc.state";
-const ZONE_FILTER = "zone.id";
-const RPC_FILTER = "rpc.id";
-const IPC_FILTER = "college.id";
-const USER_FILTER = "username_contains";
-const ROLE_FILTER = "role.id";
+const STATE_FILTER = "contact.user.state.id";
+const ZONE_FILTER = "contact.user.zone.id";
+const RPC_FILTER = "contact.user.rpc.id";
+const IPC_FILTER = "organization.id";
+const USER_FILTER = "contact.user.username_contains";
+const ROLE_FILTER = "contact.user.role.id";
 
 const SORT_FIELD_KEY = "_sort";
 

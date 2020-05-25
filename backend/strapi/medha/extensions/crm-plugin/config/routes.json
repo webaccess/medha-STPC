@@ -174,7 +174,7 @@
     },
     {
       "method": "GET",
-      "path": "/activity/:id/students",
+      "path": "/activities/:id/students",
       "handler": "activity.student",
       "config": { "policies": [] }
     },
@@ -200,6 +200,12 @@
       "method": "PUT",
       "path": "/contact/:id/edit-individual",
       "handler": "contact.editIndividual",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "PUT",
+      "path": "/activities/:id",
+      "handler": "activity.update",
       "config": { "policies": [] }
     }
   ]
