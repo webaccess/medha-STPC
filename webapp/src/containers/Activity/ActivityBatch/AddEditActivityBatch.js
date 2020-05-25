@@ -7,7 +7,8 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Tooltip
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -16,8 +17,8 @@ import useStyles from "../ViewActivityStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import * as databaseUtilities from "../../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import {
   Table,
   YellowButton,
@@ -26,7 +27,8 @@ import {
   Alert,
   CustomDateTimePicker,
   DeleteGridIcon,
-  Breadcrumbs
+  Breadcrumbs,
+  Spinner
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import { uniqBy, get } from "lodash";
@@ -39,13 +41,15 @@ import TickGridIcon from "../../../components/TickGridIcon";
 import CrossGridIcon from "../../../components/CrossGridIcon";
 import LoaderContext from "../../../context/LoaderContext";
 import moment from "moment";
+import auth from "../../../components/Auth";
 
-const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
-const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
+const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
+const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
 
 const AddEditActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
+  const [streams, setStreams] = React.useState([]);
   let history = useHistory();
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -107,6 +111,8 @@ const AddEditActivityBatches = props => {
   const [activityDetails, setActivityDetails] = useState(null);
 
   const { activity } = props.activity ? props : props.match.params;
+  const STREAMS_URL =
+    strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
   const ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_ACTIVITY +
@@ -120,9 +126,7 @@ const AddEditActivityBatches = props => {
 
   const ACTIVITY_CREATE_BATCH_URL =
     strapiConstants.STRAPI_DB_URL +
-    strapiConstants.STRAPI_ACTIVITY +
-    `/${activity}/` +
-    strapiConstants.STRAPI_CREATE_ACTIVITY_BATCH_URL;
+    `crm-plugin/activity/${activity}/create-activity-batch`;
 
   const EDIT_ACTIVITY_BATCH_STUDENTS =
     strapiConstants.STRAPI_DB_URL +
@@ -149,19 +153,6 @@ const AddEditActivityBatches = props => {
   }, []);
 
   useEffect(() => {
-    serviceProviders
-      .serviceProviderForGetRequest(URL_TO_HIT)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          studentsFilter: res.data.result,
-          streams: getStreams(res.data.result)
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-
     getStudents(10, 1);
   }, []);
 
@@ -194,18 +185,34 @@ const AddEditActivityBatches = props => {
         setFormState(formState => ({
           ...formState,
           students: res.data.result,
-          dataToShow: res.data.result,
+          dataToShow: convertStudentData(res.data.result),
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
           pageCount: res.data.pageCount,
-          isDataLoading: false,
-          streams: getStreams(res.data.result)
+          isDataLoading: false
         }));
       })
       .catch(error => {
         console.log("error", error);
       });
+  };
+
+  const convertStudentData = data => {
+    let studentDataArray = [];
+    if (data) {
+      for (let i in data) {
+        var tempIndividualStudentData = {};
+        tempIndividualStudentData["id"] = data[i]["id"];
+        tempIndividualStudentData["name"] = data[i]["name"];
+        tempIndividualStudentData["stream"] =
+          data[i]["individual"]["stream"]["name"];
+        tempIndividualStudentData["contact_number"] = data[i]["phone"];
+
+        studentDataArray.push(tempIndividualStudentData);
+      }
+      return studentDataArray;
+    }
   };
 
   /** Pagination */
@@ -260,9 +267,21 @@ const AddEditActivityBatches = props => {
     getStudents(formState.pageSize, 1);
   };
 
-  const getStreams = data => {
-    const streams = data.map(student => student.stream);
-    return uniqBy(streams, stream => stream.id);
+  const getStreams = async data => {
+    if (auth.getUserInfo().role.name === "College Admin") {
+      let streams = [];
+      console.log(auth.getUserInfo().role, auth.getUserInfo());
+      streams = auth
+        .getUserInfo()
+        .studentInfo.organization.stream_strength.map(stream => stream.stream);
+      return streams;
+    } else if (auth.getUserInfo().role.name === "Medha Admin") {
+      await serviceProviders
+        .serviceProviderForGetRequest(STREAMS_URL)
+        .then(res => {
+          return res.data.result;
+        });
+    }
   };
 
   const isDeleteCellCompleted = status => {
@@ -464,6 +483,7 @@ const AddEditActivityBatches = props => {
       formState.values[dateTo]
     );
 
+    console.log("postData", postData);
     if (formState.isEditActivityBatch) {
       const activityBatchId = formState.dataForEdit.id;
       const URL =
@@ -523,10 +543,54 @@ const AddEditActivityBatches = props => {
     {
       name: "Student Name",
       sortable: true,
-      cell: row => `${row.user.first_name} ${row.user.last_name}`
+      selector: "name",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.name}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.name}`}</div>
+        </Tooltip>
+      )
     },
-    { name: "Stream", sortable: true, selector: "stream.name" },
-    { name: "Mobile No.", sortable: true, selector: "user.contact_number" }
+    {
+      name: "Stream",
+      sortable: true,
+      selector: "stream",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.stream}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.stream}`}</div>
+        </Tooltip>
+      )
+    },
+    {
+      name: "Phone",
+      sortable: true,
+      selector: "contact_number",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.contact_number}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.contact_number}`}</div>
+        </Tooltip>
+      )
+    }
   ];
 
   if (formState.isEditActivityBatch) {
@@ -625,6 +689,17 @@ const AddEditActivityBatches = props => {
       href: "/"
     }
   ];
+
+  const handleFilterChnageActivityField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [ACTIVITY_BATCH_STUDENT_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
+  };
 
   return (
     <Grid>
@@ -736,34 +811,24 @@ const AddEditActivityBatches = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="student-dropdown"
-                  options={formState.studentsFilter}
+                <TextField
+                  label="Student Name"
+                  margin="normal"
+                  variant="outlined"
+                  value={
+                    formState.filterDataParameters[
+                      ACTIVITY_BATCH_STUDENT_FILTER
+                    ] || ""
+                  }
+                  placeholder="Student Name"
                   className={classes.autoCompleteField}
-                  getOptionLabel={option =>
-                    `${option.user.first_name} ${option.user.last_name}`
-                  }
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(
-                      ACTIVITY_BATCH_STUDENT_FILTER,
-                      event,
-                      value
-                    )
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Student Name"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                  onChange={handleFilterChnageActivityField}
                 />
               </Grid>
-              <Grid item>
+              <Grid item className={classes.paddingDate}>
                 <Autocomplete
                   id="stream-dropdown"
-                  options={formState.streams}
+                  options={streams}
                   className={classes.autoCompleteField}
                   getOptionLabel={option => option.name}
                   onChange={(event, value) =>
@@ -812,20 +877,29 @@ const AddEditActivityBatches = props => {
         </Card>
 
         <>
-          <Table
-            data={formState.dataToShow}
-            column={column}
-            defaultSortField="name"
-            defaultSortAsc={formState.sortAscending}
-            progressPending={formState.isDataLoading}
-            paginationTotalRows={formState.totalRows}
-            paginationRowsPerPageOptions={[10, 20, 50]}
-            onChangeRowsPerPage={handlePerRowsChange}
-            onChangePage={handlePageChange}
-            onSelectedRowsChange={handleRowChange}
-            noDataComponent="No Student Details found"
-            clearSelectedRows={clearSelectedRows}
-          />
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                onSelectedRowsChange={handleRowChange}
+                noDataComponent="No Student Details found"
+                clearSelectedRows={clearSelectedRows}
+              />
+            ) : (
+              <Spinner />
+            )
+          ) : (
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
+
           <Card className={styles.noBorderNoShadow}>
             <CardContent>
               <Grid container spacing={2}>

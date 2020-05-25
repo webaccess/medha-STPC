@@ -16,7 +16,7 @@ import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import {
   Table,
   Spinner,

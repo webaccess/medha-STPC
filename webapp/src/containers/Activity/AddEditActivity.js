@@ -24,8 +24,8 @@ import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
-import * as formUtilities from "../../Utilities/FormUtilities.js";
-import * as databaseUtilities from "../../Utilities/StrapiUtilities.js";
+import * as formUtilities from "../../utilities/FormUtilities.js";
+import * as databaseUtilities from "../../utilities/StrapiUtilities.js";
 
 import Img from "react-image";
 import { useHistory } from "react-router-dom";

@@ -25,7 +25,7 @@ import {
   DeleteGridIcon,
   InlineDatePicker
 } from "../../../components";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import DeleteUser from "./DeleteEvent";
 import CloseIcon from "@material-ui/icons/Close";

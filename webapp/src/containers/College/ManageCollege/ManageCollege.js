@@ -31,7 +31,7 @@ import DeleteCollege from "./DeleteCollege";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import BlockUnblockCollege from "./BlockUnblockCollege";
 import DeleteIcon from "@material-ui/icons/Delete";
 import LoaderContext from "../../../context/LoaderContext";

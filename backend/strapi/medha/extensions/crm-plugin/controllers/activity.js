@@ -200,7 +200,6 @@ module.exports = {
     const { student_id, stream_id } = query;
 
     const activity = await strapi.query("activity", PLUGIN).findOne({ id });
-    console.log("activity", activity);
 
     if (!activity) {
       return ctx.response.notFound("Activity does not exist");
@@ -312,7 +311,12 @@ module.exports = {
     if (stream_id) {
       filtered = filtered.filter(student => student.stream.id == stream_id);
     }
-
+    await utils.asyncForEach(filtered, async student => {
+      const streams = await strapi
+        .query("stream")
+        .findOne({ id: student.individual.stream });
+      student.individual.stream = streams;
+    });
     const response = utils.paginate(filtered, page, pageSize);
     return { result: response.result, ...response.pagination };
   },

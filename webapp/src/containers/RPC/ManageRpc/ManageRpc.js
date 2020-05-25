@@ -20,7 +20,7 @@ import {
   DeleteGridIcon
 } from "../../../components";
 import DeleteRpc from "./DeleteRpc";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import { CustomRouterLink } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as serviceProviders from "../../../api/Axios";

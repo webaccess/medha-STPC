@@ -81,6 +81,9 @@ const useStyles = makeStyles(theme => ({
   },
   editDialogue: {
     padding: "8px"
+  },
+  paddingDate: {
+    paddingTop: "21px !important"
   }
   /** */
 }));

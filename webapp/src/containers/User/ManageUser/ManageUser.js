@@ -33,8 +33,8 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import DeleteUser from "./DeleteUser";
 import BlockUser from "./BlockUser";
-import * as formUtilities from "../../../Utilities/FormUtilities";
-import { setCollege, setRole } from "../../../Utilities/StrapiUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
+import { setCollege, setRole } from "../../../utilities/StrapiUtilities";
 import LoaderContext from "../../../context/LoaderContext";
 
 const USER_URL =

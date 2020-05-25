@@ -17,7 +17,7 @@ import {
   PastEventStatus,
   FeedBack
 } from "../../../components";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import auth from "../../../components/Auth";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProviders from "../../../api/Axios";

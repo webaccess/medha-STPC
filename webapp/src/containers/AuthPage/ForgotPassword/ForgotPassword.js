@@ -33,7 +33,7 @@ import * as serviceProvider from "../../../api/Axios";
 import * as authPageConstants from "../../../constants/AuthPageConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as StrapiApiConstants from "../../../constants/StrapiApiConstants";
-import * as formUtilities from "../../../Utilities/FormUtilities";
+import * as formUtilities from "../../../utilities/FormUtilities";
 import CardIcon from "../../../components/Card/CardIcon";
 import { useTheme } from "@material-ui/core/styles";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
@@ -297,7 +297,7 @@ const ForgotPassword = props => {
         }));
         setOpenBackdrop(false);
       })
-      .catch(async function(error) {
+      .catch(async function (error) {
         let verificationError = false;
         let invalidOtp = false;
         if (error.response) {
