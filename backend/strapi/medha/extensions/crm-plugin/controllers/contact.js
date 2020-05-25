@@ -313,7 +313,8 @@ module.exports = {
       "date_of_birth",
       "gender",
       "roll_number",
-      "organization"
+      "organization",
+      "future_aspirations"
     ]);
 
     if (
@@ -1481,7 +1482,8 @@ module.exports = {
       "date_of_birth",
       "gender",
       "roll_number",
-      "organization"
+      "organization",
+      "future_aspirations"
     ]);
 
     if (

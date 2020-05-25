@@ -1085,7 +1085,8 @@ const ROLES = {
           "eligibleActivity",
           "individualregisteredevents",
           "individualdetails",
-          "eligiblepastevents"
+          "eligiblepastevents",
+          "editindividual"
         ],
         type: PLUGIN_NAME
       },
