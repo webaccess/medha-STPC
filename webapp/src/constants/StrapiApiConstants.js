@@ -14,6 +14,7 @@ export const STRAPI_UNBLOCK_COLLEGE = "crm-plugin/contact/unblock-organization";
 export const STRAPI_STREAMS = "streams";
 export const STRAPI_USERS = "users";
 export const STRAPI_CREATE_USERS = "crm-plugin/contact/create-individual";
+export const STRAPI_EDIT_STUDENT = "edit-individual";
 export const STRAPI_VIEW_USERS = "crm-plugin/contact/get-individuals";
 export const STRAPI_INDIVIDUAL_URL = "crm-plugin/contact/individuals";
 export const STRAPI_CONTACT_URL = "crm-plugin/contact";

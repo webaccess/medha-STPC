@@ -373,7 +373,7 @@ const AddEditStudent = props => {
           let studentName =
             props.location["dataForEdit"]["first_name"] +
             " " +
-            props.location["dataForEdit"]["studentInfo"]["father_first_name"] +
+            props.location["dataForEdit"]["father_first_name"] +
             " " +
             props.location["dataForEdit"]["last_name"];
 
@@ -469,7 +469,7 @@ const AddEditStudent = props => {
             return { stream: college.stream_strength, id: college.id };
           })
           .filter(c => c);
-        console.log("stream", streams);
+
         setStream(streams);
         setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
