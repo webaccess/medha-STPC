@@ -21,7 +21,6 @@ import { Auth as auth, InlineDatePicker } from "../../components";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
-import * as commonUtilities from "../../utilities/CommonUtilities";
 
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
