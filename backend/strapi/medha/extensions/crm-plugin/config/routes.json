@@ -207,6 +207,18 @@
       "path": "/activities/:id",
       "handler": "activity.update",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-individuals/:id/document",
+      "handler": "contact.documents",
+      "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "DELETE",
+      "path": "/contact/get-individuals/:id/file/:fileId",
+      "handler": "contact.deleteDocument",
+      "config": { "policies": ["global.isIndividual"] }
     }
   ]
 }

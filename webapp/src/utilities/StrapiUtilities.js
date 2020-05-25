@@ -284,7 +284,7 @@ export const addStudentFromCollege = (
     username: userName,
     password: password,
     email: email,
-    college_id: college,
+    organization: college,
     first_name: firstname,
     last_name: lastname,
     father_first_name: fatherfirstname,
@@ -324,22 +324,22 @@ export const editStudent = (
   password = undefined
 ) => {
   return {
-    contact_number: contactNumber,
+    phone: contactNumber,
     username: userName,
     email: email,
-    college: college,
+    organization: college,
     first_name: firstname,
     last_name: lastname,
     father_first_name: fatherfirstname,
     father_last_name: fatherlastname,
-    address: address,
+    address_1: address,
     state: state,
     district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
-    physicallyHandicapped: physicallyHandicapped,
+    is_physically_challenged: physicallyHandicapped,
     id: id,
     password: password,
     future_aspirations: futureAspirations
@@ -359,12 +359,13 @@ export const addEducation = (
   };
 };
 
-export const uploadDocument = (files, ref, refId, field) => {
+export const uploadDocument = (files, ref, refId, field, source) => {
   const formData = new FormData();
   formData.append("files", files);
   formData.append("ref", ref);
   formData.append("refId", refId);
   formData.append("field", field);
+  formData.append("source", source);
   return formData;
 };
 
