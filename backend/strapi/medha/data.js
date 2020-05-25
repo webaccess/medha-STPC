@@ -1086,6 +1086,8 @@ const ROLES = {
           "individualregisteredevents",
           "individualdetails",
           "eligiblepastevents",
+          "documents",
+          "deletedocuments",
           "editindividual"
         ],
         type: PLUGIN_NAME
