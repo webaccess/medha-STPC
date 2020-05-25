@@ -6,13 +6,7 @@ import * as routeConstants from "../constants/RouteConstants";
 
 const RouteWithLayout = props => {
   const { layout: Layout, component: Component, ...rest } = props;
-  if (
-    (auth.getToken() !== null &&
-      auth.getUserInfo() !== null &&
-      auth.getUserInfo().role !== null &&
-      auth.getUserInfo().role.name === "Medha Admin") ||
-    auth.getUserInfo().role.name === "College Admin"
-  ) {
+  if (auth.getToken() !== null && auth.getUserInfo() !== null) {
     return (
       <Route
         {...rest}
