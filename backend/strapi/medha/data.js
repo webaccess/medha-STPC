@@ -860,7 +860,8 @@ const ROLES = {
           "individual",
           "eligibleOrganizationIndividual",
           "update",
-          "delete"
+          "delete",
+          "getquestionset"
         ]
       },
       {
@@ -877,7 +878,7 @@ const ROLES = {
       },
       {
         name: "question-set",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "feedback-set",
