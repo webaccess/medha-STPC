@@ -17,8 +17,9 @@ import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import LoaderContext from "../../../context/LoaderContext";
 
 const field = "documents";
-const ref = "student";
+const ref = "individual";
 const files = "files";
+const source = "crm-plugin";
 
 const AddEditDocument = props => {
   const history = useHistory();
@@ -123,7 +124,8 @@ const AddEditDocument = props => {
       formState.files,
       ref,
       id,
-      field
+      field,
+      source
     );
 
     serviceProviders
