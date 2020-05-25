@@ -84,7 +84,6 @@ const ViewEducation = props => {
     severity: ""
   });
 
-  console.log("studentInfo", Auth.getUserInfo());
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
       ? Auth.getUserInfo().studentInfo.contact.id
