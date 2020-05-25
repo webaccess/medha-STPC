@@ -13,22 +13,37 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
-    return strapi
-      .query("stream")
-      .model.query(
-        buildQuery({
-          model: strapi.models["stream"],
-          filters
+    if (!ctx.state.user) {
+      return await strapi
+        .query("stream")
+        .model.query(
+          buildQuery({
+            model: strapi.models.stream,
+            filters
+          })
+        )
+        .fetchAll({
+          columns: ["id", "name"]
         })
-      )
-      .fetchPage({
-        page: page,
-        pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("stream") : pageSize
-      })
-      .then(res => {
-        return utils.getPaginatedResponse(res);
-      });
+        .then(res => res.toJSON());
+    } else {
+      return strapi
+        .query("stream")
+        .model.query(
+          buildQuery({
+            model: strapi.models["stream"],
+            filters
+          })
+        )
+        .fetchPage({
+          page: page,
+          pageSize:
+            pageSize < 0 ? await utils.getTotalRecords("stream") : pageSize
+        })
+        .then(res => {
+          return utils.getPaginatedResponse(res);
+        });
+    }
   },
 
   async findOne(ctx) {

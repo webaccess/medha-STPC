@@ -313,8 +313,9 @@ module.exports = {
       "date_of_birth",
       "gender",
       "roll_number",
-      "is_physically_challenged",
-      "organization"
+      "organization",
+      "future_aspirations",
+      "is_physically_challenged"
     ]);
 
     if (
@@ -1483,7 +1484,8 @@ module.exports = {
       "gender",
       "is_physically_challenged",
       "roll_number",
-      "organization"
+      "organization",
+      "future_aspirations"
     ]);
 
     if (
