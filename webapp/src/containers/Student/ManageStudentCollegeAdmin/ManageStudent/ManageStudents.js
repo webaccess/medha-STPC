@@ -237,7 +237,6 @@ const ManageStudents = props => {
 
   /** Edit Student */
   const editCell = event => {
-    console.log("EDITEVENT_>>>", event.target);
     auth.setStudentInfoForEditingFromCollegeAdmin(
       event.target.getAttribute("id")
     );
@@ -630,7 +629,7 @@ const ManageStudents = props => {
 
   const CustomLink = ({ row }) => (
     <div>
-      {/* {console.log(row)} */}
+      {}
       <div>
         <a
           href="#"
