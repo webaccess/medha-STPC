@@ -165,10 +165,10 @@ const StudentProfile = props => {
               district: data.contact.district ? data.contact.district.name : "",
               stream: data.stream ? data.stream.name : "",
               physicallyHandicapped: data.is_physically_challenged,
-              futureAspirations: data.contact.future_aspirations
+              futureAspirations: data.future_aspirations
                 ? futureAspirationsList[
                     futureAspirationsList.findIndex(function (item, i) {
-                      return item.id === data.contact.future_aspirations;
+                      return item.id === data.future_aspirations;
                     })
                   ] || null
                 : ""

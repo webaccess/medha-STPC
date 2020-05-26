@@ -279,9 +279,9 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["physicallyHandicapped"] =
           props.location["dataForEdit"]["is_physically_challenged"];
       }
-      if (props.location["dataForEdit"]["contact"]["future_aspirations"]) {
+      if (props.location["dataForEdit"]["future_aspirations"]) {
         formState.values["futureAspirations"] =
-          props.location["dataForEdit"]["contact"]["future_aspirations"];
+          props.location["dataForEdit"]["future_aspirations"];
       }
       if (
         props.location["dataForEdit"]["organization"] &&
@@ -398,11 +398,17 @@ const AddEditStudentForCollegeAdmin = props => {
         props.location["dataForEdit"]["father_first_name"] +
         " " +
         props.location["dataForEdit"]["last_name"];
+
+      let EDIT_STUDENT_URL =
+        strapiApiConstants.STRAPI_DB_URL +
+        strapiApiConstants.STRAPI_CONTACT_URL;
+      let EDIT_URL = strapiApiConstants.STRAPI_EDIT_STUDENT;
       serviceProvider
         .serviceProviderForPutRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STUDENT,
-          formState.dataForEdit.id,
-          postData
+          EDIT_STUDENT_URL,
+          formState.dataForEdit.contact.id,
+          postData,
+          EDIT_URL
         )
         .then(response => {
           setLoaderStatus(false);
@@ -456,10 +462,7 @@ const AddEditStudentForCollegeAdmin = props => {
       );
       let url =
         strapiApiConstants.STRAPI_DB_URL +
-        strapiApiConstants.STRAPI_COLLEGES +
-        "/" +
-        auth.getUserInfo().studentInfo.organization.id +
-        "/studentregister";
+        strapiApiConstants.STRAPI_CREATE_USERS;
       serviceProvider
         .serviceProviderForPostRequest(url, postData)
         .then(response => {
