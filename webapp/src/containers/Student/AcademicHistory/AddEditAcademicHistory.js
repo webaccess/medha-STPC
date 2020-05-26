@@ -39,7 +39,7 @@ const AddEditAcademicHistory = props => {
   const studentInfo =
     auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
       ? auth.getUserInfo().studentInfo.contact.id
-      : null;
+      : auth.getStudentIdFromCollegeAdmin();
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const ACADEMIC_HISTORY_URL =
@@ -258,6 +258,7 @@ const AddEditAcademicHistory = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
+          console.log("acadedmicHistoryerror", error);
           history.push({
             pathname: routeConstants.VIEW_ACADEMIC_HISTORY,
             fromAddAcademicHistory: true,

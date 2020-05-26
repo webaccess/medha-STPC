@@ -77,6 +77,10 @@ const auth = {
     return auth.get("StudentUserId");
   },
 
+  getStudentIdFromCollegeAdminForDocument() {
+    return auth.get("StudentIdForDocument");
+  },
+
   /**
    * Set data in storage
    * @param {String|Object}  value    The data to store
@@ -109,6 +113,15 @@ const auth = {
 
   setStudentIdFromCollegeAdmin(StudentIdFromCollegeAdmin) {
     localStorage.setItem("StudentUserId", StudentIdFromCollegeAdmin);
+  },
+
+  setStudentIdFromCollegeAdminForDocument(
+    StudentIdFromCollegeAdminForDocument
+  ) {
+    localStorage.setItem(
+      "StudentIdForDocument",
+      StudentIdFromCollegeAdminForDocument
+    );
   },
 
   setUserInfo(value = "", isLocalStorage = false, userInfo = USER_INFO) {
