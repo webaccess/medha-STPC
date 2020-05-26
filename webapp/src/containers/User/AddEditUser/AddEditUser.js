@@ -599,11 +599,16 @@ const AddEditUser = props => {
       formState.values[role] ? formState.values[role] : null
     );
     if (formState.isEditUser) {
+      let EDIT_USER_URL =
+        strapiApiConstants.STRAPI_DB_URL +
+        strapiApiConstants.STRAPI_CONTACT_URL;
+      let EDIT_URL = strapiApiConstants.STRAPI_EDIT_STUDENT;
       serviceProvider
         .serviceProviderForPutRequest(
-          USERS_URL,
-          formState.dataForEdit["id"],
-          postData
+          EDIT_USER_URL,
+          formState.dataForEdit.contact["id"],
+          postData,
+          EDIT_URL
         )
         .then(res => {
           history.push({
