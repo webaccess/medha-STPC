@@ -115,7 +115,7 @@ const StudentProfile = props => {
       } else if (auth.getUserInfo().role.name === "College Admin") {
         paramsForEvent = props["location"]["dataForStudent"]
           ? formState.studentId
-          : auth.getStudentIdFromCollegeAdmin();
+          : auth.getStudentInfoForEditingFromCollegeAdmin();
       }
 
       let VIEW_STUDENT_URL =
