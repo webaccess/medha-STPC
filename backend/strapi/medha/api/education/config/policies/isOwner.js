@@ -37,22 +37,55 @@ module.exports = async (ctx, next) => {
       return ctx.response.notFound("Individual does not exist");
     }
 
-    if (
-      !(contact_1.user.id === ctx.state.user.id || role.name === "Medha Admin")
+    if (role.name === "College Admin") {
+      let user = ctx.state.user;
+      user = await strapi
+        .query("contact", PLUGIN)
+        .findOne({ id: user.contact });
+
+      if (user.individual.organization !== contact_1.individual.organization)
+        return ctx.response.unauthorized();
+      else {
+        await next();
+      }
+    } else if (
+      role.name === "Medha Admin" ||
+      contact_1.user.id === ctx.state.user.id
     ) {
+      await next();
+    } else {
       return ctx.response.unauthorized("You don't have permission to do this");
     }
   }
 
   // TODO: Which all admins can update/delete student education details
   if (ctx.request.method === "PUT" || ctx.request.method === "DELETE") {
+    const { contact } = ctx.request.body;
     const education = await strapi
       .query("education")
       .findOne({ id: ctx.params.id });
-    if (!(role.name === "Medha Admin" || education.contact.user === id)) {
+    console.log(education);
+    if (role.name === "College Admin") {
+      let user = ctx.state.user;
+      user = await strapi
+        .query("contact", PLUGIN)
+        .findOne({ id: user.contact });
+
+      const individual = await strapi
+        .query("contact", PLUGIN)
+        .findOne({ id: contact });
+
+      if (user.individual.organization !== individual.individual.organization)
+        return ctx.response.unauthorized();
+      else {
+        await next();
+      }
+    } else if (role.name === "Medha Admin" || education.contact.user === id) {
+      await next();
+    } else {
       return ctx.response.unauthorized("You don't have permission to do this");
     }
   }
 
-  await next();
+  // await next();
 };
