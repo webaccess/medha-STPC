@@ -900,6 +900,10 @@ const ROLES = {
         action: ["find", "findone"]
       },
       {
+        name: "student-import-csv",
+        action: ["find", "findone", "create", "delete", "update"]
+      },
+      {
         name: "activity",
         action: ["create", "findOne", "activitybatch", "download", "student"],
         type: PLUGIN_NAME
@@ -1203,6 +1207,10 @@ const ROLES = {
       },
       {
         name: "zone",
+        action: []
+      },
+      {
+        name: "student-import-csv",
         action: []
       },
       {
