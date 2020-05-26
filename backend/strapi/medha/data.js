@@ -901,7 +901,15 @@ const ROLES = {
       },
       {
         name: "student-import-csv",
-        action: ["find", "findone", "create", "delete", "update"]
+        action: [
+          "find",
+          "findone",
+          "create",
+          "delete",
+          "update",
+          "preview",
+          "import"
+        ]
       },
       {
         name: "activity",
