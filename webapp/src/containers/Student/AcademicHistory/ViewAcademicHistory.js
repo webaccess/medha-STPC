@@ -86,7 +86,7 @@ const ViewAcademicHistory = props => {
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
       ? Auth.getUserInfo().studentInfo.contact.id
-      : null;
+      : Auth.getStudentIdFromCollegeAdmin();
 
   const STUDENT_ACADEMIC_YEAR_URL =
     strapiConstants.STRAPI_DB_URL +

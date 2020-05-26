@@ -118,7 +118,7 @@ const AddEditDocument = props => {
     const studentInfo =
       auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
         ? auth.getUserInfo().studentInfo.id
-        : auth.getStudentIdFromCollegeAdmin();
+        : auth.getStudentIdFromCollegeAdminForDocument();
     const id = studentInfo;
     let postData = databaseUtilities.uploadDocument(
       formState.files,
