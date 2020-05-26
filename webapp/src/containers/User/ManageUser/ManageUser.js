@@ -283,21 +283,21 @@ const ManageUser = props => {
       for (let i in data) {
         var temp = {};
         temp["id"] = data[i]["id"];
-        temp["username"] = data[i]["contact"]["user"]["username"];
+        temp["username"] =
+          data[i]["contact"]["user"] && data[i]["contact"]["user"]["username"]
+            ? data[i]["contact"]["user"]["username"]
+            : "";
         temp["blocked"] = data[i]["contact"]["user"]["blocked"];
         temp["role"] = data[i]["contact"]["user"]["role"]["name"];
+
         if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["state"]) {
           temp["state"] = data[i]["contact"]["user"]["state"]["name"];
         } else {
           temp["state"] = "";
         }
+
         if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
-          temp["zone"] =
-            data[i]["organization"] &&
-            data[i]["organization"]["zone"] &&
-            data[i]["organization"]["zone"]["name"]
-              ? data[i]["organization"]["zone"]["name"]
-              : "";
+          temp["zone"] = "";
         } else {
           if (
             data[i]["contact"]["user"] &&
@@ -311,12 +311,7 @@ const ManageUser = props => {
         }
 
         if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
-          temp["rpc"] =
-            data[i]["organization"] &&
-            data[i]["organization"]["rpc"] &&
-            data[i]["organization"]["rpc"]["name"]
-              ? data[i]["organization"]["rpc"]["name"]
-              : "";
+          temp["rpc"] = "";
         } else {
           if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["rpc"]) {
             temp["rpc"] = data[i]["contact"]["user"]["rpc"]["name"];
