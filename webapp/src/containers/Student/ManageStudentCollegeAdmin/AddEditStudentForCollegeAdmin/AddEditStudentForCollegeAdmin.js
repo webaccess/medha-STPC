@@ -279,9 +279,9 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["physicallyHandicapped"] =
           props.location["dataForEdit"]["is_physically_challenged"];
       }
-      if (props.location["dataForEdit"]["contact"]["future_aspirations"]) {
+      if (props.location["dataForEdit"]["future_aspirations"]) {
         formState.values["futureAspirations"] =
-          props.location["dataForEdit"]["contact"]["future_aspirations"];
+          props.location["dataForEdit"]["future_aspirations"];
       }
       if (
         props.location["dataForEdit"]["organization"] &&
