@@ -47,6 +47,22 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/student-import-csvs/:id/preview",
+      "handler": "student-import-csv.preview",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/student-import-csvs/:id/import",
+      "handler": "student-import-csv.import",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
