@@ -29,7 +29,7 @@
       "path": "/academic-histories",
       "handler": "academic-history.create",
       "config": {
-        "policies": []
+        "policies": ["isAllowed"]
       }
     },
     {
@@ -37,7 +37,7 @@
       "path": "/academic-histories/:id",
       "handler": "academic-history.update",
       "config": {
-        "policies": []
+        "policies": ["isAllowed"]
       }
     },
     {
