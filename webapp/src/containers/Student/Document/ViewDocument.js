@@ -72,13 +72,14 @@ const ViewDocument = props => {
 
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
-      ? Auth.getUserInfo().studentInfo.id
+      ? Auth.getUserInfo().studentInfo.contact.id
       : Auth.getStudentIdFromCollegeAdmin();
 
   const STUDENT_DOCUMENT_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
-    `/${studentInfo}/document`;
+    `/${studentInfo}/` +
+    strapiConstants.STRAPI_STUDENT_DOCUMENT;
   const DOCUMENT_FILTER = "id";
 
   useEffect(() => {

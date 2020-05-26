@@ -78,6 +78,9 @@ const useStyles = makeStyles(theme => ({
   fullWidth: {
     width: "98%",
     paddingLeft: "15px"
+  },
+  paddingDiv: {
+    padding: "2%"
   }
 }));
 

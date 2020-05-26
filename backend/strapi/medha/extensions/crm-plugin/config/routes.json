@@ -219,6 +219,14 @@
       "path": "/contact/get-individuals/:id/file/:fileId",
       "handler": "contact.deleteDocument",
       "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id/question-sets",
+      "handler": "activity.getQuestionSet",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

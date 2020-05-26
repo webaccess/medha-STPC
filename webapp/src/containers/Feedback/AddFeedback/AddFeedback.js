@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Rating from "@material-ui/lab/Rating";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -11,6 +11,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as serviceProviders from "../../../api/Axios";
 
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import {
@@ -21,13 +23,17 @@ import {
   TextField,
   CardActions,
   IconButton,
+  makeStyles,
   Divider,
-  makeStyles
+  TextareaAutosize
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
+import auth from "../../../components/Auth";
+import LoaderContext from "../../../context/LoaderContext";
 
 const AddEditFeedBack = props => {
+  const { setLoaderStatus } = useContext(LoaderContext);
   const useStyles1 = makeStyles({
     root: {
       width: "100%"
@@ -38,47 +44,138 @@ const AddEditFeedBack = props => {
   });
 
   const classes = useStyles();
-  const classesTable = useStyles1();
-
   const [formState, setFormState] = useState({
-    ratings: {}
+    isFeedBackAdded: false,
+    isFormValid: false,
+    stateCounter: 0,
+    question_answers: {},
+    entityId: null,
+    entityName: null,
+    entityQuestionSet: null,
+    questionSetId: null,
+    fromEvent: false,
+    fromActivity: false
   });
+
+  if (props.showModal && !formState.stateCounter) {
+    formState.isDataBlockUnblock = false;
+    formState.entityId = props.id;
+    formState.entityName = props.Title;
+    if (
+      props.entityQuestionSet === null ||
+      props.entityQuestionSet.length === 0
+    ) {
+      formState.entityQuestionSet = null;
+    } else {
+      formState.entityQuestionSet = props.entityQuestionSet;
+      formState.question_answers = {};
+
+      props.entityQuestionSet.map(question => {
+        if (question.role.name === auth.getUserInfo().role.name) {
+          if (question.type === "Rating") {
+            formState.question_answers[question["id"]] = 0;
+          } else if (question.type === "Comment") {
+            formState.question_answers[question["id"]] = "";
+          }
+        }
+      });
+    }
+    formState.fromEvent = props.fromEvent;
+    formState.fromActivity = props.fromActivity;
+    formState.questionSetId = props.questionSetId;
+    formState.stateCounter += 1;
+  }
 
   const handleSubmit = event => {
     event.preventDefault();
+
+    const questions_answers = formState.entityQuestionSet
+      .map(question => {
+        if (
+          question.type === "Rating" &&
+          question.role.name === auth.getUserInfo().role.name
+        ) {
+          return {
+            question_id: question.id,
+            type: question.type,
+            answer_int: formState.question_answers[question["id"]],
+            answer_text: null
+          };
+        } else if (
+          question.type === "Comment" &&
+          question.role.name === auth.getUserInfo().role.name
+        )
+          return {
+            question_id: question.id,
+            type: question.type,
+            answer_int: null,
+            answer_text: formState.question_answers[question["id"]]
+          };
+      })
+      .filter(data => {
+        return data !== undefined;
+      });
+
+    const postData = {
+      activity: formState.fromActivity ? formState.entityId : null,
+      event: formState.fromEvent ? formState.entityId : null,
+      contact: auth.getUserInfo().contact.id,
+      question_set: formState.questionSetId,
+      questions_answers: questions_answers
+    };
+
+    giveFeedback(postData);
   };
 
-  const handleChangeRating = star => {
-    star.preventDefault();
+  const giveFeedback = async postData => {
+    setLoaderStatus(true);
+    const POSTFEEDBACK =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    await serviceProviders
+      .serviceProviderForPostRequest(POSTFEEDBACK, postData)
+      .then(res => {
+        props.modalClose(true, "Feedback added successfully", false);
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        props.modalClose(false, " Error adding feedback", false);
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
   };
 
-  const handleCommentChange = data => {};
+  const handleChangeRating = (id, type, value) => {
+    value = parseInt(value, 10);
+    setFormState(formState => ({
+      ...formState,
+      question_answers: {
+        ...formState.question_answers,
+        [id]: value
+      }
+    }));
+  };
+
+  const handleCommentChange = event => {
+    event.persist();
+    setFormState(formState => ({
+      ...formState,
+      question_answers: {
+        ...formState.question_answers,
+        [event.target.id]: event.target.value
+      }
+    }));
+  };
 
   const handleClose = () => {
-    props.modalClose();
+    formState.stateCounter = 0;
+    props.modalClose(false, "", true);
   };
-
-  const data = [
-    { id: 1, question: "The objective of the training were meet" },
-    { id: 2, question: "The presentation material were relevent" },
-    {
-      id: 3,
-      question:
-        "The trainers were well prepared and able to answer any questions"
-    },
-    {
-      id: 4,
-      question:
-        "The pace of the course was appropriate to the content and pace of the attendees"
-    },
-    { id: 5, question: "The venue was appropriate for the event" }
-  ];
-
   return (
     <Modal
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       className={classes.modal}
+      onClose={handleClose}
       open={props.showModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
@@ -111,91 +208,132 @@ const AddEditFeedBack = props => {
                       {props.Title}
                     </Typography>
                   </Grid>
-                  <Card>
-                    <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-                      <CardContent>
-                        <Grid item xs={12} md={12}>
-                          <div style={{ overflow: "auto" }}>
-                            <TableContainer
-                              className={classes.container}
-                              component={Paper}
-                            >
-                              <Table
-                                className={classes.table}
-                                stickyHeader
-                                aria-label="feedback table"
+                  {formState.entityQuestionSet === null ||
+                  !formState.entityQuestionSet.length ? (
+                    "No feedback for this event"
+                  ) : (
+                    <Card>
+                      <form
+                        autoComplete="off"
+                        noValidate
+                        onSubmit={handleSubmit}
+                      >
+                        <CardContent>
+                          <Grid item xs={12} md={12}>
+                            <div style={{ overflow: "auto" }}>
+                              <TableContainer
+                                className={classes.container}
+                                component={Paper}
                               >
-                                <TableHead>
-                                  <TableRow
-                                    style={{
-                                      backgroundColor: "#f5f5f5",
-                                      height: "35px"
-                                    }}
-                                  >
-                                    <TableCell>Questions</TableCell>
-                                    <TableCell align="right">Ratings</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                              </Table>
-                              <div
-                                style={{ overflow: "auto", height: "200px" }}
-                              >
-                                <Table>
-                                  <TableBody>
-                                    {data.map(row => (
-                                      <TableRow key={row.id}>
-                                        <TableCell component="th" scope="row">
-                                          {row.question}
-                                        </TableCell>
-                                        <TableCell align="right">
-                                          <Rating
-                                            name={row.id}
-                                            precision={1}
-                                            onChange={handleChangeRating}
-                                          />
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
+                                <Table
+                                  className={classes.table}
+                                  stickyHeader
+                                  aria-label="feedback table"
+                                >
+                                  <TableHead>
+                                    <TableRow
+                                      style={{
+                                        backgroundColor: "#f5f5f5",
+                                        height: "35px"
+                                      }}
+                                    >
+                                      <TableCell>Questions</TableCell>
+                                      <TableCell align="right">
+                                        Ratings
+                                      </TableCell>
+                                    </TableRow>
+                                  </TableHead>
                                 </Table>
+                                <div
+                                  style={{ overflow: "auto", height: "200px" }}
+                                >
+                                  <Table>
+                                    <TableBody>
+                                      {formState.entityQuestionSet.map(row => (
+                                        <TableRow key={row.id}>
+                                          {row.type === "Rating" &&
+                                          row.role.name ===
+                                            auth.getUserInfo().role.name ? (
+                                            <React.Fragment>
+                                              <TableCell
+                                                component="th"
+                                                scope="row"
+                                              >
+                                                {row.title}
+                                              </TableCell>
+                                              <TableCell align="right">
+                                                <Rating
+                                                  name={row.id}
+                                                  precision={1}
+                                                  onChange={event => {
+                                                    event.preventDefault();
+                                                    handleChangeRating(
+                                                      row.id,
+                                                      row.type,
+                                                      event.target.value
+                                                    );
+                                                  }}
+                                                />
+                                              </TableCell>
+                                            </React.Fragment>
+                                          ) : null}
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              </TableContainer>
+                            </div>
+                          </Grid>
+                        </CardContent>
+                        <Grid item xs={12} md={12}>
+                          <Divider />
+                          <div className={classes.paddingDiv}>
+                            {formState.entityQuestionSet.map(row => (
+                              <div key={row.id}>
+                                {row.type === "Comment" &&
+                                row.role.name ===
+                                  auth.getUserInfo().role.name ? (
+                                  <React.Fragment>
+                                    <TextareaAutosize
+                                      rowsMin={4}
+                                      label={row.title}
+                                      id={row.id}
+                                      placeholder={row.title}
+                                      variant="outlined"
+                                      multiline
+                                      fullWidth
+                                      onChange={handleCommentChange}
+                                    />
+                                  </React.Fragment>
+                                ) : null}
                               </div>
-                            </TableContainer>
+                            ))}
                           </div>
                         </Grid>
-                      </CardContent>
-                      <Grid item xs={12} md={12}>
-                        <TextField
-                          label="Comment"
-                          id="comment"
-                          placeholder="Add Comment"
-                          variant="outlined"
-                          multiline
-                          fullWidth
-                          onChange={handleCommentChange}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <CardActions justify="flex-end">
-                          <YellowButton
-                            type="submit"
-                            color="primary"
-                            variant="contained"
-                            onClick={handleSubmit}
-                          >
-                            {genericConstants.SAVE_BUTTON_TEXT}
-                          </YellowButton>
-                          <GrayButton
-                            type="submit"
-                            color="primary"
-                            variant="contained"
-                            onClick={handleClose}
-                          >
-                            CLOSE
-                          </GrayButton>
-                        </CardActions>
-                      </Grid>
-                    </form>
-                  </Card>
+                        <Grid item xs={12} md={12}>
+                          <CardActions justify="flex-end">
+                            <YellowButton
+                              type="submit"
+                              color="primary"
+                              variant="contained"
+                              onClick={handleSubmit}
+                            >
+                              {genericConstants.SAVE_BUTTON_TEXT}
+                            </YellowButton>
+                            <GrayButton
+                              type="submit"
+                              color="primary"
+                              variant="contained"
+                              onClick={handleClose}
+                            >
+                              CLOSE
+                            </GrayButton>
+                          </CardActions>
+                        </Grid>
+                      </form>
+                    </Card>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
