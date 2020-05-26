@@ -32,7 +32,7 @@ const AddEditEducation = props => {
   const studentInfo =
     auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
       ? auth.getUserInfo().studentInfo.contact.id
-      : null;
+      : auth.getStudentIdFromCollegeAdmin();
 
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 

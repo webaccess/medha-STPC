@@ -43,9 +43,9 @@ import LoaderContext from "../../../../context/LoaderContext";
 
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
-const USER_FILTER = "user.first_name_contains";
+const USER_FILTER = "contact.name_contains";
 const STREAM_FILTER = "stream.id";
-const VERIFIEDBYCOLLEGE = "verifiedByCollege";
+const VERIFIEDBYCOLLEGE = "is_verified";
 const SORT_FIELD_KEY = "_sort";
 
 const ManageStudents = props => {
