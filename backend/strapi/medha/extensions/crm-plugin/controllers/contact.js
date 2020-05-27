@@ -1025,7 +1025,6 @@ module.exports = {
     }
 
     const filters = convertRestQueryParams(query);
-
     const student = await strapi.query("contact", PLUGIN).findOne({ id });
 
     if (!student) {
@@ -1127,6 +1126,12 @@ module.exports = {
       const eventRegistrationInfo = await strapi
         .query("event-registration")
         .findOne({ contact: id, event: event.id });
+      const checkFeedbackForTheEventPresent = await strapi
+        .query("feedback-set")
+        .find({ event: event.id, contact: id });
+      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
+        ? true
+        : false;
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
         eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
@@ -1209,6 +1214,28 @@ module.exports = {
     const filtered = await strapi.plugins[
       "crm-plugin"
     ].services.contact.getEvents(college, events);
+
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(id);
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    await utils.asyncForEach(filtered, async event => {
+      const checkFeedbackForTheEventPresent = await strapi
+        .query("feedback-set")
+        .find({ event: event.id, contact_in: students_contact_id });
+      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
+        ? true
+        : false;
+    });
+
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
     return { result, ...pagination };
   },
