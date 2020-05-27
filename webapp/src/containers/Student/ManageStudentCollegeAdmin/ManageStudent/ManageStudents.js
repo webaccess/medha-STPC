@@ -43,9 +43,9 @@ import LoaderContext from "../../../../context/LoaderContext";
 
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
-const USER_FILTER = "user.first_name_contains";
+const USER_FILTER = "contact.name_contains";
 const STREAM_FILTER = "stream.id";
-const VERIFIEDBYCOLLEGE = "verifiedByCollege";
+const VERIFIEDBYCOLLEGE = "is_verified";
 const SORT_FIELD_KEY = "_sort";
 
 const ManageStudents = props => {
@@ -212,6 +212,7 @@ const ManageStudents = props => {
         let educationYear = [];
         tempIndividualStudentData["id"] = data[i]["id"];
         tempIndividualStudentData["userId"] = data[i]["contact"]["user"]["id"];
+        tempIndividualStudentData["contactId"] = data[i]["contact"]["id"];
         tempIndividualStudentData["name"] =
           data[i]["contact"] && data[i]["contact"]["name"]
             ? data[i]["contact"]["name"]
@@ -239,7 +240,10 @@ const ManageStudents = props => {
     auth.setStudentInfoForEditingFromCollegeAdmin(
       event.target.getAttribute("id")
     );
-    auth.setStudentIdFromCollegeAdmin(event.target.getAttribute("id"));
+    auth.setStudentIdFromCollegeAdminForDocument(
+      event.target.getAttribute("userId")
+    );
+    auth.setStudentIdFromCollegeAdmin(event.target.getAttribute("contactId"));
     setFormState(formState => ({
       ...formState,
       editedStudentName: event.target.getAttribute("value")
@@ -629,8 +633,9 @@ const ManageStudents = props => {
       <div>
         <a
           href="#"
-          id={row.userId}
-          userId={row.id}
+          id={row.id}
+          userId={row.userId}
+          contactId={row.contactId}
           onClick={handleClickViewStudent}
         >
           {row.name}
@@ -640,7 +645,10 @@ const ManageStudents = props => {
   );
 
   const handleClickViewStudent = event => {
-    auth.setStudentIdFromCollegeAdmin(event.target.getAttribute("userId"));
+    auth.setStudentIdFromCollegeAdminForDocument(
+      event.target.getAttribute("userId")
+    );
+    auth.setStudentIdFromCollegeAdmin(event.target.getAttribute("contactId"));
     auth.setStudentInfoForEditingFromCollegeAdmin(
       event.target.getAttribute("userId")
     );
@@ -693,6 +701,7 @@ const ManageStudents = props => {
             <EditGridIcon
               id={cell.id}
               userId={cell.userId}
+              contactId={cell.contactId}
               value={cell.name}
               onClick={editCell}
             />
