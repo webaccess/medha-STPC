@@ -3,6 +3,10 @@ import { Tooltip, Typography } from "@material-ui/core";
 
 const FeedBack = props => {
   if (props.isGiveFeedback) {
+    // let message = "";
+    // if (!props.hasAttended) {
+    //   message = "Cannot provide feedback as you have not attended the event";
+    // } else ifisQuestionSetAvailable)
     return (
       <Tooltip
         title={

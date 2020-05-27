@@ -180,14 +180,17 @@ const ViewFeedBack = props => {
                             <div>No ratings </div>
                           )}
                         </div>
-                        <Grid item xs={12}>
-                          <Typography
-                            variant="h5"
-                            gutterBottom
-                            color="textSecondary"
-                          >
-                            {`Download feedback comments`}
-                          </Typography>
+                      </Grid>
+                    </CardContent>
+                    <Grid item xs={12}>
+                      <Grid
+                        container
+                        direction="row"
+                        justify="flex-end"
+                        alignItems="center"
+                        spacing={2}
+                      >
+                        <Grid item>
                           <GreenButton
                             variant="contained"
                             color="secondary"
@@ -198,20 +201,17 @@ const ViewFeedBack = props => {
                             Download
                           </GreenButton>
                         </Grid>
+                        <Grid item>
+                          <GrayButton
+                            type="submit"
+                            color="primary"
+                            variant="contained"
+                            onClick={handleClose}
+                          >
+                            CLOSE
+                          </GrayButton>
+                        </Grid>
                       </Grid>
-                    </CardContent>
-
-                    <Grid item xs={12}>
-                      <CardActions justify="flex-end">
-                        <GrayButton
-                          type="submit"
-                          color="primary"
-                          variant="contained"
-                          onClick={handleClose}
-                        >
-                          CLOSE
-                        </GrayButton>
-                      </CardActions>
                     </Grid>
                   </Card>
                 </Grid>
