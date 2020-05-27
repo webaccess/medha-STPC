@@ -646,15 +646,15 @@ const ManageStudents = props => {
 
   const handleClickViewStudent = event => {
     auth.setStudentIdFromCollegeAdminForDocument(
-      event.target.getAttribute("userId")
+      event.target.getAttribute("id")
     );
     auth.setStudentIdFromCollegeAdmin(event.target.getAttribute("contactId"));
     auth.setStudentInfoForEditingFromCollegeAdmin(
-      event.target.getAttribute("userId")
+      event.target.getAttribute("id")
     );
     history.push({
       pathname: routeConstants.VIEW_PROFILE,
-      dataForStudent: event.target.getAttribute("userId"),
+      dataForStudent: event.target.getAttribute("id"),
       fromAddStudentToRecruitmentDrive: false,
       fromEventStudentList: false,
       fromManageStudentList: true
