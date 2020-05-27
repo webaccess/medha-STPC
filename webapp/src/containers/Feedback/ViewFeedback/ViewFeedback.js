@@ -104,7 +104,7 @@ const ViewFeedBack = props => {
               <IconButton
                 aria-label="close"
                 className={classes.closeButton}
-                onClick={props.modalClose}
+                onClick={handleClose}
               >
                 <CloseIcon />
               </IconButton>
