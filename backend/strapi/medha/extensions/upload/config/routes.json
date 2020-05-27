@@ -1,0 +1,17 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "Upload.upload",
+      "config": {
+        "policies": ["global.uploadAllowed"],
+        "description": "Upload a file",
+        "tag": {
+          "plugin": "upload",
+          "name": "File"
+        }
+      }
+    }
+  ]
+}
