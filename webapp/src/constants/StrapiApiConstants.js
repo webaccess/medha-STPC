@@ -41,6 +41,7 @@ export const STRAPI_ACADEMIC_HISTORY = "academic-histories";
 export const STRAPI_STUDENT_ACADEMIC_HISTORY = "academic-history";
 export const STRAPI_EVENTS = "events";
 export const STRAPI_ACTIVITY = "crm-plugin/activities";
+export const STRAPI_PAST_ACTIVITY = "past-activities";
 export const STRAPI_COLLEGE_ACTIVITY = "get-organization-activites";
 export const STRAPI_ACTIVITY_BATCH_URL = "activity-batches";
 export const STRAPI_CREATE_ACTIVITY_BATCH_URL = "create-activity-batch";
