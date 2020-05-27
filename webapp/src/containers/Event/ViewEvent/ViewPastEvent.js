@@ -191,6 +191,8 @@ const ViewPastEvent = props => {
         tempIndividualPastEventData["status"] = data[i]["hasAttended"];
         tempIndividualPastEventData["isFeedbackProvided"] =
           data[i]["isFeedbackProvided"];
+        tempIndividualPastEventData["isQuestionSetAvailable"] =
+          data[i]["question_set"];
 
         pastEventDataArray.push(tempIndividualPastEventData);
       }
@@ -442,7 +444,9 @@ const ViewPastEvent = props => {
           <div className={classes.PaddingFirstActionButton}>
             <PastEventStatus style={cell.status} />
           </div>
-          {cell.status && !cell.isFeedbackProvided ? (
+          {cell.status &&
+          !cell.isFeedbackProvided &&
+          cell.isQuestionSetAvailable ? (
             <div className={classes.PaddingActionButton}>
               <FeedBack
                 isGiveFeedback={true}
@@ -455,6 +459,9 @@ const ViewPastEvent = props => {
             <div className={classes.PaddingActionButton}>
               <FeedBack
                 isGiveFeedback={true}
+                // hasAttended={cell.status}
+                // isFeedbackProvided={cell.isFeedbackProvided}
+                // isQuestionSetAvailable={cell.isQuestionSetAvailable}
                 id={cell.id}
                 value={cell.eventName}
                 isdisabled={true}

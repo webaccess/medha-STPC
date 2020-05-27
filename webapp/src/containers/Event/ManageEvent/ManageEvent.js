@@ -290,7 +290,6 @@ const ManageEvent = props => {
         }
         x.push(eventIndividualData);
       }
-      console.log(x);
       return x;
     }
   };
