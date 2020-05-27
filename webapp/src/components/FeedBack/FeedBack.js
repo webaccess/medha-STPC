@@ -22,7 +22,11 @@ const FeedBack = props => {
         id={props.id}
         value={props.value}
         onClick={props.onClick}
-        style={{ color: "green", fontSize: "20px" }}
+        style={
+          props.opacity
+            ? { color: "green", fontSize: "20px", opacity: 0 }
+            : { color: "green", fontSize: "20px" }
+        }
       >
         feedback
       </i>

@@ -157,7 +157,8 @@ export const addEvent = (
   educations = [],
   colleges = null,
   streams = null,
-  state = null
+  state = null,
+  question_set = null
 ) => {
   return {
     title: title,
@@ -171,7 +172,8 @@ export const addEvent = (
     educations: educations,
     contacts: colleges,
     streams: streams,
-    state: state
+    state: state,
+    question_set: question_set
   };
 };
 export const addState = name => {

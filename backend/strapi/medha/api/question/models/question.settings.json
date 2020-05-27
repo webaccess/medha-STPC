@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "collectionName": "questions",
   "info": {
     "name": "Question"
@@ -21,8 +20,13 @@
       ]
     },
     "question_set": {
-      "via": "questions",
-      "model": "question-set"
+      "model": "question-set",
+      "via": "questions"
+    },
+    "role": {
+      "plugin": "users-permissions",
+      "model": "role"
     }
-  }
+  },
+  "connection": "default"
 }

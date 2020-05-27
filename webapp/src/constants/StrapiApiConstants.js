@@ -68,3 +68,6 @@ export const STRAPI_DOWNLOAD = "download";
 export const STRAPI_ACTIVITY_TYPE = "crm-plugin/activitytypes";
 export const STRAPI_ACTIVITY_BATCHES = "activity-batches";
 export const STRAPI_STUDENT_DOCUMENT = "document";
+export const STRAPI_QUESTION_SET = "question-sets";
+export const STRAPI_FEEDBACK_SETS = "feedback-sets";
+export const STRAPI_CONTACT_SOLO = "contact";

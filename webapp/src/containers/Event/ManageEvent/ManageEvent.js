@@ -11,7 +11,7 @@ import {
   Typography,
   Tooltip
 } from "@material-ui/core";
-import { Table, Spinner, Alert } from "../../../components";
+import { Table, Spinner, Alert, FeedBack } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
@@ -33,7 +33,8 @@ import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
 import auth from "../../../components/Auth";
 import LoaderContext from "../../../context/LoaderContext";
-
+import ViewFeedBack from "../../Feedback/ViewFeedback/ViewFeedback";
+import NoFeedback from "../../Feedback/NoFeedback/NoFeedback";
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
@@ -79,6 +80,15 @@ const ManageEvent = props => {
     pageCount: "",
     sortAscending: true,
     errors: {},
+    /** Feedback */
+    showModalFeedback: false,
+    EventTitle: null,
+    eventId: null,
+    feedBackGiven: false,
+    fromFeedBackModal: false,
+    successErrorMessage: "",
+    showErrorModalFeedback: false,
+    ratings: [],
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromeditEvent"]
       ? props["location"]["isDataEdited"]
@@ -227,6 +237,12 @@ const ManageEvent = props => {
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["start_date_time"] = startDate.toDateString();
         eventIndividualData["end_date_time"] = endDate.toDateString();
+        let currentDate = new Date();
+        if (endDate < currentDate) {
+          eventIndividualData["eligibleForFeedback"] = true;
+        } else {
+          eventIndividualData["eligibleForFeedback"] = false;
+        }
         eventIndividualData["IsEditable"] = false;
         if (auth.getUserInfo().role.name === "College Admin") {
           let state = false;
@@ -445,6 +461,51 @@ const ManageEvent = props => {
     }, 2000);
   };
 
+  /** For Adding feedback */
+  const giveFeedback = async cell => {
+    setOpen(true);
+    setLoaderStatus(true);
+    const QUESTION_SET_URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/" +
+      strapiConstants.STRAPI_CONTACT_SOLO +
+      "/" +
+      auth.getUserInfo().studentInfo.organization.contact.id +
+      "/getStudentsFeedbacks";
+    await serviceProviders
+      .serviceProviderForGetRequest(QUESTION_SET_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: true,
+          EventTitle: cell.title,
+          eventId: cell.id,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          ratings: res.data.result,
+          showErrorModalFeedback: false
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFormState(formState => ({
+          ...formState,
+          EventTitle: cell.title,
+          showModalFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          showErrorModalFeedback: true
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
   /** ------ */
 
   /** Table Data */
@@ -490,6 +551,29 @@ const ManageEvent = props => {
               onClick={viewStudentList}
             />
           </div>
+          {auth.getUserInfo().role.name === "College Admin" ? (
+            cell.eligibleForFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  id={cell.id}
+                  isGiveFeedback={false}
+                  value={cell.title}
+                  onClick={() => giveFeedback(cell)}
+                />
+              </div>
+            ) : (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  opacity
+                  id={cell.id}
+                  isGiveFeedback={false}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            )
+          ) : null}
+
           <div className={classes.PaddingActionButton}>
             <DeleteGridIcon
               id={cell.id}
@@ -635,6 +719,62 @@ const ManageEvent = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
+
+  /**Handle Closed model */
+  const handleCloseFeedBackModal = (
+    status,
+    message,
+    isModalClosedWithoutGivingFeedbach
+  ) => {
+    setOpen(true);
+    if (isModalClosedWithoutGivingFeedbach) {
+      setFormState(formState => ({
+        ...formState,
+        showModalFeedback: false,
+        EventTitle: null,
+        eventId: null,
+        feedBackGiven: false,
+        fromFeedBackModal: false,
+        successErrorMessage: ""
+      }));
+    } else {
+      if (status) {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          EventTitle: null,
+          eventId: null,
+          feedBackGiven: true,
+          fromFeedBackModal: true,
+          successErrorMessage: message
+        }));
+        getEventData(
+          formState.pageSize,
+          formState.page,
+          formState.filterDataParameters
+        );
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          EventTitle: null,
+          eventId: null,
+          feedBackGiven: false,
+          fromFeedBackModal: true,
+          successErrorMessage: message
+        }));
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalFeedback: false,
+      showErrorModalFeedback: false
+    }));
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -909,6 +1049,25 @@ const ManageEvent = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}
+          {formState.showModalFeedback ? (
+            <ViewFeedBack
+              showModal={formState.showModalFeedback}
+              modalClose={handleCloseFeedBackModal}
+              Title={formState.EventTitle}
+              id={formState.eventId}
+              fromEvent={true}
+              fromActivity={false}
+              dataToShow={formState.ratings}
+            />
+          ) : null}
+          {!formState.showModalFeedback && formState.showErrorModalFeedback ? (
+            <NoFeedback
+              showModal={formState.showErrorModalFeedback}
+              modalClose={handleCloseModal}
+              Title={formState.EventTitle}
+              forView={true}
+            />
+          ) : null}
           {formState.isMultiDelete ? (
             <DeleteUser
               showModal={formState.showModalDelete}

@@ -106,6 +106,16 @@ const EventSchema = {
     type: "text",
     validations: {}
   },
+  questionSet: {
+    label: "Question-Set",
+    id: "question_set",
+    autoComplete: "Select Question Set",
+    required: false,
+    placeholder: "Select Question Set",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
   college: {
     label: "College",
     id: "college",

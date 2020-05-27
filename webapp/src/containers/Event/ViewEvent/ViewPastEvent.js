@@ -6,7 +6,9 @@ import {
   CardContent,
   Grid,
   Tooltip,
-  Typography
+  Typography,
+  Collapse,
+  IconButton
 } from "@material-ui/core";
 import {
   Table,
@@ -15,7 +17,8 @@ import {
   YellowButton,
   InlineDatePicker,
   PastEventStatus,
-  FeedBack
+  FeedBack,
+  Alert
 } from "../../../components";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import auth from "../../../components/Auth";
@@ -27,6 +30,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddEditFeedBack from "../../Feedback/AddFeedback/AddFeedback";
 import LoaderContext from "../../../context/LoaderContext";
 import { useContext } from "react";
+import NoFeedback from "../../Feedback/NoFeedback/NoFeedback";
+import CloseIcon from "@material-ui/icons/Close";
 
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
@@ -36,6 +41,7 @@ const SORT_FIELD_KEY = "_sort";
 
 const ViewPastEvent = props => {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(true);
   const { setLoaderStatus } = useContext(LoaderContext);
   const [statusFilter, setStatusFilter] = useState([]);
   const [formState, setFormState] = useState({
@@ -54,9 +60,15 @@ const ViewPastEvent = props => {
     endDate: null,
     errors: {},
     showModalFeedback: false,
+    showErrorModalFeedback: false,
     EventTitle: null,
-    activityID: null,
-    isGiveFeedback: false
+    eventId: null,
+    isGiveFeedback: false,
+    entityQuestionSet: [],
+    questionSetId: null,
+    feedBackGiven: false,
+    fromFeedBackModal: false,
+    successErrorMessage: ""
   });
 
   useEffect(() => {
@@ -168,6 +180,7 @@ const ViewPastEvent = props => {
       for (let i in data) {
         var tempIndividualPastEventData = {};
 
+        tempIndividualPastEventData["id"] = data[i]["id"];
         let startDate = new Date(data[i]["start_date_time"]);
         let endDate = new Date(data[i]["end_date_time"]);
 
@@ -355,32 +368,48 @@ const ViewPastEvent = props => {
     getStatusFilterData();
   };
 
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showModalFeedback: true,
-      EventTitle: null,
-      activityID: null,
-      isGiveFeedback: false
-    }));
-    getPastEvent(
-      formState.pageSize,
-      formState.page,
-      formState.filterDataParameters
-    );
-  };
-
-  const giveFeedback = event => {
+  const giveFeedback = async event => {
+    setOpen(true);
     setLoaderStatus(true);
-    setFormState(formState => ({
-      ...formState,
-      showModalFeedback: true,
-      EventTitle: event.eventName,
-      activityID: event.id,
-      isGiveFeedback: true
-    }));
-
-    setLoaderStatus(false);
+    const QUESTION_SET_URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      event.id +
+      "/" +
+      strapiConstants.STRAPI_QUESTION_SET;
+    await serviceProviders
+      .serviceProviderForGetRequest(QUESTION_SET_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: true,
+          EventTitle: event.eventName,
+          eventId: event.id,
+          isGiveFeedback: true,
+          showErrorModalFeedback: false,
+          entityQuestionSet: res.data.result.questions,
+          questionSetId: res.data.result.id,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          EventTitle: event.eventName,
+          isGiveFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
   };
 
   /** Columns to show in table */
@@ -426,10 +455,111 @@ const ViewPastEvent = props => {
     }
   ];
 
+  const handleCloseFeedBackModal = (
+    status,
+    message,
+    isModalClosedWithoutGivingFeedbach
+  ) => {
+    setOpen(true);
+    if (isModalClosedWithoutGivingFeedbach) {
+      setFormState(formState => ({
+        ...formState,
+        showModalFeedback: false,
+        showErrorModalFeedback: false,
+        EventTitle: null,
+        eventId: null,
+        isGiveFeedback: false,
+        fromFeedBackModal: false,
+        feedBackGiven: false,
+        successErrorMessage: ""
+      }));
+    } else {
+      if (status) {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: false,
+          EventTitle: null,
+          eventId: null,
+          isGiveFeedback: false,
+          fromFeedBackModal: true,
+          feedBackGiven: true,
+          successErrorMessage: message
+        }));
+        getPastEvent(
+          formState.pageSize,
+          formState.page,
+          formState.filterDataParameters
+        );
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: false,
+          EventTitle: null,
+          eventId: null,
+          isGiveFeedback: false,
+          fromFeedBackModal: true,
+          feedBackGiven: false,
+          successErrorMessage: message
+        }));
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
+    setFormState(formState => ({
+      ...formState,
+      showErrorModalFeedback: false
+    }));
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        {/** Error/Success messages to be shown for student */}
+        {formState.fromFeedBackModal && formState.feedBackGiven ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.successErrorMessage}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromFeedBackModal && !formState.feedBackGiven ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.successErrorMessage}
+            </Alert>
+          </Collapse>
+        ) : null}
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card>
@@ -576,7 +706,21 @@ const ViewPastEvent = props => {
           {formState.isGiveFeedback ? (
             <AddEditFeedBack
               showModal={formState.showModalFeedback}
-              modalClose={modalClose}
+              modalClose={handleCloseFeedBackModal}
+              Title={formState.EventTitle}
+              id={formState.eventId}
+              entityQuestionSet={formState.entityQuestionSet}
+              questionSetId={formState.questionSetId}
+              fromEvent={true}
+              fromActivity={false}
+            />
+          ) : null}
+          {!formState.isGiveFeedback &&
+          !formState.showModalFeedback &&
+          formState.showErrorModalFeedback ? (
+            <NoFeedback
+              showModal={formState.showErrorModalFeedback}
+              modalClose={handleCloseModal}
               Title={formState.EventTitle}
             />
           ) : null}
