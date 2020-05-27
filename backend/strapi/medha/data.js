@@ -927,6 +927,10 @@ const ROLES = {
       {
         name: "contact",
         action: [
+          "academichistory",
+          "documents",
+          "education",
+          "eligiblepastactivities",
           "organizationstudents",
           "organizationadmins",
           "findone",
