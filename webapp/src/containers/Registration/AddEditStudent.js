@@ -344,8 +344,8 @@ const AddEditStudent = props => {
         formState.values["fatherFirstName"],
         formState.values["fatherLastName"],
         formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
+        formState.values["state"] ? formState.values["state"] : null,
+        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["username"],
@@ -355,12 +355,16 @@ const AddEditStudent = props => {
           (selectedDate.getMonth() + 1) +
           "-" +
           selectedDate.getDate(),
-        formState.values["physicallyHandicapped"],
+        formState.values["physicallyHandicapped"] !== undefined
+          ? formState.values["physicallyHandicapped"]
+          : null,
         formState.values["college"],
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
         formState.values["futureAspirations"]
+          ? formState.values["futureAspirations"]
+          : null
       );
       let EDIT_STUDENT_URL =
         strapiApiConstants.STRAPI_DB_URL +
@@ -436,6 +440,7 @@ const AddEditStudent = props => {
         parseInt(formState.values["rollnumber"]),
         formState.values.otp
       );
+
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +
