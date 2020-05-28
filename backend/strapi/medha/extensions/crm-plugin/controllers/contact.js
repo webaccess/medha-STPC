@@ -237,28 +237,43 @@ module.exports = {
           filters
         })
       )
-      .where({ contact: id })
-      .fetchPage({
-        page: page,
-        pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("education") : pageSize
-      })
+      .fetchAll()
       .then(res => {
-        return utils.getPaginatedResponse(res);
+        const data = res
+          .toJSON()
+          .filter(academicHistory => academicHistory.contact.id == id);
+        const response = utils.paginate(data, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
       });
   },
 
   academicHistory: async ctx => {
     const { id } = ctx.params;
-    const academicHistoryId = ctx.query ? ctx.query.id : null;
-    let response = await strapi
-      .query("academic-history")
-      .find({ contact: id }, ["academic_year"]);
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
 
-    if (academicHistoryId && response && response.length > 0) {
-      response = response.filter(ah => ah.id === parseInt(academicHistoryId));
-    }
-    return utils.getFindOneResponse(response);
+    return strapi
+      .query("academic-history")
+      .model.query(
+        buildQuery({
+          model: strapi.models["academic-history"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(res => {
+        const data = res
+          .toJSON()
+          .filter(academicHistory => academicHistory.contact.id == id);
+        const response = utils.paginate(data, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
+      });
   },
 
   /**
@@ -1570,7 +1585,7 @@ module.exports = {
 
   documents: async ctx => {
     const { id } = ctx.params;
-    const documentId = ctx.query ? ctx.query.id : null;
+    const documentId = ctx.query ? ctx.query.name_contains : null;
 
     const response = await strapi.query("contact", PLUGIN).findOne({ id });
 
@@ -1580,7 +1595,11 @@ module.exports = {
       response.individual.documents.length > 0
     ) {
       response.individual.documents = response.individual.documents.filter(
-        doc => doc.id === parseInt(documentId)
+        doc => {
+          if (doc.name.search(documentId) >= 0) {
+            return doc;
+          }
+        }
       );
     }
 
@@ -1651,7 +1670,7 @@ module.exports = {
     let qb = {};
     qb.contact = id;
     if (status) {
-      qb.verified_by_college = status == "attended" ? true : false;
+      qb.is_verified_by_college = status == "attended" ? true : false;
     }
 
     let activityBatches = await strapi
