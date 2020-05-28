@@ -124,7 +124,7 @@ module.exports = {
             })
             .catch(err => {
               console.log(err);
-              return { user: null, userStatus: err };
+              return { user: null, userStatus: err.detail };
             });
 
           if (!user) {
@@ -140,8 +140,8 @@ module.exports = {
               return { individual: model };
             })
             .catch(error => {
-              console.log(error);
-              return { individual: null, individualStatus: error };
+              console.log(error.message);
+              return { individual: null, individualStatus: error.detail };
             });
 
           if (!individual) {
@@ -165,8 +165,8 @@ module.exports = {
               return { contact: model };
             })
             .catch(error => {
-              console.log(error);
-              return { contact: null, contactStatus: error };
+              console.log(error.message);
+              return { contact: null, contactStatus: error.detail };
             });
 
           if (!contact) {
@@ -193,7 +193,7 @@ module.exports = {
         .catch(error => {
           errorRecords.push({
             ...record,
-            error: error
+            Error: error
           });
         });
     }
