@@ -339,18 +339,24 @@ const PastActivities = props => {
                 </Grid>
               </CardContent>
             </Card>
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              noDataComponent="No Past Activities found"
-            />
+            {formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                noDataComponent="No Past Activities found"
+              />
+            ) : (
+              <div className={classes.noDataMargin}>
+                {genericConstants.NO_DATA_TO_SHOW_TEXT}
+              </div>
+            )}
             {formState.isGiveFeedback ? (
               <AddEditFeedBack
                 showModal={formState.showModalFeedback}
