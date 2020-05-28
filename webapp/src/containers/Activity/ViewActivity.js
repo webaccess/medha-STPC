@@ -393,7 +393,7 @@ const ViewActivity = props => {
     {
       name: "Date",
       sortable: true,
-      selector: row => `${moment(row.start_datetime).format("DD MMM YYYY")}`
+      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`
     },
     {
       name: "Actions",
