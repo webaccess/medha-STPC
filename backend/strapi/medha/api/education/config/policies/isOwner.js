@@ -59,7 +59,7 @@ module.exports = async (ctx, next) => {
   }
 
   // TODO: Which all admins can update/delete student education details
-  if (ctx.request.method === "PUT" || ctx.request.method === "DELETE") {
+  if (ctx.request.method === "PUT") {
     const { contact } = ctx.request.body;
     const education = await strapi
       .query("education")
@@ -74,6 +74,34 @@ module.exports = async (ctx, next) => {
       const individual = await strapi
         .query("contact", PLUGIN)
         .findOne({ id: contact });
+
+      if (user.individual.organization !== individual.individual.organization)
+        return ctx.response.unauthorized();
+      else {
+        await next();
+      }
+    } else if (role.name === "Medha Admin" || education.contact.user === id) {
+      await next();
+    } else {
+      return ctx.response.unauthorized("You don't have permission to do this");
+    }
+  }
+
+  if (ctx.request.method === "DELETE") {
+    const { contact } = ctx.request.body;
+    const education = await strapi
+      .query("education")
+      .findOne({ id: ctx.params.id });
+    console.log(education);
+    if (role.name === "College Admin") {
+      let user = ctx.state.user;
+      user = await strapi
+        .query("contact", PLUGIN)
+        .findOne({ id: user.contact });
+
+      const individual = await strapi
+        .query("contact", PLUGIN)
+        .findOne({ id: education.contact.id });
 
       if (user.individual.organization !== individual.individual.organization)
         return ctx.response.unauthorized();
