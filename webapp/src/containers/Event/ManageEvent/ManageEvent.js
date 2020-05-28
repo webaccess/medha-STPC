@@ -234,6 +234,8 @@ const ManageEvent = props => {
         let startDate = new Date(data[i]["start_date_time"]);
         let endDate = new Date(data[i]["end_date_time"]);
         eventIndividualData["id"] = data[i]["id"];
+        eventIndividualData["isFeedbackProvided"] =
+          data[i]["isFeedbackProvided"];
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["start_date_time"] = startDate.toDateString();
         eventIndividualData["end_date_time"] = endDate.toDateString();
@@ -552,11 +554,11 @@ const ManageEvent = props => {
             />
           </div>
           {auth.getUserInfo().role.name === "College Admin" ? (
-            cell.eligibleForFeedback ? (
+            cell.isFeedbackProvided ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
                   id={cell.id}
-                  isGiveFeedback={false}
+                  isViewFeedback={true}
                   value={cell.title}
                   onClick={() => giveFeedback(cell)}
                 />
@@ -564,9 +566,9 @@ const ManageEvent = props => {
             ) : (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
-                  opacity
+                  isdisabled={true}
                   id={cell.id}
-                  isGiveFeedback={false}
+                  isViewFeedback={true}
                   value={cell.title}
                   onClick={() => {}}
                 />

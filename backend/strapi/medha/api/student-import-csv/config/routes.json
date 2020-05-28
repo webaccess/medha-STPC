@@ -1,0 +1,68 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/student-import-csvs",
+      "handler": "student-import-csv.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/student-import-csvs/count",
+      "handler": "student-import-csv.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/student-import-csvs/:id",
+      "handler": "student-import-csv.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/student-import-csvs",
+      "handler": "student-import-csv.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/student-import-csvs/:id",
+      "handler": "student-import-csv.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/student-import-csvs/:id",
+      "handler": "student-import-csv.delete",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/student-import-csvs/:id/preview",
+      "handler": "student-import-csv.preview",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/student-import-csvs/:id/import",
+      "handler": "student-import-csv.import",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

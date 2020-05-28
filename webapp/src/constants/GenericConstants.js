@@ -155,3 +155,5 @@ export const FUTURE_ASPIRATIONS = [
   { name: "Apprenticeship", id: "apprenticeship" },
   { name: "Others", id: "others" }
 ];
+
+export const PREVIEW = "Preview";

@@ -179,7 +179,6 @@ const ViewPastEvent = props => {
     if (data) {
       for (let i in data) {
         var tempIndividualPastEventData = {};
-
         tempIndividualPastEventData["id"] = data[i]["id"];
         let startDate = new Date(data[i]["start_date_time"]);
         let endDate = new Date(data[i]["end_date_time"]);
@@ -190,6 +189,11 @@ const ViewPastEvent = props => {
         ] = startDate.toDateString();
         tempIndividualPastEventData["end_date_time"] = endDate.toDateString();
         tempIndividualPastEventData["status"] = data[i]["hasAttended"];
+        tempIndividualPastEventData["isFeedbackProvided"] =
+          data[i]["isFeedbackProvided"];
+        tempIndividualPastEventData["isQuestionSetAvailable"] =
+          data[i]["question_set"];
+
         pastEventDataArray.push(tempIndividualPastEventData);
       }
       return pastEventDataArray;
@@ -440,7 +444,9 @@ const ViewPastEvent = props => {
           <div className={classes.PaddingFirstActionButton}>
             <PastEventStatus style={cell.status} />
           </div>
-          {cell.status ? (
+          {cell.status &&
+          !cell.isFeedbackProvided &&
+          cell.isQuestionSetAvailable ? (
             <div className={classes.PaddingActionButton}>
               <FeedBack
                 isGiveFeedback={true}
@@ -449,7 +455,20 @@ const ViewPastEvent = props => {
                 onClick={() => giveFeedback(cell)}
               />
             </div>
-          ) : null}
+          ) : (
+            <div className={classes.PaddingActionButton}>
+              <FeedBack
+                isGiveFeedback={true}
+                // hasAttended={cell.status}
+                // isFeedbackProvided={cell.isFeedbackProvided}
+                // isQuestionSetAvailable={cell.isQuestionSetAvailable}
+                id={cell.id}
+                value={cell.eventName}
+                isdisabled={true}
+                onClick={() => giveFeedback(cell)}
+              />
+            </div>
+          )}
         </div>
       )
     }
