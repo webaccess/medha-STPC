@@ -40,6 +40,8 @@ import useStyles from "../../containers/ContainerStyles/AddEditPageStyles.js";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import LoaderContext from "../../context/LoaderContext";
 import moment from "moment";
+import axios from "axios";
+import { includes } from "lodash";
 
 const AddEditActivity = props => {
   let history = useHistory();
@@ -98,11 +100,13 @@ const AddEditActivity = props => {
 
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
+  const [collegeStreamList, setCollegeStreamList] = useState([]);
   const [activityType, setActivityType] = useState([]);
 
   useEffect(() => {
     setLoaderStatus(true);
     getColleges();
+    getStreams();
     getActivityTypes();
     setLoaderStatus(false);
   }, []);
@@ -121,30 +125,54 @@ const AddEditActivity = props => {
       });
   };
 
+  const getStreams = () => {
+    axios
+      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS)
+      .then(res => {
+        const list = res.data.map(({ id, name }) => ({
+          id,
+          name
+        }));
+        setstreamlist(list);
+
+        if (formState.dataForEdit) {
+          const streamIds = props.location["dataForEdit"]["streams"].map(
+            stream => stream.id
+          );
+          const selectedStream = list.filter(stream => {
+            if (includes(streamIds, stream.id)) {
+              return stream;
+            }
+          });
+
+          setStream(selectedStream);
+        }
+      });
+  };
+
   useEffect(() => {
     setLoaderStatus(true);
     if (
-      stream !== null &&
-      stream !== undefined &&
       formState.values.hasOwnProperty("college") &&
-      formState.values["college"] !== null &&
-      formState.values["college"] !== undefined
+      formState.values["college"] &&
+      collegelist.length > 0
     ) {
-      const list = stream.reduce((result, obj) => {
-        if (formState.values.college === obj.id) {
-          result.push(...obj.stream);
-        }
-        return result;
-      }, []);
-
-      setstreamlist(
-        list.map(obj => {
-          return { id: obj.stream.id, name: obj.stream.name };
-        })
+      const college = collegelist.find(
+        college => college.contact.id == formState.values["college"]
       );
+
+      const collegeStreamIds = college.stream_strength.map(s => s.stream.id);
+      const list = streamlist.filter(stream => {
+        if (includes(collegeStreamIds, stream.id)) {
+          return stream;
+        }
+      });
+
+      setCollegeStreamList(list);
     }
+
     setLoaderStatus(false);
-  }, [formState.values["college"]]);
+  }, [formState.values["college"], collegelist, streamlist]);
 
   if (formState.dataForEdit && !formState.counter) {
     setLoaderStatus(true);
@@ -166,20 +194,6 @@ const AddEditActivity = props => {
       }
       if (props.location["dataForEdit"]["streams"]) {
         formState.values["stream"] = props.location["dataForEdit"]["streams"];
-        const id = props.location["dataForEdit"]["streams"].map(stream => {
-          return stream.id;
-        });
-        const data = {
-          id: props.location["dataForEdit"]["contact"]["id"],
-          stream:
-            props.location["dataForEdit"]["contact"]["organization"][
-              "stream_strength"
-            ]
-        };
-        const list = [];
-        list.push(data);
-        formState["stream"] = id;
-        setStream(list);
       }
       if (props.location["dataForEdit"]["address"]) {
         formState.values["address"] = props.location["dataForEdit"]["address"];
@@ -300,6 +314,7 @@ const AddEditActivity = props => {
 
   const postActivityData = () => {
     let postData;
+    console.log(stream, formState);
     if (formState.editActivity) {
       postData = databaseUtilities.editActivity(
         formState.showPreview,
@@ -312,7 +327,7 @@ const AddEditActivity = props => {
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
         formState.values["trainer"],
-        formState["stream"],
+        stream.map(stream => stream.id),
         formState["dataForEdit"]["id"],
         formState.files
       );
@@ -348,7 +363,7 @@ const AddEditActivity = props => {
         formState.values["address"],
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
         formState.values["trainer"],
-        formState["stream"],
+        stream.map(stream => stream.id),
         formState.files
       );
       serviceProvider
@@ -378,17 +393,12 @@ const AddEditActivity = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
-        const streams = res.data.result
-          .map(college => {
-            return { stream: college.stream_strength, id: college.contact.id };
-          })
-          .filter(c => c);
-        setStream(streams);
         setcollegelist(
-          res.data.result.map(({ id, name, contact }) => ({
+          res.data.result.map(({ id, name, contact, stream_strength }) => ({
             id,
             name,
-            contact
+            contact,
+            stream_strength
           }))
         );
       });
@@ -441,23 +451,7 @@ const AddEditActivity = props => {
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (value !== null) {
-      if (eventName === "stream") {
-        const id = value.map(stream => {
-          return stream.id;
-        });
-        setFormState(formState => ({
-          ...formState,
-          values: {
-            ...formState.values,
-            [eventName]: value
-          },
-          touched: {
-            ...formState.touched,
-            [eventName]: true
-          },
-          stream: id
-        }));
-      } else if (eventName === "college") {
+      if (eventName === "college") {
         setFormState(formState => ({
           ...formState,
           values: {
@@ -489,9 +483,31 @@ const AddEditActivity = props => {
       if (eventName === "college") {
         delete formState.values["stream"];
         formState.stream = [];
-        setstreamlist([]);
+        setCollegeStreamList([]);
+        setStream([]);
       }
       delete formState.values[eventName];
+    }
+  };
+
+  const handleStreamChange = (eventName, event, value) => {
+    /**TO SET VALUES OF AUTOCOMPLETE */
+    if (value !== null) {
+      setFormState(formState => ({
+        ...formState,
+        values: {
+          ...formState.values,
+          [eventName]: value
+        },
+        touched: {
+          ...formState.touched,
+          [eventName]: true
+        }
+      }));
+      if (formState.errors.hasOwnProperty(eventName)) {
+        delete formState.errors[eventName];
+      }
+      setStream(value);
     }
   };
 
@@ -812,12 +828,12 @@ const AddEditActivity = props => {
                       multiple={true}
                       id="tags-outlined"
                       required
-                      options={streamlist}
+                      options={collegeStreamList}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
-                        handleChangeAutoComplete("stream", event, value);
+                        handleStreamChange("stream", event, value);
                       }}
-                      value={formState.values.stream}
+                      value={stream}
                       filterSelectedOptions
                       renderInput={params => (
                         <TextField

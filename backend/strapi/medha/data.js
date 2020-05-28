@@ -838,7 +838,7 @@ const ROLES = {
     controllers: [
       {
         name: "academic-history",
-        action: ["create", "update"]
+        action: ["create", "update", "delete"]
       },
       {
         name: "academic-year",
@@ -850,7 +850,7 @@ const ROLES = {
       },
       {
         name: "education",
-        action: ["create", "update"]
+        action: ["create", "update", "delete"]
       },
       {
         name: "event",
@@ -903,6 +903,18 @@ const ROLES = {
         action: ["find", "findone"]
       },
       {
+        name: "student-import-csv",
+        action: [
+          "find",
+          "findone",
+          "create",
+          "delete",
+          "update",
+          "preview",
+          "import"
+        ]
+      },
+      {
         name: "activity",
         action: [
           "create",
@@ -927,6 +939,11 @@ const ROLES = {
       {
         name: "contact",
         action: [
+          "academichistory",
+          "documents",
+          "education",
+          "deletedocument",
+          "eligiblepastactivities",
           "organizationstudents",
           "organizationadmins",
           "findone",
@@ -1216,6 +1233,10 @@ const ROLES = {
       },
       {
         name: "zone",
+        action: []
+      },
+      {
+        name: "student-import-csv",
         action: []
       },
       {

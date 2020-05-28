@@ -34,7 +34,7 @@ const NoFeedback = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              Error
+              {props.forView ? `View Feedback` : `Add/Edit Feedback`}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton

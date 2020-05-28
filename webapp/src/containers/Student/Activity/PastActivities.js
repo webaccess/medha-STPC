@@ -49,7 +49,7 @@ const PastActivities = props => {
   const studentInfo =
     Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
       ? Auth.getUserInfo().studentInfo.contact.id
-      : null;
+      : Auth.getStudentIdFromCollegeAdmin();
   const STUDENT_ACTIVITY_URL =
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_ACTIVITY_URL +
@@ -67,7 +67,7 @@ const PastActivities = props => {
         }));
       })
       .catch(error => {
-        console.log("error", error);
+        console.log("error-->>", error);
       });
 
     getPastActivities(10, 1);
@@ -113,7 +113,7 @@ const PastActivities = props => {
         }));
       })
       .catch(error => {
-        console.log("error", error);
+        console.log("error-->>", error);
       });
   };
 

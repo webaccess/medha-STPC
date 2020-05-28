@@ -465,3 +465,10 @@ export const studentEventRegistration = (event, student) => {
     contact: student
   };
 };
+
+export const uploadStudentCSV = file => {
+  const formData = new FormData();
+  formData.append("files.imported_file", file, file.name);
+  formData.append("data", JSON.stringify({ status: "uploaded" }));
+  return formData;
+};
