@@ -111,13 +111,15 @@ const AddEditStudent = props => {
   const [districtlist, setdistrictlist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
   const [streamlist, setstreamlist] = useState([]);
-  const [stream, setStream] = useState([]);
+  const [collegeStreamList, setCollegeStreamList] = useState([]);
+  const [stream, setStream] = useState(null);
 
   useEffect(() => {
     setLoaderStatus(true);
     getStates();
     getDistrict();
     getColleges();
+    getStreams();
     setLoaderStatus(false);
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
@@ -125,24 +127,23 @@ const AddEditStudent = props => {
   useEffect(() => {
     setLoaderStatus(true);
     if (
-      stream !== null &&
-      stream !== undefined &&
       formState.values.hasOwnProperty("college") &&
-      formState.values["college"] !== null &&
-      formState.values["college"] !== undefined
+      formState.values["college"] &&
+      collegelist.length > 0
     ) {
-      const list = stream.reduce((result, obj) => {
-        if (formState.values.college === obj.id) {
-          result.push(obj.stream);
-        }
-        return result;
-      }, []);
-
-      setstreamlist(
-        list.map(obj => {
-          return { id: obj.id, name: obj.name };
-        })
+      const college = collegelist.find(
+        college => college.id == formState.values["college"]
       );
+
+      console.log(collegelist);
+      const collegeStreamIds = college.stream_strength.map(s => s.stream.id);
+      const list = streamlist.filter(stream => {
+        if (_.includes(collegeStreamIds, stream.id)) {
+          return stream;
+        }
+      });
+
+      setCollegeStreamList(list);
     }
 
     setLoaderStatus(false);
@@ -182,7 +183,13 @@ const AddEditStudent = props => {
         formState.values["username"] =
           props.location["dataForEdit"]["contact"]["user"]["username"];
       }
-
+      if (
+        props.location["dataForEdit"]["organization"] &&
+        props.location["dataForEdit"]["organization"]["id"]
+      ) {
+        formState.values["college"] =
+          props.location["dataForEdit"]["organization"]["id"];
+      }
       if (
         props.location["dataForEdit"]["contact"] &&
         props.location["dataForEdit"]["contact"]["user"] &&
@@ -195,16 +202,7 @@ const AddEditStudent = props => {
         props.location["dataForEdit"]["stream"] &&
         props.location["dataForEdit"]["stream"]["id"]
       ) {
-        formState.values["stream"] =
-          props.location["dataForEdit"]["stream"]["id"];
-
-        const data = {
-          id: props.location["dataForEdit"]["organization"]["id"],
-          stream: props.location["dataForEdit"]["stream"]
-        };
-        const list = [];
-        list.push(data);
-        setStream(list);
+        formState.values["stream"] = props.location["dataForEdit"]["stream"];
       }
 
       if (
@@ -338,6 +336,7 @@ const AddEditStudent = props => {
   const postStudentData = () => {
     let postData;
     if (formState.editStudent) {
+      console.log(formState.values);
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
         formState.values["lastname"],
@@ -357,7 +356,7 @@ const AddEditStudent = props => {
           selectedDate.getDate(),
         formState.values["physicallyHandicapped"],
         formState.values["college"],
-        formState.values["stream"],
+        formState.values["stream"].id,
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
         formState.values["futureAspirations"]
@@ -428,7 +427,7 @@ const AddEditStudent = props => {
           selectedDate.getDate(),
         formState.values["physicallyHandicapped"],
         formState.values["college"],
-        formState.values["stream"],
+        formState.values["stream"].id,
         parseInt(formState.values["rollnumber"]),
         formState.values.otp
       );
@@ -464,14 +463,34 @@ const AddEditStudent = props => {
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
       )
       .then(res => {
-        const streams = res.data.result
-          .map(college => {
-            return { stream: college.stream_strength, id: college.id };
-          })
-          .filter(c => c);
-        console.log("stream", streams);
-        setStream(streams);
-        setcollegelist(res.data.result.map(({ id, name }) => ({ id, name })));
+        setcollegelist(
+          res.data.result.map(({ id, name, stream_strength }) => ({
+            id,
+            name,
+            stream_strength
+          }))
+        );
+      });
+  };
+
+  const getStreams = () => {
+    axios
+      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS)
+      .then(res => {
+        const list = res.data.map(({ id, name }) => ({
+          id,
+          name
+        }));
+        setstreamlist(list);
+
+        if (formState.dataForEdit) {
+          console.log(props.location["dataForEdit"]["stream"]);
+          const selectedStream = list.find(
+            stream => stream.id == props.location["dataForEdit"]["stream"]["id"]
+          );
+
+          setStream(selectedStream);
+        }
       });
   };
 
@@ -562,6 +581,35 @@ const AddEditStudent = props => {
     }
   };
 
+  const handleStreamChange = (eventName, event, value) => {
+    /**TO SET VALUES OF AUTOCOMPLETE */
+    if (value !== null) {
+      setFormState(formState => ({
+        ...formState,
+        values: {
+          ...formState.values,
+          [eventName]: value
+        },
+        touched: {
+          ...formState.touched,
+          [eventName]: true
+        }
+      }));
+      if (formState.errors.hasOwnProperty(eventName)) {
+        delete formState.errors[eventName];
+      }
+      setStream(value);
+    } else {
+      if (eventName === "state") {
+        delete formState.values["district"];
+      }
+      delete formState.values[eventName];
+      setFormState(formState => ({
+        ...formState
+      }));
+    }
+  };
+
   const handleClickShowPassword = () => {
     setFormState({
       ...formState,
@@ -570,6 +618,7 @@ const AddEditStudent = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
+  console.log(stream);
 
   return (
     // <Layout>
@@ -957,19 +1006,13 @@ const AddEditStudent = props => {
                   <Autocomplete
                     id="combo-box-demo"
                     className={classes.root}
-                    options={streamlist}
+                    options={collegeStreamList || []}
                     disabled={formState.editStudent ? true : false}
                     getOptionLabel={option => option.name}
                     onChange={(event, value) => {
-                      handleChangeAutoComplete("stream", event, value);
+                      handleStreamChange("stream", event, value);
                     }}
-                    value={
-                      streamlist[
-                        streamlist.findIndex(function (item, i) {
-                          return item.id === formState.values.stream;
-                        })
-                      ] || null
-                    }
+                    value={stream || null}
                     renderInput={params => (
                       <TextField
                         {...params}
