@@ -838,7 +838,7 @@ const ROLES = {
     controllers: [
       {
         name: "academic-history",
-        action: ["create", "update"]
+        action: ["create", "update", "delete"]
       },
       {
         name: "academic-year",
@@ -850,7 +850,7 @@ const ROLES = {
       },
       {
         name: "education",
-        action: ["create", "update"]
+        action: ["create", "update", "delete"]
       },
       {
         name: "event",
@@ -930,6 +930,7 @@ const ROLES = {
           "academichistory",
           "documents",
           "education",
+          "deletedocument",
           "eligiblepastactivities",
           "organizationstudents",
           "organizationadmins",
