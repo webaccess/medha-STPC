@@ -140,6 +140,12 @@
     },
     {
       "method": "GET",
+      "path": "/contact/individuals/:id/past-activities",
+      "handler": "contact.eligiblePastActivities",
+      "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "GET",
       "path": "/activity/:id/download",
       "handler": "activity.download",
       "config": { "policies": [] }
@@ -207,6 +213,26 @@
       "path": "/activities/:id",
       "handler": "activity.update",
       "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/get-individuals/:id/document",
+      "handler": "contact.documents",
+      "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "DELETE",
+      "path": "/contact/get-individuals/:id/file/:fileId",
+      "handler": "contact.deleteDocument",
+      "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:id/question-sets",
+      "handler": "activity.getQuestionSet",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

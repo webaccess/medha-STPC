@@ -55,10 +55,12 @@ const DeleteDocument = props => {
   const deleteData = () => {
     const studentInfo =
       auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
-        ? auth.getUserInfo().studentInfo.id
+        ? auth.getUserInfo().studentInfo.contact.id
         : auth.getStudentIdFromCollegeAdmin();
 
-    const API_URL = `${DELETE_DOCUMENT_URL}/${studentInfo}/file`;
+    const API_URL =
+      `${DELETE_DOCUMENT_URL}/${studentInfo}/` +
+      strapiConstants.STRAPI_DELETE_UPLOAD;
     serviceProviders
       .serviceProviderForDeleteRequest(API_URL, props.id)
       .then(res => {

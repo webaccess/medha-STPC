@@ -17,8 +17,9 @@ import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import LoaderContext from "../../../context/LoaderContext";
 
 const field = "documents";
-const ref = "student";
+const ref = "individual";
 const files = "files";
+const source = "crm-plugin";
 
 const AddEditDocument = props => {
   const history = useHistory();
@@ -117,13 +118,14 @@ const AddEditDocument = props => {
     const studentInfo =
       auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
         ? auth.getUserInfo().studentInfo.id
-        : auth.getStudentIdFromCollegeAdmin();
+        : auth.getStudentIdFromCollegeAdminForDocument();
     const id = studentInfo;
     let postData = databaseUtilities.uploadDocument(
       formState.files,
       ref,
       id,
-      field
+      field,
+      source
     );
 
     serviceProviders

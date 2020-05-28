@@ -313,8 +313,9 @@ module.exports = {
       "date_of_birth",
       "gender",
       "roll_number",
-      "is_physically_challenged",
-      "organization"
+      "organization",
+      "future_aspirations",
+      "is_physically_challenged"
     ]);
 
     if (
@@ -1024,7 +1025,6 @@ module.exports = {
     }
 
     const filters = convertRestQueryParams(query);
-
     const student = await strapi.query("contact", PLUGIN).findOne({ id });
 
     if (!student) {
@@ -1126,6 +1126,12 @@ module.exports = {
       const eventRegistrationInfo = await strapi
         .query("event-registration")
         .findOne({ contact: id, event: event.id });
+      const checkFeedbackForTheEventPresent = await strapi
+        .query("feedback-set")
+        .find({ event: event.id, contact: id });
+      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
+        ? true
+        : false;
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
         eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
@@ -1208,6 +1214,28 @@ module.exports = {
     const filtered = await strapi.plugins[
       "crm-plugin"
     ].services.contact.getEvents(college, events);
+
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(id);
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    await utils.asyncForEach(filtered, async event => {
+      const checkFeedbackForTheEventPresent = await strapi
+        .query("feedback-set")
+        .find({ event: event.id, contact_in: students_contact_id });
+      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
+        ? true
+        : false;
+    });
+
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
     return { result, ...pagination };
   },
@@ -1483,7 +1511,8 @@ module.exports = {
       "gender",
       "is_physically_challenged",
       "roll_number",
-      "organization"
+      "organization",
+      "future_aspirations"
     ]);
 
     if (
@@ -1564,5 +1593,151 @@ module.exports = {
       .catch(error => {
         return ctx.response.badRequest(error);
       });
+  },
+
+  documents: async ctx => {
+    const { id } = ctx.params;
+    const documentId = ctx.query ? ctx.query.id : null;
+
+    const response = await strapi.query("contact", PLUGIN).findOne({ id });
+
+    if (
+      documentId &&
+      response.individual.documents &&
+      response.individual.documents.length > 0
+    ) {
+      response.individual.documents = response.individual.documents.filter(
+        doc => doc.id === parseInt(documentId)
+      );
+    }
+
+    return utils.getFindOneResponse(
+      response ? response.individual.documents : null
+    );
+  },
+
+  deleteDocument: async ctx => {
+    const { fileId } = ctx.params;
+    if (!fileId) {
+      return ctx.response.badRequest("File Id is absent");
+    }
+
+    const config = await strapi
+      .store({
+        environment: strapi.config.environment,
+        type: "plugin",
+        name: "upload"
+      })
+      .get({ key: "provider" });
+
+    const file = await strapi.plugins["upload"].services.upload.fetch({
+      id: fileId
+    });
+
+    if (!file) {
+      return ctx.notFound("file.notFound");
+    }
+
+    const related = await bookshelf
+      .model("uploadMorph")
+      .where({ upload_file_id: fileId })
+      .fetch();
+
+    if (related) {
+      console.log("1");
+      await related.destroy();
+    }
+
+    await strapi.plugins["upload"].services.upload.remove(file, config);
+
+    ctx.send(file);
+  },
+  eligiblePastActivities: async ctx => {
+    const { id } = ctx.params;
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+
+    // Removing custom query params since strapi won't allow filtering using that
+    let status;
+    if (query.status) {
+      status = query.status;
+      delete query.status;
+    }
+
+    let filters = convertRestQueryParams(query);
+
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
+    }
+
+    const student = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!student) return ctx.response.notFound("Student does not exist");
+
+    // Building query depending on query params sent
+    let qb = {};
+    qb.contact = id;
+    if (status) {
+      qb.verified_by_college = status == "attended" ? true : false;
+    }
+
+    let activityBatches = await strapi
+      .query("activityassignee", PLUGIN)
+      .find(qb);
+
+    if (!activityBatches.length)
+      return ctx.response.notFound("Student not Enrolled in any event");
+
+    const currentDate = new Date();
+
+    activityBatches = activityBatches.filter(activityBatch => {
+      const endTime = new Date(activityBatch.activity_batch.end_date_time);
+      if (currentDate.getTime() > endTime.getTime()) return activityBatch;
+    });
+
+    if (activityBatches) {
+      const activityIds = activityBatches.map(
+        activityBatch => activityBatch.activity_batch.activity
+      );
+
+      const activity = await strapi
+        .query("activity", PLUGIN)
+        .model.query(
+          buildQuery({
+            model: strapi.plugins["crm-plugin"].models["activity"],
+            filters
+          })
+        )
+        .where("id", "in", activityIds)
+        .fetchAll()
+        .then(model => model.toJSON());
+      // console.log(activity);
+
+      let result = activity
+        .map(activity => {
+          let flag = 0;
+          // for (let i = 0; i < activityBatch.length; i++) {
+          activityBatches.forEach(activityBatch => {
+            if (activity.id === activityBatch.activity_batch.activity) {
+              activity["activity_batch"] = activityBatch.activity_batch;
+              flag = 1;
+            }
+          });
+
+          if (flag) return activity;
+        })
+        .filter(activity => activity);
+
+      // Sorting ascending or descending on one or multiple fields
+      if (sort && sort.length) {
+        result = utils.sort(result, sort);
+      }
+
+      const response = utils.paginate(result, page, pageSize);
+      return {
+        result: response.result,
+        ...response.pagination
+      };
+    }
   }
 };

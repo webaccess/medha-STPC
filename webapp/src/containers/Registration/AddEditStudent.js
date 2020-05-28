@@ -343,8 +343,8 @@ const AddEditStudent = props => {
         formState.values["fatherFirstName"],
         formState.values["fatherLastName"],
         formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
+        formState.values["state"] ? formState.values["state"] : null,
+        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["username"],
@@ -354,25 +354,33 @@ const AddEditStudent = props => {
           (selectedDate.getMonth() + 1) +
           "-" +
           selectedDate.getDate(),
-        formState.values["physicallyHandicapped"],
+        formState.values["physicallyHandicapped"] !== undefined
+          ? formState.values["physicallyHandicapped"]
+          : null,
         formState.values["college"],
         formState.values["stream"].id,
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
         formState.values["futureAspirations"]
+          ? formState.values["futureAspirations"]
+          : null
       );
+      let EDIT_STUDENT_URL =
+        strapiApiConstants.STRAPI_DB_URL +
+        strapiApiConstants.STRAPI_CONTACT_URL;
+      let EDIT_URL = strapiApiConstants.STRAPI_EDIT_STUDENT;
       serviceProvider
         .serviceProviderForPutRequest(
-          strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_CONTACTS,
+          EDIT_STUDENT_URL,
           formState.dataForEdit.contact.id,
           postData,
-          "edit-individual"
+          EDIT_URL
         )
         .then(response => {
           let studentName =
             props.location["dataForEdit"]["first_name"] +
             " " +
-            props.location["dataForEdit"]["studentInfo"]["father_first_name"] +
+            props.location["dataForEdit"]["father_first_name"] +
             " " +
             props.location["dataForEdit"]["last_name"];
 
@@ -431,6 +439,7 @@ const AddEditStudent = props => {
         parseInt(formState.values["rollnumber"]),
         formState.values.otp
       );
+
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +

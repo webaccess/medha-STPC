@@ -21,6 +21,7 @@ const EditGridIcon = props => {
         className="material-icons"
         id={props.id}
         userId={props.userId}
+        contactId={props.contactId}
         value={props.value}
         onClick={props.disabled ? null : props.onClick}
         style={

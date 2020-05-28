@@ -157,7 +157,8 @@ export const addEvent = (
   educations = [],
   colleges = null,
   streams = null,
-  state = null
+  state = null,
+  question_set = null
 ) => {
   return {
     title: title,
@@ -171,7 +172,8 @@ export const addEvent = (
     educations: educations,
     contacts: colleges,
     streams: streams,
-    state: state
+    state: state,
+    question_set: question_set
   };
 };
 export const addState = name => {
@@ -284,7 +286,7 @@ export const addStudentFromCollege = (
     username: userName,
     password: password,
     email: email,
-    college_id: college,
+    organization: college,
     first_name: firstname,
     last_name: lastname,
     father_first_name: fatherfirstname,
@@ -324,10 +326,10 @@ export const editStudent = (
   password = undefined
 ) => {
   return {
-    contact_number: contactNumber,
+    phone: contactNumber,
     username: userName,
     email: email,
-    college: college,
+    organization: college,
     first_name: firstname,
     last_name: lastname,
     father_first_name: fatherfirstname,
@@ -359,12 +361,13 @@ export const addEducation = (
   };
 };
 
-export const uploadDocument = (files, ref, refId, field) => {
+export const uploadDocument = (files, ref, refId, field, source) => {
   const formData = new FormData();
   formData.append("files", files);
   formData.append("ref", ref);
   formData.append("refId", refId);
   formData.append("field", field);
+  formData.append("source", source);
   return formData;
 };
 

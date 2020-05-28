@@ -13,8 +13,8 @@
       "required": true
     },
     "questions": {
-      "collection": "question",
-      "via": "question_set"
+      "via": "question_set",
+      "collection": "question"
     },
     "activities": {
       "via": "question_set",

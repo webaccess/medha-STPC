@@ -19,6 +19,11 @@ bookshelf.model("academic_year", {
   requireFetch: false
 });
 
+bookshelf.model("uploadMorph", {
+  requireFetch: false,
+  tableName: "upload_file_morph"
+});
+
 bookshelf.model("country", {
   tableName: "countries",
   requireFetch: false
@@ -72,6 +77,14 @@ bookshelf.model("organization-component", {
 bookshelf.model("activity_type", {
   requireFetch: false,
   tableName: "activitytypes"
+});
+
+bookshelf.model("feedback", {
+  tableName: "feedbacks"
+});
+
+bookshelf.model("feedback-set", {
+  tableName: "feedback_sets"
 });
 
 module.exports = bookshelf;

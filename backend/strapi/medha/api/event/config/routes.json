@@ -71,6 +71,30 @@
       "config": {
         "policies": ["isCollegeEventOwner"]
       }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:id/question-sets",
+      "handler": "event.getQuestionSet",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:eventId/contact/:collegeId/getStudentsFeedbacks",
+      "handler": "event.getFeedbacksForEventFromCollege",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:eventId/contact/:collegeId/getStudentsCommentsForFeedbacks",
+      "handler": "event.getStudentCommentsForEventFromCollege",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
