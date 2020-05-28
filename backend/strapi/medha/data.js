@@ -903,6 +903,18 @@ const ROLES = {
         action: ["find", "findone"]
       },
       {
+        name: "student-import-csv",
+        action: [
+          "find",
+          "findone",
+          "create",
+          "delete",
+          "update",
+          "preview",
+          "import"
+        ]
+      },
+      {
         name: "activity",
         action: [
           "create",
@@ -1220,6 +1232,10 @@ const ROLES = {
       },
       {
         name: "zone",
+        action: []
+      },
+      {
+        name: "student-import-csv",
         action: []
       },
       {

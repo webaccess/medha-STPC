@@ -1,0 +1,34 @@
+{
+  "info": {
+    "name": "Student import csv"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "imported_file": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "uploaded",
+        "processing",
+        "completed",
+        "error"
+      ]
+    },
+    "error_file": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    }
+  },
+  "connection": "default",
+  "collectionName": "student_import_csvs"
+}

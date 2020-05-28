@@ -27,10 +27,14 @@ module.exports = {
       data = JSON.parse(data);
       entry = await strapi.query("activity", PLUGIN).create(data);
       // automatically uploads the files based on the entry and the model
-      await strapi.entityService.uploadFiles(entry, files, {
-        model: "activity",
-        plugin: PLUGIN
-      });
+      await strapi.plugins.upload.services.upload.uploadToEntity(
+        {
+          id: entry.id || entry._id,
+          model: "activity"
+        },
+        files,
+        PLUGIN
+      );
     } else {
       entry = await strapi.query("activity", PLUGIN).create(ctx.request.body);
     }
