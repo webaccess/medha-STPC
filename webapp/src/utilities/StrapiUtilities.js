@@ -332,14 +332,14 @@ export const editStudent = (
     last_name: lastname,
     father_first_name: fatherfirstname,
     father_last_name: fatherlastname,
-    address: address,
+    address_1: address,
     state: state,
     district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
     roll_number: rollNumber,
-    physicallyHandicapped: physicallyHandicapped,
+    is_physically_challenged: physicallyHandicapped,
     id: id,
     password: password,
     future_aspirations: futureAspirations
@@ -461,4 +461,11 @@ export const studentEventRegistration = (event, student) => {
     event: event,
     contact: student
   };
+};
+
+export const uploadStudentCSV = file => {
+  const formData = new FormData();
+  formData.append("files.imported_file", file, file.name);
+  formData.append("data", JSON.stringify({ status: "uploaded" }));
+  return formData;
 };
