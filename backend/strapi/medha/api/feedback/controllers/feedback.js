@@ -6,8 +6,9 @@
  */
 
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
-const utils = require("../../../config/utils.js");
 const { sanitizeEntity } = require("strapi-utils");
+const bookshelf = require("../../../config/bookshelf.js");
+const utils = require("../../../config/utils");
 
 const sanitizeUser = user =>
   sanitizeEntity(user, {

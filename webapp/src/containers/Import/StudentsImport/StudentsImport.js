@@ -1,15 +1,45 @@
-import React from "react";
-import { Card, CardContent, Grid, Typography, Button } from "@material-ui/core";
+import React, { useState, useContext } from "react";
+import {
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  Button,
+  IconButton
+} from "@material-ui/core";
 //import CSVReader from "react-csv-reader";
 import { CSVReader } from "react-papaparse";
 import PublishIcon from "@material-ui/icons/Publish";
+import CloudUpload from "@material-ui/icons/CloudUpload";
+import CloseIcon from "@material-ui/icons/Close";
 
 import * as genericConstants from "../../../constants/GenericConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
+import * as databaseUtilities from "../../../utilities/StrapiUtilities";
+import * as serviceProviders from "../../../api/Axios";
+import { useHistory } from "react-router-dom";
+import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import { Alert } from "../../../components";
+import ImportStudentsModal from "./PreviewAndImport";
+import LoaderContext from "../../../context/LoaderContext";
 
 const StudentsImport = props => {
   const classes = useStyles();
-
+  const history = useHistory();
+  const { setLoaderStatus } = useContext(LoaderContext);
+  const [files, setFiles] = useState(null);
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    message: "",
+    severity: ""
+  });
+  const [showPreviewAndImportModal, setShowPreviewAndImportModal] = useState(
+    false
+  );
+  const [fileData, setFileData] = useState(null);
+  const [preview, setPreview] = useState(false);
+  const URL =
+    strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT_IMPORT_CSV;
   // const handleForce = (data, fileInfo) => console.log(data, fileInfo);
 
   // const papaparseOptions = {
@@ -19,10 +49,8 @@ const StudentsImport = props => {
   //   transformHeader: header => header.toLowerCase().replace(/\W/g, "_")
   // };
 
-  const handleOnDrop = data => {
-    console.log("---------------------------");
-    console.log(data);
-    console.log("---------------------------");
+  const handleOnDrop = (data, file) => {
+    setFiles(file);
   };
 
   const handleOnError = (err, file, inputElem, reason) => {
@@ -30,9 +58,38 @@ const StudentsImport = props => {
   };
 
   const handleOnRemoveFile = data => {
-    console.log("---------------------------");
-    console.log(data);
-    console.log("---------------------------");
+    setFiles(null);
+    setPreview(false);
+    setFileData(null);
+  };
+
+  const postUploadData = async () => {
+    let postData = databaseUtilities.uploadStudentCSV(files);
+
+    serviceProviders
+      .serviceProviderForPostRequest(URL, postData)
+      .then(res => {
+        setAlert(() => ({
+          isOpen: true,
+          message: "File uploaded successfully",
+          severity: "success"
+        }));
+        setPreview(true);
+        setFileData(res.data);
+      })
+      .catch(error => {
+        setAlert(() => ({
+          isOpen: true,
+          message: "Something went wrong while uploading file",
+          severity: "error"
+        }));
+        setPreview(false);
+        setFileData(null);
+      });
+  };
+
+  const handlePreviewClick = () => {
+    setShowPreviewAndImportModal(true);
   };
 
   return (
@@ -42,6 +99,25 @@ const StudentsImport = props => {
           {genericConstants.STUDENTS_IMPORT}
         </Typography>
       </Grid>
+      {alert.isOpen ? (
+        <Alert
+          severity={alert.severity}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlert(() => ({ isOpen: false }));
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alert.message}
+        </Alert>
+      ) : null}
       <Card>
         <CardContent>
           <Grid>
@@ -81,13 +157,44 @@ const StudentsImport = props => {
               component="span"
               fullWidth
               className={classes.InputFileButton}
-              startIcon={<PublishIcon />}
+              startIcon={<CloudUpload />}
+              disabled={files ? false : true}
+              onClick={postUploadData}
             >
-              IMPORT STUDENTS
+              UPLOAD FILE
+            </Button>
+          </Grid>
+          <Grid item style={{ marginTop: "16px" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              fullWidth
+              className={classes.InputFileButton}
+              disabled={!preview}
+              onClick={handlePreviewClick}
+            >
+              PREVIEW
             </Button>
           </Grid>
         </CardContent>
       </Card>
+      {showPreviewAndImportModal ? (
+        <ImportStudentsModal
+          showModal={showPreviewAndImportModal}
+          closeModal={() => setShowPreviewAndImportModal(false)}
+          id={fileData.id}
+          loading={val => setLoaderStatus(val)}
+          clear={handleOnRemoveFile}
+          alert={(isOpen, severity, message) =>
+            setAlert({
+              severity,
+              message,
+              isOpen
+            })
+          }
+        />
+      ) : null}
     </Grid>
   );
 };

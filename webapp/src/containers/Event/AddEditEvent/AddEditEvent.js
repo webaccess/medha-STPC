@@ -52,6 +52,7 @@ const address = "address";
 const state = "state";
 const zone = "zone";
 const rpc = "rpc";
+const questionSet = "questionSet";
 const college = "college";
 const stream = "stream";
 const percentage = "percentage";
@@ -73,6 +74,8 @@ const DOCUMENT_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_UPLOAD;
 const COLLEGE_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
+const QUESTION_SET =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUESTION_SET;
 
 const AddEditEvent = props => {
   const [editorState, setEditorState] = React.useState(
@@ -145,6 +148,7 @@ const AddEditEvent = props => {
   const [colleges, setColleges] = useState([]);
   const [streams, setStreams] = useState([]);
   const inputLabel = React.useRef(null);
+  const [questionSetData, setQuestionSetData] = useState([]);
   const [qualifications, setQualifications] = useState([
     { id: 1, value: "SSC" },
     { id: 2, value: "HSC" },
@@ -201,6 +205,13 @@ const AddEditEvent = props => {
       }
       if (props["dataForEdit"]["zone"] && props["dataForEdit"]["zone"]["id"]) {
         formState.values[zone] = props["dataForEdit"]["zone"]["id"];
+      }
+      if (
+        props["dataForEdit"]["question_set"] &&
+        props["dataForEdit"]["question_set"]["id"]
+      ) {
+        formState.values[questionSet] =
+          props["dataForEdit"]["question_set"]["id"];
       }
       if (
         props["dataForEdit"]["state"] &&
@@ -261,6 +272,16 @@ const AddEditEvent = props => {
     }
     formState.counter += 1;
   }
+
+  /** Use effect to populate Question Set */
+  useEffect(() => {
+    serviceProvider
+      .serviceProviderForGetRequest(QUESTION_SET)
+      .then(res => {
+        setQuestionSetData(res.data);
+      })
+      .catch(error => {});
+  }, []);
 
   /** Streams data for Prepopulating */
   const prePopulateStreamsData = streamsData => {
@@ -1025,7 +1046,8 @@ const AddEditEvent = props => {
       educationPercentageArray,
       formState.values[college] ? formState.values[college] : null,
       formState.values[stream] ? formState.values[stream] : null,
-      formState.values[state] ? formState.values[state] : null
+      formState.values[state] ? formState.values[state] : null,
+      formState.values[questionSet] ? formState.values[questionSet] : null
     );
     console.log(postData);
     if (formState.isEditEvent) {
@@ -1558,7 +1580,44 @@ const AddEditEvent = props => {
                       />
                     )}
                   </Grid>
-                  <Grid item md={6} xs={12}></Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id={get(EventSchema[questionSet], "id")}
+                      className={classes.root}
+                      options={questionSetData}
+                      placeholder={get(EventSchema[questionSet], "placeholder")}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(questionSet, event, value);
+                      }}
+                      value={
+                        questionSetData[
+                          questionSetData.findIndex(function (item, i) {
+                            return item.id === formState.values[questionSet];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[questionSet], "label")}
+                          variant="outlined"
+                          placeholder={get(
+                            EventSchema[questionSet],
+                            "placeholder"
+                          )}
+                          error={hasError(questionSet)}
+                          helperText={
+                            hasError(questionSet)
+                              ? formState.errors[questionSet].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>

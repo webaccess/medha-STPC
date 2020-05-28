@@ -79,4 +79,12 @@ bookshelf.model("activity_type", {
   tableName: "activitytypes"
 });
 
+bookshelf.model("feedback", {
+  tableName: "feedbacks"
+});
+
+bookshelf.model("feedback-set", {
+  tableName: "feedback_sets"
+});
+
 module.exports = bookshelf;

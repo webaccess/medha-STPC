@@ -371,5 +371,38 @@ module.exports = {
           return model;
         });
     }
+  },
+
+  async getQuestionSet(ctx) {
+    const { id } = ctx.params;
+    const activity = await strapi.query("activity", PLUGIN).findOne({ id: id });
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+    if (activity.question_set) {
+      const activity_question_set = await strapi.query("question-set").findOne({
+        id: activity.question_set.id
+      });
+
+      if (
+        activity_question_set.questions &&
+        activity_question_set.questions.length !== 0
+      ) {
+        await utils.asyncForEach(
+          activity_question_set.questions,
+          async question => {
+            const role = await strapi
+              .query("role", "users-permissions")
+              .findOne({ id: question.role });
+            question.role = { id: role.id, name: role.name };
+          }
+        );
+        return utils.getFindOneResponse(activity_question_set);
+      } else {
+        return ctx.response.notFound("No questions for activity");
+      }
+    } else {
+      return ctx.response.notFound("No question set with this activity");
+    }
   }
 };

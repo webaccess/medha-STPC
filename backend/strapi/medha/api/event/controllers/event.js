@@ -293,5 +293,254 @@ module.exports = {
       result: response.result,
       ...response.pagination
     };
+  },
+
+  async getQuestionSet(ctx) {
+    const { id } = ctx.params;
+    const event = await strapi.query("event").findOne({ id: id });
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+    if (event.question_set) {
+      const event_question_set = await strapi.query("question-set").findOne({
+        id: event.question_set.id
+      });
+
+      if (
+        event_question_set.questions &&
+        event_question_set.questions.length !== 0
+      ) {
+        await utils.asyncForEach(
+          event_question_set.questions,
+          async question => {
+            const role = await strapi
+              .query("role", "users-permissions")
+              .findOne({ id: question.role });
+            question.role = { id: role.id, name: role.name };
+          }
+        );
+        return utils.getFindOneResponse(event_question_set);
+      } else {
+        return ctx.response.notFound("No questions for event");
+      }
+    } else {
+      return ctx.response.notFound("No event set with this activity");
+    }
+  },
+
+  async getFeedbacksForEventFromCollege(ctx) {
+    const { eventId, collegeId } = ctx.params;
+
+    const event = await strapi.query("event").findOne({ id: eventId });
+
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    const contact = await strapi
+      .query("contact", "crm-plugin")
+      .find({ id: collegeId, contact_type: "organization" });
+
+    if (!contact.length) {
+      return ctx.response.notFound("No college found");
+    }
+
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(collegeId);
+
+    if (!userIds.length) {
+      return ctx.response.notFound("No students with this college");
+    }
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    students = students.map(student => {
+      student.user = sanitizeUser(student.user);
+      return student;
+    });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    const checkFeedbackForTheEventPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, contact_in: students_contact_id });
+
+    if (!checkFeedbackForTheEventPresent.length) {
+      return ctx.response.notFound("No feedback given by college students");
+    }
+
+    let question_set = null;
+    const feedback_set_id = checkFeedbackForTheEventPresent.map(res => {
+      question_set = res.question_set.id;
+      return res.id;
+    });
+
+    const event_question_set = await strapi.query("question-set").findOne(
+      {
+        id: question_set
+      },
+      ["questions.role"]
+    );
+
+    /** This basically gets questions id to which we will store our aggregate data */
+    let question_ids = [];
+    const question_ratings = event_question_set.questions
+      .map(data => {
+        if (data.role.name === "Student" && data.type === "Rating") {
+          question_ids.push(data["id"]);
+          return {
+            id: data["id"],
+            title: data["title"],
+            result: 0
+          };
+        }
+      })
+      .filter(data => {
+        return data !== undefined;
+      });
+
+    const feedback_response_data = await strapi.query("feedback").find({
+      question_in: question_ids,
+      feedback_set_in: feedback_set_id
+    });
+
+    const result = {};
+    feedback_response_data.map(res => {
+      if (result.hasOwnProperty(res.question.id)) {
+        result[res.question.id] = result[res.question.id] + res.answer_int;
+      } else {
+        result[res.question.id] = res.answer_int;
+      }
+    });
+
+    question_ratings.map(res => {
+      res.result = Math.round(result[res.id] / feedback_set_id.length);
+    });
+
+    return utils.getFindOneResponse({
+      total: feedback_set_id.length,
+      ratings: question_ratings
+    });
+  },
+
+  async getStudentCommentsForEventFromCollege(ctx) {
+    const { eventId, collegeId } = ctx.params;
+
+    const event = await strapi.query("event").findOne({ id: eventId });
+
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    const contact = await strapi
+      .query("contact", "crm-plugin")
+      .find({ id: collegeId, contact_type: "organization" });
+
+    if (!contact.length) {
+      return ctx.response.notFound("No college found");
+    }
+
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(collegeId);
+
+    if (!userIds.length) {
+      return ctx.response.notFound("No students with this college");
+    }
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    students = students.map(student => {
+      student.user = sanitizeUser(student.user);
+      return student;
+    });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    const checkFeedbackForTheEventPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, contact_in: students_contact_id });
+
+    if (!checkFeedbackForTheEventPresent.length) {
+      return ctx.response.notFound("No feedback given by college students");
+    }
+
+    let question_set = null;
+    const feedback_set_id = checkFeedbackForTheEventPresent.map(res => {
+      question_set = res.question_set.id;
+      return res.id;
+    });
+
+    const event_question_set = await strapi.query("question-set").findOne(
+      {
+        id: question_set
+      },
+      ["questions.role"]
+    );
+
+    /** This basically gets questions id to which we will store our aggregate data */
+    let question_ids = [];
+    const question_ratings = event_question_set.questions
+      .map(data => {
+        if (data.role.name === "Student" && data.type === "Comment") {
+          question_ids.push(data["id"]);
+          return {
+            id: data["id"],
+            title: data["title"],
+            result: []
+          };
+        }
+      })
+      .filter(data => {
+        return data !== undefined;
+      });
+
+    const feedback_response_data = await strapi.query("feedback").find(
+      {
+        question_in: question_ids,
+        feedback_set_in: feedback_set_id
+      },
+      ["feedback_set.contact"]
+    );
+
+    question_ratings.map(res => {
+      const result = feedback_response_data.map(data => {
+        if (res.id === data.question) {
+          return {
+            studentId: data.feedback_set.contact.id,
+            studentName: data.feedback_set.contact.name,
+            answer: data.answer_text
+          };
+        }
+      });
+      res.result = result;
+    });
+
+    return utils.getFindOneResponse(question_ratings);
   }
 };

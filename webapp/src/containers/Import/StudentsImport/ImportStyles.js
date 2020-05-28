@@ -2,12 +2,20 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
+    // padding: theme.spacing(4)
     maxWidth: "100%"
   },
   content: {
     display: "content"
   },
+  filterOptions: {
+    // marginTop: theme.spacing(3)
+  },
+  filterMargin: {
+    // margin: theme.spacing(3)
+  },
   filterButtonsMargin: {
+    // margin: theme.spacing(0.5)
     alignSelf: "center",
     marginLeft: "10px"
   },
@@ -16,42 +24,18 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center"
   },
-  edit_dialog: {
-    padding: "15px 15px"
-  },
-  deletemessage: {
-    flex: "inherit",
-    fontSize: "14px",
-    paddingBottom: "18px !important"
-  },
-  blockpanel: {
-    display: "flex",
-    position: "relative",
-    "& h2": {
-      flexGrow: "1"
-    }
-  },
-  crossbtn: {
-    position: "absolute",
-    top: "-7px",
-    right: "-7px",
-    padding: "0px",
-    color: "#fff"
-  },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: "primary"
+    border: "primary",
+    boxShadow: theme.shadows[5],
+    marginBottom: theme.spacing(3)
+    // padding: theme.spacing(2, 4, 3)
   },
   tabledata: {
     marginTop: theme.spacing(3)
   },
   textMargin: {
-    margin: "0px",
-    backgroundColor: "#000",
-    color: "#fff",
-    fontSize: "16px",
-    paddingLeft: "8px",
-    width: "100%"
+    margin: "10px"
   },
   autoCompleteField: {
     width: 200
@@ -70,18 +54,34 @@ const useStyles = makeStyles(theme => ({
   Cardtheming: {
     paddingBottom: "16px !important"
   },
-  FontWeight: { fontWeight: 700 },
+  elementroot: {
+    width: "30% !important"
+  },
+  marginTop: {
+    marginTop: "8px"
+  },
+  DisplayFlex: {
+    display: "flex"
+  },
+  PaddingActionButton: {
+    padding: "2px 8px 0px 8px",
+    cursor: "pointer"
+  },
+  PaddingFirstActionButton: {
+    padding: "0px 8px 0px 0px",
+    cursor: "pointer"
+  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "#fff"
   },
-  fullWidth: {
-    width: "98%",
-    paddingLeft: "15px"
+  editDialogue: {
+    padding: "8px"
   },
-  paddingDiv: {
-    padding: "2%"
+  paddingDate: {
+    paddingTop: "21px !important"
   }
+  /** */
 }));
 
 export default useStyles;
