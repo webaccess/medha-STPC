@@ -114,6 +114,7 @@ const AddEditUser = props => {
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [isDisable, setIsDisable] = useState(false);
 
   /** Part for editing user */
   if (formState.isEditUser && !formState.counter) {
@@ -171,12 +172,11 @@ const AddEditUser = props => {
       ) {
         /** For populating state */
         if (
-          props["dataForEdit"]["organization"] &&
-          props["dataForEdit"]["organization"]["contact"] &&
-          props["dataForEdit"]["organization"]["contact"]["state"]
+          props["dataForEdit"] &&
+          props["dataForEdit"]["contact"] &&
+          props["dataForEdit"]["contact"]["state"]
         ) {
-          formState.values[state] =
-            props["dataForEdit"]["organization"]["contact"]["state"];
+          formState.values[state] = props["dataForEdit"]["contact"]["state"];
         } else {
           formState.values[state] = "";
         }
@@ -186,8 +186,7 @@ const AddEditUser = props => {
           props["dataForEdit"]["organization"] &&
           props["dataForEdit"]["organization"]["zone"]
         ) {
-          formState.values[zone] =
-            props["dataForEdit"]["organization"]["zone"]["id"];
+          formState.values[zone] = props["dataForEdit"]["organization"]["zone"];
         } else {
           formState.values[zone] = "";
         }
@@ -197,8 +196,7 @@ const AddEditUser = props => {
           props["dataForEdit"]["organization"] &&
           props["dataForEdit"]["organization"]["rpc"]
         ) {
-          formState.values[rpc] =
-            props["dataForEdit"]["organization"]["rpc"]["id"];
+          formState.values[rpc] = props["dataForEdit"]["organization"]["rpc"];
         } else {
           formState.values[rpc] = "";
         }
@@ -294,6 +292,17 @@ const AddEditUser = props => {
           }
           if (formState.isEditUser && res.data.roles[i]["name"] === "Student") {
             roles.push(res.data.roles[i]);
+          }
+          if (
+            formState.dataForEdit["contact"] &&
+            formState.dataForEdit["contact"]["user"] &&
+            formState.dataForEdit["contact"]["user"]["role"] &&
+            formState.dataForEdit["contact"]["user"]["role"]["name"] ===
+              "Student"
+          ) {
+            setIsDisable(true);
+          } else {
+            setIsDisable(false);
           }
         }
         setRoles(roles);
@@ -908,6 +917,7 @@ const AddEditUser = props => {
                     <Autocomplete
                       id={get(UserSchema[state], "id")}
                       className={classes.root}
+                      disabled={isDisable}
                       options={states}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
@@ -942,6 +952,7 @@ const AddEditUser = props => {
                     <Autocomplete
                       id={get(UserSchema[zone], "id")}
                       className={classes.root}
+                      disabled={isDisable}
                       options={zones}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
@@ -978,6 +989,7 @@ const AddEditUser = props => {
                     <Autocomplete
                       id={get(UserSchema[rpc], "id")}
                       className={classes.root}
+                      disabled={isDisable}
                       options={rpcs}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
