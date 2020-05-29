@@ -32,6 +32,7 @@ const ViewUser = props => {
   const classes = useStyles();
   const history = useHistory();
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const [isDisable, setIsDisable] = useState(false);
 
   const [formState, setFormState] = useState({
     userDetails: []
@@ -52,6 +53,11 @@ const ViewUser = props => {
       await serviceProviders
         .serviceProviderForGetRequest(VIEW_USER_URL)
         .then(res => {
+          if (res.data.result.contact.user.role.name === "Student") {
+            setIsDisable(true);
+          } else {
+            setIsDisable(false);
+          }
           setFormState(formState => ({
             ...formState,
             userDetails: res.data.result
@@ -229,8 +235,11 @@ const ViewUser = props => {
                   <ReadOnlyTextField
                     id="state"
                     label="State"
+                    disabled={isDisable}
                     defaultValue={
-                      formState.userDetails.contact
+                      isDisable
+                        ? null
+                        : formState.userDetails.contact
                         ? formState.userDetails.contact.user
                           ? formState.userDetails.contact.user.state
                             ? formState.userDetails.contact.user.state.name
@@ -244,8 +253,11 @@ const ViewUser = props => {
                   <ReadOnlyTextField
                     id="zone"
                     label="Zone"
+                    disabled={isDisable}
                     defaultValue={
-                      formState.userDetails.contact
+                      isDisable
+                        ? null
+                        : formState.userDetails.contact
                         ? formState.userDetails.contact.user
                           ? formState.userDetails.contact.user.zone
                             ? formState.userDetails.contact.user.zone.name
@@ -261,8 +273,11 @@ const ViewUser = props => {
                   <ReadOnlyTextField
                     id="rpc"
                     label="RPC"
+                    disabled={isDisable}
                     defaultValue={
-                      formState.userDetails.contact
+                      isDisable
+                        ? null
+                        : formState.userDetails.contact
                         ? formState.userDetails.contact.user
                           ? formState.userDetails.contact.user.rpc
                             ? formState.userDetails.contact.user.rpc.name
@@ -276,8 +291,11 @@ const ViewUser = props => {
                   <ReadOnlyTextField
                     id="college"
                     label="College"
+                    disabled={isDisable}
                     defaultValue={
-                      formState.userDetails.organization
+                      isDisable
+                        ? null
+                        : formState.userDetails.organization
                         ? formState.userDetails.organization.name
                           ? formState.userDetails.organization.name
                           : ""

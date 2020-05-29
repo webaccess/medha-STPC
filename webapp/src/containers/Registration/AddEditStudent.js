@@ -192,11 +192,10 @@ const AddEditStudent = props => {
       }
       if (
         props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["user"] &&
-        props.location["dataForEdit"]["contact"]["user"]["state"]
+        props.location["dataForEdit"]["contact"]["state"]
       ) {
         formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["user"]["state"]["id"];
+          props.location["dataForEdit"]["contact"]["state"];
       }
       if (
         props.location["dataForEdit"]["stream"] &&
