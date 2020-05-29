@@ -40,6 +40,7 @@ module.exports = {
     const states = await strapi.query("state", PLUGIN).find({});
     const streams = await strapi.query("stream").find({});
     const districts = await strapi.query("district", PLUGIN).find({});
+    const organization = await strapi.query("organization", PLUGIN).find({});
 
     const inputFile = "./public" + csv.imported_file.url;
     const records = await strapi.services["student-import-csv"].getRecords(
@@ -56,7 +57,8 @@ module.exports = {
       userRequestBody.role = studentRole.id;
 
       const state = states.find(state => state.name == record["State"]);
-      userRequestBody.state = state ? state.id : null;
+      // user object state will be null for user student
+      userRequestBody.state = null;
 
       userRequestBody.zone = null;
       userRequestBody.rpc = null;
@@ -84,7 +86,10 @@ module.exports = {
       individualRequestBody.date_of_birth = record["DOB"] || null;
       individualRequestBody.gender = record["Gender"] || null;
       individualRequestBody.roll_number = record["Roll Number"] || null;
-      individualRequestBody.organization = null;
+
+      const org = organization.find(org => org.name == record["organization"]);
+      individualRequestBody.organization = org ? org.id : null;
+
       individualRequestBody.future_aspirations = null;
       individualRequestBody.is_physically_challenged = false;
 
@@ -111,6 +116,16 @@ module.exports = {
 
       contactBody.name = `${individualRequestBody.first_name} ${individualRequestBody.last_name}`;
       contactBody.contact_type = "individual";
+
+      const academicYearId = await strapi.services[
+        "academic-year"
+      ].getCurrentAcademicYear();
+
+      const academicHistoryBody = {
+        academic_year: academicYearId,
+        percentage: null,
+        education_year: record["Year"]
+      };
 
       await bookshelf
         .transaction(async t => {
@@ -175,6 +190,25 @@ module.exports = {
 
           // Mapping user and individual relations
           const contactResponse = contact.toJSON ? contact.toJSON() : contact;
+
+          // Step 4 Adding academic details
+          academicHistoryBody.contact = contactResponse.id;
+
+          const { academicHistory, academicHistoryStatus } = await strapi
+            .query("academic-history")
+            .model.forge(academicHistoryBody)
+            .save(null, { transacting: t })
+            .then(model => {
+              return { academicHistory: model };
+            })
+            .catch(error => {
+              console.log(error);
+              return { academicHistory: null, academicHistoryStatus: null };
+            });
+
+          if (!academicHistory) {
+            return Promise.reject(academicHistoryStatus);
+          }
 
           await user.save(
             { contact: contactResponse.id },
