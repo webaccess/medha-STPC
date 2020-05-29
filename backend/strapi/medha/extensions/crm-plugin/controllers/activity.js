@@ -293,11 +293,17 @@ module.exports = {
         .find({ contact: student.id });
 
       const { education_year } = activity;
+      const { academic_year } = activity;
+      console.log(academic_year);
       isEducationEligible = true;
 
-      const isEducationPresent = academicHistory.find(
-        ah => ah.education_year == education_year
-      );
+      const isEducationPresent = academicHistory.find(ah => {
+        if (
+          ah.education_year == education_year &&
+          ah.academic_year.id == academic_year.id
+        )
+          return ah;
+      });
 
       if (!isEducationPresent) {
         isEducationEligible = false;
