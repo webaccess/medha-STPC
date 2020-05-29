@@ -58,10 +58,12 @@ const VerifyOtp = props => {
           setLoaderStatus(false);
         })
         .catch(err => {
+          console.log(err.response);
           console.log(err.response.status);
-          if (err.response.status === 403) {
+          if (err.response.data.message === "User already registered") {
             history.push(routeConstants.REQUIRED_CONFORMATION);
-          } else if (err.response.status === 400) setError("Invalid OTP");
+          } else if (err.response.date.message === "OTP is invalid")
+            setError("Invalid OTP");
 
           setLoaderStatus(false);
         });

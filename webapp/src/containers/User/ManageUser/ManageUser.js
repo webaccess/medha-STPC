@@ -289,11 +289,17 @@ const ManageUser = props => {
             : "";
         temp["blocked"] = data[i]["contact"]["user"]["blocked"];
         temp["role"] = data[i]["contact"]["user"]["role"]["name"];
-
-        if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["state"]) {
-          temp["state"] = data[i]["contact"]["user"]["state"]["name"];
-        } else {
+        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
           temp["state"] = "";
+        } else {
+          if (
+            data[i]["contact"]["user"] &&
+            data[i]["contact"]["user"]["state"]
+          ) {
+            temp["state"] = data[i]["contact"]["user"]["state"]["name"];
+          } else {
+            temp["state"] = "";
+          }
         }
 
         if (data[i]["contact"]["user"]["role"]["name"] === "Student") {

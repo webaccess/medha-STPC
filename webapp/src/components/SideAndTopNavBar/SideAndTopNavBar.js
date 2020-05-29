@@ -185,6 +185,13 @@ function SideAndTopNavBar(props) {
     []
   );
 
+  const title = () => {
+    const userInfo = auth.getUserInfo();
+    return userInfo["first_name"]
+      ? `${userInfo["first_name"]} ${userInfo["last_name"]}`
+      : userInfo.username;
+  };
+
   const drawer = (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.toolbar} />
@@ -289,9 +296,7 @@ function SideAndTopNavBar(props) {
                 </div>
                 <InputLabel>
                   {"Welcome "}
-                  {auth.getUserInfo()["first_name"] +
-                    " " +
-                    auth.getUserInfo()["last_name"]}
+                  {title()}
                 </InputLabel>
                 <IconButton
                   className={topBarClasses.changePasswordButton}

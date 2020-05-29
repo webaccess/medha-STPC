@@ -94,7 +94,7 @@ const ViewAcademicHistory = props => {
     `/${studentInfo}/` +
     strapiConstants.STRAPI_STUDENT_ACADEMIC_HISTORY;
 
-  const ACADEMIC_YEAR_FILTER = "id";
+  const ACADEMIC_YEAR_FILTER = "academic_year.name_contains";
 
   useEffect(() => {
     serviceProviders
@@ -200,14 +200,25 @@ const ViewAcademicHistory = props => {
     setLoaderStatus(false);
   };
 
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
+  const handleFilterChangeForAcademicHistoryField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [ACADEMIC_YEAR_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
+
+  // const handleChangeAutoComplete = (filterName, event, value) => {
+  //   if (value === null) {
+  //     delete formState.filterDataParameters[filterName];
+  //     //restoreData();
+  //   } else {
+  //     formState.filterDataParameters[filterName] = value["id"];
+  //   }
+  // };
 
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
@@ -400,7 +411,19 @@ const ViewAcademicHistory = props => {
               <CardContent className={classes.Cardtheming}>
                 <Grid className={classes.filterOptions} container spacing={1}>
                   <Grid item>
-                    <Autocomplete
+                    <TextField
+                      label="Academic Year"
+                      margin="normal"
+                      variant="outlined"
+                      value={
+                        formState.filterDataParameters[ACADEMIC_YEAR_FILTER] ||
+                        ""
+                      }
+                      placeholder="Academic Year"
+                      className={classes.autoCompleteField}
+                      onChange={handleFilterChangeForAcademicHistoryField}
+                    />
+                    {/* <Autocomplete
                       id="combo-box-demo"
                       options={formState.academicHistoryFilters}
                       className={classes.autoCompleteField}
@@ -420,7 +443,7 @@ const ViewAcademicHistory = props => {
                           variant="outlined"
                         />
                       )}
-                    />
+                    /> */}
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
