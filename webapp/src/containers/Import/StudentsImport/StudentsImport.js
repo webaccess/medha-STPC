@@ -125,11 +125,10 @@ const StudentsImport = props => {
             <p>
               Create a CSV file using any standard spread sheet application. For
               each user account, create a new row (line) and enter data into
-              each column (field). Each row equal one record.
+              each column (field). Each row equals one record.
             </p>
             <p>
-              Please <a href="/files/sample.csv">download</a> a simple CSV file
-              for the reference.
+              Please <a href="/files/sample.csv">download</a> a sample CSV file.
             </p>
           </Grid>
           <Grid>
