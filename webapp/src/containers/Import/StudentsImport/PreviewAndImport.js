@@ -54,11 +54,7 @@ const PreviewAndImport = props => {
         props.closeModal();
         props.clear();
         if (data.length) {
-          props.alert(
-            true,
-            "warning",
-            "Not all students where imported...please check downloaded file for more info"
-          );
+          props.alert(true, "warning", "Not all students were imported");
           let wb = XLSX.utils.book_new();
 
           /**
@@ -87,7 +83,7 @@ const PreviewAndImport = props => {
 
           XLSX.writeFile(wb, "students.csv", { bookType: "csv" });
         } else {
-          props.alert(true, "success", "Student import was successfull");
+          props.alert(true, "success", "Student import was successful");
         }
       })
       .catch(error => {
