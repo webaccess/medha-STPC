@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/imported-records",
+      "handler": "imported-records.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/imported-records/count",
+      "handler": "imported-records.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/imported-records/:id",
+      "handler": "imported-records.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/imported-records",
+      "handler": "imported-records.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/imported-records/:id",
+      "handler": "imported-records.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/imported-records/:id",
+      "handler": "imported-records.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

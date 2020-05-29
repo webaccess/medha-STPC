@@ -1,0 +1,25 @@
+{
+  "info": {
+    "name": "Imported records"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "fields": {
+      "type": "json"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "completed",
+        "error"
+      ],
+      "default": "pending"
+    }
+  },
+  "connection": "default",
+  "collectionName": "imported_records"
+}
