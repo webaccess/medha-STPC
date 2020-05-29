@@ -884,7 +884,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create"]
+        action: ["create", "findone", "update"]
       },
       {
         name: "rpc",
@@ -1069,7 +1069,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create"]
+        action: ["create", "findone", "update"]
       },
       {
         name: "rpc",

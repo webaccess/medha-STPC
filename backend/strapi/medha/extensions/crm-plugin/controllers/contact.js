@@ -1129,9 +1129,13 @@ module.exports = {
       const checkFeedbackForTheEventPresent = await strapi
         .query("feedback-set")
         .find({ event: event.id, contact: id });
-      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
-        ? true
-        : false;
+      if (checkFeedbackForTheEventPresent.length) {
+        event.isFeedbackProvided = true;
+        event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+      } else {
+        event.isFeedbackProvided = false;
+        event.feedbackSetId = null;
+      }
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
         eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
