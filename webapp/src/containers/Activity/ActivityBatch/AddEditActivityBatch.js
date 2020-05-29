@@ -205,6 +205,7 @@ const AddEditActivityBatches = props => {
         var tempIndividualStudentData = {};
         tempIndividualStudentData["id"] = data[i]["id"];
         tempIndividualStudentData["name"] = data[i]["name"];
+        tempIndividualStudentData["activityBatch"] = data[i]["activityBatch"];
         tempIndividualStudentData["stream"] =
           data[i]["individual"]["stream"]["name"];
         tempIndividualStudentData["contact_number"] = data[i]["phone"];
@@ -598,7 +599,8 @@ const AddEditActivityBatches = props => {
       name: "Action",
       cell: cell => (
         <div style={{ display: "flex" }}>
-          {!!cell.activityBatch.verified_by_college ? (
+          {console.log(cell)}
+          {!!cell.activityBatch.is_verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
               <TickGridIcon
                 id={cell.id}
