@@ -1145,16 +1145,27 @@ module.exports = {
       const eventRegistrationInfo = await strapi
         .query("event-registration")
         .findOne({ contact: id, event: event.id });
-      const checkFeedbackForTheEventPresent = await strapi
-        .query("feedback-set")
-        .find({ event: event.id, contact: id });
-      if (checkFeedbackForTheEventPresent.length) {
-        event.isFeedbackProvided = true;
-        event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact: id,
+            question_set: event.question_set.id
+          });
+
+        if (checkFeedbackForTheEventPresent.length) {
+          event.isFeedbackProvided = true;
+          event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+        } else {
+          event.isFeedbackProvided = false;
+          event.feedbackSetId = null;
+        }
       } else {
         event.isFeedbackProvided = false;
         event.feedbackSetId = null;
       }
+
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
         eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
@@ -1215,11 +1226,42 @@ module.exports = {
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
+    /** This checks college using contact id */
     const college = await strapi.query("contact", PLUGIN).findOne({ id }, []);
     if (!college) {
       return ctx.response.notFound("College does not exist");
     }
 
+    /** This gets contact id of the logged in user */
+    const { contact } = ctx.state.user;
+
+    /** This gets contact ids of all the college admins */
+    const collegeUserIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdmin(id);
+
+    let collegeAdminContact = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeUserIds });
+
+    const collegeAdminContactIds = collegeAdminContact.map(user => {
+      return user.id;
+    });
+
+    /** Get student contact ids of a college */
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(id);
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    /** Get actual event data */
     const events = await strapi
       .query("event")
       .model.query(
@@ -1238,25 +1280,40 @@ module.exports = {
       "crm-plugin"
     ].services.contact.getEvents(college, events);
 
-    const userIds = await strapi.plugins[
-      "crm-plugin"
-    ].services.contact.getUsers(id);
-
-    let students = await strapi
-      .query("contact", PLUGIN)
-      .find({ user_in: userIds });
-
-    const students_contact_id = students.map(student => {
-      return student.id;
-    });
-
     await utils.asyncForEach(filtered, async event => {
-      const checkFeedbackForTheEventPresent = await strapi
-        .query("feedback-set")
-        .find({ event: event.id, contact_in: students_contact_id });
-      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
-        ? true
-        : false;
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: students_contact_id,
+            question_set: event.question_set.id
+          });
+
+        const checkCollegeFeedbackAvailable = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact: collegeAdminContactIds,
+            question_set: event.question_set.id
+          });
+
+        if (checkCollegeFeedbackAvailable.length) {
+          event.isFeedbackProvidedbyCollege = true;
+          event.feedbackSetId = checkCollegeFeedbackAvailable[0].id;
+        } else {
+          event.isFeedbackProvidedbyCollege = false;
+          event.feedbackSetId = null;
+        }
+
+        event.isFeedbackProvidedbyStudents = checkFeedbackForTheEventPresent.length
+          ? true
+          : false;
+      } else {
+        event.isFeedbackProvidedbyCollege = false;
+        event.feedbackSetId = null;
+        event.isFeedbackProvidedbyStudents = false;
+      }
     });
 
     const { result, pagination } = utils.paginate(filtered, page, pageSize);

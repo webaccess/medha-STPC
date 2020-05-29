@@ -81,6 +81,36 @@ module.exports = {
   },
 
   /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all college admin for given college id
+   */
+  getCollegeAdmin: async collegeId => {
+    const studentRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: studentRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(
+        user =>
+          user.contact.individual &&
+          user.contact.individual.organization &&
+          user.contact.individual.organization.contact == collegeId
+      )
+      .map(user => user.id);
+    return userIds;
+  },
+
+  /**
    * @param {ids, block}
    * ids => which ids to block or unblock
    * block => flag to block or unblock user

@@ -69,7 +69,14 @@ const ViewFeedBack = props => {
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
-        const ws = XLSX.utils.json_to_sheet(res.data.result[0]["result"]);
+        let finalData = res.data.result[0]["result"].map(res => {
+          return {
+            "Student Name": res["studentName"],
+            Comment: res["answer"]
+          };
+        });
+
+        const ws = XLSX.utils.json_to_sheet(finalData);
         const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const data = new Blob([excelBuffer], { type: fileType });
@@ -120,99 +127,94 @@ const ViewFeedBack = props => {
                     </Typography>
                   </Grid>
                   <Card>
-                    <CardContent>
-                      <Grid item xs={12} md={12}>
-                        <Typography
-                          variant="h5"
-                          gutterBottom
-                          color="textSecondary"
+                    <div className={classes.edit_dialog}>
+                      <CardContent>
+                        <Grid item xs={12} md={12}>
+                          <Typography
+                            variant="h5"
+                            gutterBottom
+                            color="textSecondary"
+                          >
+                            {`Feedback given by ${formState.dataToShow.total} students`}
+                          </Typography>
+                          <div style={{ overflow: "auto" }}>
+                            {formState.dataToShow.ratings.length !== 0 ? (
+                              <CardContent>
+                                <Grid item xs={12} md={12}>
+                                  <div style={{ overflow: "auto" }}>
+                                    <TableContainer
+                                      className={classes.container}
+                                      component={Paper}
+                                    >
+                                      <div
+                                        style={{
+                                          overflow: "auto",
+                                          height: "200px"
+                                        }}
+                                      >
+                                        {formState.dataToShow.ratings.map(
+                                          row => (
+                                            <TableRow key={row.id}>
+                                              <React.Fragment>
+                                                <TableCell
+                                                  component="th"
+                                                  scope="row"
+                                                >
+                                                  {row.title}
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                  <Rating
+                                                    name={row.id}
+                                                    precision={1}
+                                                    value={row.result}
+                                                    readOnly
+                                                  />
+                                                </TableCell>
+                                              </React.Fragment>
+                                            </TableRow>
+                                          )
+                                        )}
+                                      </div>
+                                    </TableContainer>
+                                  </div>
+                                </Grid>
+                              </CardContent>
+                            ) : null}
+                          </div>
+                        </Grid>
+                      </CardContent>
+                      <Grid item xs={12}>
+                        <Grid
+                          container
+                          direction="row"
+                          justify="flex-end"
+                          alignItems="center"
+                          spacing={2}
                         >
-                          {`Feedback given by ${formState.dataToShow.total} students`}
-                        </Typography>
-                        <div style={{ overflow: "auto" }}>
-                          {formState.dataToShow.ratings.length !== 0 ? (
-                            <TableContainer
-                              className={classes.container}
-                              component={Paper}
+                          <Grid item>
+                            <GreenButton
+                              variant="contained"
+                              color="secondary"
+                              startIcon={<GetAppIcon />}
+                              onClick={e => getComments()}
+                              greenButtonChecker={formState.greenButtonChecker}
                             >
-                              <Table
-                                className={classes.table}
-                                stickyHeader
-                                aria-label="feedback table"
-                              >
-                                <TableHead>
-                                  <TableRow
-                                    style={{
-                                      backgroundColor: "#f5f5f5",
-                                      height: "35px"
-                                    }}
-                                  >
-                                    <TableCell>Questions</TableCell>
-                                    <TableCell align="right">Ratings</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                              </Table>
-                              <div
-                                style={{ overflow: "auto", height: "200px" }}
-                              >
-                                <Table>
-                                  <TableBody>
-                                    {formState.dataToShow.ratings.map(row => (
-                                      <TableRow key={row.id}>
-                                        <TableCell component="th" scope="row">
-                                          {row.title}
-                                        </TableCell>
-                                        <TableCell align="right">
-                                          <Rating
-                                            name={row.id}
-                                            precision={1}
-                                            value={row.result}
-                                            readOnly
-                                          />
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </div>
-                            </TableContainer>
-                          ) : (
-                            <div>No ratings </div>
-                          )}
-                        </div>
-                      </Grid>
-                    </CardContent>
-                    <Grid item xs={12}>
-                      <Grid
-                        container
-                        direction="row"
-                        justify="flex-end"
-                        alignItems="center"
-                        spacing={2}
-                      >
-                        <Grid item>
-                          <GreenButton
-                            variant="contained"
-                            color="secondary"
-                            startIcon={<GetAppIcon />}
-                            onClick={e => getComments()}
-                            greenButtonChecker={formState.greenButtonChecker}
-                          >
-                            Download
-                          </GreenButton>
-                        </Grid>
-                        <Grid item>
-                          <GrayButton
-                            type="submit"
-                            color="primary"
-                            variant="contained"
-                            onClick={handleClose}
-                          >
-                            CLOSE
-                          </GrayButton>
+                              Download
+                            </GreenButton>
+                          </Grid>
+                          <Grid item>
+                            <GrayButton
+                              type="submit"
+                              color="primary"
+                              variant="contained"
+                              onClick={handleClose}
+                            >
+                              CLOSE
+                            </GrayButton>
+                          </Grid>
                         </Grid>
                       </Grid>
-                    </Grid>
+                    </div>
                   </Card>
                 </Grid>
               </Grid>
