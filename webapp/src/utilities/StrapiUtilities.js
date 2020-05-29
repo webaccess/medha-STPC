@@ -236,7 +236,8 @@ export const addStudent = (
   college,
   stream = null,
   rollNumber = null,
-  otp
+  otp,
+  isStudent = true
 ) => {
   return {
     phone: contactNumber,
@@ -257,7 +258,8 @@ export const addStudent = (
     gender: gender,
     roll_number: rollNumber,
     is_physically_challenged: physicallyHandicapped,
-    role: 7
+    role: 7,
+    isStudent: true
   };
 };
 
@@ -300,7 +302,8 @@ export const addStudentFromCollege = (
     roll_number: rollNumber,
     is_physically_challenged: physicallyHandicapped,
     future_aspirations: futureAspirations,
-    role: 7
+    role: 7,
+    isStudent: true
   };
 };
 
@@ -344,7 +347,8 @@ export const editStudent = (
     is_physically_challenged: physicallyHandicapped,
     id: id,
     password: password,
-    future_aspirations: futureAspirations
+    future_aspirations: futureAspirations,
+    isStudent: true
   };
 };
 export const addEducation = (

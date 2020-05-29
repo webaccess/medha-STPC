@@ -192,11 +192,10 @@ const AddEditStudent = props => {
       }
       if (
         props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["user"] &&
-        props.location["dataForEdit"]["contact"]["user"]["state"]
+        props.location["dataForEdit"]["contact"]["state"]
       ) {
         formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["user"]["state"]["id"];
+          props.location["dataForEdit"]["contact"]["state"];
       }
       if (
         props.location["dataForEdit"]["stream"] &&
@@ -262,6 +261,7 @@ const AddEditStudent = props => {
     if (props.location.state.contactNumber && props.location.state.otp) {
       formState.values["contact"] = props.location.state.contactNumber;
       formState.values["otp"] = props.location.state.otp;
+      formState.values["username"] = props.location.state.contactNumber;
     }
     formState.counter += 1;
   }
@@ -1116,8 +1116,8 @@ const AddEditStudent = props => {
                     variant="outlined"
                     required
                     fullWidth
-                    disabled={formState.editStudent ? true : false}
-                    onChange={handleChange}
+                    disabled
+                    readOnly
                     error={hasError("username")}
                     helperText={
                       hasError("username")

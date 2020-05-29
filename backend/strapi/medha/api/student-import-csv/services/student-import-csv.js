@@ -8,6 +8,7 @@
 const fs = require("fs");
 const parse = require("csv-parse/lib/sync");
 const _ = require("lodash");
+const bookshelf = require("../../../config/bookshelf");
 
 module.exports = {
   getRecords: async (inputFile, preview) => {
@@ -29,7 +30,8 @@ module.exports = {
           "District",
           "Email",
           "Qualification",
-          "Stream"
+          "Stream",
+          "Year"
         ])
       );
       return result;
@@ -37,4 +39,26 @@ module.exports = {
 
     return preview ? result.slice(0, 3) : result;
   }
+
+  // createRecords: async model => {
+  //   const inputFile = "./public" + csv.imported_file.url;
+  //   const records = await strapi.services["student-import-csv"].getRecords(
+  //     inputFile
+  //   );
+
+  //   for await (record of records) {
+  //     strapi
+  //       .query("imported-records")
+  //       .model.forge({
+  //         fields: record
+  //       })
+  //       .save(null)
+  //       .then(model => {
+  //         console.log(model.id);
+  //       })
+  //       .catch(error => {
+  //         console.log(error);
+  //       });
+  //   }
+  // }
 };

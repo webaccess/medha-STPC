@@ -924,11 +924,13 @@ const AddEditUser = props => {
                         handleChangeAutoComplete(state, event, value);
                       }}
                       value={
-                        states[
-                          states.findIndex(function (item, i) {
-                            return item.id === formState.values[state];
-                          })
-                        ] || null
+                        isDisable
+                          ? null
+                          : states[
+                              states.findIndex(function (item, i) {
+                                return item.id === formState.values[state];
+                              })
+                            ] || null
                       }
                       renderInput={params => (
                         <TextField
@@ -959,11 +961,13 @@ const AddEditUser = props => {
                         handleChangeAutoComplete(zone, event, value);
                       }}
                       value={
-                        zones[
-                          zones.findIndex(function (item, i) {
-                            return item.id === formState.values[zone];
-                          })
-                        ] || null
+                        isDisable
+                          ? null
+                          : zones[
+                              zones.findIndex(function (item, i) {
+                                return item.id === formState.values[zone];
+                              })
+                            ] || null
                       }
                       renderInput={params => (
                         <TextField
@@ -996,11 +1000,13 @@ const AddEditUser = props => {
                         handleChangeAutoComplete(rpc, event, value);
                       }}
                       value={
-                        rpcs[
-                          rpcs.findIndex(function (item, i) {
-                            return item.id === formState.values[rpc];
-                          })
-                        ] || null
+                        isDisable
+                          ? null
+                          : rpcs[
+                              rpcs.findIndex(function (item, i) {
+                                return item.id === formState.values[rpc];
+                              })
+                            ] || null
                       }
                       renderInput={params => (
                         <TextField
@@ -1024,17 +1030,20 @@ const AddEditUser = props => {
                     <Autocomplete
                       id={get(UserSchema[college], "id")}
                       className={classes.root}
+                      disabled={isDisable}
                       options={colleges}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(college, event, value);
                       }}
                       value={
-                        colleges[
-                          colleges.findIndex(function (item, i) {
-                            return item.id === formState.values[college];
-                          })
-                        ] || null
+                        isDisable
+                          ? null
+                          : colleges[
+                              colleges.findIndex(function (item, i) {
+                                return item.id === formState.values[college];
+                              })
+                            ] || null
                       }
                       renderInput={params => (
                         <TextField

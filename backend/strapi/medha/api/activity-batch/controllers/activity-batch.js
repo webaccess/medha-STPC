@@ -93,6 +93,9 @@ module.exports = {
     });
 
     await utils.asyncForEach(students, async student => {
+      const streamId = student.individual.stream;
+      const stream = await strapi.query("stream").findOne({ id: streamId });
+      student.individual.stream = stream;
       const activityBatch = await strapi
         .query("activityassignee", PLUGIN)
         .findOne({ activity_batch: id, contact: student.id }, []);

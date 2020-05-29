@@ -21,6 +21,7 @@ const BlockIcon = props => {
         className="material-icons"
         id={props.id}
         value={props.value}
+        contactId={props.contactId}
         onClick={props.onClick}
         style={
           props.style

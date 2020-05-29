@@ -16,7 +16,7 @@ import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
 const USER_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_CREATE_USERS;
+  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_CONTACT_URL;
 
 const BlockUser = props => {
   const [open, setOpen] = React.useState(false);
@@ -69,8 +69,20 @@ const BlockUser = props => {
     }
 
     if (props.isMulBlocked || props.isMultiUnblock) {
+      let MultiBlockUnblockUrl;
+      if (props.isMulBlocked) {
+        MultiBlockUnblockUrl = USER_URL + strapiConstants.STRAPI_BLOCK_URL;
+      } else if (props.isMultiUnblock) {
+        MultiBlockUnblockUrl = USER_URL + strapiConstants.STRAPI_UNBLOCK_URL;
+      }
+      let MultiBlockUnblockId = {
+        ids: props.id
+      };
       serviceProviders
-        .serviceProviderForAllBlockRequest(USER_URL, props.id, body)
+        .serviceProviderForPostRequest(
+          MultiBlockUnblockUrl,
+          MultiBlockUnblockId
+        )
         .then(res => {
           setFormState(formState => ({
             ...formState,
@@ -93,8 +105,18 @@ const BlockUser = props => {
           }
         });
     } else {
+      let BLOCK_URL;
+      if (props.dataToBlockUnblock.isUserBlock === true) {
+        BLOCK_URL = USER_URL + strapiConstants.STRAPI_BLOCK_URL;
+      } else if (props.dataToBlockUnblock.isUserBlock === false) {
+        BLOCK_URL = USER_URL + strapiConstants.STRAPI_UNBLOCK_URL;
+      }
+
+      let BLOCKUNBLOCKID = {
+        ids: parseInt(props.id)
+      };
       serviceProviders
-        .serviceProviderForPutRequest(USER_URL, props.id, body)
+        .serviceProviderForPostRequest(BLOCK_URL, BLOCKUNBLOCKID)
         .then(res => {
           formState.isDataBlockUnblock = true;
           if (props.dataToBlockUnblock["isUserBlock"]) {
