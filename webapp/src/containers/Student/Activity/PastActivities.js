@@ -54,8 +54,8 @@ const PastActivities = props => {
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_ACTIVITY_URL +
     `/${studentInfo}/` +
-    strapiConstants.STRAPI_PAST_ACTIVITY;
-  const ACTIVITY_FILTER = "id";
+    strapiConstants.STRAPI_PAST_ACTIVITIES;
+  const ACTIVITY_FILTER = "title_contains";
   const ACTIVITY_STATUS = "status";
   useEffect(() => {
     serviceProviders
@@ -168,6 +168,17 @@ const PastActivities = props => {
     getPastActivities(formState.pageSize, 1);
   };
 
+  const handleFilterChangeForTitleField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [ACTIVITY_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
+  };
+
   const handleChangeAutoComplete = (filterName, event, value) => {
     if (value === null) {
       delete formState.filterDataParameters[filterName];
@@ -252,7 +263,20 @@ const PastActivities = props => {
               <CardContent className={classes.Cardtheming}>
                 <Grid className={classes.filterOptions} container spacing={1}>
                   <Grid item>
-                    <Autocomplete
+                    <TextField
+                      label="Name"
+                      margin="normal"
+                      variant="outlined"
+                      value={
+                        formState.filterDataParameters[ACTIVITY_FILTER] || ""
+                      }
+                      placeholder="Name"
+                      className={classes.autoCompleteField}
+                      style={{ marginTop: "0px", marginBottom: "0px" }}
+                      onChange={handleFilterChangeForTitleField}
+                    />
+
+                    {/* <Autocomplete
                       id="activity-title-filter"
                       options={formState.activitiesFilter}
                       className={classes.autoCompleteField}
@@ -268,7 +292,7 @@ const PastActivities = props => {
                           variant="outlined"
                         />
                       )}
-                    />
+                    /> */}
                   </Grid>
                   <Grid item>
                     <Autocomplete
@@ -315,18 +339,24 @@ const PastActivities = props => {
                 </Grid>
               </CardContent>
             </Card>
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              noDataComponent="No Past Activities found"
-            />
+            {formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                noDataComponent="No Past Activities found"
+              />
+            ) : (
+              <div className={classes.noDataMargin}>
+                {genericConstants.NO_DATA_TO_SHOW_TEXT}
+              </div>
+            )}
             {formState.isGiveFeedback ? (
               <AddEditFeedBack
                 showModal={formState.showModalFeedback}

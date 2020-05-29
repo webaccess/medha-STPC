@@ -54,6 +54,7 @@ export const STRAPI_UNVALIDATE_STUDENT_ACTIVITY_BATCH =
 export const STRAPI_EVENT_REGISTRATION = "event-registrations";
 export const STRAPI_ADMIN = "admins";
 export const STRAPI_PAST_EVENTS = "past-events";
+export const STRAPI_PAST_ACTIVITIES = "past-activities";
 export const STRAPI_CHANGE_PASSWORD = "auth/reset-password";
 export const STRAPI_CURRENT_USER = "users/me";
 export const STRAPI_CONTACTS = "crm-plugin/contact";
