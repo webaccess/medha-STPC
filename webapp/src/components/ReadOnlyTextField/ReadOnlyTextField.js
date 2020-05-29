@@ -9,6 +9,7 @@ const ReadOnlyTextField = props => {
       id={props.id}
       label={props.label}
       defaultValue={props.defaultValue}
+      disabled={props.disabled}
       multiline
       fullWidth
       variant="outlined"

@@ -326,10 +326,14 @@ const ManageUser = props => {
           }
         }
 
-        if (data[i]["organization"] && data[i]["organization"]["name"]) {
-          temp["college"] = data[i]["organization"]["name"];
-        } else {
+        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
           temp["college"] = "";
+        } else {
+          if (data[i]["organization"] && data[i]["organization"]["name"]) {
+            temp["college"] = data[i]["organization"]["name"];
+          } else {
+            temp["college"] = "";
+          }
         }
         x.push(temp);
       }
