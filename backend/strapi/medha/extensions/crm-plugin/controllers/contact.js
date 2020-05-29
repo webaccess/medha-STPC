@@ -308,11 +308,15 @@ module.exports = {
       "email",
       "password",
       "role",
-      "state",
       "zone",
       "rpc",
       "blocked"
     ]);
+
+    const { isStudent } = ctx.request.body;
+    if (!isStudent) {
+      userRequestBody.state = ctx.request.body.state;
+    }
 
     userRequestBody.provider = "local";
     userRequestBody.password = await strapi.plugins[
@@ -1504,7 +1508,6 @@ module.exports = {
       "email",
       "password",
       "role",
-      "state",
       "zone",
       "rpc",
       "blocked"
@@ -1518,6 +1521,14 @@ module.exports = {
       userRequestBody.password = await strapi.plugins[
         "users-permissions"
       ].services.user.hashPassword(userRequestBody);
+    }
+
+    /**
+     * Add state in user object only for user other than student
+     */
+    const { isStudent } = ctx.request.body;
+    if (!isStudent) {
+      userRequestBody.state = ctx.request.body.state;
     }
 
     const individualRequestBody = _.pick(ctx.request.body, [
@@ -1675,6 +1686,7 @@ module.exports = {
 
     ctx.send(file);
   },
+
   eligiblePastActivities: async ctx => {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
