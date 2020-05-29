@@ -80,7 +80,7 @@ const ViewDocument = props => {
     strapiConstants.STRAPI_STUDENTS_DIRECT_URL +
     `/${studentInfo}/` +
     strapiConstants.STRAPI_STUDENT_DOCUMENT;
-  const DOCUMENT_FILTER = "id";
+  const DOCUMENT_FILTER = "name_contains";
 
   useEffect(() => {
     serviceProviders
@@ -176,14 +176,25 @@ const ViewDocument = props => {
     setLoaderStatus(false);
   };
 
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
+  const handleFilterChangeForNameField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [DOCUMENT_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
+
+  // const handleChangeAutoComplete = (filterName, event, value) => {
+  //   if (value === null) {
+  //     delete formState.filterDataParameters[filterName];
+  //     //restoreData();
+  //   } else {
+  //     formState.filterDataParameters[filterName] = value["id"];
+  //   }
+  // };
 
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
@@ -335,7 +346,18 @@ const ViewDocument = props => {
               <CardContent className={classes.Cardtheming}>
                 <Grid className={classes.filterOptions} container spacing={1}>
                   <Grid item>
-                    <Autocomplete
+                    <TextField
+                      label="Name"
+                      margin="normal"
+                      variant="outlined"
+                      value={
+                        formState.filterDataParameters[DOCUMENT_FILTER] || ""
+                      }
+                      placeholder="Name"
+                      className={classes.autoCompleteField}
+                      onChange={handleFilterChangeForNameField}
+                    />
+                    {/* <Autocomplete
                       id="combo-box-demo"
                       options={formState.documentFilters}
                       className={classes.autoCompleteField}
@@ -351,7 +373,7 @@ const ViewDocument = props => {
                           variant="outlined"
                         />
                       )}
-                    />
+                    /> */}
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton

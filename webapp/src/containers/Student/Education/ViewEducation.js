@@ -93,7 +93,7 @@ const ViewEducation = props => {
     strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
     `/${studentInfo}/` +
     strapiConstants.STRAPI_STUDENT_EDUCATION;
-  const EDUCATION_FILTER = "id";
+  const EDUCATION_FILTER = "qualification_contains";
 
   useEffect(() => {
     serviceProviders
@@ -244,14 +244,25 @@ const ViewEducation = props => {
     setLoaderStatus(false);
   };
 
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
+  const handleFilterChangeForQualificationField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [EDUCATION_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
+
+  // const handleChangeAutoComplete = (filterName, event, value) => {
+  //   if (value === null) {
+  //     delete formState.filterDataParameters[filterName];
+  //     //restoreData();
+  //   } else {
+  //     formState.filterDataParameters[filterName] = value["id"];
+  //   }
+  // };
 
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
@@ -446,7 +457,18 @@ const ViewEducation = props => {
               <CardContent className={classes.Cardtheming}>
                 <Grid className={classes.filterOptions} container spacing={1}>
                   <Grid item>
-                    <Autocomplete
+                    <TextField
+                      label="Qualification"
+                      margin="normal"
+                      variant="outlined"
+                      value={
+                        formState.filterDataParameters[EDUCATION_FILTER] || ""
+                      }
+                      placeholder="Qualification"
+                      className={classes.autoCompleteField}
+                      onChange={handleFilterChangeForQualificationField}
+                    />
+                    {/* <Autocomplete
                       id="combo-box-demo"
                       options={formState.educationFilter}
                       className={classes.autoCompleteField}
@@ -462,7 +484,7 @@ const ViewEducation = props => {
                           variant="outlined"
                         />
                       )}
-                    />
+                    /> */}
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
