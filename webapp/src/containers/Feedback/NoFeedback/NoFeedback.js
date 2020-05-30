@@ -50,9 +50,7 @@ const NoFeedback = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.forView
-                    ? `No feedback for ${props.Title}`
-                    : `Cannot add feedback for ${props.Title}`}
+                  {props.errorMessage}
                 </Grid>
               </Grid>
             </Grid>

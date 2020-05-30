@@ -3,22 +3,12 @@ import { Tooltip, Typography } from "@material-ui/core";
 
 const FeedBack = props => {
   if (props.isGiveFeedback) {
-    // let message = "";
-    // if (!props.hasAttended) {
-    //   message = "Cannot provide feedback as you have not attended the event";
-    // } else ifisQuestionSetAvailable)
     return (
       <Tooltip
         title={
-          props.isdisabled ? (
-            <React.Fragment>
-              <Typography color="inherit">Cannot give feedback</Typography>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <Typography color="inherit">Give FeedBack</Typography>
-            </React.Fragment>
-          )
+          <React.Fragment>
+            <Typography color="inherit">Give FeedBack</Typography>
+          </React.Fragment>
         }
         placement="top"
       >
@@ -26,50 +16,100 @@ const FeedBack = props => {
           className="material-icons"
           id={props.id}
           value={props.value}
-          onClick={props.isdisabled ? null : props.onClick}
-          disabled={props.isdisabled ? true : false}
-          style={
-            props.isdisabled
-              ? { color: "gray", fontSize: "20px" }
-              : { color: "green", fontSize: "20px" }
-          }
+          onClick={props.onClick}
+          style={{ color: "green", fontSize: "20px" }}
         >
-          feedback
+          rate_review
+        </i>
+      </Tooltip>
+    );
+  } else if (props.isEditFeedback) {
+    return (
+      <Tooltip
+        title={
+          <React.Fragment>
+            <Typography color="inherit">Edit FeedBack</Typography>
+          </React.Fragment>
+        }
+        placement="top"
+      >
+        <i
+          className="material-icons"
+          id={props.id}
+          value={props.value}
+          onClick={props.onClick}
+          style={{ color: "green", fontSize: "20px" }}
+        >
+          rate_review
+        </i>
+      </Tooltip>
+    );
+  } else if (props.cannotGiveFeedback) {
+    return (
+      <Tooltip
+        title={
+          <React.Fragment>
+            <Typography color="inherit">Cannot give feedback</Typography>
+          </React.Fragment>
+        }
+        placement="top"
+      >
+        <i
+          className="material-icons"
+          id={props.id}
+          value={props.value}
+          onClick={null}
+          disabled={true}
+          style={{ color: "gray", fontSize: "20px" }}
+        >
+          rate_review
         </i>
       </Tooltip>
     );
   } else if (props.isViewFeedback) {
-    return (
-      <Tooltip
-        title={
-          props.isdisabled ? (
+    if (props.feedbackNotAvailable) {
+      return (
+        <Tooltip
+          title={
             <React.Fragment>
-              <Typography color="inherit">No FeedBack</Typography>
+              <Typography color="inherit">{props.message}</Typography>
             </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <Typography color="inherit">View FeedBack</Typography>
-            </React.Fragment>
-          )
-        }
-        placement="top"
-      >
-        <i
-          className="material-icons"
-          id={props.id}
-          value={props.value}
-          onClick={props.isdisabled ? null : props.onClick}
-          disabled={props.isdisabled ? true : false}
-          style={
-            props.isdisabled
-              ? { color: "gray", fontSize: "20px" }
-              : { color: "green", fontSize: "20px" }
           }
+          placement="top"
         >
-          feedback
-        </i>
-      </Tooltip>
-    );
+          <i
+            className="material-icons"
+            id={props.id}
+            value={props.value}
+            onClick={null}
+            style={{ color: "gray", fontSize: "20px" }}
+          >
+            feedback
+          </i>
+        </Tooltip>
+      );
+    } else {
+      return (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{props.message}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <i
+            className="material-icons"
+            id={props.id}
+            value={props.value}
+            onClick={props.onClick}
+            style={{ color: "green", fontSize: "20px" }}
+          >
+            feedback
+          </i>
+        </Tooltip>
+      );
+    }
   }
 };
 

@@ -35,6 +35,8 @@ import auth from "../../../components/Auth";
 import LoaderContext from "../../../context/LoaderContext";
 import ViewFeedBack from "../../Feedback/ViewFeedback/ViewFeedback";
 import NoFeedback from "../../Feedback/NoFeedback/NoFeedback";
+import AddEditFeedBack from "../../Feedback/AddFeedback/AddFeedback";
+
 const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
@@ -80,15 +82,7 @@ const ManageEvent = props => {
     pageCount: "",
     sortAscending: true,
     errors: {},
-    /** Feedback */
-    showModalFeedback: false,
-    EventTitle: null,
-    eventId: null,
-    feedBackGiven: false,
-    fromFeedBackModal: false,
-    successErrorMessage: "",
-    showErrorModalFeedback: false,
-    ratings: [],
+
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromeditEvent"]
       ? props["location"]["isDataEdited"]
@@ -115,6 +109,39 @@ const ManageEvent = props => {
     addedEventName: props["location"]["addedEventData"]
       ? props["location"]["addedEventData"]["title"]
       : ""
+  });
+
+  /** Special feedbackState state variable to set parameters for feedback  */
+  const [feedbackState, setFeedbackState] = useState({
+    /** Feedback */
+    /**  showModalFeedback is used to enable the popup of modal for view/add/edit feedback.*/
+    showModalFeedback: false,
+    EventTitle: null,
+    eventId: null,
+    /** feedBackGiven , fromFeedBackModal this two flags are used to set the success and error messages*/
+    feedBackGiven: false,
+    fromFeedBackModal: false,
+    successErrorMessage: "",
+
+    /** showErrorModalFeedback this flag sets the error feedback modal ehich is used to dispaly the popup for error */
+    showErrorModalFeedback: false,
+    /** errorMessage is used to display what error needs to be shown for popup */
+    errorMessage: "",
+
+    ratings: [],
+    /** showAddEditModalFeedback this flags enables the add/edit feedback modal. */
+    showAddEditModalFeedback: false,
+    /** Below three flags are used to identify whether to give, edit or to view feedback. */
+    isGiveFeedback: false,
+    isEditFeedback: false,
+    isViewFeedback: false,
+
+    /** This has the question set for adding feedback and also for editing feedback with answers also (for editing) */
+    entityQuestionSet: [],
+    /** questionSetId is while adding/editng */
+    questionSetId: null,
+    /** feedbackSetId is used while editing to identify where to store data against which feedback. */
+    feedbackSetId: null
   });
 
   useEffect(() => {
@@ -234,17 +261,43 @@ const ManageEvent = props => {
         let startDate = new Date(data[i]["start_date_time"]);
         let endDate = new Date(data[i]["end_date_time"]);
         eventIndividualData["id"] = data[i]["id"];
-        eventIndividualData["isFeedbackProvided"] =
-          data[i]["isFeedbackProvided"];
+
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["start_date_time"] = startDate.toDateString();
         eventIndividualData["end_date_time"] = endDate.toDateString();
-        let currentDate = new Date();
-        if (endDate < currentDate) {
-          eventIndividualData["eligibleForFeedback"] = true;
+
+        /** Several feedback flags are taken form the response itself  */
+        /** Can college admin view feedback */
+        eventIndividualData["isFeedbackProvidedbyStudents"] =
+          data[i]["isFeedbackProvidedbyStudents"];
+
+        /** can a college admin add/edit/cannot give feedback */
+
+        /**  */
+        eventIndividualData["question_set"] = data[i]["question_set"]
+          ? true
+          : false;
+        eventIndividualData["giveFeedback"] = false;
+        eventIndividualData["editFeedback"] = false;
+        eventIndividualData["cannotGiveFeedback"] = false;
+        eventIndividualData["feedbackId"] = data[i]["feedbackSetId"];
+
+        if (
+          data[i]["question_set"] &&
+          !data[i]["isFeedbackProvidedbyCollege"]
+        ) {
+          eventIndividualData["giveFeedback"] = true;
+        } else if (
+          data[i]["question_set"] &&
+          data[i]["isFeedbackProvidedbyCollege"]
+        ) {
+          eventIndividualData["editFeedback"] = true;
+        } else if (!data[i]["question_set"]) {
+          eventIndividualData["cannotGiveFeedback"] = true;
         } else {
-          eventIndividualData["eligibleForFeedback"] = false;
+          eventIndividualData["cannotGiveFeedback"] = true;
         }
+
         eventIndividualData["IsEditable"] = false;
         if (auth.getUserInfo().role.name === "College Admin") {
           let state = false;
@@ -464,8 +517,7 @@ const ManageEvent = props => {
   };
 
   /** For Adding feedback */
-  const giveFeedback = async cell => {
-    setOpen(true);
+  const viewFeedback = async cell => {
     setLoaderStatus(true);
     const QUESTION_SET_URL =
       strapiConstants.STRAPI_DB_URL +
@@ -480,8 +532,11 @@ const ManageEvent = props => {
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
-        setFormState(formState => ({
-          ...formState,
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          isViewFeedback: true,
+          isEditFeedback: false,
+          isGiveFeedback: false,
           showModalFeedback: true,
           EventTitle: cell.title,
           eventId: cell.id,
@@ -494,14 +549,68 @@ const ManageEvent = props => {
         setLoaderStatus(false);
       })
       .catch(error => {
-        setFormState(formState => ({
-          ...formState,
-          EventTitle: cell.title,
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
           showModalFeedback: false,
+          showErrorModalFeedback: true,
+          showAddEditModalFeedback: false,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          EventTitle: cell.title,
           feedBackGiven: false,
           fromFeedBackModal: false,
           successErrorMessage: "",
-          showErrorModalFeedback: true
+          errorMessage: "Cannot view feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
+  /** Give feedback */
+  const giveFeedback = async event => {
+    setLoaderStatus(true);
+    const QUESTION_SET_URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      event.id +
+      "/" +
+      strapiConstants.STRAPI_QUESTION_SET;
+    await serviceProviders
+      .serviceProviderForGetRequest(QUESTION_SET_URL)
+      .then(res => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: true,
+          EventTitle: event.title,
+          eventId: event.id,
+          isGiveFeedback: true,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          showErrorModalFeedback: false,
+          entityQuestionSet: res.data.result.questions,
+          questionSetId: res.data.result.id,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          EventTitle: event.title,
+          isEditFeedback: false,
+          isGiveFeedback: false,
+          isViewFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot add feedback"
         }));
         setLoaderStatus(false);
         console.log("error giving feedback");
@@ -509,90 +618,52 @@ const ManageEvent = props => {
   };
 
   /** ------ */
+  /** Edit feedback */
+  const editFeedback = async event => {
+    setLoaderStatus(true);
+    const FEEDBACK_SET_URL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    await serviceProviders
+      .serviceProviderForGetOneRequest(FEEDBACK_SET_URL, event.feedbackId)
+      .then(res => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          EventTitle: event.eventName,
+          eventId: event.id,
+          isGiveFeedback: false,
+          isEditFeedback: true,
+          isViewFeedback: false,
+          showModalFeedback: true,
+          showErrorModalFeedback: false,
+          feedbackSetId: event.feedbackId,
+          questionSetId: res.data.result.question_set.id,
+          entityQuestionSet: res.data.result.questions,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          EventTitle: event.eventName,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot edit feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
 
-  /** Table Data */
-  const column = [
-    {
-      name: "Name",
-      sortable: true,
-      selector: "title",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.title}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.title}`}</div>
-        </Tooltip>
-      )
-    },
-    { name: "Start Date", sortable: true, selector: "start_date_time" },
-    { name: "End Date", sortable: true, selector: "end_date_time" },
-    {
-      name: "Actions",
-      cell: cell => (
-        <div className={classes.DisplayFlex}>
-          <div className={classes.PaddingFirstActionButton}>
-            <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
-          </div>
-          <div className={classes.PaddingActionButton}>
-            <EditGridIcon
-              id={cell.id}
-              value={cell.name}
-              onClick={editCell}
-              disabled={!cell.IsEditable}
-            />
-          </div>
-          <div className={classes.PaddingActionButton}>
-            <ViewStudentGridIcon
-              id={cell.id}
-              value={cell.title}
-              onClick={viewStudentList}
-            />
-          </div>
-          {auth.getUserInfo().role.name === "College Admin" ? (
-            cell.isFeedbackProvided ? (
-              <div className={classes.PaddingActionButton}>
-                <FeedBack
-                  id={cell.id}
-                  isViewFeedback={true}
-                  value={cell.title}
-                  onClick={() => giveFeedback(cell)}
-                />
-              </div>
-            ) : (
-              <div className={classes.PaddingActionButton}>
-                <FeedBack
-                  isdisabled={true}
-                  id={cell.id}
-                  isViewFeedback={true}
-                  value={cell.title}
-                  onClick={() => {}}
-                />
-              </div>
-            )
-          ) : null}
-
-          <div className={classes.PaddingActionButton}>
-            <DeleteGridIcon
-              id={cell.id}
-              value={cell.title}
-              onClick={deleteCell}
-              disabled={!cell.IsEditable}
-            />
-          </div>
-        </div>
-      ),
-      width: "18%",
-      cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
-      }
-    }
-  ];
+  /** ---------------------------------------------------- */
 
   /** Used for restoring data */
   const restoreData = () => {
@@ -728,10 +799,13 @@ const ManageEvent = props => {
     message,
     isModalClosedWithoutGivingFeedbach
   ) => {
-    setOpen(true);
     if (isModalClosedWithoutGivingFeedbach) {
-      setFormState(formState => ({
-        ...formState,
+      setFeedbackState(feedbackState => ({
+        ...feedbackState,
+        showAddEditModalFeedback: false,
+        isGiveFeedback: false,
+        isEditFeedback: false,
+        isViewFeedback: false,
         showModalFeedback: false,
         EventTitle: null,
         eventId: null,
@@ -741,8 +815,13 @@ const ManageEvent = props => {
       }));
     } else {
       if (status) {
-        setFormState(formState => ({
-          ...formState,
+        setOpen(true);
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showAddEditModalFeedback: false,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
           showModalFeedback: false,
           EventTitle: null,
           eventId: null,
@@ -756,8 +835,12 @@ const ManageEvent = props => {
           formState.filterDataParameters
         );
       } else {
-        setFormState(formState => ({
-          ...formState,
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showAddEditModalFeedback: false,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
           showModalFeedback: false,
           EventTitle: null,
           eventId: null,
@@ -770,12 +853,153 @@ const ManageEvent = props => {
   };
 
   const handleCloseModal = () => {
-    setFormState(formState => ({
-      ...formState,
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
       showModalFeedback: false,
-      showErrorModalFeedback: false
+      showErrorModalFeedback: false,
+      showAddEditModalFeedback: false,
+      isGiveFeedback: false,
+      isEditFeedback: false,
+      isViewFeedback: false,
+      feedBackGiven: false,
+      fromFeedBackModal: false
     }));
   };
+
+  /** Table Data */
+  const column = [
+    {
+      name: "Name",
+      sortable: true,
+      selector: "title",
+      cell: row => (
+        <Tooltip
+          title={
+            <React.Fragment>
+              <Typography color="inherit">{`${row.title}`}</Typography>
+            </React.Fragment>
+          }
+          placement="top"
+        >
+          <div>{`${row.title}`}</div>
+        </Tooltip>
+      )
+    },
+    { name: "Start Date", sortable: true, selector: "start_date_time" },
+    { name: "End Date", sortable: true, selector: "end_date_time" },
+    {
+      name: "Actions",
+      cell: cell => (
+        <div className={classes.DisplayFlex}>
+          <div className={classes.PaddingFirstActionButton}>
+            <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <EditGridIcon
+              id={cell.id}
+              value={cell.name}
+              onClick={editCell}
+              disabled={!cell.IsEditable}
+            />
+          </div>
+          <div className={classes.PaddingActionButton}>
+            <ViewStudentGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={viewStudentList}
+            />
+          </div>
+          {auth.getUserInfo().role.name === "College Admin" ? (
+            cell.isFeedbackProvidedbyStudents ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  message={"View student feedback"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => viewFeedback(cell)}
+                />
+              </div>
+            ) : !cell.question_set ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  feedbackNotAvailable={true}
+                  message={"No question set with this event"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            ) : (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  feedbackNotAvailable={true}
+                  message={"No student feedback available"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            )
+          ) : null}
+
+          {auth.getUserInfo().role.name === "College Admin" ? (
+            cell.giveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={true}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => giveFeedback(cell)}
+                />
+              </div>
+            ) : cell.editFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={true}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => editFeedback(cell)}
+                />
+              </div>
+            ) : cell.cannotGiveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={true}
+                  isdisabled={true}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            ) : null
+          ) : null}
+
+          <div className={classes.PaddingActionButton}>
+            <DeleteGridIcon
+              id={cell.id}
+              value={cell.title}
+              onClick={deleteCell}
+              disabled={!cell.IsEditable}
+            />
+          </div>
+        </div>
+      ),
+      width: "20%",
+      cellStyle: {
+        width: "18%",
+        maxWidth: "18%"
+      }
+    }
+  ];
 
   return (
     <Grid>
@@ -807,6 +1031,52 @@ const ManageEvent = props => {
         </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
+        {/** Feedback */}
+
+        {feedbackState.fromFeedBackModal && feedbackState.feedBackGiven ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {feedbackState.successErrorMessage}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {feedbackState.fromFeedBackModal && !feedbackState.feedBackGiven ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {feedbackState.successErrorMessage}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         {/** Error/Success messages to be shown for event */}
         {formState.fromeditEvent && formState.isDataEdited ? (
           <Collapse in={open}>
@@ -1051,25 +1321,56 @@ const ManageEvent = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}
-          {formState.showModalFeedback ? (
+          {/** Feedback modal calling */}
+          {feedbackState.isViewFeedback ? (
             <ViewFeedBack
-              showModal={formState.showModalFeedback}
-              modalClose={handleCloseFeedBackModal}
-              Title={formState.EventTitle}
-              id={formState.eventId}
+              showModal={feedbackState.showModalFeedback}
+              modalClose={handleCloseModal}
+              Title={feedbackState.EventTitle}
+              id={feedbackState.eventId}
               fromEvent={true}
               fromActivity={false}
-              dataToShow={formState.ratings}
+              dataToShow={feedbackState.ratings}
             />
           ) : null}
-          {!formState.showModalFeedback && formState.showErrorModalFeedback ? (
+          {feedbackState.isGiveFeedback ? (
+            <AddEditFeedBack
+              isAddFeedback={true}
+              showModal={feedbackState.showModalFeedback}
+              modalClose={handleCloseFeedBackModal}
+              Title={feedbackState.EventTitle}
+              id={feedbackState.eventId}
+              entityQuestionSet={feedbackState.entityQuestionSet}
+              questionSetId={feedbackState.questionSetId}
+              fromEvent={true}
+              fromActivity={false}
+            />
+          ) : feedbackState.isEditFeedback ? (
+            <AddEditFeedBack
+              isEditFeedback={true}
+              showModal={feedbackState.showModalFeedback}
+              modalClose={handleCloseFeedBackModal}
+              Title={feedbackState.EventTitle}
+              id={feedbackState.eventId}
+              entityQuestionSet={feedbackState.entityQuestionSet}
+              questionSetId={feedbackState.questionSetId}
+              feedbackSetId={feedbackState.feedbackSetId}
+              fromEvent={true}
+              fromActivity={false}
+            />
+          ) : null}
+          {!feedbackState.isGiveFeedback &&
+          !feedbackState.isEditFeedback &&
+          !feedbackState.showModalFeedback &&
+          feedbackState.showErrorModalFeedback ? (
             <NoFeedback
-              showModal={formState.showErrorModalFeedback}
+              showModal={feedbackState.showErrorModalFeedback}
               modalClose={handleCloseModal}
-              Title={formState.EventTitle}
-              forView={true}
+              Title={feedbackState.EventTitle}
+              errorMessage={feedbackState.errorMessage}
             />
           ) : null}
+
           {formState.isMultiDelete ? (
             <DeleteUser
               showModal={formState.showModalDelete}
