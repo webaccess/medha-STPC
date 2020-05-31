@@ -69,18 +69,11 @@ const ViewFeedBack = props => {
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
-        let finalData = res.data.result[0]["result"].map(res => {
-          return {
-            "Student Name": res["studentName"],
-            Comment: res["answer"]
-          };
-        });
-
-        const ws = XLSX.utils.json_to_sheet(finalData);
+        const ws = XLSX.utils.json_to_sheet(res.data.result);
         const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, res.data.result[0]["title"] + fileExtension);
+        FileSaver.saveAs(data, "Feedback" + fileExtension);
         setLoaderStatus(false);
       })
       .catch(error => {

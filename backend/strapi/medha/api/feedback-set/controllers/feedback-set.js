@@ -48,6 +48,8 @@ module.exports = {
 
   async findOne(ctx) {
     const { id } = ctx.params;
+    let user = ctx.state.user;
+
     const response = await strapi.query("feedback-set").findOne({ id });
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback")
@@ -56,12 +58,44 @@ module.exports = {
         "question",
         "question.role"
       ]);
-    const questions = checkFeedbackForTheEventPresent.map(res => {
+    const question_set = await strapi
+      .query("question-set")
+      .findOne({ id: response.question_set.id }, ["questions.role"]);
+
+    const questions = question_set.questions
+      .map(res => {
+        if (user.role.id === res.role.id) {
+          if (res.type === "Rating") {
+            res["answer_int"] = 0;
+            res["answer_text"] = "";
+          } else {
+            res["answer_int"] = null;
+            res["answer_text"] = "";
+          }
+          return res;
+        }
+      })
+      .filter(res => {
+        if (res !== undefined || res !== null) {
+          return res;
+        }
+      });
+
+    const questions_asnwers = checkFeedbackForTheEventPresent.map(res => {
       res.question["answer_text"] = res.answer_text;
       res.question["answer_int"] = res.answer_int;
       return res.question;
     });
 
+    questions.map(res => {
+      questions_asnwers.forEach(innerRes => {
+        if (innerRes.id === res.id) {
+          res["answer_int"] = innerRes["answer_int"];
+          res["answer_text"] = innerRes["answer_text"];
+        }
+      });
+      return res;
+    });
     response.questions = questions;
     return utils.getFindOneResponse(response);
   },
@@ -196,6 +230,7 @@ module.exports = {
 
   async update(ctx) {
     const { id } = ctx.params;
+    let user = ctx.state.user;
 
     const {
       activity,
@@ -223,15 +258,17 @@ module.exports = {
       return Promise.reject({ column: "No questions assigned" });
     }
 
-    const isDataPresent = await strapi.query("feedback-set").find({
-      activity: activity,
-      event: event,
-      contact: contact,
-      question_set: question_set
-    });
+    if (user.role.name === "Student") {
+      const isDataPresent = await strapi.query("feedback-set").find({
+        activity: activity,
+        event: event,
+        contact: contact,
+        question_set: question_set
+      });
 
-    if (!isDataPresent.length) {
-      return ctx.response.badRequest(`FeedBack Data Not present`);
+      if (!isDataPresent.length) {
+        return ctx.response.badRequest(`FeedBack Data Not present`);
+      }
     }
 
     await bookshelf
@@ -252,15 +289,26 @@ module.exports = {
               answer_text: answer_text
             };
 
-            await bookshelf
-              .model("feedback")
-              .where({ feedback_set: id, question: question_id })
-              .save(responseData, { transacting: t, patch: true })
-              .then(model => model)
-              .catch(error => {
-                console.log(error);
-                return null;
-              });
+            const checkIfFeedbackPresent = await strapi
+              .query("feedback")
+              .find({ feedback_set: id, question: question_id });
+            if (checkIfFeedbackPresent.length) {
+              await bookshelf
+                .model("feedback")
+                .where({ feedback_set: id, question: question_id })
+                .save(responseData, { transacting: t, patch: true })
+                .then(model => model)
+                .catch(error => {
+                  console.log(error);
+                  return null;
+                });
+            } else {
+              await bookshelf
+                .model("feedback")
+                .forge(responseData)
+                .save(null, { transacting: t })
+                .then(res => res.toJSON());
+            }
           }
         });
       })
