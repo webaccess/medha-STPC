@@ -20,11 +20,9 @@ import {
   CardActions,
   IconButton,
   Divider,
-  TextareaAutosize,
   TextField,
   Table,
-  TableBody,
-  Dialog
+  TableBody
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
@@ -91,6 +89,7 @@ const AddEditFeedBack = props => {
     formState.fromEvent = props.fromEvent;
     formState.fromActivity = props.fromActivity;
     formState.questionSetId = props.questionSetId;
+
     formState.feedbackSetId = props.feedbackSetId;
     formState.stateCounter += 1;
   }
@@ -245,7 +244,7 @@ const AddEditFeedBack = props => {
                   !formState.entityQuestionSet.length ? (
                     "Cannot give feedback for this event"
                   ) : (
-                    <Card>
+                    <Card style={{ paddingRight: "5%" }}>
                       {formState.isRatingAvailable ||
                       formState.isCommentAvailable ? (
                         <form
@@ -334,7 +333,7 @@ const AddEditFeedBack = props => {
                                           margin="normal"
                                           style={{
                                             margin: 8,
-                                            width: "fit-content"
+                                            width: "100%"
                                           }}
                                           label={row.title}
                                           id={row.id + ""}

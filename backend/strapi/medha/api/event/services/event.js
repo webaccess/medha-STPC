@@ -118,69 +118,22 @@ module.exports = {
     return filtered;
   },
 
-  getAggregateFeedbackForOneEventOfCollege: async (eventId, collegeId) => {
-    const event = await strapi.query("event").findOne({ id: eventId });
-
-    if (!event) {
-      return ctx.response.notFound("Event does not exist");
-    }
-
-    if (!event.question_set) {
-      return ctx.response.notFound("No question set");
-    }
-
-    const checkIfFeedbackPresent = await strapi
-      .query("feedback-set")
-      .find({ event: eventId, question_set: event.question_set.id });
-
-    if (!checkIfFeedbackPresent.length) {
-      return ctx.response.notFound("No feedback data present");
-    }
-
-    const contact = await strapi
-      .query("contact", "crm-plugin")
-      .find({ id: collegeId, contact_type: "organization" });
-
-    if (!contact.length) {
-      return ctx.response.notFound("No college found");
-    }
-
-    const userIds = await strapi.plugins[
-      "crm-plugin"
-    ].services.contact.getUsers(collegeId);
-
-    if (!userIds.length) {
-      return ctx.response.notFound("No students with this college");
-    }
-
-    let students = await strapi
-      .query("contact", PLUGIN)
-      .find({ user_in: userIds });
-
-    students = students.map(student => {
-      student.user = sanitizeUser(student.user);
-      return student;
-    });
-
-    const students_contact_id = students.map(student => {
-      return student.id;
-    });
-
+  /** Gets aggregate feedback for an event for multiple conatcts and for a specific role */
+  getAggregateFeedbackForEvent: async (event, contacts, role) => {
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
-        event: eventId,
-        contact_in: students_contact_id,
+        event: event.id,
+        contact_in: contacts,
         question_set: event.question_set.id
       });
 
     if (!checkFeedbackForTheEventPresent.length) {
-      return ctx.response.notFound("No feedback given by college students");
+      return ctx.response.notFound("No feedback available");
     }
 
-    let question_set = null;
+    let question_set = event.question_set.id;
     const feedback_set_id = checkFeedbackForTheEventPresent.map(res => {
-      question_set = res.question_set.id;
       return res.id;
     });
 
@@ -195,7 +148,7 @@ module.exports = {
     let question_ids = [];
     const question_ratings = event_question_set.questions
       .map(data => {
-        if (data.role.name === "Student" && data.type === "Rating") {
+        if (data.role.name === role && data.type === "Rating") {
           question_ids.push(data["id"]);
           return {
             id: data["id"],
@@ -230,5 +183,107 @@ module.exports = {
       total: feedback_set_id.length,
       ratings: question_ratings
     };
+  },
+
+  /** Get all comments for a particular role */
+  getAllCommentsForEvent: async (event, contacts, role) => {
+    const checkFeedbackForTheEventPresent = await strapi
+      .query("feedback-set")
+      .find({
+        event: event.id,
+        contact_in: contacts,
+        question_set: event.question_set.id
+      });
+
+    if (!checkFeedbackForTheEventPresent.length) {
+      return ctx.response.notFound("No feedback ");
+    }
+
+    let question_set = event.question_set.id;
+    const feedback_set_id = checkFeedbackForTheEventPresent.map(res => {
+      return res.id;
+    });
+
+    const event_question_set = await strapi.query("question-set").findOne(
+      {
+        id: question_set
+      },
+      ["questions.role"]
+    );
+
+    /** This basically gets questions id to which we will store our aggregate data */
+    let question_ids = [];
+    const questions = event_question_set.questions
+      .map(data => {
+        if (data.role.name === role) {
+          question_ids.push(data["id"]);
+          return data;
+        }
+      })
+      .filter(data => {
+        return data !== undefined;
+      });
+
+    const feedback_response_data = await strapi.query("feedback").find(
+      {
+        question_in: question_ids,
+        feedback_set_in: feedback_set_id
+      },
+      [
+        "question",
+        "feedback_set.contact",
+        "feedback_set.contact.individual",
+        "feedback_set.contact.individual.stream",
+        "feedback_set.contact.individual.organization"
+      ]
+    );
+
+    let finalResult = {};
+    let result = [];
+    feedback_response_data.map(res => {
+      if (finalResult.hasOwnProperty(res.feedback_set.contact.id)) {
+        finalResult[res.feedback_set.contact.id][res.question.title] = "";
+
+        if (res.question.type === "Comment") {
+          finalResult[res.feedback_set.contact.id][res.question.title] =
+            res.answer_text;
+        } else if (res.question.type === "Rating") {
+          finalResult[res.feedback_set.contact.id][res.question.title] =
+            res.answer_int;
+        }
+      } else {
+        finalResult[res.feedback_set.contact.id] = {
+          "College Name": res.feedback_set.contact.individual.organization
+            ? res.feedback_set.contact.individual.organization.name
+            : "",
+          "Student Name": res.feedback_set.contact.name,
+          "Roll number": res.feedback_set.contact.individual
+            ? res.feedback_set.contact.individual.roll_number
+            : "",
+          Stream: res.feedback_set.contact.individual.stream.name
+        };
+
+        questions.map(ques => {
+          if (ques.type === "Rating") {
+            finalResult[res.feedback_set.contact.id][ques.title] = 0;
+          } else if (ques.type === "Comment") {
+            finalResult[res.feedback_set.contact.id][ques.title] = "";
+          }
+        });
+
+        if (res.question.type === "Comment") {
+          finalResult[res.feedback_set.contact.id][res.question.title] =
+            res.answer_text;
+        } else if (res.question.type === "Rating") {
+          finalResult[res.feedback_set.contact.id][res.question.title] =
+            res.answer_int;
+        }
+      }
+    });
+
+    for (var key of Object.keys(finalResult)) {
+      result.push(finalResult[key]);
+    }
+    return result;
   }
 };
