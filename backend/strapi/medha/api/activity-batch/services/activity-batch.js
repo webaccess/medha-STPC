@@ -51,7 +51,7 @@ module.exports = {
         const createStudentActivityBatchAttendance = students.map(
           async studentId => {
             return await strapi
-              .query("activity-batch-attendance")
+              .query("activityassignee", PLUGIN)
               .model.forge({
                 activity_batch: id,
                 student: studentId,

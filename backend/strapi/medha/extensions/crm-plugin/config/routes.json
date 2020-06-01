@@ -110,7 +110,7 @@
     },
     {
       "method": "GET",
-      "path": "/contact/individuals/:id/activities",
+      "path": "/contact/individual/:id/activities",
       "handler": "contact.eligibleActivity",
       "config": { "policies": ["global.isIndividual"] }
     },
