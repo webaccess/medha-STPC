@@ -846,7 +846,7 @@ const ROLES = {
       },
       {
         name: "activity-batch",
-        action: ["student", "delete"]
+        action: ["student", "delete", "update"]
       },
       {
         name: "education",
@@ -1109,6 +1109,8 @@ const ROLES = {
           "findone",
           "education",
           "academichistory",
+          "eligiblepastactivities",
+          "deletedocument",
           "eligibleEvents",
           "eligibleActivity",
           "individualregisteredevents",
