@@ -894,10 +894,12 @@ const AddEditActivityBatches = props => {
                 clearSelectedRows={clearSelectedRows}
               />
             ) : (
-              <Spinner />
+              <div className={classes.noDataMargin}>
+                {genericConstants.NO_STUDENTS_DETAILS_FOUND}
+              </div>
             )
           ) : (
-            <div className={classes.noDataMargin}>No data to show</div>
+            <Spinner />
           )}
 
           <Card className={styles.noBorderNoShadow}>

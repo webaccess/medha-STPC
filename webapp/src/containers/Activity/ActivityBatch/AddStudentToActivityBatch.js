@@ -59,7 +59,7 @@ const AddEditActivityBatches = props => {
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_ACTIVITY_BATCH_URL +
     `/${activityBatch}/` +
-    strapiConstants.STRAPI_ADD_STUDENT_ACTIVITY_BATCH;
+    strapiConstants.STRAPI_ADD_STUDENTS;
 
   useEffect(() => {
     setLoaderStatus(true);
@@ -201,6 +201,7 @@ const AddEditActivityBatches = props => {
     let postData = {
       students: selectedStudents
     };
+
     serviceProviders
       .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
       .then(res => {
@@ -222,7 +223,7 @@ const AddEditActivityBatches = props => {
       cell: row => `${row.individual.first_name} ${row.individual.last_name}`
     },
     { name: "Stream", sortable: true, selector: "individual.stream.name" },
-    { name: "Mobile No.", sortable: true, selector: "user.contact_number" }
+    { name: "Mobile No.", sortable: true, selector: "phone" }
   ];
 
   return (
@@ -339,7 +340,7 @@ const AddEditActivityBatches = props => {
                     onChangeRowsPerPage={handlePerRowsChange}
                     onChangePage={handlePageChange}
                     onSelectedRowsChange={handleRowChange}
-                    noDataComponent="No Student Details found"
+                    noDataComponent={genericConstants.NO_STUDENTS_DETAILS_FOUND}
                   />
                   <Card className={styles.noBorderNoShadow}>
                     <CardContent>
