@@ -42,6 +42,7 @@ import CrossGridIcon from "../../../components/CrossGridIcon";
 import LoaderContext from "../../../context/LoaderContext";
 import moment from "moment";
 import auth from "../../../components/Auth";
+import { CompassCalibrationOutlined } from "@material-ui/icons";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
@@ -147,7 +148,8 @@ const AddEditActivityBatches = props => {
         }
         setActivityDetails(data.result);
       })
-      .catch(() => {
+      .catch(error => {
+        console.log("Error", error);
         history.push("/404");
       });
   }, []);
@@ -177,7 +179,6 @@ const AddEditActivityBatches = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT, params)
       .then(res => {
@@ -271,7 +272,6 @@ const AddEditActivityBatches = props => {
   const getStreams = async data => {
     if (auth.getUserInfo().role.name === "College Admin") {
       let streams = [];
-      console.log(auth.getUserInfo().role, auth.getUserInfo());
       streams = auth
         .getUserInfo()
         .studentInfo.organization.stream_strength.map(stream => stream.stream);
@@ -484,7 +484,6 @@ const AddEditActivityBatches = props => {
       formState.values[dateTo]
     );
 
-    console.log("postData", postData);
     if (formState.isEditActivityBatch) {
       const activityBatchId = formState.dataForEdit.id;
       const URL =
@@ -599,7 +598,6 @@ const AddEditActivityBatches = props => {
       name: "Action",
       cell: cell => (
         <div style={{ display: "flex" }}>
-          {console.log(cell)}
           {!!cell.activityBatch.is_verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
               <TickGridIcon
