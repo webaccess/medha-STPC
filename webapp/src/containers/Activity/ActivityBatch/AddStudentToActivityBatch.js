@@ -128,7 +128,7 @@ const AddEditActivityBatches = props => {
   };
 
   const getStreams = data => {
-    const streams = data.map(student => student.stream);
+    const streams = data.map(student => student.individual.stream);
     return uniqBy(streams, stream => stream.id);
   };
 
@@ -201,7 +201,6 @@ const AddEditActivityBatches = props => {
     let postData = {
       students: selectedStudents
     };
-
     serviceProviders
       .serviceProviderForPostRequest(ACTIVITY_CREATE_BATCH_URL, postData)
       .then(res => {
@@ -210,6 +209,7 @@ const AddEditActivityBatches = props => {
         props.closeModal();
       })
       .catch(error => {
+        console.log("ErrorAddStudent", error);
         setSeletedStudent([]);
         props.closeModal();
       });
@@ -219,9 +219,9 @@ const AddEditActivityBatches = props => {
     {
       name: "Student Name",
       sortable: true,
-      cell: row => `${row.user.first_name} ${row.user.last_name}`
+      cell: row => `${row.individual.first_name} ${row.individual.last_name}`
     },
-    { name: "Stream", sortable: true, selector: "stream.name" },
+    { name: "Stream", sortable: true, selector: "individual.stream.name" },
     { name: "Mobile No.", sortable: true, selector: "user.contact_number" }
   ];
 
