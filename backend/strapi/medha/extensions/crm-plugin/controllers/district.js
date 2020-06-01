@@ -36,7 +36,7 @@ module.exports = {
     const { id } = ctx.params;
     const response = await strapi
       .query("district", "crm-plugin")
-      .findOne({ id });
+      .findOne({ id }, ["state", "state.country"]);
     return utils.getFindOneResponse(response);
   }
 };

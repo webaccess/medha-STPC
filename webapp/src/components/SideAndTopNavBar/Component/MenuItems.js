@@ -134,6 +134,40 @@ const MenuItems = props => {
         link: routeConstants.ELIGIBLE_EVENT,
         Icon: <EmojiFlagsOutlinedIcon />
       }
+    ],
+    "RPC Admin": [
+      {
+        name: "Dashboard",
+        link: routeConstants.DASHBOARD_URL,
+        Icon: <DashboardIcon />
+      },
+      {
+        name: "Activity",
+        Icon: <AssignmentOutlinedIcon />,
+        link: routeConstants.FEEDBACK_ACTIVITIES
+      },
+      {
+        name: "Events",
+        Icon: <EmojiFlagsOutlinedIcon />,
+        link: routeConstants.FEEDBACK_EVENTS
+      }
+    ],
+    "Zonal Admin": [
+      {
+        name: "Dashboard",
+        link: routeConstants.DASHBOARD_URL,
+        Icon: <DashboardIcon />
+      },
+      {
+        name: "Activity",
+        Icon: <AssignmentOutlinedIcon />,
+        link: routeConstants.FEEDBACK_ACTIVITIES
+      },
+      {
+        name: "Events",
+        Icon: <EmojiFlagsOutlinedIcon />,
+        link: routeConstants.FEEDBACK_EVENTS
+      }
     ]
   };
 

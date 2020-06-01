@@ -38,7 +38,7 @@ const ViewFeedBack = props => {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
 
-  const [formState, setFormState] = useState({
+  const [formState] = useState({
     ratings: 3,
     stateCounter: 0,
     dataToShow: [],
@@ -56,21 +56,41 @@ const ViewFeedBack = props => {
 
   const getComments = async () => {
     setLoaderStatus(true);
-    const QUESTION_SET_URL =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
-      "/" +
-      props.id +
-      "/" +
-      strapiConstants.STRAPI_CONTACT_SOLO +
-      "/" +
-      auth.getUserInfo().studentInfo.organization.contact.id +
-      "/getStudentsCommentsForFeedbacks";
+    let QUESTION_SET_URL = "";
+    let sheetName = "";
+    if (auth.getUserInfo().role.name === "RPC Admin") {
+      QUESTION_SET_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_EVENTS +
+        "/" +
+        props.id +
+        "/" +
+        strapiConstants.STRAPI_RPC +
+        "/" +
+        auth.getUserInfo().rpc.id +
+        "/getCollegeCommentFeedbackForRPC";
+      sheetName = "College Feedback";
+    } else if (auth.getUserInfo().role.name === "College Admin") {
+      QUESTION_SET_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_EVENTS +
+        "/" +
+        props.id +
+        "/" +
+        strapiConstants.STRAPI_CONTACT_SOLO +
+        "/" +
+        auth.getUserInfo().studentInfo.organization.contact.id +
+        "/getStudentsCommentsForFeedbacks";
+      sheetName = "Student Feedback";
+    }
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
         const ws = XLSX.utils.json_to_sheet(res.data.result);
-        const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+        const wb = {
+          Sheets: { [sheetName]: ws },
+          SheetNames: [sheetName]
+        };
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const data = new Blob([excelBuffer], { type: fileType });
         FileSaver.saveAs(data, "Feedback" + fileExtension);
@@ -128,7 +148,9 @@ const ViewFeedBack = props => {
                             gutterBottom
                             color="textSecondary"
                           >
-                            {`Feedback given by ${formState.dataToShow.total} students`}
+                            {props.fromRPC
+                              ? `Feedback given by ${formState.dataToShow.total} colleges`
+                              : `Feedback given by ${formState.dataToShow.total} students`}
                           </Typography>
                           <div style={{ overflow: "auto" }}>
                             {formState.dataToShow.ratings.length !== 0 ? (

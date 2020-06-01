@@ -50,6 +50,46 @@ module.exports = {
     return filtered;
   },
 
+  getEventsForRpc: async (contact, events) => {
+    const filtered = events.filter(event => {
+      const { contacts, rpc, zone, state } = event;
+
+      /**
+       * Since colleges might be empty array
+       * If Event has particular colleges then filter by colleges
+       * If Event has RPC and Zone then get student college's RPC and Zone
+       * If Event has either RPC or Zone then get student college's RPC or Zone
+       *
+       *
+       * TODO:
+       * Since college don't have state attribute in their schema we need to filter state either
+       * from RPC or Zone
+       * Currently we only have one state so we are returning event directly
+       * since it won't affect response
+       * But when we have case where we have more than 1 state then in that case we'll filter
+       * state either from rpc or zone from college
+       */
+
+      const isCollegesExist = contacts.length > 0 ? true : false;
+      const isRPCExist = rpc && Object.keys(rpc).length > 0 ? true : false;
+      const isZoneExist = zone && Object.keys(zone).length > 0 ? true : false;
+      const isStateExist =
+        state && Object.keys(state).length > 0 ? true : false;
+
+      if (isStateExist && !isRPCExist && !isZoneExist && !isCollegesExist) {
+        if (state.id == contact.state) return event;
+      } else if (isRPCExist) {
+        if (rpc.id == contact.id) return event;
+      } else if (!isRPCExist && isZoneExist) {
+        return null;
+      } else {
+        return event;
+      }
+    });
+
+    return filtered;
+  },
+
   /**
    * @return {Array}
    * @param {CollegeId}
@@ -107,6 +147,58 @@ module.exports = {
           user.contact.individual.organization.contact == collegeId
       )
       .map(user => user.id);
+    return userIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all college admin for given college id
+   */
+  getRpcAdmins: async rpcId => {
+    const rpcRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "RPC Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: rpcRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(user => user.rpc == rpcId)
+      .map(user => user.id);
+
+    return userIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all college admin for given college id
+   */
+  getCollegeAdminsFromRPC: async rpcId => {
+    const collegeRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: collegeRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(user => user.rpc == rpcId)
+      .map(user => user.id);
+
     return userIds;
   },
 

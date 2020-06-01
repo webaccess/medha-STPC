@@ -233,7 +233,7 @@ const StudentList = props => {
         var eventIndividualData = {};
         let educationYear = [];
         eventIndividualData["id"] = data[i]["id"];
-        eventIndividualData["studentid"] = data[i]["id"];
+        eventIndividualData["studentid"] = data[i]["individual"]["id"];
         eventIndividualData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";

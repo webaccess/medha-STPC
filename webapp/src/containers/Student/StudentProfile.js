@@ -429,15 +429,18 @@ const StudentProfile = props => {
             <CardActions className={classes.btnspace}>
               {auth.getUserInfo().role.name === "Student" ||
               auth.getUserInfo().role.name === "College Admin" ? (
-                <YellowButton
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  onClick={editData}
-                  className={classes.submitbtn}
-                >
-                  {genericConstants.EDIT_TEXT}
-                </YellowButton>
+                formState.fromEventStudentList ||
+                formState.fromAddStudentToRecruitmentDrive ? null : (
+                  <YellowButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={editData}
+                    className={classes.submitbtn}
+                  >
+                    {genericConstants.EDIT_TEXT}
+                  </YellowButton>
+                )
               ) : null}
               {auth.getUserInfo().role.name === "Medha Admin" ||
               auth.getUserInfo().role.name === "College Admin" ? (

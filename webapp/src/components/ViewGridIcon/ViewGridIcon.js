@@ -5,9 +5,15 @@ const ViewGridIcon = props => {
   return (
     <Tooltip
       title={
-        <React.Fragment>
-          <Typography color="inherit">View</Typography>
-        </React.Fragment>
+        props.fromEvent ? (
+          <React.Fragment>
+            <Typography color="inherit">View Event</Typography>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography color="inherit">View</Typography>
+          </React.Fragment>
+        )
       }
       placement="top"
     >
