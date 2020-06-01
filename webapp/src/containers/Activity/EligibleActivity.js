@@ -60,7 +60,7 @@ const EligibleActivity = props => {
       auth.getUserInfo().role.name === "Student" &&
       auth.getUserInfo().studentInfo !== null
     ) {
-      paramsForStudent = auth.getUserInfo().studentInfo.id;
+      paramsForStudent = auth.getUserInfo().contact.id;
     } else {
       localStorage.clear();
       history.push({
@@ -70,9 +70,10 @@ const EligibleActivity = props => {
     if (paramsForStudent !== null && paramsForStudent !== undefined) {
       const COLLEGES_URL =
         strapiConstants.STRAPI_DB_URL +
-        "students/" +
+        strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
+        "/" +
         paramsForStudent +
-        "/activity";
+        "/activities";
       let params = {
         pageSize: -1,
         _sort: "start_date_time"
