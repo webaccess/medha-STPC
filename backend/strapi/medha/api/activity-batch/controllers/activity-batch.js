@@ -251,7 +251,7 @@ module.exports = {
     const { students } = ctx.request.body;
     const studentsResponse = await Promise.all(
       students.map(studentId =>
-        strapi.query("student").findOne({ id: studentId })
+        strapi.query("contact", PLUGIN).findOne({ id: studentId })
       )
     );
 

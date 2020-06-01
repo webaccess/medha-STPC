@@ -5,8 +5,8 @@ const knex = require("knex")({
     port: "5432",
     user: "medha",
     password: "medha",
-    database: "medha",
-  },
+    database: "medha"
+  }
 });
 
 const bookshelf = require("bookshelf")(knex);
