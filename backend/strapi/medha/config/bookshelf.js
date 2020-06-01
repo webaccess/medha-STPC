@@ -79,6 +79,11 @@ bookshelf.model("activity_type", {
   tableName: "activitytypes"
 });
 
+bookshelf.model("activityassignee", {
+  requireFetch: false,
+  tableName: "activityassignee"
+});
+
 bookshelf.model("feedback", {
   tableName: "feedbacks"
 });
