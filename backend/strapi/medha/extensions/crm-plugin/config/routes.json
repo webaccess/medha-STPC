@@ -157,6 +157,12 @@
       "config": { "policies": [] }
     },
     {
+      "method": "GET",
+      "path": "/contact/:id/get-rpc-events",
+      "handler": "contact.rpcEvents",
+      "config": { "policies": [] }
+    },
+    {
       "method": "DELETE",
       "path": "/activities/:id",
       "handler": "activity.delete",
@@ -219,6 +225,12 @@
       "path": "/contact/get-individuals/:id/document",
       "handler": "contact.documents",
       "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/districts",
+      "handler": "state.districts",
+      "config": { "policies": [] }
     },
     {
       "method": "DELETE",
