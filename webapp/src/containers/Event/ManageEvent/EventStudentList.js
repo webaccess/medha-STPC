@@ -28,6 +28,7 @@ import {
   HowToReg
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProvider from "../../../api/Axios";
 import * as genericConstants from "../../../constants/GenericConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
@@ -141,12 +142,12 @@ const StudentList = props => {
     let EVENT_ID = null;
     let regStudent_url = null;
     if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       EVENT_ID = formState.eventId;
       regStudent_url = EVENT_URL + "/" + EVENT_ID + "/" + STUDENT_URL;
-      if (auth.getUserInfo().role.name === "College Admin") {
+      if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
         paramsForevents["individual.organization"] = auth.getUserInfo()[
           "studentInfo"
         ]["organization"]["id"];
@@ -186,8 +187,8 @@ const StudentList = props => {
         });
     } else {
       if (
-        auth.getUserInfo().role.name === "Medha Admin" ||
-        auth.getUserInfo().role.name === "College Admin"
+        auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+        auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
       ) {
         history.push({
           pathname: routeConstants.MANAGE_EVENT
@@ -233,7 +234,7 @@ const StudentList = props => {
         var eventIndividualData = {};
         let educationYear = [];
         eventIndividualData["id"] = data[i]["id"];
-        eventIndividualData["studentid"] = data[i]["id"];
+        eventIndividualData["studentid"] = data[i]["individual"]["id"];
         eventIndividualData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";
@@ -667,7 +668,7 @@ const StudentList = props => {
         <Typography variant="h4" gutterBottom>
           Event Students List
         </Typography>
-        {auth.getUserInfo().role.name === "College Admin" ? (
+        {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
           <GreenButton
             variant="contained"
             color="secondary"

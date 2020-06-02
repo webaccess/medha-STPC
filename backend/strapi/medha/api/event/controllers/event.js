@@ -434,5 +434,109 @@ module.exports = {
       "Student"
     );
     return utils.getFindOneResponse(feedbackData);
+  },
+
+  /*** Get feedback comments for rpc */
+
+  async getFeedbacksCommentsForEventForRPC(ctx) {
+    const { eventId, rpcId } = ctx.params;
+
+    const event = await strapi.query("event").findOne({ id: eventId });
+
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+
+    if (!event.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, question_set: event.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if rpc exist */
+    const rpc = await strapi.query("rpc").findOne({ id: rpcId }, []);
+
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    /** This gets contact ids of all the college admins under the RPC*/
+    const collegeAdminUsers = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdminsFromRPC(rpcId);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeAdminUsers });
+
+    const collegeAdminsIds = collegeAdminContacts.map(contact => {
+      return contact.id;
+    });
+
+    /**------------------------------------------------ */
+    let feedbackData = await strapi.services.event.getAllCommentsForEvent(
+      event,
+      collegeAdminsIds,
+      "College Admin"
+    );
+
+    return utils.getFindOneResponse(feedbackData);
+  },
+
+  /** Get Feedback for rpc  */
+  async getFeedbacksForEventForRPC(ctx) {
+    const { eventId, rpcId } = ctx.params;
+
+    const event = await strapi.query("event").findOne({ id: eventId });
+
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+
+    if (!event.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, question_set: event.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if rpc exist */
+    const rpc = await strapi.query("rpc").findOne({ id: rpcId }, []);
+
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    /** This gets contact ids of all the college admins under the RPC*/
+    const collegeAdminUsers = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdminsFromRPC(rpcId);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeAdminUsers });
+
+    const collegeAdminsIds = collegeAdminContacts.map(contact => {
+      return contact.id;
+    });
+
+    /**------------------------------------------------ */
+    let feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+      event,
+      collegeAdminsIds,
+      "College Admin"
+    );
+    return utils.getFindOneResponse(feedbackData);
   }
 };

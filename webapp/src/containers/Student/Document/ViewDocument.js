@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
   Card,
@@ -16,10 +15,10 @@ import * as serviceProviders from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import {
   Table,
-  Spinner,
   GreenButton,
   YellowButton,
   GrayButton,
@@ -71,7 +70,8 @@ const ViewDocument = props => {
   });
 
   const studentInfo =
-    Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
+    Auth.getUserInfo() !== null &&
+    Auth.getUserInfo().role.name === roleConstants.STUDENT
       ? Auth.getUserInfo().studentInfo.contact.id
       : Auth.getStudentIdFromCollegeAdmin();
 

@@ -27,6 +27,7 @@ import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined"
 import EventSchema from "../EventSchema";
 import { get } from "lodash";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import { useHistory } from "react-router-dom";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
@@ -117,7 +118,9 @@ const AddEditEvent = props => {
     dynamicEducationBar: [{ index: Math.random() }],
     dynamicEducationBarError: [],
     isCollegeAdmin:
-      auth.getUserInfo().role.name === "College Admin" ? true : false,
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+        ? true
+        : false,
     isStateClearFilter: false,
     isContainDateValidation: true,
     isDateValidated: false
@@ -125,19 +128,19 @@ const AddEditEvent = props => {
 
   const [collegeInfo] = useState({
     college:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().studentInfo.organization
         : {},
     state:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().state
         : {},
     rpc:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().rpc
         : {},
     zone:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().zone
         : {}
   });

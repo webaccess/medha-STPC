@@ -3,7 +3,7 @@ import { Grid, Typography } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import useStyles from "../CommonStyles/DeleteStyles.js";
 import * as serviceProviders from "../../../api/Axios";
@@ -54,7 +54,8 @@ const DeleteDocument = props => {
 
   const deleteData = () => {
     const studentInfo =
-      auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role.name === roleConstants.STUDENT
         ? auth.getUserInfo().studentInfo.contact.id
         : auth.getStudentIdFromCollegeAdmin();
 

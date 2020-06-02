@@ -5,6 +5,7 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { green } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
 import "../../../assets/cssstylesheet/ImageCssStyles.css";
+import * as roleConstants from "../../../constants/RoleConstants";
 
 import { Auth as auth, Spinner, Alert } from "../../../components";
 import {
@@ -48,7 +49,7 @@ const EligibleEvents = props => {
     if (
       auth.getUserInfo() !== null &&
       auth.getUserInfo().role !== null &&
-      auth.getUserInfo().role.name === "Student" &&
+      auth.getUserInfo().role.name === roleConstants.STUDENT &&
       auth.getUserInfo().studentInfo !== null &&
       auth.getUserInfo().studentInfo.id !== null
     ) {
@@ -66,7 +67,7 @@ const EligibleEvents = props => {
     if (
       auth.getUserInfo() !== null &&
       auth.getUserInfo().role !== null &&
-      auth.getUserInfo().role.name === "Student" &&
+      auth.getUserInfo().role.name === roleConstants.STUDENT &&
       auth.getUserInfo().studentInfo !== null &&
       auth.getUserInfo().studentInfo.contact !== null &&
       auth.getUserInfo().studentInfo.contact.id !== null

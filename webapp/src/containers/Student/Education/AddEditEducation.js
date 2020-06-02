@@ -11,6 +11,7 @@ import {
 import * as formUtilities from "../../../utilities/FormUtilities";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";
 import * as serviceProviders from "../../../api/Axios";
@@ -30,7 +31,8 @@ const AddEditEducation = props => {
   const history = useHistory();
   const classes = useStyles();
   const studentInfo =
-    auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+    auth.getUserInfo() !== null &&
+    auth.getUserInfo().role.name === roleConstants.STUDENT
       ? auth.getUserInfo().studentInfo.contact.id
       : auth.getStudentIdFromCollegeAdmin();
 

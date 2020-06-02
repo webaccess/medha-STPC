@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import { Auth as auth, Typography, Alert } from "../../../components";
 import TextField from "@material-ui/core/TextField";
 import Chip from "@material-ui/core/Chip";
@@ -72,13 +73,13 @@ const ViewCollege = props => {
     setLoaderStatus(true);
     const studentInfo =
       auth.getUserInfo() !== null &&
-      auth.getUserInfo().role.name === "College Admin" &&
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
       auth.getUserInfo().studentInfo &&
       auth.getUserInfo().studentInfo.organization &&
       auth.getUserInfo().studentInfo.organization.id
         ? auth.getUserInfo().studentInfo.organization.id
         : auth.getUserInfo() !== null &&
-          auth.getUserInfo().role.name === "Medha Admin"
+          auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
         ? props["location"]["dataForEdit"]
         : null;
 
@@ -393,7 +394,7 @@ const ViewCollege = props => {
               >
                 {genericConstants.EDIT_TEXT}
               </YellowButton>
-              {auth.getUserInfo().role.name !== "College Admin" ? (
+              {auth.getUserInfo().role.name !== roleConstants.COLLEGEADMIN ? (
                 <GrayButton
                   color="primary"
                   variant="contained"

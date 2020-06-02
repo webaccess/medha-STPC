@@ -17,6 +17,7 @@ import {
 import useStyles from "../../ContainerStyles/ViewPageStyles";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import {
   YellowButton,
   GrayButton,
@@ -45,7 +46,7 @@ const ViewUser = props => {
     setLoaderStatus(true);
     let paramsForUser;
 
-    if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       paramsForUser = props["location"]["dataForEdit"];
     }
     let VIEW_USER_URL = USER_URL + "/" + paramsForUser;
@@ -53,7 +54,9 @@ const ViewUser = props => {
       await serviceProviders
         .serviceProviderForGetRequest(VIEW_USER_URL)
         .then(res => {
-          if (res.data.result.contact.user.role.name === "Student") {
+          if (
+            res.data.result.contact.user.role.name === roleConstants.STUDENT
+          ) {
             setIsDisable(true);
           } else {
             setIsDisable(false);

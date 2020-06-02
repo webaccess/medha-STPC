@@ -35,6 +35,7 @@ import {
   Validation as validateInput
 } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as authPageConstants from "../../../constants/AuthPageConstants";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import Visibility from "@material-ui/icons/Visibility";
@@ -189,7 +190,7 @@ const LogIn = props => {
   };
 
   if (ifSuccess && auth.getToken()) {
-    return auth.getUserInfo().role.name === "Student" ? (
+    return auth.getUserInfo().role.name === roleConstants.STUDENT ? (
       <Redirect
         to={{
           pathname: routeConstants.VIEW_PROFILE,
@@ -238,7 +239,7 @@ const LogIn = props => {
         }
       )
       .then(response => {
-        if (response.data.user.role.name === "Student") {
+        if (response.data.user.role.name === roleConstants.STUDENT) {
           /** This check whether the college is blocked or not then it checks whether the user is blocked or not */
           if (response.data.user.studentInfo.organization.is_blocked) {
             moveToErrorPageForBlocked();
@@ -252,7 +253,9 @@ const LogIn = props => {
             }
           }
           setOpenSpinner(false);
-        } else if (response.data.user.role.name === "College Admin") {
+        } else if (
+          response.data.user.role.name === roleConstants.COLLEGEADMIN
+        ) {
           if (response.data.user.studentInfo.organization.is_blocked) {
             moveToErrorPageForBlocked();
           } else {
@@ -263,21 +266,21 @@ const LogIn = props => {
             }
           }
           setOpenSpinner(false);
-        } else if (response.data.user.role.name === "Medha Admin") {
+        } else if (response.data.user.role.name === roleConstants.MEDHAADMIN) {
           if (response.data.user.blocked) {
             moveToErrorPageForBlocked();
           } else {
             setUserData(response.data.jwt, response.data.user);
           }
           setOpenSpinner(false);
-        } else if (response.data.user.role.name === "Zonal Admin") {
+        } else if (response.data.user.role.name === roleConstants.ZONALADMIN) {
           if (response.data.user.blocked) {
             moveToErrorPageForBlocked();
           } else {
             setUserData(response.data.jwt, response.data.user);
           }
           setOpenSpinner(false);
-        } else if (response.data.user.role.name === "RPC Admin") {
+        } else if (response.data.user.role.name === roleConstants.RPCADMIN) {
           if (response.data.user.blocked) {
             moveToErrorPageForBlocked();
           } else {
