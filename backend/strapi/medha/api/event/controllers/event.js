@@ -543,5 +543,69 @@ module.exports = {
       "College Admin"
     );
     return utils.getFindOneResponse(feedbackData);
+  },
+
+  async getFeedbackForZone(ctx) {
+    const { eventId, zoneId, dataFor, feedbackType } = ctx.params;
+
+    /** Steps to check if event is present */
+    const event = await strapi.services.event.checkIfEventExist(eventId);
+
+    /** Steps to check if feedback exist for that event */
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, question_set: event.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if zone exist */
+    const zone = await strapi.services.zone.checkIfZoneExist(zoneId);
+
+    let feedbackData;
+    if (dataFor === "college") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+        zoneId,
+        "Zonal Admin",
+        "college"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          event,
+          collegeAdminIds,
+          "College Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          event,
+          collegeAdminIds,
+          "College Admin"
+        );
+      }
+    } else if (dataFor === "rpc") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+        zoneId,
+        "Zonal Admin",
+        "rpc"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          event,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          event,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      }
+    }
+
+    return utils.getFindOneResponse(feedbackData);
   }
 };

@@ -3,6 +3,7 @@ export const STRAPI_DB_URL = process.env.REACT_APP_SERVER_URL;
 export const STRAPI_DB_URL_WITHOUT_HASH =
   process.env.REACT_APP_SERVER_URL_WITHOUT_HASH;
 export const STRAPI_ZONES = "zones";
+export const STRAPI_ZONE = "zone";
 export const STRAPI_STATES = "crm-plugin/states";
 export const STRAPI_RPCS = "rpcs";
 export const STRAPI_RPC = "rpc";

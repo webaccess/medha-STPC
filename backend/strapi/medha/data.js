@@ -606,7 +606,13 @@ const ROLES = {
       },
       {
         name: "event",
-        action: []
+        action: [
+          "getfeedbackforzone",
+          "getquestionset",
+          "findone",
+          "getfeedbacksforeventforrpc",
+          "getfeedbackscommentsforeventforrpc"
+        ]
       },
       {
         name: "event-registration",
@@ -622,11 +628,11 @@ const ROLES = {
       },
       {
         name: "question-set",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "feedback-set",
-        action: []
+        action: ["create", "findone", "update"]
       },
       {
         name: "rpc",
@@ -661,7 +667,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: [],
+        action: ["zoneevents"],
         type: PLUGIN_NAME
       },
       {

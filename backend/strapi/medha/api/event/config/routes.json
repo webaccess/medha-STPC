@@ -111,6 +111,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:eventId/getFeedbackForZone/:zoneId/DataFor/:dataFor/FeedbackType/:feedbackType",
+      "handler": "event.getFeedbackForZone",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
