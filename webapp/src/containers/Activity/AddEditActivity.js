@@ -43,6 +43,9 @@ import moment from "moment";
 import axios from "axios";
 import { includes } from "lodash";
 
+const QUESTION_SET =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUESTION_SET;
+
 const AddEditActivity = props => {
   let history = useHistory();
   const dateFrom = "dateFrom";
@@ -102,8 +105,15 @@ const AddEditActivity = props => {
   const [streamlist, setstreamlist] = useState([]);
   const [collegeStreamList, setCollegeStreamList] = useState([]);
   const [activityType, setActivityType] = useState([]);
+  const [questionSetData, setQuestionSetData] = useState([]);
 
   useEffect(() => {
+    serviceProvider
+      .serviceProviderForGetRequest(QUESTION_SET)
+      .then(res => {
+        setQuestionSetData(res.data);
+      })
+      .catch(error => {});
     setLoaderStatus(true);
     getColleges();
     getStreams();
@@ -201,6 +211,13 @@ const AddEditActivity = props => {
       if (props.location["dataForEdit"]["education_year"]) {
         formState.values["educationyear"] =
           props.location["dataForEdit"]["education_year"];
+      }
+      if (
+        props.location["dataForEdit"]["question_set"] &&
+        props.location["dataForEdit"]["question_set"]
+      ) {
+        formState.values["questionSet"] =
+          props.location["dataForEdit"]["question_set"];
       }
 
       if (props.location["dataForEdit"]["description"]) {
@@ -314,7 +331,6 @@ const AddEditActivity = props => {
 
   const postActivityData = () => {
     let postData;
-    console.log(stream, formState);
     if (formState.editActivity) {
       postData = databaseUtilities.editActivity(
         formState.showPreview,
@@ -929,7 +945,7 @@ const AddEditActivity = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={12} xs={12}>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       label="Trainer Name"
                       name="trainer"
@@ -946,6 +962,43 @@ const AddEditActivity = props => {
                             })
                           : null
                       }
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id={"question_set"}
+                      className={classes.root}
+                      options={questionSetData}
+                      placeholder={"Select Question Set"}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("questionSet", event, value);
+                      }}
+                      required
+                      value={
+                        questionSetData[
+                          questionSetData.findIndex(function (item, i) {
+                            return item.id === formState.values["questionSet"];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={"Question-Set"}
+                          variant="outlined"
+                          required
+                          placeholder={"Select Question Set"}
+                          error={hasError("questionSet")}
+                          helperText={
+                            hasError("questionSet")
+                              ? formState.errors["questionSet"].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
                     />
                   </Grid>
                 </Grid>
