@@ -281,9 +281,15 @@ const AddEditRpc = props => {
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.ADD_RPC_TITLE}
-        </Typography>
+        {formState.isEditRpc ? (
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.EDIT_RPC_TEXT}
+          </Typography>
+        ) : (
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.ADD_RPC_TITLE}
+          </Typography>
+        )}
         {isSuccess ? (
           <Alert severity="success">
             {genericConstants.ALERT_SUCCESS_BUTTON_MESSAGE}
