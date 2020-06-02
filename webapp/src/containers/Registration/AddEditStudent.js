@@ -19,6 +19,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth, InlineDatePicker } from "../../components";
 
 import * as routeConstants from "../../constants/RouteConstants";
+import * as roleConstants from "../../constants/RoleConstants";
+
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
 
@@ -388,7 +390,7 @@ const AddEditStudent = props => {
           setFormState({ ...formState, isSuccess: true });
           if (
             auth.getUserInfo().role.name === "Medha Admin" ||
-            auth.getUserInfo().role.name === "College Admin"
+            auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
           ) {
             history.push({
               pathname: routeConstants.MANAGE_STUDENT,
@@ -452,7 +454,7 @@ const AddEditStudent = props => {
           } else {
             if (
               auth.getUserInfo().role.name === "Medha Admin" ||
-              auth.getUserInfo().role.name === "College Admin"
+              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
             ) {
               history.push(routeConstants.MANAGE_STUDENT);
             }
@@ -1248,7 +1250,8 @@ const AddEditStudent = props => {
                     mfullWidth
                     variant="contained"
                     onClick={() => {
-                      auth.getUserInfo().role.name === "College Admin"
+                      auth.getUserInfo().role.name ===
+                      roleConstants.COLLEGEADMIN
                         ? history.push(routeConstants.MANAGE_STUDENT)
                         : history.push(routeConstants.VIEW_PROFILE);
                     }}

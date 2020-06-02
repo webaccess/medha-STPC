@@ -3,13 +3,14 @@ import { Route, Redirect } from "../../node_modules/react-router-dom";
 import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
 import * as routeConstants from "../constants/RouteConstants";
+import * as roleConstants from "../constants/RoleConstants";
 
 const MedhaCollegeAdminRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   if (auth.getToken() !== null) {
     if (
       auth.getUserInfo().role.name === "Medha Admin" ||
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       return (
         <Route

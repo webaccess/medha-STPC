@@ -13,6 +13,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProviders from "../../../api/Axios";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
@@ -70,7 +71,7 @@ const ViewFeedBack = props => {
         auth.getUserInfo().rpc.id +
         "/getCollegeCommentFeedbackForRPC";
       sheetName = "College Feedback";
-    } else if (auth.getUserInfo().role.name === "College Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       QUESTION_SET_URL =
         strapiConstants.STRAPI_DB_URL +
         strapiConstants.STRAPI_EVENTS +

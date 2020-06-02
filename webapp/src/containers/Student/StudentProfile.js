@@ -15,6 +15,7 @@ import {
   IconButton
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
+import * as roleConstants from "../../constants/RoleConstants";
 
 import * as genericConstants from "../../constants/GenericConstants.js";
 
@@ -112,7 +113,7 @@ const StudentProfile = props => {
         paramsForEvent = props.data
           ? props.data.id
           : auth.getUserInfo().studentInfo.id;
-      } else if (auth.getUserInfo().role.name === "College Admin") {
+      } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
         paramsForEvent = props["location"]["dataForStudent"]
           ? formState.studentId
           : auth.getStudentInfoForEditingFromCollegeAdmin();
@@ -196,7 +197,7 @@ const StudentProfile = props => {
         editStudent: true,
         dataForEdit: formState.details
       });
-    } else if (auth.getUserInfo().role.name === "College Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       history.push({
         pathname: routeConstants.EDIT_PROFILE,
         dataForEdit: formState.details,
@@ -257,7 +258,7 @@ const StudentProfile = props => {
         </Collapse>
       ) : null}
       <Grid item xs={12} className={classes.title}>
-        {auth.getUserInfo().role.name === "College Admin" ? (
+        {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
           <Typography variant="h4" gutterBottom>
             {/* View Student */}
           </Typography>
@@ -428,7 +429,7 @@ const StudentProfile = props => {
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>
               {auth.getUserInfo().role.name === "Student" ||
-              auth.getUserInfo().role.name === "College Admin" ? (
+              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
                 formState.fromEventStudentList ||
                 formState.fromAddStudentToRecruitmentDrive ? null : (
                   <YellowButton
@@ -443,7 +444,7 @@ const StudentProfile = props => {
                 )
               ) : null}
               {auth.getUserInfo().role.name === "Medha Admin" ||
-              auth.getUserInfo().role.name === "College Admin" ? (
+              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
                 <GrayButton
                   color="primary"
                   variant="contained"

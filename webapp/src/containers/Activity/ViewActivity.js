@@ -17,6 +17,7 @@ import * as serviceProviders from "../../api/Axios";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
 import * as genericConstants from "../../constants/GenericConstants";
+import * as roleConstants from "../../constants/RoleConstants";
 import * as formUtilities from "../../utilities/FormUtilities";
 import {
   Table,
@@ -108,7 +109,7 @@ const ViewActivity = props => {
       url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
     }
 
-    if (roleName === "College Admin") {
+    if (roleName === roleConstants.COLLEGEADMIN) {
       const college = user ? user.studentInfo : null;
       const collegeId = college ? college.organization.contact.id : null;
 
@@ -432,7 +433,8 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
-          {roleName === "College Admin" || roleName === "Medha Admin" ? (
+          {roleName === roleConstants.COLLEGEADMIN ||
+          roleName === "Medha Admin" ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon
                 id={cell.id}

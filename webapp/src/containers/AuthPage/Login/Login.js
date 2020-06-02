@@ -35,6 +35,7 @@ import {
   Validation as validateInput
 } from "../../../components";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as authPageConstants from "../../../constants/AuthPageConstants";
 import * as strapiApiConstants from "../../../constants/StrapiApiConstants";
 import Visibility from "@material-ui/icons/Visibility";
@@ -252,7 +253,9 @@ const LogIn = props => {
             }
           }
           setOpenSpinner(false);
-        } else if (response.data.user.role.name === "College Admin") {
+        } else if (
+          response.data.user.role.name === roleConstants.COLLEGEADMIN
+        ) {
           if (response.data.user.studentInfo.organization.is_blocked) {
             moveToErrorPageForBlocked();
           } else {

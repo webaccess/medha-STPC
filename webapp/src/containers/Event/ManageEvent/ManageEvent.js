@@ -14,6 +14,7 @@ import {
 import { Table, Spinner, Alert, FeedBack } from "../../../components";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
   GrayButton,
@@ -189,7 +190,7 @@ const ManageEvent = props => {
       isDataLoading: true
     }));
     if (auth.getUserInfo().role !== null) {
-      if (auth.getUserInfo().role.name === "College Admin") {
+      if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
         const EVENTS_FOR_COLLEGE_ADMIN =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_CONTACTS +
@@ -299,7 +300,7 @@ const ManageEvent = props => {
         }
 
         eventIndividualData["IsEditable"] = false;
-        if (auth.getUserInfo().role.name === "College Admin") {
+        if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
           let state = false;
           if (
             data[i]["state"] &&
@@ -909,7 +910,7 @@ const ManageEvent = props => {
               onClick={viewStudentList}
             />
           </div>
-          {auth.getUserInfo().role.name === "College Admin" ? (
+          {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
             cell.isFeedbackProvidedbyStudents ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
@@ -945,7 +946,7 @@ const ManageEvent = props => {
             )
           ) : null}
 
-          {auth.getUserInfo().role.name === "College Admin" ? (
+          {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
             cell.giveFeedback ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack

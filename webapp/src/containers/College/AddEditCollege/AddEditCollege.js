@@ -8,6 +8,7 @@ import * as formUtilities from "../../../utilities/FormUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as commonUtilities from "../../../utilities/CommonUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import {
@@ -91,7 +92,7 @@ const AddEditCollege = props => {
     showing: false,
     dataToShowForMultiSelect: [],
     isCollegeAdmin:
-      auth.getUserInfo().role.name === "College Admin" ? true : false
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? true : false
   });
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
@@ -104,22 +105,22 @@ const AddEditCollege = props => {
   const inputLabel = React.useRef(null);
   const [collegeInfo, setCollegeInfo] = useState({
     college:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().studentInfo &&
           auth.getUserInfo().studentInfo.organization
           ? auth.getUserInfo().studentInfo.organization
           : {}
         : {},
     state:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().state
         : {},
     rpc:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().rpc
         : {},
     zone:
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().zone
         : {}
   });
@@ -130,7 +131,7 @@ const AddEditCollege = props => {
         ...formState,
         showing: true
       }));
-    } else if (auth.getUserInfo().role.name === "College Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       setFormState(formState => ({
         ...formState,
         showing: false
@@ -286,7 +287,7 @@ const AddEditCollege = props => {
       } else {
         setUser([]);
       }
-    } else if (auth.getUserInfo().role.name === "College Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       const studentId =
         auth.getUserInfo() !== null &&
         auth.getUserInfo().studentInfo &&
@@ -750,7 +751,9 @@ const AddEditCollege = props => {
               editResponseMessage: "",
               editedData: {}
             });
-          } else if (auth.getUserInfo().role.name === "College Admin") {
+          } else if (
+            auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+          ) {
             commonUtilities.updateUser();
             history.push({
               pathname: routeConstants.VIEW_COLLEGE,
@@ -807,7 +810,7 @@ const AddEditCollege = props => {
       history.push({
         pathname: routeConstants.MANAGE_COLLEGE
       });
-    } else if (auth.getUserInfo().role.name === "College Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       history.push({
         pathname: routeConstants.VIEW_COLLEGE
       });
@@ -1228,7 +1231,7 @@ const AddEditCollege = props => {
                 </Grid>
               </Grid>
               {(auth.getUserInfo().role.name === "Medha Admin" ||
-                auth.getUserInfo().role.name === "College Admin") &&
+                auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) &&
               formState.isEditCollege ? (
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>

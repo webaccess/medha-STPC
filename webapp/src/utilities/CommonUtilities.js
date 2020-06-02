@@ -1,5 +1,6 @@
 import { Auth as auth } from "../components";
 import * as routeConstants from "../constants/RouteConstants";
+import * as roleConstants from "../constants/RoleConstants";
 import * as serviceProvider from "../api/Axios";
 import * as apiConstants from "../constants/StrapiApiConstants";
 
@@ -10,7 +11,7 @@ export const setSideBarIndex = path => {
     auth.getUserInfo() !== null &&
     auth.getUserInfo().role !== null
   ) {
-    if (auth.getUserInfo().role.name === "College Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       id = returnId(routeConstants.COLLEGE_ADMIN, path);
     } else if (auth.getUserInfo().role.name === "Medha Admin") {
       id = returnId(routeConstants.MEDHA_ADMIN, path);

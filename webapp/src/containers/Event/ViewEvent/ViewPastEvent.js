@@ -23,6 +23,7 @@ import {
 import * as formUtilities from "../../../utilities/FormUtilities";
 import auth from "../../../components/Auth";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProviders from "../../../api/Axios";
 import moment from "moment";
 import * as genericConstants from "../../../constants/GenericConstants";
@@ -135,7 +136,7 @@ const ViewPastEvent = props => {
         auth.getUserInfo().role !== null &&
         auth.getUserInfo().role.name !== null &&
         auth.getUserInfo().role.name === "Student") ||
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       setFormState(formState => ({
         ...formState,

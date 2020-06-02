@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import { Auth as auth, Spinner, GreenButton } from "../../../components";
 import {
   Card,
@@ -80,7 +81,7 @@ const ViewEvent = props => {
       if (
         auth.getUserInfo().role.name === "Medha Admin" ||
         auth.getUserInfo().role.name === "Student" ||
-        auth.getUserInfo().role.name === "College Admin"
+        auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
       ) {
         paramsForEvent = props["location"]["dataForView"];
       }
@@ -127,7 +128,7 @@ const ViewEvent = props => {
       });
     } else if (
       auth.getUserInfo().role.name === "Medha Admin" ||
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       history.push({
         pathname: routeConstants.MANAGE_EVENT

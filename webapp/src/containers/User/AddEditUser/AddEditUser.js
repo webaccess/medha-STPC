@@ -20,6 +20,7 @@ import {
   Switch
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProvider from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import { useHistory } from "react-router-dom";
@@ -107,7 +108,7 @@ const AddEditUser = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     isCollegeAdmin:
-      auth.getUserInfo().role.name === "College Admin" ? true : false
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? true : false
   });
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
@@ -504,7 +505,7 @@ const AddEditUser = props => {
         break;
       }
     }
-    if (roleName === "College Admin" || roleName === "Student") {
+    if (roleName === roleConstants.COLLEGEADMIN || roleName === "Student") {
       UserSchema[rpc]["required"] = true;
       UserSchema[state]["required"] = true;
       UserSchema[zone]["required"] = true;

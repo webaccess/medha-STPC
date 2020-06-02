@@ -9,6 +9,7 @@ import GroupOutlinedIcon from "@material-ui/icons/GroupOutlined";
 import LocalLibraryOutlinedIcon from "@material-ui/icons/LocalLibraryOutlined";
 
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 
 const MenuItems = props => {
   const menuItems = {
@@ -56,7 +57,7 @@ const MenuItems = props => {
         Icon: <EmojiFlagsOutlinedIcon />
       }
     ],
-    "College Admin": [
+    [roleConstants.COLLEGEADMIN]: [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
