@@ -23,5 +23,10 @@ module.exports = async (ctx, next) => {
     if (!isStateValid) return ctx.response.badRequest("State is invalid");
   }
 
+  const zone = await strapi.query("zone").findOne({ name: name, state: state });
+
+  if (zone)
+    return ctx.response.badRequest("Zone can't be created with same name");
+
   await next();
 };

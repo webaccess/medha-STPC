@@ -38,6 +38,17 @@ module.exports = async (ctx, next) => {
    * Since strapi default behavior does not check if they are present
    * If object is not present in DB, It simple attach empty object
    */
+
+  if (name) {
+    const college = await strapi
+      .query("organization", PLUGIN)
+      .findOne({ name: name, rpc: rpc, zone: zone });
+    if (college)
+      return ctx.response.badRequest(
+        "College cna't be created with the given name"
+      );
+  }
+
   if (college_code) {
     const college = await strapi
       .query("organization", PLUGIN)

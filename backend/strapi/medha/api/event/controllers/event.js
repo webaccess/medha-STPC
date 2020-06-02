@@ -274,7 +274,12 @@ module.exports = {
         }
       });
 
-      if (isStreamEligible && isQualificationEligible && isEducationEligible) {
+      if (
+        isStreamEligible &&
+        isQualificationEligible &&
+        isEducationEligible &&
+        student.individual.is_verified
+      ) {
         const qualifications = await strapi
           .query("academic-history")
           .find({ contact: student.id }, []);
