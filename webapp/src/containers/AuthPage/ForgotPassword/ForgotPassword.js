@@ -301,7 +301,7 @@ const ForgotPassword = props => {
         let verificationError = false;
         let invalidOtp = false;
         if (error.response) {
-          if (error.response.data.message === "User already registered.") {
+          if (error.response.data.message === "User already registered") {
             await serviceProvider
               .serviceProviderForPostRequest(
                 VALIDATE_OTP_URL,
@@ -323,18 +323,14 @@ const ForgotPassword = props => {
                   invalidOtp = true;
                 } else if (formUtilities.checkEmpty(res.data)) {
                   invalidOtp = true;
-                } else if (
-                  res.data.result &&
-                  res.data.result.resetPasswordToken
-                ) {
+                } else if (res.data.result) {
                   /** Otp verified and reset password token genarated */
-                  formState.resetPasswordToken =
-                    res.data.result.resetPasswordToken;
+                  formState.resetPasswordToken = res.data.result;
                   setFormState(formState => ({
                     ...formState,
                     otpVerify: true,
                     isValid: false,
-                    resetPasswordToken: res.data.result.resetPasswordToken,
+                    resetPasswordToken: res.data.result,
                     errorsToShow: "",
                     formType: authPageConstants.FORM_TYPE_CHANGE_PASS
                   }));
