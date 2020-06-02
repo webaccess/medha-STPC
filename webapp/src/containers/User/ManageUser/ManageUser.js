@@ -19,6 +19,7 @@ import {
 import { Table, Spinner, Alert } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import {
   GrayButton,
   YellowButton,
@@ -294,7 +295,9 @@ const ManageUser = props => {
             ? data[i]["contact"]["user"]["blocked"]
             : false;
         temp["role"] = data[i]["contact"]["user"]["role"]["name"];
-        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["state"] = "";
         } else {
           if (
@@ -307,7 +310,9 @@ const ManageUser = props => {
           }
         }
 
-        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["zone"] = "";
         } else {
           if (
@@ -321,7 +326,9 @@ const ManageUser = props => {
           }
         }
 
-        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["rpc"] = "";
         } else {
           if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["rpc"]) {
@@ -331,7 +338,9 @@ const ManageUser = props => {
           }
         }
 
-        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["college"] = "";
         } else {
           if (data[i]["organization"] && data[i]["organization"]["name"]) {

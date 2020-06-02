@@ -389,7 +389,7 @@ const AddEditStudent = props => {
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
           if (
-            auth.getUserInfo().role.name === "Medha Admin" ||
+            auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
             auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
           ) {
             history.push({
@@ -453,7 +453,7 @@ const AddEditStudent = props => {
             history.push(routeConstants.REGISTERED);
           } else {
             if (
-              auth.getUserInfo().role.name === "Medha Admin" ||
+              auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
               auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
             ) {
               history.push(routeConstants.MANAGE_STUDENT);

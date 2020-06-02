@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { Table, Spinner, Alert, FeedBack } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
   GrayButton,
@@ -148,7 +149,7 @@ const EventFeedback = props => {
       isDataLoading: true
     }));
     if (auth.getUserInfo().role !== null) {
-      if (auth.getUserInfo().role.name === "RPC Admin") {
+      if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
         const EVENTS_FOR_COLLEGE_ADMIN =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_CONTACTS +
@@ -180,7 +181,7 @@ const EventFeedback = props => {
           .catch(error => {
             console.log("error", error);
           });
-      } else if (auth.getUserInfo().role.name === "Zonal Admin") {
+      } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
         await serviceProviders
           .serviceProviderForGetRequest(EVENT_URL, paramsForEvents)
           .then(res => {
@@ -698,7 +699,7 @@ const EventFeedback = props => {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
-          {auth.getUserInfo().role.name === "RPC Admin" ? (
+          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ? (
             cell.isFeedbackFromCollegePresent ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
@@ -734,7 +735,7 @@ const EventFeedback = props => {
             )
           ) : null}
 
-          {auth.getUserInfo().role.name === "RPC Admin" ? (
+          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ? (
             cell.giveFeedback ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack

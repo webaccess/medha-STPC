@@ -9,7 +9,7 @@ const MedhaCollegeAdminRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   if (auth.getToken() !== null) {
     if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       return (

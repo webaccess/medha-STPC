@@ -105,7 +105,7 @@ const ViewActivity = props => {
 
   const url = () => {
     let url;
-    if (roleName === "Medha Admin") {
+    if (roleName === roleConstants.MEDHAADMIN) {
       url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
     }
 
@@ -408,7 +408,7 @@ const ViewActivity = props => {
               title="Manage Activity Batch"
             />
           </div>
-          {roleName === "Medha Admin" ? (
+          {roleName === roleConstants.MEDHAADMIN ? (
             <div className={classes.PaddingActionButton}>
               <EditGridIcon
                 id={cell.id}
@@ -434,7 +434,7 @@ const ViewActivity = props => {
             />
           </div>
           {roleName === roleConstants.COLLEGEADMIN ||
-          roleName === "Medha Admin" ? (
+          roleName === roleConstants.MEDHAADMIN ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon
                 id={cell.id}
@@ -445,7 +445,7 @@ const ViewActivity = props => {
             </div>
           ) : null}
 
-          {roleName === "Medha Admin" ? (
+          {roleName === roleConstants.MEDHAADMIN ? (
             <div className={classes.PaddingActionButton}>
               <DeleteGridIcon
                 id={cell.id}
@@ -502,7 +502,7 @@ const ViewActivity = props => {
           {genericConstants.VIEW_ACTIVITY_TEXT}
         </Typography>
 
-        {auth.getUserInfo().role.name === "Medha Admin" ? (
+        {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
           <GreenButton
             variant="contained"
             color="primary"

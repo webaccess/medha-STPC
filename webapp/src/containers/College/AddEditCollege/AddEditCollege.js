@@ -126,7 +126,7 @@ const AddEditCollege = props => {
   });
 
   React.useEffect(() => {
-    if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       setFormState(formState => ({
         ...formState,
         showing: true
@@ -267,7 +267,7 @@ const AddEditCollege = props => {
   }, []);
 
   async function fetchCollegeAdminData() {
-    if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       if (formState.isEditCollege) {
         let user_url =
           COLLEGES_URL +
@@ -742,7 +742,7 @@ const AddEditCollege = props => {
           EDIT_URL
         )
         .then(res => {
-          if (auth.getUserInfo().role.name === "Medha Admin") {
+          if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
             history.push({
               pathname: routeConstants.MANAGE_COLLEGE,
               fromeditCollege: true,
@@ -806,7 +806,7 @@ const AddEditCollege = props => {
   };
 
   const clickedCancelButton = () => {
-    if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       history.push({
         pathname: routeConstants.MANAGE_COLLEGE
       });
@@ -1230,7 +1230,7 @@ const AddEditCollege = props => {
                   </div>
                 </Grid>
               </Grid>
-              {(auth.getUserInfo().role.name === "Medha Admin" ||
+              {(auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
                 auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) &&
               formState.isEditCollege ? (
                 <Grid container spacing={3} className={classes.MarginBottom}>

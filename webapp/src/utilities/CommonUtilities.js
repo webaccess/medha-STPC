@@ -13,9 +13,9 @@ export const setSideBarIndex = path => {
   ) {
     if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       id = returnId(routeConstants.COLLEGE_ADMIN, path);
-    } else if (auth.getUserInfo().role.name === "Medha Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       id = returnId(routeConstants.MEDHA_ADMIN, path);
-    } else if (auth.getUserInfo().role.name === "Student") {
+    } else if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       id = returnId(routeConstants.STUDENT, path);
     }
   }

@@ -222,7 +222,7 @@ const ManageEvent = props => {
           .catch(error => {
             console.log("error", error);
           });
-      } else if (auth.getUserInfo().role.name === "Medha Admin") {
+      } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
         await serviceProviders
           .serviceProviderForGetRequest(EVENT_URL, paramsForEvents)
           .then(res => {
@@ -339,7 +339,7 @@ const ManageEvent = props => {
           } else {
             eventIndividualData["IsEditable"] = false;
           }
-        } else if (auth.getUserInfo().role.name === "Medha Admin") {
+        } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
           eventIndividualData["IsEditable"] = true;
         }
         x.push(eventIndividualData);

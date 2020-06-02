@@ -119,7 +119,8 @@ const ViewPastEvent = props => {
     }
 
     const studentInfo =
-      auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role.name === roleConstants.STUDENT
         ? auth.getUserInfo().studentInfo.contact.id
         : auth.getStudentIdFromCollegeAdmin();
 
@@ -135,7 +136,7 @@ const ViewPastEvent = props => {
       (auth.getUserInfo() !== null &&
         auth.getUserInfo().role !== null &&
         auth.getUserInfo().role.name !== null &&
-        auth.getUserInfo().role.name === "Student") ||
+        auth.getUserInfo().role.name === roleConstants.STUDENT) ||
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       setFormState(formState => ({

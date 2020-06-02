@@ -277,7 +277,7 @@ const AddEditActivityBatches = props => {
         .getUserInfo()
         .studentInfo.organization.stream_strength.map(stream => stream.stream);
       return streams;
-    } else if (auth.getUserInfo().role.name === "Medha Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       await serviceProviders
         .serviceProviderForGetRequest(STREAMS_URL)
         .then(res => {

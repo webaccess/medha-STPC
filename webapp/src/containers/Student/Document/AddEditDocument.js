@@ -6,6 +6,7 @@ import * as formUtilities from "../../../utilities/FormUtilities";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as genericConstants from "../../../constants/GenericConstants.js";
 import * as serviceProviders from "../../../api/Axios";
 import { Alert, GrayButton, YellowButton, Spinner } from "../../../components";
@@ -116,7 +117,8 @@ const AddEditDocument = props => {
 
   const postUploadData = async () => {
     const studentInfo =
-      auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role.name === roleConstants.STUDENT
         ? auth.getUserInfo().studentInfo.id
         : auth.getStudentIdFromCollegeAdminForDocument();
     const id = studentInfo;

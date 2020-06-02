@@ -142,7 +142,7 @@ const StudentList = props => {
     let EVENT_ID = null;
     let regStudent_url = null;
     if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       EVENT_ID = formState.eventId;
@@ -187,7 +187,7 @@ const StudentList = props => {
         });
     } else {
       if (
-        auth.getUserInfo().role.name === "Medha Admin" ||
+        auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
         auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
       ) {
         history.push({

@@ -107,9 +107,9 @@ const StudentProfile = props => {
   async function handleSetDetails() {
     let paramsForEvent = null;
     if (auth.getUserInfo() && auth.getUserInfo().role) {
-      if (auth.getUserInfo().role.name === "Medha Admin") {
+      if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
         paramsForEvent = props["location"]["dataForStudent"];
-      } else if (auth.getUserInfo().role.name === "Student") {
+      } else if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
         paramsForEvent = props.data
           ? props.data.id
           : auth.getUserInfo().studentInfo.id;
@@ -191,7 +191,7 @@ const StudentProfile = props => {
   }
 
   const editData = () => {
-    if (auth.getUserInfo().role.name === "Student") {
+    if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       history.push({
         pathname: routeConstants.EDIT_PROFILE,
         editStudent: true,
@@ -428,7 +428,7 @@ const StudentProfile = props => {
           </CardContent>
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>
-              {auth.getUserInfo().role.name === "Student" ||
+              {auth.getUserInfo().role.name === roleConstants.STUDENT ||
               auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
                 formState.fromEventStudentList ||
                 formState.fromAddStudentToRecruitmentDrive ? null : (
@@ -443,7 +443,7 @@ const StudentProfile = props => {
                   </YellowButton>
                 )
               ) : null}
-              {auth.getUserInfo().role.name === "Medha Admin" ||
+              {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
               auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
                 <GrayButton
                   color="primary"

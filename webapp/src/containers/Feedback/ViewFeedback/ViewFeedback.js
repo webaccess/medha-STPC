@@ -59,7 +59,7 @@ const ViewFeedBack = props => {
     setLoaderStatus(true);
     let QUESTION_SET_URL = "";
     let sheetName = "";
-    if (auth.getUserInfo().role.name === "RPC Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
       QUESTION_SET_URL =
         strapiConstants.STRAPI_DB_URL +
         strapiConstants.STRAPI_EVENTS +

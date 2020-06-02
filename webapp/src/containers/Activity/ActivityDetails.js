@@ -47,17 +47,17 @@ const ActivityDetails = props => {
   async function getactivityDetails() {
     let paramsForEvent = null;
     if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       paramsForEvent = props["location"]["dataForView"];
-    } else if (auth.getUserInfo().role.name === "Student") {
+    } else if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       paramsForEvent = props["location"]["dataForView"];
     }
     if (
       paramsForEvent !== null &&
       paramsForEvent !== undefined &&
-      (auth.getUserInfo().role.name === "Medha Admin" ||
+      (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
         auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN)
     ) {
       await serviceProviders
@@ -75,7 +75,7 @@ const ActivityDetails = props => {
     } else if (
       paramsForEvent !== null &&
       paramsForEvent !== undefined &&
-      auth.getUserInfo().role.name === "Student"
+      auth.getUserInfo().role.name === roleConstants.STUDENT
     ) {
       setFormState(formState => ({
         ...formState,
@@ -83,13 +83,13 @@ const ActivityDetails = props => {
       }));
     } else {
       if (
-        auth.getUserInfo().role.name === "Medha Admin" ||
+        auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
         auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
       ) {
         history.push({
           pathname: routeConstants.MANAGE_ACTIVITY
         });
-      } else if (auth.getUserInfo().role.name === "Student") {
+      } else if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
         history.push({
           pathname: routeConstants.ELIGIBLE_ACTIVITY
         });
@@ -103,12 +103,12 @@ const ActivityDetails = props => {
 
   const route = () => {
     setLoaderStatus(true);
-    if (auth.getUserInfo().role.name === "Student") {
+    if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       history.push({
         pathname: routeConstants.ELIGIBLE_ACTIVITY
       });
     } else if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       history.push({
@@ -221,7 +221,8 @@ const ActivityDetails = props => {
                           {formState.activityDetails["title"]}
                         </Typography>
                       </Grid>
-                      {auth.getUserInfo().role.name === "Student" ? (
+                      {auth.getUserInfo().role.name ===
+                      roleConstants.STUDENT ? (
                         <Grid
                           container
                           md={6}
@@ -290,7 +291,8 @@ const ActivityDetails = props => {
                             {getDate()}
                           </Grid>
                         </Grid>
-                        {auth.getUserInfo().role.name === "Medha Admin" ||
+                        {auth.getUserInfo().role.name ===
+                          roleConstants.MEDHAADMIN ||
                         auth.getUserInfo().role.name ===
                           roleConstants.COLLEGEADMIN ? (
                           <Grid container className={classes.defaultMargin}>
@@ -310,7 +312,8 @@ const ActivityDetails = props => {
                             {getVenue()}
                           </Grid>
                         </Grid>
-                        {auth.getUserInfo().role.name === "Student" ? (
+                        {auth.getUserInfo().role.name ===
+                        roleConstants.STUDENT ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
                               <b>Batch </b>
@@ -320,7 +323,8 @@ const ActivityDetails = props => {
                             </Grid>
                           </Grid>
                         ) : null}
-                        {auth.getUserInfo().role.name === "Student" ? (
+                        {auth.getUserInfo().role.name ===
+                        roleConstants.STUDENT ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
                               <b>Timing </b>

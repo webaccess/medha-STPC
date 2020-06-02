@@ -13,7 +13,7 @@ import * as roleConstants from "../../../constants/RoleConstants";
 
 const MenuItems = props => {
   const menuItems = {
-    "Medha Admin": [
+    [roleConstants.MEDHAADMIN]: [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
@@ -93,7 +93,7 @@ const MenuItems = props => {
         link: routeConstants.MANAGE_EVENT
       }
     ],
-    Student: [
+    [roleConstants.STUDENT]: [
       {
         name: "Profile",
         Icon: <PersonOutlineOutlinedIcon />,
@@ -136,7 +136,7 @@ const MenuItems = props => {
         Icon: <EmojiFlagsOutlinedIcon />
       }
     ],
-    "RPC Admin": [
+    [roleConstants.RPCADMIN]: [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
@@ -153,7 +153,7 @@ const MenuItems = props => {
         link: routeConstants.FEEDBACK_EVENTS
       }
     ],
-    "Zonal Admin": [
+    [roleConstants.ZONALADMIN]: [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
