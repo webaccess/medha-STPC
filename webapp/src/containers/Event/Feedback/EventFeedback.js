@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import moment from "moment";
 import {
   TextField,
@@ -12,23 +11,17 @@ import {
   Tooltip
 } from "@material-ui/core";
 import { Table, Spinner, Alert, FeedBack } from "../../../components";
-import DeleteIcon from "@material-ui/icons/Delete";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as roleConstants from "../../../constants/RoleConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
   GrayButton,
   YellowButton,
-  GreenButton,
   ViewGridIcon,
-  EditGridIcon,
-  ViewStudentGridIcon,
-  DeleteGridIcon,
   InlineDatePicker
 } from "../../../components";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import * as serviceProviders from "../../../api/Axios";
-import DeleteUser from "./DeleteEvent";
 import CloseIcon from "@material-ui/icons/Close";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../../constants/RouteConstants";
@@ -44,11 +37,11 @@ const START_DATE_FILTER = "start_date_time_gte";
 const END_DATE_FILTER = "end_date_time_lt";
 const SORT_FIELD_KEY = "_sort";
 
-const ManageEvent = props => {
+const EventFeedback = props => {
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const classes = useStyles();
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [setSelectedRows] = useState([]);
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
@@ -56,13 +49,6 @@ const ManageEvent = props => {
     tempData: [],
     events: [],
     greenButtonChecker: true,
-    isDataDeleted: false,
-    dataToEdit: {},
-    dataToDelete: {},
-    showEditModal: false,
-    showModalDelete: false,
-    isMultiDelete: false,
-    MultiDeleteID: [],
     /** Filters */
     eventFilterData: [],
     selectedRowFilter: true,
@@ -82,34 +68,7 @@ const ManageEvent = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
-    errors: {},
-
-    /** This is when we return from edit page */
-    isDataEdited: props["location"]["fromeditEvent"]
-      ? props["location"]["isDataEdited"]
-      : false,
-    editedData: props["location"]["fromeditEvent"]
-      ? props["location"]["editedData"]
-      : {},
-    fromeditEvent: props["location"]["fromeditEvent"]
-      ? props["location"]["fromeditEvent"]
-      : false,
-    editedEventName: props["location"]["editedEventData"]
-      ? props["location"]["editedEventData"]["title"]
-      : "",
-    /** This is when we return from add page */
-    isDataAdded: props["location"]["fromAddEvent"]
-      ? props["location"]["isDataAdded"]
-      : false,
-    addedData: props["location"]["fromAddEvent"]
-      ? props["location"]["addedData"]
-      : {},
-    fromAddEvent: props["location"]["fromAddEvent"]
-      ? props["location"]["fromAddEvent"]
-      : false,
-    addedEventName: props["location"]["addedEventData"]
-      ? props["location"]["addedEventData"]["title"]
-      : ""
+    errors: {}
   });
 
   /** Special feedbackState state variable to set parameters for feedback  */
@@ -190,13 +149,13 @@ const ManageEvent = props => {
       isDataLoading: true
     }));
     if (auth.getUserInfo().role !== null) {
-      if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
         const EVENTS_FOR_COLLEGE_ADMIN =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_CONTACTS +
           "/" +
-          auth.getUserInfo().studentInfo.organization.contact.id +
-          "/get-organization-events";
+          auth.getUserInfo().rpc.id +
+          "/get-rpc-events";
         await serviceProviders
           .serviceProviderForGetRequest(
             EVENTS_FOR_COLLEGE_ADMIN,
@@ -222,7 +181,7 @@ const ManageEvent = props => {
           .catch(error => {
             console.log("error", error);
           });
-      } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+      } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
         await serviceProviders
           .serviceProviderForGetRequest(EVENT_URL, paramsForEvents)
           .then(res => {
@@ -269,8 +228,8 @@ const ManageEvent = props => {
 
         /** Several feedback flags are taken form the response itself  */
         /** Can college admin view feedback */
-        eventIndividualData["isFeedbackProvidedbyStudents"] =
-          data[i]["isFeedbackProvidedbyStudents"];
+        eventIndividualData["isFeedbackFromCollegePresent"] =
+          data[i]["isFeedbackFromCollegePresent"];
 
         /** can a college admin add/edit/cannot give feedback */
 
@@ -283,64 +242,17 @@ const ManageEvent = props => {
         eventIndividualData["cannotGiveFeedback"] = false;
         eventIndividualData["feedbackId"] = data[i]["feedbackSetId"];
 
-        if (
-          data[i]["question_set"] &&
-          !data[i]["isFeedbackProvidedbyCollege"]
-        ) {
+        if (data[i]["question_set"] && !data[i]["isFeedbackProvidedbyRPC"]) {
           eventIndividualData["giveFeedback"] = true;
         } else if (
           data[i]["question_set"] &&
-          data[i]["isFeedbackProvidedbyCollege"]
+          data[i]["isFeedbackProvidedbyRPC"]
         ) {
           eventIndividualData["editFeedback"] = true;
         } else if (!data[i]["question_set"]) {
           eventIndividualData["cannotGiveFeedback"] = true;
         } else {
           eventIndividualData["cannotGiveFeedback"] = true;
-        }
-
-        eventIndividualData["IsEditable"] = false;
-        if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
-          let state = false;
-          if (
-            data[i]["state"] &&
-            data[i]["state"]["id"] &&
-            auth.getUserInfo().state.id === data[i]["state"]["id"]
-          ) {
-            state = true;
-          }
-          let rpc = false;
-          if (
-            data[i]["rpc"] &&
-            data[i]["rpc"]["id"] &&
-            auth.getUserInfo().rpc.id === data[i]["rpc"]["id"]
-          ) {
-            rpc = true;
-          }
-          let zone = false;
-          if (
-            data[i]["zone"] &&
-            data[i]["zone"]["id"] &&
-            auth.getUserInfo().zone.id === data[i]["zone"]["id"]
-          ) {
-            zone = true;
-          }
-          let colleges = false;
-          if (
-            data[i]["contacts"] &&
-            data[i]["contacts"].length === 1 &&
-            data[i]["contacts"][0]["id"] ===
-              auth.getUserInfo().studentInfo.organization.contact.id
-          ) {
-            colleges = true;
-          }
-          if (state && rpc && zone && colleges) {
-            eventIndividualData["IsEditable"] = true;
-          } else {
-            eventIndividualData["IsEditable"] = false;
-          }
-        } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
-          eventIndividualData["IsEditable"] = true;
         }
         x.push(eventIndividualData);
       }
@@ -394,117 +306,12 @@ const ManageEvent = props => {
     setSelectedRows(state.selectedRows);
   }, []);
 
-  /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = (status, statusToShow = "") => {
-    /** This restores all the data when we close the modal */
-    //restoreData();
-    setOpen(true);
-    setFormState(formState => ({
-      ...formState,
-      isDataDeleted: status,
-      showModalDelete: false,
-      fromDeleteModal: true,
-      isMultiDelete: false,
-      fromAddEvent: false,
-      messageToShow: statusToShow
-    }));
-    if (status) {
-      getEventData(formState.pageSize, 1, formState.filterDataParameters);
-    }
-  };
-
-  // const isDeleteCellCompleted = status => {
-  //   formState.isDataDeleted = status;
-  // };
-
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showModalBlock: false,
-      showModalDelete: false
-    }));
-  };
-
-  const deleteCell = event => {
-    setLoaderStatus(true);
-    setFormState(formState => ({
-      ...formState,
-      dataToDelete: {
-        id: event.target.id,
-        name: event.target.getAttribute("value")
-      },
-      showEditModal: false,
-      showModalDelete: true,
-      messageToShow: "",
-      fromDeleteModal: false,
-      fromeditCollege: false,
-      fromBlockModal: false,
-      fromAddEvent: false,
-      fromeditEvent: false
-    }));
-    setLoaderStatus(false);
-  };
-
-  /** Get multiple user id for delete */
-  const deleteMulUserById = () => {
-    let arrayId = [];
-
-    selectedRows.forEach(d => {
-      arrayId.push(d.id);
-    });
-
-    setFormState(formState => ({
-      ...formState,
-      showEditModal: false,
-      showModalDelete: true,
-      isMultiDelete: true,
-      MultiDeleteID: arrayId,
-      fromAddEvent: false,
-      fromeditEvent: false
-    }));
-  };
-
   /** View Event */
   const viewCell = event => {
     history.push({
       pathname: routeConstants.VIEW_EVENT,
       dataForView: event.target.id
     });
-  };
-
-  /** View Student List */
-  const viewStudentList = event => {
-    setLoaderStatus(true);
-    history.push({
-      pathname: routeConstants.EVENT_STUDENT_LIST,
-      eventId: event.target.id,
-      eventTitle: event.target.getAttribute("value")
-    });
-    setLoaderStatus(false);
-  };
-
-  /** Edit -------------------------------------------------------*/
-  const getDataForEdit = async id => {
-    setLoaderStatus(true);
-    await serviceProviders
-      .serviceProviderForGetOneRequest(EVENT_URL, id)
-      .then(res => {
-        let editData = res.data.result;
-        /** move to edit page */
-        history.push({
-          pathname: routeConstants.EDIT_EVENT,
-          editEvent: true,
-          dataForEdit: editData
-        });
-      })
-      .catch(error => {
-        console.log("error");
-      });
-    setLoaderStatus(false);
-  };
-
-  const editCell = event => {
-    getDataForEdit(event.target.id);
   };
 
   const selectedRowCleared = data => {
@@ -526,10 +333,10 @@ const ManageEvent = props => {
       "/" +
       cell.id +
       "/" +
-      strapiConstants.STRAPI_CONTACT_SOLO +
+      strapiConstants.STRAPI_RPC +
       "/" +
-      auth.getUserInfo().studentInfo.organization.contact.id +
-      "/getStudentsFeedbacks";
+      auth.getUserInfo().rpc.id +
+      "/getCollegeFeedbackForRPC";
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
@@ -892,29 +699,11 @@ const ManageEvent = props => {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
-          <div className={classes.PaddingFirstActionButton}>
-            <ViewGridIcon id={cell.id} value={cell.name} onClick={viewCell} />
-          </div>
-          <div className={classes.PaddingActionButton}>
-            <EditGridIcon
-              id={cell.id}
-              value={cell.name}
-              onClick={editCell}
-              disabled={!cell.IsEditable}
-            />
-          </div>
-          <div className={classes.PaddingActionButton}>
-            <ViewStudentGridIcon
-              id={cell.id}
-              value={cell.title}
-              onClick={viewStudentList}
-            />
-          </div>
-          {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
-            cell.isFeedbackProvidedbyStudents ? (
+          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ? (
+            cell.isFeedbackFromCollegePresent ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
-                  message={"View student feedback"}
+                  message={"View college feedback"}
                   id={cell.id}
                   isViewFeedback={true}
                   value={cell.title}
@@ -936,7 +725,7 @@ const ManageEvent = props => {
               <div className={classes.PaddingActionButton}>
                 <FeedBack
                   feedbackNotAvailable={true}
-                  message={"No student feedback available"}
+                  message={"No college feedback available"}
                   id={cell.id}
                   isViewFeedback={true}
                   value={cell.title}
@@ -946,7 +735,7 @@ const ManageEvent = props => {
             )
           ) : null}
 
-          {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
+          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ? (
             cell.giveFeedback ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
@@ -983,15 +772,6 @@ const ManageEvent = props => {
               </div>
             ) : null
           ) : null}
-
-          <div className={classes.PaddingActionButton}>
-            <DeleteGridIcon
-              id={cell.id}
-              value={cell.title}
-              onClick={deleteCell}
-              disabled={!cell.IsEditable}
-            />
-          </div>
         </div>
       ),
       width: "20%",
@@ -1008,32 +788,8 @@ const ManageEvent = props => {
         <Typography variant="h4" gutterBottom>
           Manage Events
         </Typography>
-
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Delete Selected Event
-        </GreenButton>
-
-        <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={() => {}}
-          disableElevation
-          to={routeConstants.ADD_EVENT}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          Add Event
-        </GreenButton>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
-        {/** Feedback */}
-
         {feedbackState.fromFeedBackModal && feedbackState.feedBackGiven ? (
           <Collapse in={open}>
             <Alert
@@ -1074,141 +830,6 @@ const ManageEvent = props => {
               }
             >
               {feedbackState.successErrorMessage}
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {/** Error/Success messages to be shown for event */}
-        {formState.fromeditEvent && formState.isDataEdited ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              Event {formState.editedEventName} has been updated successfully.
-            </Alert>
-          </Collapse>
-        ) : null}
-        {formState.fromeditEvent && !formState.isDataEdited ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              An error has occured while updating event. Kindly, try again.
-            </Alert>
-          </Collapse>
-        ) : null}
-        {formState.fromAddEvent && formState.isDataAdded ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              Event {formState.addedEventName} has been added successfully.
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {formState.fromAddEvent && !formState.isDataAdded ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              An error has occured while adding event. Kindly, try again.
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {formState.fromDeleteModal &&
-        formState.isDataDeleted &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="success"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
-            </Alert>
-          </Collapse>
-        ) : null}
-
-        {formState.fromDeleteModal &&
-        !formState.isDataDeleted &&
-        formState.messageToShow !== "" ? (
-          <Collapse in={open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              {formState.messageToShow}
             </Alert>
           </Collapse>
         ) : null}
@@ -1304,7 +925,6 @@ const ManageEvent = props => {
                 defaultSortAsc={formState.sortAscending}
                 paginationResetDefaultPage={formState.resetPagination}
                 onSelectedRowsChange={handleRowSelected}
-                deleteEvent={deleteCell}
                 onSort={handleSort}
                 sortServer={true}
                 paginationDefaultPage={formState.page}
@@ -1331,6 +951,7 @@ const ManageEvent = props => {
               id={feedbackState.eventId}
               fromEvent={true}
               fromActivity={false}
+              fromRPC={true}
               dataToShow={feedbackState.ratings}
             />
           ) : null}
@@ -1371,34 +992,10 @@ const ManageEvent = props => {
               errorMessage={feedbackState.errorMessage}
             />
           ) : null}
-
-          {formState.isMultiDelete ? (
-            <DeleteUser
-              showModal={formState.showModalDelete}
-              closeModal={handleCloseDeleteModal}
-              //deleteEvent={isDeleteCellCompleted}
-              id={formState.MultiDeleteID}
-              isMultiDelete={formState.isMultiDelete}
-              modalClose={modalClose}
-              seletedUser={selectedRows.length}
-              clearSelectedRow={selectedRowCleared}
-            />
-          ) : (
-            <DeleteUser
-              showModal={formState.showModalDelete}
-              closeModal={handleCloseDeleteModal}
-              id={formState.dataToDelete["id"]}
-              //deleteEvent={isDeleteCellCompleted}
-              modalClose={modalClose}
-              userName={formState.userNameDelete}
-              dataToDelete={formState.dataToDelete}
-              clearSelectedRow={selectedRowCleared}
-            />
-          )}
         </Card>
       </Grid>
     </Grid>
   );
 };
 
-export default ManageEvent;
+export default EventFeedback;

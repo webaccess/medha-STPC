@@ -9,10 +9,11 @@ import GroupOutlinedIcon from "@material-ui/icons/GroupOutlined";
 import LocalLibraryOutlinedIcon from "@material-ui/icons/LocalLibraryOutlined";
 
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 
 const MenuItems = props => {
   const menuItems = {
-    "Medha Admin": [
+    [roleConstants.MEDHAADMIN]: [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
@@ -56,7 +57,7 @@ const MenuItems = props => {
         Icon: <EmojiFlagsOutlinedIcon />
       }
     ],
-    "College Admin": [
+    [roleConstants.COLLEGEADMIN]: [
       {
         name: "Dashboard",
         link: routeConstants.DASHBOARD_URL,
@@ -92,7 +93,7 @@ const MenuItems = props => {
         link: routeConstants.MANAGE_EVENT
       }
     ],
-    Student: [
+    [roleConstants.STUDENT]: [
       {
         name: "Profile",
         Icon: <PersonOutlineOutlinedIcon />,
@@ -133,6 +134,40 @@ const MenuItems = props => {
         name: "Events",
         link: routeConstants.ELIGIBLE_EVENT,
         Icon: <EmojiFlagsOutlinedIcon />
+      }
+    ],
+    [roleConstants.RPCADMIN]: [
+      {
+        name: "Dashboard",
+        link: routeConstants.DASHBOARD_URL,
+        Icon: <DashboardIcon />
+      },
+      {
+        name: "Activity",
+        Icon: <AssignmentOutlinedIcon />,
+        link: routeConstants.FEEDBACK_ACTIVITIES
+      },
+      {
+        name: "Events",
+        Icon: <EmojiFlagsOutlinedIcon />,
+        link: routeConstants.FEEDBACK_EVENTS
+      }
+    ],
+    [roleConstants.ZONALADMIN]: [
+      {
+        name: "Dashboard",
+        link: routeConstants.DASHBOARD_URL,
+        Icon: <DashboardIcon />
+      },
+      {
+        name: "Activity",
+        Icon: <AssignmentOutlinedIcon />,
+        link: routeConstants.FEEDBACK_ACTIVITIES
+      },
+      {
+        name: "Events",
+        Icon: <EmojiFlagsOutlinedIcon />,
+        link: routeConstants.FEEDBACK_EVENTS
       }
     ]
   };

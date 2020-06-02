@@ -17,6 +17,7 @@ import useStyles from "../ViewActivityStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import {
@@ -270,13 +271,13 @@ const AddEditActivityBatches = props => {
   };
 
   const getStreams = async data => {
-    if (auth.getUserInfo().role.name === "College Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       let streams = [];
       streams = auth
         .getUserInfo()
         .studentInfo.organization.stream_strength.map(stream => stream.stream);
       return streams;
-    } else if (auth.getUserInfo().role.name === "Medha Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       await serviceProviders
         .serviceProviderForGetRequest(STREAMS_URL)
         .then(res => {

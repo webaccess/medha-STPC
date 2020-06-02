@@ -3,11 +3,12 @@ import { Route, Redirect } from "../../node_modules/react-router-dom";
 import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
 import * as routeConstants from "../constants/RouteConstants";
+import * as roleConstants from "../constants/RoleConstants";
 
 const MedhaAdminRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   if (auth.getToken() !== null) {
-    if (auth.getUserInfo().role.name === "Medha Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       return (
         <Route
           {...rest}

@@ -20,6 +20,7 @@ import {
   Switch
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProvider from "../../../api/Axios";
 import * as routeConstants from "../../../constants/RouteConstants";
 import { useHistory } from "react-router-dom";
@@ -107,7 +108,7 @@ const AddEditUser = props => {
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
     counter: 0,
     isCollegeAdmin:
-      auth.getUserInfo().role.name === "College Admin" ? true : false
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? true : false
   });
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
@@ -168,7 +169,8 @@ const AddEditUser = props => {
         props["dataForEdit"]["contact"] &&
         props["dataForEdit"]["contact"]["user"] &&
         props["dataForEdit"]["contact"]["user"]["role"] &&
-        props["dataForEdit"]["contact"]["user"]["role"]["name"] === "Student"
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] ===
+          roleConstants.STUDENT
       ) {
         /** For populating state */
         if (
@@ -286,11 +288,14 @@ const AddEditUser = props => {
             res.data.roles[i]["name"] !== "Admin" &&
             res.data.roles[i]["name"] !== "Authenticated" &&
             res.data.roles[i]["name"] !== "Public" &&
-            res.data.roles[i]["name"] !== "Student"
+            res.data.roles[i]["name"] !== roleConstants.STUDENT
           ) {
             roles.push(res.data.roles[i]);
           }
-          if (formState.isEditUser && res.data.roles[i]["name"] === "Student") {
+          if (
+            formState.isEditUser &&
+            res.data.roles[i]["name"] === roleConstants.STUDENT
+          ) {
             roles.push(res.data.roles[i]);
           }
           if (
@@ -298,7 +303,7 @@ const AddEditUser = props => {
             formState.dataForEdit["contact"]["user"] &&
             formState.dataForEdit["contact"]["user"]["role"] &&
             formState.dataForEdit["contact"]["user"]["role"]["name"] ===
-              "Student"
+              roleConstants.STUDENT
           ) {
             setIsDisable(true);
           } else {
@@ -504,7 +509,10 @@ const AddEditUser = props => {
         break;
       }
     }
-    if (roleName === "College Admin" || roleName === "Student") {
+    if (
+      roleName === roleConstants.COLLEGEADMIN ||
+      roleName === roleConstants.STUDENT
+    ) {
       UserSchema[rpc]["required"] = true;
       UserSchema[state]["required"] = true;
       UserSchema[zone]["required"] = true;
@@ -513,17 +521,17 @@ const AddEditUser = props => {
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
       UserSchema[zone]["validations"] = VALIDATIONFORZONE;
       UserSchema[college]["validations"] = VALIDATIONFORCOLLEGE;
-    } else if (roleName === "RPC Admin") {
+    } else if (roleName === roleConstants.RPCADMIN) {
       UserSchema[rpc]["required"] = true;
       UserSchema[state]["required"] = true;
       UserSchema[rpc]["validations"] = VALIDATIONFORRPC;
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
-    } else if (roleName === "Zonal Admin") {
+    } else if (roleName === roleConstants.ZONALADMIN) {
       UserSchema[state]["required"] = true;
       UserSchema[zone]["required"] = true;
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
       UserSchema[zone]["validations"] = VALIDATIONFORZONE;
-    } else if (roleName === "Medha Admin") {
+    } else if (roleName === roleConstants.MEDHAADMIN) {
       clearValidations();
     }
   };

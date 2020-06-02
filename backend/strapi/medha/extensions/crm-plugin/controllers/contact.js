@@ -1321,6 +1321,109 @@ module.exports = {
   },
 
   /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async rpcEvents(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /** This checks college using contact id */
+    const rpc = await strapi.query("rpc").findOne({ id }, []);
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    /** This gets contact id of the logged in user */
+    const { contact } = ctx.state.user;
+
+    /** This gets contact ids of all the rpc admins */
+    const rpcAdmins = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getRpcAdmins(id);
+
+    let rpcAdminsContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: rpcAdmins });
+
+    const rpcAdminsContactIds = rpcAdminsContacts.map(user => {
+      return user.id;
+    });
+
+    /** This gets contact ids of all college admins */
+    const collegeAdmins = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdminsFromRPC(id);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeAdmins });
+
+    const collegeAdminContactIds = collegeAdminContacts.map(user => {
+      return user.id;
+    });
+
+    /** Get actual event data */
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    /**
+     * Get all events for specific college
+     */
+    const filtered = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getEventsForRpc(rpc, events);
+
+    await utils.asyncForEach(filtered, async event => {
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: rpcAdminsContactIds,
+            question_set: event.question_set.id
+          });
+
+        const checkFeedbackFromCollegePresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: collegeAdminContactIds,
+            question_set: event.question_set.id
+          });
+
+        event.isFeedbackFromCollegePresent = checkFeedbackFromCollegePresent.length
+          ? true
+          : false;
+
+        if (checkFeedbackForTheEventPresent.length) {
+          event.isFeedbackProvidedbyRPC = true;
+          event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+        } else {
+          event.isFeedbackProvidedbyRPC = false;
+          event.feedbackSetId = null;
+        }
+      } else {
+        event.isFeedbackProvidedbyRPC = false;
+        event.feedbackSetId = null;
+        event.isFeedbackFromCollegePresent = false;
+      }
+    });
+
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
+  },
+
+  /**
    * Registered events info
    *
    */

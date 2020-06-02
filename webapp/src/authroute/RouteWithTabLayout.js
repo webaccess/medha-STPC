@@ -3,6 +3,7 @@ import { Route, Redirect } from "../../node_modules/react-router-dom";
 import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
 import * as routeConstants from "../constants/RouteConstants";
+import * as roleConstants from "../constants/RoleConstants";
 import MenuItems from "../components/SideAndTopNavBar/Component/MenuItems.js";
 import { Tabs, Tab } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -75,7 +76,7 @@ const RouteWithTabLayout = props => {
   let history = useHistory();
   const classes = useStyles();
 
-  const menu = get(MenuItems(), "Student", []);
+  const menu = get(MenuItems(), roleConstants.STUDENT, []);
 
   /**
    * Get tabs for only sub menu items from menu only for profile

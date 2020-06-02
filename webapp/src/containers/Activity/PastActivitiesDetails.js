@@ -20,6 +20,7 @@ import ReactHtmlParser from "react-html-parser";
 import useStyles from "./ActivityDetailsStyle.js";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../constants/RouteConstants";
+import * as roleConstants from "../../constants/RoleConstants";
 import Img from "react-image";
 import * as formUtilities from "../../utilities/FormUtilities.js";
 import moment from "moment";
@@ -46,18 +47,18 @@ const PastActivitiesDetails = props => {
   async function getactivityDetails() {
     let paramsForEvent = null;
     if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       paramsForEvent = props["location"]["dataForView"];
-    } else if (auth.getUserInfo().role.name === "Student") {
+    } else if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       paramsForEvent = props["location"]["dataForView"];
     }
     if (
       paramsForEvent !== null &&
       paramsForEvent !== undefined &&
-      (auth.getUserInfo().role.name === "Medha Admin" ||
-        auth.getUserInfo().role.name === "College Admin")
+      (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+        auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN)
     ) {
       await serviceProviders
         .serviceProviderForGetOneRequest(ACTIVITIES_URL, paramsForEvent)
@@ -74,14 +75,14 @@ const PastActivitiesDetails = props => {
     } else if (
       paramsForEvent !== null &&
       paramsForEvent !== undefined &&
-      auth.getUserInfo().role.name === "Student"
+      auth.getUserInfo().role.name === roleConstants.STUDENT
     ) {
       setFormState(formState => ({
         ...formState,
         activityDetails: props["location"]["dataForView"]
       }));
     } else {
-      if (auth.getUserInfo().role.name === "Student") {
+      if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
         history.push({
           pathname: routeConstants.VIEW_PAST_ACTIVITIES
         });
@@ -95,7 +96,7 @@ const PastActivitiesDetails = props => {
 
   const route = () => {
     setLoaderStatus(true);
-    if (auth.getUserInfo().role.name === "Student") {
+    if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       history.push({
         pathname: routeConstants.VIEW_PAST_ACTIVITIES
       });
@@ -243,8 +244,10 @@ const PastActivitiesDetails = props => {
                             {getDate()}
                           </Grid>
                         </Grid>
-                        {auth.getUserInfo().role.name === "Medha Admin" ||
-                        auth.getUserInfo().role.name === "College Admin" ? (
+                        {auth.getUserInfo().role.name ===
+                          roleConstants.MEDHAADMIN ||
+                        auth.getUserInfo().role.name ===
+                          roleConstants.COLLEGEADMIN ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
                               <b>Time </b>
@@ -262,7 +265,8 @@ const PastActivitiesDetails = props => {
                             {getVenue()}
                           </Grid>
                         </Grid>
-                        {auth.getUserInfo().role.name === "Student" ? (
+                        {auth.getUserInfo().role.name ===
+                        roleConstants.STUDENT ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
                               <b>Batch </b>
@@ -272,7 +276,8 @@ const PastActivitiesDetails = props => {
                             </Grid>
                           </Grid>
                         ) : null}
-                        {auth.getUserInfo().role.name === "Student" ? (
+                        {auth.getUserInfo().role.name ===
+                        roleConstants.STUDENT ? (
                           <Grid container className={classes.defaultMargin}>
                             <Grid item md={3} xs={3}>
                               <b>Timing </b>

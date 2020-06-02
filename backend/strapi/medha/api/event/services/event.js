@@ -252,16 +252,27 @@ module.exports = {
             res.answer_int;
         }
       } else {
-        finalResult[res.feedback_set.contact.id] = {
-          "College Name": res.feedback_set.contact.individual.organization
-            ? res.feedback_set.contact.individual.organization.name
-            : "",
-          "Student Name": res.feedback_set.contact.name,
-          "Roll number": res.feedback_set.contact.individual
-            ? res.feedback_set.contact.individual.roll_number
-            : "",
-          Stream: res.feedback_set.contact.individual.stream.name
-        };
+        if (role === "College Admin") {
+          finalResult[res.feedback_set.contact.id] = {
+            "College Name": res.feedback_set.contact.individual.organization
+              ? res.feedback_set.contact.individual.organization.name
+              : ""
+          };
+        } else {
+          finalResult[res.feedback_set.contact.id] = {
+            "College Name": res.feedback_set.contact.individual.organization
+              ? res.feedback_set.contact.individual.organization.name
+              : "",
+
+            "Student Name": res.feedback_set.contact.name,
+            "Roll number": res.feedback_set.contact.individual
+              ? res.feedback_set.contact.individual.roll_number
+              : "",
+            Stream: res.feedback_set.contact.individual.stream
+              ? res.feedback_set.contact.individual.stream.name
+              : ""
+          };
+        }
 
         questions.map(ques => {
           if (ques.type === "Rating") {
