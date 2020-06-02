@@ -319,7 +319,11 @@ module.exports = {
         isEducationEligible = false;
       }
 
-      if (isStreamEligible && isEducationEligible) {
+      if (
+        isStreamEligible &&
+        isEducationEligible &&
+        student.individual.is_verified
+      ) {
         filtered.push(student);
       }
     });
