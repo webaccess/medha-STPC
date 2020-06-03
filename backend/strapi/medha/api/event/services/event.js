@@ -15,7 +15,7 @@ const bookshelf = require("../../../config/config.js");
 const utils = require("../../../config/utils.js");
 
 module.exports = {
-  checkIfEventExist: async eventId => {
+  checkIfEventExist: async (ctx, eventId) => {
     const event = await strapi.query("event").findOne({ id: eventId });
     if (!event) {
       return ctx.response.notFound("Event does not exist");
@@ -129,7 +129,7 @@ module.exports = {
   },
 
   /** Gets aggregate feedback for an event for multiple conatcts and for a specific role */
-  getAggregateFeedbackForEvent: async (event, contacts, role) => {
+  getAggregateFeedbackForEvent: async (ctx, event, contacts, role) => {
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
@@ -196,7 +196,7 @@ module.exports = {
   },
 
   /** Get all comments for a particular role */
-  getAllCommentsForEvent: async (event, contacts, role) => {
+  getAllCommentsForEvent: async (ctx, event, contacts, role) => {
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
@@ -316,7 +316,7 @@ module.exports = {
     return result;
   },
 
-  getContactIdsForFeedback: async (id, role, contactIdToFind) => {
+  getContactIdsForFeedback: async (ctx, id, role, contactIdToFind) => {
     if (role === "Zonal Admin") {
       if (contactIdToFind === "college") {
         const collegeAdminIds = await strapi.plugins[

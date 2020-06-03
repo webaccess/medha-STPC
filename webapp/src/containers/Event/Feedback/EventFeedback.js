@@ -86,6 +86,7 @@ const EventFeedback = props => {
     /** showErrorModalFeedback this flag sets the error feedback modal ehich is used to dispaly the popup for error */
     showErrorModalFeedback: false,
     /** errorMessage is used to display what error needs to be shown for popup */
+    errorHeading: "",
     errorMessage: "",
 
     ratings: [],
@@ -327,14 +328,6 @@ const EventFeedback = props => {
     setSelectedRows(state.selectedRows);
   }, []);
 
-  /** View Event */
-  const viewCell = event => {
-    history.push({
-      pathname: routeConstants.VIEW_EVENT,
-      dataForView: event.target.id
-    });
-  };
-
   const selectedRowCleared = data => {
     formState.toggleCleared = data;
     setTimeout(() => {
@@ -390,7 +383,8 @@ const EventFeedback = props => {
           feedBackGiven: false,
           fromFeedBackModal: false,
           successErrorMessage: "",
-          errorMessage: "Cannot view feedback"
+          errorHeading: "View Feedback",
+          errorMessage: "No feedback available"
         }));
         setLoaderStatus(false);
         console.log("error giving feedback");
@@ -441,7 +435,8 @@ const EventFeedback = props => {
           feedBackGiven: false,
           fromFeedBackModal: false,
           successErrorMessage: "",
-          errorMessage: "Cannot view feedback"
+          errorHeading: "View Feedback",
+          errorMessage: "No feedback available"
         }));
         setLoaderStatus(false);
         console.log("error giving feedback");
@@ -491,7 +486,8 @@ const EventFeedback = props => {
           feedBackGiven: false,
           fromFeedBackModal: false,
           successErrorMessage: "",
-          errorMessage: "Cannot view feedback"
+          errorHeading: "View Feedback",
+          errorMessage: "No feedback available"
         }));
         setLoaderStatus(false);
         console.log("error giving feedback");
@@ -540,6 +536,7 @@ const EventFeedback = props => {
           feedBackGiven: false,
           fromFeedBackModal: false,
           successErrorMessage: "",
+          errorHeading: "Add Feedback",
           errorMessage: "Cannot add feedback"
         }));
         setLoaderStatus(false);
@@ -586,6 +583,7 @@ const EventFeedback = props => {
           feedBackGiven: false,
           fromFeedBackModal: false,
           successErrorMessage: "",
+          errorHeading: "Edit Feedback",
           errorMessage: "Cannot edit feedback"
         }));
         setLoaderStatus(false);
@@ -935,7 +933,7 @@ const EventFeedback = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Manage Events
+          Event Feedback
         </Typography>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
@@ -1148,6 +1146,7 @@ const EventFeedback = props => {
               showModal={feedbackState.showErrorModalFeedback}
               modalClose={handleCloseModal}
               Title={feedbackState.EventTitle}
+              errorHeading={"View Feedback"}
               errorMessage={feedbackState.errorMessage}
             />
           ) : null}
