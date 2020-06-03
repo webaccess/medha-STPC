@@ -150,9 +150,9 @@ const StudentProfile = props => {
                   ? data.contact.user.email
                   : ""
                 : "",
-              state: data.contact.user
-                ? data.contact.user.state
-                  ? data.contact.user.state.name
+              state: data.contact
+                ? data.contact.state
+                  ? data.contact.state.name
                   : ""
                 : "",
               college: data.organization.name,
