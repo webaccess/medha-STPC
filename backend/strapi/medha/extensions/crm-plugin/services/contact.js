@@ -53,23 +53,6 @@ module.exports = {
   getEventsForRpc: async (contact, events) => {
     const filtered = events.filter(event => {
       const { contacts, rpc, zone, state } = event;
-
-      /**
-       * Since colleges might be empty array
-       * If Event has particular colleges then filter by colleges
-       * If Event has RPC and Zone then get student college's RPC and Zone
-       * If Event has either RPC or Zone then get student college's RPC or Zone
-       *
-       *
-       * TODO:
-       * Since college don't have state attribute in their schema we need to filter state either
-       * from RPC or Zone
-       * Currently we only have one state so we are returning event directly
-       * since it won't affect response
-       * But when we have case where we have more than 1 state then in that case we'll filter
-       * state either from rpc or zone from college
-       */
-
       const isCollegesExist = contacts.length > 0 ? true : false;
       const isRPCExist = rpc && Object.keys(rpc).length > 0 ? true : false;
       const isZoneExist = zone && Object.keys(zone).length > 0 ? true : false;
@@ -81,6 +64,29 @@ module.exports = {
       } else if (isRPCExist) {
         if (rpc.id == contact.id) return event;
       } else if (!isRPCExist && isZoneExist) {
+        return null;
+      } else {
+        return event;
+      }
+    });
+
+    return filtered;
+  },
+
+  getEventsForZone: async (contact, events) => {
+    const filtered = events.filter(event => {
+      const { contacts, rpc, zone, state } = event;
+      const isCollegesExist = contacts.length > 0 ? true : false;
+      const isRPCExist = rpc && Object.keys(rpc).length > 0 ? true : false;
+      const isZoneExist = zone && Object.keys(zone).length > 0 ? true : false;
+      const isStateExist =
+        state && Object.keys(state).length > 0 ? true : false;
+
+      if (isStateExist && !isRPCExist && !isZoneExist && !isCollegesExist) {
+        if (state.id == contact.state) return event;
+      } else if (isZoneExist) {
+        if (zone.id == contact.id) return event;
+      } else if (!isZoneExist && isRPCExist) {
         return null;
       } else {
         return event;
@@ -118,6 +124,38 @@ module.exports = {
       )
       .map(user => user.id);
     return userIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all student for given college id
+   */
+  getAllRpcs: async () => {
+    const rpcRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "RPC Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: rpcRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response.map(user => user.id);
+
+    let rpcAdmins = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const rpcAdminIds = rpcAdmins.map(user => {
+      return user.id;
+    });
+
+    return rpcAdminIds;
   },
 
   /**
@@ -182,6 +220,40 @@ module.exports = {
    *
    * Get all college admin for given college id
    */
+  getZoneAdmins: async zoneId => {
+    const zoneRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Zonal Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: zoneRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(user => user.zone == zoneId)
+      .map(user => user.id);
+
+    let zonalAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const zonalAdminIds = zonalAdminContacts.map(user => {
+      return user.id;
+    });
+
+    return zonalAdminIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all college admin for given rpc id
+   */
   getCollegeAdminsFromRPC: async rpcId => {
     const collegeRole = await strapi
       .query("role", "users-permissions")
@@ -200,6 +272,40 @@ module.exports = {
       .map(user => user.id);
 
     return userIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all college admin for given zone id
+   */
+  getCollegeAdminsFromZone: async zoneId => {
+    const collegeRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: collegeRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(user => user.zone == zoneId)
+      .map(user => user.id);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const collegeAdminContactIds = collegeAdminContacts.map(user => {
+      return user.id;
+    });
+
+    return collegeAdminContactIds;
   },
 
   /**

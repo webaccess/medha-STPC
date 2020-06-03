@@ -1331,6 +1331,18 @@ const ManageEvent = props => {
               id={feedbackState.eventId}
               fromEvent={true}
               fromActivity={false}
+              fromRPC={false}
+              fromZone={false}
+              fromCollegeAdmin={
+                auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+                  ? true
+                  : false
+              }
+              fromMedhaAdmin={
+                auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
+                  ? true
+                  : false
+              }
               dataToShow={feedbackState.ratings}
             />
           ) : null}

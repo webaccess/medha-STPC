@@ -101,7 +101,8 @@ const EventFeedback = props => {
     /** questionSetId is while adding/editng */
     questionSetId: null,
     /** feedbackSetId is used while editing to identify where to store data against which feedback. */
-    feedbackSetId: null
+    feedbackSetId: null,
+    dataFor: ""
   });
 
   useEffect(() => {
@@ -150,17 +151,14 @@ const EventFeedback = props => {
     }));
     if (auth.getUserInfo().role !== null) {
       if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
-        const EVENTS_FOR_COLLEGE_ADMIN =
+        const EVENTS_FOR_RPC_ADMIN =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_CONTACTS +
           "/" +
           auth.getUserInfo().rpc.id +
           "/get-rpc-events";
         await serviceProviders
-          .serviceProviderForGetRequest(
-            EVENTS_FOR_COLLEGE_ADMIN,
-            paramsForEvents
-          )
+          .serviceProviderForGetRequest(EVENTS_FOR_RPC_ADMIN, paramsForEvents)
           .then(res => {
             formState.dataToShow = [];
             formState.tempData = [];
@@ -182,8 +180,14 @@ const EventFeedback = props => {
             console.log("error", error);
           });
       } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+        const EVENTS_FOR_ZONAL_ADMIN =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_CONTACTS +
+          "/" +
+          auth.getUserInfo().zone.id +
+          "/get-zone-events";
         await serviceProviders
-          .serviceProviderForGetRequest(EVENT_URL, paramsForEvents)
+          .serviceProviderForGetRequest(EVENTS_FOR_ZONAL_ADMIN, paramsForEvents)
           .then(res => {
             formState.dataToShow = [];
             formState.tempData = [];
@@ -227,9 +231,6 @@ const EventFeedback = props => {
         eventIndividualData["end_date_time"] = endDate.toDateString();
 
         /** Several feedback flags are taken form the response itself  */
-        /** Can college admin view feedback */
-        eventIndividualData["isFeedbackFromCollegePresent"] =
-          data[i]["isFeedbackFromCollegePresent"];
 
         /** can a college admin add/edit/cannot give feedback */
 
@@ -242,18 +243,38 @@ const EventFeedback = props => {
         eventIndividualData["cannotGiveFeedback"] = false;
         eventIndividualData["feedbackId"] = data[i]["feedbackSetId"];
 
-        if (data[i]["question_set"] && !data[i]["isFeedbackProvidedbyRPC"]) {
-          eventIndividualData["giveFeedback"] = true;
-        } else if (
-          data[i]["question_set"] &&
-          data[i]["isFeedbackProvidedbyRPC"]
-        ) {
-          eventIndividualData["editFeedback"] = true;
-        } else if (!data[i]["question_set"]) {
-          eventIndividualData["cannotGiveFeedback"] = true;
+        if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+          /** Can college admin view feedback */
+          eventIndividualData["isFeedbackFromCollegePresent"] =
+            data[i]["isFeedbackFromCollegePresent"];
+
+          if (data[i]["question_set"] && !data[i]["isFeedbackProvidedbyRPC"]) {
+            eventIndividualData["giveFeedback"] = true;
+          } else if (
+            data[i]["question_set"] &&
+            data[i]["isFeedbackProvidedbyRPC"]
+          ) {
+            eventIndividualData["editFeedback"] = true;
+          } else if (!data[i]["question_set"]) {
+            eventIndividualData["cannotGiveFeedback"] = true;
+          } else {
+            eventIndividualData["cannotGiveFeedback"] = true;
+          }
         } else {
-          eventIndividualData["cannotGiveFeedback"] = true;
+          if (data[i]["question_set"] && !data[i]["isFeedbackProvidedbyZone"]) {
+            eventIndividualData["giveFeedback"] = true;
+          } else if (
+            data[i]["question_set"] &&
+            data[i]["isFeedbackProvidedbyZone"]
+          ) {
+            eventIndividualData["editFeedback"] = true;
+          } else if (!data[i]["question_set"]) {
+            eventIndividualData["cannotGiveFeedback"] = true;
+          } else {
+            eventIndividualData["cannotGiveFeedback"] = true;
+          }
         }
+
         x.push(eventIndividualData);
       }
       return x;
@@ -353,6 +374,107 @@ const EventFeedback = props => {
           successErrorMessage: "",
           ratings: res.data.result,
           showErrorModalFeedback: false
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          showAddEditModalFeedback: false,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          EventTitle: cell.title,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot view feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
+  /** For Viewing feedback for Zonal Admin feedback */
+  const viewCollegeFeedback = async cell => {
+    setLoaderStatus(true);
+    const ZONE_COLLEGE_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getFeedbackForZone/" +
+      auth.getUserInfo().zone.id +
+      "/DataFor/college/FeedbackType/rating";
+    await serviceProviders
+      .serviceProviderForGetRequest(ZONE_COLLEGE_FEEDBACK)
+      .then(res => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          isViewFeedback: true,
+          isEditFeedback: false,
+          isGiveFeedback: false,
+          showModalFeedback: true,
+          EventTitle: cell.title,
+          eventId: cell.id,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          ratings: res.data.result,
+          showErrorModalFeedback: false,
+          dataFor: "college"
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          showAddEditModalFeedback: false,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          EventTitle: cell.title,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot view feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
+  const viewRPCFeedback = async cell => {
+    setLoaderStatus(true);
+    const ZONE_COLLEGE_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getFeedbackForZone/" +
+      auth.getUserInfo().zone.id +
+      "/DataFor/rpc/FeedbackType/rating";
+    await serviceProviders
+      .serviceProviderForGetRequest(ZONE_COLLEGE_FEEDBACK)
+      .then(res => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          isViewFeedback: true,
+          isEditFeedback: false,
+          isGiveFeedback: false,
+          showModalFeedback: true,
+          EventTitle: cell.title,
+          eventId: cell.id,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          ratings: res.data.result,
+          showErrorModalFeedback: false,
+          dataFor: "rpc"
         }));
         setLoaderStatus(false);
       })
@@ -670,7 +792,8 @@ const EventFeedback = props => {
       isEditFeedback: false,
       isViewFeedback: false,
       feedBackGiven: false,
-      fromFeedBackModal: false
+      fromFeedBackModal: false,
+      dataFor: ""
     }));
   };
 
@@ -699,6 +822,7 @@ const EventFeedback = props => {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
+          {/** For RPC */}
           {auth.getUserInfo().role.name === roleConstants.RPCADMIN ? (
             cell.isFeedbackFromCollegePresent ? (
               <div className={classes.PaddingActionButton}>
@@ -735,7 +859,32 @@ const EventFeedback = props => {
             )
           ) : null}
 
-          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ? (
+          {/** For Zone */}
+          {auth.getUserInfo().role.name === roleConstants.ZONALADMIN ? (
+            <React.Fragment>
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  message={"View College feedback"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => viewCollegeFeedback(cell)}
+                />
+              </div>
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  message={"View RPC feedback"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => viewRPCFeedback(cell)}
+                />
+              </div>
+            </React.Fragment>
+          ) : null}
+
+          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+          auth.getUserInfo().role.name === roleConstants.ZONALADMIN ? (
             cell.giveFeedback ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
@@ -951,7 +1100,17 @@ const EventFeedback = props => {
               id={feedbackState.eventId}
               fromEvent={true}
               fromActivity={false}
-              fromRPC={true}
+              fromRPC={
+                auth.getUserInfo().role.name === roleConstants.RPCADMIN
+                  ? true
+                  : false
+              }
+              fromZone={
+                auth.getUserInfo().role.name === roleConstants.ZONALADMIN
+                  ? true
+                  : false
+              }
+              dataFor={feedbackState.dataFor}
               dataToShow={feedbackState.ratings}
             />
           ) : null}

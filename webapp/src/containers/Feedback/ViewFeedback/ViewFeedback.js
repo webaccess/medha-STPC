@@ -83,6 +83,28 @@ const ViewFeedBack = props => {
         auth.getUserInfo().studentInfo.organization.contact.id +
         "/getStudentsCommentsForFeedbacks";
       sheetName = "Student Feedback";
+    } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+      if (props.dataFor === "college") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getFeedbackForZone/" +
+          auth.getUserInfo().zone.id +
+          "/DataFor/college/FeedbackType/comment";
+        sheetName = "College Feedback";
+      } else if (props.dataFor === "rpc") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getFeedbackForZone/" +
+          auth.getUserInfo().zone.id +
+          "/DataFor/rpc/FeedbackType/comment";
+        sheetName = "RPC Feedback";
+      }
     }
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
@@ -141,96 +163,146 @@ const ViewFeedBack = props => {
                     </Typography>
                   </Grid>
                   <Card>
-                    <div className={classes.edit_dialog}>
-                      <CardContent>
-                        <Grid item xs={12} md={12}>
-                          <Typography
-                            variant="h5"
-                            gutterBottom
-                            color="textSecondary"
-                          >
-                            {props.fromRPC
-                              ? `Feedback given by ${formState.dataToShow.total} colleges`
-                              : `Feedback given by ${formState.dataToShow.total} students`}
-                          </Typography>
-                          <div style={{ overflow: "auto" }}>
-                            {formState.dataToShow.ratings.length !== 0 ? (
-                              <CardContent>
-                                <Grid item xs={12} md={12}>
-                                  <div style={{ overflow: "auto" }}>
-                                    <TableContainer
-                                      className={classes.container}
-                                      component={Paper}
-                                    >
-                                      <div
-                                        style={{
-                                          overflow: "auto",
-                                          height: "200px"
-                                        }}
+                    {formState.dataToShow !== undefined &&
+                    formState.dataToShow !== null &&
+                    formState.dataToShow.length !== 0 ? (
+                      <div className={classes.edit_dialog}>
+                        <CardContent>
+                          <Grid item xs={12} md={12}>
+                            <Typography
+                              variant="h5"
+                              gutterBottom
+                              color="textSecondary"
+                            >
+                              {props.fromCollegeAdmin
+                                ? `Feedback given by ${formState.dataToShow.total} students`
+                                : null}
+                              {props.fromRPC
+                                ? `Feedback given by ${formState.dataToShow.total} colleges`
+                                : null}
+                              {props.fromZone && props.dataFor === "college"
+                                ? `Feedback given by ${formState.dataToShow.total} colleges`
+                                : null}
+                              {props.fromZone && props.dataFor === "rpc"
+                                ? `Feedback given by ${formState.dataToShow.total} RPCs`
+                                : null}
+                            </Typography>
+                            <div style={{ overflow: "auto" }}>
+                              {formState.dataToShow.ratings.length !== 0 ? (
+                                <CardContent>
+                                  <Grid item xs={12} md={12}>
+                                    <div style={{ overflow: "auto" }}>
+                                      <TableContainer
+                                        className={classes.container}
+                                        component={Paper}
                                       >
-                                        {formState.dataToShow.ratings.map(
-                                          row => (
-                                            <TableRow key={row.id}>
-                                              <React.Fragment>
-                                                <TableCell
-                                                  component="th"
-                                                  scope="row"
-                                                >
-                                                  {row.title}
-                                                </TableCell>
-                                                <TableCell align="right">
-                                                  <Rating
-                                                    name={row.id}
-                                                    precision={1}
-                                                    value={row.result}
-                                                    readOnly
-                                                  />
-                                                </TableCell>
-                                              </React.Fragment>
-                                            </TableRow>
-                                          )
-                                        )}
-                                      </div>
-                                    </TableContainer>
-                                  </div>
-                                </Grid>
-                              </CardContent>
-                            ) : null}
-                          </div>
-                        </Grid>
-                      </CardContent>
-                      <Grid item xs={12}>
-                        <Grid
-                          container
-                          direction="row"
-                          justify="flex-end"
-                          alignItems="center"
-                          spacing={2}
-                        >
-                          <Grid item>
-                            <GreenButton
-                              variant="contained"
-                              color="secondary"
-                              startIcon={<GetAppIcon />}
-                              onClick={e => getComments()}
-                              greenButtonChecker={formState.greenButtonChecker}
-                            >
-                              Download
-                            </GreenButton>
+                                        <div
+                                          style={{
+                                            overflow: "auto",
+                                            height: "200px"
+                                          }}
+                                        >
+                                          {formState.dataToShow.ratings.map(
+                                            row => (
+                                              <TableRow key={row.id}>
+                                                <React.Fragment>
+                                                  <TableCell
+                                                    component="th"
+                                                    scope="row"
+                                                  >
+                                                    {row.title}
+                                                  </TableCell>
+                                                  <TableCell align="right">
+                                                    <Rating
+                                                      name={row.id}
+                                                      precision={1}
+                                                      value={row.result}
+                                                      readOnly
+                                                    />
+                                                  </TableCell>
+                                                </React.Fragment>
+                                              </TableRow>
+                                            )
+                                          )}
+                                        </div>
+                                      </TableContainer>
+                                    </div>
+                                  </Grid>
+                                </CardContent>
+                              ) : null}
+                            </div>
                           </Grid>
-                          <Grid item>
-                            <GrayButton
-                              type="submit"
-                              color="primary"
-                              variant="contained"
-                              onClick={handleClose}
-                            >
-                              CLOSE
-                            </GrayButton>
+                        </CardContent>
+                        <Grid item xs={12}>
+                          <Grid
+                            container
+                            direction="row"
+                            justify="flex-end"
+                            alignItems="center"
+                            spacing={2}
+                          >
+                            <Grid item>
+                              <GreenButton
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<GetAppIcon />}
+                                onClick={e => getComments()}
+                                greenButtonChecker={
+                                  formState.greenButtonChecker
+                                }
+                              >
+                                Download
+                              </GreenButton>
+                            </Grid>
+                            <Grid item>
+                              <GrayButton
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                onClick={handleClose}
+                              >
+                                CLOSE
+                              </GrayButton>
+                            </Grid>
                           </Grid>
                         </Grid>
-                      </Grid>
-                    </div>
+                      </div>
+                    ) : (
+                      <div className={classes.edit_dialog}>
+                        <CardContent>
+                          <Grid item xs={12} md={12}>
+                            <Typography
+                              variant="h5"
+                              gutterBottom
+                              color="textSecondary"
+                            >
+                              No feedback available
+                            </Typography>
+                          </Grid>
+                        </CardContent>
+
+                        <Grid item xs={12}>
+                          <Grid
+                            container
+                            direction="row"
+                            justify="flex-end"
+                            alignItems="center"
+                            spacing={2}
+                          >
+                            <Grid item>
+                              <GrayButton
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                onClick={handleClose}
+                              >
+                                CLOSE
+                              </GrayButton>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </div>
+                    )}
                   </Card>
                 </Grid>
               </Grid>

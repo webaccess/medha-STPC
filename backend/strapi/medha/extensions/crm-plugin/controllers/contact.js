@@ -1424,6 +1424,77 @@ module.exports = {
   },
 
   /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async zoneEvents(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /** This checks college using contact id */
+    const zone = await strapi.query("zone").findOne({ id }, []);
+    if (!zone) {
+      return ctx.response.notFound("Zone does not exist");
+    }
+
+    /** This gets contact id of the logged in user */
+    const { contact } = ctx.state.user;
+
+    /** This gets contact ids of all zonal admins */
+    const zonalAdmins = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getZoneAdmins(id);
+
+    /** Get actual event data */
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    /**
+     * Get all events
+     */
+    const filtered = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getEventsForZone(zone, events);
+
+    await utils.asyncForEach(filtered, async event => {
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: zonalAdmins,
+            question_set: event.question_set.id
+          });
+
+        if (checkFeedbackForTheEventPresent.length) {
+          event.isFeedbackProvidedbyZone = true;
+          event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+        } else {
+          event.isFeedbackProvidedbyZone = false;
+          event.feedbackSetId = null;
+        }
+      } else {
+        event.isFeedbackProvidedbyZone = false;
+        event.feedbackSetId = null;
+        event.isFeedbackFromCollegePresent = false;
+        event.isFeedbackFromRPCPresent = false;
+      }
+    });
+
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
+  },
+
+  /**
    * Registered events info
    *
    */
