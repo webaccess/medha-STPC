@@ -21,7 +21,7 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import LoaderContext from "../../../context/LoaderContext";
 
-const ACTIVITY_BATCH_STUDENT_FILTER = "name.id";
+const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
 
 const AddEditActivityBatches = props => {

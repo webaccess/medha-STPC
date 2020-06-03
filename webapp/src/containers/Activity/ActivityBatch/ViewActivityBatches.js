@@ -33,7 +33,7 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
 
-const ACTIVITY_BATCH_FILTER = "name.contains";
+const ACTIVITY_BATCH_FILTER = "name_contains";
 
 const ViewActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
