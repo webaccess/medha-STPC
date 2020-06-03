@@ -116,7 +116,7 @@ const ViewFeedBack = props => {
         };
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, "Feedback" + fileExtension);
+        FileSaver.saveAs(data, props.Title + fileExtension);
         setLoaderStatus(false);
       })
       .catch(error => {

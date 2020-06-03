@@ -1467,6 +1467,7 @@ module.exports = {
 
     await utils.asyncForEach(filtered, async event => {
       if (event.question_set) {
+        /** Check data for zonal admins */
         const checkFeedbackForTheEventPresent = await strapi
           .query("feedback-set")
           .find({

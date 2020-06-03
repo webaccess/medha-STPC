@@ -379,6 +379,7 @@ module.exports = {
 
     /**------------------------------------------------ */
     let feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+      ctx,
       event,
       students_contact_id,
       "Student"
@@ -434,6 +435,7 @@ module.exports = {
 
     /**------------------------------------------------ */
     let feedbackData = await strapi.services.event.getAllCommentsForEvent(
+      ctx,
       event,
       students_contact_id,
       "Student"
@@ -486,6 +488,7 @@ module.exports = {
 
     /**------------------------------------------------ */
     let feedbackData = await strapi.services.event.getAllCommentsForEvent(
+      ctx,
       event,
       collegeAdminsIds,
       "College Admin"
@@ -538,6 +541,7 @@ module.exports = {
 
     /**------------------------------------------------ */
     let feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+      ctx,
       event,
       collegeAdminsIds,
       "College Admin"
@@ -549,7 +553,7 @@ module.exports = {
     const { eventId, zoneId, dataFor, feedbackType } = ctx.params;
 
     /** Steps to check if event is present */
-    const event = await strapi.services.event.checkIfEventExist(eventId);
+    const event = await strapi.services.event.checkIfEventExist(ctx, eventId);
 
     /** Steps to check if feedback exist for that event */
     const checkIfFeedbackPresent = await strapi
@@ -567,18 +571,21 @@ module.exports = {
     if (dataFor === "college") {
       /** This gets contact ids of all the college admins under the RPC*/
       const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+        ctx,
         zoneId,
         "Zonal Admin",
         "college"
       );
       if (feedbackType === "rating") {
         feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          ctx,
           event,
           collegeAdminIds,
           "College Admin"
         );
       } else if (feedbackType === "comment") {
         feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          ctx,
           event,
           collegeAdminIds,
           "College Admin"
@@ -587,18 +594,21 @@ module.exports = {
     } else if (dataFor === "rpc") {
       /** This gets contact ids of all the college admins under the RPC*/
       const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+        ctx,
         zoneId,
         "Zonal Admin",
         "rpc"
       );
       if (feedbackType === "rating") {
         feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          ctx,
           event,
           rpcAdmins,
           "RPC Admin"
         );
       } else if (feedbackType === "comment") {
         feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          ctx,
           event,
           rpcAdmins,
           "RPC Admin"
