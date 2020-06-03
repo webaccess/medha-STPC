@@ -38,3 +38,4 @@ export { default as StickyFooter } from "./StickyFooter";
 export { default as PastEventStatus } from "./PastEventStatus";
 export { default as ThumbsUpDownIcon } from "./ThumbsUpDownIcon";
 export { default as FeedBack } from "./FeedBack";
+export { default as RetryIcon } from "./RetryIcon";

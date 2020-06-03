@@ -109,6 +109,7 @@ export const QUALIFICATIONANDPERCENTAGE = "Qualification and Percentage";
 
 /**Import */
 export const STUDENTS_IMPORT = "Import Students";
+export const STUDENT_IMPORT_SUMMARY = "Import Summary";
 
 /**FeedBack */
 export const ADD_FEEDBACK = "Feedback";

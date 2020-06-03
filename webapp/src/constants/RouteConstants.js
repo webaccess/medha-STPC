@@ -27,6 +27,7 @@ export const PROFILE = "/profile";
 export const VIEW_PAST_ACTIVITIES = "/past-activities";
 export const VIEW_PAST_EVENTS = "/past-events";
 export const IMPORT_STUDENTS = "/import-students";
+export const IMPORT_SUMMARY = "/import-summary";
 
 export const ADD_STUDENT_FROM_COLLEGE_ADMIN = "/college-add-student";
 export const EDIT_STUDENT_FROM_COLLEGE_ADMIN = "/college-edit-student";

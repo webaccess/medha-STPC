@@ -96,6 +96,7 @@ import PastActivitiesDetails from "./containers/Activity/PastActivitiesDetails";
 
 /** Import */
 import StudentsImport from "./containers/Import/StudentsImport/StudentsImport";
+import SummaryReport from "./containers/Import/StudentsImport/SummaryReport";
 
 /** FeedBack */
 import AddEditFeedBack from "./containers/Feedback/AddFeedback/AddFeedback";
@@ -505,6 +506,13 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.IMPORT_STUDENTS}
+        />
+
+        <CollegeAdminRoute
+          component={SummaryReport}
+          exact
+          layout={Layout}
+          path={routeConstants.IMPORT_SUMMARY}
         />
 
         {/* Activities */}

@@ -1,47 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 import { Card, CardContent, Grid, Typography } from "@material-ui/core";
-
 import useStyles from "./ImportStyles";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as genericConstants from "../../../constants/GenericConstants";
 import { Table, YellowButton } from "../../../components";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-
-import XLSX from "xlsx";
+import { useHistory } from "react-router-dom";
+import * as routeConstants from "../../../constants/RouteConstants";
 
 const PreviewAndImport = props => {
   const classes = useStyles();
-
-  const [isLoading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    previewData();
-  }, ["props.id"]);
-
-  const previewData = () => {
-    const { id } = props;
-    const PREVIEW =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_STUDENT_IMPORT_CSV +
-      `/${id}/preview`;
-
-    serviceProviders
-      .serviceProviderForGetRequest(PREVIEW)
-      .then(({ data }) => {
-        setData(data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
+  const history = useHistory();
 
   const handleStudentImport = () => {
     props.loading(true);
-    const { id } = props;
+    const { id } = props.data;
     const IMPORT_URL =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_STUDENT_IMPORT_CSV +
@@ -53,38 +28,10 @@ const PreviewAndImport = props => {
         props.loading(false);
         props.closeModal();
         props.clear();
-        if (data.length) {
-          props.alert(true, "warning", "Not all students were imported");
-          let wb = XLSX.utils.book_new();
-
-          /**
-           * Create worksheet for every batch
-           * Add students list for respective batch
-           */
-          const headers = [
-            "Name",
-            "Gender",
-            "DOB",
-            "Contact Number",
-            "Alternate Contact",
-            "Stream",
-            "Address",
-            "State",
-            "District",
-            "Email",
-            "Qualification",
-            "Stream",
-            "Error"
-          ];
-          let workSheetName = "Users";
-          let ws = XLSX.utils.json_to_sheet(data, ...headers);
-          wb.SheetNames.push(workSheetName);
-          wb.Sheets[workSheetName] = ws;
-
-          XLSX.writeFile(wb, "students.csv", { bookType: "csv" });
-        } else {
-          props.alert(true, "success", "Student import was successful");
-        }
+        history.push({
+          pathname: routeConstants.IMPORT_SUMMARY,
+          data
+        });
       })
       .catch(error => {
         props.loading(false);
@@ -172,10 +119,9 @@ const PreviewAndImport = props => {
               <Grid>
                 <Grid item xs={12} className={classes.formgrid}>
                   <Table
-                    data={data}
+                    data={props.data.tableData}
                     column={columns}
                     defaultSortField="name"
-                    progressPending={isLoading}
                     noDataComponent="No Student Details to preview"
                     pagination={false}
                     selectableRows={false}
