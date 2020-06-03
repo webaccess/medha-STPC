@@ -23,6 +23,7 @@ import {
 import * as formUtilities from "../../../utilities/FormUtilities";
 import auth from "../../../components/Auth";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProviders from "../../../api/Axios";
 import moment from "moment";
 import * as genericConstants from "../../../constants/GenericConstants";
@@ -64,11 +65,14 @@ const ViewPastEvent = props => {
     EventTitle: null,
     eventId: null,
     isGiveFeedback: false,
+    isEditFeedback: false,
     entityQuestionSet: [],
     questionSetId: null,
+    feedbackSetId: null,
     feedBackGiven: false,
     fromFeedBackModal: false,
-    successErrorMessage: ""
+    successErrorMessage: "",
+    errorMessage: ""
   });
 
   useEffect(() => {
@@ -115,7 +119,8 @@ const ViewPastEvent = props => {
     }
 
     const studentInfo =
-      auth.getUserInfo() !== null && auth.getUserInfo().role.name === "Student"
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role.name === roleConstants.STUDENT
         ? auth.getUserInfo().studentInfo.contact.id
         : auth.getStudentIdFromCollegeAdmin();
 
@@ -131,8 +136,8 @@ const ViewPastEvent = props => {
       (auth.getUserInfo() !== null &&
         auth.getUserInfo().role !== null &&
         auth.getUserInfo().role.name !== null &&
-        auth.getUserInfo().role.name === "Student") ||
-      auth.getUserInfo().role.name === "College Admin"
+        auth.getUserInfo().role.name === roleConstants.STUDENT) ||
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       setFormState(formState => ({
         ...formState,
@@ -188,12 +193,30 @@ const ViewPastEvent = props => {
           "start_date_time"
         ] = startDate.toDateString();
         tempIndividualPastEventData["end_date_time"] = endDate.toDateString();
-        tempIndividualPastEventData["status"] = data[i]["hasAttended"];
-        tempIndividualPastEventData["isFeedbackProvided"] =
-          data[i]["isFeedbackProvided"];
-        tempIndividualPastEventData["isQuestionSetAvailable"] =
-          data[i]["question_set"];
+        tempIndividualPastEventData["hasAttended"] = data[i]["hasAttended"];
 
+        tempIndividualPastEventData["giveFeedback"] = false;
+        tempIndividualPastEventData["editFeedback"] = false;
+        tempIndividualPastEventData["cannotGiveFeedback"] = false;
+        tempIndividualPastEventData["feedbackId"] = data[i]["feedbackSetId"];
+
+        if (
+          data[i]["hasAttended"] &&
+          data[i]["question_set"] &&
+          !data[i]["isFeedbackProvided"]
+        ) {
+          tempIndividualPastEventData["giveFeedback"] = true;
+        } else if (
+          data[i]["hasAttended"] &&
+          data[i]["question_set"] &&
+          data[i]["isFeedbackProvided"]
+        ) {
+          tempIndividualPastEventData["editFeedback"] = true;
+        } else if (!data[i]["hasAttended"] || !data[i]["question_set"]) {
+          tempIndividualPastEventData["cannotGiveFeedback"] = true;
+        } else {
+          tempIndividualPastEventData["cannotGiveFeedback"] = true;
+        }
         pastEventDataArray.push(tempIndividualPastEventData);
       }
       return pastEventDataArray;
@@ -372,8 +395,8 @@ const ViewPastEvent = props => {
     getStatusFilterData();
   };
 
+  /** Give feedback */
   const giveFeedback = async event => {
-    setOpen(true);
     setLoaderStatus(true);
     const QUESTION_SET_URL =
       strapiConstants.STRAPI_DB_URL +
@@ -391,6 +414,7 @@ const ViewPastEvent = props => {
           EventTitle: event.eventName,
           eventId: event.id,
           isGiveFeedback: true,
+          isEditFeedback: false,
           showErrorModalFeedback: false,
           entityQuestionSet: res.data.result.questions,
           questionSetId: res.data.result.id,
@@ -406,10 +430,55 @@ const ViewPastEvent = props => {
           showModalFeedback: false,
           showErrorModalFeedback: true,
           EventTitle: event.eventName,
+          isEditFeedback: false,
           isGiveFeedback: false,
           feedBackGiven: false,
           fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot give feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
+  /** Edit feedback */
+  const editFeedback = async event => {
+    setLoaderStatus(true);
+    const FEEDBACK_SET_URL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    await serviceProviders
+      .serviceProviderForGetOneRequest(FEEDBACK_SET_URL, event.feedbackId)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: true,
+          EventTitle: event.eventName,
+          eventId: event.id,
+          isGiveFeedback: false,
+          isEditFeedback: true,
+          showErrorModalFeedback: false,
+          feedbackSetId: event.feedbackId,
+          questionSetId: res.data.result.question_set.id,
+          entityQuestionSet: res.data.result.questions,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
           successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          EventTitle: event.eventName,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot edit feedback"
         }));
         setLoaderStatus(false);
         console.log("error giving feedback");
@@ -442,33 +511,43 @@ const ViewPastEvent = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            <PastEventStatus style={cell.status} />
+            <PastEventStatus style={cell.hasAttended} />
           </div>
-          {cell.status &&
-          !cell.isFeedbackProvided &&
-          cell.isQuestionSetAvailable ? (
+          {cell.giveFeedback ? (
             <div className={classes.PaddingActionButton}>
               <FeedBack
                 isGiveFeedback={true}
+                isEditFeedback={false}
+                cannotGiveFeedback={false}
                 id={cell.id}
                 value={cell.eventName}
                 onClick={() => giveFeedback(cell)}
               />
             </div>
-          ) : (
+          ) : cell.editFeedback ? (
             <div className={classes.PaddingActionButton}>
               <FeedBack
-                isGiveFeedback={true}
-                // hasAttended={cell.status}
-                // isFeedbackProvided={cell.isFeedbackProvided}
-                // isQuestionSetAvailable={cell.isQuestionSetAvailable}
+                isGiveFeedback={false}
+                isEditFeedback={true}
+                cannotGiveFeedback={false}
                 id={cell.id}
                 value={cell.eventName}
+                onClick={() => editFeedback(cell)}
+              />
+            </div>
+          ) : cell.cannotGiveFeedback ? (
+            <div className={classes.PaddingActionButton}>
+              <FeedBack
+                isGiveFeedback={false}
+                isEditFeedback={false}
+                cannotGiveFeedback={true}
                 isdisabled={true}
-                onClick={() => giveFeedback(cell)}
+                id={cell.id}
+                value={cell.eventName}
+                onClick={() => {}}
               />
             </div>
-          )}
+          ) : null}
         </div>
       )
     }
@@ -488,6 +567,7 @@ const ViewPastEvent = props => {
         EventTitle: null,
         eventId: null,
         isGiveFeedback: false,
+        isEditFeedback: false,
         fromFeedBackModal: false,
         feedBackGiven: false,
         successErrorMessage: ""
@@ -501,6 +581,7 @@ const ViewPastEvent = props => {
           EventTitle: null,
           eventId: null,
           isGiveFeedback: false,
+          isEditFeedback: false,
           fromFeedBackModal: true,
           feedBackGiven: true,
           successErrorMessage: message
@@ -518,6 +599,7 @@ const ViewPastEvent = props => {
           EventTitle: null,
           eventId: null,
           isGiveFeedback: false,
+          isEditFeedback: false,
           fromFeedBackModal: true,
           feedBackGiven: false,
           successErrorMessage: message
@@ -724,6 +806,7 @@ const ViewPastEvent = props => {
           )}
           {formState.isGiveFeedback ? (
             <AddEditFeedBack
+              isAddFeedback={true}
               showModal={formState.showModalFeedback}
               modalClose={handleCloseFeedBackModal}
               Title={formState.EventTitle}
@@ -733,14 +816,29 @@ const ViewPastEvent = props => {
               fromEvent={true}
               fromActivity={false}
             />
+          ) : formState.isEditFeedback ? (
+            <AddEditFeedBack
+              isEditFeedback={true}
+              showModal={formState.showModalFeedback}
+              modalClose={handleCloseFeedBackModal}
+              Title={formState.EventTitle}
+              id={formState.eventId}
+              entityQuestionSet={formState.entityQuestionSet}
+              questionSetId={formState.questionSetId}
+              feedbackSetId={formState.feedbackSetId}
+              fromEvent={true}
+              fromActivity={false}
+            />
           ) : null}
           {!formState.isGiveFeedback &&
+          !formState.isEditFeedback &&
           !formState.showModalFeedback &&
           formState.showErrorModalFeedback ? (
             <NoFeedback
               showModal={formState.showErrorModalFeedback}
               modalClose={handleCloseModal}
               Title={formState.EventTitle}
+              errorMessage={formState.errorMessage}
             />
           ) : null}
           {/* Action button component */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 import useStyles from "../../../ContainerStyles/ManagePageStyles";
 import * as serviceProviders from "../../../../api/Axios";
 import * as strapiConstants from "../../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../../constants/RoleConstants";
 import {
   Table,
   Spinner,
@@ -140,7 +141,7 @@ const ManageStudents = props => {
       };
     }
     if (
-      auth.getUserInfo().role.name === "College Admin" &&
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
       auth.getUserInfo().studentInfo.organization !== null &&
       auth.getUserInfo().studentInfo.organization.id !== null
     ) {

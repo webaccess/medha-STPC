@@ -6,22 +6,10 @@
 
 module.exports = async (ctx, next) => {
   // Add your own logic here.
-  console.log("In addAcademicYear policy.");
-  let currentDate = new Date();
 
-  // logic to get academic year id
-  let academicYear = await strapi.query("academic-year").find();
-
-  currentDate = currentDate.getTime();
-
-  academicYear = academicYear.filter(academicYear => {
-    const startDate = new Date(academicYear.start_date).getTime();
-    const endDate = new Date(academicYear.end_date).getTime();
-    if (startDate < currentDate && currentDate < endDate) {
-      return academicYear;
-    }
-  });
-  const academicYearId = academicYear[0].id;
+  const academicYearId = await strapi.services[
+    "academic-year"
+  ].getCurrentAcademicYear();
 
   if (ctx.request.files && ctx.request.body.data) {
     let { data } = ctx.request.body;

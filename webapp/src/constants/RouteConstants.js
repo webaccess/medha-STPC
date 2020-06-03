@@ -85,6 +85,7 @@ export const ELIGIBLE_EVENT = "/eligible-event";
 export const EVENT_STUDENT_LIST = "/event-student-list";
 export const VIEW_STUDENT_PROFILE = "/view-student-profile";
 export const ADD_STUDENT_DRIVE = "/add-student-recruitment-drive";
+export const FEEDBACK_EVENTS = "/events-feedback";
 
 /**Training and Activity */
 export const EDIT_ACTIVITY = "/edit-activity";
@@ -93,6 +94,7 @@ export const MANAGE_ACTIVITY = "/manage-activity";
 export const VIEW_ACTIVITY = "/view-activity";
 export const ELIGIBLE_ACTIVITY = "/eligible-activity";
 export const PAST_ACTIVITY_DETAILS = "/past-activtiy-details";
+export const FEEDBACK_ACTIVITIES = "/activities-feedback";
 
 /**Activty Batches */
 export const MANAGE_ACTIVITY_BATCH = "/manage-activity-batch/:activity";

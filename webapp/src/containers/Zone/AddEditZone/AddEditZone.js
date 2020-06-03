@@ -233,7 +233,7 @@ const AddEditZone = props => {
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
-        {formState.isEditState ? (
+        {formState.isEditZone ? (
           <Typography variant="h4" gutterBottom>
             {genericConstants.EDIT_ZONE_TEXT}
           </Typography>

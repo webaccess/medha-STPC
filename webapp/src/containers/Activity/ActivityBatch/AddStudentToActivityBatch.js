@@ -21,12 +21,11 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import LoaderContext from "../../../context/LoaderContext";
 
-const ACTIVITY_BATCH_STUDENT_FILTER = "student_id";
+const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
 
 const AddEditActivityBatches = props => {
   const classes = useStyles();
-  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -59,10 +58,9 @@ const AddEditActivityBatches = props => {
     strapiConstants.STRAPI_DB_URL +
     strapiConstants.STRAPI_ACTIVITY_BATCH_URL +
     `/${activityBatch}/` +
-    strapiConstants.STRAPI_ADD_STUDENT_ACTIVITY_BATCH;
+    strapiConstants.STRAPI_ADD_STUDENTS;
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_STUDENTS)
       .then(res => {
@@ -71,11 +69,9 @@ const AddEditActivityBatches = props => {
           studentsFilter: res.data.result,
           streams: getStreams(res.data.result)
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
 
     getStudents(10, 1);
@@ -83,7 +79,6 @@ const AddEditActivityBatches = props => {
 
   /** This seperate function is used to get the Activity Batches data*/
   const getStudents = async (pageSize, page, params = null) => {
-    setLoaderStatus(true);
     if (params !== null && !formUtilities.checkEmpty(params)) {
       let defaultParams = {
         page: page,
@@ -103,7 +98,6 @@ const AddEditActivityBatches = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_STUDENTS, params)
       .then(res => {
@@ -119,16 +113,14 @@ const AddEditActivityBatches = props => {
           isDataLoading: false,
           streams: getStreams(res.data.result)
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
   };
 
   const getStreams = data => {
-    const streams = data.map(student => student.stream);
+    const streams = data.map(student => student.individual.stream);
     return uniqBy(streams, stream => stream.id);
   };
 
@@ -214,15 +206,27 @@ const AddEditActivityBatches = props => {
         props.closeModal();
       });
   };
+
+  const handleFilterChange = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [ACTIVITY_BATCH_STUDENT_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
+  };
+
   /** Columns to show in table */
   const column = [
     {
       name: "Student Name",
       sortable: true,
-      cell: row => `${row.user.first_name} ${row.user.last_name}`
+      cell: row => `${row.individual.first_name} ${row.individual.last_name}`
     },
-    { name: "Stream", sortable: true, selector: "stream.name" },
-    { name: "Mobile No.", sortable: true, selector: "user.contact_number" }
+    { name: "Stream", sortable: true, selector: "individual.stream.name" },
+    { name: "Mobile No.", sortable: true, selector: "phone" }
   ];
 
   return (
@@ -255,28 +259,18 @@ const AddEditActivityBatches = props => {
                         spacing={1}
                       >
                         <Grid item>
-                          <Autocomplete
-                            id="student-dropdown"
-                            options={formState.studentsFilter}
+                          <TextField
+                            label="Student Name"
+                            placeholder="Student Name"
+                            variant="outlined"
+                            value={
+                              formState.filterDataParameters[
+                                ACTIVITY_BATCH_STUDENT_FILTER
+                              ] || ""
+                            }
+                            name={ACTIVITY_BATCH_STUDENT_FILTER}
                             className={classes.autoCompleteField}
-                            getOptionLabel={option =>
-                              `${option.user.first_name} ${option.user.last_name}`
-                            }
-                            onChange={(event, value) =>
-                              handleChangeAutoComplete(
-                                ACTIVITY_BATCH_STUDENT_FILTER,
-                                event,
-                                value
-                              )
-                            }
-                            renderInput={params => (
-                              <TextField
-                                {...params}
-                                label="Student Name"
-                                className={classes.autoCompleteField}
-                                variant="outlined"
-                              />
-                            )}
+                            onChange={handleFilterChange}
                           />
                         </Grid>
                         <Grid item>
@@ -339,7 +333,7 @@ const AddEditActivityBatches = props => {
                     onChangeRowsPerPage={handlePerRowsChange}
                     onChangePage={handlePageChange}
                     onSelectedRowsChange={handleRowChange}
-                    noDataComponent="No Student Details found"
+                    noDataComponent={genericConstants.NO_STUDENTS_DETAILS_FOUND}
                   />
                   <Card className={styles.noBorderNoShadow}>
                     <CardContent>

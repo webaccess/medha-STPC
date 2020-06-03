@@ -110,7 +110,7 @@
     },
     {
       "method": "GET",
-      "path": "/contact/individuals/:id/activities",
+      "path": "/contact/individual/:id/activities",
       "handler": "contact.eligibleActivity",
       "config": { "policies": ["global.isIndividual"] }
     },
@@ -154,6 +154,18 @@
       "method": "GET",
       "path": "/contact/:id/get-organization-events",
       "handler": "contact.organizationEvents",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/:id/get-rpc-events",
+      "handler": "contact.rpcEvents",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
+      "path": "/contact/:id/get-zone-events",
+      "handler": "contact.zoneEvents",
       "config": { "policies": [] }
     },
     {
@@ -219,6 +231,12 @@
       "path": "/contact/get-individuals/:id/document",
       "handler": "contact.documents",
       "config": { "policies": ["global.isIndividual"] }
+    },
+    {
+      "method": "GET",
+      "path": "/states/:id/districts",
+      "handler": "state.districts",
+      "config": { "policies": [] }
     },
     {
       "method": "DELETE",

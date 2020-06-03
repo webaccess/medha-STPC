@@ -23,5 +23,10 @@ module.exports = async (ctx, next) => {
     if (!isStateValid) return ctx.response.badRequest("State is invalid");
   }
 
+  const rpc = await strapi.query("rpc").findOne({ name: name, state: state });
+
+  if (rpc)
+    return ctx.response.badRequest("Rpc can't be created with same name");
+
   await next();
 };

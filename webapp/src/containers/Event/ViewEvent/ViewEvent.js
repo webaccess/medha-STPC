@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import { Auth as auth, Spinner, GreenButton } from "../../../components";
 import {
   Card,
@@ -47,7 +48,7 @@ const ViewEvent = props => {
 
   /** Check if a student is registered for a event */
   const getRegisteredEvents = async () => {
-    if (auth.getUserInfo().role.name === "Student") {
+    if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       const apiToCheckStudentRegistration =
         strapiConstants.STRAPI_DB_URL +
         strapiConstants.STRAPI_CONTACT_URL +
@@ -78,9 +79,9 @@ const ViewEvent = props => {
     let paramsForEvent = null;
     if (auth.getUserInfo() && auth.getUserInfo().role) {
       if (
-        auth.getUserInfo().role.name === "Medha Admin" ||
-        auth.getUserInfo().role.name === "Student" ||
-        auth.getUserInfo().role.name === "College Admin"
+        auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+        auth.getUserInfo().role.name === roleConstants.STUDENT ||
+        auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
       ) {
         paramsForEvent = props["location"]["dataForView"];
       }
@@ -98,11 +99,11 @@ const ViewEvent = props => {
             console.log("error", error);
           });
       } else {
-        if (auth.getUserInfo().role.name === "Medha Admin") {
+        if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
           history.push({
             pathname: routeConstants.MANAGE_EVENT
           });
-        } else if (auth.getUserInfo().role.name === "Student") {
+        } else if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
           history.push({
             pathname: routeConstants.ELIGIBLE_EVENT
           });
@@ -121,13 +122,13 @@ const ViewEvent = props => {
   }
 
   const route = () => {
-    if (auth.getUserInfo().role.name === "Student") {
+    if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       history.push({
         pathname: routeConstants.ELIGIBLE_EVENT
       });
     } else if (
-      auth.getUserInfo().role.name === "Medha Admin" ||
-      auth.getUserInfo().role.name === "College Admin"
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
     ) {
       history.push({
         pathname: routeConstants.MANAGE_EVENT
@@ -316,7 +317,7 @@ const ViewEvent = props => {
                         {ReactHtmlParser(formState.eventDetails["description"])}
                       </Grid>
                     </Grid>
-                    {auth.getUserInfo().role.name === "Student" ? (
+                    {auth.getUserInfo().role.name === roleConstants.STUDENT ? (
                       <Grid spacing={2} className={classes.defaultMargin}>
                         <FormControlLabel
                           control={
@@ -337,7 +338,8 @@ const ViewEvent = props => {
                       </Grid>
                     ) : null}
                     <Grid>
-                      {auth.getUserInfo().role.name === "Student" ? (
+                      {auth.getUserInfo().role.name ===
+                      roleConstants.STUDENT ? (
                         <Grid item md={12} xs={12}>
                           <CardActions className={classes.btnspace}>
                             <GreenButton
@@ -366,7 +368,7 @@ const ViewEvent = props => {
           </CardContent>
         </Card>
       </Grid>
-      {auth.getUserInfo().role.name === "Student" ? (
+      {auth.getUserInfo().role.name === roleConstants.STUDENT ? (
         <RegisterEvent
           showModal={formState.showRegisterModel}
           modalClose={modalClose}

@@ -274,7 +274,12 @@ module.exports = {
         }
       });
 
-      if (isStreamEligible && isQualificationEligible && isEducationEligible) {
+      if (
+        isStreamEligible &&
+        isQualificationEligible &&
+        isEducationEligible &&
+        student.individual.is_verified
+      ) {
         const qualifications = await strapi
           .query("academic-history")
           .find({ contact: student.id }, []);
@@ -330,16 +335,19 @@ module.exports = {
 
   async getFeedbacksForEventFromCollege(ctx) {
     const { eventId, collegeId } = ctx.params;
-
     const event = await strapi.query("event").findOne({ id: eventId });
 
     if (!event) {
       return ctx.response.notFound("Event does not exist");
     }
 
+    if (!event.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
     const checkIfFeedbackPresent = await strapi
       .query("feedback-set")
-      .find({ event: eventId });
+      .find({ event: eventId, question_set: event.question_set.id });
 
     if (!checkIfFeedbackPresent.length) {
       return ctx.response.notFound("No feedback data present");
@@ -365,75 +373,19 @@ module.exports = {
       .query("contact", PLUGIN)
       .find({ user_in: userIds });
 
-    students = students.map(student => {
-      student.user = sanitizeUser(student.user);
-      return student;
-    });
-
     const students_contact_id = students.map(student => {
       return student.id;
     });
 
-    const checkFeedbackForTheEventPresent = await strapi
-      .query("feedback-set")
-      .find({ event: eventId, contact_in: students_contact_id });
-
-    if (!checkFeedbackForTheEventPresent.length) {
-      return ctx.response.notFound("No feedback given by college students");
-    }
-
-    let question_set = null;
-    const feedback_set_id = checkFeedbackForTheEventPresent.map(res => {
-      question_set = res.question_set.id;
-      return res.id;
-    });
-
-    const event_question_set = await strapi.query("question-set").findOne(
-      {
-        id: question_set
-      },
-      ["questions.role"]
+    /**------------------------------------------------ */
+    let feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+      ctx,
+      event,
+      students_contact_id,
+      "Student"
     );
 
-    /** This basically gets questions id to which we will store our aggregate data */
-    let question_ids = [];
-    const question_ratings = event_question_set.questions
-      .map(data => {
-        if (data.role.name === "Student" && data.type === "Rating") {
-          question_ids.push(data["id"]);
-          return {
-            id: data["id"],
-            title: data["title"],
-            result: 0
-          };
-        }
-      })
-      .filter(data => {
-        return data !== undefined;
-      });
-
-    const feedback_response_data = await strapi.query("feedback").find({
-      question_in: question_ids,
-      feedback_set_in: feedback_set_id
-    });
-
-    const result = {};
-    feedback_response_data.map(res => {
-      if (result.hasOwnProperty(res.question.id)) {
-        result[res.question.id] = result[res.question.id] + res.answer_int;
-      } else {
-        result[res.question.id] = res.answer_int;
-      }
-    });
-
-    question_ratings.map(res => {
-      res.result = Math.round(result[res.id] / feedback_set_id.length);
-    });
-
-    return utils.getFindOneResponse({
-      total: feedback_set_id.length,
-      ratings: question_ratings
-    });
+    return utils.getFindOneResponse(feedbackData);
   },
 
   async getStudentCommentsForEventFromCollege(ctx) {
@@ -445,9 +397,13 @@ module.exports = {
       return ctx.response.notFound("Event does not exist");
     }
 
+    if (!event.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
     const checkIfFeedbackPresent = await strapi
       .query("feedback-set")
-      .find({ event: eventId });
+      .find({ event: eventId, question_set: event.question_set.id });
 
     if (!checkIfFeedbackPresent.length) {
       return ctx.response.notFound("No feedback data present");
@@ -473,74 +429,193 @@ module.exports = {
       .query("contact", PLUGIN)
       .find({ user_in: userIds });
 
-    students = students.map(student => {
-      student.user = sanitizeUser(student.user);
-      return student;
-    });
-
     const students_contact_id = students.map(student => {
       return student.id;
     });
 
-    const checkFeedbackForTheEventPresent = await strapi
-      .query("feedback-set")
-      .find({ event: eventId, contact_in: students_contact_id });
+    /**------------------------------------------------ */
+    let feedbackData = await strapi.services.event.getAllCommentsForEvent(
+      ctx,
+      event,
+      students_contact_id,
+      "Student"
+    );
+    return utils.getFindOneResponse(feedbackData);
+  },
 
-    if (!checkFeedbackForTheEventPresent.length) {
-      return ctx.response.notFound("No feedback given by college students");
+  /*** Get feedback comments for rpc */
+
+  async getFeedbacksCommentsForEventForRPC(ctx) {
+    const { eventId, rpcId } = ctx.params;
+
+    const event = await strapi.query("event").findOne({ id: eventId });
+
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
     }
 
-    let question_set = null;
-    const feedback_set_id = checkFeedbackForTheEventPresent.map(res => {
-      question_set = res.question_set.id;
-      return res.id;
+    if (!event.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, question_set: event.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if rpc exist */
+    const rpc = await strapi.query("rpc").findOne({ id: rpcId }, []);
+
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    /** This gets contact ids of all the college admins under the RPC*/
+    const collegeAdminUsers = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdminsFromRPC(rpcId);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeAdminUsers });
+
+    const collegeAdminsIds = collegeAdminContacts.map(contact => {
+      return contact.id;
     });
 
-    const event_question_set = await strapi.query("question-set").findOne(
-      {
-        id: question_set
-      },
-      ["questions.role"]
+    /**------------------------------------------------ */
+    let feedbackData = await strapi.services.event.getAllCommentsForEvent(
+      ctx,
+      event,
+      collegeAdminsIds,
+      "College Admin"
     );
 
-    /** This basically gets questions id to which we will store our aggregate data */
-    let question_ids = [];
-    const question_ratings = event_question_set.questions
-      .map(data => {
-        if (data.role.name === "Student" && data.type === "Comment") {
-          question_ids.push(data["id"]);
-          return {
-            id: data["id"],
-            title: data["title"],
-            result: []
-          };
-        }
-      })
-      .filter(data => {
-        return data !== undefined;
-      });
+    return utils.getFindOneResponse(feedbackData);
+  },
 
-    const feedback_response_data = await strapi.query("feedback").find(
-      {
-        question_in: question_ids,
-        feedback_set_in: feedback_set_id
-      },
-      ["feedback_set.contact"]
-    );
+  /** Get Feedback for rpc  */
+  async getFeedbacksForEventForRPC(ctx) {
+    const { eventId, rpcId } = ctx.params;
 
-    question_ratings.map(res => {
-      const result = feedback_response_data.map(data => {
-        if (res.id === data.question) {
-          return {
-            studentId: data.feedback_set.contact.id,
-            studentName: data.feedback_set.contact.name,
-            answer: data.answer_text
-          };
-        }
-      });
-      res.result = result;
+    const event = await strapi.query("event").findOne({ id: eventId });
+
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+
+    if (!event.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, question_set: event.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if rpc exist */
+    const rpc = await strapi.query("rpc").findOne({ id: rpcId }, []);
+
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    /** This gets contact ids of all the college admins under the RPC*/
+    const collegeAdminUsers = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdminsFromRPC(rpcId);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeAdminUsers });
+
+    const collegeAdminsIds = collegeAdminContacts.map(contact => {
+      return contact.id;
     });
 
-    return utils.getFindOneResponse(question_ratings);
+    /**------------------------------------------------ */
+    let feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+      ctx,
+      event,
+      collegeAdminsIds,
+      "College Admin"
+    );
+    return utils.getFindOneResponse(feedbackData);
+  },
+
+  async getFeedbackForZone(ctx) {
+    const { eventId, zoneId, dataFor, feedbackType } = ctx.params;
+
+    /** Steps to check if event is present */
+    const event = await strapi.services.event.checkIfEventExist(ctx, eventId);
+
+    /** Steps to check if feedback exist for that event */
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, question_set: event.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if zone exist */
+    const zone = await strapi.services.zone.checkIfZoneExist(zoneId);
+
+    let feedbackData;
+    if (dataFor === "college") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+        ctx,
+        zoneId,
+        "Zonal Admin",
+        "college"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          ctx,
+          event,
+          collegeAdminIds,
+          "College Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          ctx,
+          event,
+          collegeAdminIds,
+          "College Admin"
+        );
+      }
+    } else if (dataFor === "rpc") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+        ctx,
+        zoneId,
+        "Zonal Admin",
+        "rpc"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          ctx,
+          event,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          ctx,
+          event,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      }
+    }
+
+    return utils.getFindOneResponse(feedbackData);
   }
 };

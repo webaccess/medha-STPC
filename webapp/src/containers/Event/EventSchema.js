@@ -110,11 +110,16 @@ const EventSchema = {
     label: "Question-Set",
     id: "question_set",
     autoComplete: "Select Question Set",
-    required: false,
+    required: true,
     placeholder: "Select Question Set",
     autoFocus: true,
     type: "text",
-    validations: {}
+    validations: {
+      required: {
+        value: "true",
+        message: "Question-Set is required"
+      }
+    }
   },
   college: {
     label: "College",

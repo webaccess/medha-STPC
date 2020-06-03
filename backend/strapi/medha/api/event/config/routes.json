@@ -90,8 +90,32 @@
     },
     {
       "method": "GET",
+      "path": "/events/:eventId/rpc/:rpcId/getCollegeFeedbackForRPC",
+      "handler": "event.getFeedbacksForEventForRPC",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/events/:eventId/contact/:collegeId/getStudentsCommentsForFeedbacks",
       "handler": "event.getStudentCommentsForEventFromCollege",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:eventId/rpc/:rpcId/getCollegeCommentFeedbackForRPC",
+      "handler": "event.getFeedbacksCommentsForEventForRPC",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:eventId/getFeedbackForZone/:zoneId/DataFor/:dataFor/FeedbackType/:feedbackType",
+      "handler": "event.getFeedbackForZone",
       "config": {
         "policies": []
       }

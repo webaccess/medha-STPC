@@ -61,5 +61,14 @@ module.exports = {
           })
           .then(res => res.toJSON());
     }
+  },
+
+  checkIfZoneExist: async zoneId => {
+    const zone = await strapi.query("zone").findOne({ id: zoneId }, []);
+
+    if (!zone) {
+      return ctx.response.notFound("Zone does not exist");
+    }
+    return zone;
   }
 };

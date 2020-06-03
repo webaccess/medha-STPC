@@ -95,6 +95,8 @@ export const ADD_STUDENT_TO_ACTIVITY_BATCH = "Add Students";
 export const DELETE_STUDENT_TO_ACTIVITY_BATCH = "Delete Students";
 export const VERIFY_STUDENT_TO_ACTIVITY_BATCH = "Verify Students";
 
+export const NO_STUDENTS_DETAILS_FOUND = "No Students details found";
+
 /** Events */
 export const ADD_EVENT_TEXT = "Add Event";
 export const DESCRIPTION = "Description";

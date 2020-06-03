@@ -17,6 +17,7 @@ import * as serviceProviders from "../../api/Axios";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
 import * as genericConstants from "../../constants/GenericConstants";
+import * as roleConstants from "../../constants/RoleConstants";
 import * as formUtilities from "../../utilities/FormUtilities";
 import {
   Table,
@@ -104,11 +105,11 @@ const ViewActivity = props => {
 
   const url = () => {
     let url;
-    if (roleName === "Medha Admin") {
+    if (roleName === roleConstants.MEDHAADMIN) {
       url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
     }
 
-    if (roleName === "College Admin") {
+    if (roleName === roleConstants.COLLEGEADMIN) {
       const college = user ? user.studentInfo : null;
       const collegeId = college ? college.organization.contact.id : null;
 
@@ -407,7 +408,7 @@ const ViewActivity = props => {
               title="Manage Activity Batch"
             />
           </div>
-          {roleName === "Medha Admin" ? (
+          {roleName === roleConstants.MEDHAADMIN ? (
             <div className={classes.PaddingActionButton}>
               <EditGridIcon
                 id={cell.id}
@@ -432,7 +433,8 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
-          {roleName === "College Admin" || roleName === "Medha Admin" ? (
+          {roleName === roleConstants.COLLEGEADMIN ||
+          roleName === roleConstants.MEDHAADMIN ? (
             <div className={classes.PaddingActionButton}>
               <ThumbsUpDownIcon
                 id={cell.id}
@@ -443,7 +445,7 @@ const ViewActivity = props => {
             </div>
           ) : null}
 
-          {roleName === "Medha Admin" ? (
+          {roleName === roleConstants.MEDHAADMIN ? (
             <div className={classes.PaddingActionButton}>
               <DeleteGridIcon
                 id={cell.id}
@@ -500,7 +502,7 @@ const ViewActivity = props => {
           {genericConstants.VIEW_ACTIVITY_TEXT}
         </Typography>
 
-        {auth.getUserInfo().role.name === "Medha Admin" ? (
+        {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
           <GreenButton
             variant="contained"
             color="primary"

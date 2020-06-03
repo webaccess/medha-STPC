@@ -189,7 +189,7 @@ const AddStudentToRecruitmentDrive = props => {
         var individualStudentData = {};
         let educationYear = [];
         individualStudentData["id"] = data[i]["id"];
-        individualStudentData["studentid"] = data[i]["id"];
+        individualStudentData["studentid"] = data[i]["individual"]["id"];
         individualStudentData["user"] = data[i]["user"]
           ? data[i]["user"]["username"]
           : "";

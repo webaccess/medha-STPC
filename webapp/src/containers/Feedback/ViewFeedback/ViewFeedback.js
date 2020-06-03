@@ -13,6 +13,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProviders from "../../../api/Axios";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
@@ -38,7 +39,7 @@ const ViewFeedBack = props => {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
 
-  const [formState, setFormState] = useState({
+  const [formState] = useState({
     ratings: 3,
     stateCounter: 0,
     dataToShow: [],
@@ -56,24 +57,66 @@ const ViewFeedBack = props => {
 
   const getComments = async () => {
     setLoaderStatus(true);
-    const QUESTION_SET_URL =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
-      "/" +
-      props.id +
-      "/" +
-      strapiConstants.STRAPI_CONTACT_SOLO +
-      "/" +
-      auth.getUserInfo().studentInfo.organization.contact.id +
-      "/getStudentsCommentsForFeedbacks";
+    let QUESTION_SET_URL = "";
+    let sheetName = "";
+    if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+      QUESTION_SET_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_EVENTS +
+        "/" +
+        props.id +
+        "/" +
+        strapiConstants.STRAPI_RPC +
+        "/" +
+        auth.getUserInfo().rpc.id +
+        "/getCollegeCommentFeedbackForRPC";
+      sheetName = "College Feedback";
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      QUESTION_SET_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_EVENTS +
+        "/" +
+        props.id +
+        "/" +
+        strapiConstants.STRAPI_CONTACT_SOLO +
+        "/" +
+        auth.getUserInfo().studentInfo.organization.contact.id +
+        "/getStudentsCommentsForFeedbacks";
+      sheetName = "Student Feedback";
+    } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+      if (props.dataFor === "college") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getFeedbackForZone/" +
+          auth.getUserInfo().zone.id +
+          "/DataFor/college/FeedbackType/comment";
+        sheetName = "College Feedback";
+      } else if (props.dataFor === "rpc") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getFeedbackForZone/" +
+          auth.getUserInfo().zone.id +
+          "/DataFor/rpc/FeedbackType/comment";
+        sheetName = "RPC Feedback";
+      }
+    }
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
-        const ws = XLSX.utils.json_to_sheet(res.data.result[0]["result"]);
-        const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+        const ws = XLSX.utils.json_to_sheet(res.data.result);
+        const wb = {
+          Sheets: { [sheetName]: ws },
+          SheetNames: [sheetName]
+        };
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, res.data.result[0]["title"] + fileExtension);
+        FileSaver.saveAs(data, props.Title + fileExtension);
         setLoaderStatus(false);
       })
       .catch(error => {
@@ -120,99 +163,146 @@ const ViewFeedBack = props => {
                     </Typography>
                   </Grid>
                   <Card>
-                    <CardContent>
-                      <Grid item xs={12} md={12}>
-                        <Typography
-                          variant="h5"
-                          gutterBottom
-                          color="textSecondary"
-                        >
-                          {`Feedback given by ${formState.dataToShow.total} students`}
-                        </Typography>
-                        <div style={{ overflow: "auto" }}>
-                          {formState.dataToShow.ratings.length !== 0 ? (
-                            <TableContainer
-                              className={classes.container}
-                              component={Paper}
+                    {formState.dataToShow !== undefined &&
+                    formState.dataToShow !== null &&
+                    formState.dataToShow.length !== 0 ? (
+                      <div className={classes.edit_dialog}>
+                        <CardContent>
+                          <Grid item xs={12} md={12}>
+                            <Typography
+                              variant="h5"
+                              gutterBottom
+                              color="textSecondary"
                             >
-                              <Table
-                                className={classes.table}
-                                stickyHeader
-                                aria-label="feedback table"
-                              >
-                                <TableHead>
-                                  <TableRow
-                                    style={{
-                                      backgroundColor: "#f5f5f5",
-                                      height: "35px"
-                                    }}
-                                  >
-                                    <TableCell>Questions</TableCell>
-                                    <TableCell align="right">Ratings</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                              </Table>
-                              <div
-                                style={{ overflow: "auto", height: "200px" }}
-                              >
-                                <Table>
-                                  <TableBody>
-                                    {formState.dataToShow.ratings.map(row => (
-                                      <TableRow key={row.id}>
-                                        <TableCell component="th" scope="row">
-                                          {row.title}
-                                        </TableCell>
-                                        <TableCell align="right">
-                                          <Rating
-                                            name={row.id}
-                                            precision={1}
-                                            value={row.result}
-                                            readOnly
-                                          />
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </div>
-                            </TableContainer>
-                          ) : (
-                            <div>No ratings </div>
-                          )}
-                        </div>
-                      </Grid>
-                    </CardContent>
-                    <Grid item xs={12}>
-                      <Grid
-                        container
-                        direction="row"
-                        justify="flex-end"
-                        alignItems="center"
-                        spacing={2}
-                      >
-                        <Grid item>
-                          <GreenButton
-                            variant="contained"
-                            color="secondary"
-                            startIcon={<GetAppIcon />}
-                            onClick={e => getComments()}
-                            greenButtonChecker={formState.greenButtonChecker}
+                              {props.fromCollegeAdmin
+                                ? `Feedback given by ${formState.dataToShow.total} students`
+                                : null}
+                              {props.fromRPC
+                                ? `Feedback given by ${formState.dataToShow.total} colleges`
+                                : null}
+                              {props.fromZone && props.dataFor === "college"
+                                ? `Feedback given by ${formState.dataToShow.total} colleges`
+                                : null}
+                              {props.fromZone && props.dataFor === "rpc"
+                                ? `Feedback given by ${formState.dataToShow.total} RPCs`
+                                : null}
+                            </Typography>
+                            <div style={{ overflow: "auto" }}>
+                              {formState.dataToShow.ratings.length !== 0 ? (
+                                <CardContent>
+                                  <Grid item xs={12} md={12}>
+                                    <div style={{ overflow: "auto" }}>
+                                      <TableContainer
+                                        className={classes.container}
+                                        component={Paper}
+                                      >
+                                        <div
+                                          style={{
+                                            overflow: "auto",
+                                            height: "200px"
+                                          }}
+                                        >
+                                          {formState.dataToShow.ratings.map(
+                                            row => (
+                                              <TableRow key={row.id}>
+                                                <React.Fragment>
+                                                  <TableCell
+                                                    component="th"
+                                                    scope="row"
+                                                  >
+                                                    {row.title}
+                                                  </TableCell>
+                                                  <TableCell align="right">
+                                                    <Rating
+                                                      name={row.id}
+                                                      precision={1}
+                                                      value={row.result}
+                                                      readOnly
+                                                    />
+                                                  </TableCell>
+                                                </React.Fragment>
+                                              </TableRow>
+                                            )
+                                          )}
+                                        </div>
+                                      </TableContainer>
+                                    </div>
+                                  </Grid>
+                                </CardContent>
+                              ) : null}
+                            </div>
+                          </Grid>
+                        </CardContent>
+                        <Grid item xs={12}>
+                          <Grid
+                            container
+                            direction="row"
+                            justify="flex-end"
+                            alignItems="center"
+                            spacing={2}
                           >
-                            Download
-                          </GreenButton>
+                            <Grid item>
+                              <GreenButton
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<GetAppIcon />}
+                                onClick={e => getComments()}
+                                greenButtonChecker={
+                                  formState.greenButtonChecker
+                                }
+                              >
+                                Download
+                              </GreenButton>
+                            </Grid>
+                            <Grid item>
+                              <GrayButton
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                onClick={handleClose}
+                              >
+                                CLOSE
+                              </GrayButton>
+                            </Grid>
+                          </Grid>
                         </Grid>
-                        <Grid item>
-                          <GrayButton
-                            type="submit"
-                            color="primary"
-                            variant="contained"
-                            onClick={handleClose}
+                      </div>
+                    ) : (
+                      <div className={classes.edit_dialog}>
+                        <CardContent>
+                          <Grid item xs={12} md={12}>
+                            <Typography
+                              variant="h5"
+                              gutterBottom
+                              color="textSecondary"
+                            >
+                              No feedback available
+                            </Typography>
+                          </Grid>
+                        </CardContent>
+
+                        <Grid item xs={12}>
+                          <Grid
+                            container
+                            direction="row"
+                            justify="flex-end"
+                            alignItems="center"
+                            spacing={2}
                           >
-                            CLOSE
-                          </GrayButton>
+                            <Grid item>
+                              <GrayButton
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                onClick={handleClose}
+                              >
+                                CLOSE
+                              </GrayButton>
+                            </Grid>
+                          </Grid>
                         </Grid>
-                      </Grid>
-                    </Grid>
+                      </div>
+                    )}
                   </Card>
                 </Grid>
               </Grid>

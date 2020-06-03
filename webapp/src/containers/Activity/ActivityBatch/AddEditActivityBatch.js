@@ -17,6 +17,7 @@ import useStyles from "../ViewActivityStyles.js";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import {
@@ -42,6 +43,7 @@ import CrossGridIcon from "../../../components/CrossGridIcon";
 import LoaderContext from "../../../context/LoaderContext";
 import moment from "moment";
 import auth from "../../../components/Auth";
+import { CompassCalibrationOutlined } from "@material-ui/icons";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
@@ -147,7 +149,8 @@ const AddEditActivityBatches = props => {
         }
         setActivityDetails(data.result);
       })
-      .catch(() => {
+      .catch(error => {
+        console.log("Error", error);
         history.push("/404");
       });
   }, []);
@@ -177,7 +180,6 @@ const AddEditActivityBatches = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(URL_TO_HIT, params)
       .then(res => {
@@ -205,6 +207,7 @@ const AddEditActivityBatches = props => {
         var tempIndividualStudentData = {};
         tempIndividualStudentData["id"] = data[i]["id"];
         tempIndividualStudentData["name"] = data[i]["name"];
+        tempIndividualStudentData["activityBatch"] = data[i]["activityBatch"];
         tempIndividualStudentData["stream"] =
           data[i]["individual"]["stream"]["name"];
         tempIndividualStudentData["contact_number"] = data[i]["phone"];
@@ -268,14 +271,13 @@ const AddEditActivityBatches = props => {
   };
 
   const getStreams = async data => {
-    if (auth.getUserInfo().role.name === "College Admin") {
+    if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       let streams = [];
-      console.log(auth.getUserInfo().role, auth.getUserInfo());
       streams = auth
         .getUserInfo()
         .studentInfo.organization.stream_strength.map(stream => stream.stream);
       return streams;
-    } else if (auth.getUserInfo().role.name === "Medha Admin") {
+    } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       await serviceProviders
         .serviceProviderForGetRequest(STREAMS_URL)
         .then(res => {
@@ -483,7 +485,6 @@ const AddEditActivityBatches = props => {
       formState.values[dateTo]
     );
 
-    console.log("postData", postData);
     if (formState.isEditActivityBatch) {
       const activityBatchId = formState.dataForEdit.id;
       const URL =
@@ -598,7 +599,7 @@ const AddEditActivityBatches = props => {
       name: "Action",
       cell: cell => (
         <div style={{ display: "flex" }}>
-          {!!cell.activityBatch.verified_by_college ? (
+          {!!cell.activityBatch.is_verified_by_college ? (
             <div style={{ marginLeft: "8px" }}>
               <TickGridIcon
                 id={cell.id}
@@ -894,10 +895,12 @@ const AddEditActivityBatches = props => {
                 clearSelectedRows={clearSelectedRows}
               />
             ) : (
-              <Spinner />
+              <div className={classes.noDataMargin}>
+                {genericConstants.NO_STUDENTS_DETAILS_FOUND}
+              </div>
             )
           ) : (
-            <div className={classes.noDataMargin}>No data to show</div>
+            <Spinner />
           )}
 
           <Card className={styles.noBorderNoShadow}>
