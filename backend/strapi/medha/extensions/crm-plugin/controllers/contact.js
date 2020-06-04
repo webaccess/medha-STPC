@@ -1934,5 +1934,124 @@ module.exports = {
         ...response.pagination
       };
     }
+  },
+  deleteIndividual: async ctx => {
+    console.log("in delete individual");
+    let { id } = ctx.request.body;
+    console.log(id);
+    let user = [];
+    let notStudent = await Promise.all(
+      id.map(async id => {
+        const student = await strapi
+          .query("contact", PLUGIN)
+          .findOne({ id: id });
+        if (student === null) {
+          return null;
+        } else {
+          const data = {
+            studentId: id,
+            userId: student.user.id
+          };
+          user.push(data);
+          return id;
+        }
+      })
+    );
+
+    notStudent = _.xor(id, notStudent).filter(c => c);
+
+    id = _.pullAll(id, notStudent);
+
+    let list = await Promise.all(
+      id.map(async id => {
+        const stud = await strapi.query("contact", PLUGIN).findOne({ id: id });
+        const documents = stud.individual.documents;
+        if (documents.length > 0) return id;
+        const role = await strapi
+          .query("role", "users-permissions")
+          .findOne({ id: stud.user.role });
+        if (role.name === "College Admin") {
+          const organization = await strapi
+            .query("organization", PLUGIN)
+            .findOne({ id: stud.individual.organization });
+          console.log(organization);
+          if (
+            organization.principal !== null &&
+            organization.principal.contact === id
+          )
+            return id;
+
+          const tpo = organization.tpos.map(tpo => tpo.contact).filter(c => c);
+          if (_.includes(tpo, id)) return id;
+        }
+
+        const academic_history = await strapi
+          .query("academic-history")
+          .findOne({ contact: id });
+        if (academic_history !== null) return id;
+
+        const education = await strapi
+          .query("education")
+          .findOne({ contact: id });
+        if (education !== null) return id;
+
+        const activity_batch_attendance = await strapi
+          .query("activityassignee", PLUGIN)
+          .findOne({ contact: id });
+        if (activity_batch_attendance !== null) return id;
+
+        const event_registration = await strapi
+          .query("event-registration")
+          .findOne({ contact: id });
+        if (event_registration !== null) return id;
+      })
+    );
+    console.log("list is:");
+    console.log(list);
+    list = _.xor(id, list).filter(c => c);
+    id = _.pullAll(id, list);
+    console.log("id that cant't be deleted is:");
+    console.log(id);
+
+    const userId = user.filter(user => {
+      if (_.includes(list, user.studentId)) return user.userId;
+    });
+    console.log(user);
+
+    const admins = user.filter(user => {
+      if (user.role !== "Student") return user.studentId;
+    });
+    console.log("Admins");
+    console.log(admins);
+    console.log("after filtering userId");
+    console.log(userId);
+
+    console.log("not a student:");
+    console.log(notStudent);
+
+    const result = await Promise.all(
+      userId.map(async user => {
+        const student = await strapi
+          .query("contact", PLUGIN)
+          .delete({ id: user.studentId });
+        // console.log(student);
+        const userData = await strapi
+          .query("user", "users-permissions")
+          .delete({ id: user.userId });
+
+        const individual = await strapi
+          .query("individual", PLUGIN)
+          .delete({ id: student.individual.id });
+        //console.log(userData);
+
+        return { student: student };
+      })
+    );
+
+    if (notStudent.length > 0)
+      return ctx.response.notFound(
+        "Students with Id " + `${notStudent}` + " not found"
+      );
+    else return utils.getFindOneResponse("success");
   }
 };

@@ -239,6 +239,12 @@
       "config": { "policies": ["global.isIndividual"] }
     },
     {
+      "method": "POST",
+      "path": "/contact/delete",
+      "handler": "contact.deleteIndividual",
+      "config": { "policies": [] }
+    },
+    {
       "method": "GET",
       "path": "/activities/:id/question-sets",
       "handler": "activity.getQuestionSet",
