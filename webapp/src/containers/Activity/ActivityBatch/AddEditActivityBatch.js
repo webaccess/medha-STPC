@@ -463,6 +463,9 @@ const AddEditActivityBatches = props => {
   };
 
   const handleDateChange = (datefrom, event) => {
+    if (formState.errors.hasOwnProperty(datefrom)) {
+      delete formState.errors[datefrom];
+    }
     setFormState(formState => ({
       ...formState,
       values: {
