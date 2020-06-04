@@ -79,6 +79,7 @@ const AddEditCollege = props => {
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
+    adminValues: {},
     touched: {},
     errors: {},
     states: [],
@@ -102,6 +103,9 @@ const AddEditCollege = props => {
   const [districts, setDistricts] = useState([]);
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
+  const [isGetAdminData, setIsGetAdminData] = useState(false);
+  const [tpoData, setTpoData] = useState([]);
+  const [principalData, setPrincipalData] = useState([]);
   const inputLabel = React.useRef(null);
   const [collegeInfo, setCollegeInfo] = useState({
     college:
@@ -398,6 +402,72 @@ const AddEditCollege = props => {
         });
     }
   }
+
+  /** This gets Principal Email and contact number*/
+  useEffect(() => {
+    if (formState.values[principal]) {
+      getPrincipalName(formState.values[principal]);
+    } else {
+      setIsGetAdminData(false);
+      setPrincipalData([]);
+    }
+    return () => {};
+  }, [formState.values[principal]]);
+
+  const getPrincipalName = ID => {
+    let principalURL;
+    principalURL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_VIEW_USERS +
+      "/" +
+      ID;
+    serviceProviders
+      .serviceProviderForGetRequest(principalURL)
+      .then(res => {
+        setIsGetAdminData(true);
+        setPrincipalData(res.data.result);
+      })
+      .catch(error => {
+        setIsGetAdminData(false);
+        console.log("error", error);
+      });
+  };
+
+  /** This gets TPOs Email and contact number */
+  useEffect(() => {
+    if (formState.values[tpos]) {
+      setTpoData([]);
+      getTpoName(formState.values[tpos]);
+    } else {
+      setIsGetAdminData(false);
+      setTpoData([]);
+    }
+    return () => {};
+  }, [formState.values[tpos]]);
+
+  const getTpoName = ID => {
+    let tpoURL = [];
+    for (let i = 0; i < ID.length; i++) {
+      tpoURL[i] =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_VIEW_USERS +
+        "/" +
+        ID[i];
+    }
+    serviceProviders
+      .serviceProviderForAllGetRequest(tpoURL)
+      .then(res => {
+        let tpoarray = [];
+        for (let j = 0; j < res.length; j++) {
+          tpoarray.push(res[j].data.result);
+        }
+        setTpoData(tpoarray);
+      })
+      .catch(error => {
+        setIsGetAdminData(false);
+        console.log("error", error);
+      });
+  };
 
   /** Handle change for text fields */
   const handleChange = e => {
@@ -881,32 +951,7 @@ const AddEditCollege = props => {
                   />
                 </Grid>
               </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
-                  <TextField
-                    fullWidth
-                    label={get(CollegeFormSchema[collegeEmail], "label")}
-                    id={get(CollegeFormSchema[collegeEmail], "id")}
-                    name={collegeEmail}
-                    onChange={handleChange}
-                    placeholder={get(
-                      CollegeFormSchema[collegeEmail],
-                      "placeholder"
-                    )}
-                    required
-                    value={formState.values[collegeEmail] || ""}
-                    error={hasError(collegeEmail)}
-                    helperText={
-                      hasError(collegeEmail)
-                        ? formState.errors[collegeEmail].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-              </Grid>
+
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   {formState.isCollegeAdmin ? (
@@ -1177,10 +1222,38 @@ const AddEditCollege = props => {
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    fullWidth
+                    label={get(CollegeFormSchema[collegeEmail], "label")}
+                    id={get(CollegeFormSchema[collegeEmail], "id")}
+                    name={collegeEmail}
+                    onChange={handleChange}
+                    placeholder={get(
+                      CollegeFormSchema[collegeEmail],
+                      "placeholder"
+                    )}
+                    required
+                    value={formState.values[collegeEmail] || ""}
+                    error={hasError(collegeEmail)}
+                    helperText={
+                      hasError(collegeEmail)
+                        ? formState.errors[collegeEmail].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <TextField
                     fullWidth
-                    label="Contact Number"
+                    label={get(CollegeFormSchema[contactNumber], "label")}
                     name={contactNumber}
                     onChange={handleChange}
                     required
@@ -1234,7 +1307,7 @@ const AddEditCollege = props => {
                 auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) &&
               formState.isEditCollege ? (
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={12} xs={12}>
                     <Autocomplete
                       id={get(CollegeFormSchema[tpos], "id")}
                       multiple
@@ -1268,50 +1341,112 @@ const AddEditCollege = props => {
                     />
                     {/* </FormControl> */}
                   </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id={get(CollegeFormSchema[principal], "id")}
-                      options={user}
-                      getOptionLabel={option => option.contact.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(principal, event, value);
-                      }}
-                      /** This is used to set the default value to the auto complete */
-                      value={
-                        user[
-                          user.findIndex(function (item, i) {
-                            return item.id === formState.values[principal];
-                          })
-                        ] || null /** Please give a default " " blank value */
-                      }
-                      name={principal}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(principal)}
-                          helperText={
-                            hasError(principal)
-                              ? formState.errors[principal].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          placeholder={get(
-                            CollegeFormSchema[principal],
-                            "placeholder"
-                          )}
-                          value={option => option.id}
-                          name={principal}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[principal], "label")}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </Grid>
                 </Grid>
               ) : null}
             </Grid>
+            {tpoData ? (
+              <Grid item xs={12} md={6} xl={3}>
+                {tpoData.map(tpo => (
+                  <Grid container spacing={3} className={classes.MarginBottom}>
+                    <Grid item md={6} xs={12}>
+                      <ReadOnlyTextField
+                        id="TPO Email"
+                        label={"Tpo Email"}
+                        defaultValue={tpo.contact.email}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <ReadOnlyTextField
+                        id="TPO Contact Number"
+                        label={"TPO Contact Number"}
+                        defaultValue={tpo.contact.phone}
+                      />
+                    </Grid>
+                  </Grid>
+                ))}
+              </Grid>
+            ) : null}
+            {(auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) &&
+            formState.isEditCollege ? (
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <Autocomplete
+                    id={get(CollegeFormSchema[principal], "id")}
+                    options={user}
+                    getOptionLabel={option => option.contact.name}
+                    onChange={(event, value) => {
+                      handleChangeAutoComplete(principal, event, value);
+                    }}
+                    /** This is used to set the default value to the auto complete */
+                    value={
+                      user[
+                        user.findIndex(function (item, i) {
+                          return item.id === formState.values[principal];
+                        })
+                      ] || null /** Please give a default " " blank value */
+                    }
+                    name={principal}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        error={hasError(principal)}
+                        helperText={
+                          hasError(principal)
+                            ? formState.errors[principal].map(error => {
+                                return error + " ";
+                              })
+                            : null
+                        }
+                        placeholder={get(
+                          CollegeFormSchema[principal],
+                          "placeholder"
+                        )}
+                        value={option => option.id}
+                        name={principal}
+                        key={option => option.id}
+                        label={get(CollegeFormSchema[principal], "label")}
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                  {/* </FormControl> */}
+                </Grid>
+              </Grid>
+            ) : null}
+            {principalData && isGetAdminData ? (
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <ReadOnlyTextField
+                      id="Principal Email"
+                      label={"Principal Email"}
+                      defaultValue={
+                        principalData.contact
+                          ? principalData.contact.email
+                            ? principalData.contact.email
+                            : ""
+                          : ""
+                      }
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <ReadOnlyTextField
+                      id="Principal Contact Number"
+                      label={"Principal Contact Number"}
+                      defaultValue={
+                        principalData.contact
+                          ? principalData.contact.phone
+                            ? principalData.contact.phone
+                            : ""
+                          : ""
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            ) : null}
+
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={1} className={classes.formgrid}>
