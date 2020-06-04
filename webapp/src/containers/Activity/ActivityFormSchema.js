@@ -143,6 +143,21 @@ const ActivityFormSchema = {
       }
     }
   },
+  questionSet: {
+    label: "Question-Set",
+    id: "question_set",
+    autoComplete: "Select Question Set",
+    required: true,
+    placeholder: "Select Question Set",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Question-Set is required"
+      }
+    }
+  },
   dateFrom: {
     label: "Start Date",
     id: "dateFrom",

@@ -397,7 +397,6 @@ const ViewPastEvent = props => {
 
   /** Give feedback */
   const giveFeedback = async event => {
-    setOpen(true);
     setLoaderStatus(true);
     const QUESTION_SET_URL =
       strapiConstants.STRAPI_DB_URL +
@@ -445,7 +444,6 @@ const ViewPastEvent = props => {
 
   /** Edit feedback */
   const editFeedback = async event => {
-    setOpen(true);
     setLoaderStatus(true);
     const FEEDBACK_SET_URL =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;

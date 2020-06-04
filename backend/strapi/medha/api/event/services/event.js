@@ -15,6 +15,16 @@ const bookshelf = require("../../../config/config.js");
 const utils = require("../../../config/utils.js");
 
 module.exports = {
+  checkIfEventExist: async (ctx, eventId) => {
+    const event = await strapi.query("event").findOne({ id: eventId });
+    if (!event) {
+      return ctx.response.notFound("Event does not exist");
+    }
+    if (!event.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+    return event;
+  },
   getIndividuals: async (eventId, collegeId, filters) => {
     const studentRole = await strapi
       .query("role", "users-permissions")
@@ -119,7 +129,7 @@ module.exports = {
   },
 
   /** Gets aggregate feedback for an event for multiple conatcts and for a specific role */
-  getAggregateFeedbackForEvent: async (event, contacts, role) => {
+  getAggregateFeedbackForEvent: async (ctx, event, contacts, role) => {
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
@@ -186,7 +196,7 @@ module.exports = {
   },
 
   /** Get all comments for a particular role */
-  getAllCommentsForEvent: async (event, contacts, role) => {
+  getAllCommentsForEvent: async (ctx, event, contacts, role) => {
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
@@ -232,12 +242,14 @@ module.exports = {
       [
         "question",
         "feedback_set.contact",
+        "feedback_set.contact.user",
+        "feedback_set.contact.user.zone",
+        "feedback_set.contact.user.rpc",
         "feedback_set.contact.individual",
         "feedback_set.contact.individual.stream",
         "feedback_set.contact.individual.organization"
       ]
     );
-
     let finalResult = {};
     let result = [];
     feedback_response_data.map(res => {
@@ -258,7 +270,7 @@ module.exports = {
               ? res.feedback_set.contact.individual.organization.name
               : ""
           };
-        } else {
+        } else if (role === "Student") {
           finalResult[res.feedback_set.contact.id] = {
             "College Name": res.feedback_set.contact.individual.organization
               ? res.feedback_set.contact.individual.organization.name
@@ -270,6 +282,12 @@ module.exports = {
               : "",
             Stream: res.feedback_set.contact.individual.stream
               ? res.feedback_set.contact.individual.stream.name
+              : ""
+          };
+        } else if (role === "RPC Admin") {
+          finalResult[res.feedback_set.contact.id] = {
+            "RPC Name": res.feedback_set.contact.user.rpc
+              ? res.feedback_set.contact.user.rpc.name
               : ""
           };
         }
@@ -296,5 +314,23 @@ module.exports = {
       result.push(finalResult[key]);
     }
     return result;
+  },
+
+  getContactIdsForFeedback: async (ctx, id, role, contactIdToFind) => {
+    if (role === "Zonal Admin") {
+      if (contactIdToFind === "college") {
+        const collegeAdminIds = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getCollegeAdminsFromZone(id);
+
+        return collegeAdminIds;
+      } else if (contactIdToFind === "rpc") {
+        const rpcAdmins = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllRpcs();
+
+        return rpcAdmins;
+      }
+    }
   }
 };

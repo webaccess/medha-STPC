@@ -525,6 +525,13 @@ const AppRouter = props => {
           path={routeConstants.EDIT_ACTIVITY_BATCH}
         />
 
+        <RouteWithLayout
+          component={AddEditActivityBatch}
+          exact
+          layout={Layout}
+          path={routeConstants.ADD_ACTIVITY_BATCH}
+        />
+
         <ZonalRPCSuperAdminRoute
           component={EventFeedback}
           exact

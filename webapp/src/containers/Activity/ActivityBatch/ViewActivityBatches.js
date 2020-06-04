@@ -33,13 +33,12 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
 
-const ACTIVITY_BATCH_FILTER = "activity_batch_id";
+const ACTIVITY_BATCH_FILTER = "name_contains";
 
 const ViewActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
-  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     dataToShow: [],
@@ -97,7 +96,6 @@ const ViewActivityBatches = props => {
     strapiConstants.STRAPI_ACTIVITIES_BATCHES_URL;
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_URL)
       .then(({ data }) => {
@@ -110,11 +108,9 @@ const ViewActivityBatches = props => {
       .catch(() => {
         history.push("/404");
       });
-    setLoaderStatus(false);
   }, []);
 
   useEffect(() => {
-    setLoaderStatus(true);
     serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_URL)
       .then(res => {
@@ -157,7 +153,6 @@ const ViewActivityBatches = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_URL, params)
       .then(res => {
@@ -172,17 +167,14 @@ const ViewActivityBatches = props => {
           pageCount: res.data.pageCount,
           isDataLoading: false
         }));
-        setLoaderStatus(false);
       })
       .catch(error => {
         console.log("error", error);
-        setLoaderStatus(false);
       });
   };
 
   /** Pagination */
   const handlePerRowsChange = async (perPage, page) => {
-    setLoaderStatus(true);
     /** If we change the now of rows per page with filters supplied then the filter should by default be applied*/
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
       await getActivityBatches(perPage, page);
@@ -197,7 +189,6 @@ const ViewActivityBatches = props => {
 
   const handlePageChange = async page => {
     if (formUtilities.checkEmpty(formState.filterDataParameters)) {
-      setLoaderStatus(true);
       await getActivityBatches(formState.pageSize, page);
     } else {
       if (formState.isFilterSearch) {
@@ -210,7 +201,6 @@ const ViewActivityBatches = props => {
 
   /** Search filter is called when we select filters and click on search button */
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
-    setLoaderStatus(true);
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
       await getActivityBatches(perPage, page, formState.filterDataParameters);
@@ -234,15 +224,6 @@ const ViewActivityBatches = props => {
     getActivityBatches(formState.pageSize, 1);
   };
 
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
-  };
-
   /**
    * Redirect to Activity batch UI for given activity
    */
@@ -256,7 +237,6 @@ const ViewActivityBatches = props => {
   };
 
   const handleDeleteActivityBatch = activityBatch => {
-    setLoaderStatus(true);
     const url =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
     const activityBatchId = activityBatch.id;
@@ -269,7 +249,6 @@ const ViewActivityBatches = props => {
           severity: "success"
         }));
         getActivityBatches(10, 1);
-        setLoaderStatus(false);
       })
       .catch(({ response }) => {
         setAlert(() => ({
@@ -277,8 +256,18 @@ const ViewActivityBatches = props => {
           message: response.data.message,
           severity: "error"
         }));
-        setLoaderStatus(false);
       });
+  };
+
+  const handleFilterChange = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [ACTIVITY_BATCH_FILTER]: event.target.value
+      }
+    }));
+    event.persist();
   };
   /** Columns to show in table */
   const column = [
@@ -476,26 +465,16 @@ const ViewActivityBatches = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
-                <Autocomplete
-                  id="combo-box-demo"
-                  options={formState.batchesFilter}
-                  className={classes.autoCompleteField}
-                  getOptionLabel={option => option.name}
-                  onChange={(event, value) =>
-                    handleChangeAutoComplete(
-                      ACTIVITY_BATCH_FILTER,
-                      event,
-                      value
-                    )
+                <TextField
+                  label="Batch Name"
+                  placeholder="Batch Name"
+                  variant="outlined"
+                  value={
+                    formState.filterDataParameters[ACTIVITY_BATCH_FILTER] || ""
                   }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Batch Name"
-                      className={classes.autoCompleteField}
-                      variant="outlined"
-                    />
-                  )}
+                  name={ACTIVITY_BATCH_FILTER}
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChange}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>

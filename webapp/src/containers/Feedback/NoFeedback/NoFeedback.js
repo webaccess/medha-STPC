@@ -5,7 +5,13 @@ import Fade from "@material-ui/core/Fade";
 import CloseIcon from "@material-ui/icons/Close";
 
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
-import { Grid, Typography, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Card,
+  CardActions
+} from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { GrayButton } from "../../../components";
 
@@ -34,7 +40,7 @@ const NoFeedback = props => {
         <div className={classes.paper}>
           <div className={classes.blockpanel}>
             <Typography variant={"h2"} className={classes.textMargin}>
-              {props.forView ? `View Feedback` : `Add/Edit Feedback`}
+              {props.errorHeading ? props.errorHeading : `Feedback`}
             </Typography>
             <div className={classes.crossbtn}>
               <IconButton
@@ -49,28 +55,44 @@ const NoFeedback = props => {
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
-                <Grid item lg className={classes.deletemessage}>
-                  {props.errorMessage}
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Grid
-                container
-                direction="row"
-                justify="flex-end"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item>
-                  <GrayButton
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    onClick={handleClose}
-                  >
-                    Close
-                  </GrayButton>
+                <Grid item xs={12} className={classes.fullWidth}>
+                  <Grid item xs={12} className={classes.formgrid}>
+                    <Typography variant="h5" gutterBottom color="textSecondary">
+                      {props.Title}
+                    </Typography>
+                  </Grid>
+                  <Card>
+                    <Grid item xs={12} className={classes.edit_dialog}>
+                      <Grid item xs={12} md={12}>
+                        <CardActions justify="flex-end">
+                          {props.errorMessage ? props.errorMessage : "Error"}
+                        </CardActions>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                  <Grid xs={12} className={classes.edit_dialog}>
+                    <Grid
+                      item
+                      xs={12}
+                      md={12}
+                      container
+                      direction="row"
+                      justify="flex-end"
+                      alignItems="center"
+                      spacing={2}
+                    >
+                      <CardActions justify="flex-end">
+                        <GrayButton
+                          type="submit"
+                          color="primary"
+                          variant="contained"
+                          onClick={handleClose}
+                        >
+                          CLOSE
+                        </GrayButton>
+                      </CardActions>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>

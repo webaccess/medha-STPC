@@ -163,6 +163,12 @@
       "config": { "policies": [] }
     },
     {
+      "method": "GET",
+      "path": "/contact/:id/get-zone-events",
+      "handler": "contact.zoneEvents",
+      "config": { "policies": [] }
+    },
+    {
       "method": "DELETE",
       "path": "/activities/:id",
       "handler": "activity.delete",
