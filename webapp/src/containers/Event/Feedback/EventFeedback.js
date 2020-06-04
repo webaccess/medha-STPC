@@ -386,46 +386,6 @@ const EventFeedback = props => {
       result: result,
       showErrorModalFeedback: false
     }));
-
-    // await serviceProviders
-    //   .serviceProviderForGetRequest(QUESTION_SET_URL)
-    //   .then(res => {
-    //     setFeedbackState(feedbackState => ({
-    //       ...feedbackState,
-    //       isViewFeedback: true,
-    //       isEditFeedback: false,
-    //       isGiveFeedback: false,
-    //       showModalFeedback: true,
-    //       EventTitle: cell.title,
-    //       eventId: cell.id,
-    //       feedBackGiven: false,
-    //       fromFeedBackModal: false,
-    //       successErrorMessage: "",
-    //       ratings: res.data.result,
-    //       result: result,
-    //       showErrorModalFeedback: false
-    //     }));
-    //     setLoaderStatus(false);
-    //   })
-    //   .catch(error => {
-    //     setFeedbackState(feedbackState => ({
-    //       ...feedbackState,
-    //       showModalFeedback: false,
-    //       showErrorModalFeedback: true,
-    //       showAddEditModalFeedback: false,
-    //       isGiveFeedback: false,
-    //       isEditFeedback: false,
-    //       isViewFeedback: false,
-    //       EventTitle: cell.title,
-    //       feedBackGiven: false,
-    //       fromFeedBackModal: false,
-    //       successErrorMessage: "",
-    //       errorHeading: "View Feedback",
-    //       errorMessage: "No feedback available"
-    //     }));
-    //     setLoaderStatus(false);
-    //     console.log("error giving feedback");
-    //   });
   };
 
   /** For Viewing feedback for Zonal Admin feedback */
@@ -469,9 +429,11 @@ const EventFeedback = props => {
     await serviceProviders
       .serviceProviderForGetRequest(ZONE_FEEDBACK)
       .then(res => {
+        setLoaderStatus(false);
         result[roleConstants.RPCADMIN] = res.data.result;
       })
       .catch(error => {
+        setLoaderStatus(false);
         result[roleConstants.RPCADMIN] = [];
       });
 
@@ -490,111 +452,7 @@ const EventFeedback = props => {
       showErrorModalFeedback: false,
       dataFor: "college"
     }));
-
-    setLoaderStatus(false);
-
-    // await serviceProviders
-    //   .serviceProviderForAllGetRequest([COLLEGE_FEEDBACK, ZONE_FEEDBACK])
-    //   .then(res => {
-    //     res.map(arrayData => {
-    //       if (
-    //         arrayData.data.result.dataForRole === roleConstants.COLLEGEADMIN
-    //       ) {
-    //         result[roleConstants.COLLEGEADMIN] = arrayData.data.result;
-    //       } else if (
-    //         arrayData.data.result.dataForRole === roleConstants.RPCADMIN
-    //       ) {
-    //         result[roleConstants.RPCADMIN] = arrayData.data.result;
-    //       }
-    //     });
-    //     setFeedbackState(feedbackState => ({
-    //       ...feedbackState,
-    //       isViewFeedback: true,
-    //       isEditFeedback: false,
-    //       isGiveFeedback: false,
-    //       showModalFeedback: true,
-    //       EventTitle: cell.title,
-    //       eventId: cell.id,
-    //       feedBackGiven: false,
-    //       fromFeedBackModal: false,
-    //       successErrorMessage: "",
-    //       result: result,
-    //       showErrorModalFeedback: false,
-    //       dataFor: "college"
-    //     }));
-    //     setLoaderStatus(false);
-    //   })
-    //   .catch(error => {
-    //     setFeedbackState(feedbackState => ({
-    //       ...feedbackState,
-    //       showModalFeedback: false,
-    //       showErrorModalFeedback: true,
-    //       showAddEditModalFeedback: false,
-    //       isGiveFeedback: false,
-    //       isEditFeedback: false,
-    //       isViewFeedback: false,
-    //       EventTitle: cell.title,
-    //       feedBackGiven: false,
-    //       fromFeedBackModal: false,
-    //       successErrorMessage: "",
-    //       errorHeading: "View Feedback",
-    //       errorMessage: "No feedback available"
-    //     }));
-    //     setLoaderStatus(false);
-    //     console.log("error giving feedback");
-    //   });
   };
-
-  // const viewRPCFeedback = async cell => {
-  //   setLoaderStatus(true);
-  //   const ZONE_COLLEGE_FEEDBACK =
-  //     strapiConstants.STRAPI_DB_URL +
-  //     strapiConstants.STRAPI_EVENTS +
-  //     "/" +
-  //     cell.id +
-  //     "/getFeedbackForZone/" +
-  //     auth.getUserInfo().zone.id +
-  //     "/DataFor/rpc/FeedbackType/rating";
-  //   await serviceProviders
-  //     .serviceProviderForGetRequest(ZONE_COLLEGE_FEEDBACK)
-  //     .then(res => {
-  //       setFeedbackState(feedbackState => ({
-  //         ...feedbackState,
-  //         isViewFeedback: true,
-  //         isEditFeedback: false,
-  //         isGiveFeedback: false,
-  //         showModalFeedback: true,
-  //         EventTitle: cell.title,
-  //         eventId: cell.id,
-  //         feedBackGiven: false,
-  //         fromFeedBackModal: false,
-  //         successErrorMessage: "",
-  //         ratings: res.data.result,
-  //         showErrorModalFeedback: false,
-  //         dataFor: "rpc"
-  //       }));
-  //       setLoaderStatus(false);
-  //     })
-  //     .catch(error => {
-  //       setFeedbackState(feedbackState => ({
-  //         ...feedbackState,
-  //         showModalFeedback: false,
-  //         showErrorModalFeedback: true,
-  //         showAddEditModalFeedback: false,
-  //         isGiveFeedback: false,
-  //         isEditFeedback: false,
-  //         isViewFeedback: false,
-  //         EventTitle: cell.title,
-  //         feedBackGiven: false,
-  //         fromFeedBackModal: false,
-  //         successErrorMessage: "",
-  //         errorHeading: "View Feedback",
-  //         errorMessage: "No feedback available"
-  //       }));
-  //       setLoaderStatus(false);
-  //       console.log("error giving feedback");
-  //     });
-  // };
 
   /** Give feedback */
   const giveFeedback = async event => {
