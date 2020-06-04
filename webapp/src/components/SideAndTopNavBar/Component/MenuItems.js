@@ -116,22 +116,22 @@ const MenuItems = props => {
             link: routeConstants.VIEW_EDUCATION
           },
           {
-            name: "Activities",
+            name: "Past Activities",
             link: routeConstants.VIEW_PAST_ACTIVITIES
           },
           {
-            name: "Events",
+            name: "Past Events",
             link: routeConstants.VIEW_PAST_EVENTS
           }
         ]
       },
       {
-        name: "Activity",
+        name: "Upcoming Activities",
         link: routeConstants.ELIGIBLE_ACTIVITY,
         Icon: <AssignmentOutlinedIcon />
       },
       {
-        name: "Events",
+        name: "Upcoming Events",
         link: routeConstants.ELIGIBLE_EVENT,
         Icon: <EmojiFlagsOutlinedIcon />
       }
