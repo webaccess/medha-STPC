@@ -48,6 +48,7 @@ const USER_FILTER = "contact.name_contains";
 const STREAM_FILTER = "stream.id";
 const VERIFIEDBYCOLLEGE = "is_verified";
 const SORT_FIELD_KEY = "_sort";
+const PHONE_FILTER = "contact.phone_contains";
 
 const ManageStudents = props => {
   const history = useHistory();
@@ -230,6 +231,7 @@ const ManageStudents = props => {
 
         tempIndividualStudentData["qualifications"] = [];
         tempIndividualStudentData["Approved"] = data[i]["is_verified"];
+        tempIndividualStudentData["PhoneNumber"] = data[i]["contact"]["phone"];
         studentDataArray.push(tempIndividualStudentData);
       }
       return studentDataArray;
@@ -427,6 +429,18 @@ const ManageStudents = props => {
     event.persist();
   };
 
+  const handleFilterChangeForStudentConatctField = event => {
+    setFormState(formState => ({
+      ...formState,
+      filterDataParameters: {
+        ...formState.filterDataParameters,
+        [PHONE_FILTER]: event.target.value
+      },
+      isClearResetFilter: false
+    }));
+    event.persist();
+  };
+
   const searchFilter = async (perPage = formState.pageSize, page = 1) => {
     if (!formUtilities.checkEmpty(formState.filterDataParameters)) {
       formState.isFilterSearch = true;
@@ -474,6 +488,8 @@ const ManageStudents = props => {
   ) => {
     if (column.selector === "stream") {
       column.selector = "stream.name";
+    } else if (column.selector === "PhoneNumber") {
+      column.selector = "contact.phone";
     }
     formState.filterDataParameters[SORT_FIELD_KEY] =
       column.selector + ":" + sortDirection;
@@ -670,6 +686,7 @@ const ManageStudents = props => {
       selector: "first_name",
       cell: row => <CustomLink row={row} />
     },
+    { name: "Contact", sortable: true, selector: "PhoneNumber" },
     { name: "Stream", sortable: true, selector: "stream" },
     {
       name: "Education year",
@@ -938,6 +955,17 @@ const ManageStudents = props => {
                   placeholder="Name"
                   className={classes.autoCompleteField}
                   onChange={handleFilterChangeForStudentField}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="Contact"
+                  margin="normal"
+                  variant="outlined"
+                  value={formState.filterDataParameters[PHONE_FILTER] || ""}
+                  placeholder="Contact"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForStudentConatctField}
                 />
               </Grid>
               <Grid item className={classes.paddingDate}>
