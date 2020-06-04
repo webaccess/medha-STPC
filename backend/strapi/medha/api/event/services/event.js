@@ -190,6 +190,7 @@ module.exports = {
     });
 
     return {
+      dataForRole: role,
       total: feedback_set_id.length,
       ratings: question_ratings
     };
@@ -290,6 +291,12 @@ module.exports = {
               ? res.feedback_set.contact.user.rpc.name
               : ""
           };
+        } else if (role === "Zonal Admin") {
+          finalResult[res.feedback_set.contact.id] = {
+            "Zone Name": res.feedback_set.contact.user.zone
+              ? res.feedback_set.contact.user.zone.name
+              : ""
+          };
         }
 
         questions.map(ques => {
@@ -330,6 +337,26 @@ module.exports = {
         ].services.contact.getAllRpcs();
 
         return rpcAdmins;
+      }
+    } else if (role === "Medha Admin") {
+      if (contactIdToFind === "college") {
+        const collegeAdminIds = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllCollegeAdmins();
+
+        return collegeAdminIds;
+      } else if (contactIdToFind === "rpc") {
+        const rpcAdmins = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllRpcs();
+
+        return rpcAdmins;
+      } else if (contactIdToFind === "zone") {
+        const zoneAdmins = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllZones();
+
+        return zoneAdmins;
       }
     }
   }
