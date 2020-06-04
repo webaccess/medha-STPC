@@ -130,7 +130,7 @@ module.exports = {
    * @return {Array}
    * @param {CollegeId}
    *
-   * Get all student for given college id
+   * Get all rpcs
    */
   getAllRpcs: async () => {
     const rpcRole = await strapi
@@ -156,6 +156,70 @@ module.exports = {
     });
 
     return rpcAdminIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all zones
+   */
+  getAllZones: async () => {
+    const zoneRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Zonal Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: zoneRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response.map(user => user.id);
+
+    let zoneAdmins = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const zoneAdminIds = zoneAdmins.map(user => {
+      return user.id;
+    });
+
+    return zoneAdminIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all college admins
+   */
+  getAllCollegeAdmins: async () => {
+    const collegeRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: collegeRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response.map(user => user.id);
+
+    let collegeAdmins = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const collegeAdminIds = collegeAdmins.map(user => {
+      return user.id;
+    });
+
+    return collegeAdminIds;
   },
 
   /**

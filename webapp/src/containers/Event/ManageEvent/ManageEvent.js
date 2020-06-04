@@ -142,7 +142,8 @@ const ManageEvent = props => {
     /** questionSetId is while adding/editng */
     questionSetId: null,
     /** feedbackSetId is used while editing to identify where to store data against which feedback. */
-    feedbackSetId: null
+    feedbackSetId: null,
+    result: {}
   });
 
   useEffect(() => {
@@ -517,7 +518,7 @@ const ManageEvent = props => {
     }, 2000);
   };
 
-  /** For Adding feedback */
+  /** For viewing feedback */
   const viewFeedback = async cell => {
     setLoaderStatus(true);
     const QUESTION_SET_URL =
@@ -530,43 +531,120 @@ const ManageEvent = props => {
       "/" +
       auth.getUserInfo().studentInfo.organization.contact.id +
       "/getStudentsFeedbacks";
+
+    let result = {};
+    if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      result = {
+        [roleConstants.STUDENT]: null
+      };
+    }
+
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          isViewFeedback: true,
-          isEditFeedback: false,
-          isGiveFeedback: false,
-          showModalFeedback: true,
-          EventTitle: cell.title,
-          eventId: cell.id,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          ratings: res.data.result,
-          showErrorModalFeedback: false
-        }));
+        result[roleConstants.STUDENT] = res.data.result;
         setLoaderStatus(false);
       })
       .catch(error => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          showModalFeedback: false,
-          showErrorModalFeedback: true,
-          showAddEditModalFeedback: false,
-          isGiveFeedback: false,
-          isEditFeedback: false,
-          isViewFeedback: false,
-          EventTitle: cell.title,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          errorMessage: "Cannot view feedback"
-        }));
+        result[roleConstants.STUDENT] = [];
         setLoaderStatus(false);
-        console.log("error giving feedback");
       });
+
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
+      isViewFeedback: true,
+      isEditFeedback: false,
+      isGiveFeedback: false,
+      showModalFeedback: true,
+      EventTitle: cell.title,
+      eventId: cell.id,
+      feedBackGiven: false,
+      fromFeedBackModal: false,
+      successErrorMessage: "",
+      result: result,
+      showErrorModalFeedback: false
+    }));
+  };
+
+  /** For Adding feedback */
+  const viewFeedbackSuperAdmin = async cell => {
+    setLoaderStatus(true);
+    const COLLEGE_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getSuperAdminFeedback/" +
+      auth.getUserInfo().contact.id +
+      "/DataFor/college/FeedbackType/rating";
+
+    const RPC_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getSuperAdminFeedback/" +
+      auth.getUserInfo().contact.id +
+      "/DataFor/rpc/FeedbackType/rating";
+
+    const ZONE_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getSuperAdminFeedback/" +
+      auth.getUserInfo().contact.id +
+      "/DataFor/zone/FeedbackType/rating";
+
+    let result = {};
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+      result = {
+        [roleConstants.ZONALADMIN]: null,
+        [roleConstants.RPCADMIN]: null,
+        [roleConstants.COLLEGEADMIN]: null
+      };
+    }
+    await serviceProviders
+      .serviceProviderForGetRequest(COLLEGE_FEEDBACK)
+      .then(res => {
+        result[roleConstants.COLLEGEADMIN] = res.data.result;
+      })
+      .catch(error => {
+        result[roleConstants.COLLEGEADMIN] = [];
+      });
+    await serviceProviders
+      .serviceProviderForGetRequest(ZONE_FEEDBACK)
+      .then(res => {
+        result[roleConstants.ZONALADMIN] = res.data.result;
+      })
+      .catch(error => {
+        result[roleConstants.ZONALADMIN] = [];
+      });
+    await serviceProviders
+      .serviceProviderForGetRequest(RPC_FEEDBACK)
+      .then(res => {
+        result[roleConstants.RPCADMIN] = res.data.result;
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        result[roleConstants.RPCADMIN] = [];
+        setLoaderStatus(false);
+      });
+
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
+      isViewFeedback: true,
+      isEditFeedback: false,
+      isGiveFeedback: false,
+      showModalFeedback: true,
+      EventTitle: cell.title,
+      eventId: cell.id,
+      feedBackGiven: false,
+      fromFeedBackModal: false,
+      successErrorMessage: "",
+      result: result,
+      showErrorModalFeedback: false
+    }));
   };
 
   /** Give feedback */
@@ -863,7 +941,8 @@ const ManageEvent = props => {
       isEditFeedback: false,
       isViewFeedback: false,
       feedBackGiven: false,
-      fromFeedBackModal: false
+      fromFeedBackModal: false,
+      result: {}
     }));
   };
 
@@ -944,6 +1023,20 @@ const ManageEvent = props => {
                 />
               </div>
             )
+          ) : null}
+
+          {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+            <React.Fragment>
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  message={"View feedback"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => viewFeedbackSuperAdmin(cell)}
+                />
+              </div>
+            </React.Fragment>
           ) : null}
 
           {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
@@ -1338,11 +1431,12 @@ const ManageEvent = props => {
                   ? true
                   : false
               }
-              fromMedhaAdmin={
+              formSuperAdmin={
                 auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
                   ? true
                   : false
               }
+              result={feedbackState.result}
               dataToShow={feedbackState.ratings}
             />
           ) : null}
