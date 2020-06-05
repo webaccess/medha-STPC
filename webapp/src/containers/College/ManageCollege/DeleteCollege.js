@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Backdrop,
   Fade,
-  Modal,
+  Modal
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -17,17 +17,20 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
 
 const COLLEGE_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_COLLEGES;
+  strapiConstants.STRAPI_DB_URL +
+  strapiConstants.STRAPI_CONTACT_URL +
+  "s" +
+  strapiConstants.STRAPI_DELETE_ORGANIZATION;
 const COLLEGE_ID = "id";
 
-const DeleteZone = (props) => {
+const DeleteZone = props => {
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
     isValid: false,
     stateCounter: 0,
     values: {},
-    dataToDelete: {},
+    dataToDelete: {}
   });
 
   if (props.showModal && !formState.stateCounter) {
@@ -43,12 +46,12 @@ const DeleteZone = (props) => {
     if (typeof message !== "string") {
       message = "";
     }
-    setFormState((formState) => ({
+    setFormState(formState => ({
       ...formState,
       values: {},
       isDeleteData: false,
       isValid: false,
-      stateCounter: 0,
+      stateCounter: 0
     }));
     if (formState.isDeleteData) {
       props.closeModal(true, message);
@@ -57,7 +60,7 @@ const DeleteZone = (props) => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     /** CALL Put FUNCTION */
     setOpen(true);
     event.preventDefault();
@@ -82,7 +85,7 @@ const DeleteZone = (props) => {
     }
   };
 
-  const handleClose = async (event) => {
+  const handleClose = async event => {
     props.clearSelectedRow(true);
     props.closeModal();
   };
@@ -100,7 +103,7 @@ const DeleteZone = (props) => {
     if (isErrorCounter > 0) {
       dataToSent = {
         status: false,
-        message: "Error deleting selected Colleges",
+        message: "Error deleting selected Colleges"
       };
     } else {
       dataToSent = { status: true, message: "Success" };
@@ -109,34 +112,41 @@ const DeleteZone = (props) => {
   };
 
   /** This checks if the state can be deleted and returns back an array with status and message*/
-  const checkIfCollegeCanBeDelete = async (id) => {
+  const checkIfCollegeCanBeDelete = async id => {
     let dataToReturn = {};
+    // let studentsCheckUrl =
+    //   COLLEGE_URL + "/" + id + "/" + strapiConstants.STRAPI_STUDENT;
     let studentsCheckUrl =
-      COLLEGE_URL + "/" + id + "/" + strapiConstants.STRAPI_STUDENT;
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_COLLEGES +
+      "/" +
+      props.id +
+      "/" +
+      strapiConstants.STRAPI_STUDENT;
     await serviceProviders
       .serviceProviderForGetRequest(studentsCheckUrl)
-      .then((res) => {
-        if (res.data.result.length) {
+      .then(res => {
+        if (res.data.result.length > 0) {
           dataToReturn = {
             status: false,
             message:
               "Cannot delete College " +
               formState.dataToDelete["name"] +
-              " as it is linked to other Students",
+              " as it is linked to other Students"
           };
         } else {
           dataToReturn = {
             status: true,
-            message: "Success",
+            message: "Success"
           };
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("error", error);
         /** return error */
         dataToReturn = {
           status: false,
-          message: "Error deleting College " + formState.dataToDelete["name"],
+          message: "Error deleting College " + formState.dataToDelete["name"]
         };
       });
     return dataToReturn;
@@ -144,17 +154,20 @@ const DeleteZone = (props) => {
 
   const deleteData = () => {
     if (props.isMultiDelete) {
+      let deleteId = {
+        ids: props.id
+      };
       serviceProviders
-        .serviceProviderForAllDeleteRequest(COLLEGE_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .serviceProviderForPostRequest(COLLEGE_URL, deleteId)
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDeleteData = true;
           handleCloseModal("Colleges have been deleted successfully");
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("error");
           formState.isDeleteData = false;
           handleCloseModal(
@@ -162,12 +175,17 @@ const DeleteZone = (props) => {
           );
         });
     } else {
+      let idArray = [];
+      idArray.push(parseInt(props.id));
+      let deleteId = {
+        ids: idArray
+      };
       serviceProviders
-        .serviceProviderForDeleteRequest(COLLEGE_URL, props.id)
-        .then((res) => {
-          setFormState((formState) => ({
+        .serviceProviderForPostRequest(COLLEGE_URL, deleteId)
+        .then(res => {
+          setFormState(formState => ({
             ...formState,
-            isValid: true,
+            isValid: true
           }));
           formState.isDeleteData = true;
           handleCloseModal(
@@ -176,8 +194,8 @@ const DeleteZone = (props) => {
               " has been deleted successfully"
           );
         })
-        .catch((error) => {
-          console.log("error");
+        .catch(error => {
+          console.log("error", error);
           formState.isDeleteData = false;
           handleCloseModal(
             "An error has occured while deleting college" +
@@ -199,7 +217,7 @@ const DeleteZone = (props) => {
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
-        timeout: 500,
+        timeout: 500
       }}
     >
       <Fade in={props.showModal}>
