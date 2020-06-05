@@ -248,7 +248,7 @@
       "method": "POST",
       "path": "/contact/delete",
       "handler": "contact.deleteIndividual",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.isIndividualDeleteAllowed"] }
     },
     {
       "method": "GET",
