@@ -22,6 +22,7 @@ module.exports = {
   create: async ctx => {
     const files = ctx.request.files;
     let entry;
+
     if (ctx.request.files && ctx.request.body.data) {
       let { data } = ctx.request.body;
       data = JSON.parse(data);
@@ -32,7 +33,7 @@ module.exports = {
           id: entry.id || entry._id,
           model: "activity"
         },
-        files,
+        { upload_logo: files["files.upload_logo"] },
         PLUGIN
       );
     } else {
@@ -334,6 +335,7 @@ module.exports = {
 
     if (ctx.request.files && ctx.request.body.data) {
       const data = JSON.parse(ctx.request.body.data);
+      const files = ctx.request.files;
       const body = _.pick(data, [
         "title",
         "start_date_time",
@@ -347,6 +349,25 @@ module.exports = {
         "question_set",
         "description"
       ]);
+
+      return await strapi
+        .query("activity", PLUGIN)
+        .model.where({ id })
+        .save(body, { patch: true })
+        .then(async model => {
+          await model.related("streams").detach();
+          await model.related("streams").attach(ctx.request.body.streams);
+          await strapi.plugins.upload.services.upload.uploadToEntity(
+            {
+              id,
+              model: "activity"
+            },
+            { upload_logo: files["files.upload_logo"] },
+            PLUGIN
+          );
+
+          return model;
+        });
     } else {
       const body = _.pick(ctx.request.body, [
         "title",
