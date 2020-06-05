@@ -68,6 +68,16 @@ module.exports = {
     return response;
   },
 
+  async organizations(ctx) {
+    const { id } = ctx.params;
+
+    const response = await strapi
+      .query("contact", "crm-plugin")
+      .find({ contact_type: "organization", state: id });
+
+    return response;
+  },
+
   /**
    * @return {Object}
    */
