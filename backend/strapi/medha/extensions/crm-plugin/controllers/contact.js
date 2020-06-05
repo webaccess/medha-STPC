@@ -318,6 +318,7 @@ module.exports = {
       userRequestBody.state = ctx.request.body.state;
     }
 
+    userRequestBody.username = ctx.request.body.phone;
     userRequestBody.provider = "local";
     userRequestBody.password = await strapi.plugins[
       "users-permissions"
@@ -1500,7 +1501,6 @@ module.exports = {
     }
 
     const userRequestBody = _.pick(ctx.request.body, [
-      "username",
       "email",
       "password",
       "role",
@@ -1508,6 +1508,8 @@ module.exports = {
       "rpc",
       "blocked"
     ]);
+
+    userRequestBody.username = ctx.request.body.phone;
 
     if (
       (role.name == ROLE_COLLEGE_ADMIN || role.name == ROLE_MEDHA_ADMIN) &&
