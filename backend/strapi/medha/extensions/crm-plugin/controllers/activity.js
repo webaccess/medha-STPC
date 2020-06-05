@@ -102,6 +102,7 @@ module.exports = {
   async activityBatch(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    let filters = convertRestQueryParams(query);
     const { activity_batch_id } = query;
 
     const activity = await strapi.query("activity", PLUGIN).findOne({ id });
@@ -112,8 +113,16 @@ module.exports = {
 
     let activityBatches = await strapi
       .query("activity-batch")
-      .find({ activity: id });
+      .model.query(
+        buildQuery({
+          model: strapi.models["activity-batch"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
 
+    activityBatches = activityBatches.filter(ab => ab.activity.id == id);
     if (activity_batch_id) {
       activityBatches = activityBatches.filter(
         ab => ab.id == activity_batch_id
