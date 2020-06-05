@@ -435,7 +435,7 @@ const ManageUser = props => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
-        id: event.target.id,
+        id: event.target.getAttribute("contactId"),
         name: event.target.getAttribute("value")
       },
       showEditModal: false,
@@ -610,7 +610,7 @@ const ManageUser = props => {
     let arrayId = [];
 
     selectedRows.forEach(d => {
-      arrayId.push(d.id);
+      arrayId.push(d.contactId);
     });
 
     setFormState(formState => ({
@@ -948,6 +948,7 @@ const ManageUser = props => {
           <div className={classes.PaddingActionButton}>
             <DeleteGridIcon
               id={cell.id}
+              contactId={cell.contactId}
               value={cell.username}
               onClick={deleteCell}
             />
