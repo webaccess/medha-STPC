@@ -119,6 +119,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/events/:eventId/getSuperAdminFeedback/:id/DataFor/:dataFor/FeedbackType/:feedbackType",
+      "handler": "event.getFeedbackForSuperAdmin",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

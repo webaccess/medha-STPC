@@ -617,5 +617,96 @@ module.exports = {
     }
 
     return utils.getFindOneResponse(feedbackData);
+  },
+
+  /** Feedback data for medha admin */
+  async getFeedbackForSuperAdmin(ctx) {
+    const { eventId, id, dataFor, feedbackType } = ctx.params;
+
+    /** Steps to check if event is present */
+    const event = await strapi.services.event.checkIfEventExist(ctx, eventId);
+
+    /** Steps to check if feedback exist for that event */
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ event: eventId, question_set: event.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    let feedbackData;
+    if (dataFor === "college") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+        ctx,
+        null,
+        "Medha Admin",
+        "college"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          ctx,
+          event,
+          collegeAdminIds,
+          "College Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          ctx,
+          event,
+          collegeAdminIds,
+          "College Admin"
+        );
+      }
+    } else if (dataFor === "rpc") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+        ctx,
+        null,
+        "Medha Admin",
+        "rpc"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          ctx,
+          event,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          ctx,
+          event,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      }
+    } else if (dataFor === "zone") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const zoneAdmins = await strapi.services.event.getContactIdsForFeedback(
+        ctx,
+        null,
+        "Medha Admin",
+        "zone"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForEvent(
+          ctx,
+          event,
+          zoneAdmins,
+          "Zonal Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForEvent(
+          ctx,
+          event,
+          zoneAdmins,
+          "Zonal Admin"
+        );
+      }
+    }
+
+    return utils.getFindOneResponse(feedbackData);
   }
 };
