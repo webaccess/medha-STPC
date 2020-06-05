@@ -95,9 +95,9 @@ const AddEditRpc = props => {
         "/" +
         formState.values[stateName] +
         "/" +
-        strapiConstants.STRAPI_COLLEGES_INDERIECT_URL;
+        strapiConstants.STRAPI_ORGANIZATION;
       serviceProviders.serviceProviderForGetRequest(COLLEGE_URL).then(res => {
-        setGetColleges(res.data.result);
+        setGetColleges(res.data);
       });
     }
     return () => {};

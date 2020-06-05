@@ -239,6 +239,12 @@
       "config": { "policies": [] }
     },
     {
+      "method": "GET",
+      "path": "/states/:id/organization",
+      "handler": "state.organizations",
+      "config": { "policies": [] }
+    },
+    {
       "method": "DELETE",
       "path": "/contact/get-individuals/:id/file/:fileId",
       "handler": "contact.deleteDocument",
@@ -248,7 +254,7 @@
       "method": "POST",
       "path": "/contact/delete",
       "handler": "contact.deleteIndividual",
-      "config": { "policies": [] }
+      "config": { "policies": ["global.isIndividualDeleteAllowed"] }
     },
     {
       "method": "GET",

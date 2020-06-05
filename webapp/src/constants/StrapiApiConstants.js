@@ -22,6 +22,7 @@ export const STRAPI_INDIVIDUAL_URL = "crm-plugin/contact/individuals";
 export const STRAPI_BLOCK_URL = "/block-individual";
 export const STRAPI_UNBLOCK_URL = "/unblock-individual";
 export const STRAPI_CONTACT_URL = "crm-plugin/contact";
+export const STRAPI_DELETE_URL = "/delete";
 export const STRAPI_DISTRICTS = "crm-plugin/districts";
 export const STRAPI_QUALIFICATIONS = "qualifications";
 export const STRAPI_ROLES = "users-permissions/roles";
