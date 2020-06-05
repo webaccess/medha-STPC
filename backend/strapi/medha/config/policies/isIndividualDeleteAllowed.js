@@ -3,31 +3,56 @@
 /**
  * `isIndividualDeleteAllowed` policy.
  */
-
+const { PLUGIN } = require("../constants");
+const _ = require("lodash");
 module.exports = async (ctx, next) => {
   // Add your own logic here.
   console.log("In isIndividualDeleteAllowed policy.");
 
-  const { id } = ctx.params;
-  const user = ctx.state.user;
-  const body = ctx.request.body;
+  let user = ctx.state.user;
+  let { id } = ctx.request.body;
 
+  const user_1 = await strapi
+    .query("contact", PLUGIN)
+    .findOne({ id: user.contact });
+  const college = user_1.individual.organization;
   if (user.role.name === "Medha Admin") {
     await next();
-  }
-  if (user.role.name === "College Admin") {
-    const contact = await strapi
-      .query("contact", PLUGIN)
-      .findOne({ id: user.contact });
-    if (contact.individual.organization != id) {
-      return ctx.response.unauthorized("You don't have permission to do this");
-    } else await next();
-  }
-  if (
-    !(user.role.name == "Medha Admin" || user.role.name === "College Admin")
-  ) {
-    ctx.response.forbidden();
-  }
+  } else if (user.role.name === "College Admin") {
+    let student = await Promise.all(
+      id.map(async id => {
+        const contact = await strapi
+          .query("contact", PLUGIN)
+          .findOne({ id: id });
 
-  await next();
+        if (contact && contact.individual.organization === college) {
+          return id;
+        }
+      })
+    );
+    student = student.filter(c => c);
+
+    const notStudent = _.pullAll(id, student);
+
+    ctx.request.body["id"] = student;
+    await next();
+  } else if (user.role.name === "RPC Admin") {
+    console.log("rpc admin");
+    let student = await Promise.all(
+      id.map(async id => {
+        const contact = await strapi
+          .query("contact", PLUGIN)
+          .findOne({ id: id });
+        if (contact && contact.user.rpc === user.rpc) {
+          return id;
+        }
+      })
+    );
+    student = student.filter(c => c);
+
+    const notStudent = _.pullAll(id, student);
+    ctx.request.body["id"] = student;
+    await next();
+  } else return ctx.response.forbidden();
+  // await next();
 };

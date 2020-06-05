@@ -2089,12 +2089,6 @@ module.exports = {
       if (_.includes(list, user.studentId)) return user.userId;
     });
     console.log(user);
-
-    const admins = user.filter(user => {
-      if (user.role !== "Student") return user.studentId;
-    });
-    console.log("Admins");
-    console.log(admins);
     console.log("after filtering userId");
     console.log(userId);
 
@@ -2124,6 +2118,8 @@ module.exports = {
       return ctx.response.notFound(
         "Students with Id " + `${notStudent}` + " not found"
       );
+    else if (userId.length === 0)
+      return ctx.response.forbidden("Can't delete User");
     else return utils.getFindOneResponse("success");
   }
 };
