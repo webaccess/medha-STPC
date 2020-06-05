@@ -2,6 +2,14 @@
   "routes": [
     {
       "method": "GET",
+      "path": "/student-import-csvs/get-files-details",
+      "handler": "student-import-csv.getFileImportDetails",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/student-import-csvs",
       "handler": "student-import-csv.find",
       "config": {
@@ -49,17 +57,25 @@
       }
     },
     {
-      "method": "GET",
-      "path": "/student-import-csvs/:id/preview",
-      "handler": "student-import-csv.preview",
+      "method": "POST",
+      "path": "/student-import-csvs/:id/import",
+      "handler": "student-import-csv.import",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/student-import-csvs/:id/import",
-      "handler": "student-import-csv.import",
+      "path": "/student-import-csvs/:id/get-file-records",
+      "handler": "student-import-csv.getRecords",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/student-import-csvs/:id/get-imported-file-status",
+      "handler": "student-import-csv.getImportedFileStatus",
       "config": {
         "policies": []
       }

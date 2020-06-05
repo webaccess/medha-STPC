@@ -1,4 +1,6 @@
 {
+  "connection": "default",
+  "collectionName": "student_import_csvs",
   "info": {
     "name": "Student import csv"
   },
@@ -22,13 +24,9 @@
         "error"
       ]
     },
-    "error_file": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
     }
-  },
-  "connection": "default",
-  "collectionName": "student_import_csvs"
+  }
 }
