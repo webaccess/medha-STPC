@@ -11,7 +11,10 @@ import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../components";
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 
-const USER_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_URL =
+  strapiConstants.STRAPI_DB_URL +
+  strapiConstants.STRAPI_CONTACT_URL +
+  strapiConstants.STRAPI_DELETE_URL;
 const USER_ID = "UserName";
 
 const DeleteUser = props => {
@@ -60,8 +63,11 @@ const DeleteUser = props => {
 
   const deleteData = () => {
     if (props.isMultiDelete) {
+      let deleteId = {
+        id: props.id
+      };
       serviceProviders
-        .serviceProviderForAllDeleteRequest(USER_URL, props.id)
+        .serviceProviderForPostRequest(USER_URL, deleteId)
         .then(res => {
           setFormState(formState => ({
             ...formState,
@@ -78,8 +84,13 @@ const DeleteUser = props => {
           );
         });
     } else {
+      let deleteArray = [];
+      deleteArray.push(parseInt(props.id));
+      let deleteId = {
+        id: deleteArray
+      };
       serviceProviders
-        .serviceProviderForDeleteRequest(USER_URL, props.id)
+        .serviceProviderForPostRequest(USER_URL, deleteId)
         .then(res => {
           setFormState(formState => ({
             ...formState,
@@ -93,7 +104,7 @@ const DeleteUser = props => {
           );
         })
         .catch(error => {
-          console.log("error");
+          console.log("error", error);
           formState.isDeleteData = false;
           handleCloseModal(
             "An error has occured while deleting user" +
