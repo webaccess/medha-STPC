@@ -19,6 +19,10 @@ module.exports = async (ctx, next) => {
   if (user.role.name === "Medha Admin") {
     await next();
   } else if (user.role.name === "College Admin") {
+    const user_1 = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: user.contact });
+    const college = user_1.individual.organization;
     let student = await Promise.all(
       id.map(async id => {
         const contact = await strapi
