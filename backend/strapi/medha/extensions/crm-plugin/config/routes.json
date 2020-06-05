@@ -239,6 +239,12 @@
       "config": { "policies": [] }
     },
     {
+      "method": "GET",
+      "path": "/states/:id/organization",
+      "handler": "state.organizations",
+      "config": { "policies": [] }
+    },
+    {
       "method": "DELETE",
       "path": "/contact/get-individuals/:id/file/:fileId",
       "handler": "contact.deleteDocument",
@@ -254,6 +260,14 @@
       "method": "GET",
       "path": "/activities/:id/question-sets",
       "handler": "activity.getQuestionSet",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/contacts/delete-organization",
+      "handler": "contact.deleteOrganization",
       "config": {
         "policies": []
       }

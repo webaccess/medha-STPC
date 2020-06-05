@@ -16,6 +16,7 @@ const DeleteGridIcon = props => {
         id={props.id}
         userId={props.userId}
         value={props.value}
+        contactId={props.contactId}
         onClick={props.disabled ? null : props.onClick}
         style={
           props.disabled
