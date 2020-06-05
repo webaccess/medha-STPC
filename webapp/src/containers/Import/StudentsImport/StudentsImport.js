@@ -21,11 +21,11 @@ import {
   Auth,
   Table,
   RetryIcon,
-  DownloadIcon
+  DownloadIcon,
+  LinearProgressWithLabel
 } from "../../../components";
 import ImportStudentsModal from "./PreviewAndImport";
 import LoaderContext from "../../../context/LoaderContext";
-import { capitalize } from "lodash";
 import XLSX from "xlsx";
 
 const StudentsImport = props => {
@@ -43,6 +43,10 @@ const StudentsImport = props => {
   const [fileData, setFileData] = useState(null);
   const [importHistory, setImportHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [showProgress, setShowProgress] = useState(false);
+  const [fileId, setFileId] = useState(null);
+  const [intervalId, setIntervalId] = useState(null);
 
   const URL =
     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT_IMPORT_CSV;
@@ -52,6 +56,17 @@ const StudentsImport = props => {
   useEffect(() => {
     getImportHistory();
   }, []);
+
+  useEffect(() => {
+    let id;
+    if (showProgress && fileId) {
+      id = setInterval(() => {
+        fetchFileDetails();
+      }, 5000);
+      setIntervalId(id);
+    }
+    return () => clearInterval(id);
+  }, [showProgress, fileId]);
 
   const getImportHistory = () => {
     setLoading(true);
@@ -107,32 +122,53 @@ const StudentsImport = props => {
       });
   };
 
+  const updateStatus = id => {
+    setShowProgress(true);
+    setFileId(id);
+  };
+
+  const fetchFileDetails = () => {
+    if (showProgress) {
+      const url = URL + `/${fileId}/get-imported-file-status`;
+      serviceProviders
+        .serviceProviderForGetAsyncRequest(url)
+        .then(({ data }) => {
+          const val = (data.pending / data.total) * 100;
+          const progress = 100 - val == 0 ? 0 : 100 - val;
+          if (progress == 100) {
+            clearInterval(intervalId);
+            setFileId(null);
+            setShowProgress(false);
+            setProgress(0);
+            setAlert(() => ({
+              isOpen: true,
+              message: `File processed successfully`,
+              severity: "success"
+            }));
+            getImportHistory();
+          } else {
+            setProgress(progress);
+          }
+        })
+        .catch(() => {
+          clearInterval(intervalId);
+          setFileId(null);
+          setShowProgress(false);
+          setProgress(0);
+        });
+    }
+  };
+
   const retry = (id, name) => {
     const IMPORT_URL = URL + `/${id}/import?retry=true`;
-    setLoaderStatus(true);
+    updateStatus(id);
     serviceProviders
-      .serviceProviderForGetRequest(IMPORT_URL)
-      .then(({ data }) => {
-        if (data.records.length) {
-          setAlert(() => ({
-            isOpen: true,
-            message: `${capitalize(
-              name
-            )} pending records successfully imported`,
-            severity: "success"
-          }));
-        } else {
-          setAlert(() => ({
-            isOpen: true,
-            message: `Not all ${name} pending records were imported`,
-            severity: "success"
-          }));
-        }
+      .serviceProviderForPostRequest(IMPORT_URL)
+      .then(() => {
         getImportHistory();
-        setLoaderStatus(false);
       })
       .catch(error => {
-        setLoaderStatus(false);
+        console.log(error);
       });
   };
 
@@ -289,6 +325,16 @@ const StudentsImport = props => {
             </Button>
           </Grid>
           <Grid item>
+            {showProgress ? (
+              <div className={classes.ProgressBar}>
+                <LinearProgressWithLabel
+                  value={progress}
+                  style={{ height: "20px" }}
+                />
+              </div>
+            ) : null}
+          </Grid>
+          <Grid item>
             <Table
               data={importHistory}
               column={column}
@@ -306,15 +352,8 @@ const StudentsImport = props => {
           showModal={showPreviewAndImportModal}
           closeModal={() => setShowPreviewAndImportModal(false)}
           data={fileData}
-          loading={val => setLoaderStatus(val)}
           clear={handleOnRemoveFile}
-          alert={(isOpen, severity, message) =>
-            setAlert({
-              severity,
-              message,
-              isOpen
-            })
-          }
+          updateStatus={id => updateStatus(id)}
         />
       ) : null}
     </Grid>

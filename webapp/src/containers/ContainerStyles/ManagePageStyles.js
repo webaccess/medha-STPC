@@ -93,6 +93,12 @@ const useStyles = makeStyles(theme => ({
       color: "#353535",
       backgroundColor: "#f6c80a"
     }
+  },
+
+  ProgressBar: {
+    marginLeft: "2%",
+    paddingRight: "20px",
+    marginTop: "8px"
   }
 
   /** */

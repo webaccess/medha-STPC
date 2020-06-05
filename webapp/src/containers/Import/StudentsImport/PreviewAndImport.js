@@ -7,41 +7,23 @@ import { Table, YellowButton } from "../../../components";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import { useHistory } from "react-router-dom";
-import * as routeConstants from "../../../constants/RouteConstants";
 
 const PreviewAndImport = props => {
   const classes = useStyles();
-  const history = useHistory();
-
   const handleStudentImport = () => {
-    props.loading(true);
     const { id } = props.data;
+    props.updateStatus(id);
+    props.closeModal();
+    props.clear();
     const IMPORT_URL =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_STUDENT_IMPORT_CSV +
       `/${id}/import`;
 
     serviceProviders
-      .serviceProviderForGetRequest(IMPORT_URL)
-      .then(({ data }) => {
-        props.loading(false);
-        props.closeModal();
-        props.clear();
-        history.push({
-          pathname: routeConstants.IMPORT_SUMMARY,
-          data
-        });
-      })
+      .serviceProviderForPostRequest(IMPORT_URL)
+      .then(() => {})
       .catch(error => {
-        props.loading(false);
-        props.closeModal();
-        props.clear();
-        props.alert(
-          true,
-          "error",
-          "Something went wrong while student importing"
-        );
         console.log(error);
       });
   };
