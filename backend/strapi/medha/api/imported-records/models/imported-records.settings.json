@@ -1,4 +1,6 @@
 {
+  "connection": "default",
+  "collectionName": "imported_records",
   "info": {
     "name": "Imported records"
   },
@@ -18,8 +20,12 @@
         "error"
       ],
       "default": "pending"
+    },
+    "student_import_csv": {
+      "model": "student-import-csv"
+    },
+    "message": {
+      "type": "string"
     }
-  },
-  "connection": "default",
-  "collectionName": "imported_records"
+  }
 }

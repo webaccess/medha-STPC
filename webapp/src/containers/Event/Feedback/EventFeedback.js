@@ -103,7 +103,8 @@ const EventFeedback = props => {
     questionSetId: null,
     /** feedbackSetId is used while editing to identify where to store data against which feedback. */
     feedbackSetId: null,
-    dataFor: ""
+    dataFor: "",
+    result: {}
   });
 
   useEffect(() => {
@@ -341,6 +342,14 @@ const EventFeedback = props => {
   /** For Adding feedback */
   const viewFeedback = async cell => {
     setLoaderStatus(true);
+
+    let result = {};
+    if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+      result = {
+        [roleConstants.COLLEGEADMIN]: null
+      };
+    }
+
     const QUESTION_SET_URL =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_EVENTS +
@@ -351,50 +360,38 @@ const EventFeedback = props => {
       "/" +
       auth.getUserInfo().rpc.id +
       "/getCollegeFeedbackForRPC";
+
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          isViewFeedback: true,
-          isEditFeedback: false,
-          isGiveFeedback: false,
-          showModalFeedback: true,
-          EventTitle: cell.title,
-          eventId: cell.id,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          ratings: res.data.result,
-          showErrorModalFeedback: false
-        }));
+        result[roleConstants.COLLEGEADMIN] = res.data.result;
         setLoaderStatus(false);
       })
       .catch(error => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          showModalFeedback: false,
-          showErrorModalFeedback: true,
-          showAddEditModalFeedback: false,
-          isGiveFeedback: false,
-          isEditFeedback: false,
-          isViewFeedback: false,
-          EventTitle: cell.title,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          errorHeading: "View Feedback",
-          errorMessage: "No feedback available"
-        }));
+        result[roleConstants.COLLEGEADMIN] = [];
         setLoaderStatus(false);
-        console.log("error giving feedback");
       });
+
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
+      isViewFeedback: true,
+      isEditFeedback: false,
+      isGiveFeedback: false,
+      showModalFeedback: true,
+      EventTitle: cell.title,
+      eventId: cell.id,
+      feedBackGiven: false,
+      fromFeedBackModal: false,
+      successErrorMessage: "",
+      result: result,
+      showErrorModalFeedback: false
+    }));
   };
 
   /** For Viewing feedback for Zonal Admin feedback */
   const viewCollegeFeedback = async cell => {
     setLoaderStatus(true);
-    const ZONE_COLLEGE_FEEDBACK =
+    const COLLEGE_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_EVENTS +
       "/" +
@@ -402,50 +399,8 @@ const EventFeedback = props => {
       "/getFeedbackForZone/" +
       auth.getUserInfo().zone.id +
       "/DataFor/college/FeedbackType/rating";
-    await serviceProviders
-      .serviceProviderForGetRequest(ZONE_COLLEGE_FEEDBACK)
-      .then(res => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          isViewFeedback: true,
-          isEditFeedback: false,
-          isGiveFeedback: false,
-          showModalFeedback: true,
-          EventTitle: cell.title,
-          eventId: cell.id,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          ratings: res.data.result,
-          showErrorModalFeedback: false,
-          dataFor: "college"
-        }));
-        setLoaderStatus(false);
-      })
-      .catch(error => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          showModalFeedback: false,
-          showErrorModalFeedback: true,
-          showAddEditModalFeedback: false,
-          isGiveFeedback: false,
-          isEditFeedback: false,
-          isViewFeedback: false,
-          EventTitle: cell.title,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          errorHeading: "View Feedback",
-          errorMessage: "No feedback available"
-        }));
-        setLoaderStatus(false);
-        console.log("error giving feedback");
-      });
-  };
 
-  const viewRPCFeedback = async cell => {
-    setLoaderStatus(true);
-    const ZONE_COLLEGE_FEEDBACK =
+    const ZONE_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_EVENTS +
       "/" +
@@ -453,45 +408,50 @@ const EventFeedback = props => {
       "/getFeedbackForZone/" +
       auth.getUserInfo().zone.id +
       "/DataFor/rpc/FeedbackType/rating";
+
+    let result = {};
+    if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+      result = {
+        [roleConstants.RPCADMIN]: null,
+        [roleConstants.COLLEGEADMIN]: null
+      };
+    }
+
     await serviceProviders
-      .serviceProviderForGetRequest(ZONE_COLLEGE_FEEDBACK)
+      .serviceProviderForGetRequest(COLLEGE_FEEDBACK)
       .then(res => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          isViewFeedback: true,
-          isEditFeedback: false,
-          isGiveFeedback: false,
-          showModalFeedback: true,
-          EventTitle: cell.title,
-          eventId: cell.id,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          ratings: res.data.result,
-          showErrorModalFeedback: false,
-          dataFor: "rpc"
-        }));
-        setLoaderStatus(false);
+        result[roleConstants.COLLEGEADMIN] = res.data.result;
       })
       .catch(error => {
-        setFeedbackState(feedbackState => ({
-          ...feedbackState,
-          showModalFeedback: false,
-          showErrorModalFeedback: true,
-          showAddEditModalFeedback: false,
-          isGiveFeedback: false,
-          isEditFeedback: false,
-          isViewFeedback: false,
-          EventTitle: cell.title,
-          feedBackGiven: false,
-          fromFeedBackModal: false,
-          successErrorMessage: "",
-          errorHeading: "View Feedback",
-          errorMessage: "No feedback available"
-        }));
-        setLoaderStatus(false);
-        console.log("error giving feedback");
+        result[roleConstants.COLLEGEADMIN] = [];
       });
+
+    await serviceProviders
+      .serviceProviderForGetRequest(ZONE_FEEDBACK)
+      .then(res => {
+        setLoaderStatus(false);
+        result[roleConstants.RPCADMIN] = res.data.result;
+      })
+      .catch(error => {
+        setLoaderStatus(false);
+        result[roleConstants.RPCADMIN] = [];
+      });
+
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
+      isViewFeedback: true,
+      isEditFeedback: false,
+      isGiveFeedback: false,
+      showModalFeedback: true,
+      EventTitle: cell.title,
+      eventId: cell.id,
+      feedBackGiven: false,
+      fromFeedBackModal: false,
+      successErrorMessage: "",
+      result: result,
+      showErrorModalFeedback: false,
+      dataFor: "college"
+    }));
   };
 
   /** Give feedback */
@@ -862,20 +822,11 @@ const EventFeedback = props => {
             <React.Fragment>
               <div className={classes.PaddingActionButton}>
                 <FeedBack
-                  message={"View College feedback"}
+                  message={"View feedback"}
                   id={cell.id}
                   isViewFeedback={true}
                   value={cell.title}
                   onClick={() => viewCollegeFeedback(cell)}
-                />
-              </div>
-              <div className={classes.PaddingActionButton}>
-                <FeedBack
-                  message={"View RPC feedback"}
-                  id={cell.id}
-                  isViewFeedback={true}
-                  value={cell.title}
-                  onClick={() => viewRPCFeedback(cell)}
                 />
               </div>
             </React.Fragment>
@@ -1108,6 +1059,7 @@ const EventFeedback = props => {
                   ? true
                   : false
               }
+              result={feedbackState.result}
               dataFor={feedbackState.dataFor}
               dataToShow={feedbackState.ratings}
             />

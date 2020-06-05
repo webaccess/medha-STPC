@@ -922,8 +922,10 @@ const ROLES = {
           "create",
           "delete",
           "update",
-          "preview",
-          "import"
+          "import",
+          "getFileImportDetails",
+          "getRecords",
+          "getImportedFileStatus"
         ]
       },
       {

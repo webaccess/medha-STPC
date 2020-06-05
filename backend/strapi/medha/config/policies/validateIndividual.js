@@ -45,14 +45,15 @@ module.exports = async (ctx, next) => {
       if (user) return ctx.response.badRequest("Roll number already taken");
     }
 
-    if (!individual.username)
-      return ctx.response.badRequest("Username field is missing");
-    else {
-      const contact = await strapi
-        .query("user", "users-permissions")
-        .findOne({ username: individual.username });
-      if (contact) return ctx.response.badRequest("Username already taken");
-    }
+    // if (!individual.username)
+    //   return ctx.response.badRequest("Username field is missing");
+    // else {
+    //   const contact = await strapi
+    //     .query("user", "users-permissions")
+    //     .findOne({ username: individual.username });
+    //   if (contact) return ctx.response.badRequest("Username already taken");
+    // }
+
     if (!individual.email)
       return ctx.response.badRequest("Email field is missing");
     else {
@@ -64,10 +65,16 @@ module.exports = async (ctx, next) => {
     if (!individual.phone)
       return ctx.response.badRequest("Contact Number field is missing");
     else {
-      const contact = await strapi
+      const isUsernamePresent = await strapi
+        .query("user", "users-permissions")
+        .findOne({ username: individual.phone });
+      if (isUsernamePresent)
+        return ctx.response.badRequest("Username already taken");
+
+      const isContactPresent = await strapi
         .query("contact", PLUGIN)
         .findOne({ phone: individual.phone });
-      if (contact)
+      if (isContactPresent)
         return ctx.response.badRequest("Contact number already taken");
     }
 
