@@ -19,6 +19,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth, InlineDatePicker } from "../../components";
 
 import * as routeConstants from "../../constants/RouteConstants";
+import * as roleConstants from "../../constants/RoleConstants";
+
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
 
@@ -192,11 +194,10 @@ const AddEditStudent = props => {
       }
       if (
         props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["user"] &&
-        props.location["dataForEdit"]["contact"]["user"]["state"]
+        props.location["dataForEdit"]["contact"]["state"]
       ) {
         formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["user"]["state"]["id"];
+          props.location["dataForEdit"]["contact"]["state"];
       }
       if (
         props.location["dataForEdit"]["stream"] &&
@@ -262,6 +263,7 @@ const AddEditStudent = props => {
     if (props.location.state.contactNumber && props.location.state.otp) {
       formState.values["contact"] = props.location.state.contactNumber;
       formState.values["otp"] = props.location.state.otp;
+      formState.values["username"] = props.location.state.contactNumber;
     }
     formState.counter += 1;
   }
@@ -387,8 +389,8 @@ const AddEditStudent = props => {
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
           if (
-            auth.getUserInfo().role.name === "Medha Admin" ||
-            auth.getUserInfo().role.name === "College Admin"
+            auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+            auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
           ) {
             history.push({
               pathname: routeConstants.MANAGE_STUDENT,
@@ -451,8 +453,8 @@ const AddEditStudent = props => {
             history.push(routeConstants.REGISTERED);
           } else {
             if (
-              auth.getUserInfo().role.name === "Medha Admin" ||
-              auth.getUserInfo().role.name === "College Admin"
+              auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
             ) {
               history.push(routeConstants.MANAGE_STUDENT);
             }
@@ -1116,8 +1118,8 @@ const AddEditStudent = props => {
                     variant="outlined"
                     required
                     fullWidth
-                    disabled={formState.editStudent ? true : false}
-                    onChange={handleChange}
+                    disabled
+                    readOnly
                     error={hasError("username")}
                     helperText={
                       hasError("username")
@@ -1248,7 +1250,8 @@ const AddEditStudent = props => {
                     mfullWidth
                     variant="contained"
                     onClick={() => {
-                      auth.getUserInfo().role.name === "College Admin"
+                      auth.getUserInfo().role.name ===
+                      roleConstants.COLLEGEADMIN
                         ? history.push(routeConstants.MANAGE_STUDENT)
                         : history.push(routeConstants.VIEW_PROFILE);
                     }}

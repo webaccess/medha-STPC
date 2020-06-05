@@ -8,6 +8,7 @@ import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import {
   Table,
@@ -47,7 +48,8 @@ const PastActivities = props => {
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const studentInfo =
-    Auth.getUserInfo() !== null && Auth.getUserInfo().role.name === "Student"
+    Auth.getUserInfo() !== null &&
+    Auth.getUserInfo().role.name === roleConstants.STUDENT
       ? Auth.getUserInfo().studentInfo.contact.id
       : Auth.getStudentIdFromCollegeAdmin();
   const STUDENT_ACTIVITY_URL =

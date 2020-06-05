@@ -58,6 +58,16 @@ module.exports = {
       });
   },
 
+  async districts(ctx) {
+    const { id } = ctx.params;
+
+    const response = await strapi
+      .query("district", "crm-plugin")
+      .find({ state: id }, ["state", "state.country"]);
+
+    return response;
+  },
+
   /**
    * @return {Object}
    */

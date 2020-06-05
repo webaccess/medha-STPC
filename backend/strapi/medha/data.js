@@ -606,7 +606,13 @@ const ROLES = {
       },
       {
         name: "event",
-        action: []
+        action: [
+          "getfeedbackforzone",
+          "getquestionset",
+          "findone",
+          "getfeedbacksforeventforrpc",
+          "getfeedbackscommentsforeventforrpc"
+        ]
       },
       {
         name: "event-registration",
@@ -622,11 +628,11 @@ const ROLES = {
       },
       {
         name: "question-set",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "feedback-set",
-        action: []
+        action: ["create", "findone", "update"]
       },
       {
         name: "rpc",
@@ -661,7 +667,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: [],
+        action: ["zoneevents"],
         type: PLUGIN_NAME
       },
       {
@@ -728,7 +734,12 @@ const ROLES = {
       },
       {
         name: "event",
-        action: []
+        action: [
+          "getquestionset",
+          "findone",
+          "getfeedbacksforeventforrpc",
+          "getfeedbackscommentsforeventforrpc"
+        ]
       },
       {
         name: "event-registration",
@@ -744,11 +755,11 @@ const ROLES = {
       },
       {
         name: "question-set",
-        action: []
+        action: ["find", "findone"]
       },
       {
         name: "feedback-set",
-        action: []
+        action: ["create", "findone", "update"]
       },
       {
         name: "rpc",
@@ -783,7 +794,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: [],
+        action: ["rpcevents"],
         type: PLUGIN_NAME
       },
       {
@@ -842,11 +853,11 @@ const ROLES = {
       },
       {
         name: "academic-year",
-        action: ["find", "create", "update"]
+        action: ["find", "create", "update", "findone"]
       },
       {
         name: "activity-batch",
-        action: ["student", "delete"]
+        action: ["student", "delete", "update", "create"]
       },
       {
         name: "education",
@@ -856,6 +867,7 @@ const ROLES = {
         name: "event",
         action: [
           "create",
+          "deleteimage",
           "findone",
           "individual",
           "eligibleOrganizationIndividual",
@@ -884,7 +896,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create"]
+        action: ["create", "findone", "update"]
       },
       {
         name: "rpc",
@@ -924,7 +936,8 @@ const ROLES = {
           "activitybatch",
           "download",
           "student",
-          "getquestionset"
+          "getquestionset",
+          "update"
         ],
         type: PLUGIN_NAME
       },
@@ -1072,7 +1085,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create"]
+        action: ["create", "findone", "update"]
       },
       {
         name: "rpc",
@@ -1111,6 +1124,8 @@ const ROLES = {
           "findone",
           "education",
           "academichistory",
+          "eligiblepastactivities",
+          "deletedocument",
           "eligibleEvents",
           "eligibleActivity",
           "individualregisteredevents",

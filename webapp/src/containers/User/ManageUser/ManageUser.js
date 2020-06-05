@@ -19,6 +19,7 @@ import {
 import { Table, Spinner, Alert } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import {
   GrayButton,
   YellowButton,
@@ -283,13 +284,20 @@ const ManageUser = props => {
       for (let i in data) {
         var temp = {};
         temp["id"] = data[i]["id"];
+        temp["contactId"] = data[i]["contact"]["id"];
         temp["username"] =
           data[i]["contact"]["user"] && data[i]["contact"]["user"]["username"]
             ? data[i]["contact"]["user"]["username"]
             : "";
-        temp["blocked"] = data[i]["contact"]["user"]["blocked"];
+        temp["blocked"] =
+          data[i]["contact"]["user"]["blocked"] !== null &&
+          data[i]["contact"]["user"]["blocked"]
+            ? data[i]["contact"]["user"]["blocked"]
+            : false;
         temp["role"] = data[i]["contact"]["user"]["role"]["name"];
-        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["state"] = "";
         } else {
           if (
@@ -302,7 +310,9 @@ const ManageUser = props => {
           }
         }
 
-        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["zone"] = "";
         } else {
           if (
@@ -316,7 +326,9 @@ const ManageUser = props => {
           }
         }
 
-        if (data[i]["contact"]["user"]["role"]["name"] === "Student") {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["rpc"] = "";
         } else {
           if (data[i]["contact"]["user"] && data[i]["contact"]["user"]["rpc"]) {
@@ -326,10 +338,16 @@ const ManageUser = props => {
           }
         }
 
-        if (data[i]["organization"] && data[i]["organization"]["name"]) {
-          temp["college"] = data[i]["organization"]["name"];
-        } else {
+        if (
+          data[i]["contact"]["user"]["role"]["name"] === roleConstants.STUDENT
+        ) {
           temp["college"] = "";
+        } else {
+          if (data[i]["organization"] && data[i]["organization"]["name"]) {
+            temp["college"] = data[i]["organization"]["name"];
+          } else {
+            temp["college"] = "";
+          }
         }
         x.push(temp);
       }
@@ -612,13 +630,13 @@ const ManageUser = props => {
       ) {
         if (formState.dataToShow[k]["blocked"] === true) {
           blockedCellData(
-            event.target.id,
+            event.target.getAttribute("contactId"),
             event.target.getAttribute("value"),
             false
           );
         } else {
           blockedCellData(
-            event.target.id,
+            event.target.getAttribute("contactId"),
             event.target.getAttribute("value"),
             true
           );
@@ -744,7 +762,7 @@ const ManageUser = props => {
     setLoaderStatus(true);
     let arrayId = [];
     for (var k = 0; k < selectedRows.length; k++) {
-      arrayId.push(selectedRows[k]["id"]);
+      arrayId.push(selectedRows[k]["contactId"]);
     }
     if (formState.bottonBlockUnblock === "Block Selected User") {
       setFormState(formState => ({
@@ -921,6 +939,7 @@ const ManageUser = props => {
             <BlockGridIcon
               title={cell.blocked}
               id={cell.id}
+              contactId={cell.contactId}
               value={cell.username}
               onClick={blockedCell}
               style={cell.blocked}

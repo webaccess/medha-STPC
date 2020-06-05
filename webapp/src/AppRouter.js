@@ -20,7 +20,8 @@ import {
   EditEducation,
   RouteWithTabLayout,
   EditAcademicHistoryRoute,
-  EditActivityBatchRoute
+  EditActivityBatchRoute,
+  ZonalRPCSuperAdminRoute
 } from "./authroute";
 
 /** General */
@@ -58,6 +59,7 @@ import ViewEvent from "./containers/Event/ViewEvent/ViewEvent";
 import EligibleEvents from "./containers/Event/EligibleEvents/EligibleEvents";
 import AddStudentToRecruitmentDrive from "./containers/Event/ManageEvent/AddStudentToRecruitmentDrive";
 import ViewPastEvent from "./containers/Event/ViewEvent/ViewPastEvent";
+import EventFeedback from "./containers/Event/Feedback/EventFeedback";
 
 /** OTP */
 import RequestOtp from "./containers/OTP/Requestotp";
@@ -93,9 +95,11 @@ import EligibleActivity from "./containers/Activity/EligibleActivity";
 import ViewActivityBatches from "./containers/Activity/ActivityBatch/ViewActivityBatches";
 import AddEditActivityBatch from "./containers/Activity/ActivityBatch/AddEditActivityBatch";
 import PastActivitiesDetails from "./containers/Activity/PastActivitiesDetails";
+import ActivityFeedback from "./containers/Activity/Feedback/ActivityFeedback";
 
 /** Import */
 import StudentsImport from "./containers/Import/StudentsImport/StudentsImport";
+import SummaryReport from "./containers/Import/StudentsImport/SummaryReport";
 
 /** FeedBack */
 import AddEditFeedBack from "./containers/Feedback/AddFeedback/AddFeedback";
@@ -507,6 +511,13 @@ const AppRouter = props => {
           path={routeConstants.IMPORT_STUDENTS}
         />
 
+        <CollegeAdminRoute
+          component={SummaryReport}
+          exact
+          layout={Layout}
+          path={routeConstants.IMPORT_SUMMARY}
+        />
+
         {/* Activities */}
         <RouteWithLayout
           component={ViewActivityBatches}
@@ -527,6 +538,20 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.ADD_ACTIVITY_BATCH}
+        />
+
+        <ZonalRPCSuperAdminRoute
+          component={EventFeedback}
+          exact
+          layout={Layout}
+          path={routeConstants.FEEDBACK_EVENTS}
+        />
+        {/** Feedbacks */}
+        <ZonalRPCSuperAdminRoute
+          component={ActivityFeedback}
+          exact
+          layout={Layout}
+          path={routeConstants.FEEDBACK_ACTIVITIES}
         />
         <Route path="*" component={NotFoundPage} />
       </Switch>

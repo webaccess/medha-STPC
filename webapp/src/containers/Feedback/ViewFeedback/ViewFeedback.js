@@ -4,18 +4,24 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import CloseIcon from "@material-ui/icons/Close";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProviders from "../../../api/Axios";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
+import { withStyles } from "@material-ui/core/styles";
+import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
+import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
 import {
@@ -23,13 +29,27 @@ import {
   CardContent,
   Grid,
   Typography,
-  CardActions,
-  IconButton
+  IconButton,
+  Dialog
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { GrayButton, GreenButton } from "../../../components";
 import LoaderContext from "../../../context/LoaderContext";
 import auth from "../../../components/Auth";
+
+const dataToShowOnRoles = {
+  [roleConstants.COLLEGEADMIN]: "College feedback",
+  [roleConstants.RPCADMIN]: "RPC feedback",
+  [roleConstants.STUDENT]: "Student feedback",
+  [roleConstants.ZONALADMIN]: "Zone feedback"
+};
+
+const dataFor = {
+  [roleConstants.COLLEGEADMIN]: "College(s)",
+  [roleConstants.RPCADMIN]: "RPC(s)",
+  [roleConstants.STUDENT]: "Student(s)",
+  [roleConstants.ZONALADMIN]: "Zone(s)"
+};
 
 const ViewFeedBack = props => {
   const classes = useStyles();
@@ -42,38 +62,136 @@ const ViewFeedBack = props => {
     ratings: 3,
     stateCounter: 0,
     dataToShow: [],
-    greenButtonChecker: true
+    greenButtonChecker: true,
+    result: {},
+    dataLength: 0
   });
+
+  const [expanded, setExpanded] = React.useState(false);
 
   if (props.showModal && !formState.stateCounter) {
     formState.dataToShow = props.dataToShow;
+    formState.dataLength = Object.keys(props.result).length;
+    if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+      setExpanded(false);
+    } else if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+      formState.dataToShow = props.result[roleConstants.COLLEGEADMIN];
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      formState.dataToShow = props.result[roleConstants.STUDENT];
+    } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+      setExpanded(false);
+    }
     formState.stateCounter += 1;
   }
+
+  const handleChangeExpansionPanel = (panel, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+    setFormState(formState => ({
+      ...formState,
+      dataToShow: props.result[panel]
+    }));
+  };
 
   const handleClose = () => {
     props.modalClose(false, "", true);
   };
 
-  const getComments = async () => {
+  const getComments = async dataFor => {
     setLoaderStatus(true);
-    const QUESTION_SET_URL =
-      strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
-      "/" +
-      props.id +
-      "/" +
-      strapiConstants.STRAPI_CONTACT_SOLO +
-      "/" +
-      auth.getUserInfo().studentInfo.organization.contact.id +
-      "/getStudentsCommentsForFeedbacks";
+    let QUESTION_SET_URL = "";
+    let sheetName = "";
+    if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+      QUESTION_SET_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_EVENTS +
+        "/" +
+        props.id +
+        "/" +
+        strapiConstants.STRAPI_RPC +
+        "/" +
+        auth.getUserInfo().rpc.id +
+        "/getCollegeCommentFeedbackForRPC";
+      sheetName = "College Feedback";
+    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      QUESTION_SET_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_EVENTS +
+        "/" +
+        props.id +
+        "/" +
+        strapiConstants.STRAPI_CONTACT_SOLO +
+        "/" +
+        auth.getUserInfo().studentInfo.organization.contact.id +
+        "/getStudentsCommentsForFeedbacks";
+      sheetName = "Student Feedback";
+    } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+      if (dataFor === "College(s)") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getFeedbackForZone/" +
+          auth.getUserInfo().zone.id +
+          "/DataFor/college/FeedbackType/comment";
+        sheetName = "College Feedback";
+      } else if (dataFor === "RPC(s)") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getFeedbackForZone/" +
+          auth.getUserInfo().zone.id +
+          "/DataFor/rpc/FeedbackType/comment";
+        sheetName = "RPC Feedback";
+      }
+    } else if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+      if (dataFor === "College(s)") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getSuperAdminFeedback/" +
+          auth.getUserInfo().contact.id +
+          "/DataFor/college/FeedbackType/comment";
+
+        sheetName = "College Feedback";
+      } else if (dataFor === "RPC(s)") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getSuperAdminFeedback/" +
+          auth.getUserInfo().contact.id +
+          "/DataFor/rpc/FeedbackType/comment";
+
+        sheetName = "RPC Feedback";
+      } else if (dataFor === "Zone(s)") {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/getSuperAdminFeedback/" +
+          auth.getUserInfo().contact.id +
+          "/DataFor/zone/FeedbackType/comment";
+        sheetName = "Zone Feedback";
+      }
+    }
     await serviceProviders
       .serviceProviderForGetRequest(QUESTION_SET_URL)
       .then(res => {
-        const ws = XLSX.utils.json_to_sheet(res.data.result[0]["result"]);
-        const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+        const ws = XLSX.utils.json_to_sheet(res.data.result);
+        const wb = {
+          Sheets: { [sheetName]: ws },
+          SheetNames: [sheetName]
+        };
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, res.data.result[0]["title"] + fileExtension);
+        FileSaver.saveAs(data, props.Title + fileExtension);
         setLoaderStatus(false);
       })
       .catch(error => {
@@ -82,11 +200,127 @@ const ViewFeedBack = props => {
       });
   };
 
+  const noDataToShow = () => {
+    return (
+      <>
+        <div className={classes.edit_dialog}>
+          <CardContent>
+            <Grid item xs={12} md={12}>
+              <Typography variant="h5" gutterBottom color="textSecondary">
+                No feedback available
+              </Typography>
+            </Grid>
+          </CardContent>
+        </div>
+      </>
+    );
+  };
+
+  const functionTest = dataFor => {
+    return (
+      <React.Fragment>
+        {formState.dataToShow !== undefined &&
+        formState.dataToShow !== null &&
+        formState.dataToShow.length !== 0 ? (
+          <div className={classes.edit_dialog}>
+            <CardContent>
+              <Grid item xs={12} md={12}>
+                <Typography variant="h5" gutterBottom color="textSecondary">
+                  {props.fromCollegeAdmin
+                    ? `Feedback given by ${formState.dataToShow.total} student(s)`
+                    : null}
+                  {props.fromRPC
+                    ? `Feedback given by ${formState.dataToShow.total} college(s)`
+                    : null}
+                  {props.fromZone || props.formSuperAdmin
+                    ? `Feedback given by ${formState.dataToShow.total} ${dataFor}`
+                    : null}
+                </Typography>
+                <div style={{ overflow: "auto" }}>
+                  {formState.dataToShow.ratings.length !== 0 ? (
+                    <CardContent>
+                      <Grid item xs={12} md={12}>
+                        <div style={{ overflow: "auto" }}>
+                          <TableContainer
+                            className={classes.container}
+                            component={Paper}
+                          >
+                            <div
+                              style={{
+                                overflow: "auto"
+                              }}
+                            >
+                              {formState.dataToShow.ratings.map(row => (
+                                <TableRow key={row.id}>
+                                  <React.Fragment>
+                                    <TableCell component="th" scope="row">
+                                      {row.title}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                      <Rating
+                                        name={row.id}
+                                        precision={1}
+                                        value={row.result}
+                                        readOnly
+                                      />
+                                    </TableCell>
+                                  </React.Fragment>
+                                </TableRow>
+                              ))}
+                            </div>
+                          </TableContainer>
+                        </div>
+                      </Grid>
+                    </CardContent>
+                  ) : null}
+                </div>
+              </Grid>
+            </CardContent>
+            <Grid item xs={12} className={classes.edit_dialog}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
+                  <GreenButton
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<GetAppIcon />}
+                    onClick={e => getComments(dataFor)}
+                    greenButtonChecker={formState.greenButtonChecker}
+                  >
+                    Download
+                  </GreenButton>
+                </Grid>
+                {formState.dataLength === 1 ? (
+                  <Grid item>
+                    <GrayButton
+                      type="submit"
+                      color="primary"
+                      variant="contained"
+                      onClick={handleClose}
+                    >
+                      CLOSE
+                    </GrayButton>
+                  </Grid>
+                ) : null}
+              </Grid>
+            </Grid>
+          </div>
+        ) : (
+          noDataToShow()
+        )}
+      </React.Fragment>
+    );
+  };
+
   return (
-    <Modal
+    <Dialog
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
-      className={classes.modal}
       open={props.showModal}
       closeAfterTransition
       BackdropComponent={Backdrop}
@@ -120,69 +354,38 @@ const ViewFeedBack = props => {
                     </Typography>
                   </Grid>
                   <Card>
-                    <CardContent>
-                      <Grid item xs={12} md={12}>
-                        <Typography
-                          variant="h5"
-                          gutterBottom
-                          color="textSecondary"
-                        >
-                          {`Feedback given by ${formState.dataToShow.total} students`}
-                        </Typography>
-                        <div style={{ overflow: "auto" }}>
-                          {formState.dataToShow.ratings.length !== 0 ? (
-                            <TableContainer
-                              className={classes.container}
-                              component={Paper}
+                    {formState.dataLength > 1
+                      ? Object.keys(props.result).map(data => (
+                          <>
+                            <ExpansionPanel
+                              expanded={expanded === data}
+                              onChange={(event, isExpanded) => {
+                                handleChangeExpansionPanel(data, isExpanded);
+                              }}
                             >
-                              <Table
-                                className={classes.table}
-                                stickyHeader
-                                aria-label="feedback table"
+                              <ExpansionPanelSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1bh-content"
+                                id="panel1bh-header"
                               >
-                                <TableHead>
-                                  <TableRow
-                                    style={{
-                                      backgroundColor: "#f5f5f5",
-                                      height: "35px"
-                                    }}
-                                  >
-                                    <TableCell>Questions</TableCell>
-                                    <TableCell align="right">Ratings</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                              </Table>
-                              <div
-                                style={{ overflow: "auto", height: "200px" }}
-                              >
-                                <Table>
-                                  <TableBody>
-                                    {formState.dataToShow.ratings.map(row => (
-                                      <TableRow key={row.id}>
-                                        <TableCell component="th" scope="row">
-                                          {row.title}
-                                        </TableCell>
-                                        <TableCell align="right">
-                                          <Rating
-                                            name={row.id}
-                                            precision={1}
-                                            value={row.result}
-                                            readOnly
-                                          />
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </div>
-                            </TableContainer>
-                          ) : (
-                            <div>No ratings </div>
-                          )}
-                        </div>
-                      </Grid>
-                    </CardContent>
-                    <Grid item xs={12}>
+                                <Typography>
+                                  {dataToShowOnRoles[data]}
+                                </Typography>
+                              </ExpansionPanelSummary>
+                              <ExpansionPanelDetails>
+                                {functionTest(dataFor[data])}
+                              </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                          </>
+                        ))
+                      : formState.dataToShow !== undefined &&
+                        formState.dataToShow !== null &&
+                        formState.dataToShow.length !== 0
+                      ? functionTest(props.dataFor)
+                      : noDataToShow()}
+                  </Card>
+                  {formState.dataLength === 1 ? null : (
+                    <Grid item xs={12} className={classes.edit_dialog}>
                       <Grid
                         container
                         direction="row"
@@ -190,17 +393,6 @@ const ViewFeedBack = props => {
                         alignItems="center"
                         spacing={2}
                       >
-                        <Grid item>
-                          <GreenButton
-                            variant="contained"
-                            color="secondary"
-                            startIcon={<GetAppIcon />}
-                            onClick={e => getComments()}
-                            greenButtonChecker={formState.greenButtonChecker}
-                          >
-                            Download
-                          </GreenButton>
-                        </Grid>
                         <Grid item>
                           <GrayButton
                             type="submit"
@@ -213,14 +405,14 @@ const ViewFeedBack = props => {
                         </Grid>
                       </Grid>
                     </Grid>
-                  </Card>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
           </div>
         </div>
       </Fade>
-    </Modal>
+    </Dialog>
   );
 };
 export default ViewFeedBack;

@@ -1146,12 +1146,27 @@ module.exports = {
       const eventRegistrationInfo = await strapi
         .query("event-registration")
         .findOne({ contact: id, event: event.id });
-      const checkFeedbackForTheEventPresent = await strapi
-        .query("feedback-set")
-        .find({ event: event.id, contact: id });
-      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
-        ? true
-        : false;
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact: id,
+            question_set: event.question_set.id
+          });
+
+        if (checkFeedbackForTheEventPresent.length) {
+          event.isFeedbackProvided = true;
+          event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+        } else {
+          event.isFeedbackProvided = false;
+          event.feedbackSetId = null;
+        }
+      } else {
+        event.isFeedbackProvided = false;
+        event.feedbackSetId = null;
+      }
+
       event.isRegistered = eventRegistrationInfo ? true : false;
       event.isHired =
         eventRegistrationInfo && eventRegistrationInfo.is_hired_at_event
@@ -1212,11 +1227,42 @@ module.exports = {
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     const filters = convertRestQueryParams(query);
 
+    /** This checks college using contact id */
     const college = await strapi.query("contact", PLUGIN).findOne({ id }, []);
     if (!college) {
       return ctx.response.notFound("College does not exist");
     }
 
+    /** This gets contact id of the logged in user */
+    const { contact } = ctx.state.user;
+
+    /** This gets contact ids of all the college admins */
+    const collegeUserIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdmin(id);
+
+    let collegeAdminContact = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeUserIds });
+
+    const collegeAdminContactIds = collegeAdminContact.map(user => {
+      return user.id;
+    });
+
+    /** Get student contact ids of a college */
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(id);
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    /** Get actual event data */
     const events = await strapi
       .query("event")
       .model.query(
@@ -1235,25 +1281,215 @@ module.exports = {
       "crm-plugin"
     ].services.contact.getEvents(college, events);
 
-    const userIds = await strapi.plugins[
-      "crm-plugin"
-    ].services.contact.getUsers(id);
+    await utils.asyncForEach(filtered, async event => {
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: students_contact_id,
+            question_set: event.question_set.id
+          });
 
-    let students = await strapi
-      .query("contact", PLUGIN)
-      .find({ user_in: userIds });
+        const checkCollegeFeedbackAvailable = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact: collegeAdminContactIds,
+            question_set: event.question_set.id
+          });
 
-    const students_contact_id = students.map(student => {
-      return student.id;
+        if (checkCollegeFeedbackAvailable.length) {
+          event.isFeedbackProvidedbyCollege = true;
+          event.feedbackSetId = checkCollegeFeedbackAvailable[0].id;
+        } else {
+          event.isFeedbackProvidedbyCollege = false;
+          event.feedbackSetId = null;
+        }
+
+        event.isFeedbackProvidedbyStudents = checkFeedbackForTheEventPresent.length
+          ? true
+          : false;
+      } else {
+        event.isFeedbackProvidedbyCollege = false;
+        event.feedbackSetId = null;
+        event.isFeedbackProvidedbyStudents = false;
+      }
     });
 
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
+  },
+
+  /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async rpcEvents(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /** This checks college using contact id */
+    const rpc = await strapi.query("rpc").findOne({ id }, []);
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    /** This gets contact id of the logged in user */
+    const { contact } = ctx.state.user;
+
+    /** This gets contact ids of all the rpc admins */
+    const rpcAdmins = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getRpcAdmins(id);
+
+    let rpcAdminsContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: rpcAdmins });
+
+    const rpcAdminsContactIds = rpcAdminsContacts.map(user => {
+      return user.id;
+    });
+
+    /** This gets contact ids of all college admins */
+    const collegeAdmins = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdminsFromRPC(id);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeAdmins });
+
+    const collegeAdminContactIds = collegeAdminContacts.map(user => {
+      return user.id;
+    });
+
+    /** Get actual event data */
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    /**
+     * Get all events for specific college
+     */
+    const filtered = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getEventsForRpc(rpc, events);
+
     await utils.asyncForEach(filtered, async event => {
-      const checkFeedbackForTheEventPresent = await strapi
-        .query("feedback-set")
-        .find({ event: event.id, contact_in: students_contact_id });
-      event.isFeedbackProvided = checkFeedbackForTheEventPresent.length
-        ? true
-        : false;
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: rpcAdminsContactIds,
+            question_set: event.question_set.id
+          });
+
+        const checkFeedbackFromCollegePresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: collegeAdminContactIds,
+            question_set: event.question_set.id
+          });
+
+        event.isFeedbackFromCollegePresent = checkFeedbackFromCollegePresent.length
+          ? true
+          : false;
+
+        if (checkFeedbackForTheEventPresent.length) {
+          event.isFeedbackProvidedbyRPC = true;
+          event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+        } else {
+          event.isFeedbackProvidedbyRPC = false;
+          event.feedbackSetId = null;
+        }
+      } else {
+        event.isFeedbackProvidedbyRPC = false;
+        event.feedbackSetId = null;
+        event.isFeedbackFromCollegePresent = false;
+      }
+    });
+
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
+  },
+
+  /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async zoneEvents(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /** This checks college using contact id */
+    const zone = await strapi.query("zone").findOne({ id }, []);
+    if (!zone) {
+      return ctx.response.notFound("Zone does not exist");
+    }
+
+    /** This gets contact id of the logged in user */
+    const { contact } = ctx.state.user;
+
+    /** This gets contact ids of all zonal admins */
+    const zonalAdmins = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getZoneAdmins(id);
+
+    /** Get actual event data */
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    /**
+     * Get all events
+     */
+    const filtered = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getEventsForZone(zone, events);
+
+    await utils.asyncForEach(filtered, async event => {
+      if (event.question_set) {
+        /** Check data for zonal admins */
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: zonalAdmins,
+            question_set: event.question_set.id
+          });
+
+        if (checkFeedbackForTheEventPresent.length) {
+          event.isFeedbackProvidedbyZone = true;
+          event.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+        } else {
+          event.isFeedbackProvidedbyZone = false;
+          event.feedbackSetId = null;
+        }
+      } else {
+        event.isFeedbackProvidedbyZone = false;
+        event.feedbackSetId = null;
+        event.isFeedbackFromCollegePresent = false;
+        event.isFeedbackFromRPCPresent = false;
+      }
     });
 
     const { result, pagination } = utils.paginate(filtered, page, pageSize);
@@ -1772,5 +2008,124 @@ module.exports = {
         ...response.pagination
       };
     }
+  },
+  deleteIndividual: async ctx => {
+    console.log("in delete individual");
+    let { id } = ctx.request.body;
+    console.log(id);
+    let user = [];
+    let notStudent = await Promise.all(
+      id.map(async id => {
+        const student = await strapi
+          .query("contact", PLUGIN)
+          .findOne({ id: id });
+        if (student === null) {
+          return null;
+        } else {
+          const data = {
+            studentId: id,
+            userId: student.user.id
+          };
+          user.push(data);
+          return id;
+        }
+      })
+    );
+
+    notStudent = _.xor(id, notStudent).filter(c => c);
+
+    id = _.pullAll(id, notStudent);
+
+    let list = await Promise.all(
+      id.map(async id => {
+        const stud = await strapi.query("contact", PLUGIN).findOne({ id: id });
+        const documents = stud.individual.documents;
+        if (documents.length > 0) return id;
+        const role = await strapi
+          .query("role", "users-permissions")
+          .findOne({ id: stud.user.role });
+        if (role.name === "College Admin") {
+          const organization = await strapi
+            .query("organization", PLUGIN)
+            .findOne({ id: stud.individual.organization });
+          console.log(organization);
+          if (
+            organization.principal !== null &&
+            organization.principal.contact === id
+          )
+            return id;
+
+          const tpo = organization.tpos.map(tpo => tpo.contact).filter(c => c);
+          if (_.includes(tpo, id)) return id;
+        }
+
+        const academic_history = await strapi
+          .query("academic-history")
+          .findOne({ contact: id });
+        if (academic_history !== null) return id;
+
+        const education = await strapi
+          .query("education")
+          .findOne({ contact: id });
+        if (education !== null) return id;
+
+        const activity_batch_attendance = await strapi
+          .query("activityassignee", PLUGIN)
+          .findOne({ contact: id });
+        if (activity_batch_attendance !== null) return id;
+
+        const event_registration = await strapi
+          .query("event-registration")
+          .findOne({ contact: id });
+        if (event_registration !== null) return id;
+      })
+    );
+    console.log("list is:");
+    console.log(list);
+    list = _.xor(id, list).filter(c => c);
+    id = _.pullAll(id, list);
+    console.log("id that cant't be deleted is:");
+    console.log(id);
+
+    const userId = user.filter(user => {
+      if (_.includes(list, user.studentId)) return user.userId;
+    });
+    console.log(user);
+
+    const admins = user.filter(user => {
+      if (user.role !== "Student") return user.studentId;
+    });
+    console.log("Admins");
+    console.log(admins);
+    console.log("after filtering userId");
+    console.log(userId);
+
+    console.log("not a student:");
+    console.log(notStudent);
+
+    const result = await Promise.all(
+      userId.map(async user => {
+        const student = await strapi
+          .query("contact", PLUGIN)
+          .delete({ id: user.studentId });
+        // console.log(student);
+        const userData = await strapi
+          .query("user", "users-permissions")
+          .delete({ id: user.userId });
+
+        const individual = await strapi
+          .query("individual", PLUGIN)
+          .delete({ id: student.individual.id });
+        //console.log(userData);
+
+        return { student: student };
+      })
+    );
+
+    if (notStudent.length > 0)
+      return ctx.response.notFound(
+        "Students with Id " + `${notStudent}` + " not found"
+      );
+    else return utils.getFindOneResponse("success");
   }
 };

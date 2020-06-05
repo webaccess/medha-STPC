@@ -45,9 +45,15 @@ module.exports = {
 
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
 
-    return strapi
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
+    }
+    console.log(sort);
+    let activity = await strapi
       .query("activity", PLUGIN)
       .model.query(
         buildQuery({
@@ -66,14 +72,18 @@ module.exports = {
           "streams",
           "upload_logo"
         ]
-      })
-      .then(res => {
-        const response = utils.paginate(res, page, pageSize);
-        return {
-          result: response.result,
-          ...response.pagination
-        };
       });
+    console.log(activity);
+    let response;
+    if (sort && sort.length) {
+      activity = utils.sort(activity.toJSON(), sort);
+    }
+
+    response = utils.paginate(activity, page, pageSize);
+    return {
+      result: response.result,
+      ...response.pagination
+    };
   },
 
   async findOne(ctx) {
@@ -294,17 +304,27 @@ module.exports = {
         .find({ contact: student.id });
 
       const { education_year } = activity;
+      const { academic_year } = activity;
+      console.log(academic_year);
       isEducationEligible = true;
 
-      const isEducationPresent = academicHistory.find(
-        ah => ah.education_year == education_year
-      );
+      const isEducationPresent = academicHistory.find(ah => {
+        if (
+          ah.education_year == education_year &&
+          ah.academic_year.id == academic_year.id
+        )
+          return ah;
+      });
 
       if (!isEducationPresent) {
         isEducationEligible = false;
       }
 
-      if (isStreamEligible && isEducationEligible) {
+      if (
+        isStreamEligible &&
+        isEducationEligible &&
+        student.individual.is_verified
+      ) {
         filtered.push(student);
       }
     });

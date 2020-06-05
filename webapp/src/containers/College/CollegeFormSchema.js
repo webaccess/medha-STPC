@@ -110,7 +110,7 @@ const CollegeFormSchema = {
     validations: {}
   },
   contactNumber: {
-    label: "Contact Number",
+    label: "College Contact Number",
     id: "contact_number",
     autoComplete: "contact_number",
     required: true,
@@ -120,7 +120,7 @@ const CollegeFormSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Contact number is required"
+        message: "College Contact number is required"
       },
       validateMobileNumber: {
         value: 10,
@@ -129,7 +129,7 @@ const CollegeFormSchema = {
     }
   },
   collegeEmail: {
-    label: "Email",
+    label: "College Email",
     id: "college_email",
     autoComplete: "college_email",
     required: true,
@@ -139,7 +139,7 @@ const CollegeFormSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Email is required"
+        message: "College Email is required"
       },
       validateEmailRegex: {
         value: "true",

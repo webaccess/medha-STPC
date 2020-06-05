@@ -3,11 +3,12 @@ import { Redirect } from "../../node_modules/react-router-dom";
 import * as routeConstants from "../constants/RouteConstants";
 import PropTypes from "../../node_modules/prop-types";
 import auth from "../components/Auth/Auth";
+import * as roleConstants from "../constants/RoleConstants";
 
 const DashBoardComponent = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   if (auth.getToken() !== null) {
-    if (auth.getUserInfo().role.name === "Student") {
+    if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
       return (
         <Redirect
           to={{

@@ -93,6 +93,9 @@ module.exports = {
     });
 
     await utils.asyncForEach(students, async student => {
+      const streamId = student.individual.stream;
+      const stream = await strapi.query("stream").findOne({ id: streamId });
+      student.individual.stream = stream;
       const activityBatch = await strapi
         .query("activityassignee", PLUGIN)
         .findOne({ activity_batch: id, contact: student.id }, []);
@@ -248,7 +251,7 @@ module.exports = {
     const { students } = ctx.request.body;
     const studentsResponse = await Promise.all(
       students.map(studentId =>
-        strapi.query("student").findOne({ id: studentId })
+        strapi.query("contact", PLUGIN).findOne({ id: studentId })
       )
     );
 

@@ -5,7 +5,7 @@
  * to customize this service
  */
 
-const bookshelf = require("../../../config/config.js");
+const bookshelf = require("../../../config/bookshelf");
 const utils = require("../../../config/utils.js");
 const { PLUGIN } = require("../../../config/constants");
 module.exports = {
@@ -42,6 +42,8 @@ module.exports = {
     const { students } = ctx.request.body;
     const { id } = ctx.params;
 
+    const activityBatch = await strapi.query("activity-batch").findOne({ id });
+    const activityId = activityBatch.activity.id;
     await bookshelf
       .transaction(async t => {
         /**
@@ -51,16 +53,16 @@ module.exports = {
         const createStudentActivityBatchAttendance = students.map(
           async studentId => {
             return await strapi
-              .query("activity-batch-attendance")
+              .query("activityassignee", PLUGIN)
               .model.forge({
                 activity_batch: id,
-                student: studentId,
-                marked_by_student: false,
-                verified_by_college: false
+                contact: studentId,
+                activity: activityId,
+                is_verified_by_college: false
               })
               .save(null, { transacting: t })
               .then(model => model.toJSON())
-              .catch(() => null);
+              .catch(err => null);
           }
         );
 

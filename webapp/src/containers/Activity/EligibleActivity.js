@@ -1,35 +1,24 @@
 import React, { useState, useEffect } from "react";
 import * as serviceProviders from "../../api/Axios";
 import * as strapiConstants from "../../constants/StrapiApiConstants";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import * as roleConstants from "../../constants/RoleConstants";
 import Clock from "@material-ui/icons/AddAlarm";
-import { green, red } from "@material-ui/core/colors";
-import CloseIcon from "@material-ui/icons/Close";
+import { green } from "@material-ui/core/colors";
 
-import {
-  Auth as auth,
-  Spinner,
-  GreenButton,
-  YellowButton,
-  Alert
-} from "../../components";
+import { Auth as auth, Spinner } from "../../components";
 import {
   Card,
-  CardContent,
   Box,
   Grid,
   Divider,
   Typography,
   IconButton,
-  Collapse,
   Button,
   CardMedia
 } from "@material-ui/core";
 import useStyles from "./EligibleActivityStyles.js";
 import { useHistory } from "react-router-dom";
 import * as routeConstants from "../../constants/RouteConstants";
-import * as genericConstants from "../../constants/GenericConstants";
-import Img from "react-image";
 import "react-multi-carousel/lib/styles.css";
 import noImage from "../../assets/images/no-image-icon.png";
 import moment from "moment";
@@ -37,8 +26,6 @@ import moment from "moment";
 
 const EligibleActivity = props => {
   const history = useHistory();
-  const [open, setOpen] = useState(true);
-
   const classes = useStyles();
   const [formState, setFormState] = useState({
     activityDetails: {},
@@ -57,10 +44,10 @@ const EligibleActivity = props => {
   async function getactivityDetails() {
     let paramsForStudent = null;
     if (
-      auth.getUserInfo().role.name === "Student" &&
+      auth.getUserInfo().role.name === roleConstants.STUDENT &&
       auth.getUserInfo().studentInfo !== null
     ) {
-      paramsForStudent = auth.getUserInfo().studentInfo.id;
+      paramsForStudent = auth.getUserInfo().contact.id;
     } else {
       localStorage.clear();
       history.push({
@@ -70,9 +57,10 @@ const EligibleActivity = props => {
     if (paramsForStudent !== null && paramsForStudent !== undefined) {
       const COLLEGES_URL =
         strapiConstants.STRAPI_DB_URL +
-        "students/" +
+        strapiConstants.STRAPI_STUDENTS_INDIVIDUAL_URL +
+        "/" +
         paramsForStudent +
-        "/activity";
+        "/activities";
       let params = {
         pageSize: -1,
         _sort: "start_date_time"
@@ -98,7 +86,7 @@ const EligibleActivity = props => {
           console.log("error", error);
         });
     } else {
-      if (auth.getUserInfo().role.name === "Student") {
+      if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
         history.push({
           pathname: routeConstants.VIEW_PROFILE
         });

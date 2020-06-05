@@ -4,11 +4,8 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import CloseIcon from "@material-ui/icons/Close";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -20,12 +17,12 @@ import {
   CardContent,
   Grid,
   Typography,
-  TextField,
   CardActions,
   IconButton,
-  makeStyles,
   Divider,
-  TextareaAutosize
+  TextField,
+  Table,
+  TableBody
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
@@ -34,25 +31,22 @@ import LoaderContext from "../../../context/LoaderContext";
 
 const AddEditFeedBack = props => {
   const { setLoaderStatus } = useContext(LoaderContext);
-  const useStyles1 = makeStyles({
-    root: {
-      width: "100%"
-    },
-    container: {
-      maxHeight: 440
-    }
-  });
 
   const classes = useStyles();
   const [formState, setFormState] = useState({
+    isAddFeedback: props.isAddFeedback ? true : false,
+    isEditFeedback: props.isEditFeedback ? true : false,
     isFeedBackAdded: false,
     isFormValid: false,
     stateCounter: 0,
     question_answers: {},
     entityId: null,
     entityName: null,
+    isRatingAvailable: false,
+    isCommentAvailable: false,
     entityQuestionSet: null,
     questionSetId: null,
+    feedbackSetId: null,
     fromEvent: false,
     fromActivity: false
   });
@@ -73,9 +67,21 @@ const AddEditFeedBack = props => {
       props.entityQuestionSet.map(question => {
         if (question.role.name === auth.getUserInfo().role.name) {
           if (question.type === "Rating") {
-            formState.question_answers[question["id"]] = 0;
+            formState.isRatingAvailable = true;
+            if (formState.isAddFeedback) {
+              formState.question_answers[question["id"]] = 0;
+            } else if (formState.isEditFeedback) {
+              formState.question_answers[question["id"]] =
+                question["answer_int"];
+            }
           } else if (question.type === "Comment") {
-            formState.question_answers[question["id"]] = "";
+            formState.isCommentAvailable = true;
+            if (formState.isAddFeedback) {
+              formState.question_answers[question["id"]] = "";
+            } else if (formState.isEditFeedback) {
+              formState.question_answers[question["id"]] =
+                question["answer_text"];
+            }
           }
         }
       });
@@ -83,6 +89,8 @@ const AddEditFeedBack = props => {
     formState.fromEvent = props.fromEvent;
     formState.fromActivity = props.fromActivity;
     formState.questionSetId = props.questionSetId;
+
+    formState.feedbackSetId = props.feedbackSetId;
     formState.stateCounter += 1;
   }
 
@@ -123,8 +131,11 @@ const AddEditFeedBack = props => {
       question_set: formState.questionSetId,
       questions_answers: questions_answers
     };
-
-    giveFeedback(postData);
+    if (formState.isAddFeedback) {
+      giveFeedback(postData);
+    } else if (formState.isEditFeedback) {
+      editFeedback(postData);
+    }
   };
 
   const giveFeedback = async postData => {
@@ -139,6 +150,27 @@ const AddEditFeedBack = props => {
       })
       .catch(error => {
         props.modalClose(false, " Error adding feedback", false);
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
+  const editFeedback = async postData => {
+    setLoaderStatus(true);
+    const EDITFEEDBACK =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    await serviceProviders
+      .serviceProviderForPutRequest(
+        EDITFEEDBACK,
+        formState.feedbackSetId,
+        postData
+      )
+      .then(res => {
+        props.modalClose(true, "Feedback edited successfully", false);
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        props.modalClose(false, " Error editing feedback", false);
         setLoaderStatus(false);
         console.log("error giving feedback");
       });
@@ -193,7 +225,7 @@ const AddEditFeedBack = props => {
               <IconButton
                 aria-label="close"
                 className={classes.closeButton}
-                onClick={props.modalClose}
+                onClick={handleClose}
               >
                 <CloseIcon />
               </IconButton>
@@ -202,7 +234,7 @@ const AddEditFeedBack = props => {
           <div className={classes.edit_dialog}>
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
-                <Grid item lg className={classes.deletemessage}>
+                <Grid item xs={12} className={classes.fullWidth}>
                   <Grid item xs={12} className={classes.formgrid}>
                     <Typography variant="h5" gutterBottom color="textSecondary">
                       {props.Title}
@@ -210,128 +242,170 @@ const AddEditFeedBack = props => {
                   </Grid>
                   {formState.entityQuestionSet === null ||
                   !formState.entityQuestionSet.length ? (
-                    "No feedback for this event"
+                    "Cannot give feedback for this event"
                   ) : (
-                    <Card>
-                      <form
-                        autoComplete="off"
-                        noValidate
-                        onSubmit={handleSubmit}
-                      >
-                        <CardContent>
-                          <Grid item xs={12} md={12}>
-                            <div style={{ overflow: "auto" }}>
-                              <TableContainer
-                                className={classes.container}
-                                component={Paper}
-                              >
-                                <Table
-                                  className={classes.table}
-                                  stickyHeader
-                                  aria-label="feedback table"
-                                >
-                                  <TableHead>
-                                    <TableRow
+                    <Card style={{ paddingRight: "5%" }}>
+                      {formState.isRatingAvailable ||
+                      formState.isCommentAvailable ? (
+                        <form
+                          autoComplete="off"
+                          noValidate
+                          onSubmit={handleSubmit}
+                        >
+                          <Divider />
+                          {formState.isRatingAvailable ? (
+                            <CardContent>
+                              <Grid item xs={12} md={12}>
+                                <div style={{ overflow: "auto" }}>
+                                  <TableContainer
+                                    className={classes.container}
+                                    component={Paper}
+                                  >
+                                    <div
                                       style={{
-                                        backgroundColor: "#f5f5f5",
-                                        height: "35px"
+                                        overflow: "auto",
+                                        height: "200px"
                                       }}
                                     >
-                                      <TableCell>Questions</TableCell>
-                                      <TableCell align="right">
-                                        Ratings
-                                      </TableCell>
-                                    </TableRow>
-                                  </TableHead>
-                                </Table>
-                                <div
-                                  style={{ overflow: "auto", height: "200px" }}
-                                >
-                                  <Table>
-                                    <TableBody>
-                                      {formState.entityQuestionSet.map(row => (
-                                        <TableRow key={row.id}>
-                                          {row.type === "Rating" &&
-                                          row.role.name ===
-                                            auth.getUserInfo().role.name ? (
-                                            <React.Fragment>
-                                              <TableCell
-                                                component="th"
-                                                scope="row"
-                                              >
-                                                {row.title}
-                                              </TableCell>
-                                              <TableCell align="right">
-                                                <Rating
-                                                  name={row.id}
-                                                  precision={1}
-                                                  onChange={event => {
-                                                    event.preventDefault();
-                                                    handleChangeRating(
-                                                      row.id,
-                                                      row.type,
-                                                      event.target.value
-                                                    );
-                                                  }}
-                                                />
-                                              </TableCell>
-                                            </React.Fragment>
-                                          ) : null}
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
+                                      <Table>
+                                        <TableBody>
+                                          {formState.entityQuestionSet.map(
+                                            row => (
+                                              <TableRow key={row.id}>
+                                                {row.type === "Rating" &&
+                                                row.role.name ===
+                                                  auth.getUserInfo().role
+                                                    .name ? (
+                                                  <React.Fragment>
+                                                    <TableCell
+                                                      component="th"
+                                                      scope="row"
+                                                    >
+                                                      {row.title}
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                      <Rating
+                                                        name={row.id + ""}
+                                                        precision={1}
+                                                        value={
+                                                          formState
+                                                            .question_answers[
+                                                            row.id
+                                                          ] || null
+                                                        }
+                                                        onChange={event => {
+                                                          event.preventDefault();
+                                                          handleChangeRating(
+                                                            row.id,
+                                                            row.type,
+                                                            event.target.value
+                                                          );
+                                                        }}
+                                                      />
+                                                    </TableCell>
+                                                  </React.Fragment>
+                                                ) : null}
+                                              </TableRow>
+                                            )
+                                          )}
+                                        </TableBody>
+                                      </Table>
+                                    </div>
+                                  </TableContainer>
                                 </div>
-                              </TableContainer>
-                            </div>
-                          </Grid>
-                        </CardContent>
-                        <Grid item xs={12} md={12}>
+                              </Grid>
+                            </CardContent>
+                          ) : null}
                           <Divider />
-                          <div className={classes.paddingDiv}>
-                            {formState.entityQuestionSet.map(row => (
-                              <div key={row.id}>
-                                {row.type === "Comment" &&
-                                row.role.name ===
-                                  auth.getUserInfo().role.name ? (
-                                  <React.Fragment>
-                                    <TextareaAutosize
-                                      rowsMin={4}
-                                      label={row.title}
-                                      id={row.id}
-                                      placeholder={row.title}
-                                      variant="outlined"
-                                      multiline
-                                      fullWidth
-                                      onChange={handleCommentChange}
-                                    />
-                                  </React.Fragment>
-                                ) : null}
+                          {formState.isCommentAvailable ? (
+                            <Grid item xs={12} md={12}>
+                              <div className={classes.paddingDiv}>
+                                {formState.entityQuestionSet.map(row => (
+                                  <div key={row.id}>
+                                    {row.type === "Comment" &&
+                                    row.role.name ===
+                                      auth.getUserInfo().role.name ? (
+                                      <React.Fragment>
+                                        <TextField
+                                          placeholder={row.title}
+                                          fullWidth
+                                          multiline
+                                          margin="normal"
+                                          style={{
+                                            margin: 8,
+                                            width: "100%"
+                                          }}
+                                          label={row.title}
+                                          id={row.id + ""}
+                                          rows={2}
+                                          rowsMax={4}
+                                          value={
+                                            formState.question_answers[
+                                              row.id
+                                            ] || ""
+                                          }
+                                          variant="outlined"
+                                          onChange={handleCommentChange}
+                                        />
+                                      </React.Fragment>
+                                    ) : null}
+                                  </div>
+                                ))}{" "}
                               </div>
-                            ))}
-                          </div>
+                            </Grid>
+                          ) : null}
+
+                          <Grid item xs={12} md={12}>
+                            <CardActions justify="flex-end">
+                              <YellowButton
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                onClick={handleSubmit}
+                              >
+                                {genericConstants.SAVE_BUTTON_TEXT}
+                              </YellowButton>
+                              <GrayButton
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                onClick={handleClose}
+                              >
+                                CLOSE
+                              </GrayButton>
+                            </CardActions>
+                          </Grid>
+                        </form>
+                      ) : (
+                        <Grid item xs={12} className={classes.edit_dialog}>
+                          <Grid item xs={12} md={12}>
+                            <CardActions justify="flex-end">
+                              No feedback questions available for your login
+                            </CardActions>
+                          </Grid>
+                          <Grid
+                            item
+                            xs={12}
+                            md={12}
+                            container
+                            direction="row"
+                            justify="flex-end"
+                            alignItems="center"
+                            spacing={2}
+                          >
+                            <CardActions justify="flex-end">
+                              <GrayButton
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                onClick={handleClose}
+                              >
+                                CLOSE
+                              </GrayButton>
+                            </CardActions>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={12} md={12}>
-                          <CardActions justify="flex-end">
-                            <YellowButton
-                              type="submit"
-                              color="primary"
-                              variant="contained"
-                              onClick={handleSubmit}
-                            >
-                              {genericConstants.SAVE_BUTTON_TEXT}
-                            </YellowButton>
-                            <GrayButton
-                              type="submit"
-                              color="primary"
-                              variant="contained"
-                              onClick={handleClose}
-                            >
-                              CLOSE
-                            </GrayButton>
-                          </CardActions>
-                        </Grid>
-                      </form>
+                      )}
                     </Card>
                   )}
                 </Grid>
