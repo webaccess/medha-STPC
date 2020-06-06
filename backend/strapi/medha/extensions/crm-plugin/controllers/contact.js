@@ -1228,7 +1228,7 @@ module.exports = {
     const filters = convertRestQueryParams(query);
 
     /** This checks college using contact id */
-    const college = await strapi.query("contact", PLUGIN).findOne({ id }, []);
+    const college = await strapi.query("contact", PLUGIN).findOne({ id });
     if (!college) {
       return ctx.response.notFound("College does not exist");
     }

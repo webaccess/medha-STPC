@@ -240,7 +240,7 @@
     },
     {
       "method": "GET",
-      "path": "/states/:id/organization",
+      "path": "/states/:id/organization/:rpcId/rpc",
       "handler": "state.organizations",
       "config": { "policies": [] }
     },
