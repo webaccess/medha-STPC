@@ -2009,6 +2009,7 @@ module.exports = {
       };
     }
   },
+
   deleteIndividual: async ctx => {
     console.log("in delete individual");
     let { id } = ctx.request.body;
@@ -2123,5 +2124,73 @@ module.exports = {
     else if (userId.length === 0)
       return ctx.response.forbidden("Can't delete User");
     else return utils.getFindOneResponse("success");
+  },
+
+  deleteOrganization: async ctx => {
+    const { ids } = ctx.request.body;
+
+    if (!ids) {
+      return ctx.response.badRequest("College ids are missing");
+    }
+
+    /**
+     * Checking if references exist in following tables:
+     *  - Activity
+     *  - Event
+     *
+     * Checking if given ids exist in db or not
+     *
+     * If no reference found do the following:
+     *  - Delete organization
+     *  - Delete contact
+     */
+
+    let idsToDelete = [];
+    /**
+     * Step 1 checking if references present in Activity
+     * if id has reference return null
+     * otherwise return id to be deleted
+     */
+
+    const activityIdsWithoutReference = await Promise.all(
+      ids.map(id => {
+        return strapi
+          .query("activity", PLUGIN)
+          .count({ contact: id })
+          .then(val => (val == 0 ? id : null));
+      })
+    );
+
+    // Update idsToBeDeleted with non reference ids
+    idsToDelete = _.compact(activityIdsWithoutReference);
+
+    /**
+     * Step 2 checking if references present in Event
+     * Get all unique ids of contact for all events
+     * Get ids to be deleted
+     * return ids which are not in all unique id array.
+     */
+
+    // const allEvents = await strapi.query("event").find({});
+    // const allEventContactIds = _.union(
+    //   allEvents.reduce((result, event) => {
+    //     const { contacts } = event;
+    //     result.push(...contacts.map(contact => contact.id));
+    //     return result;
+    //   }, [])
+    // );
+
+    // idsToDelete = _.xor(idsToDelete, allEventContactIds);
+    // console.log(idsToDelete);
+
+    await strapi
+      .query("organization", PLUGIN)
+      .delete({ contact_in: idsToDelete });
+
+    await strapi.query("contact", PLUGIN).delete({ id_in: idsToDelete });
+
+    return {
+      result: "Success"
+    };
   }
 };
