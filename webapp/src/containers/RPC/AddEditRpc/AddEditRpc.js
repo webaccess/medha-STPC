@@ -95,7 +95,10 @@ const AddEditRpc = props => {
         "/" +
         formState.values[stateName] +
         "/" +
-        strapiConstants.STRAPI_ORGANIZATION;
+        strapiConstants.STRAPI_ORGANIZATION +
+        "/" +
+        formState.dataForEdit["id"] +
+        "/rpc";
       serviceProviders.serviceProviderForGetRequest(COLLEGE_URL).then(res => {
         setGetColleges(res.data);
       });
@@ -373,49 +376,54 @@ const AddEditRpc = props => {
                     className={classes.elementroot}
                   />
                 </Grid>
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    options={getColleges}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(collegeName, event, value);
-                    }}
-                    name={collegeName}
-                    value={
-                      formState.isStateClearFilter
-                        ? null
-                        : getColleges[
-                            getColleges.findIndex(function (item, i) {
-                              return item.id === formState.values[collegeName];
-                            })
-                          ] || null /** Please give a default " " blank value */
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(collegeName)}
-                        placeholder={get(
-                          AddRpcSchema[collegeName],
-                          "placeholder"
-                        )}
-                        helperText={
-                          hasError(collegeName)
-                            ? formState.errors[collegeName].map(error => {
-                                return error + " ";
+                {formState.isEditRpc ? (
+                  <Grid item md={12} xs={12}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      options={getColleges}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(collegeName, event, value);
+                      }}
+                      name={collegeName}
+                      value={
+                        formState.isStateClearFilter
+                          ? null
+                          : getColleges[
+                              getColleges.findIndex(function (item, i) {
+                                return (
+                                  item.id === formState.values[collegeName]
+                                );
                               })
-                            : null
-                        }
-                        value={option => option.id}
-                        name={collegeName}
-                        key={option => option.id}
-                        label={get(AddRpcSchema[collegeName], "label")}
-                        variant="outlined"
-                      />
-                    )}
-                    className={classes.elementroot}
-                  />
-                </Grid>
+                            ] ||
+                            null /** Please give a default " " blank value */
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(collegeName)}
+                          placeholder={get(
+                            AddRpcSchema[collegeName],
+                            "placeholder"
+                          )}
+                          helperText={
+                            hasError(collegeName)
+                              ? formState.errors[collegeName].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          value={option => option.id}
+                          name={collegeName}
+                          key={option => option.id}
+                          label={get(AddRpcSchema[collegeName], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                      className={classes.elementroot}
+                    />{" "}
+                  </Grid>
+                ) : null}
               </Grid>
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>

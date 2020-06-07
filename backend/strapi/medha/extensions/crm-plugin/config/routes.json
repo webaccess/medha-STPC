@@ -271,6 +271,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:activityId/contact/:collegeId/getStudentsFeedbacks/:feedbackType",
+      "handler": "activity.getFeedbacksForEventFromCollege",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

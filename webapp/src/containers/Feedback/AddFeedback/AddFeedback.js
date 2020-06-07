@@ -9,6 +9,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import * as serviceProviders from "../../../api/Axios";
 
 import useStyles from "../../ContainerStyles/ModalPopUpStyles";
@@ -22,7 +23,8 @@ import {
   Divider,
   TextField,
   Table,
-  TableBody
+  TableBody,
+  Dialog
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import { YellowButton, GrayButton } from "../../../components";
@@ -48,10 +50,19 @@ const AddEditFeedBack = props => {
     questionSetId: null,
     feedbackSetId: null,
     fromEvent: false,
-    fromActivity: false
+    fromActivity: false,
+    roleName: auth.getUserInfo().role.name
   });
 
   if (props.showModal && !formState.stateCounter) {
+    if (
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+      auth.getUserInfo().studentInfo.organization.contact.id ===
+        auth.getUserInfo().rpc.main_college &&
+      props.formMainCollege
+    ) {
+      formState.roleName = roleConstants.RPCADMIN;
+    }
     formState.isDataBlockUnblock = false;
     formState.entityId = props.id;
     formState.entityName = props.Title;
@@ -65,7 +76,7 @@ const AddEditFeedBack = props => {
       formState.question_answers = {};
 
       props.entityQuestionSet.map(question => {
-        if (question.role.name === auth.getUserInfo().role.name) {
+        if (question.role.name === formState.roleName) {
           if (question.type === "Rating") {
             formState.isRatingAvailable = true;
             if (formState.isAddFeedback) {
@@ -101,7 +112,7 @@ const AddEditFeedBack = props => {
       .map(question => {
         if (
           question.type === "Rating" &&
-          question.role.name === auth.getUserInfo().role.name
+          question.role.name === formState.roleName
         ) {
           return {
             question_id: question.id,
@@ -111,7 +122,7 @@ const AddEditFeedBack = props => {
           };
         } else if (
           question.type === "Comment" &&
-          question.role.name === auth.getUserInfo().role.name
+          question.role.name === formState.roleName
         )
           return {
             question_id: question.id,
@@ -203,7 +214,7 @@ const AddEditFeedBack = props => {
     props.modalClose(false, "", true);
   };
   return (
-    <Modal
+    <Dialog
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       className={classes.modal}
@@ -323,8 +334,7 @@ const AddEditFeedBack = props => {
                                 {formState.entityQuestionSet.map(row => (
                                   <div key={row.id}>
                                     {row.type === "Comment" &&
-                                    row.role.name ===
-                                      auth.getUserInfo().role.name ? (
+                                    row.role.name === formState.roleName ? (
                                       <React.Fragment>
                                         <TextField
                                           placeholder={row.title}
@@ -414,7 +424,7 @@ const AddEditFeedBack = props => {
           </div>
         </div>
       </Fade>
-    </Modal>
+    </Dialog>
   );
 };
 export default AddEditFeedBack;

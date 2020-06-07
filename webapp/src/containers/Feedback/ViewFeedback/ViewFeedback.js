@@ -74,7 +74,13 @@ const ViewFeedBack = props => {
     formState.dataLength = Object.keys(props.result).length;
     if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
       setExpanded(false);
-    } else if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+    } else if (
+      auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+      (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+        auth.getUserInfo().studentInfo.organization.contact.id ===
+          auth.getUserInfo().rpc.main_college &&
+        props.fromRPC)
+    ) {
       formState.dataToShow = props.result[roleConstants.COLLEGEADMIN];
     } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
       formState.dataToShow = props.result[roleConstants.STUDENT];
@@ -100,7 +106,13 @@ const ViewFeedBack = props => {
     setLoaderStatus(true);
     let QUESTION_SET_URL = "";
     let sheetName = "";
-    if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+    if (
+      auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+      (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+        auth.getUserInfo().studentInfo.organization.contact.id ===
+          auth.getUserInfo().rpc.main_college &&
+        props.fromRPC)
+    ) {
       QUESTION_SET_URL =
         strapiConstants.STRAPI_DB_URL +
         strapiConstants.STRAPI_EVENTS +
@@ -112,18 +124,33 @@ const ViewFeedBack = props => {
         auth.getUserInfo().rpc.id +
         "/getCollegeCommentFeedbackForRPC";
       sheetName = "College Feedback";
+      /** Gets comments for students depending on whether its for event or for activities */
     } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
-      QUESTION_SET_URL =
-        strapiConstants.STRAPI_DB_URL +
-        strapiConstants.STRAPI_EVENTS +
-        "/" +
-        props.id +
-        "/" +
-        strapiConstants.STRAPI_CONTACT_SOLO +
-        "/" +
-        auth.getUserInfo().studentInfo.organization.contact.id +
-        "/getStudentsCommentsForFeedbacks";
-      sheetName = "Student Feedback";
+      if (props.fromEvent) {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_EVENTS +
+          "/" +
+          props.id +
+          "/" +
+          strapiConstants.STRAPI_CONTACT_SOLO +
+          "/" +
+          auth.getUserInfo().studentInfo.organization.contact.id +
+          "/getStudentsCommentsForFeedbacks";
+        sheetName = "Student Feedback";
+      } else if (props.fromActivity) {
+        QUESTION_SET_URL =
+          strapiConstants.STRAPI_DB_URL +
+          strapiConstants.STRAPI_ACTIVITY +
+          "/" +
+          props.id +
+          "/" +
+          strapiConstants.STRAPI_CONTACT_SOLO +
+          "/" +
+          auth.getUserInfo().studentInfo.organization.contact.id +
+          "/getStudentsFeedbacks/comment";
+        sheetName = "Student Feedback";
+      }
     } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
       if (dataFor === "College(s)") {
         QUESTION_SET_URL =

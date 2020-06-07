@@ -273,6 +273,22 @@ module.exports = {
 
     await bookshelf
       .transaction(async t => {
+        const feedbackData = {
+          activity: activity,
+          event: event,
+          contact: contact,
+          question_set: question_set
+        };
+        await bookshelf
+          .model("feedback-set")
+          .where({ id: id })
+          .save(feedbackData, { transacting: t, patch: true })
+          .then(model => model)
+          .catch(error => {
+            console.log(error);
+            return null;
+          });
+
         await utils.asyncForEach(questions_answers, async question_answers => {
           if (question_answers !== undefined) {
             const {

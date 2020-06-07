@@ -70,12 +70,28 @@ module.exports = {
 
   async organizations(ctx) {
     const { id } = ctx.params;
+    const { rpcId } = ctx.params;
 
     const response = await strapi
       .query("contact", "crm-plugin")
       .find({ contact_type: "organization", state: id });
 
-    return response;
+    const data = response
+      .map(res => {
+        if (res.organization.rpc == rpcId) {
+          return {
+            id: res.id,
+            name: res.name
+          };
+        }
+      })
+      .filter(res => {
+        if (res !== undefined) {
+          return true;
+        }
+      });
+
+    return data;
   },
 
   /**

@@ -17,7 +17,6 @@ import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
   GrayButton,
   YellowButton,
-  ViewGridIcon,
   InlineDatePicker
 } from "../../../components";
 import * as formUtilities from "../../../utilities/FormUtilities";
@@ -31,7 +30,6 @@ import ViewFeedBack from "../../Feedback/ViewFeedback/ViewFeedback";
 import NoFeedback from "../../Feedback/NoFeedback/NoFeedback";
 import AddEditFeedBack from "../../Feedback/AddFeedback/AddFeedback";
 
-const EVENT_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_EVENTS;
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
 const END_DATE_FILTER = "end_date_time_lt";
@@ -152,7 +150,12 @@ const EventFeedback = props => {
       isDataLoading: true
     }));
     if (auth.getUserInfo().role !== null) {
-      if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+      if (
+        auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+        (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+          auth.getUserInfo().studentInfo.organization.contact.id ===
+            auth.getUserInfo().rpc.main_college)
+      ) {
         const EVENTS_FOR_RPC_ADMIN =
           strapiConstants.STRAPI_DB_URL +
           strapiConstants.STRAPI_CONTACTS +
@@ -245,7 +248,12 @@ const EventFeedback = props => {
         eventIndividualData["cannotGiveFeedback"] = false;
         eventIndividualData["feedbackId"] = data[i]["feedbackSetId"];
 
-        if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+        if (
+          auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+          (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+            auth.getUserInfo().studentInfo.organization.contact.id ===
+              auth.getUserInfo().rpc.main_college)
+        ) {
           /** Can college admin view feedback */
           eventIndividualData["isFeedbackFromCollegePresent"] =
             data[i]["isFeedbackFromCollegePresent"];
@@ -344,7 +352,12 @@ const EventFeedback = props => {
     setLoaderStatus(true);
 
     let result = {};
-    if (auth.getUserInfo().role.name === roleConstants.RPCADMIN) {
+    if (
+      auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+      (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+        auth.getUserInfo().studentInfo.organization.contact.id ===
+          auth.getUserInfo().rpc.main_college)
+    ) {
       result = {
         [roleConstants.COLLEGEADMIN]: null
       };
@@ -781,7 +794,10 @@ const EventFeedback = props => {
       cell: cell => (
         <div className={classes.DisplayFlex}>
           {/** For RPC */}
-          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ? (
+          {auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+          (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+            auth.getUserInfo().studentInfo.organization.contact.id ===
+              auth.getUserInfo().rpc.main_college) ? (
             cell.isFeedbackFromCollegePresent ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
@@ -833,7 +849,10 @@ const EventFeedback = props => {
           ) : null}
 
           {auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
-          auth.getUserInfo().role.name === roleConstants.ZONALADMIN ? (
+          auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
+          (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+            auth.getUserInfo().studentInfo.organization.contact.id ===
+              auth.getUserInfo().rpc.main_college) ? (
             cell.giveFeedback ? (
               <div className={classes.PaddingActionButton}>
                 <FeedBack
@@ -1050,7 +1069,10 @@ const EventFeedback = props => {
               fromEvent={true}
               fromActivity={false}
               fromRPC={
-                auth.getUserInfo().role.name === roleConstants.RPCADMIN
+                auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
+                (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+                  auth.getUserInfo().studentInfo.organization.contact.id ===
+                    auth.getUserInfo().rpc.main_college)
                   ? true
                   : false
               }
@@ -1075,6 +1097,13 @@ const EventFeedback = props => {
               questionSetId={feedbackState.questionSetId}
               fromEvent={true}
               fromActivity={false}
+              formMainCollege={
+                auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+                auth.getUserInfo().studentInfo.organization.contact.id ===
+                  auth.getUserInfo().rpc.main_college
+                  ? true
+                  : false
+              }
             />
           ) : feedbackState.isEditFeedback ? (
             <AddEditFeedBack
@@ -1088,6 +1117,13 @@ const EventFeedback = props => {
               feedbackSetId={feedbackState.feedbackSetId}
               fromEvent={true}
               fromActivity={false}
+              formMainCollege={
+                auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+                auth.getUserInfo().studentInfo.organization.contact.id ===
+                  auth.getUserInfo().rpc.main_college
+                  ? true
+                  : false
+              }
             />
           ) : null}
           {!feedbackState.isGiveFeedback &&
