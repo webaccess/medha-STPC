@@ -10,6 +10,7 @@ export const STRAPI_RPC = "rpc";
 export const STRAPI_COLLEGES = "crm-plugin/contact/get-organizations";
 export const STRAPI_ADD_COLLEGE = "crm-plugin/contact/create-organization";
 export const STRAPI_EDIT_COLLEGE = "edit-organization";
+export const STRAPI_DELETE_ORGANIZATION = "/delete-organization";
 export const STRAPI_COLLEGES_INDERIECT_URL = "colleges";
 export const STRAPI_BLOCK_COLLEGE = "crm-plugin/contact/block-organization";
 export const STRAPI_UNBLOCK_COLLEGE = "crm-plugin/contact/unblock-organization";

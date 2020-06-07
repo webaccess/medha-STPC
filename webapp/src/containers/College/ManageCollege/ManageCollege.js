@@ -258,6 +258,7 @@ const ManageCollege = props => {
       for (let i in data) {
         var tempIndividualCollegeData = {};
         tempIndividualCollegeData["id"] = data[i]["id"];
+        tempIndividualCollegeData["contactId"] = data[i]["contact"]["id"];
         tempIndividualCollegeData["blocked"] = data[i]["is_blocked"];
         tempIndividualCollegeData["name"] = data[i]["name"];
         tempIndividualCollegeData["state"] =
@@ -534,7 +535,7 @@ const ManageCollege = props => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
-        id: event.target.id,
+        id: event.target.getAttribute("contactId"),
         name: event.target.getAttribute("value")
       },
       showModalDelete: true,
@@ -591,7 +592,7 @@ const ManageCollege = props => {
     let arrayId = [];
 
     selectedRows.forEach(d => {
-      arrayId.push(d.id);
+      arrayId.push(d.contactId);
     });
 
     setFormState(formState => ({
@@ -749,6 +750,7 @@ const ManageCollege = props => {
           <div className={classes.PaddingActionButton}>
             <DeleteGridIcon
               id={cell.id}
+              contactId={cell.contactId}
               value={cell.name}
               onClick={deleteCell}
             />
