@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { TextField, Card, CardContent, Grid } from "@material-ui/core";
+import {
+  TextField,
+  Card,
+  CardContent,
+  Grid,
+  Collapse,
+  IconButton
+} from "@material-ui/core";
 
 import styles from "./Activity.module.css";
 import useStyles from "../CommonStyles/ViewStyles.js";
@@ -10,19 +17,25 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as roleConstants from "../../../constants/RoleConstants";
 import * as formUtilities from "../../../utilities/FormUtilities";
+import CloseIcon from "@material-ui/icons/Close";
 import {
   Table,
   YellowButton,
   GrayButton,
   Auth,
-  ViewGridIcon,
-  FeedBack
+  FeedBack,
+  PastEventStatus
 } from "../../../components";
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
 import AddEditFeedBack from "../../Feedback/AddFeedback/AddFeedback";
+import Alert from "@material-ui/lab/Alert";
+import NoFeedback from "../../Feedback/NoFeedback/NoFeedback";
 
 const PastActivities = props => {
+  const [open, setOpen] = React.useState(true);
+  const { setLoaderStatus } = useContext(LoaderContext);
+  const [statusFilter, setStatusFilter] = useState([]);
   const classes = useStyles();
   const history = useHistory();
   const [formState, setFormState] = useState({
@@ -39,13 +52,20 @@ const PastActivities = props => {
     page: "",
     pageCount: "",
     sortAscending: true,
-    showModalFeedback: false,
     activityTitle: null,
     activityID: null,
-    isGiveFeedback: false
+    showModalFeedback: false,
+    showErrorModalFeedback: false,
+    isGiveFeedback: false,
+    isEditFeedback: false,
+    entityQuestionSet: [],
+    questionSetId: null,
+    feedbackSetId: null,
+    feedBackGiven: false,
+    fromFeedBackModal: false,
+    successErrorMessage: "",
+    errorMessage: ""
   });
-
-  const { setLoaderStatus } = useContext(LoaderContext);
 
   const studentInfo =
     Auth.getUserInfo() !== null &&
@@ -103,10 +123,13 @@ const PastActivities = props => {
       .serviceProviderForGetRequest(STUDENT_ACTIVITY_URL, params)
       .then(res => {
         formState.dataToShow = [];
+        let tempPAstActivityData = [];
+        let pastActivity = res.data.result;
+        tempPAstActivityData = convertPastActivityData(pastActivity);
         setFormState(formState => ({
           ...formState,
-          activities: res.data.result,
-          dataToShow: res.data.result,
+          activities: tempPAstActivityData,
+          dataToShow: tempPAstActivityData,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
@@ -117,6 +140,55 @@ const PastActivities = props => {
       .catch(error => {
         console.log("error-->>", error);
       });
+  };
+
+  const convertPastActivityData = data => {
+    let pastEventDataArray = [];
+    if (data) {
+      for (let i in data) {
+        var tempIndividualPastEventData = {};
+        tempIndividualPastEventData["id"] = data[i]["id"];
+        let startDate = new Date(data[i]["start_date_time"]);
+        let endDate = new Date(data[i]["end_date_time"]);
+
+        tempIndividualPastEventData["title"] = data[i]["title"];
+        tempIndividualPastEventData["activityType"] =
+          data[i]["activitytype"]["name"];
+        tempIndividualPastEventData["activityBatch"] =
+          data[i]["activity_batch"]["name"];
+
+        tempIndividualPastEventData[
+          "start_date_time"
+        ] = startDate.toDateString();
+        tempIndividualPastEventData["end_date_time"] = endDate.toDateString();
+        tempIndividualPastEventData["hasAttended"] = data[i]["hasAttended"];
+
+        tempIndividualPastEventData["giveFeedback"] = false;
+        tempIndividualPastEventData["editFeedback"] = false;
+        tempIndividualPastEventData["cannotGiveFeedback"] = false;
+        tempIndividualPastEventData["feedbackId"] = data[i]["feedbackSetId"];
+
+        if (
+          data[i]["hasAttended"] &&
+          data[i]["question_set"] &&
+          !data[i]["isFeedbackProvided"]
+        ) {
+          tempIndividualPastEventData["giveFeedback"] = true;
+        } else if (
+          data[i]["hasAttended"] &&
+          data[i]["question_set"] &&
+          data[i]["isFeedbackProvided"]
+        ) {
+          tempIndividualPastEventData["editFeedback"] = true;
+        } else if (!data[i]["hasAttended"] || !data[i]["question_set"]) {
+          tempIndividualPastEventData["cannotGiveFeedback"] = true;
+        } else {
+          tempIndividualPastEventData["cannotGiveFeedback"] = true;
+        }
+        pastEventDataArray.push(tempIndividualPastEventData);
+      }
+      return pastEventDataArray;
+    }
   };
 
   /** Pagination */
@@ -190,62 +262,218 @@ const PastActivities = props => {
     }
   };
 
-  const viewCell = activity => {
+  // const handleSort = (
+  //   column,
+  //   sortDirection,
+  //   perPage = formState.pageSize,
+  //   page = 1
+  // ) => {
+  //   formState.filterDataParameters[SORT_FIELD_KEY] =
+  //     column.selector + ":" + sortDirection;
+  //   getPastActivities(perPage, page, formState.filterDataParameters);
+  // };
+
+  /** Give feedback */
+  const giveFeedback = async activity => {
     setLoaderStatus(true);
-    history.push({
-      pathname: routeConstants.PAST_ACTIVITY_DETAILS,
-      dataForView: activity
-    });
-    setLoaderStatus(false);
+    const QUESTION_SET_URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_ACTIVITY +
+      "/" +
+      activity.id +
+      "/" +
+      strapiConstants.STRAPI_QUESTION_SET;
+    await serviceProviders
+      .serviceProviderForGetRequest(QUESTION_SET_URL)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: true,
+          activityTitle: activity.title,
+          activityID: activity.id,
+          isGiveFeedback: true,
+          isEditFeedback: false,
+          showErrorModalFeedback: false,
+          entityQuestionSet: res.data.result.questions,
+          questionSetId: res.data.result.id,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          activityTitle: activity.title,
+          isEditFeedback: false,
+          isGiveFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot give feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
   };
 
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
-      showModalFeedback: true,
-      activityTitle: null,
-      activityID: null,
-      isGiveFeedback: false
-    }));
+  /** Edit feedback */
+  const editFeedback = async activity => {
+    setLoaderStatus(true);
+    const FEEDBACK_SET_URL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    await serviceProviders
+      .serviceProviderForGetOneRequest(FEEDBACK_SET_URL, activity.feedbackId)
+      .then(res => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: true,
+          activityTitle: activity.title,
+          activityID: activity.id,
+          isGiveFeedback: false,
+          isEditFeedback: true,
+          showErrorModalFeedback: false,
+          feedbackSetId: activity.feedbackId,
+          questionSetId: res.data.result.question_set.id,
+          entityQuestionSet: res.data.result.questions,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          activityTitle: activity.title,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot edit feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
   };
 
-  const giveFeedback = event => {
-    setLoaderStatus(true);
+  const handleCloseFeedBackModal = (
+    status,
+    message,
+    isModalClosedWithoutGivingFeedbach
+  ) => {
+    setOpen(true);
+    if (isModalClosedWithoutGivingFeedbach) {
+      setFormState(formState => ({
+        ...formState,
+        showModalFeedback: false,
+        showErrorModalFeedback: false,
+        activityTitle: null,
+        activityID: null,
+        isGiveFeedback: false,
+        isEditFeedback: false,
+        fromFeedBackModal: false,
+        feedBackGiven: false,
+        successErrorMessage: ""
+      }));
+    } else {
+      if (status) {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: false,
+          activityTitle: null,
+          activityID: null,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          fromFeedBackModal: true,
+          feedBackGiven: true,
+          successErrorMessage: message
+        }));
+        getPastActivities(
+          formState.pageSize,
+          formState.page,
+          formState.filterDataParameters
+        );
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          showModalFeedback: false,
+          showErrorModalFeedback: false,
+          activityTitle: null,
+          activityID: null,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          fromFeedBackModal: true,
+          feedBackGiven: false,
+          successErrorMessage: message
+        }));
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
     setFormState(formState => ({
       ...formState,
-      showModalFeedback: true,
-      activityTitle: event.title,
-      activityID: event.id,
-      isGiveFeedback: true
+      showErrorModalFeedback: false
     }));
-
-    setLoaderStatus(false);
   };
 
   /** Columns to show in table */
   const column = [
     { name: "Training & Activity", sortable: true, selector: "title" },
-    { name: "Type", sortable: true, selector: "activitytype.name" },
-    { name: "Batch", sortable: true, selector: "activity_batch.name" },
+    { name: "Type", sortable: true, selector: "activityType" },
+    { name: "Batch", sortable: true, selector: "activityBatch" },
     {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
-          <div className={classes.PaddingActionButton}>
-            <ViewGridIcon
-              id={cell.id}
-              value={cell.name}
-              onClick={() => viewCell(cell)}
-            />
+          <div className={classes.PaddingFirstActionButton}>
+            <PastEventStatus style={cell.hasAttended} />
           </div>
-          <div className={classes.PaddingActionButton}>
-            <FeedBack
-              isGiveFeedback={true}
-              id={cell.id}
-              value={cell.name}
-              onClick={() => giveFeedback(cell)}
-            />
-          </div>
+          {cell.giveFeedback ? (
+            <div className={classes.PaddingActionButton}>
+              <FeedBack
+                isGiveFeedback={true}
+                isEditFeedback={false}
+                cannotGiveFeedback={false}
+                id={cell.id}
+                value={cell.title}
+                onClick={() => giveFeedback(cell)}
+              />
+            </div>
+          ) : cell.editFeedback ? (
+            <div className={classes.PaddingActionButton}>
+              <FeedBack
+                isGiveFeedback={false}
+                isEditFeedback={true}
+                cannotGiveFeedback={false}
+                id={cell.id}
+                value={cell.title}
+                onClick={() => {
+                  editFeedback(cell);
+                }}
+              />
+            </div>
+          ) : cell.cannotGiveFeedback ? (
+            <div className={classes.PaddingActionButton}>
+              <FeedBack
+                isGiveFeedback={false}
+                isEditFeedback={false}
+                cannotGiveFeedback={true}
+                isdisabled={true}
+                id={cell.id}
+                value={cell.title}
+                onClick={() => {}}
+              />
+            </div>
+          ) : null}
         </div>
       ),
       width: "18%",
@@ -260,6 +488,52 @@ const PastActivities = props => {
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>
         <Grid>
+          {" "}
+          <Grid item xs={12} className={classes.formgrid}>
+            {formState.fromFeedBackModal && formState.feedBackGiven ? (
+              <Collapse in={open}>
+                <Alert
+                  severity="success"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {formState.successErrorMessage}
+                </Alert>
+              </Collapse>
+            ) : null}
+
+            {formState.fromFeedBackModal && !formState.feedBackGiven ? (
+              <Collapse in={open}>
+                <Alert
+                  severity="error"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  {formState.successErrorMessage}
+                </Alert>
+              </Collapse>
+            ) : null}
+          </Grid>
           <Grid item xs={12} className={classes.formgrid}>
             <Card className={styles.filterButton}>
               <CardContent className={classes.Cardtheming}>
@@ -277,24 +551,6 @@ const PastActivities = props => {
                       style={{ marginTop: "0px", marginBottom: "0px" }}
                       onChange={handleFilterChangeForTitleField}
                     />
-
-                    {/* <Autocomplete
-                      id="activity-title-filter"
-                      options={formState.activitiesFilter}
-                      className={classes.autoCompleteField}
-                      getOptionLabel={option => option.title}
-                      onChange={(event, value) =>
-                        handleChangeAutoComplete(ACTIVITY_FILTER, event, value)
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label="Activity"
-                          className={classes.autoCompleteField}
-                          variant="outlined"
-                        />
-                      )}
-                    /> */}
                   </Grid>
                   <Grid item>
                     <Autocomplete
@@ -361,9 +617,39 @@ const PastActivities = props => {
             )}
             {formState.isGiveFeedback ? (
               <AddEditFeedBack
+                isAddFeedback={true}
                 showModal={formState.showModalFeedback}
-                modalClose={modalClose}
+                modalClose={handleCloseFeedBackModal}
                 Title={formState.activityTitle}
+                id={formState.activityID}
+                entityQuestionSet={formState.entityQuestionSet}
+                questionSetId={formState.questionSetId}
+                fromEvent={false}
+                fromActivity={true}
+              />
+            ) : formState.isEditFeedback ? (
+              <AddEditFeedBack
+                isEditFeedback={true}
+                showModal={formState.showModalFeedback}
+                modalClose={handleCloseFeedBackModal}
+                Title={formState.activityTitle}
+                id={formState.activityID}
+                entityQuestionSet={formState.entityQuestionSet}
+                questionSetId={formState.questionSetId}
+                feedbackSetId={formState.feedbackSetId}
+                fromEvent={false}
+                fromActivity={true}
+              />
+            ) : null}
+            {!formState.isGiveFeedback &&
+            !formState.isEditFeedback &&
+            !formState.showModalFeedback &&
+            formState.showErrorModalFeedback ? (
+              <NoFeedback
+                showModal={formState.showErrorModalFeedback}
+                modalClose={handleCloseModal}
+                Title={formState.activityTitle}
+                errorMessage={formState.errorMessage}
               />
             ) : null}
           </Grid>

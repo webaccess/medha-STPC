@@ -11,7 +11,10 @@ const ZonalRPCSuperAdminRoute = props => {
     if (
       auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
       auth.getUserInfo().role.name === roleConstants.RPCADMIN ||
-      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+        auth.getUserInfo().studentInfo.organization.contact.id ===
+          auth.getUserInfo().rpc.main_college)
     ) {
       return (
         <Route

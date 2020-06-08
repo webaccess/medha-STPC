@@ -52,7 +52,6 @@ module.exports = {
       sort = filters.sort;
       filters = _.omit(filters, ["sort"]);
     }
-    console.log(sort);
     let activity = await strapi
       .query("activity", PLUGIN)
       .model.query(
@@ -73,7 +72,6 @@ module.exports = {
           "upload_logo"
         ]
       });
-    console.log(activity);
     let response;
     if (sort && sort.length) {
       activity = utils.sort(activity.toJSON(), sort);
@@ -314,7 +312,6 @@ module.exports = {
 
       const { education_year } = activity;
       const { academic_year } = activity;
-      console.log(academic_year);
       isEducationEligible = true;
 
       const isEducationPresent = academicHistory.find(ah => {
@@ -453,6 +450,72 @@ module.exports = {
       }
     } else {
       return ctx.response.notFound("No question set with this activity");
+    }
+  },
+
+  async getFeedbacksForEventFromCollege(ctx) {
+    const { activityId, collegeId, feedbackType } = ctx.params;
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .findOne({ id: activityId });
+
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+
+    if (!activity.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ activity: activityId, question_set: activity.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    const contact = await strapi
+      .query("contact", "crm-plugin")
+      .find({ id: collegeId, contact_type: "organization" });
+
+    if (!contact.length) {
+      return ctx.response.notFound("No college found");
+    }
+
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(collegeId);
+
+    if (!userIds.length) {
+      return ctx.response.notFound("No students with this college");
+    }
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    /**------------------------------------------------ */
+    if (feedbackType === "rating") {
+      let feedbackData = await strapi.services.event.getAggregateFeedbackForActivity(
+        ctx,
+        activity,
+        students_contact_id,
+        "Student"
+      );
+      return utils.getFindOneResponse(feedbackData);
+    } else if (feedbackType === "comment") {
+      let feedbackData = await strapi.services.event.getAllCommentsForActivity(
+        ctx,
+        activity,
+        students_contact_id,
+        "Student"
+      );
+      return utils.getFindOneResponse(feedbackData);
     }
   }
 };

@@ -32,7 +32,8 @@ import {
   DeleteGridIcon,
   DownloadIcon,
   ThumbsUpDownIcon,
-  Spinner
+  Spinner,
+  FeedBack
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -42,6 +43,8 @@ import XLSX from "xlsx";
 import LoaderContext from "../../context/LoaderContext";
 import ViewFeedBack from "../../containers/Feedback/ViewFeedback/ViewFeedback";
 import auth from "../../components/Auth";
+import AddEditFeedBack from "../Feedback/AddFeedback/AddFeedback";
+import NoFeedback from "../Feedback/NoFeedback/NoFeedback";
 
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
@@ -90,6 +93,41 @@ const ViewActivity = props => {
     activityID: "",
     showViewFeedbackModal: false
   });
+
+  /** Special feedbackState state variable to set parameters for feedback  */
+  const [feedbackState, setFeedbackState] = useState({
+    /** Feedback */
+    /**  showModalFeedback is used to enable the popup of modal for view/add/edit feedback.*/
+    showModalFeedback: false,
+    EventTitle: null,
+    eventId: null,
+    /** feedBackGiven , fromFeedBackModal this two flags are used to set the success and error messages*/
+    feedBackGiven: false,
+    fromFeedBackModal: false,
+    successErrorMessage: "",
+
+    /** showErrorModalFeedback this flag sets the error feedback modal ehich is used to dispaly the popup for error */
+    showErrorModalFeedback: false,
+    /** errorMessage is used to display what error needs to be shown for popup */
+    errorMessage: "",
+
+    ratings: [],
+    /** showAddEditModalFeedback this flags enables the add/edit feedback modal. */
+    showAddEditModalFeedback: false,
+    /** Below three flags are used to identify whether to give, edit or to view feedback. */
+    isGiveFeedback: false,
+    isEditFeedback: false,
+    isViewFeedback: false,
+
+    /** This has the question set for adding feedback and also for editing feedback with answers also (for editing) */
+    entityQuestionSet: [],
+    /** questionSetId is while adding/editng */
+    questionSetId: null,
+    /** feedbackSetId is used while editing to identify where to store data against which feedback. */
+    feedbackSetId: null,
+    result: {}
+  });
+
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [alert, setAlert] = useState({
@@ -166,10 +204,14 @@ const ViewActivity = props => {
       .serviceProviderForGetRequest(URL, params)
       .then(res => {
         formState.dataToShow = [];
+        formState.dataToShow = [];
+        formState.tempData = [];
+        let activityData = [];
+        activityData = convertactivityData(res.data.result);
         setFormState(formState => ({
           ...formState,
           activities: res.data.result,
-          dataToShow: res.data.result,
+          dataToShow: activityData,
           pageSize: res.data.pageSize,
           totalRows: res.data.rowCount,
           page: res.data.page,
@@ -180,6 +222,57 @@ const ViewActivity = props => {
       .catch(error => {
         console.log("error", error);
       });
+  };
+
+  const convertactivityData = data => {
+    let x = [];
+    if (data.length > 0) {
+      for (let i in data) {
+        var eventIndividualData = {};
+        eventIndividualData["id"] = data[i]["id"];
+
+        eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
+        eventIndividualData["activityType"] = data[i].activitytype.name;
+        eventIndividualData["streams"] = data[i].streams;
+        eventIndividualData["collegeName"] = data[i].contact.name;
+
+        eventIndividualData["start_date_time"] = data[i]["start_date_time"];
+
+        /** Several feedback flags are taken form the response itself  */
+        /** Can college admin view feedback */
+        eventIndividualData["isFeedbackProvidedbyStudents"] =
+          data[i]["isFeedbackProvidedbyStudents"];
+
+        /** can a college admin add/edit/cannot give feedback */
+
+        /**  */
+        eventIndividualData["question_set"] = data[i]["question_set"]
+          ? true
+          : false;
+        eventIndividualData["giveFeedback"] = false;
+        eventIndividualData["editFeedback"] = false;
+        eventIndividualData["cannotGiveFeedback"] = false;
+        eventIndividualData["feedbackId"] = data[i]["feedbackSetId"];
+
+        if (
+          data[i]["question_set"] &&
+          !data[i]["isFeedbackProvidedbyCollege"]
+        ) {
+          eventIndividualData["giveFeedback"] = true;
+        } else if (
+          data[i]["question_set"] &&
+          data[i]["isFeedbackProvidedbyCollege"]
+        ) {
+          eventIndividualData["editFeedback"] = true;
+        } else if (!data[i]["question_set"]) {
+          eventIndividualData["cannotGiveFeedback"] = true;
+        } else {
+          eventIndividualData["cannotGiveFeedback"] = true;
+        }
+        x.push(eventIndividualData);
+      }
+      return x;
+    }
   };
 
   /** Pagination */
@@ -235,16 +328,32 @@ const ViewActivity = props => {
 
   const editCell = data => {
     setLoaderStatus(true);
-    history.push({
-      pathname: routeConstants.EDIT_ACTIVITY,
-      editActivity: true,
-      dataForEdit: data
-    });
-    setLoaderStatus(false);
+    getDataForEdit(data.id);
   };
 
-  const isDeleteCellCompleted = status => {
-    formState.isDataDeleted = status;
+  /** Edit -------------------------------------------------------*/
+  const getDataForEdit = async id => {
+    setLoaderStatus(true);
+    let ACTIVITY_URL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
+    await serviceProviders
+      .serviceProviderForGetOneRequest(ACTIVITY_URL, id)
+      .then(res => {
+        setLoaderStatus(false);
+
+        let editData = res.data.result;
+        /** move to edit page */
+        history.push({
+          pathname: routeConstants.EDIT_ACTIVITY,
+          editActivity: true,
+          dataForEdit: editData
+        });
+      })
+      .catch(error => {
+        setLoaderStatus(false);
+
+        console.log("error");
+      });
   };
 
   const deleteCell = event => {
@@ -262,15 +371,6 @@ const ViewActivity = props => {
       pathname: routeConstants.VIEW_ACTIVITY,
       dataForView: data.id
     });
-  };
-
-  const handleChangeAutoComplete = (filterName, event, value) => {
-    if (value === null) {
-      delete formState.filterDataParameters[filterName];
-      //restoreData();
-    } else {
-      formState.filterDataParameters[filterName] = value["id"];
-    }
   };
 
   const handleFilterChangeForActivityField = event => {
@@ -361,36 +461,316 @@ const ViewActivity = props => {
         setLoaderStatus(false);
       });
   };
+  /** Feedback */
 
-  const viewFeedbackHandler = event => {
+  /** For viewing feedback for student */
+  const viewFeedback = async cell => {
     setLoaderStatus(true);
-    setFormState(formState => ({
-      ...formState,
-      showViewFeedbackModal: true,
-      activityTitle: event.title,
-      activityID: event.id
+    const QUESTION_SET_URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_ACTIVITY +
+      "/" +
+      cell.id +
+      "/" +
+      strapiConstants.STRAPI_CONTACT_SOLO +
+      "/" +
+      auth.getUserInfo().studentInfo.organization.contact.id +
+      "/getStudentsFeedbacks/rating";
+
+    let result = {};
+    if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      result = {
+        [roleConstants.STUDENT]: null
+      };
+    }
+
+    await serviceProviders
+      .serviceProviderForGetRequest(QUESTION_SET_URL)
+      .then(res => {
+        result[roleConstants.STUDENT] = res.data.result;
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        result[roleConstants.STUDENT] = [];
+        setLoaderStatus(false);
+      });
+
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
+      isViewFeedback: true,
+      isEditFeedback: false,
+      isGiveFeedback: false,
+      showModalFeedback: true,
+      EventTitle: cell.title,
+      eventId: cell.id,
+      feedBackGiven: false,
+      fromFeedBackModal: false,
+      successErrorMessage: "",
+      result: result,
+      showErrorModalFeedback: false
     }));
-    setLoaderStatus(false);
   };
 
-  const modalClose = () => {
-    setFormState(formState => ({
-      ...formState,
+  /** For viewung feedback for superadmin */
+  const viewFeedbackSuperAdmin = async cell => {
+    setLoaderStatus(true);
+    const COLLEGE_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getSuperAdminFeedback/" +
+      auth.getUserInfo().contact.id +
+      "/DataFor/college/FeedbackType/rating";
+
+    const RPC_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getSuperAdminFeedback/" +
+      auth.getUserInfo().contact.id +
+      "/DataFor/rpc/FeedbackType/rating";
+
+    const ZONE_FEEDBACK =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_EVENTS +
+      "/" +
+      cell.id +
+      "/getSuperAdminFeedback/" +
+      auth.getUserInfo().contact.id +
+      "/DataFor/zone/FeedbackType/rating";
+
+    let result = {};
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+      result = {
+        [roleConstants.ZONALADMIN]: null,
+        [roleConstants.RPCADMIN]: null,
+        [roleConstants.COLLEGEADMIN]: null
+      };
+    }
+    await serviceProviders
+      .serviceProviderForGetRequest(COLLEGE_FEEDBACK)
+      .then(res => {
+        result[roleConstants.COLLEGEADMIN] = res.data.result;
+      })
+      .catch(error => {
+        result[roleConstants.COLLEGEADMIN] = [];
+      });
+    await serviceProviders
+      .serviceProviderForGetRequest(ZONE_FEEDBACK)
+      .then(res => {
+        result[roleConstants.ZONALADMIN] = res.data.result;
+      })
+      .catch(error => {
+        result[roleConstants.ZONALADMIN] = [];
+      });
+    await serviceProviders
+      .serviceProviderForGetRequest(RPC_FEEDBACK)
+      .then(res => {
+        result[roleConstants.RPCADMIN] = res.data.result;
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        result[roleConstants.RPCADMIN] = [];
+        setLoaderStatus(false);
+      });
+
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
+      isViewFeedback: true,
+      isEditFeedback: false,
+      isGiveFeedback: false,
+      showModalFeedback: true,
+      EventTitle: cell.title,
+      eventId: cell.id,
+      feedBackGiven: false,
+      fromFeedBackModal: false,
+      successErrorMessage: "",
+      result: result,
+      showErrorModalFeedback: false
+    }));
+  };
+
+  /** Give feedback */
+  const giveFeedback = async event => {
+    setLoaderStatus(true);
+    const QUESTION_SET_URL =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_ACTIVITY +
+      "/" +
+      event.id +
+      "/" +
+      strapiConstants.STRAPI_QUESTION_SET;
+    await serviceProviders
+      .serviceProviderForGetRequest(QUESTION_SET_URL)
+      .then(res => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: true,
+          EventTitle: event.title,
+          eventId: event.id,
+          isGiveFeedback: true,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          showErrorModalFeedback: false,
+          entityQuestionSet: res.data.result.questions,
+          questionSetId: res.data.result.id,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          EventTitle: event.title,
+          isEditFeedback: false,
+          isGiveFeedback: false,
+          isViewFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot add feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
+  /** ------ */
+  /** Edit feedback */
+  const editFeedback = async event => {
+    setLoaderStatus(true);
+    const FEEDBACK_SET_URL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    await serviceProviders
+      .serviceProviderForGetOneRequest(FEEDBACK_SET_URL, event.feedbackId)
+      .then(res => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          EventTitle: event.eventName,
+          eventId: event.id,
+          isGiveFeedback: false,
+          isEditFeedback: true,
+          isViewFeedback: false,
+          showModalFeedback: true,
+          showErrorModalFeedback: false,
+          feedbackSetId: event.feedbackId,
+          questionSetId: res.data.result.question_set.id,
+          entityQuestionSet: res.data.result.questions,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: ""
+        }));
+        setLoaderStatus(false);
+      })
+      .catch(error => {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showModalFeedback: false,
+          showErrorModalFeedback: true,
+          EventTitle: event.eventName,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          feedBackGiven: false,
+          fromFeedBackModal: false,
+          successErrorMessage: "",
+          errorMessage: "Cannot edit feedback"
+        }));
+        setLoaderStatus(false);
+        console.log("error giving feedback");
+      });
+  };
+
+  /**Handle Closed model */
+  const handleCloseFeedBackModal = (
+    status,
+    message,
+    isModalClosedWithoutGivingFeedbach
+  ) => {
+    if (isModalClosedWithoutGivingFeedbach) {
+      setFeedbackState(feedbackState => ({
+        ...feedbackState,
+        showAddEditModalFeedback: false,
+        isGiveFeedback: false,
+        isEditFeedback: false,
+        isViewFeedback: false,
+        showModalFeedback: false,
+        EventTitle: null,
+        eventId: null,
+        feedBackGiven: false,
+        fromFeedBackModal: false,
+        successErrorMessage: ""
+      }));
+    } else {
+      if (status) {
+        setOpen(true);
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showAddEditModalFeedback: false,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          showModalFeedback: false,
+          EventTitle: null,
+          eventId: null,
+          feedBackGiven: true,
+          fromFeedBackModal: true,
+          successErrorMessage: message
+        }));
+        getActivityData(
+          formState.pageSize,
+          formState.page,
+          formState.filterDataParameters
+        );
+      } else {
+        setFeedbackState(feedbackState => ({
+          ...feedbackState,
+          showAddEditModalFeedback: false,
+          isGiveFeedback: false,
+          isEditFeedback: false,
+          isViewFeedback: false,
+          showModalFeedback: false,
+          EventTitle: null,
+          eventId: null,
+          feedBackGiven: false,
+          fromFeedBackModal: true,
+          successErrorMessage: message
+        }));
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
+    setFeedbackState(feedbackState => ({
+      ...feedbackState,
       showModalFeedback: false,
-      showViewFeedbackModal: false
+      showErrorModalFeedback: false,
+      showAddEditModalFeedback: false,
+      isGiveFeedback: false,
+      isEditFeedback: false,
+      isViewFeedback: false,
+      feedBackGiven: false,
+      fromFeedBackModal: false,
+      result: {}
     }));
   };
 
   /** Columns to show in table */
   const column = [
     { name: "Training and Activities", sortable: true, selector: "title" },
-    { name: "Activity Type", sortable: true, selector: "activitytype.name" },
+    { name: "Activity Type", sortable: true, selector: "activityType" },
     {
       name: "Streams",
       sortable: true,
       selector: row => `${row.streams.map(s => ` ${s.name}`)}`
     },
-    { name: "College", sortable: true, selector: "contact.name" },
+    { name: "College", sortable: true, selector: "collegeName" },
     {
       name: "Date",
       sortable: true,
@@ -433,16 +813,78 @@ const ViewActivity = props => {
               onClick={() => handleClickDownloadStudents(cell)}
             />
           </div>
-          {roleName === roleConstants.COLLEGEADMIN ||
-          roleName === roleConstants.MEDHAADMIN ? (
-            <div className={classes.PaddingActionButton}>
-              <ThumbsUpDownIcon
-                id={cell.id}
-                value={cell.name}
-                title="View FeedBack"
-                onClick={() => viewFeedbackHandler(cell)}
-              />
-            </div>
+          {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
+            cell.isFeedbackProvidedbyStudents ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  message={"View student feedback"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => viewFeedback(cell)}
+                />
+              </div>
+            ) : !cell.question_set ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  feedbackNotAvailable={true}
+                  message={"No question set with this event"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            ) : (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  feedbackNotAvailable={true}
+                  message={"No student feedback available"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            )
+          ) : null}
+
+          {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
+            cell.giveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={true}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => giveFeedback(cell)}
+                />
+              </div>
+            ) : cell.editFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={true}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => editFeedback(cell)}
+                />
+              </div>
+            ) : cell.cannotGiveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={true}
+                  isdisabled={true}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            ) : null
           ) : null}
 
           {roleName === roleConstants.MEDHAADMIN ? (
@@ -518,6 +960,50 @@ const ViewActivity = props => {
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
+        {feedbackState.fromFeedBackModal && feedbackState.feedBackGiven ? (
+          <Collapse in={open}>
+            <Alert
+              severity="success"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {feedbackState.successErrorMessage}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {feedbackState.fromFeedBackModal && !feedbackState.feedBackGiven ? (
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {feedbackState.successErrorMessage}
+            </Alert>
+          </Collapse>
+        ) : null}
+
         {/** Error/Success messages to be shown for edit */}
         {formState.fromEditActivity && formState.isDataEdited ? (
           <Collapse in={open}>
@@ -666,20 +1152,71 @@ const ViewActivity = props => {
               onChangePage={handlePageChange}
             />
           ) : (
-            <React.Fragment>
-              <div className={classes.noDataMargin}>No data to show</div>
-            </React.Fragment>
+            <Spinner />
           )
         ) : (
-          <React.Fragment>
-            <div className={classes.noDataMargin}>No data to show</div>
-          </React.Fragment>
+          <div className={classes.noDataMargin}>No data to show</div>
         )}
-        {formState.showViewFeedbackModal ? (
+        {/** Feedback modal calling */}
+        {feedbackState.isViewFeedback ? (
           <ViewFeedBack
-            showModal={formState.showViewFeedbackModal}
-            modalClose={modalClose}
-            activityTitle={formState.activityTitle}
+            showModal={feedbackState.showModalFeedback}
+            modalClose={handleCloseModal}
+            Title={feedbackState.EventTitle}
+            id={feedbackState.eventId}
+            fromEvent={false}
+            fromActivity={true}
+            fromRPC={false}
+            fromZone={false}
+            fromCollegeAdmin={
+              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+                ? true
+                : false
+            }
+            formSuperAdmin={
+              auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
+                ? true
+                : false
+            }
+            result={feedbackState.result}
+            dataToShow={feedbackState.ratings}
+          />
+        ) : null}
+        {feedbackState.isGiveFeedback ? (
+          <AddEditFeedBack
+            isAddFeedback={true}
+            showModal={feedbackState.showModalFeedback}
+            modalClose={handleCloseFeedBackModal}
+            Title={feedbackState.EventTitle}
+            id={feedbackState.eventId}
+            entityQuestionSet={feedbackState.entityQuestionSet}
+            questionSetId={feedbackState.questionSetId}
+            fromEvent={false}
+            fromActivity={true}
+          />
+        ) : feedbackState.isEditFeedback ? (
+          <AddEditFeedBack
+            isEditFeedback={true}
+            showModal={feedbackState.showModalFeedback}
+            modalClose={handleCloseFeedBackModal}
+            Title={feedbackState.EventTitle}
+            id={feedbackState.eventId}
+            entityQuestionSet={feedbackState.entityQuestionSet}
+            questionSetId={feedbackState.questionSetId}
+            feedbackSetId={feedbackState.feedbackSetId}
+            fromEvent={false}
+            fromActivity={true}
+          />
+        ) : null}
+        {!feedbackState.isGiveFeedback &&
+        !feedbackState.isEditFeedback &&
+        !feedbackState.showModalFeedback &&
+        feedbackState.showErrorModalFeedback ? (
+          <NoFeedback
+            showModal={feedbackState.showErrorModalFeedback}
+            modalClose={handleCloseModal}
+            Title={feedbackState.EventTitle}
+            errorMessage={feedbackState.errorMessage}
           />
         ) : null}
       </Grid>

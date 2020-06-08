@@ -1087,7 +1087,7 @@ const ManageEvent = props => {
           </div>
         </div>
       ),
-      width: "20%",
+      width: "auto",
       cellStyle: {
         width: "18%",
         maxWidth: "18%"

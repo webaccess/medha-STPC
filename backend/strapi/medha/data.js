@@ -875,7 +875,9 @@ const ROLES = {
           "delete",
           "getquestionset",
           "getfeedbacksforeventfromcollege",
-          "getstudentcommentsforeventfromcollege"
+          "getstudentcommentsforeventfromcollege",
+          "getfeedbacksforeventforrpc",
+          "getfeedbackscommentsforeventforrpc"
         ]
       },
       {
@@ -937,7 +939,8 @@ const ROLES = {
           "download",
           "student",
           "getquestionset",
-          "update"
+          "update",
+          "getfeedbacksforeventfromcollege"
         ],
         type: PLUGIN_NAME
       },
@@ -973,7 +976,8 @@ const ROLES = {
           "eligiblepastevents",
           "eligibleEvents",
           "editindividual",
-          "getOrganizationActivities"
+          "getOrganizationActivities",
+          "rpcevents"
         ],
         type: PLUGIN_NAME
       },

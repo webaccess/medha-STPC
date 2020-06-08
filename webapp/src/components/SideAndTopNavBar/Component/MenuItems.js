@@ -8,10 +8,115 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import GroupOutlinedIcon from "@material-ui/icons/GroupOutlined";
 import LocalLibraryOutlinedIcon from "@material-ui/icons/LocalLibraryOutlined";
 
+import auth from "../../Auth/Auth";
 import * as routeConstants from "../../../constants/RouteConstants";
 import * as roleConstants from "../../../constants/RoleConstants";
 
 const MenuItems = props => {
+  const getCollegeAdminMenus = () => {
+    let dataToReturn = [];
+    if (
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+    ) {
+      if (
+        auth.getUserInfo().studentInfo.organization.contact.id ===
+        auth.getUserInfo().rpc.main_college
+      ) {
+        dataToReturn = [
+          {
+            name: "Dashboard",
+            link: routeConstants.DASHBOARD_URL,
+            Icon: <DashboardIcon />
+          },
+          {
+            name: "College Profile",
+            link: routeConstants.VIEW_COLLEGE,
+            Icon: <LocalLibraryOutlinedIcon />
+          },
+          {
+            name: "Students",
+            Icon: <GroupOutlinedIcon />,
+            items: [
+              {
+                name: "Manage Students",
+                link: routeConstants.MANAGE_STUDENT
+              },
+              {
+                name: "Import Students",
+                link: routeConstants.IMPORT_STUDENTS
+              }
+            ]
+          },
+          {
+            name: "Activity",
+            Icon: <AssignmentOutlinedIcon />,
+            link: routeConstants.MANAGE_ACTIVITY
+          },
+          {
+            name: "Events",
+            Icon: <EmojiFlagsOutlinedIcon />,
+            link: routeConstants.MANAGE_EVENT
+          },
+          {
+            name: "Feedback",
+            Icon: <GroupOutlinedIcon />,
+            items: [
+              {
+                name: "Activity Feedback",
+                Icon: <AssignmentOutlinedIcon />,
+                link: routeConstants.FEEDBACK_ACTIVITIES
+              },
+              {
+                name: "Events Feedback",
+                Icon: <EmojiFlagsOutlinedIcon />,
+                link: routeConstants.FEEDBACK_EVENTS
+              }
+            ]
+          }
+        ];
+      } else {
+        dataToReturn = [
+          {
+            name: "Dashboard",
+            link: routeConstants.DASHBOARD_URL,
+            Icon: <DashboardIcon />
+          },
+          {
+            name: "College Profile",
+            link: routeConstants.VIEW_COLLEGE,
+            Icon: <LocalLibraryOutlinedIcon />
+          },
+          {
+            name: "Students",
+            Icon: <GroupOutlinedIcon />,
+            items: [
+              {
+                name: "Manage Students",
+                link: routeConstants.MANAGE_STUDENT
+              },
+              {
+                name: "Import Students",
+                link: routeConstants.IMPORT_STUDENTS
+              }
+            ]
+          },
+          {
+            name: "Activity",
+            Icon: <AssignmentOutlinedIcon />,
+            link: routeConstants.MANAGE_ACTIVITY
+          },
+          {
+            name: "Events",
+            Icon: <EmojiFlagsOutlinedIcon />,
+            link: routeConstants.MANAGE_EVENT
+          }
+        ];
+      }
+    }
+
+    return dataToReturn;
+  };
   const menuItems = {
     [roleConstants.MEDHAADMIN]: [
       {
@@ -57,42 +162,7 @@ const MenuItems = props => {
         Icon: <EmojiFlagsOutlinedIcon />
       }
     ],
-    [roleConstants.COLLEGEADMIN]: [
-      {
-        name: "Dashboard",
-        link: routeConstants.DASHBOARD_URL,
-        Icon: <DashboardIcon />
-      },
-      {
-        name: "College Profile",
-        link: routeConstants.VIEW_COLLEGE,
-        Icon: <LocalLibraryOutlinedIcon />
-      },
-      {
-        name: "Students",
-        Icon: <GroupOutlinedIcon />,
-        items: [
-          {
-            name: "Manage Students",
-            link: routeConstants.MANAGE_STUDENT
-          },
-          {
-            name: "Import Students",
-            link: routeConstants.IMPORT_STUDENTS
-          }
-        ]
-      },
-      {
-        name: "Activity",
-        Icon: <AssignmentOutlinedIcon />,
-        link: routeConstants.MANAGE_ACTIVITY
-      },
-      {
-        name: "Events",
-        Icon: <EmojiFlagsOutlinedIcon />,
-        link: routeConstants.MANAGE_EVENT
-      }
-    ],
+    [roleConstants.COLLEGEADMIN]: getCollegeAdminMenus(),
     [roleConstants.STUDENT]: [
       {
         name: "Profile",

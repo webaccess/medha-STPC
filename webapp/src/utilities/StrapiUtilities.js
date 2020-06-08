@@ -386,7 +386,8 @@ export const addActivity = (
   description,
   trainer_name,
   streams,
-  files
+  files,
+  question_set
 ) => {
   const data = {
     title: title,
@@ -399,7 +400,7 @@ export const addActivity = (
     description: description,
     trainer_name: trainer_name,
     streams: streams,
-    question_set: null
+    question_set: question_set
   };
 
   if (files) {
@@ -423,7 +424,8 @@ export const editActivity = (
   trainer_name,
   streams,
   id,
-  files
+  files,
+  question_set
 ) => {
   const data = {
     title: title,
@@ -436,6 +438,7 @@ export const editActivity = (
     description: description,
     trainer_name: trainer_name,
     streams: streams,
+    question_set: question_set,
     id: id
   };
   const formdata = new FormData();

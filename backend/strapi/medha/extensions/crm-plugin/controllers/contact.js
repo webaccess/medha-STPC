@@ -671,6 +671,109 @@ module.exports = {
   },
 
   /**
+   * @return {Array}
+   * This will fetch all events related to college
+   */
+  async organizationEvents(ctx) {
+    const { id } = ctx.params;
+    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /** This checks college using contact id */
+    const college = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!college) {
+      return ctx.response.notFound("College does not exist");
+    }
+
+    /** This gets contact id of the logged in user */
+    const { contact } = ctx.state.user;
+
+    /** This gets contact ids of all the college admins */
+    const collegeUserIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdmin(id);
+
+    let collegeAdminContact = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeUserIds });
+
+    const collegeAdminContactIds = collegeAdminContact.map(user => {
+      return user.id;
+    });
+
+    /** Get student contact ids of a college */
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(id);
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
+    /** Get actual event data */
+    const events = await strapi
+      .query("event")
+      .model.query(
+        buildQuery({
+          model: strapi.models["event"],
+          filters
+        })
+      )
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    /**
+     * Get all events for specific college
+     */
+    const filtered = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getEvents(college, events);
+
+    await utils.asyncForEach(filtered, async event => {
+      if (event.question_set) {
+        const checkFeedbackForTheEventPresent = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact_in: students_contact_id,
+            question_set: event.question_set.id
+          });
+
+        const checkCollegeFeedbackAvailable = await strapi
+          .query("feedback-set")
+          .find({
+            event: event.id,
+            contact: collegeAdminContactIds,
+            question_set: event.question_set.id
+          });
+
+        if (checkCollegeFeedbackAvailable.length) {
+          event.isFeedbackProvidedbyCollege = true;
+          event.feedbackSetId = checkCollegeFeedbackAvailable[0].id;
+        } else {
+          event.isFeedbackProvidedbyCollege = false;
+          event.feedbackSetId = null;
+        }
+
+        event.isFeedbackProvidedbyStudents = checkFeedbackForTheEventPresent.length
+          ? true
+          : false;
+      } else {
+        event.isFeedbackProvidedbyCollege = false;
+        event.feedbackSetId = null;
+        event.isFeedbackProvidedbyStudents = false;
+      }
+    });
+
+    const { result, pagination } = utils.paginate(filtered, page, pageSize);
+    return { result, ...pagination };
+  },
+
+  /**
    * Get Activities for given Organization
    * TODO policy only medha admin and college admin can view activites under give colleges
    */
@@ -684,6 +787,32 @@ module.exports = {
       return ctx.response.notFound("College does not exist");
     }
 
+    /** This gets contact ids of all the college admins */
+    const collegeUserIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdmin(id);
+
+    let collegeAdminContact = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeUserIds });
+
+    const collegeAdminContactIds = collegeAdminContact.map(user => {
+      return user.id;
+    });
+
+    /** Get student contact ids of a college */
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(id);
+
+    let students = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: userIds });
+
+    const students_contact_id = students.map(student => {
+      return student.id;
+    });
+
     return strapi
       .query("activity", PLUGIN)
       .model.query(
@@ -693,8 +822,45 @@ module.exports = {
         })
       )
       .fetchAll()
-      .then(res => {
+      .then(async res => {
         const data = res.toJSON().filter(activty => activty.contact.id == id);
+
+        await utils.asyncForEach(data, async activity => {
+          if (activity.question_set) {
+            const checkFeedbackForTheEventPresent = await strapi
+              .query("feedback-set")
+              .find({
+                activity: activity.id,
+                contact_in: students_contact_id,
+                question_set: activity.question_set.id
+              });
+
+            const checkCollegeFeedbackAvailable = await strapi
+              .query("feedback-set")
+              .find({
+                activity: activity.id,
+                contact: collegeAdminContactIds,
+                question_set: activity.question_set.id
+              });
+
+            if (checkCollegeFeedbackAvailable.length) {
+              activity.isFeedbackProvidedbyCollege = true;
+              activity.feedbackSetId = checkCollegeFeedbackAvailable[0].id;
+            } else {
+              activity.isFeedbackProvidedbyCollege = false;
+              activity.feedbackSetId = null;
+            }
+
+            activity.isFeedbackProvidedbyStudents = checkFeedbackForTheEventPresent.length
+              ? true
+              : false;
+          } else {
+            activity.isFeedbackProvidedbyCollege = false;
+            activity.feedbackSetId = null;
+            activity.isFeedbackProvidedbyStudents = false;
+          }
+        });
+
         const response = utils.paginate(data, page, pageSize);
         return {
           result: response.result,
@@ -1016,6 +1182,127 @@ module.exports = {
     };
   },
 
+  /** Past Activities */
+  eligiblePastActivities: async ctx => {
+    const { id } = ctx.params;
+    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
+
+    // Removing custom query params since strapi won't allow filtering using that
+    let status;
+    if (query.status) {
+      status = query.status;
+      delete query.status;
+    }
+
+    let filters = convertRestQueryParams(query);
+
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
+    }
+
+    const student = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!student) return ctx.response.notFound("Student does not exist");
+
+    // Building query depending on query params sent
+    let qb = {};
+    qb.contact = id;
+    if (status) {
+      qb.is_verified_by_college = status == "attended" ? true : false;
+    }
+
+    let activityBatches = await strapi
+      .query("activityassignee", PLUGIN)
+      .find(qb);
+
+    if (!activityBatches.length)
+      return ctx.response.notFound("Student not Enrolled in any event");
+
+    const currentDate = new Date();
+
+    activityBatches = activityBatches.filter(activityBatch => {
+      const endTime = new Date(activityBatch.activity_batch.end_date_time);
+      if (currentDate.getTime() > endTime.getTime()) return activityBatch;
+    });
+
+    if (activityBatches) {
+      const activityIds = activityBatches.map(
+        activityBatch => activityBatch.activity_batch.activity
+      );
+
+      let activity = await strapi
+        .query("activity", PLUGIN)
+        .model.query(
+          buildQuery({
+            model: strapi.plugins["crm-plugin"].models["activity"],
+            filters
+          })
+        )
+        .where("id", "in", activityIds)
+        .fetchAll()
+        .then(model => model.toJSON());
+      // console.log(activity);
+
+      await utils.asyncForEach(activity, async activity => {
+        let flag = 0;
+        // for (let i = 0; i < activityBatch.length; i++) {
+        activityBatches.forEach(activityBatch => {
+          if (activity.id === activityBatch.activity_batch.activity) {
+            activity["activity_batch"] = activityBatch.activity_batch;
+            flag = 1;
+          }
+        });
+
+        if (flag) {
+          let hasAttended = false;
+          for (let i in activity.activityassignees) {
+            if (
+              activity.activityassignees[i]["contact"] == id &&
+              activity.activityassignees[i].is_verified_by_college
+            ) {
+              hasAttended = true;
+              break;
+            }
+          }
+          if (activity.question_set) {
+            const checkFeedbackForActivityPresent = await strapi
+              .query("feedback-set")
+              .find({
+                activity: activity.id,
+                contact: id,
+                question_set: activity.question_set.id
+              });
+            if (checkFeedbackForActivityPresent.length) {
+              activity.isFeedbackProvided = true;
+              activity.feedbackSetId = checkFeedbackForActivityPresent[0].id;
+            } else {
+              activity.isFeedbackProvided = false;
+              activity.feedbackSetId = null;
+            }
+          } else {
+            activity.isFeedbackProvided = false;
+            activity.feedbackSetId = null;
+          }
+          activity["hasAttended"] = hasAttended;
+          return activity;
+        }
+      });
+
+      // Sorting ascending or descending on one or multiple fields
+      if (sort && sort.length) {
+        activity = utils.sort(activity, sort);
+      }
+
+      const response = utils.paginate(activity, page, pageSize);
+      return {
+        result: response.result,
+        ...response.pagination
+      };
+    }
+  },
+
+  /** Past Events */
   async eligiblePastEvents(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
@@ -1216,109 +1503,6 @@ module.exports = {
       result: response.result,
       ...response.pagination
     };
-  },
-
-  /**
-   * @return {Array}
-   * This will fetch all events related to college
-   */
-  async organizationEvents(ctx) {
-    const { id } = ctx.params;
-    let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
-
-    /** This checks college using contact id */
-    const college = await strapi.query("contact", PLUGIN).findOne({ id }, []);
-    if (!college) {
-      return ctx.response.notFound("College does not exist");
-    }
-
-    /** This gets contact id of the logged in user */
-    const { contact } = ctx.state.user;
-
-    /** This gets contact ids of all the college admins */
-    const collegeUserIds = await strapi.plugins[
-      "crm-plugin"
-    ].services.contact.getCollegeAdmin(id);
-
-    let collegeAdminContact = await strapi
-      .query("contact", PLUGIN)
-      .find({ user_in: collegeUserIds });
-
-    const collegeAdminContactIds = collegeAdminContact.map(user => {
-      return user.id;
-    });
-
-    /** Get student contact ids of a college */
-    const userIds = await strapi.plugins[
-      "crm-plugin"
-    ].services.contact.getUsers(id);
-
-    let students = await strapi
-      .query("contact", PLUGIN)
-      .find({ user_in: userIds });
-
-    const students_contact_id = students.map(student => {
-      return student.id;
-    });
-
-    /** Get actual event data */
-    const events = await strapi
-      .query("event")
-      .model.query(
-        buildQuery({
-          model: strapi.models["event"],
-          filters
-        })
-      )
-      .fetchAll()
-      .then(model => model.toJSON());
-
-    /**
-     * Get all events for specific college
-     */
-    const filtered = await strapi.plugins[
-      "crm-plugin"
-    ].services.contact.getEvents(college, events);
-
-    await utils.asyncForEach(filtered, async event => {
-      if (event.question_set) {
-        const checkFeedbackForTheEventPresent = await strapi
-          .query("feedback-set")
-          .find({
-            event: event.id,
-            contact_in: students_contact_id,
-            question_set: event.question_set.id
-          });
-
-        const checkCollegeFeedbackAvailable = await strapi
-          .query("feedback-set")
-          .find({
-            event: event.id,
-            contact: collegeAdminContactIds,
-            question_set: event.question_set.id
-          });
-
-        if (checkCollegeFeedbackAvailable.length) {
-          event.isFeedbackProvidedbyCollege = true;
-          event.feedbackSetId = checkCollegeFeedbackAvailable[0].id;
-        } else {
-          event.isFeedbackProvidedbyCollege = false;
-          event.feedbackSetId = null;
-        }
-
-        event.isFeedbackProvidedbyStudents = checkFeedbackForTheEventPresent.length
-          ? true
-          : false;
-      } else {
-        event.isFeedbackProvidedbyCollege = false;
-        event.feedbackSetId = null;
-        event.isFeedbackProvidedbyStudents = false;
-      }
-    });
-
-    const { result, pagination } = utils.paginate(filtered, page, pageSize);
-    return { result, ...pagination };
   },
 
   /**
@@ -1921,95 +2105,6 @@ module.exports = {
     ctx.send(file);
   },
 
-  eligiblePastActivities: async ctx => {
-    const { id } = ctx.params;
-    const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-
-    // Removing custom query params since strapi won't allow filtering using that
-    let status;
-    if (query.status) {
-      status = query.status;
-      delete query.status;
-    }
-
-    let filters = convertRestQueryParams(query);
-
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
-    }
-
-    const student = await strapi.query("contact", PLUGIN).findOne({ id });
-    if (!student) return ctx.response.notFound("Student does not exist");
-
-    // Building query depending on query params sent
-    let qb = {};
-    qb.contact = id;
-    if (status) {
-      qb.is_verified_by_college = status == "attended" ? true : false;
-    }
-
-    let activityBatches = await strapi
-      .query("activityassignee", PLUGIN)
-      .find(qb);
-
-    if (!activityBatches.length)
-      return ctx.response.notFound("Student not Enrolled in any event");
-
-    const currentDate = new Date();
-
-    activityBatches = activityBatches.filter(activityBatch => {
-      const endTime = new Date(activityBatch.activity_batch.end_date_time);
-      if (currentDate.getTime() > endTime.getTime()) return activityBatch;
-    });
-
-    if (activityBatches) {
-      const activityIds = activityBatches.map(
-        activityBatch => activityBatch.activity_batch.activity
-      );
-
-      const activity = await strapi
-        .query("activity", PLUGIN)
-        .model.query(
-          buildQuery({
-            model: strapi.plugins["crm-plugin"].models["activity"],
-            filters
-          })
-        )
-        .where("id", "in", activityIds)
-        .fetchAll()
-        .then(model => model.toJSON());
-      // console.log(activity);
-
-      let result = activity
-        .map(activity => {
-          let flag = 0;
-          // for (let i = 0; i < activityBatch.length; i++) {
-          activityBatches.forEach(activityBatch => {
-            if (activity.id === activityBatch.activity_batch.activity) {
-              activity["activity_batch"] = activityBatch.activity_batch;
-              flag = 1;
-            }
-          });
-
-          if (flag) return activity;
-        })
-        .filter(activity => activity);
-
-      // Sorting ascending or descending on one or multiple fields
-      if (sort && sort.length) {
-        result = utils.sort(result, sort);
-      }
-
-      const response = utils.paginate(result, page, pageSize);
-      return {
-        result: response.result,
-        ...response.pagination
-      };
-    }
-  },
-
   deleteIndividual: async ctx => {
     console.log("in delete individual");
     let { id } = ctx.request.body;
@@ -2081,22 +2176,12 @@ module.exports = {
         if (event_registration !== null) return id;
       })
     );
-    console.log("list is:");
-    console.log(list);
     list = _.xor(id, list).filter(c => c);
     id = _.pullAll(id, list);
-    console.log("id that cant't be deleted is:");
-    console.log(id);
 
     const userId = user.filter(user => {
       if (_.includes(list, user.studentId)) return user.userId;
     });
-    console.log(user);
-    console.log("after filtering userId");
-    console.log(userId);
-
-    console.log("not a student:");
-    console.log(notStudent);
 
     const result = await Promise.all(
       userId.map(async user => {

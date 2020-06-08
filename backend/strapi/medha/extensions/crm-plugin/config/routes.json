@@ -240,7 +240,7 @@
     },
     {
       "method": "GET",
-      "path": "/states/:id/organization",
+      "path": "/states/:id/organization/:rpcId/rpc",
       "handler": "state.organizations",
       "config": { "policies": [] }
     },
@@ -268,6 +268,14 @@
       "method": "POST",
       "path": "/contacts/delete-organization",
       "handler": "contact.deleteOrganization",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:activityId/contact/:collegeId/getStudentsFeedbacks/:feedbackType",
+      "handler": "activity.getFeedbacksForEventFromCollege",
       "config": {
         "policies": []
       }

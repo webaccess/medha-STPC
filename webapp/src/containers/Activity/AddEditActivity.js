@@ -86,6 +86,96 @@ const AddEditActivity = props => {
       : props.location.editActivity
   });
 
+  if (formState.dataForEdit && !formState.counter) {
+    if (props.location["dataForEdit"]) {
+      if (props.location["dataForEdit"]["title"]) {
+        formState.values["activityname"] =
+          props.location["dataForEdit"]["title"];
+      }
+      if (props.location["dataForEdit"]["activitytype"]) {
+        formState.values["activitytype"] =
+          props.location["dataForEdit"]["activitytype"]["id"];
+      }
+      if (
+        props.location["dataForEdit"]["academic_year"] &&
+        props.location["dataForEdit"]["academic_year"]["id"]
+      ) {
+        formState.values["academicyear"] =
+          props.location["dataForEdit"]["academic_year"]["id"];
+      }
+      if (props.location["dataForEdit"]["streams"]) {
+        formState.values["stream"] = props.location["dataForEdit"]["streams"];
+      }
+      if (props.location["dataForEdit"]["address"]) {
+        formState.values["address"] = props.location["dataForEdit"]["address"];
+      }
+      if (props.location["dataForEdit"]["education_year"]) {
+        formState.values["educationyear"] =
+          props.location["dataForEdit"]["education_year"];
+      }
+      if (
+        props.location["dataForEdit"]["question_set"] &&
+        props.location["dataForEdit"]["question_set"]
+      ) {
+        formState.values["questionSet"] =
+          props.location["dataForEdit"]["question_set"]["id"];
+      }
+
+      if (props.location["dataForEdit"]["description"]) {
+        // formState.values["description"] = props["dataForEdit"]["description"];
+        const blocksFromHtml = htmlToDraft(
+          props.location["dataForEdit"]["description"]
+        );
+        const { contentBlocks, entityMap } = blocksFromHtml;
+        const contentState = ContentState.createFromBlockArray(
+          contentBlocks,
+          entityMap
+        );
+        const editorState = EditorState.createWithContent(contentState);
+        setEditorState(editorState);
+      }
+      if (props.location["dataForEdit"]["trainer_name"]) {
+        formState.values["trainer"] =
+          props.location["dataForEdit"]["trainer_name"];
+      }
+
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["id"]
+      ) {
+        formState.values["college"] =
+          props.location["dataForEdit"]["contact"]["id"];
+      }
+      if (props.location["dataForEdit"]["start_date_time"]) {
+        formState.values[dateFrom] = moment(
+          props.location["dataForEdit"]["start_date_time"]
+        );
+      }
+      if (props.location["dataForEdit"]["end_date_time"]) {
+        formState.values[dateTo] = moment(
+          props.location["dataForEdit"]["end_date_time"]
+        );
+      }
+      if (
+        props.location["dataForEdit"]["upload_logo"] &&
+        props.location["dataForEdit"]["upload_logo"]["id"]
+      ) {
+        formState.files = props.location["dataForEdit"]["upload_logo"];
+        //      formState.values["files"] =
+        //        props.location["dataForEdit"]["upload_logo"]["name"];
+      }
+    }
+    formState.counter += 1;
+  }
+
+  if (props.location.state && !formState.counter) {
+    if (props.location.state.contactNumber && props.location.state.otp) {
+      formState.values["contact"] = props.location.state.contactNumber;
+      formState.values["otp"] = props.location.state.otp;
+    }
+    formState.counter += 1;
+  }
+
   // const [selectedDateFrom, setSelectedDateFrom] = React.useState(new Date());
   // const [selectedDateTo, setSelectedDateTo] = React.useState(new Date());
   const { setLoaderStatus } = useContext(LoaderContext);
@@ -184,98 +274,6 @@ const AddEditActivity = props => {
     setLoaderStatus(false);
   }, [formState.values["college"], collegelist, streamlist]);
 
-  if (formState.dataForEdit && !formState.counter) {
-    setLoaderStatus(true);
-    if (props.location["dataForEdit"]) {
-      if (props.location["dataForEdit"]["title"]) {
-        formState.values["activityname"] =
-          props.location["dataForEdit"]["title"];
-      }
-      if (props.location["dataForEdit"]["activitytype"]) {
-        formState.values["activitytype"] =
-          props.location["dataForEdit"]["activitytype"]["id"];
-      }
-      if (
-        props.location["dataForEdit"]["academic_year"] &&
-        props.location["dataForEdit"]["academic_year"]["id"]
-      ) {
-        formState.values["academicyear"] =
-          props.location["dataForEdit"]["academic_year"]["id"];
-      }
-      if (props.location["dataForEdit"]["streams"]) {
-        formState.values["stream"] = props.location["dataForEdit"]["streams"];
-      }
-      if (props.location["dataForEdit"]["address"]) {
-        formState.values["address"] = props.location["dataForEdit"]["address"];
-      }
-      if (props.location["dataForEdit"]["education_year"]) {
-        formState.values["educationyear"] =
-          props.location["dataForEdit"]["education_year"];
-      }
-      if (
-        props.location["dataForEdit"]["question_set"] &&
-        props.location["dataForEdit"]["question_set"]
-      ) {
-        formState.values["questionSet"] =
-          props.location["dataForEdit"]["question_set"];
-      }
-
-      if (props.location["dataForEdit"]["description"]) {
-        // formState.values["description"] = props["dataForEdit"]["description"];
-        const blocksFromHtml = htmlToDraft(
-          props.location["dataForEdit"]["description"]
-        );
-        const { contentBlocks, entityMap } = blocksFromHtml;
-        const contentState = ContentState.createFromBlockArray(
-          contentBlocks,
-          entityMap
-        );
-        const editorState = EditorState.createWithContent(contentState);
-        setEditorState(editorState);
-      }
-      if (props.location["dataForEdit"]["trainer_name"]) {
-        formState.values["trainer"] =
-          props.location["dataForEdit"]["trainer_name"];
-      }
-
-      if (
-        props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["id"]
-      ) {
-        formState.values["college"] =
-          props.location["dataForEdit"]["contact"]["id"];
-      }
-      if (props.location["dataForEdit"]["start_date_time"]) {
-        formState.values[dateFrom] = moment(
-          props.location["dataForEdit"]["start_date_time"]
-        );
-      }
-      if (props.location["dataForEdit"]["end_date_time"]) {
-        formState.values[dateTo] = moment(
-          props.location["dataForEdit"]["end_date_time"]
-        );
-      }
-      if (
-        props.location["dataForEdit"]["upload_logo"] &&
-        props.location["dataForEdit"]["upload_logo"]["id"]
-      ) {
-        formState.files = props.location["dataForEdit"]["upload_logo"];
-        //      formState.values["files"] =
-        //        props.location["dataForEdit"]["upload_logo"]["name"];
-      }
-    }
-    setLoaderStatus(false);
-    formState.counter += 1;
-  }
-
-  if (props.location.state && !formState.counter) {
-    if (props.location.state.contactNumber && props.location.state.otp) {
-      formState.values["contact"] = props.location.state.contactNumber;
-      formState.values["otp"] = props.location.state.otp;
-    }
-    formState.counter += 1;
-  }
-
   const handleSubmit = event => {
     event.preventDefault();
     setLoaderStatus(true);
@@ -345,7 +343,8 @@ const AddEditActivity = props => {
         formState.values["trainer"],
         stream.map(stream => stream.id),
         formState["dataForEdit"]["id"],
-        formState.files
+        formState.files,
+        formState.values["questionSet"]
       );
 
       serviceProvider
@@ -380,7 +379,8 @@ const AddEditActivity = props => {
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
         formState.values["trainer"],
         stream.map(stream => stream.id),
-        formState.files
+        formState.files,
+        formState.values["questionSet"]
       );
       serviceProvider
         .serviceProviderForPostRequest(
