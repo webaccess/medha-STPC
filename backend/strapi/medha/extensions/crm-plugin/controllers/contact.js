@@ -950,8 +950,7 @@ module.exports = {
       .query("activityassignee", PLUGIN)
       .find({ contact: id });
 
-    if (!activityBatch.length)
-      return ctx.response.notFound("Student not Enrolled in any event");
+    if (!activityBatch.length) return utils.getFindOneResponse([]);
 
     const currentDate = new Date();
 
