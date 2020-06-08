@@ -813,6 +813,11 @@ module.exports = {
       return student.id;
     });
 
+    /** This gets college admin role */
+    const collegeAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" }, []);
+
     return strapi
       .query("activity", PLUGIN)
       .model.query(
@@ -840,7 +845,8 @@ module.exports = {
               .find({
                 activity: activity.id,
                 contact: collegeAdminContactIds,
-                question_set: activity.question_set.id
+                question_set: activity.question_set.id,
+                role: collegeAdminRole.id
               });
 
             if (checkCollegeFeedbackAvailable.length) {
@@ -860,6 +866,152 @@ module.exports = {
             activity.isFeedbackProvidedbyStudents = false;
           }
         });
+
+        const response = utils.paginate(data, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
+      });
+  },
+
+  /**
+   * Get Activities for given Organization
+   * TODO policy only medha admin and college admin can view activites under give colleges
+   */
+  getActivitiesForZonesRpcs: async ctx => {
+    const { id, forRole } = ctx.params;
+    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    const filters = convertRestQueryParams(query);
+
+    /** This gets college admin role */
+    const collegeAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" }, []);
+
+    const rpcAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "RPC Admin" }, []);
+
+    return strapi
+      .query("activity", PLUGIN)
+      .model.query(
+        buildQuery({
+          model: strapi.query("activity", PLUGIN).model,
+          filters
+        })
+      )
+      .fetchAll({
+        withRelated: [
+          "activitytype",
+          "academic_year",
+          "contact",
+          "contact.organization",
+          "question_set",
+          "activityassignees",
+          "streams"
+        ]
+      })
+      .then(async res => {
+        const data = res.toJSON().filter(activty => {
+          if (forRole === "rpc") {
+            if (activty.contact.organization.rpc == id) {
+              return activty;
+            }
+          } else if (forRole === "zone") {
+            if (activty.contact.organization.zone == id) {
+              return activty;
+            }
+          }
+        });
+
+        /** For RPC */
+        if (forRole === "rpc") {
+          /** This gets contact ids of all college admins */
+          const collegeAdmins = await strapi.plugins[
+            "crm-plugin"
+          ].services.contact.getCollegeAdminsFromRPC(id);
+
+          let collegeAdminContacts = await strapi
+            .query("contact", PLUGIN)
+            .find({ user_in: collegeAdmins });
+
+          const collegeAdminContactIds = collegeAdminContacts.map(user => {
+            return user.id;
+          });
+
+          await utils.asyncForEach(data, async activity => {
+            if (activity.question_set) {
+              const checkFeedbackForTheActivityPresent = await strapi
+                .query("feedback-set")
+                .find({
+                  activity: activity.id,
+                  contact_in: collegeAdminContactIds,
+                  question_set: activity.question_set.id,
+                  role: rpcAdminRole.id
+                });
+
+              const checkFeedbackFromCollegePresent = await strapi
+                .query("feedback-set")
+                .find({
+                  activity: activity.id,
+                  contact_in: collegeAdminContactIds,
+                  question_set: activity.question_set.id,
+                  role: collegeAdminRole.id
+                });
+
+              activity.isFeedbackFromCollegePresent = checkFeedbackFromCollegePresent.length
+                ? true
+                : false;
+
+              if (checkFeedbackForTheActivityPresent.length) {
+                activity.isFeedbackProvidedbyRPC = true;
+                activity.feedbackSetId =
+                  checkFeedbackForTheActivityPresent[0].id;
+              } else {
+                activity.isFeedbackProvidedbyRPC = false;
+                activity.feedbackSetId = null;
+              }
+            } else {
+              activity.isFeedbackProvidedbyRPC = false;
+              activity.feedbackSetId = null;
+              activity.isFeedbackFromCollegePresent = false;
+            }
+          });
+
+          /** For Zone */
+        } else {
+          /** This gets contact ids of all zonal admins */
+          const zonalAdmins = await strapi.plugins[
+            "crm-plugin"
+          ].services.contact.getZoneAdmins(id);
+
+          await utils.asyncForEach(data, async activity => {
+            if (activity.question_set) {
+              /** Check data for zonal admins */
+              const checkFeedbackForTheEventPresent = await strapi
+                .query("feedback-set")
+                .find({
+                  activity: activity.id,
+                  contact_in: zonalAdmins,
+                  question_set: activity.question_set.id
+                });
+
+              if (checkFeedbackForTheEventPresent.length) {
+                activity.isFeedbackProvidedbyZone = true;
+                activity.feedbackSetId = checkFeedbackForTheEventPresent[0].id;
+              } else {
+                activity.isFeedbackProvidedbyZone = false;
+                activity.feedbackSetId = null;
+              }
+            } else {
+              activity.isFeedbackProvidedbyZone = false;
+              activity.feedbackSetId = null;
+              activity.isFeedbackFromCollegePresent = false;
+              activity.isFeedbackFromRPCPresent = false;
+            }
+          });
+        }
 
         const response = utils.paginate(data, page, pageSize);
         return {
