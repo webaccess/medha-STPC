@@ -536,6 +536,7 @@ const ManageCollege = props => {
       ...formState,
       dataToDelete: {
         id: event.target.getAttribute("contactId"),
+        organizationId: event.target.id,
         name: event.target.getAttribute("value")
       },
       showModalDelete: true,
@@ -590,9 +591,13 @@ const ManageCollege = props => {
   /** Get multiple user id for delete */
   const deleteMulCollegeById = () => {
     let arrayId = [];
+    let organizationArrayId = [];
 
     selectedRows.forEach(d => {
       arrayId.push(d.contactId);
+    });
+    selectedRows.forEach(d => {
+      organizationArrayId.push(d.id);
     });
 
     setFormState(formState => ({
@@ -601,6 +606,7 @@ const ManageCollege = props => {
       showModalDelete: true,
       isMultiDelete: true,
       MultiDeleteID: arrayId,
+      MultiOrganizationId: organizationArrayId,
       isDataDeleted: false,
       fromDeleteModal: false,
       fromAddCollege: false,
@@ -1179,6 +1185,7 @@ const ManageCollege = props => {
                 ? formState.MultiDeleteID
                 : formState.dataToDelete["id"]
             }
+            MultiOrganizationId={formState.MultiOrganizationId}
             modalClose={modalClose}
             isMultiDelete={formState.isMultiDelete ? true : false}
             dataToDelete={formState.dataToDelete}
