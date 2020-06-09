@@ -814,21 +814,6 @@ const AddEditActivityBatches = props => {
         <Card className={styles.filterButton}>
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
-              <Grid item>
-                <TextField
-                  label="Student Name"
-                  margin="normal"
-                  variant="outlined"
-                  value={
-                    formState.filterDataParameters[
-                      ACTIVITY_BATCH_STUDENT_FILTER
-                    ] || ""
-                  }
-                  placeholder="Student Name"
-                  className={classes.autoCompleteField}
-                  onChange={handleFilterChnageActivityField}
-                />
-              </Grid>
               <Grid item className={classes.paddingDate}>
                 <Autocomplete
                   id="stream-dropdown"
@@ -850,6 +835,21 @@ const AddEditActivityBatches = props => {
                       variant="outlined"
                     />
                   )}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="Student Name"
+                  margin="normal"
+                  variant="outlined"
+                  value={
+                    formState.filterDataParameters[
+                      ACTIVITY_BATCH_STUDENT_FILTER
+                    ] || ""
+                  }
+                  placeholder="Student Name"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChnageActivityField}
                 />
               </Grid>
 
