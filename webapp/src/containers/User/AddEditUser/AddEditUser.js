@@ -58,9 +58,6 @@ const USERS_URL =
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
 
-const ZONES_URL =
-  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ZONES;
-
 const ROLES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ROLES;
 
@@ -288,7 +285,8 @@ const AddEditUser = props => {
             res.data.roles[i]["name"] !== "Admin" &&
             res.data.roles[i]["name"] !== "Authenticated" &&
             res.data.roles[i]["name"] !== "Public" &&
-            res.data.roles[i]["name"] !== roleConstants.STUDENT
+            res.data.roles[i]["name"] !== roleConstants.STUDENT &&
+            res.data.roles[i]["name"] !== roleConstants.RPCADMIN
           ) {
             roles.push(res.data.roles[i]);
           }
@@ -602,7 +600,7 @@ const AddEditUser = props => {
   const postUserData = async () => {
     setLoaderStatus(true);
     let postData = databaseUtilities.addUser(
-      formState.values[username],
+      formState.values[contact],
       formState.values[email],
       formState.values[firstname],
       formState.values[lastname],
@@ -824,27 +822,6 @@ const AddEditUser = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
-                    <TextField
-                      id={get(UserSchema[username], "id")}
-                      label={get(UserSchema[username], "label")}
-                      placeholder={get(UserSchema[username], "placeholder")}
-                      name={username}
-                      value={formState.values[username] || ""}
-                      error={hasError(username)}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      helperText={
-                        hasError(username)
-                          ? formState.errors[username].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
                     <FormControl variant="outlined" fullWidth>
                       <InputLabel
                         htmlFor="outlined-adornment-password"
@@ -893,32 +870,32 @@ const AddEditUser = props => {
                       </FormHelperText>
                     </FormControl>
                   </Grid>
+                  <Grid item md={4} xs={12}>
+                    <FormGroup row>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            name={blocked}
+                            checked={formState.values[blocked] || false}
+                            onChange={handleChange}
+                            value={formState.values[blocked] || false}
+                            error={hasError(blocked)}
+                            helperText={
+                              hasError(blocked)
+                                ? formState.errors[blocked].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                          />
+                        }
+                        label={formState.values[blocked] ? "Unblock" : "Block"}
+                      />
+                    </FormGroup>
+                  </Grid>
                 </Grid>
               </Grid>
-              <Divider className={classes.divider} />
-              <Grid item md={4} xs={12}>
-                <FormGroup row>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        name={blocked}
-                        checked={formState.values[blocked] || false}
-                        onChange={handleChange}
-                        value={formState.values[blocked] || false}
-                        error={hasError(blocked)}
-                        helperText={
-                          hasError(blocked)
-                            ? formState.errors[blocked].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    }
-                    label={formState.values[blocked] ? "Unblock" : "Block"}
-                  />
-                </FormGroup>
-              </Grid>
+
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>

@@ -53,7 +53,7 @@ const StudentProfile = props => {
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const futureAspirationsList = [
-    { id: "private_job", name: "Private Job" },
+    { id: "private_jobs", name: "Private Job" },
     { id: "others", name: "Others" },
     { id: "higher_studies", name: "Higher Studies" },
     { id: "marriage", name: "Marriage" },
@@ -405,13 +405,6 @@ const StudentProfile = props => {
             </Grid>
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
-                  <ReadOnlyTextField
-                    id="username"
-                    label="Username"
-                    defaultValue={formState.values.username}
-                  />
-                </Grid>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="futureAspirations"
