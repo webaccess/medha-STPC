@@ -100,13 +100,69 @@ module.exports = {
     return utils.getFindOneResponse(response);
   },
 
+  async findOneWithRole(ctx) {
+    const { id, role } = ctx.params;
+    let user = ctx.state.user;
+
+    const response = await strapi.query("feedback-set").findOne({ id });
+    const checkFeedbackForTheEventPresent = await strapi
+      .query("feedback")
+      .find({ feedback_set: id }, [
+        "feedback_set",
+        "question",
+        "question.role"
+      ]);
+    const question_set = await strapi
+      .query("question-set")
+      .findOne({ id: response.question_set.id }, ["questions.role"]);
+
+    const questions = question_set.questions
+      .map(res => {
+        console.log("akbajsbh");
+        if (role == res.role.id) {
+          if (res.type === "Rating") {
+            res["answer_int"] = 0;
+            res["answer_text"] = "";
+          } else {
+            res["answer_int"] = null;
+            res["answer_text"] = "";
+          }
+          return res;
+        }
+      })
+      .filter(res => {
+        if (res !== undefined || res !== null) {
+          return res;
+        }
+      });
+
+    const questions_asnwers = checkFeedbackForTheEventPresent.map(res => {
+      res.question["answer_text"] = res.answer_text;
+      res.question["answer_int"] = res.answer_int;
+      return res.question;
+    });
+
+    questions.map(res => {
+      questions_asnwers.forEach(innerRes => {
+        if (innerRes.id === res.id) {
+          res["answer_int"] = innerRes["answer_int"];
+          res["answer_text"] = innerRes["answer_text"];
+        }
+      });
+      return res;
+    });
+    response.questions = questions;
+    return utils.getFindOneResponse(response);
+  },
+
   async create(ctx) {
     const {
       activity,
       event,
       contact,
       question_set,
-      questions_answers
+      questions_answers,
+      role
     } = ctx.request.body;
 
     if (
@@ -114,7 +170,8 @@ module.exports = {
       !_.has(ctx.request.body, "event") ||
       !_.has(ctx.request.body, "contact") ||
       !_.has(ctx.request.body, "question_set") ||
-      !_.has(ctx.request.body, "questions_answers")
+      !_.has(ctx.request.body, "questions_answers") ||
+      !_.has(ctx.request.body, "role")
     ) {
       return ctx.response.badRequest("Bad request, fields improper");
     }
@@ -131,7 +188,12 @@ module.exports = {
       let resLength = 0;
       const result = await strapi
         .query("feedback-set")
-        .find({ event: event, contact: contact, question_set: question_set })
+        .find({
+          event: event,
+          contact: contact,
+          question_set: question_set,
+          role: role
+        })
         .then(res => {
           resLength = res.length;
         });
@@ -148,7 +210,8 @@ module.exports = {
         .find({
           activity: activity,
           contact: contact,
-          question_set: question_set
+          question_set: question_set,
+          role: role
         })
         .then(res => {
           resLength = res.length;
@@ -163,7 +226,8 @@ module.exports = {
       activity: activity,
       event: event,
       contact: contact,
-      question_set: question_set
+      question_set: question_set,
+      role: role
     };
 
     await bookshelf
@@ -237,6 +301,7 @@ module.exports = {
       event,
       contact,
       question_set,
+      role,
       questions_answers
     } = ctx.request.body;
 
@@ -245,7 +310,8 @@ module.exports = {
       !_.has(ctx.request.body, "event") ||
       !_.has(ctx.request.body, "contact") ||
       !_.has(ctx.request.body, "question_set") ||
-      !_.has(ctx.request.body, "questions_answers")
+      !_.has(ctx.request.body, "questions_answers") ||
+      !_.has(ctx.request.body, "role")
     ) {
       return ctx.response.badRequest("Bad request, fields improper");
     }
@@ -277,7 +343,8 @@ module.exports = {
           activity: activity,
           event: event,
           contact: contact,
-          question_set: question_set
+          question_set: question_set,
+          role: role
         };
         await bookshelf
           .model("feedback-set")

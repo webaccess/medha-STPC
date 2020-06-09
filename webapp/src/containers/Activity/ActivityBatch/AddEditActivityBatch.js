@@ -712,7 +712,9 @@ const AddEditActivityBatches = props => {
       </div>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_ACTIVITY_BATCHES}
+          {formState.isEditActivityBatch
+            ? formState.dataForEdit[activityBatchName]
+            : "New Batch"}
         </Typography>
         {formState.isEditActivityBatch ? (
           <>
@@ -880,160 +882,161 @@ const AddEditActivityBatches = props => {
           </CardContent>
         </Card>
 
-        <>
-          {formState.dataToShow ? (
-            formState.dataToShow.length ? (
-              <Table
-                data={formState.dataToShow}
-                column={column}
-                defaultSortField="name"
-                defaultSortAsc={formState.sortAscending}
-                progressPending={formState.isDataLoading}
-                paginationTotalRows={formState.totalRows}
-                paginationRowsPerPageOptions={[10, 20, 50]}
-                onChangeRowsPerPage={handlePerRowsChange}
-                onChangePage={handlePageChange}
-                onSelectedRowsChange={handleRowChange}
-                noDataComponent="No Student Details found"
-                clearSelectedRows={clearSelectedRows}
-              />
-            ) : (
-              <div className={classes.noDataMargin}>
-                {genericConstants.NO_STUDENTS_DETAILS_FOUND}
-              </div>
-            )
-          ) : (
-            <Spinner />
-          )}
+        <Card className={styles.filterButton}>
+          <CardContent className={classes.Cardtheming}>
+            <Grid className={classes.filterOptions} container spacing={1}>
+              {formState.dataToShow ? (
+                formState.dataToShow.length ? (
+                  <Table
+                    data={formState.dataToShow}
+                    column={column}
+                    defaultSortField="name"
+                    defaultSortAsc={formState.sortAscending}
+                    progressPending={formState.isDataLoading}
+                    paginationTotalRows={formState.totalRows}
+                    paginationRowsPerPageOptions={[10, 20, 50]}
+                    onChangeRowsPerPage={handlePerRowsChange}
+                    onChangePage={handlePageChange}
+                    onSelectedRowsChange={handleRowChange}
+                    noDataComponent="No Student Details found"
+                    clearSelectedRows={clearSelectedRows}
+                  />
+                ) : (
+                  <div className={classes.noDataMargin}>
+                    {genericConstants.NO_STUDENTS_DETAILS_FOUND}
+                  </div>
+                )
+              ) : (
+                <Spinner />
+              )}
+            </Grid>
+          </CardContent>
+        </Card>
 
-          <Card className={styles.noBorderNoShadow}>
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item md={12} xs={12}>
-                  <TextField
-                    fullWidth
-                    id={get(AddActivityBatchSchema[activityBatchName], "id")}
-                    label={get(
-                      AddActivityBatchSchema[activityBatchName],
-                      "label"
-                    )}
-                    margin="normal"
-                    name={activityBatchName}
-                    onChange={handleChange}
-                    required
-                    type={get(
-                      AddActivityBatchSchema[activityBatchName],
-                      "type"
-                    )}
-                    value={formState.values[activityBatchName] || ""}
-                    error={hasError(activityBatchName)}
-                    helperText={
-                      hasError(activityBatchName)
-                        ? formState.errors[activityBatchName].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    variant="outlined"
-                    className={classes.elementroot}
-                  />
+        <Card className={styles.noBorderNoShadow}>
+          <CardContent>
+            <Grid container spacing={2}>
+              <Grid item md={12} xs={12}>
+                <TextField
+                  fullWidth
+                  id={get(AddActivityBatchSchema[activityBatchName], "id")}
+                  label={get(
+                    AddActivityBatchSchema[activityBatchName],
+                    "label"
+                  )}
+                  margin="normal"
+                  name={activityBatchName}
+                  onChange={handleChange}
+                  required
+                  type={get(AddActivityBatchSchema[activityBatchName], "type")}
+                  value={formState.values[activityBatchName] || ""}
+                  error={hasError(activityBatchName)}
+                  helperText={
+                    hasError(activityBatchName)
+                      ? formState.errors[activityBatchName].map(error => {
+                          return error + " ";
+                        })
+                      : null
+                  }
+                  variant="outlined"
+                  className={classes.elementroot}
+                />
+              </Grid>
+              <Grid item md={12} xs={12}>
+                <CustomDateTimePicker
+                  onChange={event => {
+                    handleDateChange(dateFrom, event);
+                  }}
+                  value={formState.values[dateFrom]}
+                  name={dateFrom}
+                  label={get(AddActivityBatchSchema[dateFrom], "label")}
+                  minDate={
+                    activityDetails
+                      ? new Date(activityDetails.start_date_time)
+                      : null
+                  }
+                  maxDate={
+                    activityDetails
+                      ? new Date(activityDetails.end_date_time)
+                      : null
+                  }
+                  error={hasError(dateFrom)}
+                  helperText={
+                    hasError(dateFrom)
+                      ? formState.errors[dateFrom].map(error => {
+                          return error + " ";
+                        })
+                      : null
+                  }
+                  className={classes.elementroot}
+                />
+              </Grid>
+              <Grid item md={12} xs={12} className={classes.marginTop}>
+                <CustomDateTimePicker
+                  onChange={event => {
+                    handleDateChange(dateTo, event);
+                  }}
+                  value={formState.values[dateTo]}
+                  name={dateTo}
+                  label={get(AddActivityBatchSchema[dateTo], "label")}
+                  minDate={
+                    formState.values[dateTo]
+                      ? moment(formState.values[dateTo])
+                      : null
+                  }
+                  maxDate={
+                    activityDetails
+                      ? moment(activityDetails.end_date_time)
+                      : null
+                  }
+                  error={hasError(dateTo)}
+                  helperText={
+                    hasError(dateTo)
+                      ? formState.errors[dateTo].map(error => {
+                          return error + " ";
+                        })
+                      : null
+                  }
+                  className={classes.elementroot}
+                />
+              </Grid>
+              <Grid container spacing={2} style={{ marginLeft: "2px" }}>
+                <Grid item className={classes.marginTop}>
+                  <YellowButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={handleSubmit}
+                  >
+                    {genericConstants.SAVE_BUTTON_TEXT}
+                  </YellowButton>
                 </Grid>
-                <Grid item md={12} xs={12}>
-                  <CustomDateTimePicker
-                    onChange={event => {
-                      handleDateChange(dateFrom, event);
-                    }}
-                    value={formState.values[dateFrom]}
-                    name={dateFrom}
-                    label={get(AddActivityBatchSchema[dateFrom], "label")}
-                    minDate={
-                      activityDetails
-                        ? new Date(activityDetails.start_date_time)
-                        : null
-                    }
-                    maxDate={
-                      activityDetails
-                        ? new Date(activityDetails.end_date_time)
-                        : null
-                    }
-                    error={hasError(dateFrom)}
-                    helperText={
-                      hasError(dateFrom)
-                        ? formState.errors[dateFrom].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    className={classes.elementroot}
-                  />
-                </Grid>
-                <Grid item md={12} xs={12} className={classes.marginTop}>
-                  <CustomDateTimePicker
-                    onChange={event => {
-                      handleDateChange(dateTo, event);
-                    }}
-                    value={formState.values[dateTo]}
-                    name={dateTo}
-                    label={get(AddActivityBatchSchema[dateTo], "label")}
-                    minDate={
-                      formState.values[dateTo]
-                        ? moment(formState.values[dateTo])
-                        : null
-                    }
-                    maxDate={
-                      activityDetails
-                        ? moment(activityDetails.end_date_time)
-                        : null
-                    }
-                    error={hasError(dateTo)}
-                    helperText={
-                      hasError(dateTo)
-                        ? formState.errors[dateTo].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                    className={classes.elementroot}
-                  />
-                </Grid>
-                <Grid container spacing={2} style={{ marginLeft: "2px" }}>
+                {formState.isEditActivityBatch ? (
                   <Grid item className={classes.marginTop}>
                     <YellowButton
                       type="submit"
                       color="primary"
                       variant="contained"
-                      onClick={handleSubmit}
+                      onClick={() => setShowStudentModal(true)}
                     >
-                      {genericConstants.SAVE_BUTTON_TEXT}
+                      {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
                     </YellowButton>
                   </Grid>
-                  {formState.isEditActivityBatch ? (
-                    <Grid item className={classes.marginTop}>
-                      <YellowButton
-                        type="submit"
-                        color="primary"
-                        variant="contained"
-                        onClick={() => setShowStudentModal(true)}
-                      >
-                        {genericConstants.ADD_STUDENT_TO_ACTIVITY_BATCH}
-                      </YellowButton>
-                    </Grid>
-                  ) : null}
-                  <Grid item className={classes.marginTop}>
-                    <GrayButton
-                      type="submit"
-                      color="primary"
-                      variant="contained"
-                      to={`/manage-activity-batch/${activity}`}
-                    >
-                      {genericConstants.CANCEL_BUTTON_TEXT}
-                    </GrayButton>
-                  </Grid>
+                ) : null}
+                <Grid item className={classes.marginTop}>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    to={`/manage-activity-batch/${activity}`}
+                  >
+                    {genericConstants.CANCEL_BUTTON_TEXT}
+                  </GrayButton>
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        </>
+            </Grid>
+          </CardContent>
+        </Card>
         {showStudentModal ? (
           <AddStudentToActivityBatch
             showModal={showStudentModal}

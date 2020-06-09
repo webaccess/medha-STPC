@@ -12,7 +12,7 @@ import {
 
 import BlockIcon from "@material-ui/icons/Block";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import { Table, Spinner, Alert } from "../../../components";
+import { Table, Spinner, Alert, ToolTipComponent } from "../../../components";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import * as serviceProviders from "../../../api/Axios";
@@ -670,69 +670,25 @@ const ManageCollege = props => {
       name: "Name",
       sortable: true,
       selector: "name",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.name}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.name}`}</div>
-        </Tooltip>
-      )
+      cell: row => <ToolTipComponent data={row.name} />
     },
     {
       name: "State",
       sortable: true,
       selector: "state",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.state}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.state}`}</div>
-        </Tooltip>
-      )
+      cell: row => <ToolTipComponent data={row.state} />
     },
     {
       name: "Zone",
       sortable: true,
       selector: "zone",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.zone}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.zone}`}</div>
-        </Tooltip>
-      )
+      cell: row => <ToolTipComponent data={row.zone} />
     },
     {
       name: "RPC",
       sortable: true,
       selector: "rpc",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.rpc}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.rpc}`}</div>
-        </Tooltip>
-      )
+      cell: row => <ToolTipComponent data={row.rpc} />
     },
     {
       name: "Actions",

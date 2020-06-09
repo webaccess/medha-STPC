@@ -13,7 +13,8 @@ import {
   GreenButton,
   EditGridIcon,
   DeleteGridIcon,
-  AlertMessage
+  AlertMessage,
+  ToolTipComponent
 } from "../../../../components";
 import ApprovedStudents from "./ApprovedStudents";
 import DeleteStudents from "./DeleteStudents";
@@ -686,22 +687,21 @@ const ManageStudents = props => {
       selector: "first_name",
       cell: row => <CustomLink row={row} />
     },
-    { name: "Contact", sortable: true, selector: "PhoneNumber" },
-    { name: "Stream", sortable: true, selector: "stream" },
+    {
+      name: "Contact",
+      sortable: true,
+      selector: "PhoneNumber",
+      cell: row => <ToolTipComponent data={row.PhoneNumber} />
+    },
+    {
+      name: "Stream",
+      sortable: true,
+      selector: "stream",
+      cell: row => <ToolTipComponent data={row.stream} />
+    },
     {
       name: "Education year",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.qualifications}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.qualifications}`}</div>
-        </Tooltip>
-      )
+      cell: row => <ToolTipComponent data={`${row.qualifications}`} />
     },
     {
       name: "Actions",

@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "collectionName": "feedback_sets",
   "info": {
     "name": "Feedback Set"
@@ -22,6 +21,11 @@
     },
     "question_set": {
       "model": "question-set"
+    },
+    "role": {
+      "plugin": "users-permissions",
+      "model": "role"
     }
-  }
+  },
+  "connection": "default"
 }
