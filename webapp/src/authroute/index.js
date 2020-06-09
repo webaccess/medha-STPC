@@ -13,7 +13,6 @@ export { default as EditRpcRoute } from "./EditRpcRoute";
 export { default as EditUserRoute } from "./EditUserRoute";
 export { default as EditEducation } from "./EditEducationRoute";
 export { default as RouteWithTabLayout } from "./RouteWithTabLayout";
-export { default as EditAcademicHistoryRoute } from "./EditAcademicHistoryRoute";
 export { default as EditActivityBatchRoute } from "./EditActivityBatchRoute";
 export { default as CollegeAdminRoute } from "./CollegeAdminRoute";
 export { default as ZonalRPCSuperAdminRoute } from "./ZonalRPCSuperAdminRoute";
