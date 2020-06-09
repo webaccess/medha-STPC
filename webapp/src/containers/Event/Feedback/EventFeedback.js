@@ -521,8 +521,17 @@ const EventFeedback = props => {
   /** Edit feedback */
   const editFeedback = async event => {
     setLoaderStatus(true);
-    const FEEDBACK_SET_URL =
-      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    let FEEDBACK_SET_URL = "";
+    if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      FEEDBACK_SET_URL =
+        strapiConstants.STRAPI_DB_URL +
+        strapiConstants.STRAPI_FEEDBACK_SETS +
+        "/role/" +
+        auth.getUserInfo().rpcAdminRole.id;
+    } else {
+      FEEDBACK_SET_URL =
+        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_FEEDBACK_SETS;
+    }
     await serviceProviders
       .serviceProviderForGetOneRequest(FEEDBACK_SET_URL, event.feedbackId)
       .then(res => {

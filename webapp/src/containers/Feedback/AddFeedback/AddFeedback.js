@@ -51,7 +51,8 @@ const AddEditFeedBack = props => {
     feedbackSetId: null,
     fromEvent: false,
     fromActivity: false,
-    roleName: auth.getUserInfo().role.name
+    roleName: auth.getUserInfo().role.name,
+    roleId: auth.getUserInfo().role.id
   });
 
   if (props.showModal && !formState.stateCounter) {
@@ -62,6 +63,7 @@ const AddEditFeedBack = props => {
       props.formMainCollege
     ) {
       formState.roleName = roleConstants.RPCADMIN;
+      formState.roleId = auth.getUserInfo().rpcAdminRole.id;
     }
     formState.isDataBlockUnblock = false;
     formState.entityId = props.id;
@@ -140,6 +142,7 @@ const AddEditFeedBack = props => {
       event: formState.fromEvent ? formState.entityId : null,
       contact: auth.getUserInfo().contact.id,
       question_set: formState.questionSetId,
+      role: formState.roleId,
       questions_answers: questions_answers
     };
     if (formState.isAddFeedback) {

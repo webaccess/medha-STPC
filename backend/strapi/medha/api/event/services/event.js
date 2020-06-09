@@ -130,12 +130,18 @@ module.exports = {
 
   /** Gets aggregate feedback for an event for multiple conatcts and for a specific role */
   getAggregateFeedbackForEvent: async (ctx, event, contacts, role) => {
+    /** This gets role */
+    const roleDetails = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: role }, []);
+
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
         event: event.id,
         contact_in: contacts,
-        question_set: event.question_set.id
+        question_set: event.question_set.id,
+        role: roleDetails.id
       });
 
     if (!checkFeedbackForTheEventPresent.length) {
@@ -198,12 +204,18 @@ module.exports = {
 
   /** Gets aggregate feedback for an actiity for multiple conatcts and for a specific role */
   getAggregateFeedbackForActivity: async (ctx, activity, contacts, role) => {
+    /** This gets role */
+    const roleDetails = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: role }, []);
+
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
         activity: activity.id,
         contact_in: contacts,
-        question_set: activity.question_set.id
+        question_set: activity.question_set.id,
+        role: roleDetails.id
       });
 
     if (!checkFeedbackForTheEventPresent.length) {
@@ -266,12 +278,17 @@ module.exports = {
 
   /** Get all comments for a particular role */
   getAllCommentsForEvent: async (ctx, event, contacts, role) => {
+    const roleDetails = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: role }, []);
+
     const checkFeedbackForTheEventPresent = await strapi
       .query("feedback-set")
       .find({
         event: event.id,
         contact_in: contacts,
-        question_set: event.question_set.id
+        question_set: event.question_set.id,
+        role: roleDetails.id
       });
 
     if (!checkFeedbackForTheEventPresent.length) {
@@ -393,10 +410,15 @@ module.exports = {
 
   /** Get all comments for a particular role for activity*/
   getAllCommentsForActivity: async (ctx, activity, contacts, role) => {
+    const roleDetails = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: role }, []);
+
     const checkFeedbackForActivity = await strapi.query("feedback-set").find({
       activity: activity.id,
       contact_in: contacts,
-      question_set: activity.question_set.id
+      question_set: activity.question_set.id,
+      role: roleDetails.id
     });
 
     if (!checkFeedbackForActivity.length) {
@@ -514,43 +536,5 @@ module.exports = {
       result.push(finalResult[key]);
     }
     return result;
-  },
-
-  getContactIdsForFeedback: async (ctx, id, role, contactIdToFind) => {
-    if (role === "Zonal Admin") {
-      if (contactIdToFind === "college") {
-        const collegeAdminIds = await strapi.plugins[
-          "crm-plugin"
-        ].services.contact.getCollegeAdminsFromZone(id);
-
-        return collegeAdminIds;
-      } else if (contactIdToFind === "rpc") {
-        const rpcAdmins = await strapi.plugins[
-          "crm-plugin"
-        ].services.contact.getAllRpcs();
-
-        return rpcAdmins;
-      }
-    } else if (role === "Medha Admin") {
-      if (contactIdToFind === "college") {
-        const collegeAdminIds = await strapi.plugins[
-          "crm-plugin"
-        ].services.contact.getAllCollegeAdmins();
-
-        return collegeAdminIds;
-      } else if (contactIdToFind === "rpc") {
-        const rpcAdmins = await strapi.plugins[
-          "crm-plugin"
-        ].services.contact.getAllRpcs();
-
-        return rpcAdmins;
-      } else if (contactIdToFind === "zone") {
-        const zoneAdmins = await strapi.plugins[
-          "crm-plugin"
-        ].services.contact.getAllZones();
-
-        return zoneAdmins;
-      }
-    }
   }
 };

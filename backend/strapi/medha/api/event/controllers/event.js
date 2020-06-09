@@ -565,12 +565,12 @@ module.exports = {
     }
 
     /** Check if zone exist */
-    const zone = await strapi.services.zone.checkIfZoneExist(zoneId);
-
     let feedbackData;
     if (dataFor === "college") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+      const collegeAdminIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         zoneId,
         "Zonal Admin",
@@ -593,7 +593,9 @@ module.exports = {
       }
     } else if (dataFor === "rpc") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+      const rpcAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         zoneId,
         "Zonal Admin",
@@ -638,7 +640,9 @@ module.exports = {
     let feedbackData;
     if (dataFor === "college") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+      const collegeAdminIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         null,
         "Medha Admin",
@@ -661,7 +665,9 @@ module.exports = {
       }
     } else if (dataFor === "rpc") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+      const rpcAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         null,
         "Medha Admin",
@@ -684,7 +690,9 @@ module.exports = {
       }
     } else if (dataFor === "zone") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const zoneAdmins = await strapi.services.event.getContactIdsForFeedback(
+      const zoneAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         null,
         "Medha Admin",

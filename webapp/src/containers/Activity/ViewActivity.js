@@ -31,7 +31,6 @@ import {
   ViewStudentGridIcon,
   DeleteGridIcon,
   DownloadIcon,
-  ThumbsUpDownIcon,
   Spinner,
   FeedBack,
   InlineDatePicker
@@ -583,7 +582,7 @@ const ViewActivity = props => {
     setLoaderStatus(true);
     const COLLEGE_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
+      strapiConstants.STRAPI_ACTIVITY +
       "/" +
       cell.id +
       "/getSuperAdminFeedback/" +
@@ -592,7 +591,7 @@ const ViewActivity = props => {
 
     const RPC_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
+      strapiConstants.STRAPI_ACTIVITY +
       "/" +
       cell.id +
       "/getSuperAdminFeedback/" +
@@ -601,7 +600,7 @@ const ViewActivity = props => {
 
     const ZONE_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
+      strapiConstants.STRAPI_ACTIVITY +
       "/" +
       cell.id +
       "/getSuperAdminFeedback/" +
@@ -915,6 +914,20 @@ const ViewActivity = props => {
                 />
               </div>
             )
+          ) : null}
+
+          {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+            <React.Fragment>
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  message={"View feedback"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => viewFeedbackSuperAdmin(cell)}
+                />
+              </div>
+            </React.Fragment>
           ) : null}
 
           {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (

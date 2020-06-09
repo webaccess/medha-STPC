@@ -31,6 +31,7 @@ import LoaderContext from "../../../context/LoaderContext";
 import AddEditFeedBack from "../../Feedback/AddFeedback/AddFeedback";
 import Alert from "@material-ui/lab/Alert";
 import NoFeedback from "../../Feedback/NoFeedback/NoFeedback";
+import auth from "../../../components/Auth";
 
 const PastActivities = props => {
   const [open, setOpen] = React.useState(true);

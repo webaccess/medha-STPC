@@ -255,6 +255,11 @@ module.exports = {
         .query("user", "users-permissions")
         .findOne(query);
 
+      const roles = await strapi
+        .query("role", "users-permissions")
+        .findOne({ name: "RPC Admin" }, []);
+      user.rpcAdminRole = roles;
+
       if (!user) {
         return ctx.badRequest(
           null,
@@ -378,6 +383,11 @@ module.exports = {
       } catch ([user, error]) {
         return ctx.badRequest(null, error === "array" ? error[0] : error);
       }
+
+      const roles = await strapi
+        .query("role", "users-permissions")
+        .findOne({ name: "RPC Admin" }, []);
+      user.rpcAdminRole = roles;
 
       if (!user) {
         return ctx.badRequest(null, error === "array" ? error[0] : error);

@@ -714,6 +714,15 @@ module.exports = {
       return student.id;
     });
 
+    /** This gets college admin role */
+    const collegeAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" }, []);
+
+    const studentRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Student" }, []);
+
     /** Get actual event data */
     const events = await strapi
       .query("event")
@@ -740,7 +749,8 @@ module.exports = {
           .find({
             event: event.id,
             contact_in: students_contact_id,
-            question_set: event.question_set.id
+            question_set: event.question_set.id,
+            role: studentRole.id
           });
 
         const checkCollegeFeedbackAvailable = await strapi
@@ -748,7 +758,8 @@ module.exports = {
           .find({
             event: event.id,
             contact: collegeAdminContactIds,
-            question_set: event.question_set.id
+            question_set: event.question_set.id,
+            role: collegeAdminRole.id
           });
 
         if (checkCollegeFeedbackAvailable.length) {
@@ -818,6 +829,10 @@ module.exports = {
       .query("role", "users-permissions")
       .findOne({ name: "College Admin" }, []);
 
+    const studentRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Student" }, []);
+
     return strapi
       .query("activity", PLUGIN)
       .model.query(
@@ -837,7 +852,8 @@ module.exports = {
               .find({
                 activity: activity.id,
                 contact_in: students_contact_id,
-                question_set: activity.question_set.id
+                question_set: activity.question_set.id,
+                role: studentRole.id
               });
 
             const checkCollegeFeedbackAvailable = await strapi
@@ -879,10 +895,17 @@ module.exports = {
    * Get Activities for given Organization
    * TODO policy only medha admin and college admin can view activites under give colleges
    */
+
   getActivitiesForZonesRpcs: async ctx => {
     const { id, forRole } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query);
+
+    let sort;
+    if (filters.sort) {
+      sort = filters.sort;
+      filters = _.omit(filters, ["sort"]);
+    }
 
     /** This gets college admin role */
     const collegeAdminRole = await strapi
@@ -892,6 +915,10 @@ module.exports = {
     const rpcAdminRole = await strapi
       .query("role", "users-permissions")
       .findOne({ name: "RPC Admin" }, []);
+
+    const zoneAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Zonal Admin" }, []);
 
     return strapi
       .query("activity", PLUGIN)
@@ -913,7 +940,7 @@ module.exports = {
         ]
       })
       .then(async res => {
-        const data = res.toJSON().filter(activty => {
+        let data = res.toJSON().filter(activty => {
           if (forRole === "rpc") {
             if (activty.contact.organization.rpc == id) {
               return activty;
@@ -994,7 +1021,8 @@ module.exports = {
                 .find({
                   activity: activity.id,
                   contact_in: zonalAdmins,
-                  question_set: activity.question_set.id
+                  question_set: activity.question_set.id,
+                  role: zoneAdminRole.id
                 });
 
               if (checkFeedbackForTheEventPresent.length) {
@@ -1011,6 +1039,11 @@ module.exports = {
               activity.isFeedbackFromRPCPresent = false;
             }
           });
+        }
+
+        // Sorting ascending or descending on one or multiple fields
+        if (sort && sort.length) {
+          data = utils.sort(data, sort);
         }
 
         const response = utils.paginate(data, page, pageSize);
@@ -1660,6 +1693,7 @@ module.exports = {
    * @return {Array}
    * This will fetch all events related to college
    */
+
   async rpcEvents(ctx) {
     const { id } = ctx.params;
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
@@ -1671,21 +1705,14 @@ module.exports = {
       return ctx.response.notFound("RPC does not exist");
     }
 
-    /** This gets contact id of the logged in user */
-    const { contact } = ctx.state.user;
+    /** This gets college admin role */
+    const collegeAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" }, []);
 
-    /** This gets contact ids of all the rpc admins */
-    const rpcAdmins = await strapi.plugins[
-      "crm-plugin"
-    ].services.contact.getRpcAdmins(id);
-
-    let rpcAdminsContacts = await strapi
-      .query("contact", PLUGIN)
-      .find({ user_in: rpcAdmins });
-
-    const rpcAdminsContactIds = rpcAdminsContacts.map(user => {
-      return user.id;
-    });
+    const rpcAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "RPC Admin" }, []);
 
     /** This gets contact ids of all college admins */
     const collegeAdmins = await strapi.plugins[
@@ -1725,8 +1752,9 @@ module.exports = {
           .query("feedback-set")
           .find({
             event: event.id,
-            contact_in: rpcAdminsContactIds,
-            question_set: event.question_set.id
+            contact_in: collegeAdminContactIds,
+            question_set: event.question_set.id,
+            role: rpcAdminRole.id
           });
 
         const checkFeedbackFromCollegePresent = await strapi
@@ -1734,7 +1762,8 @@ module.exports = {
           .find({
             event: event.id,
             contact_in: collegeAdminContactIds,
-            question_set: event.question_set.id
+            question_set: event.question_set.id,
+            role: collegeAdminRole.id
           });
 
         event.isFeedbackFromCollegePresent = checkFeedbackFromCollegePresent.length
@@ -1774,6 +1803,10 @@ module.exports = {
       return ctx.response.notFound("Zone does not exist");
     }
 
+    const zoneAdminRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Zonal Admin" }, []);
+
     /** This gets contact id of the logged in user */
     const { contact } = ctx.state.user;
 
@@ -1809,7 +1842,8 @@ module.exports = {
           .find({
             event: event.id,
             contact_in: zonalAdmins,
-            question_set: event.question_set.id
+            question_set: event.question_set.id,
+            role: zoneAdminRole.id
           });
 
         if (checkFeedbackForTheEventPresent.length) {
@@ -2295,7 +2329,6 @@ module.exports = {
           const organization = await strapi
             .query("organization", PLUGIN)
             .findOne({ id: stud.individual.organization });
-          console.log(organization);
           if (
             organization.principal !== null &&
             organization.principal.contact === id
