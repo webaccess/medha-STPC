@@ -1369,11 +1369,41 @@ const PUBLIC_ROUTES = {
     {
       name: "stream",
       action: ["find"]
+    },
+    {
+      name: "board",
+      action: ["find"]
+    },
+    {
+      name: "academic-year",
+      action: ["find"]
     }
   ]
 };
 
 const ACTIVITY_TYPES = ["Training", "Workshop", "Industrial Visit"];
+
+const BOARDS = [
+  "CBSE",
+  "CISCE",
+  "NIOS",
+  "UPBOARD",
+  "JKBOSE",
+  "RBSE",
+  "HPBOSE",
+  "MPBSE",
+  "CGBSE",
+  "PSEB",
+  "BSEH",
+  "ICSE",
+  "BSEB",
+  "GSEB",
+  "MSBSHSE",
+  "BIEAP",
+  "BSEAP",
+  "WBBSE",
+  "WBCSHE"
+];
 
 module.exports = {
   ACADEMIC_YEARS,
@@ -1383,5 +1413,6 @@ module.exports = {
   ROLES,
   ALLOWED_MEDHA_ADMIN_ROUTES,
   PUBLIC_ROUTES,
-  ACTIVITY_TYPES
+  ACTIVITY_TYPES,
+  BOARDS
 };
