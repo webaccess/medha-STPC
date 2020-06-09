@@ -352,16 +352,24 @@ export const editStudent = (
   };
 };
 export const addEducation = (
-  qualification,
-  board,
   yearOfPassing,
-  percentage
+  educationYear,
+  marks,
+  qualification,
+  institute,
+  pursuing,
+  board,
+  otherQualification
 ) => {
   return {
+    year_of_passing: yearOfPassing,
+    education_year: educationYear,
+    marks: parseFloat(marks),
     qualification,
+    institute,
+    pursuing: !!pursuing,
     board,
-    year_of_passing: parseInt(yearOfPassing),
-    percentage: parseFloat(percentage)
+    other_qualification: otherQualification
   };
 };
 

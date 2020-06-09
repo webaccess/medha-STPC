@@ -126,10 +126,9 @@ export const QUALIFICATIONS = [
 export const EDUCATIONANDPERCENTAGE = "Education and Percentage";
 
 export const EDUCATIONS = [
-  { id: 1, value: "First" },
-  { id: 2, value: "Second" },
-  { id: 3, value: "Third" },
-  { id: 4, value: "Fourth" }
+  { id: "first", value: "First" },
+  { id: "second", value: "Second" },
+  { id: "third", value: "Third" }
 ];
 
 export const EDUCATIONYEARLIST = [
@@ -160,3 +159,11 @@ export const FUTURE_ASPIRATIONS = [
 ];
 
 export const PREVIEW = "Preview";
+
+export const QUALIFICATION_LIST = [
+  { name: "Secondary(10th)", id: "secondary" },
+  { name: "Senior Secondary(12th)", id: "senior_secondary" },
+  { name: "Undergraduate", id: "undergraduate" },
+  { name: "Postgraduate", id: "postgraduate" },
+  { name: "Others", id: "other" }
+];
