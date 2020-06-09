@@ -33,7 +33,8 @@ import {
   DownloadIcon,
   Spinner,
   FeedBack,
-  InlineDatePicker
+  InlineDatePicker,
+  ToolTipComponent
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -829,19 +830,47 @@ const ViewActivity = props => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Training and Activities", sortable: true, selector: "title" },
-    { name: "Activity Type", sortable: true, selector: "activityType" },
+    {
+      name: "Training and Activities",
+      sortable: true,
+      selector: "title",
+      cell: row => <ToolTipComponent data={row.title} />
+    },
+    {
+      name: "Activity Type",
+      sortable: true,
+      selector: "activityType",
+      cell: row => <ToolTipComponent data={row.activityType} />
+    },
     {
       name: "Streams",
       sortable: true,
-      selector: row => `${row.streams.map(s => ` ${s.name}`)}`
+      selector: row => `${row.streams.map(s => ` ${s.name}`)}`,
+      cell: row => (
+        <ToolTipComponent data={`${row.streams.map(s => ` ${s.name}`)}`} />
+      )
     },
-    { name: "College", sortable: true, selector: "collegeName" },
-    { name: "Education Year", sortable: true, selector: "educationYear" },
+    {
+      name: "College",
+      sortable: true,
+      selector: "collegeName",
+      cell: row => <ToolTipComponent data={row.collegeName} />
+    },
+    {
+      name: "Education Year",
+      sortable: true,
+      selector: "educationYear",
+      cell: row => <ToolTipComponent data={row.educationYear} />
+    },
     {
       name: "Date",
       sortable: true,
-      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`
+      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`,
+      cell: row => (
+        <ToolTipComponent
+          data={`${moment(row.start_date_time).format("DD MMM YYYY")}`}
+        />
+      )
     },
     {
       name: "Actions",
@@ -979,7 +1008,7 @@ const ViewActivity = props => {
           ) : null}
         </div>
       ),
-      width: "auto",
+      width: "20%",
       cellStyle: {
         width: "18%",
         maxWidth: "18%"
