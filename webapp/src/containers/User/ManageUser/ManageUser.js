@@ -972,6 +972,21 @@ const ManageUser = props => {
     if (column.selector === "username") {
       formState.filterDataParameters[SORT_FIELD_KEY] =
         "contact.user.username:" + sortDirection;
+    } else if (column.selector === "role") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        "contact.user.role.name:" + sortDirection;
+    } else if (column.selector === "state") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        "contact.user.state.name:" + sortDirection;
+    } else if (column.selector === "zone") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        "contact.user.zone.name:" + sortDirection;
+    } else if (column.selector === "rpc") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        "contact.user.rpc.name:" + sortDirection;
+    } else if (column.selector === "college") {
+      formState.filterDataParameters[SORT_FIELD_KEY] =
+        "organization.name:" + sortDirection;
     }
 
     getUserData(perPage, page, formState.filterDataParameters);
