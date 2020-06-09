@@ -258,22 +258,7 @@ const AddEditActivityBatches = props => {
                         container
                         spacing={1}
                       >
-                        <Grid item>
-                          <TextField
-                            label="Student Name"
-                            placeholder="Student Name"
-                            variant="outlined"
-                            value={
-                              formState.filterDataParameters[
-                                ACTIVITY_BATCH_STUDENT_FILTER
-                              ] || ""
-                            }
-                            name={ACTIVITY_BATCH_STUDENT_FILTER}
-                            className={classes.autoCompleteField}
-                            onChange={handleFilterChange}
-                          />
-                        </Grid>
-                        <Grid item>
+                        <Grid item className={classes.paddingDate}>
                           <Autocomplete
                             id="stream-dropdown"
                             options={formState.streams}
@@ -296,6 +281,22 @@ const AddEditActivityBatches = props => {
                             )}
                           />
                         </Grid>
+                        <Grid item className={classes.paddingDate}>
+                          <TextField
+                            label="Student Name"
+                            placeholder="Student Name"
+                            variant="outlined"
+                            value={
+                              formState.filterDataParameters[
+                                ACTIVITY_BATCH_STUDENT_FILTER
+                              ] || ""
+                            }
+                            name={ACTIVITY_BATCH_STUDENT_FILTER}
+                            className={classes.autoCompleteField}
+                            onChange={handleFilterChange}
+                          />
+                        </Grid>
+                        {/* </Grid> */}
                         <Grid item className={classes.filterButtonsMargin}>
                           <YellowButton
                             variant="contained"
@@ -322,19 +323,25 @@ const AddEditActivityBatches = props => {
                       </Grid>
                     </CardContent>
                   </Card>
-                  <Table
-                    data={formState.dataToShow}
-                    column={column}
-                    defaultSortField="name"
-                    defaultSortAsc={formState.sortAscending}
-                    progressPending={formState.isDataLoading}
-                    paginationTotalRows={formState.totalRows}
-                    paginationRowsPerPageOptions={[10, 20, 50]}
-                    onChangeRowsPerPage={handlePerRowsChange}
-                    onChangePage={handlePageChange}
-                    onSelectedRowsChange={handleRowChange}
-                    noDataComponent={genericConstants.NO_STUDENTS_DETAILS_FOUND}
-                  />
+                  {formState.dataToShow.length > 0 ? (
+                    <Table
+                      data={formState.dataToShow}
+                      column={column}
+                      defaultSortField="name"
+                      defaultSortAsc={formState.sortAscending}
+                      progressPending={formState.isDataLoading}
+                      paginationTotalRows={formState.totalRows}
+                      paginationRowsPerPageOptions={[10, 20, 50]}
+                      onChangeRowsPerPage={handlePerRowsChange}
+                      onChangePage={handlePageChange}
+                      onSelectedRowsChange={handleRowChange}
+                      noDataComponent={
+                        genericConstants.NO_STUDENTS_DETAILS_FOUND
+                      }
+                    />
+                  ) : (
+                    genericConstants.NO_STUDENTS_DETAILS_FOUND
+                  )}
                   <Card className={styles.noBorderNoShadow}>
                     <CardContent>
                       <Grid container spacing={2}>
