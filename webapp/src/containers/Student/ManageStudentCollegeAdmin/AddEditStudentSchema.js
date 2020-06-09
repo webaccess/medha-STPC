@@ -222,31 +222,6 @@ const RegistrationSchema = {
       }
     }
   },
-  futureAspirations: {
-    label: "Future Aspirations",
-    id: "futureAspirations",
-    autoComplete: "futureAspirations",
-    required: false,
-    placeholder: "futureAspirations",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
-  username: {
-    label: "Username",
-    id: "username",
-    autoComplete: "username",
-    required: true,
-    placeholder: "Username",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "User Name is required"
-      }
-    }
-  },
   password: {
     label: "Password",
     id: "password",

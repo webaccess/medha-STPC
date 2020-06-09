@@ -83,7 +83,7 @@ const AddEditStudent = props => {
       : false,
     counter: 0
   });
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [selectedDate, setSelectedDate] = React.useState(null);
 
@@ -92,7 +92,7 @@ const AddEditStudent = props => {
     { name: "Female", id: "female" }
   ];
   const futureAspirationsList = [
-    { id: "private_job", name: "Private Job" },
+    { id: "private_jobs", name: "Private Job" },
     { id: "others", name: "Others" },
     { id: "higher_studies", name: "Higher Studies" },
     { id: "marriage", name: "Marriage" },
@@ -137,7 +137,6 @@ const AddEditStudent = props => {
         college => college.id == formState.values["college"]
       );
 
-      console.log(collegelist);
       const collegeStreamIds = college.stream_strength.map(s => s.stream.id);
       const list = streamlist.filter(stream => {
         if (_.includes(collegeStreamIds, stream.id)) {
@@ -338,7 +337,6 @@ const AddEditStudent = props => {
   const postStudentData = () => {
     let postData;
     if (formState.editStudent) {
-      console.log(formState.values);
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
         formState.values["lastname"],
@@ -349,7 +347,7 @@ const AddEditStudent = props => {
         formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
-        formState.values["username"],
+        formState.values["contact"],
         formState.values["gender"],
         selectedDate.getFullYear() +
           "-" +
@@ -407,7 +405,6 @@ const AddEditStudent = props => {
           setLoaderStatus(false);
         })
         .catch(err => {
-          console.log(JSON.stringify(err));
           setIsFailed(true);
           history.push({
             pathname: routeConstants.MANAGE_STUDENT,
@@ -427,7 +424,7 @@ const AddEditStudent = props => {
         formState.values["district"],
         formState.values["email"],
         formState.values["contact"],
-        formState.values["username"],
+        formState.values["contact"],
         formState.values["password"],
         formState.values["gender"],
         selectedDate.getFullYear() +
@@ -495,7 +492,6 @@ const AddEditStudent = props => {
         setstreamlist(list);
 
         if (formState.dataForEdit) {
-          console.log(props.location["dataForEdit"]["stream"]);
           const selectedStream = list.find(
             stream => stream.id == props.location["dataForEdit"]["stream"]["id"]
           );
@@ -629,7 +625,6 @@ const AddEditStudent = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
-  console.log(stream);
 
   return (
     // <Layout>
@@ -1110,27 +1105,6 @@ const AddEditStudent = props => {
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    label="Username"
-                    name="username"
-                    value={formState.values["username"] || ""}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    disabled
-                    readOnly
-                    error={hasError("username")}
-                    helperText={
-                      hasError("username")
-                        ? formState.errors["username"].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-
                 {formState.editStudent ? (
                   <Grid item md={6} xs={12}>
                     <Autocomplete

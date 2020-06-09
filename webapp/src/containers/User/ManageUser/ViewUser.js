@@ -176,26 +176,6 @@ const ViewUser = props => {
               </Grid>
             </Grid>
             <Divider className={classes.divider} />
-            <Grid item xs={12} md={6} xl={3}>
-              <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
-                  <ReadOnlyTextField
-                    id="username"
-                    label="Username"
-                    defaultValue={
-                      formState.userDetails.contact
-                        ? formState.userDetails.contact.user
-                          ? formState.userDetails.contact.user.username
-                            ? formState.userDetails.contact.user.username
-                            : ""
-                          : ""
-                        : ""
-                    }
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}></Grid>
-              </Grid>
-            </Grid>
             <Grid item md={4} xs={12}>
               <FormGroup row>
                 <FormControlLabel
