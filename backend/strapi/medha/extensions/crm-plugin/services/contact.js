@@ -430,5 +430,44 @@ module.exports = {
    */
   getUserRole: async ctx => {
     return (ctx.state.user && ctx.state.user.role) || null;
+  },
+
+  /** Get contact ids for feedback */
+  getContactIdsForFeedback: async (ctx, id, role, contactIdToFind) => {
+    if (role === "Zonal Admin") {
+      if (contactIdToFind === "college") {
+        const collegeAdminIds = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getCollegeAdminsFromZone(id);
+
+        return collegeAdminIds;
+      } else if (contactIdToFind === "rpc") {
+        const rpcAdmins = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllCollegeAdmins();
+
+        return rpcAdmins;
+      }
+    } else if (role === "Medha Admin") {
+      if (contactIdToFind === "college") {
+        const collegeAdminIds = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllCollegeAdmins();
+
+        return collegeAdminIds;
+      } else if (contactIdToFind === "rpc") {
+        const rpcAdmins = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllCollegeAdmins();
+
+        return rpcAdmins;
+      } else if (contactIdToFind === "zone") {
+        const zoneAdmins = await strapi.plugins[
+          "crm-plugin"
+        ].services.contact.getAllZones();
+
+        return zoneAdmins;
+      }
+    }
   }
 };

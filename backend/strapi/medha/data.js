@@ -632,7 +632,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",
@@ -652,7 +652,7 @@ const ROLES = {
       },
       {
         name: "activity",
-        action: [],
+        action: ["getquestionset", "getfeedbacksforactivityforzone"],
         type: PLUGIN_NAME
       },
       {
@@ -667,7 +667,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["zoneevents"],
+        action: ["zoneevents", "getactivitiesforzonesrpcs"],
         type: PLUGIN_NAME
       },
       {
@@ -759,7 +759,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",
@@ -794,7 +794,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["rpcevents"],
+        action: ["rpcevents", "getactivitiesforzonesrpcs"],
         type: PLUGIN_NAME
       },
       {
@@ -898,7 +898,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",
@@ -940,7 +940,8 @@ const ROLES = {
           "student",
           "getquestionset",
           "update",
-          "getfeedbacksforeventfromcollege"
+          "getfeedbacksforeventfromcollege",
+          "getfeedbacksforactivityforrpc"
         ],
         type: PLUGIN_NAME
       },
@@ -977,7 +978,8 @@ const ROLES = {
           "eligibleEvents",
           "editindividual",
           "getOrganizationActivities",
-          "rpcevents"
+          "rpcevents",
+          "getactivitiesforzonesrpcs"
         ],
         type: PLUGIN_NAME
       },
@@ -1089,7 +1091,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",

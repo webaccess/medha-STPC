@@ -72,7 +72,9 @@ const DeleteZone = props => {
     if (props.isMultiDelete) {
       status = await checkIfMultiCollegeCanBeDelete();
     } else {
-      status = await checkIfCollegeCanBeDelete(props.id);
+      status = await checkIfCollegeCanBeDelete(
+        formState.dataToDelete.organizationId
+      );
     }
     setOpen(false);
     if (status["status"]) {
@@ -93,8 +95,10 @@ const DeleteZone = props => {
   const checkIfMultiCollegeCanBeDelete = async () => {
     let dataToSent = {};
     let isErrorCounter = 0;
-    for (let i in props.id) {
-      let status = await checkIfCollegeCanBeDelete(props.id[i]);
+    for (let i in props.MultiOrganizationId) {
+      let status = await checkIfCollegeCanBeDelete(
+        props.MultiOrganizationId[i]
+      );
       if (!status["status"]) {
         isErrorCounter += 1;
         break;
@@ -114,13 +118,11 @@ const DeleteZone = props => {
   /** This checks if the state can be deleted and returns back an array with status and message*/
   const checkIfCollegeCanBeDelete = async id => {
     let dataToReturn = {};
-    // let studentsCheckUrl =
-    //   COLLEGE_URL + "/" + id + "/" + strapiConstants.STRAPI_STUDENT;
     let studentsCheckUrl =
       strapiConstants.STRAPI_DB_URL +
       strapiConstants.STRAPI_COLLEGES +
       "/" +
-      props.id +
+      id +
       "/" +
       strapiConstants.STRAPI_STUDENT;
     await serviceProviders

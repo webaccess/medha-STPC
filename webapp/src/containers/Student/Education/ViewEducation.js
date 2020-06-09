@@ -257,15 +257,6 @@ const ViewEducation = props => {
     event.persist();
   };
 
-  // const handleChangeAutoComplete = (filterName, event, value) => {
-  //   if (value === null) {
-  //     delete formState.filterDataParameters[filterName];
-  //     //restoreData();
-  //   } else {
-  //     formState.filterDataParameters[filterName] = value["id"];
-  //   }
-  // };
-
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
     /** This restores all the data when we close the modal */
@@ -282,10 +273,14 @@ const ViewEducation = props => {
 
   /** Columns to show in table */
   const column = [
+    {
+      name: "Year Of Passing",
+      sortable: true,
+      selector: "year_of_passing.name"
+    },
     { name: "Qualification", sortable: true, selector: "qualification" },
-    { name: "Board", sortable: true, selector: "board" },
-    { name: "Percentage", sortable: true, selector: "percentage" },
-    { name: "Year Of Passing", sortable: true, selector: "year_of_passing" },
+    { name: "Board", sortable: true, selector: "board.name" },
+    { name: "Percentage", sortable: true, selector: "marks" },
     {
       name: "Actions",
       cell: cell => (

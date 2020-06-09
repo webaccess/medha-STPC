@@ -1,6 +1,51 @@
 const EducationSchema = {
+  yearOfPassing: {
+    label: "Year of passing",
+    id: "yearofpassing",
+    autoComplete: "yearofpassing",
+    required: true,
+    placeholder: "Year of passing",
+    autoFocus: true,
+    type: "number",
+    validations: {
+      required: {
+        value: "true",
+        message: "Year of passing is required"
+      }
+    }
+  },
+  educationYear: {
+    label: "Education Year",
+    id: "educationyear",
+    autoComplete: "educationyear",
+    required: true,
+    placeholder: "Education Year",
+    autoFocus: true,
+    type: "number",
+    validations: {
+      required: {
+        value: "true",
+        message: "Education year is required"
+      }
+    }
+  },
+  marks: {
+    label: "Marks",
+    id: "marks",
+    autoComplete: "marks",
+    required: true,
+    placeholder: "Marks",
+    autoFocus: true,
+    type: "number",
+    validations: {
+      required: {
+        value: "true",
+        message: "Marks are required"
+      }
+    }
+  },
   qualification: {
-    label: "Qualification",
+    label: "qualification",
     id: "qualification",
     autoComplete: "qualification",
     required: true,
@@ -21,7 +66,7 @@ const EducationSchema = {
     required: true,
     placeholder: "board",
     autoFocus: true,
-    type: "text",
+    type: "number",
     validations: {
       required: {
         value: "true",
@@ -29,35 +74,23 @@ const EducationSchema = {
       }
     }
   },
-  yearOfPassing: {
-    label: "Year Of Passing",
-    id: "yearOfPassing",
-    autoComplete: "yearOfPassing",
-    required: true,
-    placeholder: "Year Of Passing",
+  institute: {
+    label: "Institute",
+    id: "institute",
+    autoComplete: "institute",
+    required: false,
+    placeholder: "Institute",
     autoFocus: true,
-    type: "number",
-    validations: {
-      required: {
-        value: "true",
-        message: "Year Of Passing is required"
-      }
-    }
+    type: "text"
   },
-  percentage: {
-    label: "Percentage",
-    id: "percentage",
-    autoComplete: "percentage",
-    required: true,
-    placeholder: "Percentage",
+  pursuing: {
+    label: "Pursuing",
+    id: "pursuing",
+    autoComplete: "pursuing",
+    required: false,
+    placeholder: "Pursuing",
     autoFocus: true,
-    type: "number",
-    validations: {
-      required: {
-        value: "true",
-        message: "Percentage is required"
-      }
-    }
+    type: "boolean"
   }
 };
 export default EducationSchema;

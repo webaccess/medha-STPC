@@ -349,7 +349,7 @@ const ViewActivityBatches = props => {
       </div>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_ACTIVITY_BATCHES}
+          {`${activityDetails ? activityDetails.title : ""} batches`}
         </Typography>
 
         <GreenButton

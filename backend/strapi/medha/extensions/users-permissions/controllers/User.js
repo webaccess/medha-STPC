@@ -41,6 +41,11 @@ module.exports = {
       .query("user", "users-permissions")
       .findOne({ id: request.id });
 
+    const roles = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "RPC Admin" }, []);
+    user.rpcAdminRole = roles;
+
     if (user.contact) {
       const individualInfo = await strapi
         .query("individual", "crm-plugin")

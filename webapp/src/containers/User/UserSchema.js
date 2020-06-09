@@ -1,19 +1,4 @@
 const UserSchema = {
-  username: {
-    label: "User Name",
-    id: "username",
-    autoComplete: "username",
-    required: true,
-    placeholder: "User name",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "User Name is required"
-      }
-    }
-  },
   password: {
     label: "Password",
     id: "password",
