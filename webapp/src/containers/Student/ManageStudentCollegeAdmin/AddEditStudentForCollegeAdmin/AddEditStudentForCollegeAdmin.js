@@ -76,7 +76,6 @@ const AddEditStudentForCollegeAdmin = props => {
     state: null,
     email: "",
     contactNumber: "",
-    userName: "",
     password: "",
     gender: "",
     physicallyHandicapped: null,
@@ -374,7 +373,7 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
-        formState.values["username"],
+        formState.values["contact"],
         formState.values["gender"],
         selectedDate.getFullYear() +
           "-" +
@@ -443,7 +442,7 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
-        formState.values["username"],
+        formState.values["contact"],
         formState.values["password"],
         formState.values["gender"],
         selectedDate.getFullYear() +
@@ -1069,29 +1068,6 @@ const AddEditStudentForCollegeAdmin = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      label={get(registrationSchema["username"], "label")}
-                      placeholder={get(
-                        registrationSchema["username"],
-                        "placeholder"
-                      )}
-                      name="username"
-                      value={formState.values["username"] || ""}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      error={hasError("username")}
-                      helperText={
-                        hasError("username")
-                          ? formState.errors["username"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
                   <Grid item md={6} xs={12}>
                     <FormControl fullWidth variant="outlined">
                       <InputLabel

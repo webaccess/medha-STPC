@@ -1,9 +1,16 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip, Typography } from "@material-ui/core";
 
 const ViewDownloadIcon = props => {
   return (
-    <Tooltip title={props.title} placement="top">
+    <Tooltip
+      title={
+        <React.Fragment>
+          <Typography color="inherit">{props.title}</Typography>
+        </React.Fragment>
+      }
+      placement="top"
+    >
       <i
         className="material-icons"
         id={props.id}

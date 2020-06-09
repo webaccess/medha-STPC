@@ -31,9 +31,10 @@ import {
   ViewStudentGridIcon,
   DeleteGridIcon,
   DownloadIcon,
-  ThumbsUpDownIcon,
   Spinner,
-  FeedBack
+  FeedBack,
+  InlineDatePicker,
+  ToolTipComponent
 } from "../../components";
 // import DeleteActivity from "./DeleteActivity";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
@@ -54,8 +55,12 @@ const ViewActivity = props => {
     dataToShow: [],
     activities: [],
     activityFilter: [],
+    errors: {},
     filterDataParameters: {},
+    isClearResetFilter: false,
     isFilterSearch: false,
+    startDate: null,
+    endDate: null,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromEditActivity"]
       ? props["location"]["isDataEdited"]
@@ -93,7 +98,13 @@ const ViewActivity = props => {
     activityID: "",
     showViewFeedbackModal: false
   });
-
+  const [activityType, setActivityType] = useState([]);
+  const educationyearlist = [
+    { name: "First", id: "First" },
+    { name: "Second", id: "Second" },
+    { name: "Third", id: "Third" },
+    { name: "Fourth", id: "Fourth" }
+  ];
   /** Special feedbackState state variable to set parameters for feedback  */
   const [feedbackState, setFeedbackState] = useState({
     /** Feedback */
@@ -137,6 +148,9 @@ const ViewActivity = props => {
   });
 
   const ACTIVITY_FILTER = "title_contains";
+  const ACTIVITY_TYPE_FILTER = "activitytype.id";
+  const EDUCATION_YEAR_FILTER = "education_year";
+  const START_DATE_FILTER = "start_date_time_gte";
   const user = Auth.getUserInfo() ? Auth.getUserInfo() : null;
   const role = user ? user.role : null;
   const roleName = role ? role.name : null;
@@ -173,9 +187,22 @@ const ViewActivity = props => {
       .catch(error => {
         console.log("error", error);
       });
-
+    getActivityTypes();
     getActivityData(10, 1);
   }, []);
+
+  const getActivityTypes = async () => {
+    const activityTypeUrl =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_TYPE;
+    await serviceProviders
+      .serviceProviderForGetRequest(activityTypeUrl)
+      .then(res => {
+        setActivityType(res.data);
+      })
+      .catch(error => {
+        console.log("error while getting activity type");
+      });
+  };
 
   /** This seperate function is used to get the Activity data*/
   const getActivityData = async (pageSize, page, params = null) => {
@@ -199,7 +226,6 @@ const ViewActivity = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(URL, params)
       .then(res => {
@@ -224,16 +250,33 @@ const ViewActivity = props => {
       });
   };
 
+  const getStatus = (start_date, end_date) => {
+    let current_date = new Date().toISOString();
+    if (current_date >= start_date && current_date <= end_date) {
+      return "Ongoing";
+    } else if (current_date > end_date) {
+      return "Completed";
+    } else if (current_date < start_date) {
+      return "Upcoming";
+    }
+  };
+
   const convertactivityData = data => {
     let x = [];
     if (data.length > 0) {
       for (let i in data) {
         var eventIndividualData = {};
         eventIndividualData["id"] = data[i]["id"];
-
+        eventIndividualData["status"] = getStatus(
+          data[i]["start_date_time"],
+          data[i]["end_date_time"]
+        );
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["activityType"] = data[i].activitytype.name;
         eventIndividualData["streams"] = data[i].streams;
+        eventIndividualData["educationYear"] = data[i]["education_year"]
+          ? data[i]["education_year"]
+          : "";
         eventIndividualData["collegeName"] = data[i].contact.name;
 
         eventIndividualData["start_date_time"] = data[i]["start_date_time"];
@@ -316,7 +359,9 @@ const ViewActivity = props => {
       /** Clear all filters */
       filterDataParameters: {},
       /** Turns on the spinner */
-      isDataLoading: true
+      isDataLoading: true,
+      isClearResetFilter: true,
+      startDate: null
     }));
     /**Need to confirm this thing for resetting the data */
     restoreData();
@@ -324,6 +369,42 @@ const ViewActivity = props => {
 
   const restoreData = () => {
     getActivityData(formState.pageSize, 1);
+  };
+
+  const handleStartDateChange = (START_DATE_FILTER, event) => {
+    let startDate = moment(event).format("YYYY-MM-DDT00:00:00.000Z");
+    if (startDate === "Invalid date") {
+      startDate = null;
+      formState.errors["dateFrom"] = ["Selected Date is Invalid"];
+      delete formState.filterDataParameters[START_DATE_FILTER];
+    } else {
+      formState.filterDataParameters[START_DATE_FILTER] = new Date(
+        startDate
+      ).toISOString();
+    }
+
+    setFormState(formState => ({
+      ...formState,
+      startDate: event
+    }));
+  };
+
+  const hasError = field => (formState.errors[field] ? true : false);
+
+  const handleChangeAutoComplete = (filterName, event, value) => {
+    if (value === null) {
+      delete formState.filterDataParameters[filterName];
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: true
+      }));
+    } else {
+      formState.filterDataParameters[filterName] = value["id"];
+      setFormState(formState => ({
+        ...formState,
+        isClearResetFilter: false
+      }));
+    }
   };
 
   const editCell = data => {
@@ -516,7 +597,7 @@ const ViewActivity = props => {
     setLoaderStatus(true);
     const COLLEGE_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
+      strapiConstants.STRAPI_ACTIVITY +
       "/" +
       cell.id +
       "/getSuperAdminFeedback/" +
@@ -525,7 +606,7 @@ const ViewActivity = props => {
 
     const RPC_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
+      strapiConstants.STRAPI_ACTIVITY +
       "/" +
       cell.id +
       "/getSuperAdminFeedback/" +
@@ -534,7 +615,7 @@ const ViewActivity = props => {
 
     const ZONE_FEEDBACK =
       strapiConstants.STRAPI_DB_URL +
-      strapiConstants.STRAPI_EVENTS +
+      strapiConstants.STRAPI_ACTIVITY +
       "/" +
       cell.id +
       "/getSuperAdminFeedback/" +
@@ -763,18 +844,53 @@ const ViewActivity = props => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Training and Activities", sortable: true, selector: "title" },
-    { name: "Activity Type", sortable: true, selector: "activityType" },
+    {
+      name: "Training and Activities",
+      sortable: true,
+      selector: "title",
+      cell: row => <ToolTipComponent data={row.title} />
+    },
+    {
+      name: "Activity Type",
+      sortable: true,
+      selector: "activityType",
+      cell: row => <ToolTipComponent data={row.activityType} />
+    },
     {
       name: "Streams",
       sortable: true,
-      selector: row => `${row.streams.map(s => ` ${s.name}`)}`
+      selector: row => `${row.streams.map(s => ` ${s.name}`)}`,
+      cell: row => (
+        <ToolTipComponent data={`${row.streams.map(s => ` ${s.name}`)}`} />
+      )
     },
-    { name: "College", sortable: true, selector: "collegeName" },
+    {
+      name: "College",
+      sortable: true,
+      selector: "collegeName",
+      cell: row => <ToolTipComponent data={row.collegeName} />
+    },
+    {
+      name: "Education Year",
+      sortable: true,
+      selector: "educationYear",
+      cell: row => <ToolTipComponent data={row.educationYear} />
+    },
     {
       name: "Date",
       sortable: true,
-      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`
+      selector: row => `${moment(row.start_date_time).format("DD MMM YYYY")}`,
+      cell: row => (
+        <ToolTipComponent
+          data={`${moment(row.start_date_time).format("DD MMM YYYY")}`}
+        />
+      )
+    },
+    {
+      name: "Status",
+      sortable: true,
+      selector: "status",
+      cell: row => <ToolTipComponent data={row.status} />
     },
     {
       name: "Actions",
@@ -849,6 +965,20 @@ const ViewActivity = props => {
             )
           ) : null}
 
+          {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+            <React.Fragment>
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  message={"View feedback"}
+                  id={cell.id}
+                  isViewFeedback={true}
+                  value={cell.title}
+                  onClick={() => viewFeedbackSuperAdmin(cell)}
+                />
+              </div>
+            </React.Fragment>
+          ) : null}
+
           {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
             cell.giveFeedback ? (
               <div className={classes.PaddingActionButton}>
@@ -898,7 +1028,7 @@ const ViewActivity = props => {
           ) : null}
         </div>
       ),
-      width: "auto",
+      width: "20%",
       cellStyle: {
         width: "18%",
         maxWidth: "18%"
@@ -1110,6 +1240,101 @@ const ViewActivity = props => {
                   onChange={handleFilterChangeForActivityField}
                 />
               </Grid>
+              <Grid item className={classes.paddingDate}>
+                <Autocomplete
+                  id="activity_filter"
+                  name={"activityType"}
+                  options={activityType}
+                  className={classes.autoCompleteField}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) =>
+                    handleChangeAutoComplete(ACTIVITY_TYPE_FILTER, event, value)
+                  }
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : activityType[
+                          activityType.findIndex(function (item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[
+                                ACTIVITY_TYPE_FILTER
+                              ]
+                            );
+                          })
+                        ] || null
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Activity Type"
+                      placeholder="Activity Type"
+                      className={classes.autoCompleteField}
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item className={classes.paddingDate}>
+                <Autocomplete
+                  id="Education Year"
+                  className={classes.root}
+                  options={educationyearlist}
+                  getOptionLabel={option => option.name}
+                  onChange={(event, value) => {
+                    handleChangeAutoComplete(
+                      EDUCATION_YEAR_FILTER,
+                      event,
+                      value
+                    );
+                  }}
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : educationyearlist[
+                          educationyearlist.findIndex(function (item, i) {
+                            return (
+                              item.id ===
+                              formState.filterDataParameters[
+                                EDUCATION_YEAR_FILTER
+                              ]
+                            );
+                          })
+                        ] || null
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Education Year"
+                      variant="outlined"
+                      className={classes.autoCompleteField}
+                      name="Education Year"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item className={classes.paddingDate}>
+                <InlineDatePicker
+                  id="Date"
+                  label="Date"
+                  placeholder="Date"
+                  value={formState.startDate}
+                  name={"START_DATE_FILTER"}
+                  onChange={event => {
+                    formState.errors["dateFrom"] = false;
+                    handleStartDateChange(START_DATE_FILTER, event);
+                  }}
+                  error={hasError("dateFrom")}
+                  helperText={
+                    hasError("dateFrom")
+                      ? formState.errors["dateFrom"].map(error => {
+                          return error + " ";
+                        })
+                      : null
+                  }
+                />
+              </Grid>
+
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
                   variant="contained"

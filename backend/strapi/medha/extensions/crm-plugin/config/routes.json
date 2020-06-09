@@ -110,6 +110,12 @@
     },
     {
       "method": "GET",
+      "path": "/contact/:id/get-activites/for/:forRole",
+      "handler": "contact.getActivitiesForZonesRpcs",
+      "config": { "policies": [] }
+    },
+    {
+      "method": "GET",
       "path": "/contact/individual/:id/activities",
       "handler": "contact.eligibleActivity",
       "config": { "policies": ["global.isIndividual"] }
@@ -276,6 +282,30 @@
       "method": "GET",
       "path": "/activities/:activityId/contact/:collegeId/getStudentsFeedbacks/:feedbackType",
       "handler": "activity.getFeedbacksForEventFromCollege",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:activityId/rpc/:rpcId/getRpcFeedback/:feedbackType",
+      "handler": "activity.getFeedbacksForActivityForRPC",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:activityId/getFeedbackForZone/:zoneId/DataFor/:dataFor/FeedbackType/:feedbackType",
+      "handler": "activity.getFeedbacksForActivityForZone",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/activities/:activityId/getSuperAdminFeedback/:id/DataFor/:dataFor/FeedbackType/:feedbackType",
+      "handler": "activity.getFeedbackForSuperAdmin",
       "config": {
         "policies": []
       }

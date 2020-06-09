@@ -25,6 +25,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/feedback-sets/role/:role/:id",
+      "handler": "feedback-set.findOneWithRole",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/feedback-sets",
       "handler": "feedback-set.create",
