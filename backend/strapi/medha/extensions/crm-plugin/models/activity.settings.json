@@ -67,6 +67,9 @@
     },
     "description": {
       "type": "richtext"
+    },
+    "cancelled": {
+      "type": "boolean"
     }
   }
 }
