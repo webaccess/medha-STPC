@@ -729,7 +729,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",
@@ -749,7 +749,7 @@ const ROLES = {
       },
       {
         name: "activity",
-        action: [],
+        action: ["getquestionset", "getfeedbacksforactivityforzone"],
         type: PLUGIN_NAME
       },
       {
@@ -764,7 +764,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["zoneevents"],
+        action: ["zoneevents", "getactivitiesforzonesrpcs"],
         type: PLUGIN_NAME
       },
       {
@@ -856,7 +856,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",
@@ -891,7 +891,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["rpcevents"],
+        action: ["rpcevents", "getactivitiesforzonesrpcs"],
         type: PLUGIN_NAME
       },
       {
@@ -995,7 +995,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",
@@ -1037,7 +1037,8 @@ const ROLES = {
           "student",
           "getquestionset",
           "update",
-          "getfeedbacksforeventfromcollege"
+          "getfeedbacksforeventfromcollege",
+          "getfeedbacksforactivityforrpc"
         ],
         type: PLUGIN_NAME
       },
@@ -1074,7 +1075,8 @@ const ROLES = {
           "eligibleEvents",
           "editindividual",
           "getOrganizationActivities",
-          "rpcevents"
+          "rpcevents",
+          "getactivitiesforzonesrpcs"
         ],
         type: PLUGIN_NAME
       },
@@ -1186,7 +1188,7 @@ const ROLES = {
       },
       {
         name: "feedback-set",
-        action: ["create", "findone", "update"]
+        action: ["create", "findone", "update", "findonewithrole"]
       },
       {
         name: "rpc",
@@ -1472,13 +1474,43 @@ const PUBLIC_ROUTES = {
       action: ["find"]
     },
     {
+<<<<<<< HEAD
       name: "futureaspirations",
+=======
+      name: "board",
+      action: ["find"]
+    },
+    {
+      name: "academic-year",
+>>>>>>> c4dd7920336a5124544d0cb9efee7388b48670b7
       action: ["find"]
     }
   ]
 };
 
 const ACTIVITY_TYPES = ["Training", "Workshop", "Industrial Visit"];
+
+const BOARDS = [
+  "CBSE",
+  "CISCE",
+  "NIOS",
+  "UPBOARD",
+  "JKBOSE",
+  "RBSE",
+  "HPBOSE",
+  "MPBSE",
+  "CGBSE",
+  "PSEB",
+  "BSEH",
+  "ICSE",
+  "BSEB",
+  "GSEB",
+  "MSBSHSE",
+  "BIEAP",
+  "BSEAP",
+  "WBBSE",
+  "WBCSHE"
+];
 
 module.exports = {
   ACADEMIC_YEARS,
@@ -1489,5 +1521,6 @@ module.exports = {
   ALLOWED_MEDHA_ADMIN_ROUTES,
   PUBLIC_ROUTES,
   ACTIVITY_TYPES,
-  FUTURE_ASPIRATIONS
+  FUTURE_ASPIRATIONS,
+  BOARDS
 };

@@ -9,7 +9,8 @@ const {
   PUBLIC_ROUTES,
   uploadPermissions,
   ACTIVITY_TYPES,
-  FUTURE_ASPIRATIONS
+  FUTURE_ASPIRATIONS,
+  BOARDS
 } = require("./data");
 
 (async () => {
@@ -32,6 +33,8 @@ const {
   await addUploadRoutes();
   console.log("\n");
   await addActivityTypes();
+  console.log("\n");
+  await addBoards();
 })();
 
 const fs = require("fs");
@@ -624,6 +627,24 @@ async function addActivityTypes() {
         });
     } else {
       console.log(`Skipping Activity Type ${activity}...`);
+    }
+  });
+}
+
+async function addBoards() {
+  await utils.asyncForEach(BOARDS, async name => {
+    const board = await bookshelf.model("board").where({ name }).fetch();
+
+    if (!board) {
+      await bookshelf
+        .model("board")
+        .forge({ name })
+        .save()
+        .then(() => {
+          console.log(`Added Board ${name}`);
+        });
+    } else {
+      console.log(`Skipping Board ${name}...`);
     }
   });
 }

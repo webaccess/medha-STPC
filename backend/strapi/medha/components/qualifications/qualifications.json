@@ -10,9 +10,11 @@
     "qualification": {
       "type": "enumeration",
       "enum": [
-        "SSC",
-        "HSC",
-        "Diploma"
+        "secondary",
+        "senior_secondary",
+        "undergraduate",
+        "postgraduate",
+        "other"
       ]
     },
     "percentage": {

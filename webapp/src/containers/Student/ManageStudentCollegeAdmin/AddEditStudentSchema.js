@@ -208,16 +208,6 @@ const RegistrationSchema = {
       }
     }
   },
-  futureAspirations: {
-    label: "Future Aspirations",
-    id: "futureAspirations",
-    autoComplete: "futureAspirations",
-    required: false,
-    placeholder: "futureAspirations",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
   email: {
     label: "Email",
     id: "email",

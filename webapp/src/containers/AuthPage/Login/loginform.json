@@ -1,20 +1,20 @@
 {
   "identifier": {
-    "label": "Email Address",
+    "label": "Contact Number",
     "id": "identifier",
-    "autoComplete": "email",
+    "autoComplete": "Contact number",
     "required": true,
-    "placeholder": "johndoe@abc.com",
+    "placeholder": "Contact Number",
     "autoFocus": true,
     "type": "text",
     "validations": {
       "required": {
         "value": "true",
-        "message": "Email is required"
+        "message": "Contact Number is required"
       },
-      "validateEmailRegex": {
-        "value": "true",
-        "message": "Not an email"
+      "validateMobileNumber": {
+        "value": 10,
+        "message": "Please enter a valid contact number"
       }
     }
   },

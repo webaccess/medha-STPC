@@ -40,3 +40,4 @@ export { default as ThumbsUpDownIcon } from "./ThumbsUpDownIcon";
 export { default as FeedBack } from "./FeedBack";
 export { default as RetryIcon } from "./RetryIcon";
 export { default as LinearProgressWithLabel } from "./LinearProgressWithLabel";
+export { default as ToolTipComponent } from "./ToolTipComponent";

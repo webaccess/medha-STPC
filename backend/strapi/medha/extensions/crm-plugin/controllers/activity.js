@@ -306,18 +306,17 @@ module.exports = {
         isStreamEligible = false;
       }
 
-      const academicHistory = await strapi
-        .query("academic-history")
+      const educations = await strapi
+        .query("education")
         .find({ contact: student.id });
 
-      const { education_year } = activity;
-      const { academic_year } = activity;
+      const { education_year, academic_year } = activity;
       isEducationEligible = true;
 
-      const isEducationPresent = academicHistory.find(ah => {
+      const isEducationPresent = educations.find(ah => {
         if (
-          ah.education_year == education_year &&
-          ah.academic_year.id == academic_year.id
+          _.toLower(ah.education_year) == _.toLower(education_year) &&
+          ah.year_of_passing.id == academic_year.id
         )
           return ah;
       });
@@ -373,7 +372,8 @@ module.exports = {
         "address",
         "trainer_name",
         "question_set",
-        "description"
+        "description",
+        "cancelled"
       ]);
 
       return await strapi
@@ -406,7 +406,8 @@ module.exports = {
         "address",
         "trainer_name",
         "question_set",
-        "description"
+        "description",
+        "cancelled"
       ]);
       return await strapi
         .query("activity", PLUGIN)
@@ -517,5 +518,254 @@ module.exports = {
       );
       return utils.getFindOneResponse(feedbackData);
     }
+  },
+
+  /** Get Feedback for activity for rpc  */
+  async getFeedbacksForActivityForRPC(ctx) {
+    const { activityId, rpcId, feedbackType } = ctx.params;
+
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .findOne({ id: activityId });
+
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+
+    if (!activity.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ activity: activityId, question_set: activity.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if rpc exist */
+    const rpc = await strapi.query("rpc").findOne({ id: rpcId }, []);
+
+    if (!rpc) {
+      return ctx.response.notFound("RPC does not exist");
+    }
+
+    /** This gets contact ids of all the college admins under the RPC*/
+    const collegeAdminUsers = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getCollegeAdminsFromRPC(rpcId);
+
+    let collegeAdminContacts = await strapi
+      .query("contact", PLUGIN)
+      .find({ user_in: collegeAdminUsers });
+
+    const collegeAdminsIds = collegeAdminContacts.map(contact => {
+      return contact.id;
+    });
+
+    /**------------------------------------------------ */
+    if (feedbackType === "rating") {
+      let feedbackData = await strapi.services.event.getAggregateFeedbackForActivity(
+        ctx,
+        activity,
+        collegeAdminsIds,
+        "College Admin"
+      );
+      return utils.getFindOneResponse(feedbackData);
+    } else if (feedbackType === "comment") {
+      let feedbackData = await strapi.services.event.getAllCommentsForActivity(
+        ctx,
+        activity,
+        collegeAdminsIds,
+        "College Admin"
+      );
+      return utils.getFindOneResponse(feedbackData);
+    }
+  },
+
+  /** Get Feedback for activity for rpc  */
+  async getFeedbacksForActivityForZone(ctx) {
+    const { activityId, zoneId, dataFor, feedbackType } = ctx.params;
+
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .findOne({ id: activityId });
+
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+
+    if (!activity.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ activity: activityId, question_set: activity.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    /** Check if zone exist */
+    let feedbackData;
+    if (dataFor === "college") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const collegeAdminIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
+        ctx,
+        zoneId,
+        "Zonal Admin",
+        "college"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForActivity(
+          ctx,
+          activity,
+          collegeAdminIds,
+          "College Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForActivity(
+          ctx,
+          activity,
+          collegeAdminIds,
+          "College Admin"
+        );
+      }
+    } else if (dataFor === "rpc") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const rpcAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
+        ctx,
+        zoneId,
+        "Zonal Admin",
+        "rpc"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForActivity(
+          ctx,
+          activity,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForActivity(
+          ctx,
+          activity,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      }
+    }
+    return utils.getFindOneResponse(feedbackData);
+  },
+
+  /** Feedback data for medha admin */
+  async getFeedbackForSuperAdmin(ctx) {
+    const { activityId, id, dataFor, feedbackType } = ctx.params;
+
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .findOne({ id: activityId });
+
+    if (!activity) {
+      return ctx.response.notFound("Activity does not exist");
+    }
+
+    if (!activity.question_set) {
+      return ctx.response.notFound("No question set");
+    }
+
+    const checkIfFeedbackPresent = await strapi
+      .query("feedback-set")
+      .find({ activity: activityId, question_set: activity.question_set.id });
+
+    if (!checkIfFeedbackPresent.length) {
+      return ctx.response.notFound("No feedback data present");
+    }
+
+    let feedbackData;
+    if (dataFor === "college") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const collegeAdminIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
+        ctx,
+        null,
+        "Medha Admin",
+        "college"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForActivity(
+          ctx,
+          activity,
+          collegeAdminIds,
+          "College Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForActivity(
+          ctx,
+          activity,
+          collegeAdminIds,
+          "College Admin"
+        );
+      }
+    } else if (dataFor === "rpc") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const rpcAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
+        ctx,
+        null,
+        "Medha Admin",
+        "rpc"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForActivity(
+          ctx,
+          activity,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForActivity(
+          ctx,
+          activity,
+          rpcAdmins,
+          "RPC Admin"
+        );
+      }
+    } else if (dataFor === "zone") {
+      /** This gets contact ids of all the college admins under the RPC*/
+      const zoneAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
+        ctx,
+        null,
+        "Medha Admin",
+        "zone"
+      );
+      if (feedbackType === "rating") {
+        feedbackData = await strapi.services.event.getAggregateFeedbackForActivity(
+          ctx,
+          activity,
+          zoneAdmins,
+          "Zonal Admin"
+        );
+      } else if (feedbackType === "comment") {
+        feedbackData = await strapi.services.event.getAllCommentsForActivity(
+          ctx,
+          activity,
+          zoneAdmins,
+          "Zonal Admin"
+        );
+      }
+    }
+
+    return utils.getFindOneResponse(feedbackData);
   }
 };

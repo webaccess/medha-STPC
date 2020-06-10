@@ -82,3 +82,4 @@ export const STRAPI_QUESTION_SET = "question-sets";
 export const STRAPI_FEEDBACK_SETS = "feedback-sets";
 export const STRAPI_CONTACT_SOLO = "contact";
 export const STRAPI_FUTURE_ASPIRATIONS = "futureaspirations";
+export const STRAPI_BOARDS = "boards";

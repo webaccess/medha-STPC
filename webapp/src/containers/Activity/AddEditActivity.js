@@ -9,6 +9,7 @@ import {
   InputLabel,
   IconButton,
   Collapse,
+  FormHelperText,
   Button
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
@@ -74,6 +75,8 @@ const AddEditActivity = props => {
     counter: 0,
     stream: [],
     files: null,
+    descriptionError: false,
+    discriptionMinLengthError: false,
     previewFile: {},
     showPreview: false,
     showEditPreview: props.location.editActivity
@@ -186,6 +189,19 @@ const AddEditActivity = props => {
     { name: "Third", id: "Third" },
     { name: "Fourth", id: "Fourth" }
   ];
+
+  const activityNameList = [
+    { name: "Soft Skills 1", id: "Soft Skills 1" },
+    { name: "Soft Skills 2", id: "Soft Skills 2" },
+    { name: "Career Awareness 1", id: "Career Awareness 1" },
+    { name: "Career Awareness 2", id: "Career Awareness 2" },
+    { name: "Job Preparation 1", id: "Job Preparation 1" },
+    { name: "Job Preparation 2", id: "Job Preparation 2" },
+    { name: "Job Preparation 3", id: "Job Preparation 3" },
+    { name: "Industrial Visit", id: "Industrial Visit" },
+    { name: "Industry Talk", id: "Industry Talk" }
+  ];
+
   const [stream, setStream] = useState([]);
   const [isFailed, setIsFailed] = useState(false);
 
@@ -309,7 +325,46 @@ const AddEditActivity = props => {
         dateTo
       );
     }
-    if (isValid) {
+    formState.descriptionError = false;
+
+    if (
+      convertToRaw(editorState.getCurrentContent()).blocks &&
+      convertToRaw(editorState.getCurrentContent()).blocks.length
+    ) {
+      let arrayToCheckIn = convertToRaw(editorState.getCurrentContent()).blocks;
+      let validationCounter = 0;
+      let validationMinCounter = 0;
+      for (let i in arrayToCheckIn) {
+        if (
+          arrayToCheckIn[i]["text"] &&
+          arrayToCheckIn[i]["text"].trim().length !== 0
+        ) {
+          validationCounter += 1;
+          break;
+        }
+      }
+      if (validationCounter === 0) {
+        formState.descriptionError = true;
+      }
+      for (let i in arrayToCheckIn) {
+        if (
+          arrayToCheckIn[i]["text"] &&
+          arrayToCheckIn[i]["text"].trim().length > 320
+        ) {
+          validationMinCounter += 1;
+          break;
+        }
+      }
+
+      if (validationMinCounter !== 0) {
+        formState.discriptionMinLengthError = true;
+      }
+    }
+    if (
+      isValid &&
+      !formState.descriptionError &&
+      !formState.discriptionMinLengthError
+    ) {
       /** CALL POST FUNCTION */
       postActivityData();
 
@@ -684,32 +739,59 @@ const AddEditActivity = props => {
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
-                    <TextField
-                      label="Activity Name"
-                      name="activityname"
-                      value={formState.values["activityname"] || ""}
-                      variant="outlined"
-                      error={hasError("activityname")}
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      helperText={
-                        hasError("activityname")
-                          ? formState.errors["activityname"].map(error => {
-                              return error + " ";
-                            })
-                          : null
+                    <Autocomplete
+                      id="activityname"
+                      className={classes.root}
+                      options={activityNameList}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("activityname", event, value);
+                      }}
+                      value={
+                        activityNameList[
+                          activityNameList.findIndex(function (item, i) {
+                            return item.id === formState.values["activityname"];
+                          })
+                        ] || null
                       }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError("activityname")}
+                          label="Activity Name"
+                          variant="outlined"
+                          required
+                          name="activityname"
+                          helperText={
+                            hasError("activityname")
+                              ? formState.errors["activityname"].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
                     />
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12} className={"descriptionBox"}>
-                    <Grid className={classes.descriptionBox}>
+                    <Grid
+                      className={
+                        formState.descriptionError ||
+                        formState.discriptionMinLengthError
+                          ? classes.descriptionBoxError
+                          : classes.descriptionBox
+                      }
+                    >
                       <Card className={classes.streamoffer}>
                         <InputLabel
                           htmlFor="outlined-stream-card"
                           fullwidth={true.toString()}
+                          error={
+                            formState.descriptionError ||
+                            formState.discriptionMinLengthError
+                          }
                         >
                           {genericConstants.DESCRIPTION}
                         </InputLabel>
@@ -721,10 +803,23 @@ const AddEditActivity = props => {
                             editorClassName="rdw-editor"
                             value={editorState}
                             onEditorStateChange={data => {
+                              formState.descriptionError = false;
+                              formState.discriptionMinLengthError = false;
                               setEditorState(data);
                             }}
                           />
                         </div>
+                        {formState.descriptionError ? (
+                          <FormHelperText error={true}>
+                            Description is required
+                          </FormHelperText>
+                        ) : null}
+                        {formState.discriptionMinLengthError ? (
+                          <FormHelperText error={true}>
+                            Description length should be less than 320
+                            characters
+                          </FormHelperText>
+                        ) : null}
                       </Card>
                     </Grid>
                   </Grid>

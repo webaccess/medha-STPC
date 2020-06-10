@@ -50,16 +50,14 @@ const VerifyOtp = props => {
           { otp: otp, contact_number: props.location.state.contactNumber }
         )
         .then(res => {
-          console.log("IN then");
           history.push(routeConstants.NEW_REGISTRATION_URL, {
             otp: otp,
-            contactNumber: props.location.state.contactNumber
+            contactNumber: props.location.state.contactNumber,
+            from: routeConstants.VERIFY_OTP
           });
           setLoaderStatus(false);
         })
         .catch(err => {
-          console.log(err.response);
-          console.log(err.response.status);
           if (err.response.data.message === "User already registered") {
             history.push(routeConstants.REQUIRED_CONFORMATION);
           } else if (err.response.date.message === "OTP is invalid")

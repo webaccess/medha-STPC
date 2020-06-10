@@ -116,7 +116,7 @@ module.exports = {
     await utils.asyncForEach(contact, async contact => {
       if (_.includes(contactIds, contact.id)) {
         const qualifications = await strapi
-          .query("academic-history")
+          .query("education")
           .find({ contact: contact.id }, []);
 
         // contact.user = sanitizeUser(contact.user);
@@ -254,18 +254,13 @@ module.exports = {
         }
       });
 
-      /**Filtering educations */
-      const academicHistory = await strapi
-        .query("academic-history")
-        .find({ contact: student.id });
-
       const { educations } = event;
       isEducationEligible = true;
 
       educations.forEach(edu => {
-        const isEducationPresent = academicHistory.find(
+        const isEducationPresent = studentEducations.find(
           ah =>
-            ah.education_year == edu.education_year &&
+            _.toLower(ah.education_year) == _.toLower(edu.education_year) &&
             ah.percentage >= edu.percentage
         );
 
@@ -280,10 +275,7 @@ module.exports = {
         isEducationEligible &&
         student.individual.is_verified
       ) {
-        const qualifications = await strapi
-          .query("academic-history")
-          .find({ contact: student.id }, []);
-        student.qualifications = qualifications;
+        student.qualifications = studentEducations;
         filtered.push(student);
       }
     });
@@ -565,12 +557,12 @@ module.exports = {
     }
 
     /** Check if zone exist */
-    const zone = await strapi.services.zone.checkIfZoneExist(zoneId);
-
     let feedbackData;
     if (dataFor === "college") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+      const collegeAdminIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         zoneId,
         "Zonal Admin",
@@ -593,7 +585,9 @@ module.exports = {
       }
     } else if (dataFor === "rpc") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+      const rpcAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         zoneId,
         "Zonal Admin",
@@ -638,7 +632,9 @@ module.exports = {
     let feedbackData;
     if (dataFor === "college") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const collegeAdminIds = await strapi.services.event.getContactIdsForFeedback(
+      const collegeAdminIds = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         null,
         "Medha Admin",
@@ -661,7 +657,9 @@ module.exports = {
       }
     } else if (dataFor === "rpc") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const rpcAdmins = await strapi.services.event.getContactIdsForFeedback(
+      const rpcAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         null,
         "Medha Admin",
@@ -684,7 +682,9 @@ module.exports = {
       }
     } else if (dataFor === "zone") {
       /** This gets contact ids of all the college admins under the RPC*/
-      const zoneAdmins = await strapi.services.event.getContactIdsForFeedback(
+      const zoneAdmins = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getContactIdsForFeedback(
         ctx,
         null,
         "Medha Admin",

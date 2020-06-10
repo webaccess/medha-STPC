@@ -96,7 +96,7 @@ const AddEditStudent = props => {
       : false,
     showNoImage: props.location.editStudent ? false : props.location.editStudent
   });
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [selectedDate, setSelectedDate] = React.useState(null);
 
@@ -144,7 +144,6 @@ const AddEditStudent = props => {
         college => college.id == formState.values["college"]
       );
 
-      console.log(collegelist);
       const collegeStreamIds = college.stream_strength.map(s => s.stream.id);
       const list = streamlist.filter(stream => {
         if (_.includes(collegeStreamIds, stream.id)) {
@@ -361,7 +360,6 @@ const AddEditStudent = props => {
   const postStudentData = () => {
     let postData;
     if (formState.editStudent) {
-      console.log(formState.values);
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
         formState.values["middlename"],
@@ -373,7 +371,7 @@ const AddEditStudent = props => {
         formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
-        formState.values["username"],
+        formState.values["contact"],
         formState.values["gender"],
         selectedDate.getFullYear() +
           "-" +
@@ -432,7 +430,6 @@ const AddEditStudent = props => {
           setLoaderStatus(false);
         })
         .catch(err => {
-          console.log(JSON.stringify(err));
           setIsFailed(true);
           history.push({
             pathname: routeConstants.MANAGE_STUDENT,
@@ -453,7 +450,7 @@ const AddEditStudent = props => {
         formState.values["district"],
         formState.values["email"],
         formState.values["contact"],
-        formState.values["username"],
+        formState.values["contact"],
         formState.values["password"],
         formState.values["gender"],
         selectedDate.getFullYear() +
@@ -538,7 +535,6 @@ const AddEditStudent = props => {
         setstreamlist(list);
 
         if (formState.dataForEdit) {
-          console.log(props.location["dataForEdit"]["stream"]);
           const selectedStream = list.find(
             stream => stream.id == props.location["dataForEdit"]["stream"]["id"]
           );
@@ -718,7 +714,6 @@ const AddEditStudent = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
-  console.log(stream);
 
   return (
     // <Layout>

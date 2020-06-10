@@ -97,4 +97,9 @@ bookshelf.model("feedback-set", {
   tableName: "feedback_sets"
 });
 
+bookshelf.model("board", {
+  requireFetch: false,
+  tableName: "boards"
+});
+
 module.exports = bookshelf;

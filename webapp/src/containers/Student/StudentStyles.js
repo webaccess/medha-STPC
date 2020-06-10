@@ -53,6 +53,11 @@ const useStyles = makeStyles(theme => ({
     objectFit: "contain",
     backgroundColor: "#666666",
     marginLeft: "18%"
+  },
+
+  FlexGrow: {
+    flexGrow: 1,
+    width: "30%"
   }
 }));
 
