@@ -306,18 +306,17 @@ module.exports = {
         isStreamEligible = false;
       }
 
-      const academicHistory = await strapi
-        .query("academic-history")
+      const educations = await strapi
+        .query("education")
         .find({ contact: student.id });
 
-      const { education_year } = activity;
-      const { academic_year } = activity;
+      const { education_year, academic_year } = activity;
       isEducationEligible = true;
 
-      const isEducationPresent = academicHistory.find(ah => {
+      const isEducationPresent = educations.find(ah => {
         if (
-          ah.education_year == education_year &&
-          ah.academic_year.id == academic_year.id
+          _.toLower(ah.education_year) == _.toLower(education_year) &&
+          ah.year_of_passing.id == academic_year.id
         )
           return ah;
       });
