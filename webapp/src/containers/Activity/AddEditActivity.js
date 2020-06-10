@@ -51,7 +51,6 @@ const QUESTION_SET =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUESTION_SET;
 
 const AddEditActivity = props => {
-  console.log("AddEditActivity", props);
   let history = useHistory();
   const dateFrom = "dateFrom";
   const dateTo = "dateTo";

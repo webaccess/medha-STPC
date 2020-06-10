@@ -559,9 +559,7 @@ const AddEditUser = props => {
     );
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
-      console.log("stError", formState.values, UserSchema);
       formState.errors = formUtilities.setErrors(formState.values, UserSchema);
-      console.log("formState.errors", formState.errors);
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }
