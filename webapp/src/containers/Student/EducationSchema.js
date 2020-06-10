@@ -29,18 +29,18 @@ const EducationSchema = {
       }
     }
   },
-  marks: {
-    label: "Marks",
-    id: "marks",
-    autoComplete: "marks",
+  percentage: {
+    label: "Percentage",
+    id: "percentage",
+    autoComplete: "percentage",
     required: true,
-    placeholder: "Marks",
+    placeholder: "Percentage",
     autoFocus: true,
     type: "number",
     validations: {
       required: {
         value: "true",
-        message: "Marks are required"
+        message: "Percentage are required"
       }
     }
   },
@@ -91,6 +91,36 @@ const EducationSchema = {
     placeholder: "Pursuing",
     autoFocus: true,
     type: "boolean"
+  },
+  marksObtained: {
+    label: "Marks obtained",
+    id: "marksObtained",
+    autoComplete: "marksObtained",
+    required: true,
+    placeholder: "Marks Obtained",
+    autoFocus: true,
+    type: "number",
+    validations: {
+      required: {
+        value: "true",
+        message: "Marks obtained are required"
+      }
+    }
+  },
+  totalMarks: {
+    label: "Total marks",
+    id: "totalMarks",
+    autoComplete: "totalMarks",
+    required: true,
+    placeholder: "Total marks",
+    autoFocus: true,
+    type: "number",
+    validations: {
+      required: {
+        value: "true",
+        message: "Total marks are required"
+      }
+    }
   }
 };
 export default EducationSchema;

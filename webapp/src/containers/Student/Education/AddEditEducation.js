@@ -28,11 +28,13 @@ import axios from "axios";
 
 const yearOfPassing = "yearOfPassing";
 const educationYear = "educationYear";
-const marks = "marks";
+const percentage = "percentage";
 const qualification = "qualification";
 const institute = "institute";
 const pursuing = "pursuing";
 const board = "board";
+const marksObtained = "marksObtained";
+const totalMarks = "totalMarks";
 
 const AddEditEducation = props => {
   const history = useHistory();
@@ -78,13 +80,13 @@ const AddEditEducation = props => {
       marksObtained <= totalMarks &&
       totalMarks > 0
     ) {
-      const percentage = (marksObtained / totalMarks) * 100;
+      const marks = (marksObtained / totalMarks) * 100;
 
       setFormState(formState => ({
         ...formState,
         values: {
           ...formState.values,
-          marks: percentage
+          percentage: marks
         }
       }));
     }
@@ -95,7 +97,7 @@ const AddEditEducation = props => {
     if (pursuing) {
       delete formState.values["marksObtained"];
       delete formState.values["totalMarks"];
-      delete formState.values["marks"];
+      delete formState.values["percentage"];
       setFormState(formState => ({
         ...formState,
         values: {
@@ -116,6 +118,21 @@ const AddEditEducation = props => {
       }));
     }
   }, [formState.values["otherQualification"]]);
+
+  useEffect(() => {
+    if (
+      formState.values[qualification] == "secondary" ||
+      formState.values[qualification] == "senior_secondary"
+    ) {
+      delete formState.errors[educationYear];
+      setFormState(formState => ({
+        ...formState,
+        errors: {
+          ...formState.errors
+        }
+      }));
+    }
+  }, [formState.values[qualification]]);
 
   const fetchDropdowns = (link, setList) => {
     const url = strapiConstants.STRAPI_DB_URL + link;
@@ -143,9 +160,9 @@ const AddEditEducation = props => {
         formState.values[educationYear] =
           props["dataForEdit"]["education_year"];
       }
-      if (props["dataForEdit"]["marks"]) {
-        console.log(props["dataForEdit"]["marks"]);
-        formState.values[marks] = props["dataForEdit"]["marks"];
+      if (props["dataForEdit"]["percentage"]) {
+        console.log(props["dataForEdit"]["percentage"]);
+        formState.values[percentage] = props["dataForEdit"]["percentage"];
       }
       if (props["dataForEdit"]["qualification"]) {
         formState.values[qualification] = props["dataForEdit"]["qualification"];
@@ -159,6 +176,14 @@ const AddEditEducation = props => {
 
       if (props["dataForEdit"]["board"]) {
         formState.values[board] = props["dataForEdit"]["board"]["id"];
+      }
+
+      if (props["dataForEdit"]["marks_obtained"]) {
+        formState.values[marksObtained] =
+          props["dataForEdit"]["marks_obtained"];
+      }
+      if (props["dataForEdit"]["total_marks"]) {
+        formState.values[totalMarks] = props["dataForEdit"]["total_marks"];
       }
 
       formState.counter += 1;
@@ -249,40 +274,6 @@ const AddEditEducation = props => {
     const isPursuing = formState.values[pursuing];
     const isQualificationReq = formState.values[qualification];
 
-    if (!isPursuing && !formState.isEditEducation) {
-      defaultSchema["marksObtained"] = {
-        label: "Marks obtained",
-        id: "marksObtained",
-        autoComplete: "marks",
-        required: true,
-        placeholder: "Marks Obtained",
-        autoFocus: true,
-        type: "number",
-        validations: {
-          required: {
-            value: "true",
-            message: "Marks obtained are required"
-          }
-        }
-      };
-
-      defaultSchema["totalMarks"] = {
-        label: "Total marks",
-        id: "totalMarks",
-        autoComplete: "totalMarks",
-        required: true,
-        placeholder: "Total marks",
-        autoFocus: true,
-        type: "number",
-        validations: {
-          required: {
-            value: "true",
-            message: "Total marks are required"
-          }
-        }
-      };
-    }
-
     const isOtherSelected = formState.values[qualification];
     if (isOtherSelected == "other") {
       defaultSchema["otherQualification"] = {
@@ -313,8 +304,16 @@ const AddEditEducation = props => {
     }
 
     if (isPursuing) {
-      defaultSchema[marks] = {
-        ...defaultSchema[marks],
+      defaultSchema[percentage] = {
+        ...defaultSchema[percentage],
+        required: false
+      };
+      defaultSchema[marksObtained] = {
+        ...defaultSchema[marksObtained],
+        required: false
+      };
+      defaultSchema[totalMarks] = {
+        ...defaultSchema[totalMarks],
         required: false
       };
     }
@@ -328,12 +327,14 @@ const AddEditEducation = props => {
     let postData = databaseUtilities.addEducation(
       formState.values[yearOfPassing],
       formState.values[educationYear],
-      formState.values[marks],
+      formState.values[percentage],
       formState.values[qualification],
       formState.values[institute],
       formState.values[pursuing],
       formState.values[board],
-      formState.values["otherQualification"]
+      formState.values["otherQualification"],
+      formState.values[marksObtained],
+      formState.values[totalMarks]
     );
     // Adding student id to post data
     postData.contact = studentInfo;
@@ -632,76 +633,68 @@ const AddEditEducation = props => {
                 <Grid item md={12} xs={12}>
                   <div className={classes.FlexGrow}>
                     <Grid container>
-                      {!formState.isEditEducation ? (
-                        <>
-                          <Grid item>
-                            <TextField
-                              fullWidth
-                              id="marks-obtained"
-                              label="Marks obtained"
-                              margin="normal"
-                              name="marksObtained"
-                              onChange={handleChange}
-                              required={!formState.values[pursuing]}
-                              type="number"
-                              value={formState.values["marksObtained"] || ""}
-                              variant="outlined"
-                              disabled={!!formState.values[pursuing]}
-                              error={hasError("marksObtained")}
-                              helperText={
-                                hasError("marksObtained")
-                                  ? formState.errors["marksObtained"].map(
-                                      error => {
-                                        return error + " ";
-                                      }
-                                    )
-                                  : null
-                              }
-                            />
-                          </Grid>
-                          <Grid item style={{ marginLeft: "8px" }}>
-                            <TextField
-                              fullWidth
-                              id="total-marks"
-                              label="Total Marks"
-                              margin="normal"
-                              name="totalMarks"
-                              onChange={handleChange}
-                              required={!formState.values[pursuing]}
-                              type="number"
-                              value={formState.values["totalMarks"] || ""}
-                              variant="outlined"
-                              disabled={!!formState.values[pursuing]}
-                              error={hasError("totalMarks")}
-                              helperText={
-                                hasError("totalMarks")
-                                  ? formState.errors["totalMarks"].map(
-                                      error => {
-                                        return error + " ";
-                                      }
-                                    )
-                                  : null
-                              }
-                            />
-                          </Grid>
-                        </>
-                      ) : null}
+                      <Grid item>
+                        <TextField
+                          fullWidth
+                          id={get(EducationSchema[marksObtained], "id")}
+                          label={get(EducationSchema[marksObtained], "label")}
+                          margin="normal"
+                          name={marksObtained}
+                          onChange={handleChange}
+                          required
+                          type={get(EducationSchema[marksObtained], "type")}
+                          value={formState.values[marksObtained] || ""}
+                          error={hasError(marksObtained)}
+                          helperText={
+                            hasError(marksObtained)
+                              ? formState.errors[marksObtained].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          variant="outlined"
+                          disabled={!!formState.values[pursuing]}
+                        />
+                      </Grid>
+                      <Grid item style={{ marginLeft: "8px" }}>
+                        <TextField
+                          fullWidth
+                          id={get(EducationSchema[totalMarks], "id")}
+                          label={get(EducationSchema[totalMarks], "label")}
+                          margin="normal"
+                          name={totalMarks}
+                          onChange={handleChange}
+                          required
+                          type={get(EducationSchema[totalMarks], "type")}
+                          value={formState.values[totalMarks] || ""}
+                          error={hasError(totalMarks)}
+                          helperText={
+                            hasError(totalMarks)
+                              ? formState.errors[totalMarks].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          variant="outlined"
+                          disabled={!!formState.values[pursuing]}
+                        />
+                      </Grid>
 
                       <Grid item md={12} xs={12}>
                         <TextField
                           fullWidth
-                          id={get(EducationSchema[marks], "id")}
-                          label={get(EducationSchema[marks], "label")}
+                          id={get(EducationSchema[percentage], "id")}
+                          label={get(EducationSchema[percentage], "label")}
                           margin="normal"
-                          name={marks}
+                          name={percentage}
                           onChange={handleChange}
                           required
-                          type={get(EducationSchema[marks], "type")}
-                          value={formState.values[marks] || ""}
-                          error={hasError(marks)}
+                          type={get(EducationSchema[percentage], "type")}
+                          value={formState.values[percentage] || ""}
+                          error={hasError(percentage)}
                           helperText={
-                            hasError(marks)
-                              ? formState.errors[marks].map(error => {
+                            hasError(percentage)
+                              ? formState.errors[percentage].map(error => {
                                   return error + " ";
                                 })
                               : null

@@ -354,22 +354,26 @@ export const editStudent = (
 export const addEducation = (
   yearOfPassing,
   educationYear,
-  marks,
+  percentage,
   qualification,
   institute,
   pursuing,
   board,
-  otherQualification
+  otherQualification,
+  marksObtained,
+  totalMarks
 ) => {
   return {
     year_of_passing: yearOfPassing,
     education_year: educationYear,
-    marks: parseFloat(marks),
+    percentage: parseFloat(percentage),
     qualification,
     institute,
     pursuing: !!pursuing,
     board,
-    other_qualification: otherQualification
+    other_qualification: otherQualification,
+    marks_obtained: parseInt(marksObtained),
+    total_marks: parseInt(totalMarks)
   };
 };
 

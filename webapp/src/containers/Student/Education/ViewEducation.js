@@ -280,7 +280,13 @@ const ViewEducation = props => {
     },
     { name: "Qualification", sortable: true, selector: "qualification" },
     { name: "Board", sortable: true, selector: "board.name" },
-    { name: "Percentage", sortable: true, selector: "marks" },
+    { name: "Percentage", sortable: true, selector: "percentage" },
+    {
+      name: "Pursuing",
+      sortable: true,
+      selector: "pursuing",
+      cell: cell => (cell.pursuing ? "Yes" : "No")
+    },
     {
       name: "Actions",
       cell: cell => (
