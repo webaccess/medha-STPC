@@ -30,7 +30,8 @@ module.exports = {
           "contact.user.rpc",
           "organization.zone",
           "organization.rpc",
-          "organization.contact"
+          "organization.contact",
+          "profile_photo"
         ]
       })
       .then(res => {

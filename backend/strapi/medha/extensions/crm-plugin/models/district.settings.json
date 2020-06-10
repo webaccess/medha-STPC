@@ -1,5 +1,4 @@
 {
-  "kind": "collectionType",
   "connection": "default",
   "collectionName": "districts",
   "info": {
@@ -21,7 +20,7 @@
     },
     "abbreviation": {
       "type": "string",
-      "unique": true
+      "unique": false
     },
     "identifier": {
       "type": "string",

@@ -15,6 +15,16 @@ const ACADEMIC_YEARS = [
   { name: "AY 24-25", start_date: "2024-06-01", end_date: "2025-05-31" }
 ];
 
+const FUTURE_ASPIRATIONS = [
+  "Private Jobs",
+  "Higher Studies",
+  "Marriage",
+  "Entrepreneurship",
+  "Government Job",
+  "Apprenticeship",
+  "Others"
+];
+
 const COUNTRIES = [
   {
     name: "India",
@@ -456,6 +466,93 @@ const COUNTRIES = [
           { name: "Moradabad" },
           { name: "Prayagraj" },
           { name: "Varanasi" }
+        ]
+      },
+      {
+        name: "Andra Pradesh",
+        abbreviation: "AP",
+        identifier: "AP",
+        isActive: true,
+        zones: [],
+        districts: [
+          {
+            name: "Anantapur",
+            abbreviation: "AN",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Chittoor",
+            abbreviation: "CH",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "East Godavari",
+            abbreviation: "EG",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Guntur",
+            abbreviation: "GU",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Kadapa",
+            abbreviation: "CU",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Krishna",
+            abbreviation: "KR",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Kurnool",
+            abbreviation: "KU",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Prakasam",
+            abbreviation: "PR",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Sri Potti Sriramulu Nellore",
+            abbreviation: "NE",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Srikakulam",
+            abbreviation: "SR",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Visakhapatnam",
+            abbreviation: "VS",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "Vizianagaram",
+            abbreviation: "VZ",
+            identfier: "",
+            is_active: true
+          },
+          {
+            name: "West Godavari",
+            abbreviation: "WG",
+            identfier: "",
+            is_active: true
+          }
         ]
       }
     ]
@@ -1249,6 +1346,10 @@ const ROLES = {
         action: []
       },
       {
+        name: "futureaspirations",
+        action: []
+      },
+      {
         name: "user",
         action: []
       },
@@ -1369,6 +1470,10 @@ const PUBLIC_ROUTES = {
     {
       name: "stream",
       action: ["find"]
+    },
+    {
+      name: "futureaspirations",
+      action: ["find"]
     }
   ]
 };
@@ -1383,5 +1488,6 @@ module.exports = {
   ROLES,
   ALLOWED_MEDHA_ADMIN_ROUTES,
   PUBLIC_ROUTES,
-  ACTIVITY_TYPES
+  ACTIVITY_TYPES,
+  FUTURE_ASPIRATIONS
 };

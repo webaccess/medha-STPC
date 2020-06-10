@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/futureaspirations",
+      "handler": "futureaspirations.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/futureaspirations/count",
+      "handler": "futureaspirations.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/futureaspirations/:id",
+      "handler": "futureaspirations.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/futureaspirations",
+      "handler": "futureaspirations.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/futureaspirations/:id",
+      "handler": "futureaspirations.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/futureaspirations/:id",
+      "handler": "futureaspirations.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
