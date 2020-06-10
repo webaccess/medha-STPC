@@ -14,6 +14,30 @@ const RegistrationSchema = {
       }
     }
   },
+  files: {
+    label: "files",
+    id: "files",
+    required: false,
+    placeholder: "Upload files",
+    autoFocus: true,
+    type: "file",
+    validations: {}
+  },
+  middlename: {
+    label: "Middle Name",
+    id: "middlename",
+    autoComplete: "middlename",
+    required: true,
+    placeholder: "middlename",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: "Middle Name is required"
+      }
+    }
+  },
   lastname: {
     label: "Last Name",
     id: "lastname",
@@ -29,33 +53,33 @@ const RegistrationSchema = {
       }
     }
   },
-  fatherFirstName: {
-    label: "First Name",
-    id: "firstname",
-    autoComplete: "firstname",
+  fatherFullName: {
+    label: "Father's Full Name",
+    id: "fatherfullname",
+    autoComplete: "fatherfullname",
     required: true,
-    placeholder: "firstname",
+    placeholder: "fatherfullname",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
-        message: "Father's First Name is required"
+        message: "Father's Full Name is required"
       }
     }
   },
-  fatherLastName: {
-    label: "Last Name",
-    id: "lastname",
-    autoComplete: "lastname",
+  motherFullName: {
+    label: "Mother's Full Name",
+    id: "motherfullname",
+    autoComplete: "motherfullname",
     required: true,
-    placeholder: "lastname",
+    placeholder: "motherfullname",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
-        message: " Father's Last Name is required"
+        message: " Mother's Full Name is required"
       }
     }
   },

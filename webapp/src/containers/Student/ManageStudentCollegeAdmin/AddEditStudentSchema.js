@@ -29,33 +29,48 @@ const RegistrationSchema = {
       }
     }
   },
-  fatherFirstName: {
-    label: "Father's First Name",
-    id: "fatherFirstName",
-    autoComplete: "fatherFirstName",
+  middlename: {
+    label: "Middle Name",
+    id: "middlename",
+    autoComplete: "middlename",
     required: true,
-    placeholder: "Father's First Name ",
+    placeholder: "middlename",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
-        message: "Father's First Name is required"
+        message: "Middle Name is required"
       }
     }
   },
-  fatherLastName: {
-    label: "Father's Last Name",
-    id: "fatherLastName",
-    autoComplete: "fatherLastName",
+  fatherFullName: {
+    label: "Father's Full Name",
+    id: "fatherFullName",
+    autoComplete: "fatherFullName",
     required: true,
-    placeholder: "Father's Last Name",
+    placeholder: "Father's Full Name ",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
-        message: " Father's Last Name is required"
+        message: "Father's Full Name is required"
+      }
+    }
+  },
+  motherFullName: {
+    label: "Mother's Full Name",
+    id: "motherFullName",
+    autoComplete: "motherFullName",
+    required: true,
+    placeholder: "Mother's Full Name",
+    autoFocus: true,
+    type: "text",
+    validations: {
+      required: {
+        value: "true",
+        message: " Mother's Full Name is required"
       }
     }
   },
@@ -230,6 +245,15 @@ const RegistrationSchema = {
     placeholder: "futureAspirations",
     autoFocus: true,
     type: "text",
+    validations: {}
+  },
+  files: {
+    label: "files",
+    id: "files",
+    required: false,
+    placeholder: "Upload files",
+    autoFocus: true,
+    type: "file",
     validations: {}
   },
   username: {
