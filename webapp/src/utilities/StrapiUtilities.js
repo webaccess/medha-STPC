@@ -399,7 +399,8 @@ export const addActivity = (
   trainer_name,
   streams,
   files,
-  question_set
+  question_set,
+  cancelled
 ) => {
   const data = {
     title: title,
@@ -412,7 +413,8 @@ export const addActivity = (
     description: description,
     trainer_name: trainer_name,
     streams: streams,
-    question_set: question_set
+    question_set: question_set,
+    cancelled: cancelled
   };
 
   if (files) {
@@ -432,6 +434,7 @@ export const editActivity = (
   end_date_time,
   education_year,
   address,
+  cancelled,
   description,
   trainer_name,
   streams,
@@ -447,6 +450,7 @@ export const editActivity = (
     end_date_time: end_date_time,
     education_year: education_year,
     address: address,
+    cancelled: cancelled,
     description: description,
     trainer_name: trainer_name,
     streams: streams,

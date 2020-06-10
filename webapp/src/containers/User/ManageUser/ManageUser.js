@@ -463,7 +463,8 @@ const ManageUser = props => {
       showModalDelete: false,
       fromDeleteModal: true,
       isMultiDelete: false,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
+      dataToDelete: {}
     }));
     if (status) {
       getUserData(formState.pageSize, 1, formState.filterDataParameters);
@@ -479,7 +480,8 @@ const ManageUser = props => {
       isMulUnBlocked: false,
       isBlocked: false,
       isUnBlocked: false,
-      isMultiDelete: false
+      isMultiDelete: false,
+      dataToDelete: {}
     }));
   };
   /** This restores all the data when we clear the filters*/
@@ -824,7 +826,7 @@ const ManageUser = props => {
   /** Table Data */
   const column = [
     {
-      name: "User Name",
+      name: "Contact Number",
       sortable: true,
       selector: "username",
       cell: row => <ToolTipComponent data={row.username} />
@@ -1157,8 +1159,8 @@ const ManageUser = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label="User Name"
-                  placeholder="User Name"
+                  label="Contact Number"
+                  placeholder="Contact Number"
                   variant="outlined"
                   value={formState.filterDataParameters[USER_FILTER] || ""}
                   name={USER_FILTER}
@@ -1168,7 +1170,7 @@ const ManageUser = props => {
               </Grid>
               <Grid item>
                 <Autocomplete
-                  id="username_filter"
+                  id="role_filter"
                   name={ROLE_FILTER}
                   options={roles}
                   className={classes.autoCompleteField}
@@ -1384,28 +1386,30 @@ const ManageUser = props => {
             <div className={classes.noDataMargin}>No data to show</div>
           )}
 
-          {formState.isMultiDelete ? (
-            <DeleteUser
-              showModal={formState.showModalDelete}
-              closeModal={handleCloseDeleteModal}
-              id={formState.MultiDeleteID}
-              isMultiDelete={formState.isMultiDelete}
-              modalClose={modalClose}
-              seletedUser={selectedRows.length}
-              clearSelectedRow={selectedRowCleared}
-              dataToDelete={formState.dataToDelete}
-            />
-          ) : (
-            <DeleteUser
-              showModal={formState.showModalDelete}
-              closeModal={handleCloseDeleteModal}
-              id={formState.dataToDelete["id"]}
-              modalClose={modalClose}
-              dataToDelete={formState.dataToDelete}
-              userName={formState.userNameDelete}
-              clearSelectedRow={selectedRowCleared}
-            />
-          )}
+          {formState.showModalDelete ? (
+            formState.isMultiDelete ? (
+              <DeleteUser
+                showModal={formState.showModalDelete}
+                closeModal={handleCloseDeleteModal}
+                id={formState.MultiDeleteID}
+                isMultiDelete={formState.isMultiDelete}
+                modalClose={modalClose}
+                seletedUser={selectedRows.length}
+                clearSelectedRow={selectedRowCleared}
+                dataToDelete={formState.dataToDelete}
+              />
+            ) : (
+              <DeleteUser
+                showModal={formState.showModalDelete}
+                closeModal={handleCloseDeleteModal}
+                id={formState.dataToDelete["id"]}
+                modalClose={modalClose}
+                dataToDelete={formState.dataToDelete}
+                userName={formState.userNameDelete}
+                clearSelectedRow={selectedRowCleared}
+              />
+            )
+          ) : null}
           {formState.isMulBlocked || formState.isMulUnBlocked ? (
             <BlockUser
               id={formState.MultiBlockUser}

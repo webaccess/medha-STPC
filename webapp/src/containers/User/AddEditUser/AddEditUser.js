@@ -140,14 +140,6 @@ const AddEditUser = props => {
       if (
         props["dataForEdit"]["contact"] &&
         props["dataForEdit"]["contact"]["user"] &&
-        props["dataForEdit"]["contact"]["user"]["username"]
-      ) {
-        formState.values[username] =
-          props["dataForEdit"]["contact"]["user"]["username"];
-      }
-      if (
-        props["dataForEdit"]["contact"] &&
-        props["dataForEdit"]["contact"]["user"] &&
         props["dataForEdit"]["contact"]["user"]["blocked"]
       ) {
         formState.values[blocked] =
@@ -567,7 +559,9 @@ const AddEditUser = props => {
     );
     if (checkAllFieldsValid) {
       /** Evaluated only if all keys are valid inside formstate */
+      console.log("stError", formState.values, UserSchema);
       formState.errors = formUtilities.setErrors(formState.values, UserSchema);
+      console.log("formState.errors", formState.errors);
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
       }

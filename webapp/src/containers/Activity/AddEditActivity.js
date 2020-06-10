@@ -10,7 +10,10 @@ import {
   IconButton,
   Collapse,
   FormHelperText,
-  Button
+  Button,
+  FormGroup,
+  FormControlLabel,
+  Switch
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
 import CloseIcon from "@material-ui/icons/Close";
@@ -48,6 +51,7 @@ const QUESTION_SET =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_QUESTION_SET;
 
 const AddEditActivity = props => {
+  console.log("AddEditActivity", props);
   let history = useHistory();
   const dateFrom = "dateFrom";
   const dateTo = "dateTo";
@@ -122,6 +126,16 @@ const AddEditActivity = props => {
       ) {
         formState.values["questionSet"] =
           props.location["dataForEdit"]["question_set"]["id"];
+      }
+      if (
+        props.location["dataForEdit"] &&
+        props.location["dataForEdit"]["cancelled"]
+      ) {
+        formState.values["cancelled"] = props.location["dataForEdit"][
+          "cancelled"
+        ]
+          ? true
+          : false;
       }
 
       if (props.location["dataForEdit"]["description"]) {
@@ -394,6 +408,7 @@ const AddEditActivity = props => {
         formState.values[dateTo],
         formState.values["educationyear"],
         formState.values["address"],
+        formState.values["cancelled"] ? formState.values["cancelled"] : false,
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
         formState.values["trainer"],
         stream.map(stream => stream.id),
@@ -401,7 +416,6 @@ const AddEditActivity = props => {
         formState.files,
         formState.values["questionSet"]
       );
-
       serviceProvider
         .serviceProviderForPutRequest(
           strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_ACTIVITY,
@@ -435,7 +449,8 @@ const AddEditActivity = props => {
         formState.values["trainer"],
         stream.map(stream => stream.id),
         formState.files,
-        formState.values["questionSet"]
+        formState.values["questionSet"],
+        formState.values["cancelled"]
       );
       serviceProvider
         .serviceProviderForPostRequest(
@@ -740,6 +755,42 @@ const AddEditActivity = props => {
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={12} xs={12}>
                     <Autocomplete
+                      id="activitytype"
+                      className={classes.root}
+                      options={activityType}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete("activitytype", event, value);
+                      }}
+                      value={
+                        activityType[
+                          activityType.findIndex(function (item, i) {
+                            return item.id === formState.values.activitytype;
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError("activitytype")}
+                          label="Activity Type"
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError("activitytype")
+                              ? formState.errors["activitytype"].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    <Autocomplete
                       id="activityname"
                       className={classes.root}
                       options={activityNameList}
@@ -1005,38 +1056,33 @@ const AddEditActivity = props => {
                     />
                   </Grid>
                   <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={activityType}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete("activitytype", event, value);
-                      }}
-                      value={
-                        activityType[
-                          activityType.findIndex(function (item, i) {
-                            return item.id === formState.values.activitytype;
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError("activitytype")}
-                          label="Activity Type"
-                          variant="outlined"
-                          name="tester"
-                          helperText={
-                            hasError("activitytype")
-                              ? formState.errors["activitytype"].map(error => {
-                                  return error + " ";
-                                })
-                              : null
+                    {formState.editActivity ? (
+                      <FormGroup row>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              name={"cancelled"}
+                              checked={formState.values["cancelled"] || false}
+                              onChange={handleChange}
+                              value={formState.values["cancelled"] || false}
+                              error={hasError("cancelled")}
+                              helperText={
+                                hasError("cancelled")
+                                  ? formState.errors["cancelled"].map(error => {
+                                      return error + " ";
+                                    })
+                                  : null
+                              }
+                            />
+                          }
+                          label={
+                            formState.values["cancelled"]
+                              ? "Uncancelled"
+                              : "Cancelled"
                           }
                         />
-                      )}
-                    />
+                      </FormGroup>
+                    ) : null}
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.formgrid}>

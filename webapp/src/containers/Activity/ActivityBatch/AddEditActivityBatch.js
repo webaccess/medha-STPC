@@ -156,6 +156,7 @@ const AddEditActivityBatches = props => {
   }, []);
 
   useEffect(() => {
+    getStreams();
     getStudents(10, 1);
   }, []);
 
@@ -281,6 +282,7 @@ const AddEditActivityBatches = props => {
       await serviceProviders
         .serviceProviderForGetRequest(STREAMS_URL)
         .then(res => {
+          setStreams(res.data.result);
           return res.data.result;
         });
     }
