@@ -116,7 +116,7 @@ module.exports = {
     await utils.asyncForEach(contact, async contact => {
       if (_.includes(contactIds, contact.id)) {
         const qualifications = await strapi
-          .query("academic-history")
+          .query("education")
           .find({ contact: contact.id }, []);
 
         // contact.user = sanitizeUser(contact.user);
@@ -254,18 +254,13 @@ module.exports = {
         }
       });
 
-      /**Filtering educations */
-      const academicHistory = await strapi
-        .query("academic-history")
-        .find({ contact: student.id });
-
       const { educations } = event;
       isEducationEligible = true;
 
       educations.forEach(edu => {
-        const isEducationPresent = academicHistory.find(
+        const isEducationPresent = studentEducations.find(
           ah =>
-            ah.education_year == edu.education_year &&
+            _.toLower(ah.education_year) == _.toLower(edu.education_year) &&
             ah.percentage >= edu.percentage
         );
 
@@ -280,10 +275,7 @@ module.exports = {
         isEducationEligible &&
         student.individual.is_verified
       ) {
-        const qualifications = await strapi
-          .query("academic-history")
-          .find({ contact: student.id }, []);
-        student.qualifications = qualifications;
+        student.qualifications = studentEducations;
         filtered.push(student);
       }
     });

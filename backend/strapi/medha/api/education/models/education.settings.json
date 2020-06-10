@@ -21,7 +21,7 @@
       ],
       "required": false
     },
-    "marks": {
+    "percentage": {
       "type": "decimal"
     },
     "qualification": {
@@ -50,6 +50,12 @@
     },
     "other_qualification": {
       "type": "string"
+    },
+    "marks_obtained": {
+      "type": "integer"
+    },
+    "total_marks": {
+      "type": "integer"
     }
   }
 }

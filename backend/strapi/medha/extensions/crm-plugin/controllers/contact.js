@@ -1280,20 +1280,15 @@ module.exports = {
       }
     });
 
-    /**Filtering educations */
-    const academicHistory = await strapi
-      .query("academic-history")
-      .find({ contact: id });
-
     result = result.filter(event => {
       const { educations } = event;
 
       let isEligible = true;
 
       educations.forEach(edu => {
-        const isEducationPresent = academicHistory.find(
+        const isEducationPresent = studentEducations.find(
           ah =>
-            ah.education_year == edu.education_year &&
+            _.toLower(ah.education_year) == _.toLower(edu.education_year) &&
             ah.percentage >= edu.percentage
         );
 
@@ -1580,20 +1575,15 @@ module.exports = {
       }
     });
 
-    /**Filtering educations */
-    const academicHistory = await strapi
-      .query("academic-history")
-      .find({ contact: id });
-
     result = result.filter(event => {
       const { educations } = event;
 
       let isEligible = true;
 
       educations.forEach(edu => {
-        const isEducationPresent = academicHistory.find(
+        const isEducationPresent = studentEducations.find(
           ah =>
-            ah.education_year == edu.education_year &&
+            _.toLower(ah.education_year) == _.toLower(edu.education_year) &&
             ah.percentage >= edu.percentage
         );
 
@@ -2338,11 +2328,6 @@ module.exports = {
           const tpo = organization.tpos.map(tpo => tpo.contact).filter(c => c);
           if (_.includes(tpo, id)) return id;
         }
-
-        const academic_history = await strapi
-          .query("academic-history")
-          .findOne({ contact: id });
-        if (academic_history !== null) return id;
 
         const education = await strapi
           .query("education")
