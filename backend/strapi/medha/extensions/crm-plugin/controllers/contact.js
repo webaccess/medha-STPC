@@ -2218,33 +2218,35 @@ module.exports = {
       });
   },
 
-  documents: async ctx => {
-    const { id } = ctx.params;
-    const documentId = ctx.query ? ctx.query.name_contains : null;
+  // documents: async ctx => {
+  //   const { id } = ctx.params;
+  //   const documentId = ctx.query ? ctx.query.name_contains : null;
 
-    const response = await strapi.query("contact", PLUGIN).findOne({ id });
+  //   const response = await strapi.query("contact", PLUGIN).findOne({ id });
 
-    if (
-      documentId &&
-      response.individual.documents &&
-      response.individual.documents.length > 0
-    ) {
-      response.individual.documents = response.individual.documents.filter(
-        doc => {
-          if (doc.name.search(documentId) >= 0) {
-            return doc;
-          }
-        }
-      );
-    }
+  //   if (
+  //     documentId &&
+  //     response.individual.documents &&
+  //     response.individual.documents.length > 0
+  //   ) {
+  //     response.individual.documents = response.individual.documents.filter(
+  //       doc => {
+  //         if (doc.name.search(documentId) >= 0) {
+  //           return doc;
+  //         }
+  //       }
+  //     );
+  //   }
 
-    return utils.getFindOneResponse(
-      response ? response.individual.documents : null
-    );
-  },
+  //   return utils.getFindOneResponse(
+  //     response ? response.individual.documents : null
+  //   );
+  // },
 
   deleteDocument: async ctx => {
     const { fileId } = ctx.params;
+    const { document } = ctx.query;
+
     if (!fileId) {
       return ctx.response.badRequest("File Id is absent");
     }
@@ -2260,6 +2262,10 @@ module.exports = {
     const file = await strapi.plugins["upload"].services.upload.fetch({
       id: fileId
     });
+
+    if (document) {
+      await strapi.query("document").delete({ id: document });
+    }
 
     if (!file) {
       return ctx.notFound("file.notFound");
@@ -2446,5 +2452,38 @@ module.exports = {
     return {
       result: "Success"
     };
+  },
+
+  documents: async ctx => {
+    const { id } = ctx.params;
+    const contact = await strapi.query("contact", PLUGIN).findOne({ id });
+    if (!contact) {
+      return ctx.response.notFound("Contact does not exist");
+    }
+
+    /**
+     * 1. Get all educations
+     * 2. If no educations details found return []
+     * 3. Else get education list and check if documents are uploaded for it or not
+     * 4. If documents are uploaded return upload details with education
+     * 5. Else return list of education
+     * 6. Check if resume is uploaded for that contact in documents table
+     * 7. If yes return upload details otherwise send dummy entry for resume
+     */
+
+    const educations = await strapi.query("education").find({ contact: id });
+    const result = [];
+    for await (let education of educations) {
+      const document = await strapi
+        .query("document")
+        .findOne({ education: education.id }, ["file"]);
+      result.push({ ...education, document: document, isResume: false });
+    }
+
+    const resume = await strapi
+      .query("document")
+      .findOne({ contact: id, name: "resume" });
+    result.push({ document: resume, isResume: true });
+    return utils.getFindOneResponse(result);
   }
 };
