@@ -140,14 +140,6 @@ const AddEditUser = props => {
       if (
         props["dataForEdit"]["contact"] &&
         props["dataForEdit"]["contact"]["user"] &&
-        props["dataForEdit"]["contact"]["user"]["username"]
-      ) {
-        formState.values[username] =
-          props["dataForEdit"]["contact"]["user"]["username"];
-      }
-      if (
-        props["dataForEdit"]["contact"] &&
-        props["dataForEdit"]["contact"]["user"] &&
         props["dataForEdit"]["contact"]["user"]["blocked"]
       ) {
         formState.values[blocked] =

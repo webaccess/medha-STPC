@@ -22,7 +22,7 @@ import Fade from "@material-ui/core/Fade";
 import LoaderContext from "../../../context/LoaderContext";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
-const ACTIVITY_BATCH_STREAM_FILTER = "stream_id";
+const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
 
 const AddEditActivityBatches = props => {
   const classes = useStyles();
@@ -98,6 +98,7 @@ const AddEditActivityBatches = props => {
       ...formState,
       isDataLoading: true
     }));
+
     await serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_STUDENTS, params)
       .then(res => {
