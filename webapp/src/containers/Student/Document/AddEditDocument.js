@@ -1,7 +1,14 @@
 import React, { useState, useContext } from "react";
 import useStyles from "../StudentStyles.js";
 import { get } from "lodash";
-import { Card, CardActions, Grid, TextField, Button } from "@material-ui/core";
+import {
+  Card,
+  CardActions,
+  Grid,
+  TextField,
+  Button,
+  CardContent
+} from "@material-ui/core";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -17,16 +24,12 @@ import Img from "react-image";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import LoaderContext from "../../../context/LoaderContext";
 
-const field = "documents";
-const ref = "individual";
-const files = "files";
-const source = "crm-plugin";
-
+const files = "file";
 const AddEditDocument = props => {
   const history = useHistory();
   const classes = useStyles();
   const DOCUMENT_URL =
-    strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_UPLOAD;
+    strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_DOCUMENT;
 
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -38,10 +41,23 @@ const AddEditDocument = props => {
     errors: {},
     isSuccess: false,
     counter: 0,
-    files: {},
+    files: null,
     showNoImage: true,
     showPreview: false
   });
+
+  /**
+   * If no educationId then redirect to view documents
+   */
+  const { location } = props;
+  if (
+    !(
+      location &&
+      (location.educationId || (location.contactId && location.isResume))
+    )
+  ) {
+    history.push(routeConstants.VIEW_DOCUMENTS);
+  }
 
   /** This handle change is used to handle changes to text field */
   const handleChange = event => {
@@ -74,7 +90,6 @@ const AddEditDocument = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
-    setLoaderStatus(true);
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -116,19 +131,16 @@ const AddEditDocument = props => {
   };
 
   const postUploadData = async () => {
-    const studentInfo =
-      auth.getUserInfo() !== null &&
-      auth.getUserInfo().role.name === roleConstants.STUDENT
-        ? auth.getUserInfo().studentInfo.id
-        : auth.getStudentIdFromCollegeAdminForDocument();
-    const id = studentInfo;
-    let postData = databaseUtilities.uploadDocument(
-      formState.files,
-      ref,
-      id,
-      field,
-      source
+    const { educationId, contactId, isResume } = location;
+    const { files } = formState;
+    let postData = databaseUtilities.uploadStudentDocuments(
+      files,
+      educationId || null,
+      contactId,
+      isResume
     );
+
+    setLoaderStatus(true);
 
     serviceProviders
       .serviceProviderForPostRequest(DOCUMENT_URL, postData)
@@ -169,7 +181,7 @@ const AddEditDocument = props => {
           </Alert>
         ) : null}
       </Grid>
-      <Card>
+      {/* <Card>
         <Grid item xs={12} md={6} xl={3} className={classes.formgrid}>
           <Grid container className={classes.formgridInputFile}>
             <Grid item md={10} xs={12}>
@@ -178,12 +190,12 @@ const AddEditDocument = props => {
                   <Img
                     alt="abc"
                     loader={<Spinner />}
-                    className={classes.UploadImage}
+                    className={classes.UploadImageForDocument}
                     src={formState.previewFile}
                   />
                 ) : null}
                 {!formState.showPreview && !formState.showEditPreview ? (
-                  <div class={classes.DefaultNoImage}></div>
+                  <div class={classes.DefaultNoImageForDocument}></div>
                 ) : null}
               </div>
             </Grid>
@@ -210,7 +222,7 @@ const AddEditDocument = props => {
                     : null
                 }
                 variant="outlined"
-                className={classes.inputFile}
+                className={classes.inputFileForDocument}
               />
               <label htmlFor={get(DocumentSchema["files"], "id")}>
                 <Button
@@ -218,7 +230,7 @@ const AddEditDocument = props => {
                   color="primary"
                   component="span"
                   fullWidth
-                  className={classes.InputFileButton}
+                  className={classes.InputFileButtonForDocument}
                   startIcon={<AddOutlinedIcon />}
                 >
                   ADD NEW FILE
@@ -233,6 +245,7 @@ const AddEditDocument = props => {
               onClick={handleSubmit}
               color="primary"
               variant="contained"
+              disabled={formState.files ? false : true}
             >
               {genericConstants.SAVE_BUTTON_TEXT}
             </YellowButton>
@@ -246,8 +259,8 @@ const AddEditDocument = props => {
             </GrayButton>
           </CardActions>
         </Grid>
-      </Card>
-      {/* <Grid item xs={12} className={classes.formgrid}>
+      </Card> */}
+      <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate onSubmit={handleSubmit}>
             <CardContent>
@@ -276,22 +289,29 @@ const AddEditDocument = props => {
                 </Grid>
               </Grid>
             </CardContent>
-            <CardActions className={classes.btnspace}>
-              <YellowButton type="submit" color="primary" variant="contained">
-                {genericConstants.SAVE_BUTTON_TEXT}
-              </YellowButton>
-              <GrayButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                to={routeConstants.VIEW_DOCUMENTS}
-              >
-                {genericConstants.CANCEL_BUTTON_TEXT}
-              </GrayButton>
-            </CardActions>
+            <Grid item xs={12} md={6} xl={3}>
+              <CardActions className={classes.btnspace}>
+                <YellowButton
+                  onClick={handleSubmit}
+                  color="primary"
+                  variant="contained"
+                  disabled={formState.files ? false : true}
+                >
+                  {genericConstants.SAVE_BUTTON_TEXT}
+                </YellowButton>
+                <GrayButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  to={routeConstants.VIEW_DOCUMENTS}
+                >
+                  {genericConstants.CANCEL_BUTTON_TEXT}
+                </GrayButton>
+              </CardActions>
+            </Grid>
           </form>
         </Card>
-                  </Grid>*/}
+      </Grid>
     </Grid>
   );
 };
