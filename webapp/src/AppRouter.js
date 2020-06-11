@@ -19,7 +19,6 @@ import {
   EditUserRoute,
   EditEducation,
   RouteWithTabLayout,
-  EditAcademicHistoryRoute,
   EditActivityBatchRoute,
   ZonalRPCSuperAdminRoute
 } from "./authroute";
@@ -81,8 +80,6 @@ import AddEducation from "./containers/Student/Education/AddEditEducation";
 import ViewDocument from "./containers/Student/Document/ViewDocument";
 import AddDocument from "./containers/Student/Document/AddEditDocument";
 import ManageStudents from "./containers/Student/ManageStudentCollegeAdmin/ManageStudent/ManageStudents";
-import ViewAcademicHistory from "./containers/Student/AcademicHistory/ViewAcademicHistory";
-import AddEditAcademicHistory from "./containers/Student/AcademicHistory/AddEditAcademicHistory";
 import AddEditStudentForCollegeAdmin from "./containers/Student/ManageStudentCollegeAdmin/AddEditStudentForCollegeAdmin/AddEditStudentForCollegeAdmin";
 import ViewPastActivities from "./containers/Student/Activity/PastActivities";
 
@@ -280,31 +277,6 @@ const AppRouter = props => {
           exact
           layout={Layout}
           path={routeConstants.ELIGIBLE_ACTIVITY}
-        />
-
-        {/**Student Academic history */}
-        <RouteWithTabLayout
-          component={ViewAcademicHistory}
-          exact
-          layout={Layout}
-          path={routeConstants.VIEW_ACADEMIC_HISTORY}
-          title="View Academic History"
-        />
-
-        <RouteWithTabLayout
-          component={AddEditAcademicHistory}
-          exact
-          layout={Layout}
-          path={routeConstants.ADD_ACADEMIC_HISTORY}
-          title="Add Academic History"
-        />
-
-        <RouteWithTabLayout
-          component={EditAcademicHistoryRoute}
-          exact
-          layout={Layout}
-          path={routeConstants.EDIT_ACADEMIC_HISTORY}
-          title="Edit Academic History"
         />
 
         {/** User */}

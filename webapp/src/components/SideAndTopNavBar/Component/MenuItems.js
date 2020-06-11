@@ -174,16 +174,12 @@ const MenuItems = props => {
             link: routeConstants.VIEW_PROFILE
           },
           {
-            name: "Academic History",
-            link: routeConstants.VIEW_ACADEMIC_HISTORY
+            name: "Education",
+            link: routeConstants.VIEW_EDUCATION
           },
           {
             name: "Documents",
             link: routeConstants.VIEW_DOCUMENTS
-          },
-          {
-            name: "Education",
-            link: routeConstants.VIEW_EDUCATION
           },
           {
             name: "Past Activities",

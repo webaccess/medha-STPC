@@ -9,12 +9,7 @@ module.exports = async (ctx, next) => {
   const { role, id } = ctx.state.user;
 
   if (ctx.request.method === "POST") {
-    const {
-      contact: contact,
-      qualification,
-      percentage,
-      year_of_passing: yearOfPassing
-    } = ctx.request.body;
+    const { year_of_passing, qualification, contact, board } = ctx.request.body;
 
     if (!contact) {
       return ctx.response.badRequest("Student is compulsory");
@@ -22,11 +17,25 @@ module.exports = async (ctx, next) => {
     if (!qualification) {
       return ctx.response.badRequest("Qualification is compulsory");
     }
-    if (!percentage) {
-      return ctx.response.badRequest("Percentage is compulsory");
-    }
-    if (!yearOfPassing) {
+
+    if (!year_of_passing) {
       return ctx.response.badRequest("Year Of Passing is compulsory");
+    }
+
+    if (!board) {
+      return ctx.response.badRequest("Board is compulsory");
+    }
+
+    const _board = await strapi.query("board").findOne({ id: board });
+    if (!_board) {
+      return ctx.response.notFound("Board does not exist");
+    }
+
+    const _yearOfPassing = await strapi
+      .query("academic-year")
+      .findOne({ id: year_of_passing });
+    if (!_yearOfPassing) {
+      return ctx.response.notFound("Year of passing does not exist");
     }
 
     const contact_1 = await strapi

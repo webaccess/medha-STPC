@@ -1,5 +1,5 @@
 {
-  "kind": "collectionType",
+  "connection": "default",
   "collectionName": "educations",
   "info": {
     "name": "Education"
@@ -9,23 +9,53 @@
     "timestamps": true
   },
   "attributes": {
-    "qualification": {
-      "type": "string",
-      "required": true
-    },
-    "board": {
-      "type": "string",
-      "required": true
-    },
     "year_of_passing": {
-      "type": "integer"
+      "model": "academic-year"
+    },
+    "education_year": {
+      "type": "enumeration",
+      "enum": [
+        "first",
+        "second",
+        "third"
+      ],
+      "required": false
     },
     "percentage": {
-      "type": "float"
+      "type": "decimal"
+    },
+    "qualification": {
+      "type": "enumeration",
+      "enum": [
+        "secondary",
+        "senior_secondary",
+        "undergraduate",
+        "postgraduate",
+        "other"
+      ]
+    },
+    "institute": {
+      "type": "string"
+    },
+    "pursuing": {
+      "type": "boolean",
+      "default": false
     },
     "contact": {
       "plugin": "crm-plugin",
       "model": "contact"
+    },
+    "board": {
+      "model": "board"
+    },
+    "other_qualification": {
+      "type": "string"
+    },
+    "marks_obtained": {
+      "type": "integer"
+    },
+    "total_marks": {
+      "type": "integer"
     }
   }
 }

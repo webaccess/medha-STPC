@@ -196,10 +196,11 @@ module.exports = {
           "academic-year"
         ].getCurrentAcademicYear();
 
-        const academicHistoryBody = {
-          academic_year: academicYearId,
+        const educationBody = {
+          year_of_passing: academicYearId,
           percentage: null,
-          education_year: record["Year"]
+          pursuing: true,
+          education_year: _.toLower(record["Year"])
         };
 
         await bookshelf
@@ -269,24 +270,22 @@ module.exports = {
             const contactResponse = contact.toJSON ? contact.toJSON() : contact;
 
             // // Step 4 Adding academic details
-            academicHistoryBody.contact = contactResponse.id;
+            educationBody.contact = contactResponse.id;
 
-            const { academicHistory, academicHistoryStatus } = await strapi
-              .query("academic-history")
-              .model.forge(academicHistoryBody)
+            const { education, educationStatus } = await strapi
+              .query("education")
+              .model.forge(educationBody)
               .save(null, { transacting: t })
               .then(model => {
-                return { academicHistory: model };
+                return { education: model };
               })
               .catch(error => {
-                console.log("academic history ", err.detail);
-                return { academicHistory: null, academicHistoryStatus: null };
+                console.log("Education ", err.detail);
+                return { education: null, educationStatus: err.detail };
               });
 
-            if (!academicHistory) {
-              return new Promise((resolve, reject) =>
-                reject(academicHistoryStatus)
-              );
+            if (!education) {
+              return new Promise((resolve, reject) => reject(educationStatus));
             }
 
             await user.save(

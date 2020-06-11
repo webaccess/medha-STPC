@@ -40,8 +40,7 @@
       "enum": [
         "First",
         "Second",
-        "Third",
-        "Fourth"
+        "Third"
       ]
     },
     "streams": {
@@ -67,6 +66,9 @@
     },
     "description": {
       "type": "richtext"
+    },
+    "cancelled": {
+      "type": "boolean"
     }
   }
 }
