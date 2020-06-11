@@ -221,15 +221,6 @@ const AddEditStudentForCollegeAdmin = props => {
       }
       if (
         props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["user"] &&
-        props.location["dataForEdit"]["contact"]["user"]["username"]
-      ) {
-        formState.values["username"] =
-          props.location["dataForEdit"]["contact"]["user"]["username"];
-      }
-
-      if (
-        props.location["dataForEdit"]["contact"] &&
         props.location["dataForEdit"]["contact"]["state"]
       ) {
         formState.values["state"] =

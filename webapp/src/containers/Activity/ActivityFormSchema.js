@@ -73,6 +73,16 @@ const ActivityFormSchema = {
       }
     }
   },
+  cancelled: {
+    label: "cancelled",
+    id: "cancelled",
+    autoComplete: "cancelled",
+    required: false,
+    placeholder: "cancelled",
+    autoFocus: true,
+    type: "checkbox",
+    validations: {}
+  },
   stream: {
     label: "Stream",
     id: "stream",
