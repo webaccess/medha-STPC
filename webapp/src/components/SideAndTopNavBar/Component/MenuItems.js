@@ -230,14 +230,20 @@ const MenuItems = props => {
         Icon: <DashboardIcon />
       },
       {
-        name: "Activity Feedback",
-        Icon: <AssignmentOutlinedIcon />,
-        link: routeConstants.FEEDBACK_ACTIVITIES
-      },
-      {
-        name: "Events Feedback",
-        Icon: <EmojiFlagsOutlinedIcon />,
-        link: routeConstants.FEEDBACK_EVENTS
+        name: "Feedback",
+        Icon: <GroupOutlinedIcon />,
+        items: [
+          {
+            name: "Activity Feedback",
+            Icon: <AssignmentOutlinedIcon />,
+            link: routeConstants.FEEDBACK_ACTIVITIES
+          },
+          {
+            name: "Events Feedback",
+            Icon: <EmojiFlagsOutlinedIcon />,
+            link: routeConstants.FEEDBACK_EVENTS
+          }
+        ]
       }
     ]
   };
