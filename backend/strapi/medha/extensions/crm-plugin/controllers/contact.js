@@ -302,8 +302,15 @@ module.exports = {
     //     return ctx.response.badRequest("Contact no. is missing");
     //   }
     //  }
-
-    const userRequestBody = _.pick(ctx.request.body, [
+    const files = ctx.request.files;
+    let data;
+    if (ctx.request.files && ctx.request.body.data) {
+      data = ctx.request.body.data;
+      data = JSON.parse(data);
+    } else {
+      data = ctx.request.body;
+    }
+    const userRequestBody = _.pick(data, [
       "username",
       "email",
       "password",
@@ -313,28 +320,27 @@ module.exports = {
       "blocked"
     ]);
 
-    const { isStudent } = ctx.request.body;
+    const { isStudent } = data;
     if (!isStudent) {
-      userRequestBody.state = ctx.request.body.state;
+      userRequestBody.state = data.state;
     }
 
-    userRequestBody.username = ctx.request.body.phone;
+    userRequestBody.username = data.phone;
     userRequestBody.provider = "local";
     userRequestBody.password = await strapi.plugins[
       "users-permissions"
     ].services.user.hashPassword(userRequestBody);
 
-    const individualRequestBody = _.pick(ctx.request.body, [
+    const individualRequestBody = _.pick(data, [
       "first_name",
       "last_name",
       "stream",
-      "father_first_name",
-      "father_last_name",
+      "father_full_name",
+      "mother_full_name",
       "date_of_birth",
       "gender",
       "roll_number",
       "organization",
-      "future_aspirations",
       "is_physically_challenged"
     ]);
 
@@ -347,7 +353,7 @@ module.exports = {
       individualRequestBody["date_of_birth"] = n;
     }
 
-    const contactBody = _.pick(ctx.request.body, [
+    const contactBody = _.pick(data, [
       "phone",
       "email",
       "address_1",
@@ -391,7 +397,35 @@ module.exports = {
             "Something went wrong while creating Individual"
           );
         }
+        if (ctx.request.files) {
+          await strapi.plugins.upload.services.upload.uploadToEntity(
+            {
+              id: individual.id || individual._id,
+              model: "individual"
+            },
+            { profile_photo: files["files.profile_photo"] },
+            PLUGIN
+          );
+        }
+        if (data.future_aspirations) {
+          const future_aspirations = await Promise.all(
+            data.future_aspirations.map(async futureaspiration => {
+              return await strapi
+                .query("futureaspirations")
+                .findOne({ id: futureaspiration });
+            })
+          );
 
+          if (
+            future_aspirations.some(
+              futureaspiration => futureaspiration === null
+            )
+          ) {
+            return Promise.reject("Future Aspirations does not exist");
+          }
+
+          await individual.future_aspirations().attach(data.future_aspirations);
+        }
         const userResponse = user.toJSON ? user.toJSON() : user;
         const individualResponse = individual.toJSON
           ? individual.toJSON()
@@ -512,7 +546,9 @@ module.exports = {
         "contact.user.zone",
         "contact.user.rpc",
         "contact.district",
-        "stream"
+        "stream",
+        "profile_photo",
+        "future_aspirations"
       ]);
 
     if (!response) {
@@ -2095,7 +2131,16 @@ module.exports = {
       return ctx.response.notFound("Individual does not exist");
     }
 
-    const userRequestBody = _.pick(ctx.request.body, [
+    const files = ctx.request.files;
+
+    let data;
+    if (ctx.request.files && ctx.request.body.data) {
+      data = ctx.request.body.data;
+      data = JSON.parse(data);
+    } else {
+      data = ctx.request.body;
+    }
+    const userRequestBody = _.pick(data, [
       "email",
       "password",
       "role",
@@ -2104,12 +2149,12 @@ module.exports = {
       "blocked"
     ]);
 
-    userRequestBody.username = ctx.request.body.phone;
+    userRequestBody.username = data.phone;
 
     if (
       (role.name == ROLE_COLLEGE_ADMIN || role.name == ROLE_MEDHA_ADMIN) &&
-      ctx.request.body.hasOwnProperty("password") &&
-      ctx.request.body.password
+      data.hasOwnProperty("password") &&
+      data.password
     ) {
       userRequestBody.password = await strapi.plugins[
         "users-permissions"
@@ -2119,12 +2164,12 @@ module.exports = {
     /**
      * Add state in user object only for user other than student
      */
-    const { isStudent } = ctx.request.body;
+    const { isStudent } = data;
     if (!isStudent) {
-      userRequestBody.state = ctx.request.body.state;
+      userRequestBody.state = data.state;
     }
 
-    const individualRequestBody = _.pick(ctx.request.body, [
+    const individualRequestBody = _.pick(data, [
       "first_name",
       "last_name",
       "stream",
@@ -2134,8 +2179,7 @@ module.exports = {
       "gender",
       "is_physically_challenged",
       "roll_number",
-      "organization",
-      "future_aspirations"
+      "organization"
     ]);
 
     if (
@@ -2147,7 +2191,7 @@ module.exports = {
       individualRequestBody["date_of_birth"] = n;
     }
 
-    const contactBody = _.pick(ctx.request.body, [
+    const contactBody = _.pick(data, [
       "phone",
       "email",
       "address_1",
@@ -2180,7 +2224,21 @@ module.exports = {
           .query("individual", PLUGIN)
           .model.where({ id: individualId })
           .save(individualRequestBody, { transacting: t, patch: true })
-          .then(model => model)
+          .then(async model => {
+            if (ctx.request.files) {
+              console.log("in files");
+              await strapi.plugins.upload.services.upload.uploadToEntity(
+                {
+                  id: individualId,
+                  model: "individual"
+                },
+                { profile_photo: files["files.profile_photo"] },
+                PLUGIN
+              );
+            }
+
+            return model;
+          })
           .catch(error => {
             console.log(error);
             return null;
@@ -2190,6 +2248,23 @@ module.exports = {
           return Promise.reject(
             "Something went wrong while updating Individual"
           );
+        }
+        const future_aspirations = await Promise.all(
+          data.future_aspirations.map(async futureaspiration => {
+            return await strapi
+              .query("futureaspirations")
+              .findOne({ id: futureaspiration });
+          })
+        );
+
+        if (
+          future_aspirations.some(futureaspiration => futureaspiration === null)
+        ) {
+          return Promise.reject("Future Aspiration does not exist");
+        }
+        if (data.hasOwnProperty("future_aspirations")) {
+          await individual.future_aspirations().detach();
+          await individual.future_aspirations().attach(data.future_aspirations);
         }
 
         // Step 3 updating contact details

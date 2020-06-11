@@ -1,0 +1,17 @@
+{
+  "connection": "default",
+  "collectionName": "futureaspirations",
+  "info": {
+    "name": "futureaspirations"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

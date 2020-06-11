@@ -4,7 +4,8 @@ import {
   Typography,
   YellowButton,
   GrayButton,
-  ReadOnlyTextField
+  ReadOnlyTextField,
+  Spinner
 } from "../../components";
 import {
   Card,
@@ -16,7 +17,7 @@ import {
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
-
+import Img from "react-image";
 import * as genericConstants from "../../constants/GenericConstants.js";
 
 import * as serviceProvider from "../../api/Axios.js";
@@ -33,9 +34,10 @@ const StudentProfile = props => {
   let history = useHistory();
   const [user, setUser] = useState({
     firstname: "",
+    middlename: "",
     lastname: "",
-    fatherFirstName: "",
-    fatherLastName: "",
+    fatherFullName: "",
+    motherFullName: "",
     address: "",
     district: null,
     state: null,
@@ -51,16 +53,6 @@ const StudentProfile = props => {
     futureAspirations: null
   });
   const { setLoaderStatus } = useContext(LoaderContext);
-
-  const futureAspirationsList = [
-    { id: "private_jobs", name: "Private Job" },
-    { id: "others", name: "Others" },
-    { id: "higher_studies", name: "Higher Studies" },
-    { id: "marriage", name: "Marriage" },
-    { id: "entrepreneurship", name: "Entrepreneurship" },
-    { id: "government_jobs", name: "Government Job" },
-    { id: "apprenticeship", name: "Apprenticeship" }
-  ];
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -79,7 +71,9 @@ const StudentProfile = props => {
     fromEventStudentList: props["location"]["fromEventStudentList"],
     fromManageStudentList: props["location"]["fromManageStudentList"],
     eventId: props["location"]["eventId"],
-    eventTitle: props["location"]["eventTitle"]
+    eventTitle: props["location"]["eventTitle"],
+    showEditPreview: false,
+    showNoImage: true
   });
   const classes = useStyles();
   const { setIndex } = useContext(SetIndexContext);
@@ -139,10 +133,24 @@ const StudentProfile = props => {
             if (month < 10) {
               month = "0" + month;
             }
-            setFormState({ ...formState, details: data });
+            let futureaspiration = "";
+            if (data.future_aspirations.length) {
+              data.future_aspirations.map(value => {
+                futureaspiration = value.name + ", " + futureaspiration;
+                return value;
+              });
+            }
+
+            setFormState({
+              ...formState,
+              details: data,
+              showEditPreview: data.profile_photo ? true : false,
+              showNoImage: data.profile_photo ? false : true
+            });
             setUser({
               ...user,
               firstname: data.first_name,
+              middlename: data.middle_name,
               lastname: data.last_name,
               username: data.contact.user.username,
               email: data.contact.user
@@ -151,14 +159,14 @@ const StudentProfile = props => {
                   : ""
                 : "",
               state: data.contact
-                ? data.contact.state
-                  ? data.contact.state.name
+                ? data.contact.user
+                  ? data.contact.user.state.name
                   : ""
                 : "",
               college: data.organization.name,
               contact: data.contact.phone ? data.contact.phone : "",
-              fatherFirstName: data.father_first_name,
-              fatherLastName: data.father_last_name,
+              fatherFullName: data.father_full_name,
+              motherFullName: data.mother_full_name,
               address: data.contact.address_1,
               rollnumber: data.roll_number.toString(),
               dataofbirth: dt + "/" + month + "/" + year,
@@ -166,13 +174,7 @@ const StudentProfile = props => {
               district: data.contact.district ? data.contact.district.name : "",
               stream: data.stream ? data.stream.name : "",
               physicallyHandicapped: data.is_physically_challenged,
-              futureAspirations: data.future_aspirations
-                ? futureAspirationsList[
-                    futureAspirationsList.findIndex(function (item, i) {
-                      return item.id === data.future_aspirations;
-                    })
-                  ] || null
-                : ""
+              futureAspirations: data.future_aspirations ? futureaspiration : ""
             });
             setLoaderStatus(false);
           })
@@ -236,6 +238,7 @@ const StudentProfile = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       {success ? (
         <Collapse in={success}>
           <Alert
@@ -268,12 +271,50 @@ const StudentProfile = props => {
         <Card>
           <CardContent>
             <Grid item xs={12} md={6} xl={3}>
+              <Grid container className={classes.formgridInputFile}>
+                <Grid item md={10} xs={12}>
+                  <div className={classes.imageDiv}>
+                    {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
+                    {formState.showEditPreview &&
+                    formState.details["profile_photo"] !== null &&
+                    formState.details["profile_photo"] !== undefined &&
+                    formState.details["profile_photo"] !== {} ? (
+                      <Img
+                        src={
+                          strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                          formState.details["profile_photo"]["url"]
+                        }
+                        loader={<Spinner />}
+                        className={classes.UploadImage}
+                      />
+                    ) : null}
+                    {formState.showNoImage ? (
+                      <Img
+                        src="/images/noImage.png"
+                        loader={<Spinner />}
+                        className={classes.UploadImage}
+                      />
+                    ) : null}
+                  </div>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <ReadOnlyTextField
                     id="firstname"
                     label="First Name"
                     defaultValue={formState.values.firstname}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="middlename"
+                    label="Middle Name"
+                    defaultValue={formState.values.middlename}
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
@@ -287,16 +328,16 @@ const StudentProfile = props => {
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
-                    id="fathersFirstName"
-                    label="Father's First Name"
-                    defaultValue={formState.values.fatherFirstName}
+                    id="fathersFullName"
+                    label="Father's Full Name"
+                    defaultValue={formState.values.fatherFullName}
                   />
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
-                    id="fathersLastName"
-                    label="Father's Last Name"
-                    defaultValue={formState.values.fatherLastName}
+                    id="mothersFullName"
+                    label="Mother's Full Name"
+                    defaultValue={formState.values.motherFullName}
                   />
                 </Grid>
               </Grid>
@@ -405,15 +446,26 @@ const StudentProfile = props => {
             </Grid>
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <ReadOnlyTextField
                     id="futureAspirations"
                     label="Future Aspirations"
                     defaultValue={
                       formState.values.futureAspirations
-                        ? formState.values.futureAspirations.name
+                        ? formState.values.futureAspirations
                         : null
                     }
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.formgrid}>
+                <Grid item md={6} xs={12}>
+                  <ReadOnlyTextField
+                    id="username"
+                    label="Username"
+                    defaultValue={formState.values.username}
                   />
                 </Grid>
               </Grid>

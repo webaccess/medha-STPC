@@ -13,11 +13,13 @@ import {
   OutlinedInput,
   Collapse,
   CardActions,
-  FormHelperText
+  FormHelperText,
+  Button
 } from "@material-ui/core";
+import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import CloseIcon from "@material-ui/icons/Close";
 import { Auth as auth, InlineDatePicker } from "../../components";
-
+import Spinner from "../../components/Spinner/Spinner.js";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
 
@@ -28,7 +30,8 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-
+import Img from "react-image";
+import { get, includes } from "lodash";
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
@@ -46,9 +49,10 @@ const AddEditStudent = props => {
   let history = useHistory();
   const [user, setUser] = useState({
     firstName: "",
+    middleName: "",
     lastName: "",
-    fatherFirstName: "",
-    fatherLastName: "",
+    fatherFulltName: "",
+    motherFullName: "",
     address: "",
     district: null,
     state: null,
@@ -81,7 +85,16 @@ const AddEditStudent = props => {
     dataForEdit: props.location.dataForEdit
       ? props.location.dataForEdit
       : false,
-    counter: 0
+    counter: 0,
+    files: null,
+    previewFile: {},
+    showPreview: false,
+    showEditPreview: props.location.editStudent
+      ? props.location.dataForEdit.profile_photo
+        ? true
+        : false
+      : false,
+    showNoImage: props.location.editStudent ? false : props.location.editStudent
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -89,17 +102,10 @@ const AddEditStudent = props => {
 
   const genderlist = [
     { name: "Male", id: "male" },
-    { name: "Female", id: "female" }
+    { name: "Female", id: "female" },
+    { name: "Other", id: "other" }
   ];
-  const futureAspirationsList = [
-    { id: "private_jobs", name: "Private Job" },
-    { id: "others", name: "Others" },
-    { id: "higher_studies", name: "Higher Studies" },
-    { id: "marriage", name: "Marriage" },
-    { id: "entrepreneurship", name: "Entrepreneurship" },
-    { id: "government_jobs", name: "Government Job" },
-    { id: "apprenticeship", name: "Apprenticeship" }
-  ];
+  const [futureAspirationsList, setFutureAspirationsList] = useState([]);
   const physicallyHandicappedlist = [
     { name: "Yes", id: true },
     { name: "No", id: false }
@@ -119,6 +125,7 @@ const AddEditStudent = props => {
   useEffect(() => {
     setLoaderStatus(true);
     getStates();
+    getFutureAspirations();
     getDistrict();
     getColleges();
     getStreams();
@@ -156,6 +163,10 @@ const AddEditStudent = props => {
       if (props.location["dataForEdit"]["first_name"]) {
         formState.values["firstname"] =
           props.location["dataForEdit"]["first_name"];
+      }
+      if (props.location["dataForEdit"]["middle_name"]) {
+        formState.values["middlename"] =
+          props.location["dataForEdit"]["middle_name"];
       }
       if (props.location["dataForEdit"]["last_name"]) {
         formState.values["lastname"] =
@@ -213,13 +224,13 @@ const AddEditStudent = props => {
           props.location["dataForEdit"]["contact"]["district"]["id"];
       }
 
-      if (props.location["dataForEdit"]["father_first_name"]) {
-        formState.values["fatherFirstName"] =
-          props.location["dataForEdit"]["father_first_name"];
+      if (props.location["dataForEdit"]["father_full_name"]) {
+        formState.values["fatherFullName"] =
+          props.location["dataForEdit"]["father_full_name"];
       }
-      if (props.location["dataForEdit"]["father_last_name"]) {
-        formState.values["fatherLastName"] =
-          props.location["dataForEdit"]["father_last_name"];
+      if (props.location["dataForEdit"]["mother_full_name"]) {
+        formState.values["motherFullName"] =
+          props.location["dataForEdit"]["mother_full_name"];
       }
       if (props.location["dataForEdit"]["contact"]["address_1"]) {
         formState.values["address"] =
@@ -236,6 +247,10 @@ const AddEditStudent = props => {
       if (props.location["dataForEdit"]["future_aspirations"]) {
         formState.values["futureAspirations"] =
           props.location["dataForEdit"]["future_aspirations"];
+        console.log(props.location["dataForEdit"]["future_aspirations"]);
+        formState["futureAspirations"] = props.location["dataForEdit"][
+          "future_aspirations"
+        ].map(value => value.id);
       }
 
       if (props.location["dataForEdit"]) {
@@ -253,6 +268,14 @@ const AddEditStudent = props => {
         setSelectedDate(
           new Date(props.location["dataForEdit"]["date_of_birth"])
         );
+      }
+      if (
+        props.location["dataForEdit"]["profile_photo"] &&
+        props.location["dataForEdit"]["profile_photo"]["id"]
+      ) {
+        formState.previewFile = props.location["dataForEdit"]["profile_photo"];
+        //      formState.values["files"] =
+        //        props.location["dataForEdit"]["upload_logo"]["name"];
       }
     }
     formState.counter += 1;
@@ -339,9 +362,10 @@ const AddEditStudent = props => {
     if (formState.editStudent) {
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
+        formState.values["middlename"],
         formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
+        formState.values["fatherFullName"],
+        formState.values["motherFullName"],
         formState.values["address"],
         formState.values["state"] ? formState.values["state"] : null,
         formState.values["district"] ? formState.values["district"] : null,
@@ -362,8 +386,9 @@ const AddEditStudent = props => {
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
         formState.values["futureAspirations"]
-          ? formState.values["futureAspirations"]
-          : null
+          ? formState["futureAspirations"]
+          : null,
+        formState.files
       );
       let EDIT_STUDENT_URL =
         strapiApiConstants.STRAPI_DB_URL +
@@ -416,9 +441,10 @@ const AddEditStudent = props => {
     } else {
       postData = databaseUtilities.addStudent(
         formState.values["firstname"],
+        formState.values["middlename"],
         formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
+        formState.values["fatherFullName"],
+        formState.values["motherFullName"],
         formState.values["address"],
         formState.values["state"],
         formState.values["district"],
@@ -436,7 +462,11 @@ const AddEditStudent = props => {
         formState.values["college"],
         formState.values["stream"].id,
         parseInt(formState.values["rollnumber"]),
-        formState.values.otp
+        formState.values.otp,
+        formState.files,
+        formState.values["futureAspirations"]
+          ? formState["futureAspirations"]
+          : null
       );
 
       axios
@@ -465,6 +495,29 @@ const AddEditStudent = props => {
     }
   };
 
+  const getFutureAspirations = () => {
+    axios
+      .get(
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_FUTURE_ASPIRATIONS
+      )
+      .then(res => {
+        console.log(res);
+        const list = res.data.result.map(({ id, name }) => ({ id, name }));
+        setFutureAspirationsList(list);
+        if (formState.dataForEdit) {
+          const id = props.location["dataForEdit"]["future_aspirations"].map(
+            value => value.id
+          );
+          const ids = list.filter(value => {
+            if (includes(id, value.id)) {
+              return value;
+            }
+          });
+          formState.values["futureAspirations"] = ids;
+        }
+      });
+  };
   const getColleges = () => {
     axios
       .get(
@@ -624,11 +677,58 @@ const AddEditStudent = props => {
     });
   };
 
+  const handleFutureAspirationChange = (eventName, event, value) => {
+    /**TO SET VALUES OF AUTOCOMPLETE */
+    if (value !== null) {
+      const id = value.map(value => value.id).filter(c => c);
+      setFormState(formState => ({
+        ...formState,
+        values: {
+          ...formState.values,
+          [eventName]: value
+        },
+        touched: {
+          ...formState.touched,
+          [eventName]: true
+        },
+        futureAspirations: id
+      }));
+      if (formState.errors.hasOwnProperty(eventName)) {
+        delete formState.errors[eventName];
+      }
+    }
+  };
+
+  const handleChangefile = e => {
+    e.persist();
+    setFormState(formState => ({
+      ...formState,
+
+      values: {
+        ...formState.values,
+        [e.target.name]: e.target.files[0].name
+      },
+      touched: {
+        ...formState.touched,
+        [e.target.name]: true
+      },
+      files: e.target.files[0],
+      previewFile: URL.createObjectURL(e.target.files[0]),
+      showPreview: true,
+      showEditPreview: false,
+      showNoImage: false
+    }));
+    if (formState.errors.hasOwnProperty(e.target.name)) {
+      delete formState.errors[e.target.name];
+    }
+  };
+
   const hasError = field => (formState.errors[field] ? true : false);
 
   return (
     // <Layout>
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {formState.editStudent ? null : (
           <Typography variant="h4" gutterBottom>
@@ -683,20 +783,121 @@ const AddEditStudent = props => {
         <form autoComplete="off" noValidate>
           <CardContent>
             <Grid item xs={12} md={6} xl={3}>
+              <Grid container className={classes.formgridInputFile}>
+                <Grid item md={10} xs={12}>
+                  <div className={classes.imageDiv}>
+                    {formState.showPreview ? (
+                      <Img
+                        alt="abc"
+                        loader={<Spinner />}
+                        className={classes.UploadImage}
+                        src={formState.previewFile}
+                      />
+                    ) : null}
+                    {!formState.showPreview && !formState.showEditPreview ? (
+                      <div className={classes.DefaultNoImage}></div>
+                    ) : null}
+                    {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
+                    {formState.showEditPreview &&
+                    formState.dataForEdit["profile_photo"] !== null &&
+                    formState.dataForEdit["profile_photo"] !== undefined &&
+                    formState.dataForEdit["profile_photo"] !== {} ? (
+                      <Img
+                        src={
+                          strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                          formState.dataForEdit["profile_photo"]["url"]
+                        }
+                        loader={<Spinner />}
+                        className={classes.UploadImage}
+                      />
+                    ) : null}
+                    {formState.showNoImage ? (
+                      <Img
+                        src="/images/noImage.png"
+                        loader={<Spinner />}
+                        className={classes.UploadImage}
+                      />
+                    ) : null}
+                  </div>
+                </Grid>
+              </Grid>
+              <Grid container className={classes.MarginBottom}>
+                <Grid item md={10} xs={12}>
+                  <TextField
+                    fullWidth
+                    id="files"
+                    margin="normal"
+                    name="files"
+                    placeholder="Upload Logo"
+                    onChange={handleChangefile}
+                    required
+                    type="file"
+                    inputProps={{ accept: "image/*" }}
+                    //value={formState.values["files"] || ""}
+                    error={hasError("files")}
+                    helperText={
+                      hasError("files")
+                        ? formState.errors["files"].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                    variant="outlined"
+                    className={classes.inputFile}
+                  />
+                  <label htmlFor={get(registrationSchema["files"], "id")}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component="span"
+                      fullWidth
+                      className={classes.InputFileButton}
+                      startIcon={<AddOutlinedIcon />}
+                    >
+                      ADD PROFILE PHOTO
+                    </Button>
+                  </label>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+
+            <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
                   <TextField
                     label="First Name"
                     name="firstname"
-                    value={formState.values["firstname"]}
+                    value={formState.values["firstname"] || ""}
                     variant="outlined"
+                    required
+                    fullWidth
+                    onChange={handleChange}
                     error={hasError("firstname")}
+                    helperText={
+                      hasError("firstname")
+                        ? formState.errors["firstname"].map(error => {
+                            return error + " ";
+                          })
+                        : null
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    label="Middle Name"
+                    name="middlename"
+                    value={formState.values["middlename"]}
+                    variant="outlined"
+                    error={hasError("middlename")}
                     required
                     fullWidth
                     onChange={handleChange}
                     helperText={
-                      hasError("firstname")
-                        ? formState.errors["firstname"].map(error => {
+                      hasError("middlename")
+                        ? formState.errors["middlename"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -726,17 +927,17 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    label="Father's First Name"
-                    name="fatherFirstName"
-                    value={formState.values["fatherFirstName"] || ""}
+                    label="Father's Full Name"
+                    name="fatherFullName"
+                    value={formState.values["fatherFullName"] || ""}
                     variant="outlined"
                     required
                     fullWidth
                     onChange={handleChange}
-                    error={hasError("fatherFirstName")}
+                    error={hasError("fatherFullName")}
                     helperText={
-                      hasError("fatherFirstName")
-                        ? formState.errors["fatherFirstName"].map(error => {
+                      hasError("fatherFullName")
+                        ? formState.errors["fatherFullName"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -745,17 +946,17 @@ const AddEditStudent = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    label="Father's Last Name"
-                    name="fatherLastName"
-                    value={formState.values["fatherLastName"] || ""}
+                    label="Mother's Full Name"
+                    name="motherFullName"
+                    value={formState.values["motherFullName"] || ""}
                     variant="outlined"
                     required
                     fullWidth
                     onChange={handleChange}
-                    error={hasError("fatherLastName")}
+                    error={hasError("motherFullName")}
                     helperText={
-                      hasError("fatherLastName")
-                        ? formState.errors["fatherLastName"].map(error => {
+                      hasError("motherFullName")
+                        ? formState.errors["motherFullName"].map(error => {
                             return error + " ";
                           })
                         : null
@@ -1104,51 +1305,70 @@ const AddEditStudent = props => {
             </Grid>
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <Autocomplete
+                    multiple={true}
+                    id="combo-box-demo"
+                    className={classes.root}
+                    options={futureAspirationsList}
+                    getOptionLabel={option => option.name}
+                    onChange={(event, value) => {
+                      handleFutureAspirationChange(
+                        "futureAspirations",
+                        event,
+                        value
+                      );
+                    }}
+                    value={formState.values.futureAspirations}
+                    filterSelectedOptions={true}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        error={hasError("futureAspirations")}
+                        label="Future Aspirations"
+                        variant="outlined"
+                        name="tester"
+                        helperText={
+                          hasError("futureAspirations")
+                            ? formState.errors["futureAspirations"].map(
+                                error => {
+                                  return error + " ";
+                                }
+                              )
+                            : null
+                        }
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider} />
+            <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                {formState.editStudent ? (
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      className={classes.root}
-                      options={futureAspirationsList}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(
-                          "futureAspirations",
-                          event,
-                          value
-                        );
-                      }}
-                      value={
-                        futureAspirationsList[
-                          futureAspirationsList.findIndex(function (item, i) {
-                            return (
-                              item.id === formState.values.futureAspirations
-                            );
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    label="Username"
+                    name="username"
+                    value={formState.values["username"] || ""}
+                    variant="outlined"
+                    required
+                    fullWidth
+                    disabled
+                    readOnly
+                    error={hasError("username")}
+                    helperText={
+                      hasError("username")
+                        ? formState.errors["username"].map(error => {
+                            return error + " ";
                           })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError("futureAspirations")}
-                          label="Future Aspirations"
-                          variant="outlined"
-                          name="tester"
-                          helperText={
-                            hasError("futureAspirations")
-                              ? formState.errors["futureAspirations"].map(
-                                  error => {
-                                    return error + " ";
-                                  }
-                                )
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                ) : (
+                        : null
+                    }
+                  />
+                </Grid>
+
+                {formState.editStudent ? null : (
                   <Grid item md={6} xs={12}>
                     <FormControl fullWidth variant="outlined">
                       <InputLabel

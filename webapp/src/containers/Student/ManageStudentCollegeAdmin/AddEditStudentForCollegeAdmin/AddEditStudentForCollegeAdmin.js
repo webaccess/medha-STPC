@@ -11,8 +11,11 @@ import {
   InputAdornment,
   OutlinedInput,
   FormHelperText,
-  CardActions
+  CardActions,
+  Button,
+  Divider
 } from "@material-ui/core";
+import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import { Auth as auth, InlineDatePicker } from "../../../../components";
 import useStyles from "../../../ContainerStyles/AddEditPageStyles";
 import * as routeConstants from "../../../../constants/RouteConstants";
@@ -31,6 +34,8 @@ import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../../../api/Axios.js";
 import LoaderContext from "../../../../context/LoaderContext";
 import { get } from "lodash";
+import Img from "react-image";
+import Spinner from "../../../../components/Spinner/Spinner.js";
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
@@ -47,7 +52,8 @@ const AddEditStudentForCollegeAdmin = props => {
 
   const genderlist = [
     { name: "Male", id: "male" },
-    { name: "Female", id: "female" }
+    { name: "Female", id: "female" },
+    { name: "Other", id: "other" }
   ];
 
   const futureAspirationsList = [
@@ -102,7 +108,16 @@ const AddEditStudentForCollegeAdmin = props => {
       ? props.location.editStudent
       : false,
     dataForEdit: props.location.dataForEdit ? props.location.dataForEdit : [],
-    counter: 0
+    counter: 0,
+    files: null,
+    previewFile: {},
+    showPreview: false,
+    showEditPreview: props.location.editStudent
+      ? props.location.dataForEdit.profile_photo
+        ? true
+        : false
+      : false,
+    showNoImage: props.location.editStudent ? false : props.location.editStudent
   });
 
   const { layout: Layout } = props;
@@ -200,6 +215,10 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["firstname"] =
           props.location["dataForEdit"]["first_name"];
       }
+      if (props.location["dataForEdit"]["middle_name"]) {
+        formState.values["middlename"] =
+          props.location["dataForEdit"]["middle_name"];
+      }
       if (props.location["dataForEdit"]["last_name"]) {
         formState.values["lastname"] =
           props.location["dataForEdit"]["last_name"];
@@ -238,14 +257,13 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["district"] =
           props.location["dataForEdit"]["contact"]["district"]["id"];
       }
-
-      if (props.location["dataForEdit"]["father_first_name"]) {
-        formState.values["fatherFirstName"] =
-          props.location["dataForEdit"]["father_first_name"];
+      if (props.location["dataForEdit"]["father_full_name"]) {
+        formState.values["fatherFullName"] =
+          props.location["dataForEdit"]["father_full_name"];
       }
-      if (props.location["dataForEdit"]["father_last_name"]) {
-        formState.values["fatherLastName"] =
-          props.location["dataForEdit"]["father_last_name"];
+      if (props.location["dataForEdit"]["mother_full_name"]) {
+        formState.values["motherFullName"] =
+          props.location["dataForEdit"]["mother_full_name"];
       }
       if (props.location["dataForEdit"]["contact"]["address_1"]) {
         formState.values["address"] =
@@ -259,11 +277,14 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["rollnumber"] =
           props.location["dataForEdit"]["roll_number"];
       }
-      if (props.location["dataForEdit"]["contact"]["future_aspirations"]) {
+      if (props.location["dataForEdit"]["future_aspirations"]) {
         formState.values["futureAspirations"] =
-          props.location["dataForEdit"]["contact"]["future_aspirations"];
+          props.location["dataForEdit"]["future_aspirations"];
+        console.log(props.location["dataForEdit"]["future_aspirations"]);
+        formState["futureAspirations"] = props.location["dataForEdit"][
+          "future_aspirations"
+        ].map(value => value.id);
       }
-
       if (props.location["dataForEdit"]["is_physically_challenged"] !== null) {
         formState.values["physicallyHandicapped"] =
           props.location["dataForEdit"]["is_physically_challenged"];
@@ -283,6 +304,14 @@ const AddEditStudentForCollegeAdmin = props => {
         setSelectedDate(
           new Date(props.location["dataForEdit"]["date_of_birth"])
         );
+      }
+      if (
+        props.location["dataForEdit"]["profile_photo"] &&
+        props.location["dataForEdit"]["profile_photo"]["id"]
+      ) {
+        formState.previewFile = props.location["dataForEdit"]["profile_photo"];
+        //      formState.values["files"] =
+        //        props.location["dataForEdit"]["upload_logo"]["name"];
       }
     }
     formState.counter += 1;
@@ -360,9 +389,10 @@ const AddEditStudentForCollegeAdmin = props => {
     if (formState.editStudent) {
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
+        formState.values["middlename"],
         formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
+        formState.values["fatherFullName"],
+        formState.values["motherFullName"],
         formState.values["address"],
         formState.values["state"] ? formState.values["state"] : null,
         formState.values["district"] ? formState.values["district"] : null,
@@ -381,8 +411,9 @@ const AddEditStudentForCollegeAdmin = props => {
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
         formState.values["futureAspirations"]
-          ? formState.values["futureAspirations"]
+          ? formState["futureAspirations"]
           : null,
+        formState.files,
         formState.values["password"] ? formState.values["password"] : undefined
       );
 
@@ -430,9 +461,10 @@ const AddEditStudentForCollegeAdmin = props => {
     } else {
       postData = databaseUtilities.addStudentFromCollege(
         formState.values["firstname"],
+        formState.values["middlename"],
         formState.values["lastname"],
-        formState.values["fatherFirstName"],
-        formState.values["fatherLastName"],
+        formState.values["fatherFullName"],
+        formState.values["motherFullName"],
         formState.values["address"],
         formState.values["state"] ? formState.values["state"] : null,
         formState.values["district"] ? formState.values["district"] : null,
@@ -450,10 +482,12 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["college"],
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
+        formState.files,
         formState.values["futureAspirations"]
-          ? formState.values["futureAspirations"]
+          ? formState["futureAspirations"]
           : null
       );
+      console.log(postData);
       let url =
         strapiApiConstants.STRAPI_DB_URL +
         strapiApiConstants.STRAPI_CREATE_USERS;
@@ -558,6 +592,30 @@ const AddEditStudentForCollegeAdmin = props => {
     }
   };
 
+  const handleChangefile = e => {
+    e.persist();
+    setFormState(formState => ({
+      ...formState,
+
+      values: {
+        ...formState.values,
+        [e.target.name]: e.target.files[0].name
+      },
+      touched: {
+        ...formState.touched,
+        [e.target.name]: true
+      },
+      files: e.target.files[0],
+      previewFile: URL.createObjectURL(e.target.files[0]),
+      showPreview: true,
+      showEditPreview: false,
+      showNoImage: false
+    }));
+    if (formState.errors.hasOwnProperty(e.target.name)) {
+      delete formState.errors[e.target.name];
+    }
+  };
+
   const handleClickShowPassword = () => {
     setFormState({
       ...formState,
@@ -569,6 +627,7 @@ const AddEditStudentForCollegeAdmin = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {formState.editStudent ? null : (
           <Typography variant="h4" gutterBottom>
@@ -581,8 +640,87 @@ const AddEditStudentForCollegeAdmin = props => {
           <form autoComplete="off">
             <CardContent>
               <Grid item xs={12} md={6} xl={3}>
+                <Grid container className={classes.formgridInputFile}>
+                  <Grid item md={10} xs={12}>
+                    <div className={classes.imageDiv}>
+                      {formState.showPreview ? (
+                        <Img
+                          alt="abc"
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                          src={formState.previewFile}
+                        />
+                      ) : null}
+                      {!formState.showPreview && !formState.showEditPreview ? (
+                        <div className={classes.DefaultNoImage}></div>
+                      ) : null}
+                      {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
+                      {formState.showEditPreview &&
+                      formState.dataForEdit["profile_photo"] !== null &&
+                      formState.dataForEdit["profile_photo"] !== undefined &&
+                      formState.dataForEdit["profile_photo"] !== {} ? (
+                        <Img
+                          src={
+                            strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                            formState.dataForEdit["profile_photo"]["url"]
+                          }
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                        />
+                      ) : null}
+                      {formState.showNoImage ? (
+                        <Img
+                          src="/images/noImage.png"
+                          loader={<Spinner />}
+                          className={classes.UploadImage}
+                        />
+                      ) : null}
+                    </div>
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.MarginBottom}>
+                  <Grid item md={10} xs={12}>
+                    <TextField
+                      fullWidth
+                      id="files"
+                      margin="normal"
+                      name="files"
+                      placeholder="Upload Logo"
+                      onChange={handleChangefile}
+                      required
+                      type="file"
+                      inputProps={{ accept: "image/*" }}
+                      //value={formState.values["files"] || ""}
+                      error={hasError("files")}
+                      helperText={
+                        hasError("files")
+                          ? formState.errors["files"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                      className={classes.inputFile}
+                    />
+                    <label htmlFor={get(registrationSchema["files"], "id")}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        fullWidth
+                        className={classes.InputFileButton}
+                        startIcon={<AddOutlinedIcon />}
+                      >
+                        ADD PROFILE PHOTO
+                      </Button>
+                    </label>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Divider className={classes.divider} />
+              <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={12} xs={12}>
                     <TextField
                       label={get(registrationSchema["firstname"], "label")}
                       name="firstname"
@@ -599,6 +737,27 @@ const AddEditStudentForCollegeAdmin = props => {
                       helperText={
                         hasError("firstname")
                           ? formState.errors["firstname"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                    />
+                  </Grid>{" "}
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      label="Middle Name"
+                      name="middlename"
+                      value={formState.values["middlename"]}
+                      variant="outlined"
+                      error={hasError("middlename")}
+                      required
+                      fullWidth
+                      onChange={handleChange}
+                      helperText={
+                        hasError("middlename")
+                          ? formState.errors["middlename"].map(error => {
                               return error + " ";
                             })
                           : null
@@ -632,24 +791,21 @@ const AddEditStudentForCollegeAdmin = props => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label={get(
-                        registrationSchema["fatherFirstName"],
-                        "label"
-                      )}
-                      name="fatherFirstName"
+                      label={get(registrationSchema["fatherFullName"], "label")}
+                      name="fatherFullName"
                       placeholder={get(
-                        registrationSchema["fatherFirstName"],
+                        registrationSchema["fatherFullName"],
                         "placeholder"
                       )}
-                      value={formState.values["fatherFirstName"] || ""}
+                      value={formState.values["fatherFullName"] || ""}
                       variant="outlined"
                       required
                       fullWidth
                       onChange={handleChange}
-                      error={hasError("fatherFirstName")}
+                      error={hasError("fatherFullName")}
                       helperText={
-                        hasError("fatherFirstName")
-                          ? formState.errors["fatherFirstName"].map(error => {
+                        hasError("fatherFullName")
+                          ? formState.errors["fatherFullName"].map(error => {
                               return error + " ";
                             })
                           : null
@@ -658,21 +814,21 @@ const AddEditStudentForCollegeAdmin = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
-                      label={get(registrationSchema["fatherLastName"], "label")}
-                      name="fatherLastName"
+                      label={get(registrationSchema["motherFullName"], "label")}
+                      name="motherFullName"
                       placeholder={get(
-                        registrationSchema["fatherLastName"],
+                        registrationSchema["motherFullName"],
                         "placeholder"
                       )}
-                      value={formState.values["fatherLastName"] || ""}
+                      value={formState.values["motherFullName"] || ""}
                       variant="outlined"
                       required
                       fullWidth
                       onChange={handleChange}
-                      error={hasError("fatherLastName")}
+                      error={hasError("motherFullName")}
                       helperText={
-                        hasError("fatherLastName")
-                          ? formState.errors["fatherLastName"].map(error => {
+                        hasError("motherFullName")
+                          ? formState.errors["motherFullName"].map(error => {
                               return error + " ";
                             })
                           : null
