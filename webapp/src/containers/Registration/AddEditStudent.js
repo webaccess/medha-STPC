@@ -31,7 +31,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Img from "react-image";
-import { get } from "lodash";
+import { get, includes } from "lodash";
 import Alert from "../../components/Alert/Alert.js";
 import GrayButton from "../../components/GrayButton/GrayButton.js";
 import YellowButton from "../../components/YellowButton/YellowButton.js";
@@ -503,9 +503,19 @@ const AddEditStudent = props => {
       )
       .then(res => {
         console.log(res);
-        setFutureAspirationsList(
-          res.data.result.map(({ id, name }) => ({ id, name }))
-        );
+        const list = res.data.result.map(({ id, name }) => ({ id, name }));
+        setFutureAspirationsList(list);
+        if (formState.dataForEdit) {
+          const id = props.location["dataForEdit"]["future_aspirations"].map(
+            value => value.id
+          );
+          const ids = list.filter(value => {
+            if (includes(id, value.id)) {
+              return value;
+            }
+          });
+          formState.values["futureAspirations"] = ids;
+        }
       });
   };
   const getColleges = () => {
@@ -1311,7 +1321,7 @@ const AddEditStudent = props => {
                       );
                     }}
                     value={formState.values.futureAspirations}
-                    filterSelectedOptions
+                    filterSelectedOptions={true}
                     renderInput={params => (
                       <TextField
                         {...params}
