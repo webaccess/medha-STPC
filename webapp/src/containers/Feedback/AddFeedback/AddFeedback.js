@@ -288,8 +288,7 @@ const AddEditFeedBack = props => {
                                               <TableRow key={row.id}>
                                                 {row.type === "Rating" &&
                                                 row.role.name ===
-                                                  auth.getUserInfo().role
-                                                    .name ? (
+                                                  formState.roleName ? (
                                                   <React.Fragment>
                                                     <TableCell
                                                       component="th"
