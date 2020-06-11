@@ -1474,15 +1474,15 @@ const PUBLIC_ROUTES = {
       action: ["find"]
     },
     {
-<<<<<<< HEAD
       name: "futureaspirations",
-=======
+      action: ["find"]
+    },
+    {
       name: "board",
       action: ["find"]
     },
     {
       name: "academic-year",
->>>>>>> c4dd7920336a5124544d0cb9efee7388b48670b7
       action: ["find"]
     }
   ]
