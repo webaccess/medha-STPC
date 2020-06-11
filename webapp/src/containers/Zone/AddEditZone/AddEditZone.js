@@ -211,11 +211,22 @@ const AddEditZone = props => {
         .catch(error => {
           setLoaderStatus(false);
           console.log(error);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
             fromAddZone: true,
             isDataAdded: false,
-            addResponseMessage: "",
+            addResponseMessage: errorMessage ? errorMessage : "",
             addedData: {}
           });
         });

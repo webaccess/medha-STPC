@@ -863,11 +863,23 @@ const AddEditCollege = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
+          console.log("error", error);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,
             fromAddCollege: true,
             isDataAdded: false,
-            addResponseMessage: "",
+            addResponseMessage: errorMessage ? errorMessage : "",
             addedData: {}
           });
           setLoaderStatus(false);

@@ -269,12 +269,24 @@ const AddEditRpc = props => {
           });
         })
         .catch(error => {
+          console.log(error, error.response);
           setLoaderStatus(false);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
           history.push({
             pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
             isDataAdded: false,
-            addResponseMessage: "",
+            addResponseMessage: errorMessage ? errorMessage : "",
             addedData: {}
           });
         });

@@ -152,17 +152,19 @@ const DeleteUser = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isMultiDelete ? (
-                    <p>
-                      Are you sure you want to delete "{props.seletedUser}"
-                      Events?
-                    </p>
-                  ) : (
-                    <p>
-                      Are you sure you want to delete event "
-                      {props.dataToDelete["name"]}"?
-                    </p>
-                  )}
+                  {props.id ? (
+                    props.isMultiDelete ? (
+                      <p>
+                        Are you sure you want to delete "{props.seletedUser}"
+                        Events?
+                      </p>
+                    ) : (
+                      <p>
+                        Are you sure you want to delete event "
+                        {props.dataToDelete["name"]}"?
+                      </p>
+                    )
+                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
