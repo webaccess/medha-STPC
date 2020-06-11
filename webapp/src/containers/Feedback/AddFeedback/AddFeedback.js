@@ -77,12 +77,6 @@ const AddEditFeedBack = props => {
       formState.entityQuestionSet = props.entityQuestionSet;
       formState.question_answers = {};
 
-      console.log(
-        formState.roleName,
-        formState.roleId,
-        props.entityQuestionSet
-      );
-
       props.entityQuestionSet.map(question => {
         if (question.role.name === formState.roleName) {
           if (question.type === "Rating") {
