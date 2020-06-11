@@ -304,7 +304,6 @@ const AddEditStudentForCollegeAdmin = props => {
       _.omit(formState.values, ["username"])
     );
     let isValid = false;
-    console.log(schema, formState.values);
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
       schema
