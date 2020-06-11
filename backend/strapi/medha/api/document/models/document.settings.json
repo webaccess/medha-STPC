@@ -1,0 +1,29 @@
+{
+  "info": {
+    "name": "document"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "file": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "education": {
+      "model": "education"
+    },
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
+    }
+  },
+  "connection": "default",
+  "collectionName": "documents"
+}
