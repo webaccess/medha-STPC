@@ -51,7 +51,7 @@ const AddEditStudentForCollegeAdmin = props => {
   ];
 
   const futureAspirationsList = [
-    { id: "private_job", name: "Private Job" },
+    { id: "private_jobs", name: "Private Job" },
     { id: "others", name: "Others" },
     { id: "higher_studies", name: "Higher Studies" },
     { id: "marriage", name: "Marriage" },
@@ -308,7 +308,12 @@ const AddEditStudentForCollegeAdmin = props => {
         _.omit(registrationSchema, ["futureAspirations"])
       );
     }
+    formState.values = Object.assign(
+      {},
+      _.omit(formState.values, ["username"])
+    );
     let isValid = false;
+    console.log(schema, formState.values);
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
       formState.values,
       schema
@@ -390,6 +395,7 @@ const AddEditStudentForCollegeAdmin = props => {
           : null,
         formState.values["password"] ? formState.values["password"] : undefined
       );
+
       let studentName =
         props.location["dataForEdit"]["first_name"] +
         " " +

@@ -77,6 +77,12 @@ const AddEditFeedBack = props => {
       formState.entityQuestionSet = props.entityQuestionSet;
       formState.question_answers = {};
 
+      console.log(
+        formState.roleName,
+        formState.roleId,
+        props.entityQuestionSet
+      );
+
       props.entityQuestionSet.map(question => {
         if (question.role.name === formState.roleName) {
           if (question.type === "Rating") {
@@ -99,6 +105,8 @@ const AddEditFeedBack = props => {
         }
       });
     }
+    console.log(formState.question_answers);
+
     formState.fromEvent = props.fromEvent;
     formState.fromActivity = props.fromActivity;
     formState.questionSetId = props.questionSetId;
@@ -288,8 +296,7 @@ const AddEditFeedBack = props => {
                                               <TableRow key={row.id}>
                                                 {row.type === "Rating" &&
                                                 row.role.name ===
-                                                  auth.getUserInfo().role
-                                                    .name ? (
+                                                  formState.roleName ? (
                                                   <React.Fragment>
                                                     <TableCell
                                                       component="th"
