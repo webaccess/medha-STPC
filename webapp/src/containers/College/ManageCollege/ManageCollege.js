@@ -870,7 +870,11 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              An error has occured while adding college. Kindly, try again.
+              An error has occured while adding college.{" "}
+              {props.location.addResponseMessage
+                ? props.location.addResponseMessage
+                : null}{" "}
+              Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}

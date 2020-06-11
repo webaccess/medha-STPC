@@ -296,7 +296,8 @@ const ViewZone = props => {
       showModalDelete: false,
       fromDeleteModal: true,
       messageToShow: statusToShow,
-      isMultiDelete: false
+      isMultiDelete: false,
+      dataToDelete: {}
     }));
     if (status) {
       getZoneData(formState.pageSize, 1, formState.filterDataParameters);
@@ -306,7 +307,8 @@ const ViewZone = props => {
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
-      showModalDelete: false
+      showModalDelete: false,
+      dataToDelete: {}
     }));
   };
 
@@ -570,7 +572,11 @@ const ViewZone = props => {
                 </IconButton>
               }
             >
-              An error has occured while adding zone. Kindly, try again.
+              An error has occured while adding zone.
+              {props.location.addResponseMessage
+                ? props.location.addResponseMessage
+                : null}{" "}
+              Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}
@@ -687,19 +693,21 @@ const ViewZone = props => {
           ) : (
             <div className={classes.noDataMargin}>No data to show</div>
           )}
-          <DeleteZone
-            showModal={formState.showModalDelete}
-            closeModal={handleCloseDeleteModal}
-            id={
-              formState.isMultiDelete
-                ? formState.MultiDeleteID
-                : formState.dataToDelete["id"]
-            }
-            modalClose={modalClose}
-            isMultiDelete={formState.isMultiDelete ? true : false}
-            dataToDelete={formState.dataToDelete}
-            clearSelectedRow={selectedRowCleared}
-          />
+          {formState.showModalDelete ? (
+            <DeleteZone
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              id={
+                formState.isMultiDelete
+                  ? formState.MultiDeleteID
+                  : formState.dataToDelete["id"]
+              }
+              modalClose={modalClose}
+              isMultiDelete={formState.isMultiDelete ? true : false}
+              dataToDelete={formState.dataToDelete}
+              clearSelectedRow={selectedRowCleared}
+            />
+          ) : null}
         </Card>
       </Grid>
     </Grid>

@@ -407,22 +407,22 @@ const ManageEvent = props => {
       fromDeleteModal: true,
       isMultiDelete: false,
       fromAddEvent: false,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
+      MultiDeleteID: [],
+      dataToDelete: {}
     }));
     if (status) {
       getEventData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
 
-  // const isDeleteCellCompleted = status => {
-  //   formState.isDataDeleted = status;
-  // };
-
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
       showModalBlock: false,
-      showModalDelete: false
+      showModalDelete: false,
+      MultiDeleteID: [],
+      dataToDelete: {}
     }));
   };
 
@@ -1478,29 +1478,29 @@ const ManageEvent = props => {
             />
           ) : null}
 
-          {formState.isMultiDelete ? (
-            <DeleteUser
-              showModal={formState.showModalDelete}
-              closeModal={handleCloseDeleteModal}
-              //deleteEvent={isDeleteCellCompleted}
-              id={formState.MultiDeleteID}
-              isMultiDelete={formState.isMultiDelete}
-              modalClose={modalClose}
-              seletedUser={selectedRows.length}
-              clearSelectedRow={selectedRowCleared}
-            />
-          ) : (
-            <DeleteUser
-              showModal={formState.showModalDelete}
-              closeModal={handleCloseDeleteModal}
-              id={formState.dataToDelete["id"]}
-              //deleteEvent={isDeleteCellCompleted}
-              modalClose={modalClose}
-              userName={formState.userNameDelete}
-              dataToDelete={formState.dataToDelete}
-              clearSelectedRow={selectedRowCleared}
-            />
-          )}
+          {formState.showModalDelete ? (
+            formState.isMultiDelete ? (
+              <DeleteUser
+                showModal={formState.showModalDelete}
+                closeModal={handleCloseDeleteModal}
+                id={formState.MultiDeleteID}
+                isMultiDelete={formState.isMultiDelete}
+                modalClose={modalClose}
+                seletedUser={selectedRows.length}
+                clearSelectedRow={selectedRowCleared}
+              />
+            ) : (
+              <DeleteUser
+                showModal={formState.showModalDelete}
+                closeModal={handleCloseDeleteModal}
+                id={formState.dataToDelete["id"]}
+                modalClose={modalClose}
+                userName={formState.userNameDelete}
+                dataToDelete={formState.dataToDelete}
+                clearSelectedRow={selectedRowCleared}
+              />
+            )
+          ) : null}
         </Card>
       </Grid>
     </Grid>
