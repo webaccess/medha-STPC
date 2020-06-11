@@ -99,8 +99,6 @@ const AddEditFeedBack = props => {
         }
       });
     }
-    console.log(formState.question_answers);
-
     formState.fromEvent = props.fromEvent;
     formState.fromActivity = props.fromActivity;
     formState.questionSetId = props.questionSetId;
