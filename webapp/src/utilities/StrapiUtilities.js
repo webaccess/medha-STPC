@@ -525,3 +525,19 @@ export const uploadStudentCSV = (file, contact) => {
   formData.append("data", JSON.stringify({ status: "uploaded", contact: id }));
   return formData;
 };
+
+export const uploadStudentDocuments = (
+  file,
+  educationId,
+  contactId,
+  isResume
+) => {
+  const formData = new FormData();
+  const name = isResume ? "resume" : file.name;
+  formData.append("files.file", file, file.name);
+  formData.append(
+    "data",
+    JSON.stringify({ contact: contactId, education: educationId, name })
+  );
+  return formData;
+};

@@ -58,6 +58,41 @@ const useStyles = makeStyles(theme => ({
   FlexGrow: {
     flexGrow: 1,
     width: "30%"
+  },
+
+  inputFileForDocument: {
+    display: "none"
+  },
+  InputFileButtonForDocument: {
+    color: "#353535",
+    backgroundColor: "#f6c80a",
+    fontSize: "13px",
+    fontWeight: "700",
+    marginLeft: "16px",
+    width: "85%",
+    borderRadius: "0 !important",
+    "&:hover,&:focus": {
+      color: "#353535",
+      backgroundColor: "#f6c80a"
+    }
+  },
+  DefaultNoImageForDocument: {
+    width: "85%",
+    height: "150px",
+    objectFit: "contain",
+    backgroundColor: "#666666",
+    marginLeft: "16px",
+    backgroundPosition: "center center",
+    backgroundRepeat: "no-repeat !important",
+    backgroundImage: `url(${noImageIcon})`,
+    backgroundSize: "65px"
+  },
+  UploadImageForDocument: {
+    width: "85%",
+    height: "150px",
+    objectFit: "contain",
+    backgroundColor: "#666666",
+    marginLeft: "16px"
   }
 }));
 

@@ -1,6 +1,7 @@
 "use strict";
 
 const utils = require("../../../config/utils");
+const bookshelf = require("../../../config/bookshelf");
 const { PLUGIN } = require("../../../config/constants");
 module.exports = {
   getEvents: async (contact, events) => {
@@ -469,5 +470,45 @@ module.exports = {
         return zoneAdmins;
       }
     }
+  },
+
+  /**Delete references of file and delete file */
+  deleteDocument: async (fileId, document) => {
+    const config = await strapi
+      .store({
+        environment: strapi.config.environment,
+        type: "plugin",
+        name: "upload"
+      })
+      .get({ key: "provider" });
+
+    const file = await strapi.plugins["upload"].services.upload.fetch({
+      id: fileId
+    });
+
+    /**
+     * Delete related document if present
+     * Otherwise only delete uploaded file and it's references
+     */
+
+    if (document) {
+      await strapi.query("document").delete({ id: document });
+    }
+
+    if (!file) {
+      return ctx.notFound("file.notFound");
+    }
+
+    const related = await bookshelf
+      .model("uploadMorph")
+      .where({ upload_file_id: fileId })
+      .fetch();
+
+    if (related) {
+      await related.destroy();
+    }
+
+    await strapi.plugins["upload"].services.upload.remove(file, config);
+    return file;
   }
 };
