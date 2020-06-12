@@ -15,7 +15,7 @@ const UploadIcon = props => {
         className="material-icons"
         id={props.id}
         value={props.value}
-        style={{ color: "green", fontSize: "23px" }}
+        style={{ color: "green", fontSize: "20px" }}
         onClick={props.onClick}
       >
         cloud_upload
