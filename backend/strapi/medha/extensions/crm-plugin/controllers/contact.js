@@ -333,6 +333,7 @@ module.exports = {
 
     const individualRequestBody = _.pick(data, [
       "first_name",
+      "middle_name",
       "last_name",
       "stream",
       "father_full_name",
@@ -546,6 +547,7 @@ module.exports = {
         "contact.user.zone",
         "contact.user.rpc",
         "contact.district",
+        "contact.state",
         "stream",
         "profile_photo",
         "future_aspirations"
@@ -2171,6 +2173,7 @@ module.exports = {
 
     const individualRequestBody = _.pick(data, [
       "first_name",
+      "middle_name",
       "last_name",
       "stream",
       "father_first_name",

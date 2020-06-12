@@ -1112,6 +1112,10 @@ const ROLES = {
         action: []
       },
       {
+        name: "futureaspirations",
+        action: ["find"]
+      },
+      {
         name: "user",
         action: ["me", "findOne"]
       },
