@@ -10,7 +10,7 @@ import {
   IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-
+import DeleteActivity from "./DeleteActivity";
 import styles from "./Activity.module.css";
 import useStyles from "../ContainerStyles/ManagePageStyles.js";
 import * as serviceProviders from "../../api/Axios";
@@ -519,30 +519,67 @@ const ViewActivity = props => {
     setLoaderStatus(false);
   };
 
-  const handleDeleteActivity = activity => {
-    setLoaderStatus(true);
-    const url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
-    const activityId = activity.id;
-    serviceProviders
-      .serviceProviderForDeleteRequest(url, activityId)
-      .then(() => {
-        setAlert(() => ({
-          isOpen: true,
-          message: `Activity ${activity.title} Deleted Successfully`,
-          severity: "success"
-        }));
-        getActivityData(10, 1);
-        setLoaderStatus(false);
-      })
-      .catch(({ response }) => {
-        setAlert(() => ({
-          isOpen: true,
-          message: response.data.message,
-          severity: "error"
-        }));
-        setLoaderStatus(false);
-      });
+  const handleCloseDeleteModal = () => {
+    /** This restores all the data when we close the modal */
+    setFormState(formState => ({
+      ...formState,
+      isDataDeleted: false,
+      showModalDelete: false
+    }));
+    if (formState.isDataDeleted) {
+      getActivityData(formState.pageSize, formState.page);
+    } else {
+    }
   };
+  const isDeleteCellCompleted = (status, activity) => {
+    formState.isDataDeleted = status;
+    if (status === true) {
+      setAlert(() => ({
+        isOpen: true,
+        message: `Activity ${activity.title} Deleted Successfully`,
+        severity: "success"
+      }));
+    } else if (status === false) {
+      setAlert(() => ({
+        isOpen: true,
+        message: activity.response.data.message,
+        severity: "error"
+      }));
+    }
+  };
+
+  const handleDeleteActivity = activity => {
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: { ...activity },
+      showModalDelete: true
+    }));
+  };
+
+  // const handleDeleteActivity = activity => {
+  //   setLoaderStatus(true);
+  //   const url = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY;
+  //   const activityId = activity.id;
+  //   serviceProviders
+  //     .serviceProviderForDeleteRequest(url, activityId)
+  //     .then(() => {
+  //       setAlert(() => ({
+  //         isOpen: true,
+  //         message: `Activity ${activity.title} Deleted Successfully`,
+  //         severity: "success"
+  //       }));
+  //       getActivityData(10, 1);
+  //       setLoaderStatus(false);
+  //     })
+  //     .catch(({ response }) => {
+  //       setAlert(() => ({
+  //         isOpen: true,
+  //         message: response.data.message,
+  //         severity: "error"
+  //       }));
+  //       setLoaderStatus(false);
+  //     });
+  // };
   /** Feedback */
 
   /** For viewing feedback for student */
@@ -1445,6 +1482,12 @@ const ViewActivity = props => {
             errorMessage={feedbackState.errorMessage}
           />
         ) : null}
+        <DeleteActivity
+          showModal={formState.showModalDelete}
+          closeModal={handleCloseDeleteModal}
+          activity={formState.dataToDelete}
+          deleteEvent={isDeleteCellCompleted}
+        />
       </Grid>
     </Grid>
   );
