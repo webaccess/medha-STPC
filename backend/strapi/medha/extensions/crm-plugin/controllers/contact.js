@@ -2251,38 +2251,10 @@ module.exports = {
       return ctx.response.badRequest("File Id is absent");
     }
 
-    const config = await strapi
-      .store({
-        environment: strapi.config.environment,
-        type: "plugin",
-        name: "upload"
-      })
-      .get({ key: "provider" });
-
-    const file = await strapi.plugins["upload"].services.upload.fetch({
-      id: fileId
-    });
-
-    if (document) {
-      await strapi.query("document").delete({ id: document });
-    }
-
-    if (!file) {
-      return ctx.notFound("file.notFound");
-    }
-
-    const related = await bookshelf
-      .model("uploadMorph")
-      .where({ upload_file_id: fileId })
-      .fetch();
-
-    if (related) {
-      console.log("1");
-      await related.destroy();
-    }
-
-    await strapi.plugins["upload"].services.upload.remove(file, config);
-
+    const file = await strapi.plugins[PLUGIN].services.contact.deleteDocument(
+      fileId,
+      document
+    );
     ctx.send(file);
   },
 
