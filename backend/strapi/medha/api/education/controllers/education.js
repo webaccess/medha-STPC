@@ -40,7 +40,7 @@ module.exports = {
   async delete(ctx) {
     const { id } = ctx.params;
 
-    const education = await ctx.query("education").findOne({ id });
+    const education = await strapi.query("education").findOne({ id });
     if (!education) {
       return ctx.response.notFound("Education does not exist");
     }
@@ -57,7 +57,7 @@ module.exports = {
       );
     }
 
-    await ctx.query("education").delete({ id });
+    await strapi.query("education").delete({ id });
     return {
       result: "Success"
     };
