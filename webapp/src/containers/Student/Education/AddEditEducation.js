@@ -359,7 +359,8 @@ const AddEditEducation = props => {
             fromEditEducation: true,
             isDataEdited: false,
             editResponseMessage: "",
-            editedData: {}
+            editedData: {},
+            error: error.response.data ? error.response.data.message : ""
           });
           setLoaderStatus(false);
         });
@@ -378,13 +379,14 @@ const AddEditEducation = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
-          console.log("POSTEDUCATION", error);
+          console.log("POSTEDUCATION", error.response);
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,
             fromAddEducation: true,
             isDataAdded: false,
             addResponseMessage: "",
-            addedData: {}
+            addedData: {},
+            error: error.response.data ? error.response.data.message : ""
           });
           setLoaderStatus(false);
         });

@@ -64,6 +64,7 @@ const ViewEducation = props => {
     fromAddEducation: props["location"]["fromAddEducation"]
       ? props["location"]["fromAddEducation"]
       : false,
+    responseError: props["location"]["error"] ? props["location"]["error"] : "",
     /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
@@ -403,8 +404,7 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  {" "}
-                  Error is editing Education.
+                  {formState.responseError}
                   {/* {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE} */}
                 </Alert>
               </Collapse>
@@ -450,7 +450,7 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  Error in adding Education.
+                  {formState.responseError}
                   {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
