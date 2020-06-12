@@ -7,13 +7,21 @@ const { PLUGIN } = require("../constants");
 module.exports = async (ctx, next) => {
   // Add your own logic here.
   console.log("In validateIndividual policy.");
-  const role_id = ctx.request.body.role;
+  let data;
+  if (ctx.request.files && ctx.request.body.data) {
+    data = ctx.request.body.data;
+    data = JSON.parse(data);
+  } else {
+    data = ctx.request.body;
+  }
+
+  const role_id = data.role;
 
   const role = await strapi
     .query("role", "users-permissions")
     .findOne({ id: role_id });
 
-  const individual = ctx.request.body;
+  const individual = data;
 
   if (role.name === "Student") {
     if (!individual.password)
@@ -24,10 +32,10 @@ module.exports = async (ctx, next) => {
       return ctx.response.badRequest("Last Name field is missing");
     if (!individual.address_1)
       return ctx.response.badRequest("Address field is missing");
-    if (!individual.father_first_name)
-      return ctx.response.badRequest("Father's First Name field is missing");
-    if (!individual.father_last_name)
-      return ctx.response.badRequest("Father's Last Name field is missing");
+    if (!individual.father_full_name)
+      return ctx.response.badRequest("Father's Full Name field is missing");
+    if (!individual.mother_full_name)
+      return ctx.response.badRequest("Mother's Full Name field is missing");
     if (!individual.date_of_birth)
       return ctx.response.badRequest("Date Of Birth field is missing");
     if (!individual.gender)

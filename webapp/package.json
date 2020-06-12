@@ -39,15 +39,17 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
     "react-star-rating-component": "^1.4.1",
+    "react-webpack": "^0.4.1",
     "styled-components": "^5.0.1",
     "validate.js": "^0.13.1",
     "xlsx": "^0.15.6"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cleanBuild": "rimraf ./build/*",
+    "build": "npm run cleanBuild && set \"GENERATE_SOURCEMAP=false\" && react-scripts build "
   },
   "eslintConfig": {
     "extends": "react-app"

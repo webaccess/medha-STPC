@@ -288,7 +288,9 @@ const ViewStates = props => {
   const modalClose = () => {
     setFormState(formState => ({
       ...formState,
-      showModalDelete: false
+      showModalDelete: false,
+      isMultiDelete: false,
+      dataToDelete: {}
     }));
   };
 
@@ -303,7 +305,8 @@ const ViewStates = props => {
       showModalDelete: false,
       fromDeleteModal: true,
       messageToShow: statusToShow,
-      isMultiDelete: false
+      isMultiDelete: false,
+      dataToDelete: {}
     }));
     if (status) {
       getStateData(formState.pageSize, 1, formState.filterDataParameters);
@@ -646,19 +649,21 @@ const ViewStates = props => {
         ) : (
           <div className={classes.noDataMargin}>No data to show</div>
         )}{" "}
-        <DeleteState
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          id={
-            formState.isMultiDelete
-              ? formState.MultiDeleteID
-              : formState.dataToDelete["id"]
-          }
-          modalClose={modalClose}
-          isMultiDelete={formState.isMultiDelete ? true : false}
-          dataToDelete={formState.dataToDelete}
-          clearSelectedRow={selectedRowCleared}
-        />
+        {formState.showModalDelete ? (
+          <DeleteState
+            showModal={formState.showModalDelete}
+            closeModal={handleCloseDeleteModal}
+            id={
+              formState.isMultiDelete
+                ? formState.MultiDeleteID
+                : formState.dataToDelete["id"]
+            }
+            modalClose={modalClose}
+            isMultiDelete={formState.isMultiDelete ? true : false}
+            dataToDelete={formState.dataToDelete}
+            clearSelectedRow={selectedRowCleared}
+          />
+        ) : null}
       </Grid>
     </Grid>
   );

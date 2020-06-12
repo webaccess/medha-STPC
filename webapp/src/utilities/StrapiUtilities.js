@@ -220,9 +220,10 @@ export const addUser = (
 };
 export const addStudent = (
   firstname,
+  middlename,
   lastname,
-  fatherfirstname,
-  fatherlastname,
+  fatherfullname,
+  motherfullname,
   address,
   state,
   district,
@@ -237,9 +238,10 @@ export const addStudent = (
   stream = null,
   rollNumber = null,
   otp,
+  files,
   isStudent = true
 ) => {
-  return {
+  const data = {
     phone: contactNumber,
     otp: otp,
     username: username,
@@ -247,9 +249,10 @@ export const addStudent = (
     email: email,
     organization: college,
     first_name: firstname,
+    middle_name: middlename,
     last_name: lastname,
-    father_first_name: fatherfirstname,
-    father_last_name: fatherlastname,
+    father_full_name: fatherfullname,
+    mother_full_name: motherfullname,
     address_1: address,
     state: state,
     district: district,
@@ -261,13 +264,20 @@ export const addStudent = (
     role: 7,
     isStudent: true
   };
+  if (files) {
+    const formdata = new FormData();
+    formdata.append("files.profile_photo", files, files.name);
+    formdata.append("data", JSON.stringify(data));
+    return formdata;
+  } else return data;
 };
 
 export const addStudentFromCollege = (
   firstname,
+  middlename,
   lastname,
-  fatherfirstname,
-  fatherlastname,
+  fatherfullname,
+  motherfullname,
   address,
   state,
   district,
@@ -281,18 +291,20 @@ export const addStudentFromCollege = (
   college,
   stream = null,
   rollNumber = null,
+  files,
   futureAspirations
 ) => {
-  return {
+  const data = {
     phone: contactNumber,
     username: userName,
     password: password,
     email: email,
     organization: college,
     first_name: firstname,
+    middle_name: middlename,
     last_name: lastname,
-    father_first_name: fatherfirstname,
-    father_last_name: fatherlastname,
+    father_full_name: fatherfullname,
+    mother_full_name: motherfullname,
     address_1: address,
     state: state,
     district: district,
@@ -305,13 +317,21 @@ export const addStudentFromCollege = (
     role: 7,
     isStudent: true
   };
+  console.log(data);
+  if (files) {
+    const formdata = new FormData();
+    formdata.append("files.profile_photo", files, files.name);
+    formdata.append("data", JSON.stringify(data));
+    return formdata;
+  } else return data;
 };
 
 export const editStudent = (
   firstname,
+  middlename,
   lastname,
-  fatherfirstname,
-  fatherlastname,
+  fatherfullname,
+  motherfullname,
   address,
   state,
   district,
@@ -326,17 +346,19 @@ export const editStudent = (
   rollNumber = null,
   id,
   futureAspirations,
+  files,
   password = undefined
 ) => {
-  return {
+  const data = {
     phone: contactNumber,
     username: userName,
     email: email,
     organization: college,
     first_name: firstname,
+    middle_name: middlename,
     last_name: lastname,
-    father_first_name: fatherfirstname,
-    father_last_name: fatherlastname,
+    father_full_name: fatherfullname,
+    mother_full_name: motherfullname,
     address_1: address,
     state: state,
     district: district,
@@ -350,6 +372,13 @@ export const editStudent = (
     future_aspirations: futureAspirations,
     isStudent: true
   };
+  console.log(files);
+  if (files) {
+    const formdata = new FormData();
+    formdata.append("files.profile_photo", files, files.name);
+    formdata.append("data", JSON.stringify(data));
+    return formdata;
+  } else return data;
 };
 export const addEducation = (
   yearOfPassing,

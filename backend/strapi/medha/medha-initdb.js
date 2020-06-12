@@ -9,11 +9,14 @@ const {
   PUBLIC_ROUTES,
   uploadPermissions,
   ACTIVITY_TYPES,
+  FUTURE_ASPIRATIONS,
   BOARDS
 } = require("./data");
 
 (async () => {
   await academicYears();
+  console.log("\n");
+  await futureaspirations();
   console.log("\n");
   await zones();
   console.log("\n");
@@ -315,6 +318,29 @@ async function streams() {
         .save()
         .then(() => {
           console.log(`Added Stream ${stream}`);
+        });
+    }
+  });
+}
+
+async function futureaspirations() {
+  await utils.asyncForEach(FUTURE_ASPIRATIONS, async futureaspirations => {
+    const isfutureaspirations = await bookshelf
+      .model("futureaspiration")
+      .where({ name: futureaspirations })
+      .fetch();
+
+    if (isfutureaspirations) {
+      console.log(`Skipping futureaspirations ${futureaspirations}...`);
+    } else {
+      await bookshelf
+        .model("futureaspiration")
+        .forge({
+          name: futureaspirations
+        })
+        .save()
+        .then(() => {
+          console.log(`Added futureaspirations ${futureaspirations}`);
         });
     }
   });

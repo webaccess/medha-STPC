@@ -70,6 +70,7 @@ const DeleteZone = props => {
     setOpen(false);
     if (status["status"]) {
       deleteData();
+      props.clearSelectedRow(true);
     } else {
       formState.isDeleteData = false;
       handleCloseModal(
@@ -220,11 +221,13 @@ const DeleteZone = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isMultiDelete
-                    ? "Are you sure you want to delete the selected Zones?"
-                    : "Are you sure you want to delete Zone " +
-                      formState.dataToDelete["name"] +
-                      "?"}
+                  {props.id
+                    ? props.isMultiDelete
+                      ? "Are you sure you want to delete the selected Zones?"
+                      : "Are you sure you want to delete Zone " +
+                        formState.dataToDelete["name"] +
+                        "?"
+                    : null}
                 </Grid>
               </Grid>
             </Grid>

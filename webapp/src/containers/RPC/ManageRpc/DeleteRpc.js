@@ -71,6 +71,7 @@ const DeleteRpc = props => {
     setOpen(false);
     if (status["status"]) {
       deleteData();
+      props.clearSelectedRow(true);
     } else {
       formState.isDeleteData = false;
       handleCloseModal(
@@ -216,11 +217,14 @@ const DeleteRpc = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isMultiDelete
-                    ? "Are you sure you want to delete the selected RPC's?"
-                    : "Are you sure you want to delete RPC " +
-                      formState.dataToDelete["name"] +
-                      "?"}
+                  {console.log("DeleteRpc", props)}
+                  {props.id
+                    ? props.isMultiDelete
+                      ? "Are you sure you want to delete the selected RPC's?"
+                      : "Are you sure you want to delete RPC " +
+                        formState.dataToDelete["name"] +
+                        "?"
+                    : null}
                 </Grid>
               </Grid>
             </Grid>

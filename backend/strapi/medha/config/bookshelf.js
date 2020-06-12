@@ -19,6 +19,11 @@ bookshelf.model("academic_year", {
   requireFetch: false
 });
 
+bookshelf.model("futureaspiration", {
+  tableName: "futureaspirations",
+  requireFetch: false
+});
+
 bookshelf.model("uploadMorph", {
   requireFetch: false,
   tableName: "upload_file_morph"
