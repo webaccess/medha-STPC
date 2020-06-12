@@ -318,7 +318,7 @@ const ViewDocument = props => {
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>
         <Grid>
-          <Grid item xs={12} className={classes.title}>
+          {/* <Grid item xs={12} className={classes.title}>
             <GreenButton
               variant="contained"
               color="primary"
@@ -330,7 +330,7 @@ const ViewDocument = props => {
             >
               {genericConstants.ADD_DOCUMENT_TEXT}
             </GreenButton>
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} className={classes.formgrid}>
             {/** Error/Success messages to be shown for add */}
@@ -352,8 +352,7 @@ const ViewDocument = props => {
                   }
                 >
                   {" "}
-                  Documents uploaded successfully
-                  {/* {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE} */}
+                  Document uploaded successfully
                 </Alert>
               </Collapse>
             ) : null}
@@ -375,7 +374,6 @@ const ViewDocument = props => {
                   }
                 >
                   Error in Uploading Documents.
-                  {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -395,23 +393,6 @@ const ViewDocument = props => {
                       className={classes.autoCompleteField}
                       onChange={handleFilterChangeForNameField}
                     />
-                    {/* <Autocomplete
-                      id="combo-box-demo"
-                      options={formState.documentFilters}
-                      className={classes.autoCompleteField}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) =>
-                        handleChangeAutoComplete(DOCUMENT_FILTER, event, value)
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label="Name"
-                          className={classes.autoCompleteField}
-                          variant="outlined"
-                        />
-                      )}
-                    /> */}
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
