@@ -8,7 +8,6 @@ import {
   IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-
 import styles from "./Document.module.css";
 import useStyles from "../CommonStyles/ViewStyles.js";
 import * as serviceProviders from "../../../api/Axios";
@@ -25,12 +24,14 @@ import {
   Alert,
   Auth,
   ViewGridIcon,
-  DeleteGridIcon
+  DeleteGridIcon,
+  UploadIcon
 } from "../../../components";
 import DeleteDocument from "./DeleteDocument";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
+import auth from "../../../components/Auth";
 
 const ViewDocument = props => {
   const [open, setOpen] = React.useState(true);
@@ -166,11 +167,11 @@ const ViewDocument = props => {
     }
   };
 
-  const deleteCell = event => {
+  const deleteCell = (id, documentId) => {
     setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { id: event.target.id },
+      dataToDelete: { id, documentId },
       showModalDelete: true
     }));
     setLoaderStatus(false);
@@ -186,15 +187,6 @@ const ViewDocument = props => {
     }));
     event.persist();
   };
-
-  // const handleChangeAutoComplete = (filterName, event, value) => {
-  //   if (value === null) {
-  //     delete formState.filterDataParameters[filterName];
-  //     //restoreData();
-  //   } else {
-  //     formState.filterDataParameters[filterName] = value["id"];
-  //   }
-  // };
 
   /** This is used to handle the close modal event */
   const handleCloseDeleteModal = () => {
@@ -216,26 +208,65 @@ const ViewDocument = props => {
 
   /** Columns to show in table */
   const column = [
-    { name: "Name", sortable: true, selector: "name" },
-    { name: "Size", sortable: true, selector: "size" },
+    {
+      name: "Name",
+      sortable: true,
+      cell: cell =>
+        cell.isResume ? "Resume" : (cell.document && cell.document.name) || "-"
+    },
+    {
+      name: "Size",
+      cell: cell => (cell.document ? cell.document.file.size : "-")
+    },
+    {
+      name: "Year of passing",
+      sortable: true,
+      cell: cell => (cell.year_of_passing ? cell.year_of_passing.name : "-")
+    },
+    {
+      name: "Qualification",
+      cell: cell => (cell.qualification ? cell.qualification : "-")
+    },
+    { name: "Board", cell: cell => (cell.board ? cell.board.name : "-") },
+    {
+      name: "Pursuing",
+      cell: cell =>
+        cell.hasOwnProperty("pursuing") ? (cell.pursuing ? "Yes" : "No") : "-"
+    },
     {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
           <div className={classes.PaddingFirstActionButton}>
-            <ViewGridIcon
+            <UploadIcon
               id={cell.id}
               value={cell.name}
-              onClick={() => viewCell(cell)}
+              title="Upload Document"
+              onClick={() => handleAddDocumentClick(cell.id, cell.isResume)}
             />
           </div>
-          <div className={classes.PaddingActionButton}>
-            <DeleteGridIcon
-              id={cell.id}
-              value={cell.title}
-              onClick={deleteCell}
-            />
-          </div>
+
+          {cell.document ? (
+            <div className={classes.PaddingActionButton}>
+              <ViewGridIcon
+                id={cell.id}
+                value={cell.name}
+                onClick={() => viewCell(cell.document.file)}
+              />
+            </div>
+          ) : null}
+
+          {cell.document ? (
+            <div className={classes.PaddingActionButton}>
+              <DeleteGridIcon
+                id={cell.id}
+                value={cell.title}
+                onClick={() =>
+                  deleteCell(cell.document.file.id, cell.document.id)
+                }
+              />
+            </div>
+          ) : null}
         </div>
       ),
       width: "18%",
@@ -246,11 +277,18 @@ const ViewDocument = props => {
     }
   ];
 
-  const handleAddDocumentClick = () => {
+  const handleAddDocumentClick = (id, isResume) => {
+    const contact = auth.getUserInfo() ? auth.getUserInfo().contact.id : null;
+
     history.push({
-      pathname: routeConstants.ADD_DOCUMENTS
+      pathname: routeConstants.ADD_DOCUMENTS,
+      educationId: id,
+      isResume,
+      contactId: contact
     });
   };
+
+  console.log(formState.dataToDelete);
 
   const AlertAPIResponseMessage = () => {
     return (
@@ -280,7 +318,7 @@ const ViewDocument = props => {
     <Card style={{ padding: "8px" }}>
       <CardContent className={classes.Cardtheming}>
         <Grid>
-          <Grid item xs={12} className={classes.title}>
+          {/* <Grid item xs={12} className={classes.title}>
             <GreenButton
               variant="contained"
               color="primary"
@@ -292,7 +330,7 @@ const ViewDocument = props => {
             >
               {genericConstants.ADD_DOCUMENT_TEXT}
             </GreenButton>
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} className={classes.formgrid}>
             {/** Error/Success messages to be shown for add */}
@@ -314,8 +352,7 @@ const ViewDocument = props => {
                   }
                 >
                   {" "}
-                  Documents uploaded successfully
-                  {/* {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE} */}
+                  Document uploaded successfully
                 </Alert>
               </Collapse>
             ) : null}
@@ -337,7 +374,6 @@ const ViewDocument = props => {
                   }
                 >
                   Error in Uploading Documents.
-                  {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>
             ) : null}
@@ -357,23 +393,6 @@ const ViewDocument = props => {
                       className={classes.autoCompleteField}
                       onChange={handleFilterChangeForNameField}
                     />
-                    {/* <Autocomplete
-                      id="combo-box-demo"
-                      options={formState.documentFilters}
-                      className={classes.autoCompleteField}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) =>
-                        handleChangeAutoComplete(DOCUMENT_FILTER, event, value)
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label="Name"
-                          className={classes.autoCompleteField}
-                          variant="outlined"
-                        />
-                      )}
-                    /> */}
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
@@ -416,6 +435,7 @@ const ViewDocument = props => {
               showModal={formState.showModalDelete}
               closeModal={handleCloseDeleteModal}
               id={formState.dataToDelete["id"]}
+              documentId={formState.dataToDelete["documentId"]}
               deleteEvent={isDeleteCellCompleted}
             />
           </Grid>

@@ -1,9 +1,9 @@
 const DocumentSchema = {
-  files: {
+  file: {
     label: "Upload",
-    id: "files",
+    id: "file",
     required: true,
-    placeholder: "Upload files",
+    placeholder: "Upload file",
     autoFocus: true,
     type: "file",
     validations: {

@@ -7,7 +7,7 @@
 
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 const utils = require("../../../config/utils.js");
-
+const { PLUGIN } = require("../../../config/constants");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
@@ -35,5 +35,31 @@ module.exports = {
     const { id } = ctx.params;
     const response = await strapi.query("education").findOne({ id });
     return utils.getFindOneResponse(response);
+  },
+
+  async delete(ctx) {
+    const { id } = ctx.params;
+
+    const education = await strapi.query("education").findOne({ id });
+    if (!education) {
+      return ctx.response.notFound("Education does not exist");
+    }
+
+    const document = await strapi.query("document").findOne({ education: id });
+
+    const documentId = (document && document.id) || null;
+    const fileId = (education.file && education.file.id) || null;
+
+    if (fileId && documentId) {
+      await strapi.plugins[PLUGIN].services.contact.deleteDocument(
+        fileId,
+        documentId
+      );
+    }
+
+    await strapi.query("education").delete({ id });
+    return {
+      result: "Success"
+    };
   }
 };

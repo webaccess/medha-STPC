@@ -2,6 +2,7 @@
 export const SAVE_BUTTON_TEXT = "SAVE";
 export const CANCEL_BUTTON_TEXT = "CANCEL";
 export const ALERT_SUCCESS_BUTTON_MESSAGE = "Success";
+export const SAVE_AND_NEXT_BUTTON_TEXT = "SAVE & NEXT";
 
 export const ALERT_SUCCESS_DATA_ADDED_MESSAGE = "Successfully added";
 export const ALERT_SUCCESS_DATA_EDITED_MESSAGE = "Successfully edited";
