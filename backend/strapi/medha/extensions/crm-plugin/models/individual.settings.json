@@ -37,11 +37,7 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": [
-        "male",
-        "female",
-        "other"
-      ],
+      "enum": ["male", "female", "other"],
       "required": false
     },
     "roll_number": {
@@ -59,12 +55,10 @@
       "required": false
     },
     "father_full_name": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "mother_full_name": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "middle_name": {
       "type": "string"

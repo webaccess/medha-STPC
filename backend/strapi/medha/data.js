@@ -919,6 +919,10 @@ const ROLES = {
         action: ["find", "findone"]
       },
       {
+        name: "futureaspirations",
+        action: ["find"]
+      },
+      {
         name: "user",
         action: ["me", "findOne", "destroy"]
       },
@@ -1110,6 +1114,10 @@ const ROLES = {
       {
         name: "stream",
         action: []
+      },
+      {
+        name: "futureaspirations",
+        action: ["find"]
       },
       {
         name: "user",
