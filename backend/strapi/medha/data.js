@@ -534,6 +534,10 @@ const ROLES = {
         action: ["find", "findone", "colleges"]
       },
       {
+        name: "document",
+        action: ["find", "findone"]
+      },
+      {
         name: "activity",
         action: ["find", "findone"],
         type: PLUGIN_NAME
@@ -661,6 +665,10 @@ const ROLES = {
         action: ["me", "findOne"]
       },
       {
+        name: "document",
+        action: ["find", "findone"]
+      },
+      {
         name: "activity",
         action: ["getquestionset", "getfeedbacksforactivityforzone"],
         type: PLUGIN_NAME
@@ -786,6 +794,10 @@ const ROLES = {
       {
         name: "zone",
         action: []
+      },
+      {
+        name: "document",
+        action: ["find", "findone"]
       },
       {
         name: "activity",
@@ -939,6 +951,10 @@ const ROLES = {
           "getRecords",
           "getImportedFileStatus"
         ]
+      },
+      {
+        name: "document",
+        action: ["find", "findone"]
       },
       {
         name: "activity",
@@ -1124,6 +1140,10 @@ const ROLES = {
         action: []
       },
       {
+        name: "document",
+        action: ["find", "findone", "create", "update", "delete"]
+      },
+      {
         name: "activity",
         action: ["findone", "getquestionset"],
         type: PLUGIN_NAME
@@ -1278,6 +1298,10 @@ const ROLES = {
       },
       {
         name: "student-import-csv",
+        action: []
+      },
+      {
+        name: "document",
         action: []
       },
       {
