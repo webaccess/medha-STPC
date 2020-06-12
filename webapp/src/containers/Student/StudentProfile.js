@@ -134,7 +134,7 @@ const StudentProfile = props => {
               month = "0" + month;
             }
             let futureaspiration = "";
-            if (data.future_aspirations.length) {
+            if (data.future_aspirations && data.future_aspirations.length) {
               data.future_aspirations.map(value => {
                 futureaspiration = value.name + ", " + futureaspiration;
                 return value;
@@ -159,7 +159,7 @@ const StudentProfile = props => {
                   : ""
                 : "",
               state: data.contact
-                ? data.contact.user
+                ? data.contact.user.state
                   ? data.contact.user.state.name
                   : ""
                 : "",
