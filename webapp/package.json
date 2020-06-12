@@ -39,6 +39,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
     "react-star-rating-component": "^1.4.1",
+    "react-webpack": "^0.4.1",
     "styled-components": "^5.0.1",
     "validate.js": "^0.13.1",
     "xlsx": "^0.15.6"

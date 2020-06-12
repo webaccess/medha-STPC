@@ -586,6 +586,10 @@ const ROLES = {
         name: "district",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
       // {
       //   name: "individual",
@@ -728,6 +732,10 @@ const ROLES = {
         name: "district",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -863,6 +871,10 @@ const ROLES = {
         name: "district",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -929,6 +941,10 @@ const ROLES = {
       {
         name: "stream",
         action: ["find", "findone"]
+      },
+      {
+        name: "futureaspirations",
+        action: ["find"]
       },
       {
         name: "user",
@@ -1073,6 +1089,10 @@ const ROLES = {
         name: "state",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false

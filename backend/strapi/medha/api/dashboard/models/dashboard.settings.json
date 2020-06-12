@@ -1,0 +1,112 @@
+{
+  "info": {
+    "name": "Dashboard"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "country": {
+      "plugin": "crm-plugin",
+      "model": "country"
+    },
+    "state": {
+      "plugin": "crm-plugin",
+      "model": "state"
+    },
+    "zone": {
+      "model": "zone"
+    },
+    "rpc": {
+      "model": "rpc"
+    },
+    "contact": {
+      "plugin": "crm-plugin",
+      "model": "contact"
+    },
+    "Year": {
+      "type": "biginteger"
+    },
+    "Month": {
+      "type": "string"
+    },
+    "Workshops": {
+      "type": "biginteger"
+    },
+    "TPOFeedback": {
+      "type": "biginteger"
+    },
+    "StudentFeedback": {
+      "type": "biginteger"
+    },
+    "IndustrialVisits": {
+      "type": "biginteger"
+    },
+    "Interships": {
+      "type": "biginteger"
+    },
+    "Placement": {
+      "type": "biginteger"
+    },
+    "FirstYear": {
+      "type": "biginteger"
+    },
+    "SecondNumber": {
+      "type": "biginteger"
+    },
+    "FinalYear": {
+      "type": "biginteger"
+    },
+    "Entrepreneurship": {
+      "type": "biginteger"
+    },
+    "FirstYearAttendance": {
+      "type": "biginteger"
+    },
+    "SecondYearAttendance": {
+      "type": "biginteger"
+    },
+    "FinalYearAttendance": {
+      "type": "biginteger"
+    },
+    "PlannedVsAchieved": {
+      "type": "biginteger"
+    },
+    "UniqueStudents": {
+      "type": "biginteger"
+    },
+    "Institutionstouched": {
+      "type": "biginteger"
+    },
+    "IndustrialVisitAttendance": {
+      "type": "biginteger"
+    },
+    "IndustrialVisitPlannedVsAchieved": {
+      "type": "biginteger"
+    },
+    "IndustrialVisitStudentFeedback": {
+      "type": "biginteger"
+    },
+    "IndustrialVisitTPOFeedback": {
+      "type": "biginteger"
+    },
+    "PlacementAttended": {
+      "type": "biginteger"
+    },
+    "PlacementSelected": {
+      "type": "biginteger"
+    },
+    "PlacementStudentFeedback": {
+      "type": "biginteger"
+    },
+    "PlacementTPOFeedback": {
+      "type": "biginteger"
+    },
+    "PlacementCollegeFeedback": {
+      "type": "biginteger"
+    }
+  },
+  "connection": "default",
+  "collectionName": "dashboards"
+}
