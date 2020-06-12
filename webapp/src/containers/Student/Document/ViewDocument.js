@@ -32,6 +32,7 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
 import auth from "../../../components/Auth";
+import { startCase } from "lodash";
 
 const ViewDocument = props => {
   const [open, setOpen] = React.useState(true);
@@ -225,7 +226,7 @@ const ViewDocument = props => {
     },
     {
       name: "Qualification",
-      cell: cell => (cell.qualification ? cell.qualification : "-")
+      cell: cell => (cell.qualification ? startCase(cell.qualification) : "-")
     },
     { name: "Board", cell: cell => (cell.board ? cell.board.name : "-") },
     {
