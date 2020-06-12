@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
-
+import noImageIcon from "../../assets/images/no-image-icon.png";
 const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: "100%"
@@ -60,6 +60,25 @@ const useStyles = makeStyles(theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "#fff"
+  },
+  DefaultNoImage: {
+    width: "85%",
+    height: "150px",
+    objectFit: "contain",
+    backgroundColor: "#666666",
+    marginLeft: "18%",
+    backgroundPosition: "center center",
+    backgroundRepeat: "no-repeat !important",
+    backgroundImage: `url(${noImageIcon})`,
+    backgroundSize: "65px"
+  },
+  UploadImage: {
+    width: "50%",
+    height: "200px",
+    objectFit: "contain",
+    backgroundColor: "#666666",
+    marginLeft: "33%",
+    borderRadius: "50%"
   }
 }));
 export default useStyles;

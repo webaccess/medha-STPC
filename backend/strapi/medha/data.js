@@ -15,6 +15,16 @@ const ACADEMIC_YEARS = [
   { name: "AY 24-25", start_date: "2024-06-01", end_date: "2025-05-31" }
 ];
 
+const FUTURE_ASPIRATIONS = [
+  "Private Jobs",
+  "Higher Studies",
+  "Marriage",
+  "Entrepreneurship",
+  "Government Job",
+  "Apprenticeship",
+  "Others"
+];
+
 const COUNTRIES = [
   {
     name: "India",
@@ -576,6 +586,10 @@ const ROLES = {
         name: "district",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
       // {
       //   name: "individual",
@@ -718,6 +732,10 @@ const ROLES = {
         name: "district",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -853,6 +871,10 @@ const ROLES = {
         name: "district",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -919,6 +941,10 @@ const ROLES = {
       {
         name: "stream",
         action: ["find", "findone"]
+      },
+      {
+        name: "futureaspirations",
+        action: ["find"]
       },
       {
         name: "user",
@@ -1063,6 +1089,10 @@ const ROLES = {
         name: "state",
         action: ["find", "findone"],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find", "findone"]
       }
     ],
     grantAllPermissions: false
@@ -1116,6 +1146,10 @@ const ROLES = {
       {
         name: "stream",
         action: []
+      },
+      {
+        name: "futureaspirations",
+        action: ["find"]
       },
       {
         name: "user",
@@ -1271,6 +1305,10 @@ const ROLES = {
         action: []
       },
       {
+        name: "futureaspirations",
+        action: []
+      },
+      {
         name: "user",
         action: []
       },
@@ -1397,6 +1435,10 @@ const PUBLIC_ROUTES = {
       action: ["find"]
     },
     {
+      name: "futureaspirations",
+      action: ["find"]
+    },
+    {
       name: "board",
       action: ["find"]
     },
@@ -1440,5 +1482,6 @@ module.exports = {
   ALLOWED_MEDHA_ADMIN_ROUTES,
   PUBLIC_ROUTES,
   ACTIVITY_TYPES,
+  FUTURE_ASPIRATIONS,
   BOARDS
 };

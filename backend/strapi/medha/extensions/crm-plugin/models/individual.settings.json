@@ -24,12 +24,6 @@
     "stream": {
       "model": "stream"
     },
-    "documents": {
-      "collection": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
-    },
     "is_verified": {
       "type": "boolean",
       "default": false
@@ -38,23 +32,12 @@
       "type": "boolean",
       "default": false
     },
-    "father_first_name": {
-      "type": "string",
-      "required": false
-    },
-    "father_last_name": {
-      "type": "string",
-      "required": false
-    },
     "date_of_birth": {
       "type": "datetime"
     },
     "gender": {
       "type": "enumeration",
-      "enum": [
-        "male",
-        "female"
-      ],
+      "enum": ["male", "female", "other"],
       "required": false
     },
     "roll_number": {
@@ -65,17 +48,23 @@
       "plugin": "crm-plugin",
       "model": "organization"
     },
+    "profile_photo": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "father_full_name": {
+      "type": "string"
+    },
+    "mother_full_name": {
+      "type": "string"
+    },
+    "middle_name": {
+      "type": "string"
+    },
     "future_aspirations": {
-      "type": "enumeration",
-      "enum": [
-        "private_jobs",
-        "higher_studies",
-        "marriage",
-        "entrepreneurship",
-        "government_jobs",
-        "apprenticeship",
-        "others"
-      ]
+      "collection": "futureaspirations"
     }
   }
 }
