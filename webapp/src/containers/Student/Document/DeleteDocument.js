@@ -14,7 +14,6 @@ import auth from "../../../components/Auth";
 const DELETE_DOCUMENT_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS_DIRECT_URL;
 const DOCUMENT_ID = "document";
-
 const DeleteDocument = props => {
   const [formState, setFormState] = useState({
     isDeleteData: false,
@@ -62,8 +61,11 @@ const DeleteDocument = props => {
     const API_URL =
       `${DELETE_DOCUMENT_URL}/${studentInfo}/` +
       strapiConstants.STRAPI_DELETE_UPLOAD;
+
+    const id = `${props.id}?document=${props.documentId}`;
+
     serviceProviders
-      .serviceProviderForDeleteRequest(API_URL, props.id)
+      .serviceProviderForDeleteRequest(API_URL, id)
       .then(res => {
         setFormState(formState => ({
           ...formState,
