@@ -122,6 +122,7 @@ const StudentProfile = props => {
         await serviceProvider
           .serviceProviderForGetRequest(VIEW_STUDENT_URL)
           .then(res => {
+            console.log(res);
             const data = res.data.result;
             let date = new Date(data.date_of_birth);
             let year = date.getFullYear();
@@ -159,8 +160,8 @@ const StudentProfile = props => {
                   : ""
                 : "",
               state: data.contact
-                ? data.contact.user.state
-                  ? data.contact.user.state.name
+                ? data.contact.state
+                  ? data.contact.state.name
                   : ""
                 : "",
               college: data.organization.name,

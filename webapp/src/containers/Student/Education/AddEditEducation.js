@@ -57,6 +57,7 @@ const AddEditEducation = props => {
     values: {},
     touched: {},
     errors: {},
+    flag: 0,
     isSuccess: false,
     isEditEducation: props["editEducation"] ? props["editEducation"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
@@ -346,13 +347,19 @@ const AddEditEducation = props => {
           postData
         )
         .then(res => {
-          history.push({
-            pathname: routeConstants.VIEW_EDUCATION,
-            fromEditEducation: true,
-            isDataEdited: true,
-            editResponseMessage: "",
-            editedData: {}
-          });
+          if (formState.flag === 1) {
+            history.push({
+              pathname: routeConstants.VIEW_DOCUMENTS
+            });
+          } else {
+            history.push({
+              pathname: routeConstants.VIEW_EDUCATION,
+              fromEditEducation: true,
+              isDataEdited: true,
+              editResponseMessage: "",
+              editedData: {}
+            });
+          }
           setLoaderStatus(false);
         })
         .catch(error => {
@@ -371,13 +378,19 @@ const AddEditEducation = props => {
         .serviceProviderForPostRequest(EDUCATION_URL, postData)
         .then(res => {
           setIsSuccess(true);
-          history.push({
-            pathname: routeConstants.VIEW_EDUCATION,
-            fromAddEducation: true,
-            isDataAdded: true,
-            addResponseMessage: "",
-            addedData: {}
-          });
+          if (formState.flag === 1) {
+            history.push({
+              pathname: routeConstants.VIEW_DOCUMENTS
+            });
+          } else {
+            history.push({
+              pathname: routeConstants.VIEW_EDUCATION,
+              fromAddEducation: true,
+              isDataAdded: true,
+              addResponseMessage: "",
+              addedData: {}
+            });
+          }
           setLoaderStatus(false);
         })
         .catch(error => {
@@ -414,6 +427,12 @@ const AddEditEducation = props => {
 
   console.log({ values: formState.values, errors: formState.errors });
 
+  const saveAndNext = event => {
+    event.preventDefault();
+    formState["flag"] = 1;
+    handleSubmit(event);
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -430,7 +449,7 @@ const AddEditEducation = props => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
-          <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <form autoComplete="off" noValidate>
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
@@ -730,19 +749,37 @@ const AddEditEducation = props => {
                 </Grid>
               </Grid>
             </CardContent>
-            <CardActions className={classes.btnspace}>
-              <YellowButton type="submit" color="primary" variant="contained">
-                {genericConstants.SAVE_BUTTON_TEXT}
-              </YellowButton>
-              <GrayButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                to={routeConstants.VIEW_EDUCATION}
-              >
-                {genericConstants.CANCEL_BUTTON_TEXT}
-              </GrayButton>
-            </CardActions>
+            <Grid item xs={12} className={classes.CardActionGrid}>
+              <CardActions className={classes.btnspace}>
+                <YellowButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  style={{ marginRight: "18px" }}
+                  onClick={handleSubmit}
+                >
+                  {genericConstants.SAVE_BUTTON_TEXT}
+                </YellowButton>
+                <YellowButton
+                  color="primary"
+                  type="submit"
+                  mfullWidth
+                  variant="contained"
+                  style={{ marginRight: "18px" }}
+                  onClick={saveAndNext}
+                >
+                  <span>{genericConstants.SAVE_AND_NEXT_BUTTON_TEXT}</span>
+                </YellowButton>
+                <GrayButton
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  to={routeConstants.VIEW_EDUCATION}
+                >
+                  {genericConstants.CANCEL_BUTTON_TEXT}
+                </GrayButton>
+              </CardActions>
+            </Grid>
           </form>
         </Card>
       </Grid>
