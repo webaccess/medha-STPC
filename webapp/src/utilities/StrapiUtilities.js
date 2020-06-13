@@ -345,7 +345,7 @@ export const editStudent = (
   stream = null,
   rollNumber = null,
   id,
-  futureAspirations,
+  futureAspirations = [],
   files,
   password = undefined
 ) => {
