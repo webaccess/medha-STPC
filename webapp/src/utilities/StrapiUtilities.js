@@ -239,6 +239,7 @@ export const addStudent = (
   rollNumber = null,
   otp,
   files,
+  futureAspirations = [],
   isStudent = true
 ) => {
   const data = {
@@ -261,6 +262,7 @@ export const addStudent = (
     gender: gender,
     roll_number: rollNumber,
     is_physically_challenged: physicallyHandicapped,
+    future_aspirations: futureAspirations,
     role: 7,
     isStudent: true
   };
