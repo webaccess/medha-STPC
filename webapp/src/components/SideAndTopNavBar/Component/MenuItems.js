@@ -17,7 +17,8 @@ const MenuItems = props => {
     let dataToReturn = [];
     if (
       auth.getUserInfo() !== null &&
-      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+      auth.getUserInfo().studentInfo !== null
     ) {
       if (
         auth.getUserInfo().studentInfo.organization.contact.id ===

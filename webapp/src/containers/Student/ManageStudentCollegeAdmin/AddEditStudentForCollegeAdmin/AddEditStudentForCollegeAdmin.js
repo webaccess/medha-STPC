@@ -159,7 +159,7 @@ const AddEditStudentForCollegeAdmin = props => {
   const getFutureAspirant = () => {
     let futureAspirationsUrl =
       strapiApiConstants.STRAPI_DB_URL +
-      strapiApiConstants.STRAPI_FUTURE_ASPIRANT;
+      strapiApiConstants.STRAPI_FUTURE_ASPIRATIONS;
     serviceProvider
       .serviceProviderForGetRequest(futureAspirationsUrl)
       .then(res => {
