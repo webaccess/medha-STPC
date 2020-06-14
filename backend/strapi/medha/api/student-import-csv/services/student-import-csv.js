@@ -57,9 +57,7 @@ module.exports = {
           message: null
         })
         .save(null)
-        .then(model => {
-          console.log(model.id);
-        })
+        .then(model => {})
         .catch(error => {
           console.log("inside createRecords Service");
           console.log(error);
@@ -152,10 +150,10 @@ module.exports = {
         const stream = streams.find(stream => stream.name == record["Stream"]);
         individualRequestBody.stream = stream ? stream.id : null;
 
-        individualRequestBody.father_first_name =
-          record["Father First Name"] || null;
-        individualRequestBody.father_last_name =
-          record["Father First Name"] || null;
+        individualRequestBody.father_full_name =
+          record["Father full name"] || null;
+        individualRequestBody.mother_full_name =
+          record["Mother full name"] || null;
         individualRequestBody.date_of_birth = record["DOB"] || null;
         individualRequestBody.gender = record["Gender"] || null;
         individualRequestBody.roll_number = record["Roll Number"] || null;
@@ -164,16 +162,21 @@ module.exports = {
           ? contactDetails.individual.organization
           : null;
         individualRequestBody.organization = org;
-
-        individualRequestBody.future_aspirations = null;
+        individualRequestBody.is_verified = true;
         individualRequestBody.is_physically_challenged = false;
 
         if (
           individualRequestBody.hasOwnProperty("date_of_birth") &&
           individualRequestBody["date_of_birth"]
         ) {
-          var d = new Date(individualRequestBody["date_of_birth"]);
+          var d = new Date(
+            individualRequestBody["date_of_birth"].replace(
+              /(\d{2})-(\d{2})-(\d{4})/,
+              "$2/$1/$3"
+            )
+          );
           var n = d.toISOString();
+
           individualRequestBody["date_of_birth"] = n;
         }
 
@@ -203,6 +206,7 @@ module.exports = {
           education_year: _.toLower(record["Year"])
         };
 
+        console.log(contactBody, individualRequestBody, record, educationBody);
         await bookshelf
           .transaction(async t => {
             // Step 1 creating user
@@ -233,7 +237,7 @@ module.exports = {
                 return { individual: model };
               })
               .catch(error => {
-                console.log("individual ", err.detail);
+                console.log(error);
                 return { individual: null, individualStatus: error.detail };
               });
 
@@ -305,7 +309,6 @@ module.exports = {
           })
           .then(success => {
             // successIds.push(data.id);
-            console.log(success);
             next();
           })
           .catch(async error => {

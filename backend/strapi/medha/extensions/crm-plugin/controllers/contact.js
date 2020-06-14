@@ -404,7 +404,7 @@ module.exports = {
               id: individual.id || individual._id,
               model: "individual"
             },
-            { profile_photo: files["files.profile_photo"] },
+            files["files.profile_photo"],
             PLUGIN
           );
         }
@@ -2235,7 +2235,7 @@ module.exports = {
                   id: individualId,
                   model: "individual"
                 },
-                { profile_photo: files["files.profile_photo"] },
+                files["files.profile_photo"],
                 PLUGIN
               );
             }

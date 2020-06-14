@@ -169,7 +169,7 @@ const StudentProfile = props => {
               fatherFullName: data.father_full_name,
               motherFullName: data.mother_full_name,
               address: data.contact.address_1,
-              rollnumber: data.roll_number.toString(),
+              rollnumber: data.roll_number ? data.roll_number.toString() : "",
               dataofbirth: dt + "/" + month + "/" + year,
               gender: data.gender,
               district: data.contact.district ? data.contact.district.name : "",
