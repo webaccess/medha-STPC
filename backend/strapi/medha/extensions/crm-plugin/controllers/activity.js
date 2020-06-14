@@ -33,7 +33,7 @@ module.exports = {
           id: entry.id || entry._id,
           model: "activity"
         },
-        { upload_logo: files["files.upload_logo"] },
+        files["files.upload_logo"],
         PLUGIN
       );
     } else {
@@ -388,7 +388,7 @@ module.exports = {
               id,
               model: "activity"
             },
-            { upload_logo: files["files.upload_logo"] },
+            files["files.upload_logo"],
             PLUGIN
           );
 
