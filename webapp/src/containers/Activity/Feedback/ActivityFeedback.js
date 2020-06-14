@@ -952,7 +952,7 @@ const ActivityFeedback = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          Event Feedback
+          Activity Feedback
         </Typography>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
