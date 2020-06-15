@@ -520,8 +520,8 @@ module.exports = {
         "contact.district",
         "zone",
         "rpc",
-        "principal",
-        "tpos",
+        "principal.contact",
+        "tpos.contact",
         "stream_strength",
         "stream_strength.stream"
       ]);
