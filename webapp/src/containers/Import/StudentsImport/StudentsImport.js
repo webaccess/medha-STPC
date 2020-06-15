@@ -213,7 +213,7 @@ const StudentsImport = props => {
   };
   /** Columns to show in table */
   const column = [
-    { name: "Name", selector: "imported_file" },
+    { name: "Name", selector: "imported_file.name" },
     { name: "Total Records", selector: "total" },
     { name: "Pending", selector: "pending" },
     { name: "Error", selector: "error" },
