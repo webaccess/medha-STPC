@@ -25,7 +25,7 @@ module.exports = {
           refId: entry.id,
           ref: "student-import-csv",
           source: null,
-          field: null
+          field: "imported_file"
         },
         files: files["files.imported_file"]
       });
