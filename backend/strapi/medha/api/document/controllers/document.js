@@ -20,7 +20,7 @@ module.exports = {
           id: entry.id || entry._id,
           model: "document"
         },
-        { file: files["files.file"] }
+        files["files.file"]
       );
     } else {
       return ctx.response.badRequest("file is missing");

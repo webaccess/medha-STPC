@@ -56,16 +56,6 @@ const AddEditStudentForCollegeAdmin = props => {
     { name: "Other", id: "other" }
   ];
 
-  const futureAspirationsList = [
-    { id: "private_jobs", name: "Private Job" },
-    { id: "others", name: "Others" },
-    { id: "higher_studies", name: "Higher Studies" },
-    { id: "marriage", name: "Marriage" },
-    { id: "entrepreneurship", name: "Entrepreneurship" },
-    { id: "government_jobs", name: "Government Job" },
-    { id: "apprenticeship", name: "Apprenticeship" }
-  ];
-
   const physicallyHandicappedlist = [
     { name: "Yes", id: true },
     { name: "No", id: false }
@@ -98,6 +88,7 @@ const AddEditStudentForCollegeAdmin = props => {
     values: {},
     touched: {},
     errors: {},
+    dataToShowForMultiSelect: [],
     isDateOfBirthPresent: true,
     isdateOfBirthValid: true,
     isSuccess: false,
@@ -125,6 +116,7 @@ const AddEditStudentForCollegeAdmin = props => {
   const [statelist, setstatelist] = useState([]);
   const [districtlist, setdistrictlist] = useState([]);
   const [streamlist, setStreamlist] = useState([]);
+  const [futureAspirant, setFutureAspirant] = useState([]);
   const [collegelist] = useState([auth.getUserInfo().studentInfo.organization]);
 
   useEffect(() => {
@@ -159,10 +151,57 @@ const AddEditStudentForCollegeAdmin = props => {
         }
       };
     }
-
+    getFutureAspirant();
     getStates();
     getStreams();
   }, []);
+
+  const getFutureAspirant = () => {
+    let futureAspirationsUrl =
+      strapiApiConstants.STRAPI_DB_URL +
+      strapiApiConstants.STRAPI_FUTURE_ASPIRATIONS;
+    serviceProvider
+      .serviceProviderForGetRequest(futureAspirationsUrl)
+      .then(res => {
+        setFutureAspirant(res.data.result);
+        prePopulateFutureAspirant(res.data.result);
+      })
+      .catch(error => {
+        console.log("errorfuture", error);
+      });
+  };
+
+  const prePopulateFutureAspirant = data => {
+    if (formState.editStudent) {
+      if (
+        formState["dataForEdit"]["future_aspirations"] &&
+        formState["dataForEdit"]["future_aspirations"].length !== 0
+      ) {
+        let array = [];
+        data.map(aspirantData => {
+          for (let i in formState["dataForEdit"]["future_aspirations"]) {
+            if (
+              formState["dataForEdit"]["future_aspirations"][i]["id"] ===
+              aspirantData["id"]
+            ) {
+              array.push(aspirantData);
+            }
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          dataToShowForMultiSelect: array
+        }));
+        let finalData = [];
+        for (let i in formState["dataForEdit"]["future_aspirations"]) {
+          finalData.push(
+            formState["dataForEdit"]["future_aspirations"][i]["id"]
+          );
+        }
+        formState.values["futureAspirations"] = finalData;
+      }
+    }
+  };
 
   const getStreams = () => {
     let streamsArray = [];
@@ -175,11 +214,9 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   const getStates = () => {
-    serviceProvider
-      .serviceProviderForGetRequest(STATES_URL, defaultParams, {})
-      .then(res => {
-        setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
-      });
+    serviceProvider.serviceProviderForGetRequest(STATES_URL).then(res => {
+      setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
+    });
   };
 
   const getDistrict = () => {
@@ -243,7 +280,7 @@ const AddEditStudentForCollegeAdmin = props => {
         props.location["dataForEdit"]["contact"]["state"]
       ) {
         formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["state"];
+          props.location["dataForEdit"]["contact"]["state"]["id"];
       }
       if (props.location["dataForEdit"]["stream"]) {
         formState.values["stream"] =
@@ -277,21 +314,9 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["rollnumber"] =
           props.location["dataForEdit"]["roll_number"];
       }
-      if (props.location["dataForEdit"]["future_aspirations"]) {
-        formState.values["futureAspirations"] =
-          props.location["dataForEdit"]["future_aspirations"];
-        console.log(props.location["dataForEdit"]["future_aspirations"]);
-        formState["futureAspirations"] = props.location["dataForEdit"][
-          "future_aspirations"
-        ].map(value => value.id);
-      }
       if (props.location["dataForEdit"]["is_physically_challenged"] !== null) {
         formState.values["physicallyHandicapped"] =
           props.location["dataForEdit"]["is_physically_challenged"];
-      }
-      if (props.location["dataForEdit"]["future_aspirations"]) {
-        formState.values["futureAspirations"] =
-          props.location["dataForEdit"]["future_aspirations"];
       }
       if (
         props.location["dataForEdit"]["organization"] &&
@@ -410,9 +435,7 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["stream"],
         parseInt(formState.values["rollnumber"]),
         formState.dataForEdit.id,
-        formState.values["futureAspirations"]
-          ? formState["futureAspirations"]
-          : null,
+        formState.values["futureAspirations"],
         formState.files,
         formState.values["password"] ? formState.values["password"] : undefined
       );
@@ -487,7 +510,6 @@ const AddEditStudentForCollegeAdmin = props => {
           ? formState["futureAspirations"]
           : null
       );
-      console.log(postData);
       let url =
         strapiApiConstants.STRAPI_DB_URL +
         strapiApiConstants.STRAPI_CREATE_USERS;
@@ -552,6 +574,18 @@ const AddEditStudentForCollegeAdmin = props => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
+    if (eventName === "futureAspirations") {
+      formState.dataToShowForMultiSelect = value;
+    }
+    if (get(registrationSchema[eventName], "type") === "multi-select") {
+      let finalValues = [];
+      for (let i in value) {
+        finalValues.push(value[i]["id"]);
+      }
+      value = {
+        id: finalValues
+      };
+    }
     if (value !== null) {
       setFormState(formState => ({
         ...formState,
@@ -627,7 +661,6 @@ const AddEditStudentForCollegeAdmin = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {formState.editStudent ? null : (
           <Typography variant="h4" gutterBottom>
@@ -1281,9 +1314,9 @@ const AddEditStudentForCollegeAdmin = props => {
                   {formState.editStudent ? (
                     <Grid item md={6} xs={12}>
                       <Autocomplete
-                        id="combo-box-demo"
-                        className={classes.root}
-                        options={futureAspirationsList}
+                        id={get(registrationSchema["futureAspirations"], "id")}
+                        multiple
+                        options={futureAspirant}
                         getOptionLabel={option => option.name}
                         onChange={(event, value) => {
                           handleChangeAutoComplete(
@@ -1292,22 +1325,13 @@ const AddEditStudentForCollegeAdmin = props => {
                             value
                           );
                         }}
-                        value={
-                          futureAspirationsList[
-                            futureAspirationsList.findIndex(function (item, i) {
-                              return (
-                                item.id === formState.values.futureAspirations
-                              );
-                            })
-                          ] || null
-                        }
+                        name={"futureAspirations"}
+                        filterSelectedOptions
+                        value={formState.dataToShowForMultiSelect || null}
                         renderInput={params => (
                           <TextField
                             {...params}
                             error={hasError("futureAspirations")}
-                            label="Future Aspirations"
-                            variant="outlined"
-                            name="tester"
                             helperText={
                               hasError("futureAspirations")
                                 ? formState.errors["futureAspirations"].map(
@@ -1317,6 +1341,15 @@ const AddEditStudentForCollegeAdmin = props => {
                                   )
                                 : null
                             }
+                            placeholder={get(
+                              registrationSchema["futureAspirations"],
+                              "placeholder"
+                            )}
+                            label={get(
+                              registrationSchema["futureAspirations"],
+                              "label"
+                            )}
+                            variant="outlined"
                           />
                         )}
                       />

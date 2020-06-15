@@ -234,7 +234,7 @@ const RegistrationSchema = {
     required: false,
     placeholder: "futureAspirations",
     autoFocus: true,
-    type: "text",
+    type: "multi-select",
     validations: {}
   },
   files: {
@@ -245,21 +245,6 @@ const RegistrationSchema = {
     autoFocus: true,
     type: "file",
     validations: {}
-  },
-  username: {
-    label: "Username",
-    id: "username",
-    autoComplete: "username",
-    required: true,
-    placeholder: "Username",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "User Name is required"
-      }
-    }
   },
   password: {
     label: "Password",

@@ -10,27 +10,27 @@
       "method": "GET",
       "path": "/contact/individual/:id/academic-history",
       "handler": "contact.academicHistory",
-      "config": { "policies": ["global.isIndividual"] }
+      "config": { "policies": ["global::isIndividual"] }
     },
     {
       "method": "GET",
       "path": "/contact/individual/:id/education",
       "handler": "contact.education",
       "config": {
-        "policies": ["global.isIndividual"]
+        "policies": ["global::isIndividual"]
       }
     },
     {
       "method": "POST",
       "path": "/contact/create-organization",
       "handler": "contact.createOrganization",
-      "config": { "policies": ["global.validateOrganization"] }
+      "config": { "policies": ["global::validateOrganization"] }
     },
     {
       "method": "POST",
       "path": "/contact/create-individual",
       "handler": "contact.createIndividual",
-      "config": { "policies": ["global.validateIndividual"] }
+      "config": { "policies": ["global::validateIndividual"] }
     },
     {
       "method": "POST",
@@ -58,7 +58,7 @@
       "method": "GET",
       "path": "/contact/get-organizations/:orgId",
       "handler": "contact.organizationDetails",
-      "config": { "policies": ["global.isOrganizationAllowed"] }
+      "config": { "policies": ["global::isOrganizationAllowed"] }
     },
     {
       "method": "GET",
@@ -70,7 +70,7 @@
       "method": "GET",
       "path": "/contact/get-organizations/:orgId/students",
       "handler": "contact.organizationStudents",
-      "config": { "policies": ["global.isOrganizationAllowed"] }
+      "config": { "policies": ["global::isOrganizationAllowed"] }
     },
     {
       "method": "GET",
@@ -118,7 +118,7 @@
       "method": "GET",
       "path": "/contact/individual/:id/activities",
       "handler": "contact.eligibleActivity",
-      "config": { "policies": ["global.isIndividual"] }
+      "config": { "policies": ["global::isIndividual"] }
     },
     {
       "method": "GET",
@@ -136,19 +136,19 @@
       "method": "GET",
       "path": "/contact/individuals/:id/events",
       "handler": "contact.eligibleEvents",
-      "config": { "policies": ["global.isIndividual"] }
+      "config": { "policies": ["global::isIndividual"] }
     },
     {
       "method": "GET",
       "path": "/contact/individuals/:id/past-events",
       "handler": "contact.eligiblePastEvents",
-      "config": { "policies": ["global.isIndividual"] }
+      "config": { "policies": ["global::isIndividual"] }
     },
     {
       "method": "GET",
       "path": "/contact/individuals/:id/past-activities",
       "handler": "contact.eligiblePastActivities",
-      "config": { "policies": ["global.isIndividual"] }
+      "config": { "policies": ["global::isIndividual"] }
     },
     {
       "method": "GET",
@@ -179,7 +179,7 @@
       "path": "/activities/:id",
       "handler": "activity.delete",
       "config": {
-        "policies": ["global.checkIfBatchExist"]
+        "policies": ["global::checkIfBatchExist"]
       }
     },
     {
@@ -187,7 +187,7 @@
       "path": "/activities",
       "handler": "activity.create",
       "config": {
-        "policies": ["global.addAcademicYear"]
+        "policies": ["global::addAcademicYear"]
       }
     },
     {
@@ -236,7 +236,7 @@
       "method": "GET",
       "path": "/contact/get-individuals/:id/document",
       "handler": "contact.documents",
-      "config": { "policies": ["global.isIndividual"] }
+      "config": { "policies": ["global::isIndividual"] }
     },
     {
       "method": "GET",
@@ -254,13 +254,13 @@
       "method": "DELETE",
       "path": "/contact/get-individuals/:id/file/:fileId",
       "handler": "contact.deleteDocument",
-      "config": { "policies": ["global.isIndividual"] }
+      "config": { "policies": ["global::isIndividual"] }
     },
     {
       "method": "POST",
       "path": "/contact/delete",
       "handler": "contact.deleteIndividual",
-      "config": { "policies": ["global.isIndividualDeleteAllowed"] }
+      "config": { "policies": ["global::isIndividualDeleteAllowed"] }
     },
     {
       "method": "GET",

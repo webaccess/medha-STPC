@@ -8,6 +8,7 @@ const { COUNTRIES } = require("./data");
   await states();
   console.log("\n");
   await districts();
+  process.exit(0);
 })();
 
 async function countries() {

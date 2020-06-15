@@ -310,6 +310,7 @@ const ViewCollege = props => {
                   <Autocomplete
                     multiple
                     freeSolo
+                    disabled
                     id="fixed-tags-demo"
                     options={[]}
                     getOptionLabel={option => option.TPO}
