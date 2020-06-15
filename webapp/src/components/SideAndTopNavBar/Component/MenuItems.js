@@ -172,23 +172,38 @@ const MenuItems = props => {
         tabItems: [
           {
             name: "Personal Details",
-            link: routeConstants.VIEW_PROFILE
+            link: routeConstants.VIEW_PROFILE,
+            availableRoutes: [
+              routeConstants.VIEW_PROFILE,
+              routeConstants.EDIT_PROFILE
+            ]
           },
           {
             name: "Education",
-            link: routeConstants.VIEW_EDUCATION
+            link: routeConstants.VIEW_EDUCATION,
+            availableRoutes: [
+              routeConstants.VIEW_EDUCATION,
+              routeConstants.ADD_EDUCATION,
+              routeConstants.EDIT_EDUCATION
+            ]
           },
           {
             name: "Documents",
-            link: routeConstants.VIEW_DOCUMENTS
+            link: routeConstants.VIEW_DOCUMENTS,
+            availableRoutes: [
+              routeConstants.VIEW_DOCUMENTS,
+              routeConstants.ADD_DOCUMENTS
+            ]
           },
           {
             name: "Past Activities",
-            link: routeConstants.VIEW_PAST_ACTIVITIES
+            link: routeConstants.VIEW_PAST_ACTIVITIES,
+            availableRoutes: [routeConstants.VIEW_PAST_ACTIVITIES]
           },
           {
             name: "Past Events",
-            link: routeConstants.VIEW_PAST_EVENTS
+            link: routeConstants.VIEW_PAST_EVENTS,
+            availableRoutes: [routeConstants.VIEW_PAST_ACTIVITIES]
           }
         ]
       },
