@@ -10,7 +10,7 @@ const EducationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Year of passing is required"
+        message: "Year is required"
       }
     }
   },
