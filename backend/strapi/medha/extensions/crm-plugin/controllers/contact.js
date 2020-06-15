@@ -2252,6 +2252,7 @@ module.exports = {
             "Something went wrong while updating Individual"
           );
         }
+
         const future_aspirations = await Promise.all(
           data.future_aspirations.map(async futureaspiration => {
             return await strapi
@@ -2271,9 +2272,10 @@ module.exports = {
         }
 
         // Step 3 updating contact details
+
         const contact = await strapi
           .query("contact", PLUGIN)
-          .model.where({ id })
+          .model.where({ id: id })
           .save(contactBody, { transacting: t, patch: true })
           .then(model => model)
           .catch(error => {
