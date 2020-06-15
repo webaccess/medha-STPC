@@ -548,10 +548,10 @@ const ViewActivity = props => {
     }
   };
 
-  const handleDeleteActivity = activity => {
+  const handleDeleteActivity = activityBatch => {
     setFormState(formState => ({
       ...formState,
-      dataToDelete: { ...activity },
+      dataToDelete: { ...activityBatch },
       showModalDelete: true
     }));
   };
