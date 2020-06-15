@@ -399,14 +399,16 @@ module.exports = {
           );
         }
         if (ctx.request.files) {
-          await strapi.plugins.upload.services.upload.uploadToEntity(
-            {
-              id: individual.id || individual._id,
-              model: "individual"
+          await strapi.plugins.upload.services.upload.upload({
+            data: {
+              fileInfo: {},
+              refId: individual.id,
+              ref: "individual",
+              source: PLUGIN,
+              field: "profile_photo"
             },
-            files["files.profile_photo"],
-            PLUGIN
-          );
+            files: files["files.profile_photo"]
+          });
         }
         if (data.future_aspirations) {
           const future_aspirations = await Promise.all(
@@ -2230,14 +2232,16 @@ module.exports = {
           .then(async model => {
             if (ctx.request.files) {
               console.log("in files");
-              await strapi.plugins.upload.services.upload.uploadToEntity(
-                {
-                  id: individualId,
-                  model: "individual"
+              await strapi.plugins.upload.services.upload.upload({
+                data: {
+                  fileInfo: {},
+                  refId: individualId,
+                  ref: "individual",
+                  source: PLUGIN,
+                  field: "profile_photo"
                 },
-                files["files.profile_photo"],
-                PLUGIN
-              );
+                files: files["files.profile_photo"]
+              });
             }
 
             return model;
