@@ -352,7 +352,8 @@ const ManageStudents = props => {
     setFormState(formState => ({
       ...formState,
       showModalApproveUnapprove: false,
-      showModalDelete: false
+      showModalDelete: false,
+      dataToDelete: {}
     }));
   };
 
@@ -360,7 +361,7 @@ const ManageStudents = props => {
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
-        id: event.target.id,
+        id: event.target.getAttribute("contactId"),
         name: event.target.getAttribute("value"),
         userId: event.target.getAttribute("userId")
       },
@@ -385,7 +386,8 @@ const ManageStudents = props => {
       showModalDelete: false,
       fromDeleteModal: true,
       isMultiDelete: false,
-      messageToShow: statusToShow
+      messageToShow: statusToShow,
+      dataToDelete: {}
     }));
     if (status) {
       getStudentData(formState.pageSize, 1, formState.filterDataParameters);
@@ -518,7 +520,7 @@ const ManageStudents = props => {
     let arrayId = [];
     let arrayUserId = [];
     selectedRows.forEach(d => {
-      arrayId.push(d.id);
+      arrayId.push(d.contactId);
       arrayUserId.push(d.userId);
     });
 
@@ -728,6 +730,7 @@ const ManageStudents = props => {
             <DeleteGridIcon
               userId={cell.userId}
               id={cell.id}
+              contactId={cell.contactId}
               value={cell.name}
               onClick={deleteCell}
             />
@@ -1090,21 +1093,22 @@ const ManageStudents = props => {
               {genericConstants.NO_DATA_TO_SHOW_TEXT}
             </div>
           )}
-
-          <DeleteStudents
-            showModal={formState.showModalDelete}
-            closeModal={handleCloseDeleteModal}
-            id={
-              formState.isMultiDelete
-                ? formState.MultiDeleteID
-                : formState.dataToDelete["id"]
-            }
-            UserID={formState.MultiDeleteUserId}
-            modalClose={modalClose}
-            isMultiDelete={formState.isMultiDelete ? true : false}
-            dataToDelete={formState.dataToDelete}
-            clearSelectedRow={selectedRowCleared}
-          />
+          {formState.showModalDelete ? (
+            <DeleteStudents
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              id={
+                formState.isMultiDelete
+                  ? formState.MultiDeleteID
+                  : formState.dataToDelete["id"]
+              }
+              UserID={formState.MultiDeleteUserId}
+              modalClose={modalClose}
+              isMultiDelete={formState.isMultiDelete ? true : false}
+              dataToDelete={formState.dataToDelete}
+              clearSelectedRow={selectedRowCleared}
+            />
+          ) : null}
 
           <ApprovedStudents
             studentName={formState.studentName}
