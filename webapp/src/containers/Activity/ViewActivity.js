@@ -883,7 +883,7 @@ const ViewActivity = props => {
   /** Columns to show in table */
   const column = [
     {
-      name: "Training and Activities",
+      name: "Activity Name",
       sortable: true,
       selector: "title",
       cell: row => <ToolTipComponent data={row.title} />
@@ -1269,7 +1269,7 @@ const ViewActivity = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
-                  label="Activity Title"
+                  label="Activity Name"
                   margin="normal"
                   variant="outlined"
                   value={formState.filterDataParameters[ACTIVITY_FILTER] || ""}

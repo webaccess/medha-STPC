@@ -203,10 +203,10 @@ module.exports = {
           year_of_passing: academicYearId,
           percentage: null,
           pursuing: true,
-          education_year: _.toLower(record["Year"])
+          education_year: _.toLower(record["Year"]),
+          qualification: record["Qualification"]
         };
 
-        console.log(contactBody, individualRequestBody, record, educationBody);
         await bookshelf
           .transaction(async t => {
             // Step 1 creating user
@@ -296,6 +296,7 @@ module.exports = {
               { contact: contactResponse.id },
               { transacting: t, patch: true, method: "update" }
             );
+
             await individual.save(
               { contact: contactResponse.id },
               { transacting: t, patch: true, method: "update" }

@@ -241,7 +241,7 @@ module.exports = {
       .then(res => {
         const data = res
           .toJSON()
-          .filter(academicHistory => academicHistory.contact.id == id);
+          .filter(education => education.contact.id == id);
         const response = utils.paginate(data, page, pageSize);
         return {
           result: response.result,
@@ -2178,8 +2178,8 @@ module.exports = {
       "middle_name",
       "last_name",
       "stream",
-      "father_first_name",
-      "father_last_name",
+      "father_full_name",
+      "mother_full_name",
       "date_of_birth",
       "gender",
       "is_physically_challenged",
@@ -2301,31 +2301,6 @@ module.exports = {
         return ctx.response.badRequest(error);
       });
   },
-
-  // documents: async ctx => {
-  //   const { id } = ctx.params;
-  //   const documentId = ctx.query ? ctx.query.name_contains : null;
-
-  //   const response = await strapi.query("contact", PLUGIN).findOne({ id });
-
-  //   if (
-  //     documentId &&
-  //     response.individual.documents &&
-  //     response.individual.documents.length > 0
-  //   ) {
-  //     response.individual.documents = response.individual.documents.filter(
-  //       doc => {
-  //         if (doc.name.search(documentId) >= 0) {
-  //           return doc;
-  //         }
-  //       }
-  //     );
-  //   }
-
-  //   return utils.getFindOneResponse(
-  //     response ? response.individual.documents : null
-  //   );
-  // },
 
   deleteDocument: async ctx => {
     const { fileId } = ctx.params;

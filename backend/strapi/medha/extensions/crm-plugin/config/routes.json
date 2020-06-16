@@ -8,6 +8,22 @@
     },
     {
       "method": "GET",
+      "path": "/districts",
+      "handler": "district.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/states",
+      "handler": "state.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/contact/individual/:id/academic-history",
       "handler": "contact.academicHistory",
       "config": { "policies": ["global::isIndividual"] }
