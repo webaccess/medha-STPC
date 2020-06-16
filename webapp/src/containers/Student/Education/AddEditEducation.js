@@ -126,6 +126,7 @@ const AddEditEducation = props => {
       formState.values[qualification] == "senior_secondary"
     ) {
       delete formState.errors[educationYear];
+      delete formState.values[educationYear];
       setFormState(formState => ({
         ...formState,
         errors: {
@@ -472,7 +473,11 @@ const AddEditEducation = props => {
                       <TextField
                         {...params}
                         error={hasError(yearOfPassing)}
-                        label="Year of passing"
+                        label={
+                          formState.values["pursuing"]
+                            ? "Current Year"
+                            : "Year of passing"
+                        }
                         required
                         variant="outlined"
                         name="tester"

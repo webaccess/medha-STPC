@@ -16,9 +16,10 @@ import Fade from "@material-ui/core/Fade";
 import { YellowButton, GrayButton } from "../../../../components";
 import useStyles from "../../../ContainerStyles/ModalPopUpStyles";
 
-const STUDENTS_URL =
-  strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENTS_DIRECT_URL;
-const USERS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_USERS;
+const USER_URL =
+  strapiConstants.STRAPI_DB_URL +
+  strapiConstants.STRAPI_CONTACT_URL +
+  strapiConstants.STRAPI_DELETE_URL;
 
 const DeleteStudents = props => {
   const [open, setOpen] = React.useState(false);
@@ -59,27 +60,23 @@ const DeleteStudents = props => {
   const deleteStudentData = async () => {
     setOpen(true);
     if (props.isMultiDelete) {
-      await serviceProviders
-        .serviceProviderForAllDeleteRequest(STUDENTS_URL, props.id)
+      let deleteId = {
+        id: props.id
+      };
+      serviceProviders
+        .serviceProviderForPostRequest(USER_URL, deleteId)
         .then(res => {
-          serviceProviders
-            .serviceProviderForAllDeleteRequest(USERS_URL, props.UserID)
-            .then(res => {
-              setFormState(formState => ({
-                ...formState,
-                isValid: true
-              }));
-              setOpen(false);
-              formState.isDeleteData = true;
-              handleCloseModal(
-                "The selected students have been deleted successfully."
-              );
-            })
-            .catch(error => {
-              setOpen(false);
-              console.log("UserDeleteError", error);
-            });
+          setFormState(formState => ({
+            ...formState,
+            isValid: true
+          }));
+          setOpen(false);
+          formState.isDeleteData = true;
+          handleCloseModal(
+            "The selected students have been deleted successfully."
+          );
         })
+
         .catch(error => {
           setOpen(false);
           console.log("error");
@@ -89,31 +86,26 @@ const DeleteStudents = props => {
           );
         });
     } else {
-      await serviceProviders
-        .serviceProviderForDeleteRequest(STUDENTS_URL, props.id)
+      let deleteArray = [];
+      deleteArray.push(parseInt(props.id));
+      let deleteId = {
+        id: deleteArray
+      };
+      serviceProviders
+        .serviceProviderForPostRequest(USER_URL, deleteId)
         .then(res => {
-          serviceProviders
-            .serviceProviderForDeleteRequest(
-              USERS_URL,
-              props.dataToDelete["userId"]
-            )
-            .then(res => {
-              formState.isDeleteData = true;
-              setOpen(false);
-              handleCloseModal(
-                "Student " +
-                  props.dataToDelete["name"] +
-                  " has been successfully deleted"
-              );
-            })
-            .catch(error => {
-              setOpen(false);
-              console.log("studenterror", error);
-            });
+          formState.isDeleteData = true;
+          setOpen(false);
+          handleCloseModal(
+            "Student " +
+              props.dataToDelete["name"] +
+              " has been successfully deleted"
+          );
         })
         .catch(error => {
           setOpen(false);
           console.log("error", error);
+          console.log("error.response", error.response);
           handleCloseModal(
             "An error has occured while deleting the student " +
               props.dataToDelete["name"] +
@@ -157,11 +149,13 @@ const DeleteStudents = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {props.isMultiDelete
-                    ? "Are you sure you want to delete the selected students?"
-                    : "Are you sure you want to delete student " +
-                      props.dataToDelete["name"] +
-                      " ?"}
+                  {props.id
+                    ? props.isMultiDelete
+                      ? "Are you sure you want to delete the selected students?"
+                      : "Are you sure you want to delete student " +
+                        props.dataToDelete["name"] +
+                        " ?"
+                    : null}
                 </Grid>
               </Grid>
             </Grid>

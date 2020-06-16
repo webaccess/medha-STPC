@@ -83,17 +83,29 @@ const RouteWithTabLayout = props => {
    */
   const tabs = menu ? menu[0].tabItems : menu;
 
-  const isURLValid = includes(
-    tabs.map(t => t.link),
-    props.path
-  );
+  const getSelectedTab = () => {
+    const tab = tabs.find(tab => {
+      if (includes(tab.availableRoutes, props.path)) {
+        return tab;
+      }
+    });
 
+    if (tab) {
+      return tab.link;
+    } else {
+      return "/view-profile";
+    }
+  };
+
+  console.log(getSelectedTab());
   // Default selected tab view-profile
-  const [selectedTab, setSelectedTab] = useState(
-    isURLValid || props.location["collegeAdminRoute"]
-      ? props.path
-      : "/view-profile"
-  );
+  const [selectedTab, setSelectedTab] = useState(null);
+
+  useEffect(() => {
+    if (props.path) {
+      setSelectedTab(getSelectedTab);
+    }
+  }, [props.path]);
 
   const NavBar = () => {
     const handleTabChange = val => {
