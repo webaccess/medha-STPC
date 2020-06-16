@@ -102,7 +102,7 @@ const ViewCollege = props => {
           }));
         })
         .catch(error => {
-          console.log("error", error);
+          console.log("error", error, error.reponse);
         });
     } else {
       history.push({
@@ -116,7 +116,13 @@ const ViewCollege = props => {
     let collegeDataArray = [];
     for (let i in data) {
       var tempIndividualStudentData = {};
-      tempIndividualStudentData["TPO"] = data[i] ? data[i]["username"] : "";
+      tempIndividualStudentData["TPO_NAME"] = data[i]
+        ? data[i]["contact"]["name"]
+        : "";
+      tempIndividualStudentData["TPO"] = data[i] ? data[i]["email"] : "";
+      tempIndividualStudentData["CONTACT_NUMBER"] = data[i]
+        ? data[i]["contact"]["phone"]
+        : "";
       collegeDataArray.push(tempIndividualStudentData);
     }
     return collegeDataArray;
@@ -205,19 +211,7 @@ const ViewCollege = props => {
                   />
                 </Grid>
               </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
-                  <ReadOnlyTextField
-                    id="Email"
-                    label={Email}
-                    defaultValue={
-                      formState.collegeDetails.length !== 0
-                        ? formState.collegeDetails.contact.email
-                        : ""
-                    }
-                  />
-                </Grid>
-              </Grid>
+
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
@@ -296,15 +290,17 @@ const ViewCollege = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
-                    id="Principal"
-                    label={Principal}
+                    id="Email"
+                    label={Email}
                     defaultValue={
-                      formState.collegeDetails.principal &&
-                      formState.collegeDetails.principal.username
+                      formState.collegeDetails.length !== 0
+                        ? formState.collegeDetails.contact.email
+                        : ""
                     }
                   />
                 </Grid>
               </Grid>
+
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={12} xs={12}>
                   <Autocomplete
@@ -313,13 +309,13 @@ const ViewCollege = props => {
                     disabled
                     id="fixed-tags-demo"
                     options={[]}
-                    getOptionLabel={option => option.TPO}
+                    getOptionLabel={option => option.TPO_NAME}
                     value={formState.tpoData}
                     disableClearable
                     renderTags={(value, getTagProps) =>
                       value.map((option, index) => (
                         <Chip
-                          label={option.TPO}
+                          label={option.TPO_NAME}
                           {...getTagProps({ index })}
                           disabled
                         />
@@ -330,9 +326,74 @@ const ViewCollege = props => {
                     )}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}></Grid>
               </Grid>
+              {formState.tpoData
+                ? formState.tpoData.map(tpo => (
+                    <Grid
+                      container
+                      spacing={3}
+                      className={classes.MarginBottom}
+                    >
+                      <Grid item md={6} xs={12}>
+                        <ReadOnlyTextField
+                          id="TPO_EMAIL"
+                          label={"TPO Email"}
+                          defaultValue={tpo["TPO"]}
+                        />
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <ReadOnlyTextField
+                          id="TPO_CONTACT_NUMBER"
+                          label={"TPO Contact Number"}
+                          defaultValue={tpo["CONTACT_NUMBER"]}
+                        />
+                      </Grid>
+                    </Grid>
+                  ))
+                : null}
+              <Grid container spacing={3} className={classes.MarginBottom}>
+                <Grid item md={12} xs={12}>
+                  <ReadOnlyTextField
+                    id="Principal_NAME"
+                    label={"Principal Name"}
+                    defaultValue={
+                      formState.collegeDetails.principal !== null &&
+                      formState.collegeDetails.principal &&
+                      formState.collegeDetails.principal.contact &&
+                      formState.collegeDetails.principal.contact.name
+                        ? formState.collegeDetails.principal.contact.name
+                        : ""
+                    }
+                  />
+                </Grid>
+              </Grid>
+              {formState.collegeDetails.principal !== null ? (
+                <Grid container spacing={3} className={classes.MarginBottom}>
+                  <Grid item md={6} xs={12}>
+                    <ReadOnlyTextField
+                      id="Principal"
+                      label={Principal}
+                      defaultValue={
+                        formState.collegeDetails.principal &&
+                        formState.collegeDetails.principal.email
+                      }
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <ReadOnlyTextField
+                      id="Principal_CONTACT_NUMBER"
+                      label={"Principal Contact Number"}
+                      defaultValue={
+                        formState.collegeDetails.principal !== null &&
+                        formState.collegeDetails.principal &&
+                        formState.collegeDetails.principal.username
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              ) : null}
             </Grid>
+
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={1} className={classes.formgrid}>
