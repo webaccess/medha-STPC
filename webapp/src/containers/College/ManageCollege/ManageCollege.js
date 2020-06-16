@@ -354,14 +354,12 @@ const ManageCollege = props => {
   const getDataForEdit = async (id, isView = false) => {
     setLoaderStatus(true);
     /** Get college data for edit */
-    let paramsForCollege = {
-      id: id
-    };
+    let URL = COLLEGE_URL + "/" + id;
     await serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, paramsForCollege)
+      .serviceProviderForGetRequest(URL)
       .then(res => {
         /** This we will use as final data for edit we send to modal */
-        let editData = res.data.result[0];
+        let editData = res.data.result;
         history.push({
           pathname: routeConstants.EDIT_COLLEGE,
           editCollege: true,
