@@ -286,7 +286,11 @@ const ViewEducation = props => {
           ? cell.other_qualification
           : cell.qualification
     },
-    { name: "Board", sortable: true, selector: "board.name" },
+    {
+      name: "Board",
+      sortable: true,
+      cell: cell => (cell.board ? cell.board.name : "-")
+    },
     { name: "Percentage", sortable: true, selector: "percentage" },
     {
       name: "Pursuing",
