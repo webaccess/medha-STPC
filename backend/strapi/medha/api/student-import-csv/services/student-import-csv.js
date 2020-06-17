@@ -9,8 +9,8 @@ const fs = require("fs");
 const parse = require("csv-parse/lib/sync");
 const _ = require("lodash");
 const bookshelf = require("../../../config/bookshelf");
-const utils = require("../../../config/utils");
 const { ROLE_STUDENT, PLUGIN } = require("../../../config/constants");
+const { STREAMS } = require("../../../data");
 
 module.exports = {
   getRecords: async (inputFile, preview) => {
@@ -120,95 +120,106 @@ module.exports = {
       await new Promise(async next => {
         const data = records[index];
         const record = data.fields;
-        const userRequestBody = {};
-
-        userRequestBody.username = record["Contact Number"];
-        userRequestBody.email = record["Email"];
-        userRequestBody.password = record["Contact Number"];
-        userRequestBody.role = studentRole.id;
-
-        const state = states.find(state => state.name == record["State"]);
-        // user object state will be null for user student
-        userRequestBody.state = null;
-
-        userRequestBody.zone = null;
-        userRequestBody.rpc = null;
-        userRequestBody.blocked = false;
-
-        userRequestBody.provider = "local";
-        userRequestBody.password = await strapi.plugins[
-          "users-permissions"
-        ].services.user.hashPassword(userRequestBody);
-
-        const individualRequestBody = {};
-
-        const name = record["Name"].split(" ");
-
-        individualRequestBody.first_name = (name[0] && name[0].trim()) || "";
-        individualRequestBody.last_name = (name[1] && name[1].trim()) || "";
-
-        const stream = streams.find(stream => stream.name == record["Stream"]);
-        individualRequestBody.stream = stream ? stream.id : null;
-
-        individualRequestBody.father_full_name =
-          record["Father full name"] || null;
-        individualRequestBody.mother_full_name =
-          record["Mother full name"] || null;
-        individualRequestBody.date_of_birth = record["DOB"] || null;
-        individualRequestBody.gender = record["Gender"] || null;
-        individualRequestBody.roll_number = record["Roll Number"] || null;
-
-        const org = contactDetails.individual
-          ? contactDetails.individual.organization
-          : null;
-        individualRequestBody.organization = org;
-        individualRequestBody.is_verified = true;
-        individualRequestBody.is_physically_challenged = false;
-
-        if (
-          individualRequestBody.hasOwnProperty("date_of_birth") &&
-          individualRequestBody["date_of_birth"]
-        ) {
-          var d = new Date(
-            individualRequestBody["date_of_birth"].replace(
-              /(\d{2})-(\d{2})-(\d{4})/,
-              "$2/$1/$3"
-            )
-          );
-          var n = d.toISOString();
-
-          individualRequestBody["date_of_birth"] = n;
-        }
-
-        const contactBody = {};
-
-        contactBody.phone = record["Contact Number"];
-        contactBody.email = record["Email"];
-        contactBody.address_1 = record["Address"];
-        contactBody.state = state ? state.id : null;
-
-        const district = districts.find(
-          district => district.name == record["District"]
-        );
-        contactBody.district = district ? district.id : null;
-
-        contactBody.name = `${individualRequestBody.first_name} ${individualRequestBody.last_name}`;
-        contactBody.contact_type = "individual";
-
-        const academicYearId = await strapi.services[
-          "academic-year"
-        ].getCurrentAcademicYear();
-
-        const educationBody = {
-          year_of_passing: academicYearId,
-          percentage: null,
-          pursuing: true,
-          education_year: _.toLower(record["Year"]),
-          qualification: record["Qualification"]
-        };
-
         await bookshelf
           .transaction(async t => {
+            const userRequestBody = {};
+
+            const { isError, message } = await strapi.services[
+              "student-import-csv"
+            ].validateRecord(record);
+
+            if (isError) {
+              return new Promise((resolve, reject) => reject(message));
+            }
+
+            userRequestBody.username = record["Contact Number"];
+            userRequestBody.email = record["Email"];
+            userRequestBody.password = record["Contact Number"];
+            userRequestBody.role = studentRole.id;
+
+            const state = states.find(state => state.name == record["State"]);
+            // user object state will be null for user student
+            userRequestBody.state = null;
+
+            userRequestBody.zone = null;
+            userRequestBody.rpc = null;
+            userRequestBody.blocked = false;
+
+            userRequestBody.provider = "local";
+            userRequestBody.password = await strapi.plugins[
+              "users-permissions"
+            ].services.user.hashPassword(userRequestBody);
+
+            const individualRequestBody = {};
+
+            const name = record["Name"].split(" ");
+
+            individualRequestBody.first_name =
+              (name[0] && name[0].trim()) || "";
+            individualRequestBody.last_name = (name[1] && name[1].trim()) || "";
+
+            const stream = streams.find(
+              stream => stream.name == record["Stream"]
+            );
+            individualRequestBody.stream = stream ? stream.id : null;
+
+            individualRequestBody.father_full_name =
+              record["Father full name"] || null;
+            individualRequestBody.mother_full_name =
+              record["Mother full name"] || null;
+            individualRequestBody.date_of_birth = record["DOB"] || null;
+            individualRequestBody.gender = _.toLower(record["Gender"]) || null;
+            individualRequestBody.roll_number = record["Roll Number"] || null;
+
+            const org = contactDetails.individual
+              ? contactDetails.individual.organization
+              : null;
+            individualRequestBody.organization = org;
+            individualRequestBody.is_verified = true;
+            individualRequestBody.is_physically_challenged = false;
+
+            if (
+              individualRequestBody.hasOwnProperty("date_of_birth") &&
+              individualRequestBody["date_of_birth"]
+            ) {
+              var d = new Date(
+                individualRequestBody["date_of_birth"].replace(
+                  /(\d{2})-(\d{2})-(\d{4})/,
+                  "$2/$1/$3"
+                )
+              );
+              var n = d.toISOString();
+
+              individualRequestBody["date_of_birth"] = n;
+            }
+
+            const contactBody = {};
+
+            contactBody.phone = record["Contact Number"];
+            contactBody.email = record["Email"];
+            contactBody.address_1 = record["Address"];
+            contactBody.state = state ? state.id : null;
+
+            const district = districts.find(
+              district => district.name == record["District"]
+            );
+            contactBody.district = district ? district.id : null;
+
+            contactBody.name = `${individualRequestBody.first_name} ${individualRequestBody.last_name}`;
+            contactBody.contact_type = "individual";
+
+            const academicYearId = await strapi.services[
+              "academic-year"
+            ].getCurrentAcademicYear();
+
+            const educationBody = {
+              year_of_passing: academicYearId,
+              percentage: null,
+              pursuing: true,
+              education_year: _.toLower(record["Year"]),
+              qualification: record["Qualification"]
+            };
+
             // Step 1 creating user
             const { user, userStatus } = await strapi
               .query("user", "users-permissions")
@@ -316,8 +327,10 @@ module.exports = {
             // failedIds.push(data.id);
             await strapi
               .query("imported-records")
-              .update({ id: data.id }, { status: "error" });
-            console.log(error);
+              .update({ id: data.id }, { status: "error", message: error });
+
+            console.log({ error });
+
             errorRecords.push({
               ...record,
               Error: error
@@ -345,22 +358,150 @@ module.exports = {
     }
   },
 
-  updateSuccessfulImportRecordEntries: async ids => {
-    console.log("Updating successful imported records...");
-    await strapi
-      .query("imported-records")
-      .model.query(qb => {
-        qb.whereIn("id", ids);
-      })
-      .save({ status: "completed" }, { patch: true, require: false });
-  },
-  updateErrorImportRecordEntries: async ids => {
-    console.log("Updating error imported records...");
-    await strapi
-      .query("imported-records")
-      .model.query(qb => {
-        qb.whereIn("id", ids);
-      })
-      .save({ status: "error" }, { patch: true, require: false });
+  // updateSuccessfulImportRecordEntries: async ids => {
+  //   console.log("Updating successful imported records...");
+  //   await strapi
+  //     .query("imported-records")
+  //     .model.query(qb => {
+  //       qb.whereIn("id", ids);
+  //     })
+  //     .save({ status: "completed" }, { patch: true, require: false });
+  // },
+
+  // updateErrorImportRecordEntries: async ids => {
+  //   console.log("Updating error imported records...");
+  //   await strapi
+  //     .query("imported-records")
+  //     .model.query(qb => {
+  //       qb.whereIn("id", ids);
+  //     })
+  //     .save({ status: "error" }, { patch: true, require: false });
+  // }
+
+  validateRecord: async record => {
+    if (!record["Name"]) {
+      return {
+        isError: true,
+        message: "Name is missing"
+      };
+    }
+
+    if (!record["Gender"]) {
+      return {
+        isError: true,
+        message: "Gender is missing"
+      };
+    } else {
+      const allowed = ["male", "female", "other"];
+      const gender = _.toLower(record["Gender"]);
+      if (!allowed.includes(gender)) {
+        return {
+          isError: true,
+          message: `Allowed values should be ${allowed}`
+        };
+      }
+    }
+
+    if (!record["DOB"]) {
+      return {
+        isError: true,
+        message: "DOB is missing"
+      };
+    } else {
+      let isValidDate = Date.parse(record["DOB"]);
+
+      if (isNaN(isValidDate)) {
+        return {
+          isError: true,
+          message: "DOB is invalid"
+        };
+      }
+    }
+
+    if (!record["Contact Number"]) {
+      return {
+        isError: true,
+        message: "Contact number is missing"
+      };
+    }
+
+    if (!record["State"]) {
+      return {
+        isError: true,
+        message: "State is missing"
+      };
+    }
+
+    if (!record["District"]) {
+      return {
+        isError: true,
+        message: "District is missing"
+      };
+    }
+
+    if (!record["Email"]) {
+      return {
+        isError: true,
+        message: "Email is missing"
+      };
+    }
+
+    if (!record["Qualification"]) {
+      return {
+        isError: true,
+        message: "Qualification is missing"
+      };
+    } else {
+      const allowed = [
+        "secondary",
+        "senior_secondary",
+        "undergraduate",
+        "postgraduate",
+        "other"
+      ];
+      const qualification = _.toLower(record["Qualification"]);
+      if (!allowed.includes(qualification)) {
+        return {
+          isError: true,
+          message: `Qualification should be of ${allowed}`
+        };
+      }
+    }
+
+    if (!record["Stream"]) {
+      return {
+        isError: true,
+        message: "Stream is missing"
+      };
+    } else {
+      const stream = record["Stream"];
+      if (!STREAMS.includes(stream)) {
+        return {
+          isError: true,
+          message: `Invalid Stream value`
+        };
+      }
+    }
+
+    if (!record["Year"]) {
+      return {
+        isError: true,
+        message: "Year is missing"
+      };
+    } else {
+      const allowed = ["first", "second", "third"];
+      const year = _.toLower(record["Year"]);
+      if (!allowed.includes(year)) {
+        return {
+          isError: true,
+          message: `Year should one be of ${allowed}`
+        };
+      }
+    }
+
+    return {
+      isError: false,
+      message: ""
+    };
   }
 };
