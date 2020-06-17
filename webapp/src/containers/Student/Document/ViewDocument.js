@@ -32,6 +32,7 @@ import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOut
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
 import auth from "../../../components/Auth";
+import { startCase } from "lodash";
 
 const ViewDocument = props => {
   const [open, setOpen] = React.useState(true);
