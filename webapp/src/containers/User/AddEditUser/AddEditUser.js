@@ -629,11 +629,23 @@ const AddEditUser = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
+          console.log("putErrorUSer", error, error.response);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromeditUser: true,
             isDataEdited: false,
-            editResponseMessage: "",
+            editResponseMessage: errorMessage ? errorMessage : "",
             editedData: {}
           });
           setLoaderStatus(false);
@@ -653,11 +665,23 @@ const AddEditUser = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
+          console.log("errorUSer", error, error.response);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
           history.push({
             pathname: routeConstants.MANAGE_USER,
             fromAddUser: true,
             isDataAdded: false,
-            addResponseMessage: "",
+            addResponseMessage: errorMessage ? errorMessage : "",
             addedData: {}
           });
         });

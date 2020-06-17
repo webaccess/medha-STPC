@@ -879,11 +879,22 @@ const AddEditCollege = props => {
         })
         .catch(error => {
           console.log(error.response);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
             isDataEdited: false,
-            editResponseMessage: "",
+            editResponseMessage: errorMessage ? errorMessage : "",
             editedData: {}
           });
           setLoaderStatus(false);
@@ -903,7 +914,7 @@ const AddEditCollege = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
-          console.log("error", error);
+          console.log("errorCollege", error, error.response);
           let errorMessage;
 
           if (

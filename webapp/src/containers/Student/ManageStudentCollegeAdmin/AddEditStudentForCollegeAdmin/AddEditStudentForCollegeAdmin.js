@@ -531,21 +531,33 @@ const AddEditStudentForCollegeAdmin = props => {
               " has been added successfully"
           });
         })
-        .catch(err => {
+        .catch(error => {
           setLoaderStatus(false);
-          console.log(err);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
+          console.log("err", error, error.response);
           history.push({
             pathname: routeConstants.MANAGE_STUDENT,
             fromAddStudent: true,
             isStudentAdded: false,
-            messageForAddStudent:
-              "An error has occured while adding student " +
-              formState.values["firstname"] +
-              " " +
-              formState.values["fatherFirstName"] +
-              " " +
-              formState.values["lastname"] +
-              ". Kindly, try again. "
+            messageForAddStudent: errorMessage
+              ? errorMessage
+              : "An error has occured while adding student " +
+                formState.values["firstname"] +
+                " " +
+                formState.values["fatherFirstName"] +
+                " " +
+                formState.values["lastname"] +
+                ". Kindly, try again. "
           });
         });
     }

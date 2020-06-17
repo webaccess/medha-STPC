@@ -824,7 +824,9 @@ const ManageCollege = props => {
                 </IconButton>
               }
             >
-              An error has occured while updating college. Kindly, try again.
+              {props.location.editResponseMessage
+                ? props.location.editResponseMessage
+                : "An error has occured while updating college. Kindly, try again."}
             </Alert>
           </Collapse>
         ) : null}
