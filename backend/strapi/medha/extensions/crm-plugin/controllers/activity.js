@@ -28,14 +28,16 @@ module.exports = {
       data = JSON.parse(data);
       entry = await strapi.query("activity", PLUGIN).create(data);
       // automatically uploads the files based on the entry and the model
-      await strapi.plugins.upload.services.upload.uploadToEntity(
-        {
-          id: entry.id || entry._id,
-          model: "activity"
+      await strapi.plugins.upload.services.upload.upload({
+        data: {
+          fileInfo: {},
+          refId: entry.id,
+          ref: "activity",
+          source: PLUGIN,
+          field: "upload_logo"
         },
-        { upload_logo: files["files.upload_logo"] },
-        PLUGIN
-      );
+        files: files["files.upload_logo"]
+      });
     } else {
       entry = await strapi.query("activity", PLUGIN).create(ctx.request.body);
     }
@@ -383,14 +385,16 @@ module.exports = {
         .then(async model => {
           await model.related("streams").detach();
           await model.related("streams").attach(ctx.request.body.streams);
-          await strapi.plugins.upload.services.upload.uploadToEntity(
-            {
-              id,
-              model: "activity"
+          await strapi.plugins.upload.services.upload.upload({
+            data: {
+              fileInfo: {},
+              refId: id,
+              ref: "activity",
+              source: PLUGIN,
+              field: "upload_logo"
             },
-            { upload_logo: files["files.upload_logo"] },
-            PLUGIN
-          );
+            files: files["files.upload_logo"]
+          });
 
           return model;
         });

@@ -10,7 +10,7 @@ import {
   IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-
+import DeleteActivityBatch from "./DeleteActivityBatch";
 import styles from "../Activity.module.css";
 import useStyles from "../ViewActivityStyles.js";
 import * as serviceProviders from "../../../api/Axios";
@@ -236,28 +236,67 @@ const ViewActivityBatches = props => {
     });
   };
 
-  const handleDeleteActivityBatch = activityBatch => {
-    const url =
-      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
-    const activityBatchId = activityBatch.id;
-    serviceProviders
-      .serviceProviderForDeleteRequest(url, activityBatchId)
-      .then(() => {
-        setAlert(() => ({
-          isOpen: true,
-          message: `Batch ${activityBatch.name} deleted successfully`,
-          severity: "success"
-        }));
-        getActivityBatches(10, 1);
-      })
-      .catch(({ response }) => {
-        setAlert(() => ({
-          isOpen: true,
-          message: response.data.message,
-          severity: "error"
-        }));
-      });
+  const handleCloseDeleteModal = () => {
+    /** This restores all the data when we close the modal */
+    setFormState(formState => ({
+      ...formState,
+      isDataDeleted: false,
+      showModalDelete: false
+    }));
+    if (formState.isDataDeleted) {
+      getActivityBatches(formState.pageSize, formState.page);
+    } else {
+    }
   };
+  const isDeleteCellCompleted = (status, activityBatch) => {
+    formState.isDataDeleted = status;
+    console.log(activityBatch);
+    if (status === true) {
+      setAlert(() => ({
+        isOpen: true,
+        message: `Activity Batch ${activityBatch.name} Deleted Successfully`,
+        severity: "success"
+      }));
+    } else if (status === false) {
+      setAlert(() => ({
+        isOpen: true,
+        message: activityBatch.response.data.message,
+        severity: "error"
+      }));
+    }
+  };
+
+  const handleDeleteActivityBatch = activityBatch => {
+    console.log(activityBatch);
+    setFormState(formState => ({
+      ...formState,
+      dataToDelete: { ...activityBatch },
+      showModalDelete: true
+    }));
+  };
+
+  // const handleDeleteActivityBatch = activityBatch => {
+  //   const url =
+  //     strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
+  //   const activityBatchId = activityBatch.id;
+  //   serviceProviders
+  //     .serviceProviderForDeleteRequest(url, activityBatchId)
+  //     .then(() => {
+  //       setAlert(() => ({
+  //         isOpen: true,
+  //         message: `Batch ${activityBatch.name} deleted successfully`,
+  //         severity: "success"
+  //       }));
+  //       getActivityBatches(10, 1);
+  //     })
+  //     .catch(({ response }) => {
+  //       setAlert(() => ({
+  //         isOpen: true,
+  //         message: response.data.message,
+  //         severity: "error"
+  //       }));
+  //     });
+  // };
 
   const handleFilterChange = event => {
     setFormState(formState => ({
@@ -516,6 +555,12 @@ const ViewActivityBatches = props => {
           noDataComponent="No Activity Batch details found"
         />
       </Grid>
+      <DeleteActivityBatch
+        showModal={formState.showModalDelete}
+        closeModal={handleCloseDeleteModal}
+        activityBatch={formState.dataToDelete}
+        deleteEvent={isDeleteCellCompleted}
+      />
     </Grid>
   );
 };

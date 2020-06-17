@@ -19,18 +19,21 @@ module.exports = {
       data = JSON.parse(data);
       entry = await strapi.query("student-import-csv").create(data);
       // automatically uploads the files based on the entry and the model
-      const uploaded = await strapi.plugins.upload.services.upload.uploadToEntity(
-        {
-          id: entry.id,
-          model: "student-import-csv"
+      const uploaded = await strapi.plugins.upload.services.upload.upload({
+        data: {
+          fileInfo: {},
+          refId: entry.id,
+          ref: "student-import-csv",
+          source: null,
+          field: "imported_file"
         },
-        { imported_file: files["files.imported_file"] }
-      );
+        files: files["files.imported_file"]
+      });
 
       const uploadFile = _.head(_.head(uploaded));
       return await strapi.services["student-import-csv"].createRecords(
         entry.id,
-        uploadFile.url
+        uploaded[0].url
       );
     } else {
       return ctx.response.badRequest("Files attribute is missing");

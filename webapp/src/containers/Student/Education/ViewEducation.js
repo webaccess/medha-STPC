@@ -279,8 +279,19 @@ const ViewEducation = props => {
       sortable: true,
       selector: "year_of_passing.name"
     },
-    { name: "Qualification", sortable: true, selector: "qualification" },
-    { name: "Board", sortable: true, selector: "board.name" },
+    {
+      name: "Qualification",
+      sortable: true,
+      cell: cell =>
+        cell.qualification == "other"
+          ? cell.other_qualification
+          : cell.qualification
+    },
+    {
+      name: "Board",
+      sortable: true,
+      cell: cell => (cell.board ? cell.board.name : "-")
+    },
     { name: "Percentage", sortable: true, selector: "percentage" },
     {
       name: "Pursuing",

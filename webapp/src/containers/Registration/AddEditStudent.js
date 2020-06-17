@@ -86,6 +86,7 @@ const AddEditStudent = props => {
       ? props.location.dataForEdit
       : false,
     counter: 0,
+    flag: 0,
     files: null,
     previewFile: {},
     showPreview: false,
@@ -123,6 +124,14 @@ const AddEditStudent = props => {
   const [stream, setStream] = useState(null);
 
   useEffect(() => {
+    if (
+      props.path === "/edit-profile" &&
+      !props.location.hasOwnProperty("dataForEdit")
+    ) {
+      history.push({
+        pathname: routeConstants.VIEW_PROFILE
+      });
+    }
     setLoaderStatus(true);
     getStates();
     getFutureAspirations();
@@ -207,7 +216,7 @@ const AddEditStudent = props => {
         props.location["dataForEdit"]["contact"]["state"]
       ) {
         formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["state"];
+          props.location["dataForEdit"]["contact"]["state"]["id"];
       }
       if (
         props.location["dataForEdit"]["stream"] &&
@@ -300,10 +309,7 @@ const AddEditStudent = props => {
         _.omit(registrationSchema, ["password", "otp"])
       );
     } else {
-      schema = Object.assign(
-        {},
-        _.omit(registrationSchema, ["futureAspirations"])
-      );
+      schema = registrationSchema;
     }
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -355,6 +361,12 @@ const AddEditStudent = props => {
       }));
       setLoaderStatus(false);
     }
+  };
+
+  const saveAndNext = event => {
+    event.preventDefault();
+    formState["flag"] = 1;
+    handleSubmit(event);
   };
 
   const postStudentData = () => {
@@ -411,6 +423,39 @@ const AddEditStudent = props => {
 
           setIsSuccess(true);
           setFormState({ ...formState, isSuccess: true });
+
+          if (
+            auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+            auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+          ) {
+            history.push({
+              pathname: routeConstants.MANAGE_STUDENT,
+              fromeditStudent: true,
+              isDataEdited: true,
+              editedStudentName: studentName
+            });
+          } else {
+            if (formState.flag === 1) {
+              history.push({
+                pathname: routeConstants.VIEW_EDUCATION
+              });
+            } else {
+              history.push({
+                pathname: routeConstants.VIEW_PROFILE,
+                success: true
+              });
+            }
+          }
+          setLoaderStatus(false);
+        })
+        .catch(err => {
+          setIsFailed(true);
+          let studentName =
+            props.location["dataForEdit"]["first_name"] +
+            " " +
+            props.location["dataForEdit"]["father_first_name"] +
+            " " +
+            props.location["dataForEdit"]["last_name"];
           if (
             auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
             auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
@@ -424,18 +469,9 @@ const AddEditStudent = props => {
           } else {
             history.push({
               pathname: routeConstants.VIEW_PROFILE,
-              success: true
+              success: false
             });
           }
-          setLoaderStatus(false);
-        })
-        .catch(err => {
-          setIsFailed(true);
-          history.push({
-            pathname: routeConstants.MANAGE_STUDENT,
-            fromeditStudent: true,
-            isDataEdited: false
-          });
           setLoaderStatus(false);
         });
     } else {
@@ -1437,6 +1473,16 @@ const AddEditStudent = props => {
                     onClick={handleSubmit}
                   >
                     <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
+                  </YellowButton>
+                  <YellowButton
+                    color="primary"
+                    type="submit"
+                    mfullWidth
+                    variant="contained"
+                    style={{ marginRight: "18px" }}
+                    onClick={saveAndNext}
+                  >
+                    <span>{genericConstants.SAVE_AND_NEXT_BUTTON_TEXT}</span>
                   </YellowButton>
                   <GrayButton
                     color="primary"

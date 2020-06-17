@@ -241,7 +241,7 @@ module.exports = {
       .then(res => {
         const data = res
           .toJSON()
-          .filter(academicHistory => academicHistory.contact.id == id);
+          .filter(education => education.contact.id == id);
         const response = utils.paginate(data, page, pageSize);
         return {
           result: response.result,
@@ -399,14 +399,16 @@ module.exports = {
           );
         }
         if (ctx.request.files) {
-          await strapi.plugins.upload.services.upload.uploadToEntity(
-            {
-              id: individual.id || individual._id,
-              model: "individual"
+          await strapi.plugins.upload.services.upload.upload({
+            data: {
+              fileInfo: {},
+              refId: individual.id,
+              ref: "individual",
+              source: PLUGIN,
+              field: "profile_photo"
             },
-            { profile_photo: files["files.profile_photo"] },
-            PLUGIN
-          );
+            files: files["files.profile_photo"]
+          });
         }
         if (data.future_aspirations) {
           const future_aspirations = await Promise.all(
@@ -518,8 +520,8 @@ module.exports = {
         "contact.district",
         "zone",
         "rpc",
-        "principal",
-        "tpos",
+        "principal.contact",
+        "tpos.contact",
         "stream_strength",
         "stream_strength.stream"
       ]);
@@ -2176,8 +2178,8 @@ module.exports = {
       "middle_name",
       "last_name",
       "stream",
-      "father_first_name",
-      "father_last_name",
+      "father_full_name",
+      "mother_full_name",
       "date_of_birth",
       "gender",
       "is_physically_challenged",
@@ -2230,14 +2232,16 @@ module.exports = {
           .then(async model => {
             if (ctx.request.files) {
               console.log("in files");
-              await strapi.plugins.upload.services.upload.uploadToEntity(
-                {
-                  id: individualId,
-                  model: "individual"
+              await strapi.plugins.upload.services.upload.upload({
+                data: {
+                  fileInfo: {},
+                  refId: individualId,
+                  ref: "individual",
+                  source: PLUGIN,
+                  field: "profile_photo"
                 },
-                { profile_photo: files["files.profile_photo"] },
-                PLUGIN
-              );
+                files: files["files.profile_photo"]
+              });
             }
 
             return model;
@@ -2252,6 +2256,7 @@ module.exports = {
             "Something went wrong while updating Individual"
           );
         }
+
         const future_aspirations = await Promise.all(
           data.future_aspirations.map(async futureaspiration => {
             return await strapi
@@ -2271,9 +2276,10 @@ module.exports = {
         }
 
         // Step 3 updating contact details
+
         const contact = await strapi
           .query("contact", PLUGIN)
-          .model.where({ id })
+          .model.where({ id: id })
           .save(contactBody, { transacting: t, patch: true })
           .then(model => model)
           .catch(error => {
@@ -2295,31 +2301,6 @@ module.exports = {
         return ctx.response.badRequest(error);
       });
   },
-
-  // documents: async ctx => {
-  //   const { id } = ctx.params;
-  //   const documentId = ctx.query ? ctx.query.name_contains : null;
-
-  //   const response = await strapi.query("contact", PLUGIN).findOne({ id });
-
-  //   if (
-  //     documentId &&
-  //     response.individual.documents &&
-  //     response.individual.documents.length > 0
-  //   ) {
-  //     response.individual.documents = response.individual.documents.filter(
-  //       doc => {
-  //         if (doc.name.search(documentId) >= 0) {
-  //           return doc;
-  //         }
-  //       }
-  //     );
-  //   }
-
-  //   return utils.getFindOneResponse(
-  //     response ? response.individual.documents : null
-  //   );
-  // },
 
   deleteDocument: async ctx => {
     const { fileId } = ctx.params;
@@ -2358,7 +2339,7 @@ module.exports = {
         }
       })
     );
-
+    console.log(notStudent);
     notStudent = _.xor(id, notStudent).filter(c => c);
 
     id = _.pullAll(id, notStudent);
@@ -2366,8 +2347,7 @@ module.exports = {
     let list = await Promise.all(
       id.map(async id => {
         const stud = await strapi.query("contact", PLUGIN).findOne({ id: id });
-        const documents = stud.individual.documents;
-        if (documents.length > 0) return id;
+
         const role = await strapi
           .query("role", "users-permissions")
           .findOne({ id: stud.user.role });
@@ -2375,15 +2355,23 @@ module.exports = {
           const organization = await strapi
             .query("organization", PLUGIN)
             .findOne({ id: stud.individual.organization });
-          if (
-            organization.principal !== null &&
-            organization.principal.contact === id
-          )
-            return id;
+          if (organization !== null) {
+            if (
+              organization.principal !== null &&
+              organization.principal.contact === id
+            )
+              return id;
 
-          const tpo = organization.tpos.map(tpo => tpo.contact).filter(c => c);
-          if (_.includes(tpo, id)) return id;
+            const tpo = organization.tpos
+              .map(tpo => tpo.contact)
+              .filter(c => c);
+            if (_.includes(tpo, id)) return id;
+          }
         }
+        const documents = await strapi
+          .query("document")
+          .findOne({ contact: id });
+        if (documents !== null) return id;
 
         const education = await strapi
           .query("education")

@@ -226,7 +226,11 @@ const ViewDocument = props => {
     },
     {
       name: "Qualification",
-      cell: cell => (cell.qualification ? startCase(cell.qualification) : "-")
+      sortable: true,
+      cell: cell =>
+        cell.qualification == "other"
+          ? cell.other_qualification
+          : cell.qualification || "-"
     },
     { name: "Board", cell: cell => (cell.board ? cell.board.name : "-") },
     {

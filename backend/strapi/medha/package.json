@@ -5,7 +5,7 @@
   "description": "A Strapi application",
   "scripts": {
     "develop": "strapi develop",
-    "start": "AUTORELOAD=false strapi start",
+    "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
     "test": "mocha --require co-mocha test/bootstrap.js test/**/*.test.js"
@@ -14,19 +14,21 @@
   "dependencies": {
     "axios": "^0.19.2",
     "bookshelf": "^1.1.0",
+    "cross-env": "^7.0.2",
     "csv-parse": "^4.10.1",
     "knex": "<0.20.0",
     "pg": "latest",
+    "redux-logger": "^3.0.6",
     "sqlite3": "latest",
-    "strapi": "3.0.0-beta.18.7",
-    "strapi-admin": "3.0.0-beta.18.7",
-    "strapi-connector-bookshelf": "3.0.0-beta.18.7",
-    "strapi-plugin-content-manager": "3.0.0-beta.18.7",
-    "strapi-plugin-content-type-builder": "3.0.0-beta.18.7",
-    "strapi-plugin-email": "3.0.0-beta.18.7",
-    "strapi-plugin-upload": "3.0.0-beta.18.7",
-    "strapi-plugin-users-permissions": "3.0.0-beta.18.7",
-    "strapi-utils": "3.0.0-beta.18.7"
+    "strapi": "3.0.0-beta.20",
+    "strapi-admin": "3.0.0-beta.20",
+    "strapi-connector-bookshelf": "3.0.0-beta.20",
+    "strapi-plugin-content-manager": "3.0.0-beta.20",
+    "strapi-plugin-content-type-builder": "3.0.0-beta.20",
+    "strapi-plugin-email": "3.0.0-beta.20",
+    "strapi-plugin-upload": "3.0.0-beta.20",
+    "strapi-plugin-users-permissions": "3.0.0-beta.20",
+    "strapi-utils": "3.0.0-beta.20"
   },
   "author": {
     "name": "A Strapi developer"

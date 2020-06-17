@@ -5,7 +5,7 @@
       "path": "/",
       "handler": "Upload.upload",
       "config": {
-        "policies": ["global.uploadAllowed"],
+        "policies": ["global::uploadAllowed"],
         "description": "Upload a file",
         "tag": {
           "plugin": "upload",

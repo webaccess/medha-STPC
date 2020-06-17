@@ -35,6 +35,7 @@ const {
   await addActivityTypes();
   console.log("\n");
   await addBoards();
+  process.exit(0);
 })();
 
 const fs = require("fs");

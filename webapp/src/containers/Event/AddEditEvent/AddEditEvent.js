@@ -102,6 +102,7 @@ const AddEditEvent = props => {
     files: {},
     filess: {},
     descriptionError: false,
+    discriptionMinLengthError: false,
     dataToShowForCollegeMultiSelect: [],
     eventCollegeIds: [],
     dataToShowForStreamMultiSelect: [],
@@ -993,6 +994,7 @@ const AddEditEvent = props => {
     ) {
       let arrayToCheckIn = convertToRaw(editorState.getCurrentContent()).blocks;
       let validationCounter = 0;
+      let validationMinCounter = 0;
       for (let i in arrayToCheckIn) {
         if (
           arrayToCheckIn[i]["text"] &&
@@ -1005,8 +1007,26 @@ const AddEditEvent = props => {
       if (validationCounter === 0) {
         formState.descriptionError = true;
       }
+      for (let i in arrayToCheckIn) {
+        if (
+          arrayToCheckIn[i]["text"] &&
+          arrayToCheckIn[i]["text"].trim().length > 320
+        ) {
+          validationMinCounter += 1;
+          break;
+        }
+      }
+
+      if (validationMinCounter !== 0) {
+        formState.discriptionMinLengthError = true;
+      }
     }
-    if (isValid && !formState.descriptionError && isDynamicBarValid) {
+    if (
+      isValid &&
+      !formState.descriptionError &&
+      !formState.discriptionMinLengthError &&
+      isDynamicBarValid
+    ) {
       /** CALL POST FUNCTION */
       postEventData();
       /** Call axios from here */
@@ -1340,7 +1360,8 @@ const AddEditEvent = props => {
                   <Grid item md={12} xs={12} className={"descriptionBox"}>
                     <Grid
                       className={
-                        formState.descriptionError
+                        formState.descriptionError ||
+                        formState.discriptionMinLengthError
                           ? classes.descriptionBoxError
                           : classes.descriptionBox
                       }
@@ -1349,7 +1370,10 @@ const AddEditEvent = props => {
                         <InputLabel
                           htmlFor="outlined-stream-card"
                           fullwidth={true.toString()}
-                          error={formState.descriptionError}
+                          error={
+                            formState.descriptionError ||
+                            formState.discriptionMinLengthError
+                          }
                         >
                           {genericConstants.DESCRIPTION}
                         </InputLabel>
@@ -1361,6 +1385,7 @@ const AddEditEvent = props => {
                             editorClassName="rdw-editor"
                             onEditorStateChange={data => {
                               formState.descriptionError = false;
+                              formState.discriptionMinLengthError = false;
                               setEditorState(data);
                             }}
                           />
@@ -1368,6 +1393,12 @@ const AddEditEvent = props => {
                         {formState.descriptionError ? (
                           <FormHelperText error={true}>
                             Description is required
+                          </FormHelperText>
+                        ) : null}
+                        {formState.discriptionMinLengthError ? (
+                          <FormHelperText error={true}>
+                            Description length should be less than 320
+                            characters
                           </FormHelperText>
                         ) : null}
                       </Card>
