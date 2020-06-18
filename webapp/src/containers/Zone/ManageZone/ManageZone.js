@@ -528,7 +528,9 @@ const ViewZone = props => {
                 </IconButton>
               }
             >
-              An error has occured while updating Zone. Kindly, try again.
+              {props.location.editResponseMessage
+                ? props.location.editResponseMessage
+                : "An error has occured while updating Zone. Kindly, try again."}
             </Alert>
           </Collapse>
         ) : null}
@@ -572,11 +574,9 @@ const ViewZone = props => {
                 </IconButton>
               }
             >
-              An error has occured while adding zone.
               {props.location.addResponseMessage
                 ? props.location.addResponseMessage
-                : null}{" "}
-              Kindly, try again.
+                : "An error has occured while adding zone.  Kindly, try again."}
             </Alert>
           </Collapse>
         ) : null}
