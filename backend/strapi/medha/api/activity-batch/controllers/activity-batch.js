@@ -24,7 +24,7 @@ const { PLUGIN } = require("../../../config/constants");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("activity-batch")
@@ -56,7 +56,7 @@ module.exports = {
   async student(ctx) {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {

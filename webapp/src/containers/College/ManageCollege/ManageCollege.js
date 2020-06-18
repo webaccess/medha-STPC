@@ -6,8 +6,7 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton,
-  Tooltip
+  IconButton
 } from "@material-ui/core";
 
 import BlockIcon from "@material-ui/icons/Block";
@@ -55,7 +54,6 @@ const ManageCollege = props => {
   const history = useHistory();
   const [open, setOpen] = React.useState(true);
   /** Data we get for filtering */
-  const [collegesFilter, setCollegesFilter] = React.useState([]);
   const { setLoaderStatus } = useContext(LoaderContext);
   const [rpcs, setRpcs] = React.useState([]);
   const [zones, setZones] = React.useState([]);
@@ -135,14 +133,6 @@ const ManageCollege = props => {
     let params = {
       pageSize: -1
     };
-    serviceProviders
-      .serviceProviderForGetRequest(COLLEGE_URL, params)
-      .then(res => {
-        setCollegesFilter(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, params)
       .then(res => {

@@ -171,7 +171,7 @@ module.exports = {
 
   organizations: async ctx => {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     // TODO add college admins to list
     /**
@@ -254,7 +254,7 @@ module.exports = {
   academicHistory: async ctx => {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("academic-history")
@@ -482,7 +482,7 @@ module.exports = {
    */
   individuals: async ctx => {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -582,7 +582,7 @@ module.exports = {
     }
 
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -621,7 +621,7 @@ module.exports = {
     }
 
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -718,7 +718,7 @@ module.exports = {
   async organizationEvents(ctx) {
     const { id } = ctx.params;
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     /** This checks college using contact id */
     const college = await strapi.query("contact", PLUGIN).findOne({ id });
@@ -832,7 +832,7 @@ module.exports = {
   getOrganizationActivities: async ctx => {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     const contact = await strapi.query("contact", PLUGIN).findOne({ id });
     if (!contact) {
@@ -940,7 +940,7 @@ module.exports = {
   getActivitiesForZonesRpcs: async ctx => {
     const { id, forRole } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -1166,7 +1166,7 @@ module.exports = {
   async eligibleActivity(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     const contact = await strapi.query("contact", PLUGIN).findOne({ id });
 
@@ -1255,7 +1255,7 @@ module.exports = {
       delete query.isHired;
     }
 
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     const student = await strapi.query("contact", PLUGIN).findOne({ id });
 
@@ -1414,7 +1414,7 @@ module.exports = {
       delete query.status;
     }
 
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -1551,7 +1551,7 @@ module.exports = {
       delete query.isHired;
     }
 
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
     const student = await strapi.query("contact", PLUGIN).findOne({ id });
 
     if (!student) {
@@ -1728,7 +1728,7 @@ module.exports = {
   async rpcEvents(ctx) {
     const { id } = ctx.params;
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     /** This checks college using contact id */
     const rpc = await strapi.query("rpc").findOne({ id }, []);
@@ -1826,7 +1826,7 @@ module.exports = {
   async zoneEvents(ctx) {
     const { id } = ctx.params;
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     /** This checks college using contact id */
     const zone = await strapi.query("zone").findOne({ id }, []);

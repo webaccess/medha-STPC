@@ -77,7 +77,7 @@ module.exports = async (ctx, next) => {
         .query("user", "users-permissions")
         .findOne({ username: individual.phone });
       if (isUsernamePresent)
-        return ctx.response.badRequest("Username already taken");
+        return ctx.response.badRequest("Contact number already taken");
 
       const isContactPresent = await strapi
         .query("contact", PLUGIN)

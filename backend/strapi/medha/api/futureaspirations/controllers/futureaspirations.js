@@ -9,7 +9,7 @@ const utils = require("../../../config/utils.js");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     if (!ctx.state.user) {
       return await strapi
