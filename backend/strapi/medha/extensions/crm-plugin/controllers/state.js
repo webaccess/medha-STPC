@@ -11,7 +11,7 @@ const utils = require("../../../config/utils.js");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("state", "crm-plugin")
@@ -40,7 +40,7 @@ module.exports = {
   async zones(ctx) {
     const { id } = ctx.params;
     const { query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("zone")
@@ -99,7 +99,7 @@ module.exports = {
   async rpcs(ctx) {
     const { id } = ctx.params;
     const { query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("rpc")

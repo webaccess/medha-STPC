@@ -1,4 +1,7 @@
 {
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "dashboards",
   "info": {
     "name": "Dashboard"
   },
@@ -28,9 +31,6 @@
     "Year": {
       "type": "biginteger"
     },
-    "Month": {
-      "type": "string"
-    },
     "Workshops": {
       "type": "biginteger"
     },
@@ -52,7 +52,7 @@
     "FirstYear": {
       "type": "biginteger"
     },
-    "SecondNumber": {
+    "SecondYear": {
       "type": "biginteger"
     },
     "FinalYear": {
@@ -105,8 +105,9 @@
     },
     "PlacementCollegeFeedback": {
       "type": "biginteger"
+    },
+    "Month": {
+      "type": "integer"
     }
-  },
-  "connection": "default",
-  "collectionName": "dashboards"
+  }
 }

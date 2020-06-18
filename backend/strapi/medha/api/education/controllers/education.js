@@ -11,7 +11,7 @@ const { PLUGIN } = require("../../../config/constants");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("education")

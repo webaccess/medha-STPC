@@ -184,7 +184,7 @@ module.exports = {
 
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
     return strapi
       .query("user", "users-permissions")
       .model.query(
