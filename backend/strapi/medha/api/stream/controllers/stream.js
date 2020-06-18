@@ -35,13 +35,14 @@ module.exports = {
             filters
           })
         )
-        .fetchPage({
-          page: page,
-          pageSize:
-            pageSize < 0 ? await utils.getTotalRecords("stream") : pageSize
-        })
+        .fetchAll()
         .then(res => {
-          return utils.getPaginatedResponse(res);
+          const data = res.toJSON();
+          const response = utils.paginate(data, page, pageSize);
+          return {
+            result: response.result,
+            ...response.pagination
+          };
         });
     }
   },

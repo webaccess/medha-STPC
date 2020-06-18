@@ -227,8 +227,9 @@ module.exports = {
   education: async ctx => {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
+    console.log(filters);
     return strapi
       .query("education")
       .model.query(
@@ -237,11 +238,11 @@ module.exports = {
           filters
         })
       )
+      .where({ contact: id })
       .fetchAll()
       .then(res => {
-        const data = res
-          .toJSON()
-          .filter(education => education.contact.id == id);
+        const data = res.toJSON();
+        // .filter(education => education.contact.id == id);
         const response = utils.paginate(data, page, pageSize);
         return {
           result: response.result,
