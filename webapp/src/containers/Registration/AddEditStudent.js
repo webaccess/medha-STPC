@@ -7,6 +7,7 @@ import {
   Typography,
   FormControl,
   Divider,
+  Link,
   InputLabel,
   IconButton,
   InputAdornment,
@@ -124,10 +125,8 @@ const AddEditStudent = props => {
   const [stream, setStream] = useState(null);
 
   useEffect(() => {
-    if (
-      props.path === "/edit-profile" &&
-      !props.location.hasOwnProperty("dataForEdit")
-    ) {
+    console.log(props);
+    if (props.location && !props.location.dataForEdit) {
       history.push({
         pathname: routeConstants.VIEW_PROFILE
       });
@@ -761,6 +760,12 @@ const AddEditStudent = props => {
 
   const hasError = field => (formState.errors[field] ? true : false);
 
+  const changeContactNumber = () => {
+    history.push(routeConstants.CHANGE_CONTACT_NUMBER, {
+      contactNumber: formState.values["contact"]
+    });
+  };
+
   return (
     // <Layout>
     <Grid>
@@ -1116,8 +1121,24 @@ const AddEditStudent = props => {
                         : null
                     }
                   />
+                  {formState.editStudent ? (
+                    <Link
+                      href="javascript:void(0);"
+                      variant="body2"
+                      className={classes.linkColor}
+                      onClick={changeContactNumber}
+                    >
+                      {authPageConstants.CHANGE_CONTACT_NUMBER}
+                    </Link>
+                  ) : null}
                 </Grid>
-                <Grid item md={6} xs={12}>
+
+                <Grid
+                  item
+                  md={6}
+                  xs={12}
+                  style={formState.editStudent ? { marginTop: "-22px" } : null}
+                >
                   <InlineDatePicker
                     // variant="inline"
                     format="dd/MM/yyyy"
@@ -1192,7 +1213,6 @@ const AddEditStudent = props => {
                     variant="outlined"
                     required
                     fullWidth
-                    disabled={formState.editStudent ? true : false}
                     onChange={handleChange}
                     error={hasError("email")}
                     helperText={

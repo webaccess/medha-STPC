@@ -82,6 +82,8 @@ import AddDocument from "./containers/Student/Document/AddEditDocument";
 import ManageStudents from "./containers/Student/ManageStudentCollegeAdmin/ManageStudent/ManageStudents";
 import AddEditStudentForCollegeAdmin from "./containers/Student/ManageStudentCollegeAdmin/AddEditStudentForCollegeAdmin/AddEditStudentForCollegeAdmin";
 import ViewPastActivities from "./containers/Student/Activity/PastActivities";
+import RequestOTP from "./containers/Student/ChangeContactNumber/RequestOTP.js";
+import ContactChanged from "./containers/Student/ChangeContactNumber/ContactChanged.js";
 
 /** Activity */
 import ViewActivity from "./containers/Activity/ViewActivity.js";
@@ -152,6 +154,20 @@ const AppRouter = props => {
           exact
           component={AddEditStudent}
           title="Edit Profile"
+        />
+
+        <RouteWithLayout
+          component={RequestOTP}
+          exact
+          layout={Layout}
+          path={routeConstants.CHANGE_CONTACT_NUMBER}
+        />
+
+        <RouteWithLayout
+          component={ContactChanged}
+          exact
+          layout={Layout}
+          path={routeConstants.CHANGED_CONTACT_NUMBER}
         />
 
         <RequestOtp path={routeConstants.REQUEST_OTP} layout={Layout} exact />

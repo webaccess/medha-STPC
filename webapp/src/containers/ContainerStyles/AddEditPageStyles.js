@@ -11,6 +11,11 @@ const useStyles = makeStyles(theme => ({
   DateMargin: {
     marginLeft: "6px"
   },
+  linkColor: {
+    color: "#21abdc",
+    fontSize: "0.8rem",
+    textAlign: "right"
+  },
   btnspace: {
     padding: "20px 18px 20px"
   },

@@ -234,13 +234,13 @@
       "method": "PUT",
       "path": "/contact/:id/edit-organization",
       "handler": "contact.editOrganization",
-      "config": { "policies": [] }
+      "config": { "policies": ["global::validateOrganization"] }
     },
     {
       "method": "PUT",
       "path": "/contact/:id/edit-individual",
       "handler": "contact.editIndividual",
-      "config": { "policies": [] }
+      "config": { "policies": ["global::validateIndividual"] }
     },
     {
       "method": "PUT",

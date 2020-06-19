@@ -2225,6 +2225,20 @@ module.exports = {
           return Promise.reject("Something went wrong while updating User");
         }
 
+        const future_aspirations = await Promise.all(
+          data.future_aspirations.map(async futureaspiration => {
+            return await strapi
+              .query("futureaspirations")
+              .findOne({ id: futureaspiration });
+          })
+        );
+
+        if (
+          future_aspirations.some(futureaspiration => futureaspiration === null)
+        ) {
+          return Promise.reject("Future Aspiration does not exist");
+        }
+
         // Step 2 updating individual
         const individual = await strapi
           .query("individual", PLUGIN)
@@ -2244,6 +2258,10 @@ module.exports = {
                 files: files["files.profile_photo"]
               });
             }
+            if (data.hasOwnProperty("future_aspirations")) {
+              await model.future_aspirations().detach();
+              await model.future_aspirations().attach(data.future_aspirations);
+            }
 
             return model;
           })
@@ -2256,24 +2274,6 @@ module.exports = {
           return Promise.reject(
             "Something went wrong while updating Individual"
           );
-        }
-
-        const future_aspirations = await Promise.all(
-          data.future_aspirations.map(async futureaspiration => {
-            return await strapi
-              .query("futureaspirations")
-              .findOne({ id: futureaspiration });
-          })
-        );
-
-        if (
-          future_aspirations.some(futureaspiration => futureaspiration === null)
-        ) {
-          return Promise.reject("Future Aspiration does not exist");
-        }
-        if (data.hasOwnProperty("future_aspirations")) {
-          await individual.future_aspirations().detach();
-          await individual.future_aspirations().attach(data.future_aspirations);
         }
 
         // Step 3 updating contact details
