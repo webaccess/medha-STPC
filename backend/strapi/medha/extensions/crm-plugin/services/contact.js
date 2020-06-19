@@ -510,5 +510,13 @@ module.exports = {
 
     await strapi.plugins["upload"].services.upload.remove(file, config);
     return file;
+  },
+
+  getCollegeContactIdUsingCollegeAdminContactId: async contactId => {
+    const response = await strapi
+      .query("contact", "crm-plugin")
+      .find({ id: contactId }, ["individual", "individual.organization"]);
+
+    return response[0].individual.organization.contact;
   }
 };

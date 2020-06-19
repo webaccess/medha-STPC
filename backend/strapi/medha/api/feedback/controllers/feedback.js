@@ -18,7 +18,7 @@ const sanitizeUser = user =>
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("feedback")
@@ -28,21 +28,14 @@ module.exports = {
           filters
         })
       )
-      .fetchPage({
-        page: page,
-        pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("feedback") : pageSize
-      })
+      .fetchAll()
       .then(res => {
-        const data = utils.getPaginatedResponse(res);
-        if (data.result) {
-          data.result = data.result.reduce((result, feedback) => {
-            feedback.user = sanitizeUser(feedback.user);
-            result.push(feedback);
-            return result;
-          }, []);
-        }
-        return data;
+        const data = res.toJSON();
+        const response = utils.paginate(data, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
       });
   },
 

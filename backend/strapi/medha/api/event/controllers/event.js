@@ -24,7 +24,7 @@ const _ = require("lodash");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("event")
@@ -34,12 +34,14 @@ module.exports = {
           filters
         })
       )
-      .fetchPage({
-        page: page,
-        pageSize: pageSize < 0 ? await utils.getTotalRecords("event") : pageSize
-      })
+      .fetchAll()
       .then(res => {
-        return utils.getPaginatedResponse(res);
+        const data = res.toJSON();
+        const response = utils.paginate(data, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
       });
   },
 
@@ -66,7 +68,7 @@ module.exports = {
   async individual(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -181,7 +183,7 @@ module.exports = {
     const { id, organizationId } = ctx.params;
 
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {

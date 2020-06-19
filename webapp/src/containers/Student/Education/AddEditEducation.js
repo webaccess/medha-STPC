@@ -151,7 +151,6 @@ const AddEditEducation = props => {
 
   /** Part for editing Education */
   if (formState.isEditEducation && !formState.counter) {
-    console.log(props);
     setLoaderStatus(true);
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["year_of_passing"]) {
@@ -163,7 +162,6 @@ const AddEditEducation = props => {
           props["dataForEdit"]["education_year"];
       }
       if (props["dataForEdit"]["percentage"]) {
-        console.log(props["dataForEdit"]["percentage"]);
         formState.values[percentage] = props["dataForEdit"]["percentage"];
       }
       if (props["dataForEdit"]["qualification"]) {
@@ -234,7 +232,6 @@ const AddEditEducation = props => {
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
     const schema = getSchema();
-    console.log(schema);
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -258,7 +255,6 @@ const AddEditEducation = props => {
       formState.errors = formUtilities.setErrors(formState.values, schema);
     }
 
-    console.log(isValid);
     if (isValid) {
       /** CALL POST FUNCTION */
       postEducationData();
@@ -370,7 +366,8 @@ const AddEditEducation = props => {
             fromEditEducation: true,
             isDataEdited: false,
             editResponseMessage: "",
-            editedData: {}
+            editedData: {},
+            error: error.response.data ? error.response.data.message : ""
           });
           setLoaderStatus(false);
         });
@@ -395,13 +392,14 @@ const AddEditEducation = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
-          console.log("POSTEDUCATION", error);
+          console.log("POSTEDUCATION", error.response);
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,
             fromAddEducation: true,
             isDataAdded: false,
             addResponseMessage: "",
-            addedData: {}
+            addedData: {},
+            error: error.response.data ? error.response.data.message : ""
           });
           setLoaderStatus(false);
         });
@@ -425,8 +423,6 @@ const AddEditEducation = props => {
       delete formState.errors[eventName];
     }
   };
-
-  console.log({ values: formState.values, errors: formState.errors });
 
   const saveAndNext = event => {
     event.preventDefault();

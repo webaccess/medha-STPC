@@ -594,11 +594,9 @@ const ViewRpc = props => {
                 </IconButton>
               }
             >
-              An error has occured while adding RPC.{" "}
               {props.location.addResponseMessage
                 ? props.location.addResponseMessage
-                : null}{" "}
-              Kindly, try again.
+                : "An error has occured while adding RPC. Kindly, try again"}
             </Alert>
           </Collapse>
         ) : null}

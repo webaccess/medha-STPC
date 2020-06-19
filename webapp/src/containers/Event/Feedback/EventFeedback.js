@@ -10,7 +10,13 @@ import {
   Typography,
   Tooltip
 } from "@material-ui/core";
-import { Table, Spinner, Alert, FeedBack } from "../../../components";
+import {
+  Table,
+  Spinner,
+  Alert,
+  FeedBack,
+  ToolTipComponent
+} from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as roleConstants from "../../../constants/RoleConstants";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
@@ -783,21 +789,20 @@ const EventFeedback = props => {
       name: "Name",
       sortable: true,
       selector: "title",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.title}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.title}`}</div>
-        </Tooltip>
-      )
+      cell: row => <ToolTipComponent data={row.title} />
     },
-    { name: "Start Date", sortable: true, selector: "start_date_time" },
-    { name: "End Date", sortable: true, selector: "end_date_time" },
+    {
+      name: "Start Date",
+      sortable: true,
+      selector: "start_date_time",
+      cell: row => <ToolTipComponent data={row.start_date_time} />
+    },
+    {
+      name: "End Date",
+      sortable: true,
+      selector: "end_date_time",
+      cell: row => <ToolTipComponent data={row.end_date_time} />
+    },
     {
       name: "Actions",
       cell: cell => (
