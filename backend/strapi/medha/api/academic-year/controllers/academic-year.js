@@ -10,7 +10,7 @@ const utils = require("../../../config/utils.js");
 module.exports = {
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("academic-year")
@@ -20,13 +20,14 @@ module.exports = {
           filters
         })
       )
-      .fetchPage({
-        page: page,
-        pageSize:
-          pageSize < 0 ? await utils.getTotalRecords("academic-year") : pageSize
-      })
+      .fetchAll()
       .then(res => {
-        return utils.getPaginatedResponse(res);
+        const data = res.toJSON();
+        const response = utils.paginate(data, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
       });
   },
 

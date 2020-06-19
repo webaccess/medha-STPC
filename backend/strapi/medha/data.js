@@ -742,7 +742,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["zoneevents", "getactivitiesforzonesrpcs"],
+        action: ["zoneevents", "getactivitiesforzonesrpcs", "organizations"],
         type: PLUGIN_NAME
       },
       {
@@ -768,7 +768,7 @@ const ROLES = {
 
       {
         name: "state",
-        action: [],
+        action: ["find", "rpcs", "zones", "findone"],
         type: PLUGIN_NAME
       },
       // {
@@ -877,7 +877,7 @@ const ROLES = {
       },
       {
         name: "contact",
-        action: ["rpcevents", "getactivitiesforzonesrpcs"],
+        action: ["rpcevents", "getactivitiesforzonesrpcs", "organizations"],
         type: PLUGIN_NAME
       },
       {
@@ -902,7 +902,7 @@ const ROLES = {
       },
       {
         name: "state",
-        action: [],
+        action: ["find", "rpcs", "zones", "findone"],
         type: PLUGIN_NAME
       },
       {
@@ -989,7 +989,7 @@ const ROLES = {
       },
       {
         name: "rpc",
-        action: ["find", "findone"]
+        action: ["find", "findone", "colleges"]
       },
       {
         name: "stream",
@@ -1074,7 +1074,8 @@ const ROLES = {
           "editindividual",
           "getOrganizationActivities",
           "rpcevents",
-          "getactivitiesforzonesrpcs"
+          "getactivitiesforzonesrpcs",
+          "organizations"
         ],
         type: PLUGIN_NAME
       },
@@ -1140,7 +1141,7 @@ const ROLES = {
       },
       {
         name: "state",
-        action: ["find", "findone"],
+        action: ["find", "rpcs", "zones", "findone", "organizations"],
         type: PLUGIN_NAME
       },
       {
@@ -1436,6 +1437,10 @@ const ROLES = {
         name: "district",
         action: [],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: []
       }
     ],
     grantAllPermissions: true

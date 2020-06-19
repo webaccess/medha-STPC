@@ -1008,7 +1008,9 @@ const ManageUser = props => {
                 </IconButton>
               }
             >
-              An error has occured while updating user. Kindly, try again.
+              {props.location.editResponseMessage
+                ? props.location.editResponseMessage
+                : "An error has occured while updating user. Kindly, try again."}
             </Alert>
           </Collapse>
         ) : null}
@@ -1053,7 +1055,11 @@ const ManageUser = props => {
                 </IconButton>
               }
             >
-              An error has occured while adding user. Kindly, try again.
+              An error has occured while adding user.{" "}
+              {props.location.addResponseMessage
+                ? props.location.addResponseMessage
+                : null}{" "}
+              Kindly, try again.
             </Alert>
           </Collapse>
         ) : null}

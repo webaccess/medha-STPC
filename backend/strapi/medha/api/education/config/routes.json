@@ -29,7 +29,7 @@
       "path": "/educations",
       "handler": "education.create",
       "config": {
-        "policies": ["isOwner"]
+        "policies": ["isOwner", "global::validateEducation"]
       }
     },
     {
@@ -37,7 +37,7 @@
       "path": "/educations/:id",
       "handler": "education.update",
       "config": {
-        "policies": ["isOwner"]
+        "policies": ["isOwner", "global::validateEducation"]
       }
     },
     {

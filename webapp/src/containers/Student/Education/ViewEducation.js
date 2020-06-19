@@ -64,6 +64,7 @@ const ViewEducation = props => {
     fromAddEducation: props["location"]["fromAddEducation"]
       ? props["location"]["fromAddEducation"]
       : false,
+    responseError: props["location"]["error"] ? props["location"]["error"] : "",
     /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
@@ -286,7 +287,11 @@ const ViewEducation = props => {
           ? cell.other_qualification
           : cell.qualification
     },
-    { name: "Board", sortable: true, selector: "board.name" },
+    {
+      name: "Board",
+      sortable: true,
+      cell: cell => (cell.board ? cell.board.name : "-")
+    },
     { name: "Percentage", sortable: true, selector: "percentage" },
     {
       name: "Pursuing",
@@ -410,8 +415,7 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  {" "}
-                  Error is editing Education.
+                  {formState.responseError}
                   {/* {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE} */}
                 </Alert>
               </Collapse>
@@ -457,7 +461,7 @@ const ViewEducation = props => {
                     </IconButton>
                   }
                 >
-                  Error in adding Education.
+                  {formState.responseError}
                   {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
                 </Alert>
               </Collapse>

@@ -190,9 +190,13 @@ const AddEditCollege = props => {
       }
       if (
         props["dataForEdit"]["principal"] &&
-        props["dataForEdit"]["principal"]["id"]
+        props["dataForEdit"]["principal"]["contact"] &&
+        props["dataForEdit"]["principal"]["contact"]["user"]
       ) {
-        formState.values[principal] = props["dataForEdit"]["principal"]["id"];
+        formState.values[principal] =
+          props["dataForEdit"]["principal"]["contact"]["user"];
+        formState.adminValues[principal] =
+          props["dataForEdit"]["principal"]["contact"]["individual"];
       }
       if (
         props["dataForEdit"]["stream_strength"] &&
@@ -322,7 +326,10 @@ const AddEditCollege = props => {
         let array = [];
         tpoData.map(tpo => {
           for (let i in props["dataForEdit"]["tpos"]) {
-            if (props["dataForEdit"]["tpos"][i]["id"] === tpo["id"]) {
+            if (
+              props["dataForEdit"]["tpos"][i]["contact"]["individual"] ===
+              tpo["id"]
+            ) {
               array.push(tpo);
             }
           }
@@ -333,9 +340,16 @@ const AddEditCollege = props => {
         }));
         let finalData = [];
         for (let i in props["dataForEdit"]["tpos"]) {
-          finalData.push(props["dataForEdit"]["tpos"][i]["id"]);
+          finalData.push(
+            props["dataForEdit"]["tpos"][i]["contact"]["individual"]
+          );
         }
-        formState.values[tpos] = finalData;
+        let finalDataId = [];
+        for (let i in props["dataForEdit"]["tpos"]) {
+          finalDataId.push(props["dataForEdit"]["tpos"][i]["id"]);
+        }
+        formState.values[tpos] = finalDataId;
+        formState.adminValues[tpos] = finalData;
       }
     }
   };
@@ -405,14 +419,14 @@ const AddEditCollege = props => {
 
   /** This gets Principal Email and contact number*/
   useEffect(() => {
-    if (formState.values[principal]) {
-      getPrincipalName(formState.values[principal]);
+    if (formState.adminValues[principal]) {
+      getPrincipalName(formState.adminValues[principal]);
     } else {
       setIsGetAdminData(false);
       setPrincipalData([]);
     }
     return () => {};
-  }, [formState.values[principal]]);
+  }, [formState.adminValues[principal]]);
 
   const getPrincipalName = ID => {
     let principalURL;
@@ -429,21 +443,21 @@ const AddEditCollege = props => {
       })
       .catch(error => {
         setIsGetAdminData(false);
-        console.log("error", error);
+        console.log("error", error, error.response);
       });
   };
 
   /** This gets TPOs Email and contact number */
   useEffect(() => {
-    if (formState.values[tpos]) {
+    if (formState.adminValues[tpos]) {
       setTpoData([]);
-      getTpoName(formState.values[tpos]);
+      getTpoName(formState.adminValues[tpos]);
     } else {
       setIsGetAdminData(false);
       setTpoData([]);
     }
     return () => {};
-  }, [formState.values[tpos]]);
+  }, [formState.adminValues[tpos]]);
 
   const getTpoName = ID => {
     let tpoURL = [];
@@ -497,11 +511,14 @@ const AddEditCollege = props => {
     }
     if (get(CollegeFormSchema[eventName], "type") === "multi-select") {
       let finalValues = [];
+      let finalIds = [];
       for (let i in value) {
-        finalValues.push(value[i]["id"]);
+        finalValues.push(value[i]["contact"]["user"]["id"]);
+        finalIds.push(value[i]["id"]);
       }
       value = {
-        id: finalValues
+        id: finalValues,
+        tpoId: finalIds
       };
     }
     if (value !== null) {
@@ -517,11 +534,33 @@ const AddEditCollege = props => {
         },
         isStateClearFilter: false
       }));
+      if (eventName === tpos) {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value.id
+          },
+          adminValues: {
+            ...formState.adminValues,
+            [eventName]: value.tpoId
+          },
+          touched: {
+            ...formState.touched,
+            [eventName]: true
+          },
+          isStateClearFilter: false
+        }));
+      }
       if (eventName === principal) {
         setFormState(formState => ({
           ...formState,
           values: {
             ...formState.values,
+            [eventName]: value.contact.user.id
+          },
+          adminValues: {
+            ...formState.adminValues,
             [eventName]: value.id
           },
           touched: {
@@ -563,6 +602,7 @@ const AddEditCollege = props => {
       }));
       /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
+      delete formState.adminValues[eventName];
     }
   };
 
@@ -839,11 +879,22 @@ const AddEditCollege = props => {
         })
         .catch(error => {
           console.log(error.response);
+          let errorMessage;
+
+          if (
+            error.response !== undefined &&
+            error.response.status !== undefined &&
+            error.response.status === 400
+          ) {
+            if (error.response.data["message"]) {
+              errorMessage = error.response.data["message"];
+            }
+          }
           history.push({
             pathname: routeConstants.MANAGE_COLLEGE,
             fromeditCollege: true,
             isDataEdited: false,
-            editResponseMessage: "",
+            editResponseMessage: errorMessage ? errorMessage : "",
             editedData: {}
           });
           setLoaderStatus(false);
@@ -863,7 +914,7 @@ const AddEditCollege = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
-          console.log("error", error);
+          console.log("errorCollege", error, error.response);
           let errorMessage;
 
           if (
@@ -1394,7 +1445,9 @@ const AddEditCollege = props => {
                     value={
                       user[
                         user.findIndex(function (item, i) {
-                          return item.id === formState.values[principal];
+                          return (
+                            item.contact.user.id === formState.values[principal]
+                          );
                         })
                       ] || null /** Please give a default " " blank value */
                     }

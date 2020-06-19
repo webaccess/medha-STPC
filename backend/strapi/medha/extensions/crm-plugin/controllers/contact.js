@@ -171,7 +171,7 @@ module.exports = {
 
   organizations: async ctx => {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     // TODO add college admins to list
     /**
@@ -227,8 +227,9 @@ module.exports = {
   education: async ctx => {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
+    console.log(filters);
     return strapi
       .query("education")
       .model.query(
@@ -237,11 +238,11 @@ module.exports = {
           filters
         })
       )
+      .where({ contact: id })
       .fetchAll()
       .then(res => {
-        const data = res
-          .toJSON()
-          .filter(academicHistory => academicHistory.contact.id == id);
+        const data = res.toJSON();
+        // .filter(education => education.contact.id == id);
         const response = utils.paginate(data, page, pageSize);
         return {
           result: response.result,
@@ -253,7 +254,7 @@ module.exports = {
   academicHistory: async ctx => {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     return strapi
       .query("academic-history")
@@ -481,7 +482,7 @@ module.exports = {
    */
   individuals: async ctx => {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -581,7 +582,7 @@ module.exports = {
     }
 
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -620,7 +621,7 @@ module.exports = {
     }
 
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -717,7 +718,7 @@ module.exports = {
   async organizationEvents(ctx) {
     const { id } = ctx.params;
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     /** This checks college using contact id */
     const college = await strapi.query("contact", PLUGIN).findOne({ id });
@@ -831,7 +832,7 @@ module.exports = {
   getOrganizationActivities: async ctx => {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     const contact = await strapi.query("contact", PLUGIN).findOne({ id });
     if (!contact) {
@@ -939,7 +940,7 @@ module.exports = {
   getActivitiesForZonesRpcs: async ctx => {
     const { id, forRole } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -1165,7 +1166,7 @@ module.exports = {
   async eligibleActivity(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     const contact = await strapi.query("contact", PLUGIN).findOne({ id });
 
@@ -1254,7 +1255,7 @@ module.exports = {
       delete query.isHired;
     }
 
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     const student = await strapi.query("contact", PLUGIN).findOne({ id });
 
@@ -1413,7 +1414,7 @@ module.exports = {
       delete query.status;
     }
 
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -1550,7 +1551,7 @@ module.exports = {
       delete query.isHired;
     }
 
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
     const student = await strapi.query("contact", PLUGIN).findOne({ id });
 
     if (!student) {
@@ -1727,7 +1728,7 @@ module.exports = {
   async rpcEvents(ctx) {
     const { id } = ctx.params;
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     /** This checks college using contact id */
     const rpc = await strapi.query("rpc").findOne({ id }, []);
@@ -1825,7 +1826,7 @@ module.exports = {
   async zoneEvents(ctx) {
     const { id } = ctx.params;
     let { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
 
     /** This checks college using contact id */
     const zone = await strapi.query("zone").findOne({ id }, []);
@@ -2178,8 +2179,8 @@ module.exports = {
       "middle_name",
       "last_name",
       "stream",
-      "father_first_name",
-      "father_last_name",
+      "father_full_name",
+      "mother_full_name",
       "date_of_birth",
       "gender",
       "is_physically_challenged",
@@ -2224,6 +2225,20 @@ module.exports = {
           return Promise.reject("Something went wrong while updating User");
         }
 
+        const future_aspirations = await Promise.all(
+          data.future_aspirations.map(async futureaspiration => {
+            return await strapi
+              .query("futureaspirations")
+              .findOne({ id: futureaspiration });
+          })
+        );
+
+        if (
+          future_aspirations.some(futureaspiration => futureaspiration === null)
+        ) {
+          return Promise.reject("Future Aspiration does not exist");
+        }
+
         // Step 2 updating individual
         const individual = await strapi
           .query("individual", PLUGIN)
@@ -2243,6 +2258,10 @@ module.exports = {
                 files: files["files.profile_photo"]
               });
             }
+            if (data.hasOwnProperty("future_aspirations")) {
+              await model.future_aspirations().detach();
+              await model.future_aspirations().attach(data.future_aspirations);
+            }
 
             return model;
           })
@@ -2255,24 +2274,6 @@ module.exports = {
           return Promise.reject(
             "Something went wrong while updating Individual"
           );
-        }
-
-        const future_aspirations = await Promise.all(
-          data.future_aspirations.map(async futureaspiration => {
-            return await strapi
-              .query("futureaspirations")
-              .findOne({ id: futureaspiration });
-          })
-        );
-
-        if (
-          future_aspirations.some(futureaspiration => futureaspiration === null)
-        ) {
-          return Promise.reject("Future Aspiration does not exist");
-        }
-        if (data.hasOwnProperty("future_aspirations")) {
-          await individual.future_aspirations().detach();
-          await individual.future_aspirations().attach(data.future_aspirations);
         }
 
         // Step 3 updating contact details
@@ -2301,31 +2302,6 @@ module.exports = {
         return ctx.response.badRequest(error);
       });
   },
-
-  // documents: async ctx => {
-  //   const { id } = ctx.params;
-  //   const documentId = ctx.query ? ctx.query.name_contains : null;
-
-  //   const response = await strapi.query("contact", PLUGIN).findOne({ id });
-
-  //   if (
-  //     documentId &&
-  //     response.individual.documents &&
-  //     response.individual.documents.length > 0
-  //   ) {
-  //     response.individual.documents = response.individual.documents.filter(
-  //       doc => {
-  //         if (doc.name.search(documentId) >= 0) {
-  //           return doc;
-  //         }
-  //       }
-  //     );
-  //   }
-
-  //   return utils.getFindOneResponse(
-  //     response ? response.individual.documents : null
-  //   );
-  // },
 
   deleteDocument: async ctx => {
     const { fileId } = ctx.params;

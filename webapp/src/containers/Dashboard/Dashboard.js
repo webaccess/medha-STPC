@@ -1,8 +1,7 @@
-import React, { Component } from "react";
-import Layout from "../../hoc/Layout/Layout";
+import React, { useEffect, useState } from "react";
 import useStyles from "./DashboardStyles";
 import clsx from "clsx";
-
+import * as _ from "lodash";
 import { withStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -11,90 +10,495 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import DashboardSchema from "./DashboardSchema";
+import * as formUtilities from "../../utilities/FormUtilities";
 
 import {
   Grid,
   Card,
   CardContent,
   Typography,
-  Avatar,
   FormControl,
-  InputLabel,
   TextField,
   CardHeader
 } from "@material-ui/core";
+import * as strapiApiConstants from "../../constants/StrapiApiConstants";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as genericConstants from "../../constants/GenericConstants";
+import * as roleConstants from "../../constants/RoleConstants";
+import * as serviceProvider from "../../api/Axios";
 import { GrayButton, YellowButton } from "../../components";
 import SetIndexContext from "../../context/SetIndexContext";
 import { useContext } from "react";
+import auth from "../../components/Auth";
+import LoaderContext from "../../context/LoaderContext";
+
+/** Initialize months array */
+let tempMonthArray = [
+  { id: 1, name: "January" },
+  { id: 2, name: "February" },
+  { id: 3, name: "March" },
+  { id: 4, name: "April" },
+  { id: 5, name: "May" },
+  { id: 6, name: "June" },
+  { id: 7, name: "July" },
+  { id: 8, name: "August" },
+  { id: 9, name: "September" },
+  { id: 10, name: "October" },
+  { id: 11, name: "November" },
+  { id: 12, name: "December" }
+];
+
+let finalData = {
+  Workshops: 0,
+  TPOFeedback: 0,
+  StudentFeedback: 0,
+  IndustrialVisits: 0,
+  Interships: 0,
+  Placement: 0,
+  FirstYear: 0,
+  FinalYear: 0,
+  Entrepreneurship: 0,
+  FirstYearAttendance: 0,
+  SecondYearAttendance: 0,
+  FinalYearAttendance: 0,
+  PlannedVsAchieved: 0,
+  UniqueStudents: 0,
+  Institutionstouched: 0,
+  IndustrialVisitAttendance: 0,
+  IndustrialVisitPlannedVsAchieved: 0,
+  IndustrialVisitStudentFeedback: 0,
+  IndustrialVisitTPOFeedback: 0,
+  PlacementAttended: 0,
+  PlacementSelected: 0,
+  PlacementStudentFeedback: 0,
+  PlacementTPOFeedback: 0,
+  PlacementCollegeFeedback: 0,
+  SecondYear: 0
+};
+
+/*** Initialize the filters */
+const state = "state";
+const zone = "zone";
+const rpc = "rpc";
+const college = "contact";
+const month = "Month";
+const year = "Year";
+
+const STATES_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
+
+const DASHBOARD_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DASHBOARDS;
+
+const COLLEGE_URL =
+  strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES;
+
+const RPCS = strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
 
 const Dashboard = props => {
   const { container, className, ...rest } = props;
   const classes = useStyles();
   const inputLabel = React.useRef(null);
-  const [labelWidth, setLabelWidth] = React.useState(0);
-  const { index, setIndex } = useContext(SetIndexContext);
-  setIndex(0);
+  const [zones, setZones] = useState([]);
+  const [rpcs, setRpcs] = useState([]);
+  const [monthData, setMonthData] = useState([]);
+  const [yearData, setYearData] = useState([]);
+  const [colleges, setColleges] = useState([]);
+  const { setIndex } = useContext(SetIndexContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
 
-  React.useEffect(() => {
-    setLabelWidth(inputLabel.current.offsetWidth);
+  const [formState, setFormState] = useState({
+    state: 1,
+    values: {},
+    zonerows: [],
+    indrows: [],
+    placementrows: [],
+    flag: true,
+    errors: {}
+  });
+  setIndex(0);
+  console.log(formState.values);
+  const setData = () => {
+    setLoaderStatus(true);
+    setFormState(formState => ({
+      ...formState,
+      zonerows: [
+        createDatazone("Overall Workshops", finalData.Workshops),
+        createDatazone("1st Year", finalData.FirstYear),
+        createDatazone("2nd Year", finalData.SecondYear),
+        createDatazone("Final Year", finalData.FinalYear),
+        createDatazone("Entrepreneurship", finalData.Entrepreneurship),
+        createDatazone("1st Year Attendance", finalData.FirstYearAttendance),
+        createDatazone("2nd Year Attendance", finalData.SecondYearAttendance),
+        createDatazone("Final Year Attendanc", finalData.FinalYearAttendance),
+        createDatazone("Planned Vs Achieved", finalData.PlannedVsAchieved),
+        createDatazone("Unique Students", finalData.UniqueStudents),
+        createDatazone("Instittions touched", finalData.Institutionstouched),
+        createDatazone("Student Feedback", finalData.StudentFeedback),
+        createDatazone("TPO Feedback", finalData.TPOFeedback)
+      ],
+      indrows: [
+        createDataind("Industrial Visit", finalData.IndustrialVisits),
+        createDataind("Attendance", finalData.IndustrialVisitAttendance),
+        createDataind(
+          "Planned Vs Achieved",
+          finalData.IndustrialVisitPlannedVsAchieved
+        ),
+        createDataind(
+          "Student Feedback",
+          finalData.IndustrialVisitStudentFeedback
+        ),
+        createDataind("TPO Feedback", finalData.IndustrialVisitTPOFeedback)
+      ],
+      placementrows: [
+        createDataplacement("Placement", finalData.Placement),
+        createDataplacement("Attended", finalData.PlacementAttended),
+        createDataplacement("Selected", finalData.PlacementSelected),
+        createDataplacement(
+          "Student Feedback",
+          finalData.PlacementStudentFeedback
+        ),
+        createDataplacement("TPO Feedback", finalData.PlacementTPOFeedback),
+        createDataplacement(
+          "College Feedback",
+          finalData.PlacementCollegeFeedback
+        )
+      ]
+    }));
+
+    setLoaderStatus(false);
+  };
+
+  /** Initial data bringing for all the filters role wise */
+  useEffect(() => {
+    setLoaderStatus(true);
+    prefillInitialDataRoleWise();
+    setData();
+    getInitialData();
   }, []);
 
-  function createDatazone(zonename: string, zoneresult: number) {
+  const prefillInitialDataRoleWise = () => {
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+      formState.values = {};
+    } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+      formState.values = {
+        zone: auth.getUserInfo().zone.id
+      };
+    } else if (
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+      auth.getUserInfo().studentInfo.organization.contact.id ===
+        auth.getUserInfo().rpc.main_college
+    ) {
+      formState.values = {
+        rpc: auth.getUserInfo().rpc.id
+      };
+    } else if (
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+      auth.getUserInfo().rpc.main_college !== null &&
+      auth.getUserInfo().studentInfo.organization.contact.id !==
+        auth.getUserInfo().rpc.main_college
+    ) {
+      formState.values = {
+        zone: auth.getUserInfo().zone.id,
+        rpc: auth.getUserInfo().rpc.id,
+        contact: auth.getUserInfo().studentInfo.organization.contact.id
+      };
+    }
+  };
+
+  const getInitialData = () => {
+    setLoaderStatus(true);
+    setYears(true);
+    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+      fetchZoneRpcDistrictData();
+    } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
+      fetchAllRpc();
+    } else if (
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+      auth.getUserInfo().studentInfo.organization.contact.id ===
+        auth.getUserInfo().rpc.main_college
+    ) {
+      fetchCollegesToRPC();
+    }
+    setLoaderStatus(false);
+  };
+
+  const fetchCollegesToRPC = async () => {
+    let COLLEGE_URL =
+      strapiApiConstants.STRAPI_DB_URL +
+      strapiApiConstants.STRAPI_RPCS +
+      "/" +
+      auth.getUserInfo().rpc.id +
+      "/colleges";
+
+    await serviceProvider
+      .serviceProviderForGetRequest(COLLEGE_URL)
+      .then(res => {
+        setColleges(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
+  /** Get Data */
+  function createDatazone(zonename, zoneresult) {
     return { zonename, zoneresult };
   }
 
-  function createDataind(industry: string, industryresult: number) {
+  function createDataind(industry, industryresult) {
     return { industry, industryresult };
   }
 
-  function createDataplacement(placement: string, placementresult: number) {
+  function createDataplacement(placement, placementresult) {
     return { placement, placementresult };
   }
 
-  const zonerows = [
-    createDatazone("Overall Workshops", 25),
-    createDatazone("1st Year", 40),
-    createDatazone("2nd Year", 45),
-    createDatazone("Final Year", 42),
-    createDatazone("Entrepreneurship", 2),
-    createDatazone("1st Year Attendance", 38),
-    createDatazone("2nd Year Attendance", 42),
-    createDatazone("Final Year Attendanc", 42),
-    createDatazone("Planned Vs Achieved", 6),
-    createDatazone("Unique Students", 6),
-    createDatazone("Instittions touched", 5),
-    createDatazone("Student Feedback", 22),
-    createDatazone("Stream", "IT"),
-    createDatazone("TPO Feedback", 2)
-  ];
+  /** Fetch all rpc */
+  const fetchAllRpc = async () => {
+    await serviceProvider
+      .serviceProviderForGetRequest(RPCS, {}, {})
+      .then(res => {
+        setRpcs(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
-  const indrows = [
-    createDataind("Industrial Visit", 3),
-    createDataind("Overall Industrial Visit", 3),
-    createDataind("Attendance", 40),
-    createDataind("Planned Vs Achieved", 45),
-    createDataind("Instittions touched", 42),
-    createDataind("Student Feedback", 2),
-    createDataind("TPO Feedback", 38),
-    createDataind("Employer Feedback", 42),
-    createDataind("Stream", 42)
-  ];
+  /** Sets Years */
+  const setYears = isInitialized => {
+    let startingYear = 1990;
+    let currentYear = new Date().getFullYear();
+    let diff = currentYear - startingYear;
+    let yearArray = [startingYear];
+    for (let i = 1; i <= diff; i++) {
+      yearArray.push(startingYear + i);
+    }
+    if (isInitialized) {
+      formState.values[year] = currentYear;
+      formState.values[month] = new Date().getMonth() + 1;
+      generateData();
+    }
+    setYearData(yearArray);
+  };
 
-  const placementrows = [
-    createDataplacement("Placement", 5),
-    createDataplacement("Stream", "IT"),
-    createDataplacement("OFFERS", 40),
-    createDataplacement("JOINED", 38),
-    createDataplacement("RETENNTION", 3),
-    createDataplacement("Student Feedback", 20),
-    createDataplacement("TPO Feedback", 18),
-    createDataplacement("Employer Feedback", 18),
-    createDataplacement("College Feedback", 42)
-  ];
+  /** Set month on year */
+  useEffect(() => {
+    if (formState.values[year]) {
+      getMonthsOnYears();
+    }
+  }, [formState.values[year]]);
 
-  const StyledTableCell = withStyles((theme: Theme) =>
+  const getMonthsOnYears = () => {
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    let monthArray = [];
+    if (formState.values[year] == currentYear) {
+      tempMonthArray.forEach(data => {
+        if (data["id"] <= currentMonth) {
+          monthArray.push(data);
+        }
+      });
+      setMonthData(monthArray);
+    } else {
+      setMonthData(tempMonthArray);
+    }
+  };
+
+  useEffect(() => {
+    if (formState.values[zone] && formState.values[rpc]) {
+      fetchCollegeData();
+    }
+  }, [formState.values[zone], formState.values[rpc]]);
+
+  /** Function to get college data after selcting zones and rpc's */
+  async function fetchCollegeData() {
+    let params = {
+      "zone.id": formState.values[zone],
+      "rpc.id": formState.values[rpc],
+      pageSize: -1
+    };
+
+    await serviceProvider
+      .serviceProviderForGetRequest(COLLEGE_URL, params)
+      .then(res => {
+        setColleges(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  }
+
+  const generateData = async () => {
+    if (Object.keys(formState.values) !== 0) {
+      if (
+        auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+        auth.getUserInfo().studentInfo.organization.contact.id ===
+          auth.getUserInfo().rpc.main_college
+      ) {
+        _.assign(formState.values, { isRpc: true });
+      }
+      setLoaderStatus(true);
+      await serviceProvider
+        .serviceProviderForGetRequest(DASHBOARD_URL, formState.values)
+        .then(res => {
+          Object.keys(finalData).map(data => {
+            finalData[data] = res.data[data];
+          });
+          setData();
+        })
+        .catch(error => {
+          setLoaderStatus(false);
+          console.log("error", error);
+        });
+    }
+  };
+
+  async function fetchZoneRpcDistrictData() {
+    if (
+      formState.state &&
+      formState.state !== null &&
+      formState.state !== undefined &&
+      formState.state !== ""
+    ) {
+      let zones_url =
+        STATES_URL +
+        "/" +
+        formState.state +
+        "/" +
+        strapiApiConstants.STRAPI_ZONES;
+
+      await serviceProvider
+        .serviceProviderForGetRequest(zones_url)
+        .then(res => {
+          setZones(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+
+      let rpcs_url =
+        STATES_URL +
+        "/" +
+        formState.state +
+        "/" +
+        strapiApiConstants.STRAPI_RPCS;
+
+      await serviceProvider
+        .serviceProviderForGetRequest(rpcs_url)
+        .then(res => {
+          if (Array.isArray(res.data)) {
+            setRpcs(res.data[0].result);
+          } else {
+            setRpcs(res.data.result);
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
+  }
+
+  /** Handle change for autocomplete fields */
+  const handleChangeAutoComplete = (eventName, event, value) => {
+    /**TO SET VALUES OF AUTOCOMPLETE */
+    if (value !== null) {
+      if (eventName !== year && eventName !== college) {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value.id
+          }
+        }));
+      } else if (eventName === college) {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value.contact.id
+          }
+        }));
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [eventName]: value
+          }
+        }));
+      }
+
+      if (eventName === state) {
+        fetchZoneRpcDistrictData();
+      }
+      if (formState.errors.hasOwnProperty(eventName)) {
+        delete formState.errors[eventName];
+      }
+    } else {
+      if (eventName === zone || eventName === rpc) {
+        setColleges([]);
+        delete formState.values[college];
+      } else if (eventName === year) {
+        setMonthData([]);
+        delete formState.values[month];
+      }
+      /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
+      setFormState(formState => ({
+        ...formState,
+        flag: !formState.flag
+      }));
+      delete formState.values[eventName];
+    }
+  };
+
+  const handleSubmit = event => {
+    setLoaderStatus(true);
+    let isValid = false;
+    formState.values = _.omit(formState.values, ["isRpc"]);
+    /** Checkif all fields are present in the submitted form */
+    let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
+      formState.values,
+      DashboardSchema
+    );
+    if (checkAllFieldsValid) {
+      /** Evaluated only if all keys are valid inside formstate */
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        DashboardSchema
+      );
+      /** Checks if the form is empty */
+      if (formUtilities.checkEmpty(formState.errors)) {
+        isValid = true;
+      }
+    } else {
+      /** This is used to find out which all required fields are not filled */
+      formState.values = formUtilities.getListOfKeysNotPresent(
+        formState.values,
+        DashboardSchema
+      );
+      /** This sets errors by comparing it with the json schema provided */
+      formState.errors = formUtilities.setErrors(
+        formState.values,
+        DashboardSchema
+      );
+    }
+    if (isValid) {
+      /** CALL POST FUNCTION */
+      generateData();
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        flag: !formState.flag
+      }));
+      setLoaderStatus(false);
+    }
+    event.preventDefault();
+  };
+
+  const StyledTableCell = withStyles(theme =>
     createStyles({
       head: {
         backgroundColor: "#000000",
@@ -110,7 +514,7 @@ const Dashboard = props => {
     })
   )(TableCell);
 
-  const StyledTableRow = withStyles((theme: Theme) =>
+  const StyledTableRow = withStyles(theme =>
     createStyles({
       root: {
         "&:nth-of-type(odd)": {
@@ -119,6 +523,23 @@ const Dashboard = props => {
       }
     })
   )(TableRow);
+
+  const clearFilter = () => {
+    prefillInitialDataRoleWise();
+    setYears(true);
+    if (
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.ZONALADMIN
+    ) {
+      setColleges([]);
+    }
+    setFormState(formState => ({
+      ...formState,
+      errors: {}
+    }));
+  };
+
+  const hasError = field => (formState.errors[field] ? true : false);
 
   return (
     <div className={classes.root}>
@@ -136,7 +557,7 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                25
+                {finalData.Workshops}
               </Typography>
             </CardContent>
           </Card>
@@ -154,7 +575,7 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                20
+                {finalData.TPOFeedback}
               </Typography>
             </CardContent>
           </Card>
@@ -172,7 +593,7 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                22
+                {finalData.StudentFeedback}
               </Typography>
             </CardContent>
           </Card>
@@ -190,7 +611,7 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                3
+                {finalData.IndustrialVisits}
               </Typography>
             </CardContent>
           </Card>
@@ -208,7 +629,7 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                2
+                {finalData.Interships}
               </Typography>
             </CardContent>
           </Card>
@@ -226,7 +647,7 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                5
+                {finalData.Placement}
               </Typography>
             </CardContent>
           </Card>
@@ -235,29 +656,157 @@ const Dashboard = props => {
           <Card className={classes.root} variant="outlined">
             <CardContent>
               <Grid container spacing={3} className={classes.formgrid}>
+                {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+                  <Grid item md={2} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <Autocomplete
+                        id={"zoneDemo"}
+                        options={zones}
+                        getOptionLabel={option => option.name}
+                        /* This is used to set the default value to the auto complete */
+                        name={"demo-id"}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(zone, event, value);
+                        }}
+                        value={
+                          zones[
+                            zones.findIndex(function (item, i) {
+                              return item.id === formState.values[zone];
+                            })
+                          ] || null /** Please give a default " " blank value */
+                        }
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            label={"Select Zone"}
+                            placeholder={"Select Zone"}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                ) : null}
+
+                {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+                auth.getUserInfo().role.name === roleConstants.ZONALADMIN ? (
+                  <Grid item md={2} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <Autocomplete
+                        id={"regionDemo"}
+                        options={rpcs}
+                        getOptionLabel={option => option.name}
+                        /* This is used to set the default value to the auto complete */
+                        name={"demo-id"}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(rpc, event, value);
+                        }}
+                        value={
+                          rpcs[
+                            rpcs.findIndex(function (item, i) {
+                              return item.id === formState.values[rpc];
+                            })
+                          ] || null /** Please give a default " " blank value */
+                        }
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            placeholder={"Select Region"}
+                            label={"Select Region"}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                ) : null}
+
+                {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+                auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
+                (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
+                  auth.getUserInfo().studentInfo.organization.contact.id ===
+                    auth.getUserInfo().rpc.main_college) ? (
+                  <Grid item md={2} xs={12}>
+                    <FormControl
+                      variant="outlined"
+                      fullWidth
+                      className={classes.formControl}
+                    >
+                      <Autocomplete
+                        id={"collegeDemo"}
+                        options={colleges}
+                        getOptionLabel={option => option.name}
+                        /* This is used to set the default value to the auto complete */
+                        name={"demo-id"}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(college, event, value);
+                        }}
+                        value={
+                          colleges[
+                            colleges.findIndex(function (item, i) {
+                              return (
+                                item.contact.id === formState.values[college]
+                              );
+                            })
+                          ] || null /** Please give a default " " blank value */
+                        }
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            placeholder={"Select College"}
+                            label={"Select College"}
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                ) : null}
+
                 <Grid item md={2} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
                     className={classes.formControl}
                   >
-                    <InputLabel ref={inputLabel} id="select-Zone">
-                      Select Zone
-                    </InputLabel>
                     <Autocomplete
-                      id={"zoneDemo"}
-                      options={[]}
-                      getOptionLabel={option => option.name}
+                      id={DashboardSchema[year]["id"]}
+                      options={yearData}
+                      getOptionLabel={option => "" + option + ""}
                       /* This is used to set the default value to the auto complete */
-                      name={"demo-id"}
+                      name={DashboardSchema[year]["name"]}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(year, event, value);
+                      }}
+                      value={
+                        yearData[
+                          yearData.findIndex(function (item, i) {
+                            return item === formState.values[year];
+                          })
+                        ] || null /** Please give a default " " blank value */
+                      }
                       renderInput={params => (
                         <TextField
                           {...params}
-                          placeholder={"Select Zone"}
-                          value={option => option.id}
-                          name={"demo"}
-                          key={option => option.id}
+                          placeholder={DashboardSchema[year]["placeholder"]}
+                          label={DashboardSchema[year]["label"]}
                           variant="outlined"
+                          error={hasError(year)}
+                          helperText={
+                            hasError(year)
+                              ? formState.errors[year].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
                         />
                       )}
                     />
@@ -269,85 +818,42 @@ const Dashboard = props => {
                     fullWidth
                     className={classes.formControl}
                   >
-                    <InputLabel ref={inputLabel} id="select-region">
-                      Select Region
-                    </InputLabel>
                     <Autocomplete
-                      id={"regionDemo"}
-                      options={[]}
+                      id={DashboardSchema[month]["id"]}
+                      options={monthData}
                       getOptionLabel={option => option.name}
                       /* This is used to set the default value to the auto complete */
-                      name={"demo-id"}
+                      name={DashboardSchema[month]["name"]}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(month, event, value);
+                      }}
+                      value={
+                        monthData[
+                          monthData.findIndex(function (item, i) {
+                            return item.id === formState.values[month];
+                          })
+                        ] || null /** Please give a default " " blank value */
+                      }
                       renderInput={params => (
                         <TextField
                           {...params}
-                          placeholder={"Select Region"}
-                          value={option => option.id}
-                          name={"demo"}
-                          key={option => option.id}
+                          placeholder={DashboardSchema[month]["placeholder"]}
+                          label={DashboardSchema[month]["label"]}
                           variant="outlined"
+                          error={hasError(month)}
+                          helperText={
+                            hasError(month)
+                              ? formState.errors[month].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
                         />
                       )}
                     />
                   </FormControl>
                 </Grid>
-                <Grid item md={2} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel ref={inputLabel} id="select-college">
-                      Select College
-                    </InputLabel>
-                    <Autocomplete
-                      id={"collegeDemo"}
-                      options={[]}
-                      getOptionLabel={option => option.name}
-                      /* This is used to set the default value to the auto complete */
-                      name={"demo-id"}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          placeholder={"Select College"}
-                          value={option => option.id}
-                          name={"demo"}
-                          key={option => option.id}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item md={2} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel ref={inputLabel} id="select-month">
-                      Select Month
-                    </InputLabel>
-                    <Autocomplete
-                      id={"monthDemo"}
-                      options={[]}
-                      getOptionLabel={option => option.name}
-                      /* This is used to set the default value to the auto complete */
-                      name={"demo-id"}
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          placeholder={"Select Month"}
-                          value={option => option.id}
-                          name={"demo"}
-                          key={option => option.id}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item md={2} xs={12}>
+                {/** <Grid item md={2} xs={12}>
                   <FormControl
                     variant="outlined"
                     fullWidth
@@ -360,7 +866,6 @@ const Dashboard = props => {
                       id={"trainerDemo"}
                       options={[]}
                       getOptionLabel={option => option.name}
-                      /* This is used to set the default value to the auto complete */
                       name={"demo-id"}
                       renderInput={params => (
                         <TextField
@@ -374,13 +879,14 @@ const Dashboard = props => {
                       )}
                     />
                   </FormControl>
-                </Grid>
+                </Grid>*/}
                 <Grid item md={2} xs={12} className={classes.dash_search_btn}>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
                       variant="contained"
                       color="primary"
                       disableElevation
+                      onClick={handleSubmit}
                     >
                       {genericConstants.SEARCH_BUTTON_TEXT}
                     </YellowButton>
@@ -390,6 +896,7 @@ const Dashboard = props => {
                       variant="contained"
                       color="primary"
                       disableElevation
+                      onClick={clearFilter}
                     >
                       {genericConstants.RESET_BUTTON_TEXT}
                     </GrayButton>
@@ -401,30 +908,77 @@ const Dashboard = props => {
           <Card className={classes.marginCard} variant="outlined">
             <CardContent>
               <Grid item md={4} xs={12}>
-                {/* <Grid item xs={12} className={classes.title}>
-                    <Typography variant="h4" gutterBottom>
-                      Zone / Region / College / Month
-                    </Typography>
-                  </Grid> */}
                 <TableContainer component={Paper}>
                   <Table
                     className={classes.table}
                     aria-label="customized table"
                   >
-                    <TableHead>
-                      <TableRow>
-                        <StyledTableCell>Zone</StyledTableCell>
-                        <StyledTableCell></StyledTableCell>
-                      </TableRow>
-                    </TableHead>
                     <TableBody>
-                      {zonerows.map(zonerow => (
+                      {formState.zonerows.map(zonerow => (
                         <StyledTableRow key={zonerow.zonename}>
                           <StyledTableCell component="th" scope="zonerow">
                             {zonerow.zonename}
                           </StyledTableCell>
                           <StyledTableCell align="right">
                             {zonerow.zoneresult}
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TableContainer
+                  component={Paper}
+                  className={classes.marginCard}
+                >
+                  <Table
+                    className={classes.table}
+                    aria-label="customized table"
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <StyledTableCell>Industrial Visit</StyledTableCell>
+                        <StyledTableCell></StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                      {formState.indrows.map(industry => (
+                        <StyledTableRow key={industry.industry}>
+                          <StyledTableCell component="th" scope="zonerow">
+                            {industry.industry}
+                          </StyledTableCell>
+                          <StyledTableCell align="right">
+                            {industry.industryresult}
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TableContainer
+                  component={Paper}
+                  className={classes.marginCard}
+                >
+                  <Table
+                    className={classes.table}
+                    aria-label="customized table"
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <StyledTableCell>Placement</StyledTableCell>
+                        <StyledTableCell></StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                      {formState.placementrows.map(placement => (
+                        <StyledTableRow key={placement.placement}>
+                          <StyledTableCell component="th" scope="zonerow">
+                            {placement.placement}
+                          </StyledTableCell>
+                          <StyledTableCell align="right">
+                            {placement.placementresult}
                           </StyledTableCell>
                         </StyledTableRow>
                       ))}

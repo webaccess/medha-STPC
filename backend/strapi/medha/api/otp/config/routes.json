@@ -26,6 +26,14 @@
     },
     {
       "method": "POST",
+      "path": "/otps/update-contact",
+      "handler": "otp.updateContact",
+      "config": {
+        "policies": ["validate"]
+      }
+    },
+    {
+      "method": "POST",
       "path": "/otps/validateotp",
       "handler": "otp.validateOTP",
       "config": {

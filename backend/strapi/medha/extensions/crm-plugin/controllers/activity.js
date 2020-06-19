@@ -47,7 +47,7 @@ module.exports = {
 
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     let sort;
     if (filters.sort) {
@@ -102,7 +102,7 @@ module.exports = {
   async activityBatch(ctx) {
     const { id } = ctx.params;
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
-    let filters = convertRestQueryParams(query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
     const { activity_batch_id } = query;
 
     const activity = await strapi.query("activity", PLUGIN).findOne({ id });

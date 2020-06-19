@@ -19,6 +19,11 @@ bookshelf.model("academic_year", {
   requireFetch: false
 });
 
+bookshelf.model("user", {
+  tableName: "users-permissions_user",
+  requireFetch: false
+});
+
 bookshelf.model("futureaspiration", {
   tableName: "futureaspirations",
   requireFetch: false
@@ -100,6 +105,21 @@ bookshelf.model("feedback-set", {
 bookshelf.model("board", {
   requireFetch: false,
   tableName: "boards"
+});
+
+bookshelf.model("dashboard", {
+  requireFetch: false,
+  tableName: "dashboards"
+});
+
+bookshelf.model("organization", {
+  requireFetch: false,
+  tableName: "organizations"
+});
+
+bookshelf.model("contact", {
+  requireFetch: false,
+  tableName: "contacts"
 });
 
 module.exports = bookshelf;

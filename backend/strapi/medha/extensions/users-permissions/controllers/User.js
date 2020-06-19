@@ -184,7 +184,7 @@ module.exports = {
 
   async find(ctx) {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query);
+    const filters = convertRestQueryParams(query, { limit: -1 });
     return strapi
       .query("user", "users-permissions")
       .model.query(
@@ -193,27 +193,27 @@ module.exports = {
           filters
         })
       )
-      .fetchPage({
-        page: page,
-        pageSize:
-          pageSize < 0
-            ? await strapi.query("user", "users-permissions").count()
-            : pageSize
-      })
-      .then(async u => {
-        const response = utils.getPaginatedResponse(u);
-        await utils.asyncForEach(response.result, async (user, index) => {
-          const { id } = user;
-          response.result[index].studentInfo = await strapi
-            .query("student")
-            .findOne({ user: id });
-          if (response.result[index].studentInfo) {
-            delete response.result[index].studentInfo.user;
-          }
-        });
-        const data = response.result.map(sanitizeUser);
-        response.result = data;
-        return response;
+      .fetchAll()
+      .then(async res => {
+        const data = res.toJSON();
+
+        // await utils.asyncForEach(data, async (user, index) => {
+        //   const { id } = user;
+        //   user[index].studentInfo = await strapi
+        //     .query("student")
+        //     .findOne({ user: id });
+        //   if (user[index].studentInfo) {
+        //     delete response.result[index].studentInfo.user;
+        //   }
+        // });
+
+        const sanitized = data.map(sanitizeUser);
+
+        const response = utils.paginate(sanitized, page, pageSize);
+        return {
+          result: response.result,
+          ...response.pagination
+        };
       });
   },
 

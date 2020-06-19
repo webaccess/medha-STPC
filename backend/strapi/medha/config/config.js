@@ -14,6 +14,9 @@ const bookshelf = require("bookshelf")(knex);
 /**
  * Registering models for bookshelf
  */
+bookshelf.model("dashboard", {
+  tableName: "dashboards"
+});
 
 bookshelf.model("uploadMorph", {
   requireFetch: false,
