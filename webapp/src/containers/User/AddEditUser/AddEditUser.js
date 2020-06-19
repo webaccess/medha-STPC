@@ -167,7 +167,8 @@ const AddEditUser = props => {
           props["dataForEdit"]["contact"] &&
           props["dataForEdit"]["contact"]["state"]
         ) {
-          formState.values[state] = props["dataForEdit"]["contact"]["state"];
+          formState.values[state] =
+            props["dataForEdit"]["contact"]["state"]["id"];
         } else {
           formState.values[state] = "";
         }
@@ -177,7 +178,8 @@ const AddEditUser = props => {
           props["dataForEdit"]["organization"] &&
           props["dataForEdit"]["organization"]["zone"]
         ) {
-          formState.values[zone] = props["dataForEdit"]["organization"]["zone"];
+          formState.values[zone] =
+            props["dataForEdit"]["organization"]["zone"]["id"];
         } else {
           formState.values[zone] = "";
         }
@@ -609,7 +611,7 @@ const AddEditUser = props => {
       let EDIT_USER_URL =
         strapiApiConstants.STRAPI_DB_URL +
         strapiApiConstants.STRAPI_CONTACT_URL;
-      let EDIT_URL = strapiApiConstants.STRAPI_EDIT_STUDENT;
+      let EDIT_URL = strapiApiConstants.STRAPI_EDIT_STUDENT + "?fromuser=true";
       serviceProvider
         .serviceProviderForPutRequest(
           EDIT_USER_URL,
