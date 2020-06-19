@@ -141,7 +141,7 @@ module.exports = async (ctx, next) => {
     const role_id = data.role;
 
     const { id } = ctx.params;
-
+    const { fromuser } = ctx.query;
     const contact = await strapi.query("contact", PLUGIN).findOne({ id });
 
     const role = await strapi
@@ -175,25 +175,28 @@ module.exports = async (ctx, next) => {
           return ctx.response.badRequest("Contact number already taken");
       }
 
-      if (!individual.roll_number)
-        return ctx.response.badRequest("Roll Number field is missing");
-      else {
-        const user = await strapi.query("individual", PLUGIN).findOne({
-          id_nin: [contact.individual.id],
-          organization: individual.organization,
-          roll_number: individual.roll_number
-        });
-        if (user) return ctx.response.badRequest("Roll number already taken");
+      if (!fromuser) {
+        if (!individual.roll_number)
+          return ctx.response.badRequest("Roll Number field is missing");
+        else {
+          const user = await strapi.query("individual", PLUGIN).findOne({
+            id_nin: [contact.individual.id],
+            organization: individual.organization,
+            roll_number: individual.roll_number
+          });
+          if (user) return ctx.response.badRequest("Roll number already taken");
+        }
       }
       await next();
     } else {
       if (!individual.email)
         return ctx.response.badRequest("Email field is missing");
       else {
-        const contact = await strapi
+        const validateEmail = await strapi
           .query("user", "users-permissions")
           .findOne({ id_nin: [contact.user.id], email: individual.email });
-        if (contact) return ctx.response.badRequest("Email already taken");
+        if (validateEmail)
+          return ctx.response.badRequest("Email already taken");
       }
       if (!individual.phone)
         return ctx.response.badRequest("Contact Number field is missing");

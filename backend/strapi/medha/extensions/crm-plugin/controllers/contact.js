@@ -2225,18 +2225,22 @@ module.exports = {
           return Promise.reject("Something went wrong while updating User");
         }
 
-        const future_aspirations = await Promise.all(
-          data.future_aspirations.map(async futureaspiration => {
-            return await strapi
-              .query("futureaspirations")
-              .findOne({ id: futureaspiration });
-          })
-        );
+        if (data.future_aspirations && data.future_aspirations.length) {
+          const future_aspirations = await Promise.all(
+            data.future_aspirations.map(async futureaspiration => {
+              return await strapi
+                .query("futureaspirations")
+                .findOne({ id: futureaspiration });
+            })
+          );
 
-        if (
-          future_aspirations.some(futureaspiration => futureaspiration === null)
-        ) {
-          return Promise.reject("Future Aspiration does not exist");
+          if (
+            future_aspirations.some(
+              futureaspiration => futureaspiration === null
+            )
+          ) {
+            return Promise.reject("Future Aspiration does not exist");
+          }
         }
 
         // Step 2 updating individual
@@ -2275,7 +2279,6 @@ module.exports = {
             "Something went wrong while updating Individual"
           );
         }
-
         // Step 3 updating contact details
 
         const contact = await strapi
