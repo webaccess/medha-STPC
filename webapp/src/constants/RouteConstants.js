@@ -17,6 +17,9 @@ export const REQUIRED_CONFORMATION = "/requiredconformation";
 export const REQUIRED_ERROR_PAGE = "/authorization-error";
 export const VIEW_PROFILE = "/view-profile";
 export const EDIT_PROFILE = "/edit-profile";
+export const CHANGE_CONTACT_NUMBER = "/change-contact-number";
+export const CHANGED_CONTACT_NUMBER = "/changed-contact-number";
+export const VERIFY_OTP_FOR_CHANGE_CONTACT = "/verify";
 
 export const VIEW_EDUCATION = "/view-education";
 export const ADD_EDUCATION = "/add-education";

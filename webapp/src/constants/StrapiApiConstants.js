@@ -85,3 +85,4 @@ export const STRAPI_CONTACT_SOLO = "contact";
 export const STRAPI_FUTURE_ASPIRATIONS = "futureaspirations";
 export const STRAPI_BOARDS = "boards";
 export const STRAPI_DOCUMENT = "documents";
+export const STRAPI_UPDATE_CONTACT = "otps/update-contact";

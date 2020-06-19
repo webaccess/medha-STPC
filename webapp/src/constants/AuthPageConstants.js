@@ -23,3 +23,4 @@ export const FORM_TYPE_ENTER_MOBILE = "verify_mobile";
 export const FORM_TYPE_VERIFY_OTP = "verify_otp";
 export const FORM_TYPE_RESEND_OTP = "resend_otp";
 export const FORM_TYPE_CHANGE_PASS = "change_pass";
+export const CHANGE_CONTACT_NUMBER = "Change Contact Number";
