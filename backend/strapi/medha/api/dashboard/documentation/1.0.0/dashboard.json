@@ -747,79 +747,104 @@
             "type": "integer"
           },
           "Workshops": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "TPOFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "StudentFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisits": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Interships": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Placement": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FirstYear": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "SecondYear": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FinalYear": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Entrepreneurship": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FirstYearAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "SecondYearAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FinalYearAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlannedVsAchieved": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "UniqueStudents": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Institutionstouched": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitPlannedVsAchieved": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitStudentFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitTPOFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementAttended": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementSelected": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementStudentFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementTPOFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementCollegeFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Month": {
             "type": "integer"
@@ -847,79 +872,104 @@
             "type": "integer"
           },
           "Workshops": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "TPOFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "StudentFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisits": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Interships": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Placement": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FirstYear": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "SecondYear": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FinalYear": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Entrepreneurship": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FirstYearAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "SecondYearAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "FinalYearAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlannedVsAchieved": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "UniqueStudents": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Institutionstouched": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitAttendance": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitPlannedVsAchieved": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitStudentFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "IndustrialVisitTPOFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementAttended": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementSelected": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementStudentFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementTPOFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "PlacementCollegeFeedback": {
-            "type": "integer"
+            "type": "integer",
+            "default": "0"
           },
           "Month": {
             "type": "integer"
