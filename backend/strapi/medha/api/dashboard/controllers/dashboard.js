@@ -25,7 +25,8 @@ const {
   PLUGIN,
   ROLE_MEDHA_ADMIN,
   ROLE_COLLEGE_ADMIN,
-  ROLE_ZONAL_ADMIN
+  ROLE_ZONAL_ADMIN,
+  DASHBOARD_START_DATE
 } = require("../../../config/constants");
 const utils = require("../../../config/utils.js");
 
@@ -156,7 +157,6 @@ module.exports = {
     if (ctx.state.user !== undefined) {
       const userInfo = ctx.state.user;
       const role = userInfo.role.name;
-      console.log(role);
       /** Truncate entire table */
 
       if (role === ROLE_MEDHA_ADMIN) {
@@ -166,6 +166,7 @@ module.exports = {
           .model("organization")
           .fetchAll()
           .then(model => model.toJSON());
+        allColleges = [allColleges[0]];
       }
     } else {
       let { fromScript } = ctx.request.query;
@@ -177,16 +178,32 @@ module.exports = {
           .fetchAll()
           .then(model => model.toJSON());
       }
-      console.log(fromScript);
     }
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
 
     /** Colleges loop */
     await utils.asyncForEach(allColleges, async college => {
-      let overallWorkshops = strapi.services.dashboard.getOverallWorkshops(
+      let finalJson = {};
+      let overallWorkshops = await strapi.services.dashboard.getOverallWorkshops(
         college.id
       );
+      let getOverallIndustrialVisits = await strapi.services.dashboard.getOverallIndustrialVisits(
+        college.id
+      );
+      let getPlacementCount = await strapi.services.dashboard.getPlacementCount(
+        college.id
+      );
+      finalJson = _.merge(
+        {},
+        overallWorkshops,
+        getOverallIndustrialVisits,
+        getPlacementCount
+      );
+      months.map(m => {
+        finalData.push(finalJson[m]);
+      });
     });
 
-    return {};
+    return { finalData };
   }
 };
