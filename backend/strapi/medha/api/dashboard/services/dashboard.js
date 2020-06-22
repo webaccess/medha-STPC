@@ -16,6 +16,108 @@ const _ = require("lodash");
 const moment = require("moment");
 
 module.exports = {
+<<<<<<< HEAD
+=======
+  getOverallWorkshops: async orgId => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const overallWorkshops = await strapi
+      .query("activity", PLUGIN)
+      .find({ "contact.organization": orgId, "activitytype.name": "Workshop" });
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(overallWorkshops, workshops => {
+      const { start_date_time } = workshops;
+      return moment(start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        Month: parseInt(month),
+        Year: parseInt(year),
+        Workshops: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: (org.state && org.state.country) || "",
+        contact: org.id
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+  getOverallIndustrialVisits: async orgId => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const overallIndustrialVisits = await strapi
+      .query("activity", PLUGIN)
+      .find({
+        "contact.organization": orgId,
+        "activitytype.name": "Industrial Visit"
+      });
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(overallIndustrialVisits, visits => {
+      const { start_date_time } = visits;
+      return moment(start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        Month: parseInt(month),
+        Year: parseInt(year),
+        IndustrialVisits: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: (org.state && org.state.country) || "",
+        contact: org.id
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+>>>>>>> 464aee96ce251d27be4c25f8660fe60b5c910ee0
   getPlacementCount: async orgId => {
     const org = await strapi
       .query("contact", PLUGIN)
@@ -67,7 +169,9 @@ module.exports = {
             org.organization.zone &&
             org.organization.zone.id) ||
           "",
-        state: (org.state && org.state.id) || ""
+        state: (org.state && org.state.id) || "",
+        country: (org.state && org.state.country) || "",
+        contact: org.id
       };
       return result;
     }, {});
