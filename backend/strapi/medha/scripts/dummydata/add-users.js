@@ -46,6 +46,7 @@ async function addZonalAdmins() {
           "$2a$10$kj.5SLcsdLxQeUX914SP4.cE.MhaM8hY1Rr7.OD/KLYJUV4CuZ4F6",
         role: role[0].id,
         zone: zone.id,
+        state: 1,
         rpc: null,
         blocked: false,
         provider: "local"
@@ -130,6 +131,7 @@ async function addCollegeAdmins() {
         role: role[0].id,
         zone: college.zone,
         rpc: college.rpc,
+        state: 1,
         blocked: false,
         provider: "local"
       };
@@ -204,6 +206,7 @@ async function addMedhaAdmin() {
       role: role[0].id,
       zone: null,
       rpc: null,
+      state: null,
       blocked: false,
       provider: "local"
     };
@@ -232,7 +235,7 @@ async function addMedhaAdmin() {
       phone: stringPhoneNumber,
       email: stringPhoneNumber + "@gmail.com",
       address_1: "UP",
-      state: null,
+      state: 1,
       district: null
     };
 

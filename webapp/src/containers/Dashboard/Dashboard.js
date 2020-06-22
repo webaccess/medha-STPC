@@ -131,7 +131,7 @@ const Dashboard = props => {
         createDatazone("Entrepreneurship", finalData.Entrepreneurship),
         createDatazone("1st Year Attendance", finalData.FirstYearAttendance),
         createDatazone("2nd Year Attendance", finalData.SecondYearAttendance),
-        createDatazone("Final Year Attendanc", finalData.FinalYearAttendance),
+        createDatazone("Final Year Attendance", finalData.FinalYearAttendance),
         createDatazone("Planned Vs Achieved", finalData.PlannedVsAchieved),
         createDatazone("Unique Students", finalData.UniqueStudents),
         createDatazone("Instittions touched", finalData.Institutionstouched),
@@ -612,24 +612,6 @@ const Dashboard = props => {
             <CardContent>
               <Typography variant="h1" align="center">
                 {finalData.IndustrialVisits}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
-          <Card {...rest} className={clsx(classes.root, className)}>
-            <CardHeader
-              classes={{
-                title: classes.title,
-                root: classes.titleRoot
-              }}
-              title="Internships"
-              color="textSecondary"
-              align="center"
-            />
-            <CardContent>
-              <Typography variant="h1" align="center">
-                {finalData.Interships}
               </Typography>
             </CardContent>
           </Card>
