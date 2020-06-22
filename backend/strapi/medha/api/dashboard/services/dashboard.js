@@ -216,7 +216,8 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: country.id
+        country: country.id,
+        contact: org.id
       };
       return result;
     }, {});
@@ -284,7 +285,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (country && country.id) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -293,6 +294,10 @@ module.exports = {
   },
 
   getWorkShopAttendenceCount: async (orgId, year, key) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -351,7 +356,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -360,6 +365,10 @@ module.exports = {
   },
 
   getFutureAspirations: async (orgId, value) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -429,7 +438,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -438,6 +447,10 @@ module.exports = {
   },
 
   getOverallIndustrialVisits: async orgId => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -480,7 +493,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -489,6 +502,10 @@ module.exports = {
   },
 
   getPlacementCount: async orgId => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -540,7 +557,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -553,6 +570,9 @@ module.exports = {
    * Getting placement count depending on status for given college
    */
   getPlacementCountByStatus: async (orgId, status) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -620,7 +640,9 @@ module.exports = {
             org.organization.zone &&
             org.organization.zone.id) ||
           "",
-        state: (org.state && org.state.id) || ""
+        state: (org.state && org.state.id) || "",
+        country: country.id,
+        contact: org.id
       };
       return result;
     }, {});
@@ -701,7 +723,8 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: country.id
+        country: country.id,
+        contact: org.id
       };
       return result;
     }, {});
