@@ -17,5 +17,20 @@ module.exports = {
       .query("activity", PLUGIN)
       .find({ "contact.organization": orgId });
     console.log(data);
-  }
+  },
+
+  getPlacementCount: async orgId => {},
+
+  getPlacementAttendedCount: async orgId => {},
+
+  getPlacementPlacedCount: async orgId => {},
+
+  getPlacementSelectedCount: async orgId => {},
+
+  getPlacementStudentFeedbackCount: async orgId => {},
+
+  getPlacementTPOFeedbackCount: async orgId => {},
+
+  getPlacementCollegeFeedbackCount: async orgId => {}
 };
+
