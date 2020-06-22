@@ -4,13 +4,19 @@
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/services.html#core-services)
  * to customize this service
  */
-
 const utils = require("../../../config/utils");
 const { PLUGIN, DASHBOARD_START_DATE } = require("../../../config/constants");
 const _ = require("lodash");
 const moment = require("moment");
 
 module.exports = {
+  getOverallWorkshops: async orgId => {
+    const data = await strapi
+      .query("activity", PLUGIN)
+      .find({ "contact.organization": orgId });
+    console.log(data);
+  },
+
   getPlacementCount: async orgId => {
     const org = await strapi
       .query("contact", PLUGIN)

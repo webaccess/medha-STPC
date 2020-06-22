@@ -1,5 +1,5 @@
-const bookshelf = require("./config/bookshelf");
-const utils = require("./config/utils");
+const bookshelf = require("../../config/bookshelf");
+const utils = require("../../config/utils");
 const { COUNTRIES } = require("./data");
 
 (async () => {

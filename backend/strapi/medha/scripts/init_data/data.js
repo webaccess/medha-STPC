@@ -472,6 +472,142 @@ const COUNTRIES = [
   }
 ];
 
+const QUESTION_SET = [
+  {
+    name: "Activity Question Set",
+    questions: [
+      {
+        question: "The objectives of the training were met?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question: "The presentation materials were relevant?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question:
+          "The trainers were well prepared and able to answer any questions?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question:
+          "The pace of the course was appropriate to the content and attendees?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question: "The venue was appropriate for the training?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "Student"
+      },
+      {
+        question: "College Feedback?",
+        type: "Rating",
+        role: "College Admin"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "College Admin"
+      },
+      {
+        question: "RPC Feedback?",
+        type: "Rating",
+        role: "RPC Admin"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "RPC Admin"
+      },
+      {
+        question: "Zone Feedback?",
+        type: "Rating",
+        role: "Zonal Admin"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "Zonal Admin"
+      }
+    ]
+  },
+  {
+    name: "Event Question Set",
+    questions: [
+      {
+        question: "How professional was the recruiter?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question:
+          "How clearly did the recruiter explain the details of the job to you?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question:
+          "There was adequate opportunity for interaction with other staff during the placement ?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question: "Faculty was friendly, helpful and knowledgeable ?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question: "The venue was appropriate for the event?",
+        type: "Rating",
+        role: "Student"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "Student"
+      },
+      {
+        question: "College Feedback?",
+        type: "Rating",
+        role: "College Admin"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "College Admin"
+      },
+      {
+        question: "RPC Feedback?",
+        type: "Rating",
+        role: "RPC Admin"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "RPC Admin"
+      },
+      {
+        question: "Zone Feedback?",
+        type: "Rating",
+        role: "Zonal Admin"
+      },
+      {
+        question: "Comments",
+        type: "Comment",
+        role: "Zonal Admin"
+      }
+    ]
+  }
+];
 const STREAMS = [
   "Mechanical Engineering (Production)",
   "Computer Science And Engineering",
@@ -642,7 +778,7 @@ const ROLES = {
       },
       {
         name: "dashboard",
-        action: ["find", "findone"]
+        action: ["find", "findone", "adddashboarddata"]
       }
       // {
       //   name: "individual",
@@ -788,7 +924,7 @@ const ROLES = {
       },
       {
         name: "dashboard",
-        action: ["find", "findone"]
+        action: ["find", "findone", "adddashboarddata"]
       }
     ],
     grantAllPermissions: false
@@ -927,7 +1063,7 @@ const ROLES = {
       },
       {
         name: "dashboard",
-        action: ["find", "findone"]
+        action: ["find", "findone", "adddashboarddata"]
       }
     ],
     grantAllPermissions: false
@@ -1146,7 +1282,7 @@ const ROLES = {
       },
       {
         name: "dashboard",
-        action: ["find", "findone"]
+        action: ["find", "findone", "adddashboarddata"]
       }
     ],
     grantAllPermissions: false
@@ -1379,10 +1515,6 @@ const ROLES = {
         action: []
       },
       {
-        name: "dashboard",
-        action: []
-      },
-      {
         name: "activity",
         action: [],
         type: PLUGIN_NAME
@@ -1487,6 +1619,11 @@ const PUBLIC_ROUTES = {
       action: ["organizations", "createindividual"],
       type: PLUGIN_NAME
     },
+
+    {
+      name: "dashboard",
+      action: ["adddashboarddata"]
+    },
     {
       name: "district",
       action: ["find"],
@@ -1545,5 +1682,6 @@ module.exports = {
   PUBLIC_ROUTES,
   ACTIVITY_TYPES,
   FUTURE_ASPIRATIONS,
-  BOARDS
+  BOARDS,
+  QUESTION_SET
 };

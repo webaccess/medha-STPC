@@ -10,7 +10,7 @@ const parse = require("csv-parse/lib/sync");
 const _ = require("lodash");
 const bookshelf = require("../../../config/bookshelf");
 const { ROLE_STUDENT, PLUGIN } = require("../../../config/constants");
-const { STREAMS } = require("../../../data");
+const { STREAMS } = require("../../../scripts/init_data/data");
 
 module.exports = {
   getRecords: async (inputFile, preview) => {

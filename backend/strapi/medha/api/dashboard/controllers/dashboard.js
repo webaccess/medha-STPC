@@ -5,7 +5,17 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
+const bookshelf = require("../../../config/bookshelf.js");
+const knex = require("knex")({
+  client: "pg",
+  connection: {
+    host: "127.0.0.1",
+    port: "5432",
+    user: "postgres",
+    password: "root",
+    database: "medha"
+  }
+});
 const {
   convertRestQueryParams,
   buildQuery,
@@ -137,5 +147,26 @@ module.exports = {
       });
     });
     return dataToReturn;
+  },
+
+  async addDashboardData(ctx) {
+    const userInfo = ctx.state.user;
+    const role = userInfo.role.name;
+    /** Truncate entire table */
+    await knex("dashboards").truncate();
+
+    var finalData = [];
+    let allColleges = await bookshelf
+      .model("organization")
+      .fetchAll()
+      .then(model => model.toJSON());
+
+    await utils.asyncForEach(allColleges, async college => {
+      let overallWorkshops = strapi.services.dashboard.getOverallWorkshops(
+        college.id
+      );
+    });
+
+    return {};
   }
 };
