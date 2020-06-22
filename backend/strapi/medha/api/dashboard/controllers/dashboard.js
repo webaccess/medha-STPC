@@ -166,7 +166,6 @@ module.exports = {
           .model("organization")
           .fetchAll()
           .then(model => model.toJSON());
-        allColleges = [allColleges[0]];
       }
     } else {
       let { fromScript } = ctx.request.query;
