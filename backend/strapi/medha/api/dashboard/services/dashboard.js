@@ -10,7 +10,8 @@ const {
   PLUGIN,
   DASHBOARD_START_DATE,
   ROLE_STUDENT,
-  ROLE_COLLEGE_ADMIN
+  ROLE_COLLEGE_ADMIN,
+  DASHBOARDKEYS
 } = require("../../../config/constants");
 const _ = require("lodash");
 const moment = require("moment");
@@ -126,12 +127,12 @@ module.exports = {
 
     if (yearToAdd === "Workshops") {
       overallWorkshops = await strapi.query("activity", PLUGIN).find({
-        "contact.organization": orgId,
+        contact: orgId,
         "activitytype.name": "Workshop"
       });
     } else {
       overallWorkshops = await strapi.query("activity", PLUGIN).find({
-        "contact.organization": orgId,
+        contact: orgId,
         "activitytype.name": "Workshop",
         education_year: year
       });
@@ -255,7 +256,7 @@ module.exports = {
 
     overallWorkshops = await strapi.query("activity", PLUGIN).find(
       {
-        "contact.organization": orgId,
+        contact: orgId,
         "activitytype.name": "Workshop"
       },
       ["activityassignees", "activityassignees.contact"]
@@ -588,5 +589,126 @@ module.exports = {
     }, {});
 
     return response;
+  },
+
+  createDashboardData: async colleges => {
+    let finalData = [];
+    let dataToReturn = [];
+    /** Colleges loop */
+    await utils.asyncForEach(colleges, async college => {
+      let finalJson = {};
+
+      let overallWorkshops = await strapi.services.dashboard.getOverallWorkshops(
+        college.contact.id
+      );
+
+      /** First Workshops */
+      let firstYearWorkshop = await strapi.services.dashboard.getFirstYearWorkshop(
+        college.contact.id
+      );
+      /** Second Workshops */
+      let secondYearWorkshop = await strapi.services.dashboard.getSecondYearWorkshop(
+        college.contact.id
+      );
+      /** Final Workshops */
+      let finalYearWorkshop = await strapi.services.dashboard.getFinalYearWorkshop(
+        college.contact.id
+      );
+      /** Entrepreneurship */
+      let entrepreneurship = await strapi.services.dashboard.getFutureAspirations(
+        college.contact.id,
+        "Entrepreneurship"
+      );
+      /** First Year Attendence */
+      let firstYearAttendence = await strapi.services.dashboard.getWorkshopFirstYearAttendenceCount(
+        college.contact.id
+      );
+      /** Second Year Attendence */
+      let secondYearAttendence = await strapi.services.dashboard.getWorkshopSecondYearAttendenceCount(
+        college.contact.id
+      );
+      /** Third Year Attendence */
+      let thirdYearAttendence = await strapi.services.dashboard.getWorkshopThirdYearAttendenceCount(
+        college.contact.id
+      );
+
+      let getOverallIndustrialVisits = await strapi.services.dashboard.getOverallIndustrialVisits(
+        college.contact.id
+      );
+
+      let getPlacementCount = await strapi.services.dashboard.getPlacementCount(
+        college.contact.id
+      );
+
+      let getPlacementAttendedCount = await strapi.services.dashboard.getPlacementAttendedCount(
+        college.contact.id
+      );
+
+      let getPlacementSelectedCount = await strapi.services.dashboard.getPlacementSelectedCount(
+        college.contact.id
+      );
+
+      let getPlacementStudentFeedbackCount = await strapi.services.dashboard.getPlacementStudentFeedbackCount(
+        college.contact.id
+      );
+
+      let getPlacementTPOFeedbackCount = await strapi.services.dashboard.getPlacementTPOFeedbackCount(
+        college.contact.id
+      );
+
+      let getPlacementCollegeFeedbackCount = await strapi.services.dashboard.getPlacementCollegeFeedbackCount(
+        college.contact.id
+      );
+
+      finalJson = _.merge(
+        {},
+        overallWorkshops,
+        getOverallIndustrialVisits,
+        getPlacementCount,
+        getPlacementAttendedCount,
+        getPlacementSelectedCount,
+        getPlacementStudentFeedbackCount,
+        getPlacementTPOFeedbackCount,
+        getPlacementCollegeFeedbackCount,
+        firstYearWorkshop,
+        secondYearWorkshop,
+        finalYearWorkshop,
+        entrepreneurship,
+        firstYearAttendence,
+        secondYearAttendence,
+        thirdYearAttendence
+      );
+
+      // months.map(m => {
+      //   finalData.push(finalJson[m]);
+      // });
+
+      finalData = [...finalData, ...Object.values(finalJson)];
+    });
+
+    let dashboardData = finalData
+      .map(data => {
+        let count = 0;
+        DASHBOARDKEYS.map(key => {
+          if (data.hasOwnProperty(key)) {
+            if (data[key] !== 0) {
+              count += 1;
+            }
+          }
+        });
+        if (count !== 0) {
+          dataToReturn.push(data);
+          return strapi.query("dashboard").create(data);
+        } else {
+          return null;
+        }
+      })
+      .filter(a => a);
+
+    await Promise.all(dashboardData);
+    return {
+      result: "Success",
+      dataToReturn
+    };
   }
 };
