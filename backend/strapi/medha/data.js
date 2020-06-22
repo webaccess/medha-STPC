@@ -1379,6 +1379,10 @@ const ROLES = {
         action: []
       },
       {
+        name: "dashboard",
+        action: []
+      },
+      {
         name: "activity",
         action: [],
         type: PLUGIN_NAME
