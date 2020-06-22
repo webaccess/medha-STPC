@@ -9,6 +9,34 @@ const PLUGIN = "crm-plugin";
 
 const DASHBOARD_START_DATE = "01-01-2019";
 
+const DASHBOARDKEYS = [
+  "Workshops",
+  "TPOFeedback",
+  "StudentFeedback",
+  "IndustrialVisits",
+  "Interships",
+  "Placement",
+  "FirstYear",
+  "FinalYear",
+  "Entrepreneurship",
+  "FirstYearAttendance",
+  "SecondYearAttendance",
+  "FinalYearAttendance",
+  "PlannedVsAchieved",
+  "UniqueStudents",
+  "Institutionstouched",
+  "IndustrialVisitAttendance",
+  "IndustrialVisitPlannedVsAchieved",
+  "IndustrialVisitStudentFeedback",
+  "IndustrialVisitTPOFeedback",
+  "PlacementAttended",
+  "PlacementSelected",
+  "PlacementStudentFeedback",
+  "PlacementTPOFeedback",
+  "PlacementCollegeFeedback",
+  "SecondYear"
+];
+
 module.exports = {
   ROLE_MEDHA_ADMIN,
   ROLE_ADMIN,
@@ -17,5 +45,6 @@ module.exports = {
   ROLE_COLLEGE_ADMIN,
   ROLE_STUDENT,
   PLUGIN,
-  DASHBOARD_START_DATE
+  DASHBOARD_START_DATE,
+  DASHBOARDKEYS
 };

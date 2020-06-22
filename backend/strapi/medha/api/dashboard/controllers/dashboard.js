@@ -26,7 +26,8 @@ const {
   ROLE_MEDHA_ADMIN,
   ROLE_COLLEGE_ADMIN,
   ROLE_ZONAL_ADMIN,
-  DASHBOARD_START_DATE
+  DASHBOARD_START_DATE,
+  DASHBOARDKEYS
 } = require("../../../config/constants");
 const utils = require("../../../config/utils.js");
 
@@ -202,7 +203,20 @@ module.exports = {
         finalData.push(finalJson[m]);
       });
     });
-
-    return { finalData };
+    let dashboardData = [];
+    finalData.map(data => {
+      let count = 0;
+      DASHBOARDKEYS.map(key => {
+        if (data.hasOwnProperty(key)) {
+          if (data[key] !== 0) {
+            count += 1;
+          }
+        }
+      });
+      if (count !== 0) {
+        dashboardData.push(data);
+      }
+    });
+    return { dashboardData };
   }
 };
