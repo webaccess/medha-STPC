@@ -7,6 +7,8 @@ const ROLE_STUDENT = "Student";
 
 const PLUGIN = "crm-plugin";
 
+const DASHBOARD_START_DATE = "01-01-2019";
+
 module.exports = {
   ROLE_MEDHA_ADMIN,
   ROLE_ADMIN,
@@ -14,5 +16,6 @@ module.exports = {
   ROLE_RPC_ADMIN,
   ROLE_COLLEGE_ADMIN,
   ROLE_STUDENT,
-  PLUGIN
+  PLUGIN,
+  DASHBOARD_START_DATE
 };
