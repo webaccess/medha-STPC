@@ -48,7 +48,6 @@ module.exports = {
       PlacementCollegeFeedback: 0,
       SecondYear: 0
     };
-
     /** getting data for medha admin */
     if (role === ROLE_MEDHA_ADMIN) {
       // _.assign(query, { state: "1" }, { country: "1" });

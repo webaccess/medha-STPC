@@ -45,6 +45,7 @@ async function collegeData() {
         phone: c["Phone Number"],
         email: c["Email Address"],
         state: 1,
+        country: 1,
         address_1: c["Address"],
         district: null
       };
