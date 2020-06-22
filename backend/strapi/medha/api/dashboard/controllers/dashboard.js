@@ -150,17 +150,37 @@ module.exports = {
   },
 
   async addDashboardData(ctx) {
-    const userInfo = ctx.state.user;
-    const role = userInfo.role.name;
-    /** Truncate entire table */
-    await knex("dashboards").truncate();
-
     var finalData = [];
-    let allColleges = await bookshelf
-      .model("organization")
-      .fetchAll()
-      .then(model => model.toJSON());
+    var allColleges = [];
 
+    if (ctx.state.user !== undefined) {
+      const userInfo = ctx.state.user;
+      const role = userInfo.role.name;
+      console.log(role);
+      /** Truncate entire table */
+
+      if (role === ROLE_MEDHA_ADMIN) {
+        /** If from medha admin truncate entire table */
+        await knex("dashboards").truncate();
+        allColleges = await bookshelf
+          .model("organization")
+          .fetchAll()
+          .then(model => model.toJSON());
+      }
+    } else {
+      let { fromScript } = ctx.request.query;
+      if (fromScript) {
+        await knex("dashboards").truncate();
+        /**  */
+        allColleges = await bookshelf
+          .model("organization")
+          .fetchAll()
+          .then(model => model.toJSON());
+      }
+      console.log(fromScript);
+    }
+
+    /** Colleges loop */
     await utils.asyncForEach(allColleges, async college => {
       let overallWorkshops = strapi.services.dashboard.getOverallWorkshops(
         college.id
