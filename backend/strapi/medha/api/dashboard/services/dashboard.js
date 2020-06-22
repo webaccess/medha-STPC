@@ -4,23 +4,18 @@
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/services.html#core-services)
  * to customize this service
  */
+
 const utils = require("../../../config/utils");
 const {
   PLUGIN,
   DASHBOARD_START_DATE,
-  ROLE_STUDENT
+  ROLE_STUDENT,
+  ROLE_COLLEGE_ADMIN
 } = require("../../../config/constants");
 const _ = require("lodash");
 const moment = require("moment");
 
 module.exports = {
-  getOverallWorkshops: async orgId => {
-    const data = await strapi
-      .query("activity", PLUGIN)
-      .find({ "contact.organization": orgId });
-    console.log(data);
-  },
-
   getPlacementCount: async orgId => {
     const org = await strapi
       .query("contact", PLUGIN)
@@ -94,11 +89,29 @@ module.exports = {
     );
   },
 
-  getPlacementStudentFeedbackCount: async orgId => {},
+  getPlacementStudentFeedbackCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
+      orgId,
+      ROLE_STUDENT,
+      "PlacementStudentFeedback"
+    );
+  },
 
-  getPlacementTPOFeedbackCount: async orgId => {},
+  getPlacementTPOFeedbackCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
+      orgId,
+      ROLE_COLLEGE_ADMIN,
+      "PlacementTPOFeedback"
+    );
+  },
 
-  getPlacementCollegeFeedbackCount: async orgId => {},
+  getPlacementCollegeFeedbackCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
+      orgId,
+      ROLE_COLLEGE_ADMIN,
+      "PlacementCollegeFeedback"
+    );
+  },
 
   /**
    * Getting placement count depending on status for given college
@@ -172,6 +185,87 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || ""
+      };
+      return result;
+    }, {});
+
+    return response;
+  },
+
+  /**
+   * Getting placement feedback from student, college admin and TPO
+   * roleName could be college admin and student
+   * key is dashboard column name
+   */
+  getPlacementFeedbackCountByRole: async (orgId, roleName, key) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
+    const role = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: roleName });
+
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    // Getting all placements
+    const placements = await strapi
+      .query("event")
+      .model.query({})
+      .fetchAll()
+      .then(model => {
+        const data = model.toJSON();
+        return data.filter(event => {
+          const { contacts } = event;
+          const contactIds = contacts.map(c => c.id);
+          if (_.includes(contactIds, orgId) || contactIds.length == 0) {
+            return event;
+          }
+        });
+      });
+
+    // Getting placement attendance for given list of events
+    const placementIds = placements.map(placement => placement.id);
+    const query = {};
+    query.event_in = placementIds;
+    query.role = role.id;
+
+    const feedback = await strapi.query("feedback-set").find(query);
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+
+    // Grouping feedback by month
+    const groupByMonth = _.groupBy(feedback, fb => {
+      const { event } = fb;
+      return moment(event.start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        [key]: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: country.id
       };
       return result;
     }, {});
