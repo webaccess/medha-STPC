@@ -49,20 +49,20 @@ module.exports = {
       const [month, year] = m.split(" ");
       const data = groupByMonth[m];
       result[m] = {
-        month: parseInt(month),
-        year: parseInt(year),
+        Month: parseInt(month),
+        Year: parseInt(year),
         Placement: data ? data.length : 0,
         rpc:
           (org.organization &&
             org.organization.rpc &&
-            org.organization.rpc.name) ||
+            org.organization.rpc.id) ||
           "",
         zone:
           (org.organization &&
             org.organization.zone &&
-            org.organization.zone.name) ||
+            org.organization.zone.id) ||
           "",
-        state: (org.state && org.state.name) || ""
+        state: (org.state && org.state.id) || ""
       };
       return result;
     }, {});
