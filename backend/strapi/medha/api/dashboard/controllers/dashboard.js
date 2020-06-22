@@ -167,6 +167,7 @@ module.exports = {
           .model("organization")
           .fetchAll()
           .then(model => model.toJSON());
+        allColleges = [allColleges[0], allColleges[1]];
       }
     } else {
       let { fromScript } = ctx.request.query;
@@ -184,9 +185,40 @@ module.exports = {
     /** Colleges loop */
     await utils.asyncForEach(allColleges, async college => {
       let finalJson = {};
+      /** Overall Workshops */
       let overallWorkshops = await strapi.services.dashboard.getOverallWorkshops(
         college.id
       );
+      /** First Workshops */
+      let firstYearWorkshop = await strapi.services.dashboard.getFirstYearWorkshop(
+        college.id
+      );
+      /** Second Workshops */
+      let secondYearWorkshop = await strapi.services.dashboard.getSecondYearWorkshop(
+        college.id
+      );
+      /** Final Workshops */
+      let finalYearWorkshop = await strapi.services.dashboard.getFinalYearWorkshop(
+        college.id
+      );
+      /** Entrepreneurship */
+      let entrepreneurship = await strapi.services.dashboard.getFutureAspirations(
+        college.id,
+        "Entrepreneurship"
+      );
+      /** First Year Attendence */
+      let firstYearAttendence = await strapi.services.dashboard.getWorkshopFirstYearAttendenceCount(
+        college.id
+      );
+      /** Second Year Attendence */
+      let secondYearAttendence = await strapi.services.dashboard.getWorkshopSecondYearAttendenceCount(
+        college.id
+      );
+      /** Third Year Attendence */
+      let thirdYearAttendence = await strapi.services.dashboard.getWorkshopThirdYearAttendenceCount(
+        college.id
+      );
+      /** Overall Industrial Visits */
       let getOverallIndustrialVisits = await strapi.services.dashboard.getOverallIndustrialVisits(
         college.id
       );
@@ -197,7 +229,14 @@ module.exports = {
         {},
         overallWorkshops,
         getOverallIndustrialVisits,
-        getPlacementCount
+        firstYearWorkshop,
+        secondYearWorkshop,
+        finalYearWorkshop,
+        entrepreneurship,
+        getPlacementCount,
+        firstYearAttendence,
+        secondYearAttendence,
+        thirdYearAttendence
       );
       months.map(m => {
         finalData.push(finalJson[m]);
