@@ -6,35 +6,13 @@
  */
 
 const bookshelf = require("../../../config/bookshelf.js");
-const knex = require("knex")({
-  client: "pg",
-  connection: {
-    host: "127.0.0.1",
-    port: "5432",
-    user: "postgres",
-    password: "root",
-    database: "medha"
-  }
-});
-const {
-  convertRestQueryParams,
-  buildQuery,
-  sanitizeEntity
-} = require("strapi-utils");
 const {
   PLUGIN,
   ROLE_MEDHA_ADMIN,
   ROLE_COLLEGE_ADMIN,
-  ROLE_ZONAL_ADMIN,
-  DASHBOARD_START_DATE,
-  DASHBOARDKEYS
+  ROLE_ZONAL_ADMIN
 } = require("../../../config/constants");
 const utils = require("../../../config/utils.js");
-
-const sanitizeUser = user =>
-  sanitizeEntity(user, {
-    model: strapi.query("user", "users-permissions").model
-  });
 
 const _ = require("lodash");
 
@@ -152,71 +130,17 @@ module.exports = {
   },
 
   async addDashboardData(ctx) {
-    var finalData = [];
-    var allColleges = [];
-
-    if (ctx.state.user !== undefined) {
-      const userInfo = ctx.state.user;
-      const role = userInfo.role.name;
-      /** Truncate entire table */
-
-      if (role === ROLE_MEDHA_ADMIN) {
-        /** If from medha admin truncate entire table */
-        await knex("dashboards").truncate();
-        allColleges = await bookshelf
-          .model("organization")
-          .fetchAll()
-          .then(model => model.toJSON());
-      }
-    } else {
-      let { fromScript } = ctx.request.query;
-      if (fromScript) {
-        await knex("dashboards").truncate();
-        /**  */
-        allColleges = await bookshelf
-          .model("organization")
-          .fetchAll()
-          .then(model => model.toJSON());
-      }
+    if (!ctx.state.user) {
+      return ctx.response.badRequest(
+        "You don't have permission to access this information"
+      );
     }
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    // Clearing table
+    await bookshelf.knex("dashboards").truncate();
+    const allColleges = await strapi
+      .query("organization", PLUGIN)
+      .find({ _limit: -1 });
 
-    /** Colleges loop */
-    await utils.asyncForEach(allColleges, async college => {
-      let finalJson = {};
-      let overallWorkshops = await strapi.services.dashboard.getOverallWorkshops(
-        college.id
-      );
-      let getOverallIndustrialVisits = await strapi.services.dashboard.getOverallIndustrialVisits(
-        college.id
-      );
-      let getPlacementCount = await strapi.services.dashboard.getPlacementCount(
-        college.id
-      );
-      finalJson = _.merge(
-        {},
-        overallWorkshops,
-        getOverallIndustrialVisits,
-        getPlacementCount
-      );
-      months.map(m => {
-        finalData.push(finalJson[m]);
-      });
-    });
-    let dashboardData = [];
-    finalData.map(data => {
-      let count = 0;
-      DASHBOARDKEYS.map(key => {
-        if (data.hasOwnProperty(key)) {
-          if (data[key] !== 0) {
-            count += 1;
-          }
-        }
-      });
-      if (count !== 0) {
-        dashboardData.push(data);
-      }
-    });
-    return { dashboardData };
+    return await strapi.services.dashboard.createDashboardData(allColleges);
   }
 };
