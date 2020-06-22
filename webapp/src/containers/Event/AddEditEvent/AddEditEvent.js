@@ -166,14 +166,12 @@ const AddEditEvent = props => {
   const [educations, setEducations] = useState([
     { id: 1, value: "First" },
     { id: 2, value: "Second" },
-    { id: 3, value: "Third" },
-    { id: 4, value: "Fourth" }
+    { id: 3, value: "Third" }
   ]);
   const [educationsDataBackup] = useState([
     { id: 1, value: "First" },
     { id: 2, value: "Second" },
-    { id: 3, value: "Third" },
-    { id: 4, value: "Fourth" }
+    { id: 3, value: "Third" }
   ]);
   if (formState.isEditEvent && !formState.counter) {
     setLoaderStatus(true);
@@ -367,8 +365,7 @@ const AddEditEvent = props => {
     let educationDataForEdit = [
       { id: 1, value: "First" },
       { id: 2, value: "Second" },
-      { id: 3, value: "Third" },
-      { id: 4, value: "Fourth" }
+      { id: 3, value: "Third" }
     ];
     if (formState.isEditEvent) {
       let tempEducationData = educationDataForEdit;
