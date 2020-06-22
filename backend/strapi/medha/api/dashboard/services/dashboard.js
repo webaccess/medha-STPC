@@ -16,8 +16,6 @@ const _ = require("lodash");
 const moment = require("moment");
 
 module.exports = {
-<<<<<<< HEAD
-=======
   getOverallWorkshops: async orgId => {
     const org = await strapi
       .query("contact", PLUGIN)
@@ -117,7 +115,6 @@ module.exports = {
     return response;
   },
 
->>>>>>> 464aee96ce251d27be4c25f8660fe60b5c910ee0
   getPlacementCount: async orgId => {
     const org = await strapi
       .query("contact", PLUGIN)
