@@ -151,6 +151,8 @@ module.exports = {
 
   async addDashboardData(ctx) {
     const userInfo = ctx.state.user;
+    const role = userInfo.role.name;
+    /** Truncate entire table */
     await knex("dashboards").truncate();
 
     var finalData = [];
