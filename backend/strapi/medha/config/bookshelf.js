@@ -3,9 +3,9 @@ const knex = require("knex")({
   connection: {
     host: "127.0.0.1",
     port: "5432",
-    user: "medha",
-    password: "medha",
-    database: "medha-CRM"
+    user: "postgres",
+    password: "root",
+    database: "medha"
   }
 });
 
@@ -14,8 +14,28 @@ const bookshelf = require("bookshelf")(knex);
 /**
  * Registering models for bookshelf
  */
+bookshelf.model("question-set", {
+  tableName: "question_sets",
+  requireFetch: false
+});
+
+bookshelf.model("question", {
+  tableName: "questions",
+  requireFetch: false
+});
+
 bookshelf.model("academic_year", {
   tableName: "academic_years",
+  requireFetch: false
+});
+
+bookshelf.model("education", {
+  tableName: "educations",
+  requireFetch: false
+});
+
+bookshelf.model("individual", {
+  tableName: "individuals",
   requireFetch: false
 });
 
@@ -74,16 +94,6 @@ bookshelf.model("role", {
   tableName: "users-permissions_role"
 });
 
-bookshelf.model("college-stream-strength", {
-  requireFetch: false,
-  tableName: "college_stream_strengths"
-});
-
-bookshelf.model("organization-component", {
-  requireFetch: false,
-  tableName: "organizations_components"
-});
-
 bookshelf.model("activity_type", {
   requireFetch: false,
   tableName: "activitytypes"
@@ -112,14 +122,24 @@ bookshelf.model("dashboard", {
   tableName: "dashboards"
 });
 
+bookshelf.model("contact", {
+  requireFetch: false,
+  tableName: "contacts"
+});
+
 bookshelf.model("organization", {
   requireFetch: false,
   tableName: "organizations"
 });
 
-bookshelf.model("contact", {
+bookshelf.model("college-stream-strength", {
   requireFetch: false,
-  tableName: "contacts"
+  tableName: "college_stream_strengths"
+});
+
+bookshelf.model("organization-component", {
+  requireFetch: false,
+  tableName: "organizations_components"
 });
 
 module.exports = bookshelf;

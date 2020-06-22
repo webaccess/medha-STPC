@@ -14,10 +14,13 @@
   "dependencies": {
     "axios": "^0.19.2",
     "bookshelf": "^1.1.0",
+    "buffer-from": "^1.1.1",
     "cross-env": "^7.0.2",
     "csv-parse": "^4.10.1",
     "knex": "<0.20.0",
     "moment": "^2.27.0",
+    "node-json-xlsx": "^0.2.2",
+    "node-xlsx": "^0.15.0",
     "pg": "latest",
     "read-excel-file": "^4.0.6",
     "redux-logger": "^3.0.6",
