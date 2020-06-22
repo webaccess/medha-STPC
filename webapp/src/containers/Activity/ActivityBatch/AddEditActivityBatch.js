@@ -900,16 +900,13 @@ const AddEditActivityBatches = props => {
                     onChangeRowsPerPage={handlePerRowsChange}
                     onChangePage={handlePageChange}
                     onSelectedRowsChange={handleRowChange}
-                    noDataComponent="No Student Details found"
                     clearSelectedRows={clearSelectedRows}
                   />
                 ) : (
-                  <div className={classes.noDataMargin}>
-                    {genericConstants.NO_STUDENTS_DETAILS_FOUND}
-                  </div>
+                  <Spinner />
                 )
               ) : (
-                <Spinner />
+                <div className={classes.noDataMargin}>No data to show</div>
               )}
             </Grid>
           </CardContent>
