@@ -11,9 +11,9 @@ const knex = require("knex")({
   connection: {
     host: "127.0.0.1",
     port: "5432",
-    user: "postgres",
-    password: "root",
-    database: "medha"
+    user: "medha",
+    password: "medha",
+    database: "medha-CRM"
   }
 });
 const {
@@ -70,7 +70,9 @@ module.exports = {
       PlacementCollegeFeedback: 0,
       SecondYear: 0
     };
-
+    const data1 = await strapi.services.dashboard.getIndustrialVisitAttendanceCount(
+      2
+    );
     /** getting data for medha admin */
     if (role === ROLE_MEDHA_ADMIN) {
       // _.assign(query, { state: "1" }, { country: "1" });

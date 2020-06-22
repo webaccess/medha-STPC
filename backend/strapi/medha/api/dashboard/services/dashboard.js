@@ -372,5 +372,70 @@ module.exports = {
     }, {});
 
     return response;
+  },
+  getPlacementCollegeFeedbackCount: async orgId => {},
+
+  getIndustrialVisitAttendanceCount: async orgId => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const activityType = await strapi
+      .query("activitytype", PLUGIN)
+      .findOne({ name: "Industrial Visit" });
+
+    let activityId = await strapi
+      .query("activity", PLUGIN)
+      .model.query({})
+      .where({ activitytype: activityType.id, contact: orgId })
+      .fetchAll()
+      .then(model => {
+        const data = model.toJSON();
+        // console.log(data);
+        return data.map(activity => activity.id).filter(c => c);
+      });
+
+    console.log(activityId);
+    const attendance = await strapi
+      .query("activityassignee", PLUGIN)
+      .find({ activity_in: activityId, is_verified_by_college: true });
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(attendance, attendance => {
+      const { created_at } = attendance;
+      return moment(created_at).format("M yyyy");
+    });
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        IndustrialVisitAttendance: data ? data.length : 0,
+
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || ""
+      };
+      return result;
+    }, {});
+    console.log(response);
+    return response;
   }
 };
