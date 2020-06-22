@@ -102,8 +102,7 @@ const ViewActivity = props => {
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
-    { name: "Third", id: "Third" },
-    { name: "Fourth", id: "Fourth" }
+    { name: "Third", id: "Third" }
   ];
   /** Special feedbackState state variable to set parameters for feedback  */
   const [feedbackState, setFeedbackState] = useState({

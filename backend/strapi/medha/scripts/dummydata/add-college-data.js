@@ -13,7 +13,6 @@ var XLSX = require("xlsx");
 
 async function collegeData() {
   console.log("Adding college entries");
-
   var workbook = XLSX.readFile("collegeMapping.xlsx");
   var sheet_name_list = workbook.SheetNames;
   var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);

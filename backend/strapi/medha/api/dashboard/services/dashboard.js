@@ -4,13 +4,6 @@
  * Read the documentation (https://strapi.io/documentation/3.0.0-beta.x/concepts/services.html#core-services)
  * to customize this service
  */
-const {
-  PLUGIN,
-  ROLE_MEDHA_ADMIN,
-  ROLE_COLLEGE_ADMIN,
-  ROLE_ZONAL_ADMIN
-} = require("../../../config/constants");
-
 const utils = require("../../../config/utils");
 const { PLUGIN, DASHBOARD_START_DATE } = require("../../../config/constants");
 const _ = require("lodash");

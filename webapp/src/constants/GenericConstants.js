@@ -135,8 +135,7 @@ export const EDUCATIONS = [
 export const EDUCATIONYEARLIST = [
   { name: "First", id: "First" },
   { name: "Second", id: "Second" },
-  { name: "Third", id: "Third" },
-  { name: "Fourth", id: "Fourth" }
+  { name: "Third", id: "Third" }
 ];
 
 export const ACTIVITY_STATUS = [

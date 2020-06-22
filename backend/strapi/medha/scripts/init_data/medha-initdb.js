@@ -1,5 +1,5 @@
-const bookshelf = require("./config/bookshelf");
-const utils = require("./config/utils");
+const bookshelf = require("../../config/bookshelf");
+const utils = require("../../config/utils");
 const {
   ACADEMIC_YEARS,
   COUNTRIES,
@@ -10,7 +10,8 @@ const {
   uploadPermissions,
   ACTIVITY_TYPES,
   FUTURE_ASPIRATIONS,
-  BOARDS
+  BOARDS,
+  QUESTION_SET
 } = require("./data");
 
 (async () => {
@@ -35,14 +36,16 @@ const {
   await addActivityTypes();
   console.log("\n");
   await addBoards();
+  console.log("\n");
+  await addQuestionSet();
   process.exit(0);
 })();
 
 const fs = require("fs");
 
-const apiFolder = "./api/";
-const pluginFolder = "./plugins/crm-plugin";
-const extendedPluginFolder = "./extensions/crm-plugin/config/routes.json";
+const apiFolder = "../../api";
+const pluginFolder = "../../plugins/crm-plugin";
+const extendedPluginFolder = "../../extensions/crm-plugin/config/routes.json";
 
 // Project specific models APIs, controllers and action
 let apiControllerActions = fs
@@ -50,7 +53,7 @@ let apiControllerActions = fs
   .filter(api => api.isDirectory())
   .reduce((acc, folder) => {
     const { name } = folder;
-    const raw = fs.readFileSync(`./api/${name}/config/routes.json`);
+    const raw = fs.readFileSync(`../../api/${name}/config/routes.json`);
     const route = JSON.parse(raw);
     const actionObj = route.routes.reduce((result, r) => {
       const action = r.handler.split(".")[1].toLowerCase();
@@ -195,6 +198,50 @@ async function academicYears() {
         .then(() => {
           console.log(`Added Academic Year ${ay.name}`);
         });
+    }
+  });
+}
+
+async function addQuestionSet() {
+  console.log("Question set");
+  await utils.asyncForEach(QUESTION_SET, async qs => {
+    const { questions } = qs;
+    const isQuestionSetPresent = await bookshelf
+      .model("question-set")
+      .where({ name: qs.name })
+      .fetch();
+
+    if (!isQuestionSetPresent) {
+      const questionSet = await bookshelf
+        .model("question-set")
+        .forge({
+          name: qs.name
+        })
+        .save()
+        .then(async res => {
+          console.log(`Added Question Set ${qs.name}`);
+          await utils.asyncForEach(questions, async q => {
+            const role = await bookshelf
+              .model("role")
+              .where({ name: q.role })
+              .fetchAll()
+              .then(model => model.toJSON());
+            await bookshelf
+              .model("question")
+              .forge({
+                title: q.question,
+                type: q.type,
+                question_set: res.id,
+                role: role[0].id
+              })
+              .save()
+              .then(() => {
+                console.log(`Added question ${q.question} to ${qs.name}`);
+              });
+          });
+        });
+    } else {
+      console.log(`Skipping Question Set ${qs.name}`);
     }
   });
 }

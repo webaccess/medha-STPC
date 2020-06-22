@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const moment = require("moment");
 
 function getRequestParams(params) {
   const page = params.page ? parseInt(params.page) : 1;
@@ -100,9 +101,18 @@ function sort(data, sort) {
   return result;
 }
 
-function rename(object, newKey, oldKey) {
-  object[newKey] = object[oldKey];
-  delete object[oldKey];
+function getMonthsBetweenDates(startDate, endDate, format) {
+  let dates = [];
+  let now = moment(startDate, "dd-MM-yyyy").clone();
+  const lastDate = endDate ? moment(endDate, "dd-MM-yyyy") : moment.now();
+  const _format = format ? format : "M yyyy";
+
+  while (now.isSameOrBefore(lastDate)) {
+    dates.push(now.format(_format));
+    now.add(1, "months");
+  }
+
+  return dates;
 }
 
 module.exports = {
@@ -116,6 +126,6 @@ module.exports = {
   paginate,
   getErrorResponse,
   sort,
-  rename,
-  merge: _.merge
+  merge: _.merge,
+  getMonthsBetweenDates
 };

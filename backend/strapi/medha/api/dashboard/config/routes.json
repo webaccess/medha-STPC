@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/addDashboardData",
+      "handler": "dashboard.addDashboardData",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

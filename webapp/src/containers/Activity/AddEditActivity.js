@@ -199,8 +199,7 @@ const AddEditActivity = props => {
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
-    { name: "Third", id: "Third" },
-    { name: "Fourth", id: "Fourth" }
+    { name: "Third", id: "Third" }
   ];
 
   const activityNameList = [
@@ -475,7 +474,8 @@ const AddEditActivity = props => {
   const getColleges = async () => {
     await serviceProvider
       .serviceProviderForGetRequest(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES,
+        { pageSize: -1 }
       )
       .then(res => {
         setcollegelist(
