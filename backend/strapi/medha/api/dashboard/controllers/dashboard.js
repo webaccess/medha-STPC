@@ -134,8 +134,7 @@ module.exports = {
         "You don't have permission to access this information"
       );
     }
-    // Clearing table
-    await bookshelf.knex("dashboards").truncate();
+
     const allColleges = await strapi
       .query("organization", PLUGIN)
       .find({ _limit: -1 });

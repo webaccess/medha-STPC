@@ -8,13 +8,13 @@
 const utils = require("../../../config/utils");
 const {
   PLUGIN,
-  DASHBOARD_START_DATE,
   ROLE_STUDENT,
   ROLE_COLLEGE_ADMIN,
   DASHBOARDKEYS
 } = require("../../../config/constants");
 const _ = require("lodash");
 const moment = require("moment");
+const bookshelf = require("../../../config/bookshelf");
 
 module.exports = {
   getOverallWorkshops: async orgId => {
@@ -189,7 +189,7 @@ module.exports = {
     const feedback = await strapi.query("feedback-set").find(query);
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping feedback by month
     const groupByMonth = _.groupBy(feedback, fb => {
@@ -259,7 +259,7 @@ module.exports = {
     }
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping placements monthwise
     const groupByMonth = _.groupBy(overallWorkshops, workshops => {
@@ -330,7 +330,7 @@ module.exports = {
     });
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping placements monthwise
     const groupByMonth = _.groupBy(firstYearStudents, student => {
@@ -412,7 +412,7 @@ module.exports = {
     });
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping placements monthwise
     const groupByMonth = _.groupBy(finalList, student => {
@@ -467,7 +467,7 @@ module.exports = {
       });
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping placements monthwise
     const groupByMonth = _.groupBy(overallIndustrialVisits, visits => {
@@ -531,7 +531,7 @@ module.exports = {
       });
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping placements monthwise
     const groupByMonth = _.groupBy(placements, placement => {
@@ -610,7 +610,7 @@ module.exports = {
     const attendance = await strapi.query("event-registration").find(query);
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping attendance by month
     const groupByMonth = _.groupBy(attendance, atd => {
@@ -696,7 +696,7 @@ module.exports = {
 
     const feedback = await strapi.query("feedback-set").find(query);
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping feedback by month
     const groupByMonth = _.groupBy(feedback, fb => {
@@ -731,7 +731,6 @@ module.exports = {
 
     return response;
   },
-  getPlacementCollegeFeedbackCount: async orgId => {},
 
   getIndustrialVisitAttendanceCount: async orgId => {
     const org = await strapi
@@ -753,7 +752,7 @@ module.exports = {
     });
 
     // Getting months between dates
-    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+    const months = utils.getMonthsBetweenDates();
 
     // Grouping placements monthwise
     const groupByMonth = _.groupBy(attendance, attendance => {
@@ -783,13 +782,14 @@ module.exports = {
       };
       return result;
     }, {});
-    console.log(response);
     return response;
   },
   createDashboardData: async colleges => {
     let finalData = [];
     let dataToReturn = [];
     /** Colleges loop */
+    await strapi.services.dashboard.clearDashboardRecordsByMonth();
+
     await utils.asyncForEach(colleges, async college => {
       let finalJson = {};
 
@@ -873,6 +873,10 @@ module.exports = {
         college.contact.id
       );
 
+      let getIndustrialVisitAttendanceCount = await strapi.services.dashboard.getIndustrialVisitAttendanceCount(
+        college.contact.id
+      );
+
       finalJson = _.merge(
         {},
         overallWorkshops,
@@ -893,7 +897,8 @@ module.exports = {
         workshopsStudentsFeedback,
         workshopsCollegeFeedback,
         industrialStudentsFeedback,
-        industrialCollegeFeedback
+        industrialCollegeFeedback,
+        getIndustrialVisitAttendanceCount
       );
 
       // months.map(m => {
@@ -915,17 +920,47 @@ module.exports = {
         });
         if (count !== 0) {
           dataToReturn.push(data);
-          return strapi.query("dashboard").create(data);
+          return strapi
+            .query("dashboard")
+            .create(data)
+            .then(() => "success")
+            .catch(() => null);
         } else {
           return null;
         }
       })
       .filter(a => a);
 
-    await Promise.all(dashboardData);
+    /**
+     * Making dashboard entry in dashboard history with status pending
+     * Deleting data for current month
+     * Updating data for current month
+     */
+    const dashboardHistory = await strapi
+      .query("dashboard-history")
+      .create({ status: "pending" });
+
+    const response = await Promise.all(dashboardData);
+
+    if (response.some(r => r == null)) {
+      await strapi
+        .query("dashboard-history")
+        .update({ id: dashboardHistory.id }, { status: "error" });
+    } else {
+      await strapi
+        .query("dashboard-history")
+        .update({ id: dashboardHistory.id }, { status: "completed" });
+    }
+
     return {
       result: "Success",
       dataToReturn
     };
+  },
+
+  clearDashboardRecordsByMonth: async () => {
+    const month = moment().month() + 1;
+    console.log("Clearing data for month ", month);
+    return await strapi.query("dashboard").delete({ Month: month, _limit: -1 });
   }
 };
