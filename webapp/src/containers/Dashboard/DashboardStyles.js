@@ -46,6 +46,9 @@ const useStyles = makeStyles(theme => ({
     alignSelf: "center",
     justifyContent: "flex-start",
     width: "100%"
+  },
+  move_right: {
+    float: "right"
   }
 }));
 
