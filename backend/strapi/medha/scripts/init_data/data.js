@@ -1577,6 +1577,10 @@ const ROLES = {
       {
         name: "dashboard",
         action: []
+      },
+      {
+        name: "dashboard-history",
+        action: []
       }
     ],
     grantAllPermissions: true
@@ -1623,6 +1627,10 @@ const PUBLIC_ROUTES = {
     {
       name: "dashboard",
       action: ["adddashboarddata"]
+    },
+    {
+      name: "dashboard-history",
+      action: ["create", "find", "update"]
     },
     {
       name: "district",
