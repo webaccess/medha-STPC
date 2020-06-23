@@ -10,13 +10,106 @@ const {
   PLUGIN,
   DASHBOARD_START_DATE,
   ROLE_STUDENT,
-  ROLE_COLLEGE_ADMIN
+  ROLE_COLLEGE_ADMIN,
+  DASHBOARDKEYS
 } = require("../../../config/constants");
 const _ = require("lodash");
 const moment = require("moment");
 
 module.exports = {
   getOverallWorkshops: async orgId => {
+    let overallWorkshops = await strapi.services.dashboard.getWorkShopByYear(
+      orgId
+    );
+    return overallWorkshops;
+  },
+
+  getFirstYearWorkshop: async orgId => {
+    let firstYearWorkshop = await strapi.services.dashboard.getWorkShopByYear(
+      orgId,
+      "First"
+    );
+    return firstYearWorkshop;
+  },
+
+  getSecondYearWorkshop: async orgId => {
+    let secondYearWorkshop = await strapi.services.dashboard.getWorkShopByYear(
+      orgId,
+      "Second"
+    );
+    return secondYearWorkshop;
+  },
+
+  getFinalYearWorkshop: async orgId => {
+    let thirdYearWorkshop = await strapi.services.dashboard.getWorkShopByYear(
+      orgId,
+      "Third"
+    );
+    return thirdYearWorkshop;
+  },
+
+  getWorkshopFirstYearAttendenceCount: async orgId => {
+    return await strapi.services.dashboard.getWorkShopAttendenceCount(
+      orgId,
+      "First",
+      "is_verified_by_college"
+    );
+  },
+
+  getWorkshopSecondYearAttendenceCount: async orgId => {
+    return await strapi.services.dashboard.getWorkShopAttendenceCount(
+      orgId,
+      "Second",
+      "is_verified_by_college"
+    );
+  },
+  getWorkshopThirdYearAttendenceCount: async orgId => {
+    return await strapi.services.dashboard.getWorkShopAttendenceCount(
+      orgId,
+      "Third",
+      "is_verified_by_college"
+    );
+  },
+
+  getPlacementAttendedCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementCountByStatus(
+      orgId,
+      "is_attendance_verified"
+    );
+  },
+
+  getPlacementSelectedCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementCountByStatus(
+      orgId,
+      "is_hired_at_event"
+    );
+  },
+
+  getPlacementStudentFeedbackCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
+      orgId,
+      ROLE_STUDENT,
+      "PlacementStudentFeedback"
+    );
+  },
+
+  getPlacementTPOFeedbackCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
+      orgId,
+      ROLE_COLLEGE_ADMIN,
+      "PlacementTPOFeedback"
+    );
+  },
+
+  getPlacementCollegeFeedbackCount: async orgId => {
+    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
+      orgId,
+      ROLE_COLLEGE_ADMIN,
+      "PlacementCollegeFeedback"
+    );
+  },
+
+  getWorkShopByYear: async (orgId, year = "") => {
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -25,9 +118,25 @@ module.exports = {
         "state"
       ]);
 
-    const overallWorkshops = await strapi
-      .query("activity", PLUGIN)
-      .find({ "contact.organization": orgId, "activitytype.name": "Workshop" });
+    let yearToAdd = "";
+    if (year === "First") yearToAdd = "FirstYear";
+    else if (year === "Second") yearToAdd = "SecondYear";
+    else if (year === "Third") yearToAdd = "FinalYear";
+    else if (year === "") yearToAdd = "Workshops";
+    let overallWorkshops;
+
+    if (yearToAdd === "Workshops") {
+      overallWorkshops = await strapi.query("activity", PLUGIN).find({
+        contact: orgId,
+        "activitytype.name": "Workshop"
+      });
+    } else {
+      overallWorkshops = await strapi.query("activity", PLUGIN).find({
+        contact: orgId,
+        "activitytype.name": "Workshop",
+        education_year: year
+      });
+    }
 
     // Getting months between dates
     const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
@@ -44,7 +153,153 @@ module.exports = {
       result[m] = {
         Month: parseInt(month),
         Year: parseInt(year),
-        Workshops: data ? data.length : 0,
+        [yearToAdd]: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: (org.state && org.state.country) || "",
+        contact: org.id
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+  getWorkShopAttendenceCount: async (orgId, year, key) => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    let yearToAdd = "";
+    if (year === "First") yearToAdd = "FirstYearAttendance";
+    else if (year === "Second") yearToAdd = "SecondYearAttendance";
+    else if (year === "Third") yearToAdd = "FinalYearAttendance";
+    let overallWorkshops;
+
+    overallWorkshops = await strapi.query("activity", PLUGIN).find({
+      "contact.organization": orgId,
+      "activitytype.name": "Workshop",
+      education_year: year
+    });
+
+    let firstYearStudents = [];
+    overallWorkshops.map(workshop => {
+      const { start_date_time } = workshop;
+      workshop.activityassignees.map(students => {
+        if (students[key] === true) {
+          _.assign(students, { start_date_time: start_date_time });
+          firstYearStudents.push(students);
+        }
+      });
+    });
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(firstYearStudents, student => {
+      const { start_date_time } = student;
+      return moment(start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        Month: parseInt(month),
+        Year: parseInt(year),
+        [yearToAdd]: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: (org.state && org.state.country) || "",
+        contact: org.id
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+  getFutureAspirations: async (orgId, value) => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const future_aspiration_data = await strapi
+      .query("futureaspirations")
+      .findOne({ name: value });
+    let overallWorkshops;
+
+    overallWorkshops = await strapi.query("activity", PLUGIN).find(
+      {
+        contact: orgId,
+        "activitytype.name": "Workshop"
+      },
+      ["activityassignees", "activityassignees.contact"]
+    );
+    var finalList = [];
+    await utils.asyncForEach(overallWorkshops, async workshop => {
+      const { start_date_time } = workshop;
+      await utils.asyncForEach(workshop.activityassignees, async student => {
+        const individual = await strapi
+          .query("individual", PLUGIN)
+          .findOne({ id: student.contact.individual });
+
+        const { future_aspirations } = individual;
+        let isPresent = false;
+        for (let i in future_aspirations) {
+          if (future_aspirations[i]["name"] == value) {
+            isPresent = true;
+            break;
+          }
+        }
+        if (isPresent) {
+          _.assign(student, { start_date_time: start_date_time });
+          finalList.push(student);
+        }
+      });
+    });
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(finalList, student => {
+      const { start_date_time } = student;
+      return moment(start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        Month: parseInt(month),
+        Year: parseInt(year),
+        [value]: data ? data.length : 0,
         rpc:
           (org.organization &&
             org.organization.rpc &&
@@ -174,44 +429,6 @@ module.exports = {
     }, {});
 
     return response;
-  },
-
-  getPlacementAttendedCount: async orgId => {
-    return await strapi.services.dashboard.getPlacementCountByStatus(
-      orgId,
-      "is_attendance_verified"
-    );
-  },
-
-  getPlacementSelectedCount: async orgId => {
-    return await strapi.services.dashboard.getPlacementCountByStatus(
-      orgId,
-      "is_hired_at_event"
-    );
-  },
-
-  getPlacementStudentFeedbackCount: async orgId => {
-    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
-      orgId,
-      ROLE_STUDENT,
-      "PlacementStudentFeedback"
-    );
-  },
-
-  getPlacementTPOFeedbackCount: async orgId => {
-    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
-      orgId,
-      ROLE_COLLEGE_ADMIN,
-      "PlacementTPOFeedback"
-    );
-  },
-
-  getPlacementCollegeFeedbackCount: async orgId => {
-    return await strapi.services.dashboard.getPlacementFeedbackCountByRole(
-      orgId,
-      ROLE_COLLEGE_ADMIN,
-      "PlacementCollegeFeedback"
-    );
   },
 
   /**
@@ -437,5 +654,125 @@ module.exports = {
     }, {});
     console.log(response);
     return response;
+  },
+  createDashboardData: async colleges => {
+    let finalData = [];
+    let dataToReturn = [];
+    /** Colleges loop */
+    await utils.asyncForEach(colleges, async college => {
+      let finalJson = {};
+
+      let overallWorkshops = await strapi.services.dashboard.getOverallWorkshops(
+        college.contact.id
+      );
+
+      /** First Workshops */
+      let firstYearWorkshop = await strapi.services.dashboard.getFirstYearWorkshop(
+        college.contact.id
+      );
+      /** Second Workshops */
+      let secondYearWorkshop = await strapi.services.dashboard.getSecondYearWorkshop(
+        college.contact.id
+      );
+      /** Final Workshops */
+      let finalYearWorkshop = await strapi.services.dashboard.getFinalYearWorkshop(
+        college.contact.id
+      );
+      /** Entrepreneurship */
+      let entrepreneurship = await strapi.services.dashboard.getFutureAspirations(
+        college.contact.id,
+        "Entrepreneurship"
+      );
+      /** First Year Attendence */
+      let firstYearAttendence = await strapi.services.dashboard.getWorkshopFirstYearAttendenceCount(
+        college.contact.id
+      );
+      /** Second Year Attendence */
+      let secondYearAttendence = await strapi.services.dashboard.getWorkshopSecondYearAttendenceCount(
+        college.contact.id
+      );
+      /** Third Year Attendence */
+      let thirdYearAttendence = await strapi.services.dashboard.getWorkshopThirdYearAttendenceCount(
+        college.contact.id
+      );
+
+      let getOverallIndustrialVisits = await strapi.services.dashboard.getOverallIndustrialVisits(
+        college.contact.id
+      );
+
+      let getPlacementCount = await strapi.services.dashboard.getPlacementCount(
+        college.contact.id
+      );
+
+      let getPlacementAttendedCount = await strapi.services.dashboard.getPlacementAttendedCount(
+        college.contact.id
+      );
+
+      let getPlacementSelectedCount = await strapi.services.dashboard.getPlacementSelectedCount(
+        college.contact.id
+      );
+
+      let getPlacementStudentFeedbackCount = await strapi.services.dashboard.getPlacementStudentFeedbackCount(
+        college.contact.id
+      );
+
+      let getPlacementTPOFeedbackCount = await strapi.services.dashboard.getPlacementTPOFeedbackCount(
+        college.contact.id
+      );
+
+      let getPlacementCollegeFeedbackCount = await strapi.services.dashboard.getPlacementCollegeFeedbackCount(
+        college.contact.id
+      );
+
+      finalJson = _.merge(
+        {},
+        overallWorkshops,
+        getOverallIndustrialVisits,
+        getPlacementCount,
+        getPlacementAttendedCount,
+        getPlacementSelectedCount,
+        getPlacementStudentFeedbackCount,
+        getPlacementTPOFeedbackCount,
+        getPlacementCollegeFeedbackCount,
+        firstYearWorkshop,
+        secondYearWorkshop,
+        finalYearWorkshop,
+        entrepreneurship,
+        firstYearAttendence,
+        secondYearAttendence,
+        thirdYearAttendence
+      );
+
+      // months.map(m => {
+      //   finalData.push(finalJson[m]);
+      // });
+
+      finalData = [...finalData, ...Object.values(finalJson)];
+    });
+
+    let dashboardData = finalData
+      .map(data => {
+        let count = 0;
+        DASHBOARDKEYS.map(key => {
+          if (data.hasOwnProperty(key)) {
+            if (data[key] !== 0) {
+              count += 1;
+            }
+          }
+        });
+        if (count !== 0) {
+          dataToReturn.push(data);
+          return strapi.query("dashboard").create(data);
+        } else {
+          return null;
+        }
+      })
+      .filter(a => a);
+
+    await Promise.all(dashboardData);
+    return {
+      result: "Success",
+      dataToReturn
+    };
   }
 };

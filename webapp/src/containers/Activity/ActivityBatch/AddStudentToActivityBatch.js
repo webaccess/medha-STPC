@@ -324,24 +324,28 @@ const AddEditActivityBatches = props => {
                       </Grid>
                     </CardContent>
                   </Card>
-                  {formState.dataToShow.length > 0 ? (
-                    <Table
-                      data={formState.dataToShow}
-                      column={column}
-                      defaultSortField="name"
-                      defaultSortAsc={formState.sortAscending}
-                      progressPending={formState.isDataLoading}
-                      paginationTotalRows={formState.totalRows}
-                      paginationRowsPerPageOptions={[10, 20, 50]}
-                      onChangeRowsPerPage={handlePerRowsChange}
-                      onChangePage={handlePageChange}
-                      onSelectedRowsChange={handleRowChange}
-                      noDataComponent={
-                        genericConstants.NO_STUDENTS_DETAILS_FOUND
-                      }
-                    />
+                  {formState.dataToShow ? (
+                    formState.dataToShow.length ? (
+                      <Table
+                        data={formState.dataToShow}
+                        column={column}
+                        defaultSortField="name"
+                        defaultSortAsc={formState.sortAscending}
+                        progressPending={formState.isDataLoading}
+                        paginationTotalRows={formState.totalRows}
+                        paginationRowsPerPageOptions={[10, 20, 50]}
+                        onChangeRowsPerPage={handlePerRowsChange}
+                        onChangePage={handlePageChange}
+                        onSelectedRowsChange={handleRowChange}
+                        noDataComponent={
+                          genericConstants.NO_STUDENTS_DETAILS_FOUND
+                        }
+                      />
+                    ) : (
+                      <Spinner />
+                    )
                   ) : (
-                    genericConstants.NO_STUDENTS_DETAILS_FOUND
+                    <div className={classes.noDataMargin}>No data to show</div>
                   )}
                   <Card className={styles.noBorderNoShadow}>
                     <CardContent>
