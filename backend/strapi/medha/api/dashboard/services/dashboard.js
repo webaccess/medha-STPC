@@ -1021,8 +1021,6 @@ module.exports = {
     let finalData = [];
     let dataToReturn = [];
     /** Colleges loop */
-    colleges = [colleges[0], colleges[1]];
-    console.log(colleges);
     await strapi.services.dashboard.clearDashboardRecordsByMonth();
 
     await utils.asyncForEach(colleges, async college => {
@@ -1196,8 +1194,7 @@ module.exports = {
     }
 
     return {
-      result: "Success",
-      dataToReturn
+      result: "Success"
     };
   },
 
