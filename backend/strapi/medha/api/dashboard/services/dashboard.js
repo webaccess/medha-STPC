@@ -746,21 +746,11 @@ module.exports = {
       .query("activitytype", PLUGIN)
       .findOne({ name: "Industrial Visit" });
 
-    let activityId = await strapi
-      .query("activity", PLUGIN)
-      .model.query({})
-      .where({ activitytype: activityType.id, contact: orgId })
-      .fetchAll()
-      .then(model => {
-        const data = model.toJSON();
-        // console.log(data);
-        return data.map(activity => activity.id).filter(c => c);
-      });
-
-    console.log(activityId);
-    const attendance = await strapi
-      .query("activityassignee", PLUGIN)
-      .find({ activity_in: activityId, is_verified_by_college: true });
+    const attendance = await strapi.query("activityassignee", PLUGIN).find({
+      "activity.activitytype": activityType.id,
+      is_verified_by_college: true,
+      "activity.contact": orgId
+    });
 
     // Getting months between dates
     const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
