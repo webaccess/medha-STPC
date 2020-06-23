@@ -109,7 +109,127 @@ module.exports = {
     );
   },
 
+  getStudentsFeedbackForWorkshops: async orgId => {
+    return await strapi.services.dashboard.getActivitiesFeedbackCountByRoleandType(
+      orgId,
+      ROLE_STUDENT,
+      "StudentFeedback",
+      "Workshop"
+    );
+  },
+
+  getCollegeFeedbackForWorkshops: async orgId => {
+    return await strapi.services.dashboard.getActivitiesFeedbackCountByRoleandType(
+      orgId,
+      ROLE_COLLEGE_ADMIN,
+      "TPOFeedback",
+      "Workshop"
+    );
+  },
+
+  getStudentsFeedbackForIndustrialVisit: async orgId => {
+    return await strapi.services.dashboard.getActivitiesFeedbackCountByRoleandType(
+      orgId,
+      ROLE_STUDENT,
+      "IndustrialVisitStudentFeedback",
+      "Industrial Visit"
+    );
+  },
+
+  getCollegeFeedbackForIndustrialVisit: async orgId => {
+    return await strapi.services.dashboard.getActivitiesFeedbackCountByRoleandType(
+      orgId,
+      ROLE_COLLEGE_ADMIN,
+      "IndustrialVisitTPOFeedback",
+      "Industrial Visit"
+    );
+  },
+  /**
+   * Getting activities feedback from student, college admin and TPO
+   * roleName could be college admin and student
+   * key is dashboard column name
+   */
+  getActivitiesFeedbackCountByRoleandType: async (
+    orgId,
+    roleName,
+    key,
+    type
+  ) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
+    const role = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: roleName });
+
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    /** Get overall workshops */
+    let overallActivities;
+    overallActivities = await strapi.query("activity", PLUGIN).find({
+      contact: orgId,
+      "activitytype.name": type
+    });
+
+    /** This gets activity ids */
+    const activityIds = overallActivities.map(activity => activity.id);
+
+    // Getting placement attendance for given list of events
+    const query = {};
+    query.activity_in = activityIds;
+    query.role = role.id;
+
+    const feedback = await strapi.query("feedback-set").find(query);
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates(DASHBOARD_START_DATE);
+
+    // Grouping feedback by month
+    const groupByMonth = _.groupBy(feedback, fb => {
+      const { activity } = fb;
+      return moment(activity.start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        [key]: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: country.id,
+        contact: org.id
+      };
+      return result;
+    }, {});
+
+    return response;
+  },
+
   getWorkShopByYear: async (orgId, year = "") => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -165,7 +285,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -174,6 +294,10 @@ module.exports = {
   },
 
   getWorkShopAttendenceCount: async (orgId, year, key) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -189,7 +313,7 @@ module.exports = {
     let overallWorkshops;
 
     overallWorkshops = await strapi.query("activity", PLUGIN).find({
-      "contact.organization": orgId,
+      contact: orgId,
       "activitytype.name": "Workshop",
       education_year: year
     });
@@ -232,7 +356,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -241,6 +365,10 @@ module.exports = {
   },
 
   getFutureAspirations: async (orgId, value) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -249,9 +377,6 @@ module.exports = {
         "state"
       ]);
 
-    const future_aspiration_data = await strapi
-      .query("futureaspirations")
-      .findOne({ name: value });
     let overallWorkshops;
 
     overallWorkshops = await strapi.query("activity", PLUGIN).find(
@@ -265,21 +390,23 @@ module.exports = {
     await utils.asyncForEach(overallWorkshops, async workshop => {
       const { start_date_time } = workshop;
       await utils.asyncForEach(workshop.activityassignees, async student => {
-        const individual = await strapi
-          .query("individual", PLUGIN)
-          .findOne({ id: student.contact.individual });
+        if (student.is_verified_by_college) {
+          const individual = await strapi
+            .query("individual", PLUGIN)
+            .findOne({ id: student.contact.individual });
 
-        const { future_aspirations } = individual;
-        let isPresent = false;
-        for (let i in future_aspirations) {
-          if (future_aspirations[i]["name"] == value) {
-            isPresent = true;
-            break;
+          const { future_aspirations } = individual;
+          let isPresent = false;
+          for (let i in future_aspirations) {
+            if (future_aspirations[i]["name"] == value) {
+              isPresent = true;
+              break;
+            }
           }
-        }
-        if (isPresent) {
-          _.assign(student, { start_date_time: start_date_time });
-          finalList.push(student);
+          if (isPresent) {
+            _.assign(student, { start_date_time: start_date_time });
+            finalList.push(student);
+          }
         }
       });
     });
@@ -311,7 +438,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -320,6 +447,10 @@ module.exports = {
   },
 
   getOverallIndustrialVisits: async orgId => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -331,7 +462,7 @@ module.exports = {
     const overallIndustrialVisits = await strapi
       .query("activity", PLUGIN)
       .find({
-        "contact.organization": orgId,
+        contact: orgId,
         "activitytype.name": "Industrial Visit"
       });
 
@@ -362,7 +493,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -371,6 +502,10 @@ module.exports = {
   },
 
   getPlacementCount: async orgId => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -422,7 +557,7 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: (org.state && org.state.country) || "",
+        country: country.id,
         contact: org.id
       };
       return result;
@@ -435,6 +570,9 @@ module.exports = {
    * Getting placement count depending on status for given college
    */
   getPlacementCountByStatus: async (orgId, status) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
     const org = await strapi
       .query("contact", PLUGIN)
       .findOne({ id: orgId }, [
@@ -502,7 +640,9 @@ module.exports = {
             org.organization.zone &&
             org.organization.zone.id) ||
           "",
-        state: (org.state && org.state.id) || ""
+        state: (org.state && org.state.id) || "",
+        country: country.id,
+        contact: org.id
       };
       return result;
     }, {});
@@ -583,7 +723,8 @@ module.exports = {
             org.organization.zone.id) ||
           "",
         state: (org.state && org.state.id) || "",
-        country: country.id
+        country: country.id,
+        contact: org.id
       };
       return result;
     }, {});
@@ -695,6 +836,24 @@ module.exports = {
       let thirdYearAttendence = await strapi.services.dashboard.getWorkshopThirdYearAttendenceCount(
         college.contact.id
       );
+      /** student feedback for workshop */
+      let workshopsStudentsFeedback = await strapi.services.dashboard.getStudentsFeedbackForWorkshops(
+        college.contact.id
+      );
+      /** college feedback for workshop */
+      let workshopsCollegeFeedback = await strapi.services.dashboard.getCollegeFeedbackForWorkshops(
+        college.contact.id
+      );
+
+      /** student feedback for industrial visit */
+      let industrialStudentsFeedback = await strapi.services.dashboard.getStudentsFeedbackForIndustrialVisit(
+        college.contact.id
+      );
+
+      /** college feedback for industrial visit */
+      let industrialCollegeFeedback = await strapi.services.dashboard.getCollegeFeedbackForIndustrialVisit(
+        college.contact.id
+      );
 
       let getOverallIndustrialVisits = await strapi.services.dashboard.getOverallIndustrialVisits(
         college.contact.id
@@ -740,7 +899,11 @@ module.exports = {
         entrepreneurship,
         firstYearAttendence,
         secondYearAttendence,
-        thirdYearAttendence
+        thirdYearAttendence,
+        workshopsStudentsFeedback,
+        workshopsCollegeFeedback,
+        industrialStudentsFeedback,
+        industrialCollegeFeedback
       );
 
       // months.map(m => {
