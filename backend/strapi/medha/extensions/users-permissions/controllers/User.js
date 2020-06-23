@@ -19,7 +19,6 @@ const formatError = error => [
 ];
 
 const { validate } = require("../validate.js");
-const bookshelf = require("../../../config/config.js");
 const utils = require("../../../config/utils.js");
 const { convertRestQueryParams, buildQuery } = require("strapi-utils");
 

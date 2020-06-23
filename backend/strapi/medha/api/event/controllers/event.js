@@ -5,7 +5,7 @@
  * to customize this controller
  */
 
-const bookshelf = require("../../../config/config.js");
+const bookshelf = require("../../../config/bookshelf.js");
 const {
   convertRestQueryParams,
   buildQuery,

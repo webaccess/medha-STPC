@@ -3,7 +3,6 @@
 /**
  * `isAllowed` policy.
  */
-const bookshelf = require("../../../../config/config.js");
 module.exports = async (ctx, next) => {
   const { role, rpc, zone } = ctx.state.user;
   const { id } = ctx.params;

@@ -11,8 +11,6 @@ const sanitizeUser = user =>
   sanitizeEntity(user, {
     model: strapi.query("user", "users-permissions").model
   });
-const bookshelf = require("../../../config/config.js");
-const utils = require("../../../config/utils.js");
 
 module.exports = {
   checkIfEventExist: async (ctx, eventId) => {
