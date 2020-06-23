@@ -1021,6 +1021,17 @@ module.exports = {
     let finalData = [];
     let dataToReturn = [];
     /** Colleges loop */
+    /**
+     * Making dashboard entry in dashboard history with status pending
+     * Deleting data for current month
+     * Updating data for current month
+     */
+    await bookshelf.knex("dashboard_histories").truncate();
+
+    const dashboardHistory = await strapi
+      .query("dashboard-history")
+      .create({ status: "pending" });
+
     await strapi.services.dashboard.clearDashboardRecordsByMonth();
 
     await utils.asyncForEach(colleges, async college => {
@@ -1171,15 +1182,6 @@ module.exports = {
         }
       })
       .filter(a => a);
-
-    /**
-     * Making dashboard entry in dashboard history with status pending
-     * Deleting data for current month
-     * Updating data for current month
-     */
-    const dashboardHistory = await strapi
-      .query("dashboard-history")
-      .create({ status: "pending" });
 
     const response = await Promise.all(dashboardData);
 

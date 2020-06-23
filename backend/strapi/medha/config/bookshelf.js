@@ -19,6 +19,11 @@ bookshelf.model("question-set", {
   requireFetch: false
 });
 
+bookshelf.model("dashboard-history", {
+  tableName: "dashboard_histories",
+  requireFetch: false
+});
+
 bookshelf.model("question", {
   tableName: "questions",
   requireFetch: false

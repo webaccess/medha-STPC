@@ -20,7 +20,9 @@ import {
   Typography,
   FormControl,
   TextField,
-  CardHeader
+  CardHeader,
+  Chip,
+  CircularProgress
 } from "@material-ui/core";
 import * as strapiApiConstants from "../../constants/StrapiApiConstants";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -105,6 +107,10 @@ const Dashboard = props => {
   const [monthData, setMonthData] = useState([]);
   const [yearData, setYearData] = useState([]);
   const [colleges, setColleges] = useState([]);
+  const [status, setStatus] = useState({
+    time: "",
+    status: ""
+  });
   const { setIndex } = useContext(SetIndexContext);
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -118,7 +124,6 @@ const Dashboard = props => {
     errors: {}
   });
   setIndex(0);
-  console.log(formState.values);
   const setData = () => {
     setLoaderStatus(true);
     setFormState(formState => ({
@@ -173,10 +178,86 @@ const Dashboard = props => {
   /** Initial data bringing for all the filters role wise */
   useEffect(() => {
     setLoaderStatus(true);
+    getStatusOfDashboard();
     prefillInitialDataRoleWise();
     setData();
     getInitialData();
   }, []);
+
+  const getStatusOfDashboard = async () => {
+    let STATUS_URL = strapiApiConstants.STRAPI_DB_URL + "dashboard-histories";
+
+    await serviceProvider
+      .serviceProviderForGetRequest(STATUS_URL)
+      .then(res => {
+        if (res.data.length) {
+          let today = new Date();
+          let updatedDate = new Date(res.data[0].created_at);
+          let days = parseInt((today - updatedDate) / (1000 * 60 * 60 * 24));
+          let hours = parseInt(
+            (Math.abs(today - updatedDate) / (1000 * 60 * 60)) % 24
+          );
+          let minutes = parseInt(
+            (Math.abs(today.getTime() - updatedDate.getTime()) / (1000 * 60)) %
+              60
+          );
+          let seconds = parseInt(
+            (Math.abs(today.getTime() - updatedDate.getTime()) / 1000) % 60
+          );
+
+          let updatedTime = "";
+          if (days !== 0) {
+            updatedTime =
+              days +
+              " days, " +
+              hours +
+              " hours, " +
+              minutes +
+              " minutes, " +
+              seconds +
+              " seconds ago";
+          } else if (hours !== 0) {
+            updatedTime =
+              hours +
+              " hours, " +
+              minutes +
+              " minutes, " +
+              seconds +
+              " seconds ago";
+          } else if (minutes !== 0) {
+            updatedTime = minutes + " minutes, " + seconds + " seconds ago";
+          } else {
+            updatedTime = seconds + " seconds ago";
+          }
+
+          setStatus(status => ({
+            ...status,
+            time: updatedTime,
+            status: res.data[0].status
+          }));
+
+          console.log(
+            days +
+              " days, " +
+              hours +
+              " hours, " +
+              minutes +
+              " minutes, " +
+              seconds +
+              " seconds ago updated"
+          );
+        } else {
+          setStatus(status => ({
+            ...status,
+            time: null,
+            status: "pending"
+          }));
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
 
   const prefillInitialDataRoleWise = () => {
     if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
@@ -543,6 +624,39 @@ const Dashboard = props => {
 
   return (
     <div className={classes.root}>
+      <Grid container spacing={2}>
+        <Grid item lg={12} sm={12} xl={12} xs={12}>
+          <div className={classes.move_right}>
+            {status.status === "pending" ? (
+              <>
+                <Chip
+                  label={"Updating dashboard data"}
+                  component="a"
+                  href="#chip"
+                  clickable={false}
+                />
+                <CircularProgress size={20} />
+              </>
+            ) : status.status === "error" ? (
+              <Chip
+                label={
+                  "Updating dashboard data failed last updated " + status.time
+                }
+                component="a"
+                href="#chip"
+                clickable={false}
+              />
+            ) : status.status === "completed" ? (
+              <Chip
+                label={"Updated " + status.time}
+                component="a"
+                href="#chip"
+                clickable={false}
+              />
+            ) : null}
+          </div>
+        </Grid>
+      </Grid>
       <Grid container spacing={2}>
         <Grid item lg={2} sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
