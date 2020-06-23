@@ -841,11 +841,6 @@ module.exports = {
         industrialStudentsFeedback,
         industrialCollegeFeedback
       );
-
-      // months.map(m => {
-      //   finalData.push(finalJson[m]);
-      // });
-
       finalData = [...finalData, ...Object.values(finalJson)];
     });
 
