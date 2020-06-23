@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "dashboard_histories",
+  "info": {
+    "name": "dashboard history"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "error",
+        "completed"
+      ]
+    }
+  }
+}
