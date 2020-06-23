@@ -11,7 +11,12 @@
  */
 
 module.exports = {
-  "0 0 */1 * * *": function () {
-    strapi.log.info("test");
+  "0 */3 * * *": async function () {
+    strapi.log.info("Cron running");
+    const allColleges = await strapi
+      .query("organization", "crm-plugin")
+      .find({ _limit: -1 });
+
+    await strapi.services.dashboard.createDashboardData(allColleges);
   }
 };

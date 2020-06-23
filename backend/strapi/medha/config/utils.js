@@ -103,7 +103,7 @@ function sort(data, sort) {
 
 function getMonthsBetweenDates(startDate, endDate, format) {
   let dates = [];
-  let now = moment(startDate, "dd-MM-yyyy").clone();
+  let now = startDate ? moment(startDate, "dd-MM-yyyy").clone() : moment();
   const lastDate = endDate ? moment(endDate, "dd-MM-yyyy") : moment.now();
   const _format = format ? format : "M yyyy";
 
@@ -111,7 +111,6 @@ function getMonthsBetweenDates(startDate, endDate, format) {
     dates.push(now.format(_format));
     now.add(1, "months");
   }
-
   return dates;
 }
 
