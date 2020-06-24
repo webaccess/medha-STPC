@@ -46,6 +46,15 @@ module.exports = {
           .filter(a => a);
       });
 
+    for await (let record of individuals) {
+      const education = await strapi
+        .query("education")
+        .findOne({ pursuing: true, contact: record.contact.id }, [
+          "year_of_passing"
+        ]);
+      record.education = education;
+    }
+
     return individuals;
   },
 
@@ -89,6 +98,15 @@ module.exports = {
             return result;
           }, []);
       });
+
+    for await (let record of individuals) {
+      const education = await strapi
+        .query("education")
+        .findOne({ pursuing: true, contact: record.contact.id }, [
+          "year_of_passing"
+        ]);
+      record.education = education;
+    }
 
     return individuals;
   },

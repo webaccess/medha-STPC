@@ -562,6 +562,12 @@ module.exports = {
 
     if (response.contact) {
       response.contact.user = sanitizeUser(response.contact.user);
+      const education = await strapi
+        .query("education")
+        .findOne({ pursuing: true, contact: response.contact.id }, [
+          "year_of_passing"
+        ]);
+      response.education = education;
     }
 
     return utils.getFindOneResponse(response);
