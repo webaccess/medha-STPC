@@ -251,7 +251,7 @@ const Dashboard = props => {
           setStatus(status => ({
             ...status,
             time: null,
-            status: "pending"
+            status: null
           }));
         }
       })
