@@ -1195,6 +1195,12 @@ module.exports = {
         .update({ id: dashboardHistory.id }, { status: "completed" });
     }
 
+    if (!colleges.length) {
+      const dashboardHistory = await strapi
+        .query("dashboard-history")
+        .create({ status: "completed" });
+    }
+
     return {
       result: "Success"
     };
