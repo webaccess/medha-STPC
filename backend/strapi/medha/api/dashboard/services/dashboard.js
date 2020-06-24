@@ -17,6 +17,22 @@ const moment = require("moment");
 const bookshelf = require("../../../config/bookshelf");
 
 module.exports = {
+  getTotalStudentFeedback: async orgId => {
+    return await strapi.services.dashboard.getTotalFeedback(
+      orgId,
+      ROLE_STUDENT,
+      "TotalStudentFeedback"
+    );
+  },
+
+  getTotalTpoFeedback: async orgId => {
+    return await strapi.services.dashboard.getTotalFeedback(
+      orgId,
+      ROLE_COLLEGE_ADMIN,
+      "TotalTPOFeedback"
+    );
+  },
+
   getOverallWorkshops: async orgId => {
     let overallWorkshops = await strapi.services.dashboard.getWorkShopByYear(
       orgId
@@ -144,6 +160,236 @@ module.exports = {
       "Industrial Visit"
     );
   },
+
+  getUniqueStudents: async orgId => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    let overallWorkshops;
+
+    overallWorkshops = await strapi.query("activity", PLUGIN).find(
+      {
+        contact: orgId,
+        "activitytype.name": "Workshop"
+      },
+      ["activityassignees", "activityassignees.contact"]
+    );
+    var finalList = [];
+    await utils.asyncForEach(overallWorkshops, async workshop => {
+      const { start_date_time } = workshop;
+      await utils.asyncForEach(workshop.activityassignees, async student => {
+        if (student.is_verified_by_college) {
+          student.start_date_time = start_date_time;
+          finalList.push(student);
+        }
+      });
+    });
+
+    // // Getting months between dates
+    const months = utils.getMonthsBetweenDates();
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(finalList, student => {
+      const { start_date_time } = student;
+      return moment(start_date_time).format("M yyyy");
+    });
+
+    months.map(m => {
+      if (groupByMonth.hasOwnProperty(m)) {
+        let finalArray = [];
+        let temp = [];
+        groupByMonth[m].map(studentInfo => {
+          const isInArray =
+            finalArray.find(function (el) {
+              return el.contact.id === studentInfo.contact.id;
+            }) !== undefined;
+          if (!isInArray) {
+            finalArray.push(studentInfo);
+            temp.push(studentInfo.contact.id);
+          }
+        });
+        groupByMonth[m] = finalArray;
+      }
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        Month: parseInt(month),
+        Year: parseInt(year),
+        UniqueStudents: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: country.id,
+        contact: org.id
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+  getTotalFeedback: async (orgId, roleName, key) => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
+    const role = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: roleName });
+
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+    let ids = [];
+    if (roleName === ROLE_COLLEGE_ADMIN) {
+      ids = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getCollegeAdminsFromCollege(orgId);
+    } else if (roleName === ROLE_STUDENT) {
+      ids = await strapi.plugins[
+        "crm-plugin"
+      ].services.contact.getStudentsOfCollege(orgId);
+    }
+
+    const query = {};
+    query.contact_in = ids;
+    query.role = role.id;
+
+    const feedback = await strapi.query("feedback-set").find(query);
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates();
+
+    // Grouping feedback by month
+    const groupByMonth = _.groupBy(feedback, fb => {
+      let start_date_time;
+      if (fb.activity) {
+        start_date_time = fb.activity.start_date_time;
+      } else if (fb.event) {
+        start_date_time = fb.event.start_date_time;
+      }
+      return moment(start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        [key]: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: country.id,
+        contact: org.id
+      };
+      return result;
+    }, {});
+
+    return response;
+  },
+
+  getWorkShopByYear: async (orgId, year = "") => {
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
+
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    let yearToAdd = "";
+    if (year === "First") yearToAdd = "FirstYear";
+    else if (year === "Second") yearToAdd = "SecondYear";
+    else if (year === "Third") yearToAdd = "FinalYear";
+    else if (year === "") yearToAdd = "Workshops";
+    let overallWorkshops;
+
+    if (yearToAdd === "Workshops") {
+      overallWorkshops = await strapi.query("activity", PLUGIN).find({
+        contact: orgId,
+        "activitytype.name": "Workshop"
+      });
+    } else {
+      overallWorkshops = await strapi.query("activity", PLUGIN).find({
+        contact: orgId,
+        "activitytype.name": "Workshop",
+        education_year: year
+      });
+    }
+
+    // Getting months between dates
+    const months = utils.getMonthsBetweenDates();
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(overallWorkshops, workshops => {
+      const { start_date_time } = workshops;
+      return moment(start_date_time).format("M yyyy");
+    });
+
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        Month: parseInt(month),
+        Year: parseInt(year),
+        [yearToAdd]: data ? data.length : 0,
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || "",
+        country: country.id,
+        contact: org.id
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
   /**
    * Getting activities feedback from student, college admin and TPO
    * roleName could be college admin and student
@@ -225,7 +471,7 @@ module.exports = {
     return response;
   },
 
-  getWorkShopByYear: async (orgId, year = "") => {
+  getInsititutionsTouched: async orgId => {
     const country = await strapi
       .query("country", PLUGIN)
       .findOne({ name: "India" });
@@ -238,25 +484,12 @@ module.exports = {
         "state"
       ]);
 
-    let yearToAdd = "";
-    if (year === "First") yearToAdd = "FirstYear";
-    else if (year === "Second") yearToAdd = "SecondYear";
-    else if (year === "Third") yearToAdd = "FinalYear";
-    else if (year === "") yearToAdd = "Workshops";
     let overallWorkshops;
 
-    if (yearToAdd === "Workshops") {
-      overallWorkshops = await strapi.query("activity", PLUGIN).find({
-        contact: orgId,
-        "activitytype.name": "Workshop"
-      });
-    } else {
-      overallWorkshops = await strapi.query("activity", PLUGIN).find({
-        contact: orgId,
-        "activitytype.name": "Workshop",
-        education_year: year
-      });
-    }
+    overallWorkshops = await strapi.query("activity", PLUGIN).find({
+      contact: orgId,
+      "activitytype.name": "Workshop"
+    });
 
     // Getting months between dates
     const months = utils.getMonthsBetweenDates();
@@ -273,7 +506,7 @@ module.exports = {
       result[m] = {
         Month: parseInt(month),
         Year: parseInt(year),
-        [yearToAdd]: data ? data.length : 0,
+        Institutionstouched: data ? 1 : 0,
         rpc:
           (org.organization &&
             org.organization.rpc &&
@@ -788,11 +1021,22 @@ module.exports = {
     let finalData = [];
     let dataToReturn = [];
     /** Colleges loop */
+    /**
+     * Making dashboard entry in dashboard history with status pending
+     * Deleting data for current month
+     * Updating data for current month
+     */
+    await bookshelf.knex("dashboard_histories").truncate();
+
+    const dashboardHistory = await strapi
+      .query("dashboard-history")
+      .create({ status: "pending" });
+
     await strapi.services.dashboard.clearDashboardRecordsByMonth();
 
     await utils.asyncForEach(colleges, async college => {
       let finalJson = {};
-
+      /** Overalll workshops */
       let overallWorkshops = await strapi.services.dashboard.getOverallWorkshops(
         college.contact.id
       );
@@ -824,6 +1068,17 @@ module.exports = {
       );
       /** Third Year Attendence */
       let thirdYearAttendence = await strapi.services.dashboard.getWorkshopThirdYearAttendenceCount(
+        college.contact.id
+      );
+
+      /** PlannedVsAttended */
+
+      /** Unique Students */
+      let uniqueStudents = await strapi.services.dashboard.getUniqueStudents(
+        college.contact.id
+      );
+      /** Instittions touched */
+      let insititutionsTouched = await strapi.services.dashboard.getInsititutionsTouched(
         college.contact.id
       );
       /** student feedback for workshop */
@@ -880,13 +1135,6 @@ module.exports = {
       finalJson = _.merge(
         {},
         overallWorkshops,
-        getOverallIndustrialVisits,
-        getPlacementCount,
-        getPlacementAttendedCount,
-        getPlacementSelectedCount,
-        getPlacementStudentFeedbackCount,
-        getPlacementTPOFeedbackCount,
-        getPlacementCollegeFeedbackCount,
         firstYearWorkshop,
         secondYearWorkshop,
         finalYearWorkshop,
@@ -894,17 +1142,21 @@ module.exports = {
         firstYearAttendence,
         secondYearAttendence,
         thirdYearAttendence,
+        uniqueStudents,
+        insititutionsTouched,
         workshopsStudentsFeedback,
         workshopsCollegeFeedback,
+        getOverallIndustrialVisits,
         industrialStudentsFeedback,
         industrialCollegeFeedback,
+        getPlacementCount,
+        getPlacementAttendedCount,
+        getPlacementSelectedCount,
+        getPlacementStudentFeedbackCount,
+        getPlacementTPOFeedbackCount,
+        getPlacementCollegeFeedbackCount,
         getIndustrialVisitAttendanceCount
       );
-
-      // months.map(m => {
-      //   finalData.push(finalJson[m]);
-      // });
-
       finalData = [...finalData, ...Object.values(finalJson)];
     });
 
@@ -931,15 +1183,6 @@ module.exports = {
       })
       .filter(a => a);
 
-    /**
-     * Making dashboard entry in dashboard history with status pending
-     * Deleting data for current month
-     * Updating data for current month
-     */
-    const dashboardHistory = await strapi
-      .query("dashboard-history")
-      .create({ status: "pending" });
-
     const response = await Promise.all(dashboardData);
 
     if (response.some(r => r == null)) {
@@ -953,8 +1196,7 @@ module.exports = {
     }
 
     return {
-      result: "Success",
-      dataToReturn
+      result: "Success"
     };
   },
 

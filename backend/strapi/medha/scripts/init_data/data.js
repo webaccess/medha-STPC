@@ -779,6 +779,10 @@ const ROLES = {
       {
         name: "dashboard",
         action: ["find", "findone", "adddashboarddata"]
+      },
+      {
+        name: "dashboard-history",
+        action: ["find"]
       }
       // {
       //   name: "individual",
@@ -925,6 +929,10 @@ const ROLES = {
       {
         name: "dashboard",
         action: ["find", "findone", "adddashboarddata"]
+      },
+      {
+        name: "dashboard-history",
+        action: ["find"]
       }
     ],
     grantAllPermissions: false
@@ -1064,6 +1072,10 @@ const ROLES = {
       {
         name: "dashboard",
         action: ["find", "findone", "adddashboarddata"]
+      },
+      {
+        name: "dashboard-history",
+        action: ["find"]
       }
     ],
     grantAllPermissions: false
@@ -1283,6 +1295,10 @@ const ROLES = {
       {
         name: "dashboard",
         action: ["find", "findone", "adddashboarddata"]
+      },
+      {
+        name: "dashboard-history",
+        action: ["find"]
       }
     ],
     grantAllPermissions: false
@@ -1440,6 +1456,10 @@ const ROLES = {
         name: "district",
         action: [],
         type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard-history",
+        action: ["find"]
       }
     ],
     grantAllPermissions: false
@@ -1577,6 +1597,14 @@ const ROLES = {
       {
         name: "dashboard",
         action: []
+      },
+      {
+        name: "dashboard-history",
+        action: []
+      },
+      {
+        name: "dashboard-history",
+        action: []
       }
     ],
     grantAllPermissions: true
@@ -1618,11 +1646,6 @@ const PUBLIC_ROUTES = {
       name: "contact",
       action: ["organizations", "createindividual"],
       type: PLUGIN_NAME
-    },
-
-    {
-      name: "dashboard",
-      action: ["adddashboarddata"]
     },
     {
       name: "district",

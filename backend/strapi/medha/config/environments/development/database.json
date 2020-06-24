@@ -5,7 +5,7 @@
       "connector": "bookshelf",
       "settings": {
         "client": "postgres",
-        "database": "medha-CRM",
+        "database": "medha",
         "host": "127.0.0.1",
         "port": 5432,
         "username": "medha",

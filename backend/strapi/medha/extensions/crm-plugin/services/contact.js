@@ -131,6 +131,80 @@ module.exports = {
    * @return {Array}
    * @param {CollegeId}
    *
+   * Get all student for given college id
+   */
+  getStudentsOfCollege: async collegeId => {
+    const studentRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "Student" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: studentRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(
+        user =>
+          user.contact.individual &&
+          user.contact.individual.organization &&
+          user.contact.individual.organization.contact == collegeId
+      )
+      .map(user => user.id);
+
+    const contacts = await strapi
+      .query("contact", "crm-plugin")
+      .find({ user_in: userIds });
+
+    const contactIds = contacts.map(contact => contact.id);
+    return contactIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
+   * Get all student for given college id
+   */
+  getCollegeAdminsFromCollege: async collegeId => {
+    const collegeRole = await strapi
+      .query("role", "users-permissions")
+      .findOne({ name: "College Admin" });
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .find({ role: collegeRole.id }, [
+        "contact",
+        "contact.individual",
+        "contact.individual.organization"
+      ]);
+
+    const userIds = response
+      .filter(user => {
+        console.log(user.contact.individual.organization, collegeId);
+        return (
+          user.contact.individual &&
+          user.contact.individual.organization &&
+          user.contact.individual.organization.contact == collegeId
+        );
+      })
+      .map(user => user.id);
+
+    const contacts = await strapi
+      .query("contact", "crm-plugin")
+      .find({ user_in: userIds });
+
+    const contactIds = contacts.map(contact => contact.id);
+    return contactIds;
+  },
+
+  /**
+   * @return {Array}
+   * @param {CollegeId}
+   *
    * Get all rpcs
    */
   getAllRpcs: async () => {
