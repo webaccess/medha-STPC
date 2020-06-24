@@ -171,7 +171,6 @@ const PastActivitiesDetails = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           Activity

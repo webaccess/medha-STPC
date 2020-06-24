@@ -319,7 +319,7 @@ export const addStudentFromCollege = (
     role: 7,
     isStudent: true
   };
-  console.log(data);
+
   if (files) {
     const formdata = new FormData();
     formdata.append("files.profile_photo", files, files.name);
@@ -374,7 +374,7 @@ export const editStudent = (
     future_aspirations: futureAspirations,
     isStudent: true
   };
-  console.log(files);
+
   if (files) {
     const formdata = new FormData();
     formdata.append("files.profile_photo", files, files.name);
@@ -489,7 +489,7 @@ export const editActivity = (
     id: id
   };
   const formdata = new FormData();
-  //console.log(files);
+
   if (showPreview) {
     formdata.append("files.upload_logo", files, files.name);
     formdata.append("data", JSON.stringify(data));

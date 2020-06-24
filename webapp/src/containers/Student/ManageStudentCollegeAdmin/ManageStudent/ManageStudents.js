@@ -212,7 +212,11 @@ const ManageStudents = props => {
     if (data) {
       for (let i in data) {
         var tempIndividualStudentData = {};
-        let educationYear = [];
+        tempIndividualStudentData["educationYear"] = data[i]["education"]
+          ? data[i]["education"]["pursuing"]
+            ? data[i]["education"]["education_year"]
+            : "-"
+          : "-";
         tempIndividualStudentData["id"] = data[i]["id"];
         tempIndividualStudentData["userId"] = data[i]["contact"]["user"]["id"];
         tempIndividualStudentData["contactId"] = data[i]["contact"]["id"];
@@ -697,13 +701,12 @@ const ManageStudents = props => {
     },
     {
       name: "Stream",
-      sortable: true,
       selector: "stream",
       cell: row => <ToolTipComponent data={row.stream} />
     },
     {
       name: "Education year",
-      cell: row => <ToolTipComponent data={`${row.qualifications}`} />
+      cell: row => <ToolTipComponent data={`${row.educationYear}`} />
     },
     {
       name: "Actions",

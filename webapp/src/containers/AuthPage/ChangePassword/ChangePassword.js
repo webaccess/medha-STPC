@@ -140,7 +140,6 @@ const ChangePassword = props => {
       setLoaderStatus(false);
     }
   };
-  console.log(auth.getUserInfo());
   const postStateData = () => {
     let postData = {
       username: auth.getUserInfo().username,

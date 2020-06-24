@@ -443,7 +443,7 @@ const AddEditStudentForCollegeAdmin = props => {
       let studentName =
         props.location["dataForEdit"]["first_name"] +
         " " +
-        props.location["dataForEdit"]["father_first_name"] +
+        props.location["dataForEdit"]["middlename"] +
         " " +
         props.location["dataForEdit"]["last_name"];
 
@@ -525,7 +525,7 @@ const AddEditStudentForCollegeAdmin = props => {
               "Student " +
               formState.values["firstname"] +
               " " +
-              formState.values["fatherFirstName"] +
+              formState.values["middlename"] +
               " " +
               formState.values["lastname"] +
               " has been added successfully"
@@ -554,7 +554,7 @@ const AddEditStudentForCollegeAdmin = props => {
               : "An error has occured while adding student " +
                 formState.values["firstname"] +
                 " " +
-                formState.values["fatherFirstName"] +
+                formState.values["middlename"] +
                 " " +
                 formState.values["lastname"] +
                 ". Kindly, try again. "

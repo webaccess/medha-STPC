@@ -7,8 +7,6 @@ import * as roleConstants from "../constants/RoleConstants";
 
 const CollegeAdminRoute = props => {
   const { layout: Layout, component: Component, ...rest } = props;
-  console.log("userInfo", auth.getToken());
-  console.log("userInfo11", auth.getUserInfo());
 
   if (
     auth.getToken() !== null &&
