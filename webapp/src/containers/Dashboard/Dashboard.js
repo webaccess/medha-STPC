@@ -738,13 +738,13 @@ const Dashboard = props => {
                 title: classes.title,
                 root: classes.titleRoot
               }}
-              title="Placement"
+              title="Hired"
               color="textSecondary"
               align="center"
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                {finalData.Placement}
+                {finalData.PlacementSelected}
               </Typography>
             </CardContent>
           </Card>
