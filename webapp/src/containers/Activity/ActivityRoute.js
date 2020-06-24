@@ -6,16 +6,13 @@ import AddEditActivity from "./AddEditActivity";
 
 export default function ActivityRoute(props) {
   const { layout: Layout } = props;
-  console.log(props);
   if (props.location.editActivity) {
-    console.log("In Edit Activity");
     return (
       <Layout>
         <AddEditActivity {...props} />
       </Layout>
     );
   } else if (props.location.addActivity) {
-    console.log("In Add activity");
     return (
       <Layout>
         <AddEditActivity {...props} />

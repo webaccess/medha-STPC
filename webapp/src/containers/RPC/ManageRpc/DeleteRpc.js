@@ -217,7 +217,6 @@ const DeleteRpc = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  {console.log("DeleteRpc", props)}
                   {props.id
                     ? props.isMultiDelete
                       ? "Are you sure you want to delete the selected RPC's?"

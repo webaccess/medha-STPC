@@ -159,7 +159,7 @@ const Dashboard = props => {
       placementrows: [
         createDataplacement("Placement", finalData.Placement),
         createDataplacement("Attended", finalData.PlacementAttended),
-        createDataplacement("Selected", finalData.PlacementSelected),
+        createDataplacement("Hired", finalData.PlacementSelected),
         createDataplacement(
           "Student Feedback",
           finalData.PlacementStudentFeedback
@@ -625,39 +625,6 @@ const Dashboard = props => {
 
   return (
     <div className={classes.root}>
-      {/* <Grid container spacing={2}>
-        <Grid item lg={12} sm={12} xl={12} xs={12}>
-          <div className={classes.move_right}>
-            {status.status === "pending" ? (
-              <>
-                <Chip
-                  label={"Updating dashboard data"}
-                  component="a"
-                  href="#chip"
-                  clickable={false}
-                />
-                <CircularProgress size={20} />
-              </>
-            ) : status.status === "error" ? (
-              <Chip
-                label={
-                  "Updating dashboard data failed last updated " + status.time
-                }
-                component="a"
-                href="#chip"
-                clickable={false}
-              />
-            ) : status.status === "completed" ? (
-              <Chip
-                label={"Updated " + status.time}
-                component="a"
-                href="#chip"
-                clickable={false}
-              />
-            ) : null}
-          </div>
-        </Grid>
-      </Grid> */}
       <Grid container spacing={2}>
         <Grid item lg={2} sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
@@ -690,7 +657,9 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                {finalData.TPOFeedback}
+                {finalData.TPOFeedback +
+                  finalData.IndustrialVisitTPOFeedback +
+                  finalData.PlacementTPOFeedback}
               </Typography>
             </CardContent>
           </Card>
@@ -708,7 +677,9 @@ const Dashboard = props => {
             />
             <CardContent>
               <Typography variant="h1" align="center">
-                {finalData.StudentFeedback}
+                {finalData.StudentFeedback +
+                  finalData.IndustrialVisitStudentFeedback +
+                  finalData.PlacementStudentFeedback}
               </Typography>
             </CardContent>
           </Card>
@@ -1085,6 +1056,39 @@ const Dashboard = props => {
               </Grid>
             </CardContent>
           </Card>
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item lg={12} sm={12} xl={12} xs={12}>
+            <div className={classes.move_right}>
+              {status.status === "pending" ? (
+                <>
+                  <Chip
+                    label={"Updating dashboard data"}
+                    disabled
+                    variant="outlined"
+                    size="medium"
+                  />
+                  <CircularProgress size={18} />
+                </>
+              ) : status.status === "error" ? (
+                <Chip
+                  label={
+                    "Updating dashboard data failed last updated " + status.time
+                  }
+                  disabled
+                  variant="outlined"
+                  size="medium"
+                />
+              ) : status.status === "completed" ? (
+                <Chip
+                  label={"Updated " + status.time}
+                  disabled
+                  variant="outlined"
+                  size="medium"
+                />
+              ) : null}
+            </div>
+          </Grid>
         </Grid>
       </Grid>
     </div>

@@ -248,9 +248,7 @@ const AddEditActivity = props => {
       .then(res => {
         setActivityType(res.data);
       })
-      .catch(error => {
-        console.log("error while getting activity type");
-      });
+      .catch(error => {});
   };
 
   const getStreams = () => {

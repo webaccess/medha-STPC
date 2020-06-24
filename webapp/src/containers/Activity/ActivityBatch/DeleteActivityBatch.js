@@ -21,7 +21,6 @@ const DeleteActivityBatch = props => {
   const deleteData = () => {
     const url =
       strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ACTIVITY_BATCH_URL;
-    console.log(activityBatch);
     const activityBatchId = activityBatch.id;
 
     serviceProviders

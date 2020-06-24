@@ -97,7 +97,6 @@ const RouteWithTabLayout = props => {
     }
   };
 
-  console.log(getSelectedTab());
   // Default selected tab view-profile
   const [selectedTab, setSelectedTab] = useState(null);
 

@@ -255,7 +255,6 @@ const AddEditStudent = props => {
       if (props.location["dataForEdit"]["future_aspirations"]) {
         formState.values["futureAspirations"] =
           props.location["dataForEdit"]["future_aspirations"];
-        console.log(props.location["dataForEdit"]["future_aspirations"]);
         formState["futureAspirations"] = props.location["dataForEdit"][
           "future_aspirations"
         ].map(value => value.id);
@@ -769,7 +768,6 @@ const AddEditStudent = props => {
   return (
     // <Layout>
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {formState.editStudent ? null : (
           <Typography variant="h4" gutterBottom>

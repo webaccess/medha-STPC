@@ -65,7 +65,6 @@ const RequestOTP = props => {
         form["otp"]["validations"]
       );
     }
-    console.log(formState.error);
 
     if (
       formState.error.contactNumber &&
@@ -75,7 +74,6 @@ const RequestOTP = props => {
         {},
         _.omit(formState.error, ["contactNumber"])
       );
-      console.log(formState);
     }
     if (
       formState.flag === 1 &&
@@ -83,24 +81,16 @@ const RequestOTP = props => {
       formState.error.otp.length === 0
     ) {
       formState.error = Object.assign({}, _.omit(formState.error, ["otp"]));
-      console.log(formState);
     }
-
-    console.log(Object.keys(formState.error).length);
-    console.log(formState.flag);
 
     if (formState.flag === 0) {
-      console.log(formState.flag);
     }
     if (formState.flag === 1) {
-      console.log(formState.flag);
     }
     if (Object.keys(formState.error).length === 0 && formState.flag === 1) {
-      console.log(formState.error);
       updateCall();
     }
     if (formState.flag === 0 && Object.keys(formState.error).length === 0) {
-      console.log(formState.error);
       postCall();
     }
     setFormState(formState => ({
@@ -122,7 +112,6 @@ const RequestOTP = props => {
   };
 
   const hasError = field => (formState.error[field] ? true : false);
-  console.log(props);
   if (
     props.location.state &&
     props.location.state.contactNumber &&
@@ -151,13 +140,10 @@ const RequestOTP = props => {
         otp: formState.values.otp
       })
       .then(response => {
-        console.log(response);
         history.push({ pathname: routeConstants.CHANGED_CONTACT_NUMBER });
         setLoaderStatus(false);
       })
       .catch(error => {
-        console.log(error);
-        console.log(error.response.data.message);
         setAlert(() => ({
           isOpen: true,
           message: error.response.data.message,
@@ -167,10 +153,6 @@ const RequestOTP = props => {
       });
   };
   const postCall = () => {
-    console.log(
-      strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_REQUEST_OTP
-    );
-
     axios
       .post(
         strapiApiConstants.STRAPI_DB_URL +
@@ -178,7 +160,6 @@ const RequestOTP = props => {
         { contact_number: formState.values.contactNumber }
       )
       .then(res => {
-        console.log(res);
         setFormState(formState => ({
           ...formState,
           flag: 1

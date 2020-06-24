@@ -21,7 +21,8 @@ import {
   Table,
   Auth as auth,
   Alert,
-  AddStudentIcon
+  AddStudentIcon,
+  ToolTipComponent
 } from "../../../components";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
 import * as serviceProvider from "../../../api/Axios";
@@ -393,21 +394,14 @@ const AddStudentToRecruitmentDrive = props => {
       selector: "name",
       cell: row => <CustomLink row={row} />
     },
-    { name: "Stream", sortable: true, selector: "stream" },
+    {
+      name: "Stream",
+      selector: "stream",
+      cell: row => <ToolTipComponent data={row.stream} />
+    },
     {
       name: "Education year",
-      cell: row => (
-        <Tooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit">{`${row.qualifications}`}</Typography>
-            </React.Fragment>
-          }
-          placement="top"
-        >
-          <div>{`${row.qualifications}`}</div>
-        </Tooltip>
-      )
+      cell: row => <ToolTipComponent data={`${row.qualifications}`} />
     },
     {
       name: "Actions",

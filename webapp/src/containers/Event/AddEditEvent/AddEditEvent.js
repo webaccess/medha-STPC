@@ -319,11 +319,9 @@ const AddEditEvent = props => {
         props["dataForEdit"]["contacts"] &&
         props["dataForEdit"]["contacts"].length
       ) {
-        console.log("props", props["dataForEdit"]["contacts"]);
         let array = [];
         collegeData.map(college => {
           for (let i in props["dataForEdit"]["contacts"]) {
-            console.log("i", props["dataForEdit"]["contacts"][i]);
             if (props["dataForEdit"]["contacts"][i]["id"] === college["id"]) {
               array.push(college);
             }
@@ -505,7 +503,6 @@ const AddEditEvent = props => {
         .serviceProviderForGetRequest(COLLEGE_URL, params)
         .then(res => {
           setColleges(res.data.result);
-          console.log("res.data.result", res.data.result);
           prePopulateCollegeData(res.data.result);
         })
         .catch(error => {
@@ -1072,7 +1069,6 @@ const AddEditEvent = props => {
       formState.values[state] ? formState.values[state] : null,
       formState.values[questionSet] ? formState.values[questionSet] : null
     );
-    console.log(postData);
     if (formState.isEditEvent) {
       serviceProvider
         .serviceProviderForPutRequest(
