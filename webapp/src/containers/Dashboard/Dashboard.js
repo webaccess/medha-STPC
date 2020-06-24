@@ -190,6 +190,7 @@ const Dashboard = props => {
     await serviceProvider
       .serviceProviderForGetRequest(STATUS_URL)
       .then(res => {
+        console.log(res);
         if (res.data.length) {
           let today = new Date();
           let updatedDate = new Date(res.data[0].created_at);
@@ -624,7 +625,7 @@ const Dashboard = props => {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={2}>
+      {/* <Grid container spacing={2}>
         <Grid item lg={12} sm={12} xl={12} xs={12}>
           <div className={classes.move_right}>
             {status.status === "pending" ? (
@@ -656,7 +657,7 @@ const Dashboard = props => {
             ) : null}
           </div>
         </Grid>
-      </Grid>
+      </Grid> */}
       <Grid container spacing={2}>
         <Grid item lg={2} sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
