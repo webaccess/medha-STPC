@@ -1171,7 +1171,7 @@ const ROLES = {
       },
       {
         name: "document",
-        action: ["find", "findone"]
+        action: ["find", "findone", "create", "update", "delete"]
       },
       {
         name: "activity",
