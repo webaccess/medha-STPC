@@ -484,26 +484,9 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query, { limit: -1 });
 
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
-    }
-
-    let orgs = await strapi.plugins[
+    return await strapi.plugins[
       "crm-plugin"
-    ].services.individual.fetchAllIndividuals(filters);
-
-    // Sorting ascending or descending on one or multiple fields
-    if (sort && sort.length) {
-      orgs = utils.sort(orgs, sort);
-    }
-
-    const response = utils.paginate(orgs, page, pageSize);
-    return {
-      result: response.result,
-      ...response.pagination
-    };
+    ].services.individual.fetchAllIndividuals(filters, page, pageSize);
   },
 
   /**
@@ -590,26 +573,9 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query, { limit: -1 });
 
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
-    }
-
-    let individuals = await strapi.plugins[
+    return await strapi.plugins[
       "crm-plugin"
-    ].services.individual.fetchCollegeStudents(orgId, filters);
-
-    // Sorting ascending or descending on one or multiple fields
-    if (sort && sort.length) {
-      individuals = utils.sort(individuals, sort);
-    }
-
-    const response = utils.paginate(individuals, page, pageSize);
-    return {
-      result: response.result,
-      ...response.pagination
-    };
+    ].services.individual.fetchCollegeStudents(orgId, filters, page, pageSize);
   },
 
   /**
