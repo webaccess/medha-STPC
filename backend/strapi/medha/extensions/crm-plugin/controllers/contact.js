@@ -355,7 +355,7 @@ module.exports = {
       individualRequestBody["date_of_birth"] = n;
     }
 
-    if (ctx.state.user && ctx.state.user.role === ROLE_COLLEGE_ADMIN) {
+    if (ctx.state.user && ctx.state.user.role.name === ROLE_COLLEGE_ADMIN) {
       individualRequestBody.is_verified = true;
     } else {
       individualRequestBody.is_verified = false;
