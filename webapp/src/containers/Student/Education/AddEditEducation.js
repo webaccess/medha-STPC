@@ -58,6 +58,7 @@ const AddEditEducation = props => {
     touched: {},
     errors: {},
     flag: 0,
+    hideYear: false,
     isSuccess: false,
     isEditEducation: props["editEducation"] ? props["editEducation"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
@@ -166,6 +167,17 @@ const AddEditEducation = props => {
       }
       if (props["dataForEdit"]["qualification"]) {
         formState.values[qualification] = props["dataForEdit"]["qualification"];
+        if (
+          formState.values[qualification] === "secondary" ||
+          formState.values[qualification] === "senior_secondary"
+        ) {
+          EducationSchema.qualification.required = false;
+          EducationSchema.qualification.validations = {};
+          setFormState(formState => ({
+            ...formState,
+            hideYear: true
+          }));
+        }
       }
       if (props["dataForEdit"]["institute"]) {
         formState.values[institute] = props["dataForEdit"]["institute"];
@@ -392,7 +404,6 @@ const AddEditEducation = props => {
           setLoaderStatus(false);
         })
         .catch(error => {
-          console.log("POSTEDUCATION", error.response);
           history.push({
             pathname: routeConstants.VIEW_EDUCATION,
             fromAddEducation: true,
@@ -408,6 +419,28 @@ const AddEditEducation = props => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
+    if (eventName === qualification) {
+      if (value.id === "secondary" || value.id === "senior_secondary") {
+        EducationSchema.qualification.required = false;
+        EducationSchema.qualification.validations = {};
+        setFormState(formState => ({
+          ...formState,
+          hideYear: true
+        }));
+      }
+    } else {
+      EducationSchema.qualification.required = true;
+      EducationSchema.qualification.validations = {
+        required: {
+          value: "true",
+          message: "Qualification is required"
+        }
+      };
+      setFormState(formState => ({
+        ...formState,
+        hideYear: false
+      }));
+    }
     setFormState(formState => ({
       ...formState,
       values: {
@@ -553,48 +586,51 @@ const AddEditEducation = props => {
                     />
                   </Grid>
                 ) : null}
-
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
-                    id="education-list"
-                    className={classes.elementroot}
-                    options={genericConstants.EDUCATIONS}
-                    getOptionLabel={option => option.value}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(educationYear, event, value);
-                    }}
-                    value={
-                      genericConstants.EDUCATIONS[
-                        genericConstants.EDUCATIONS.findIndex(function (item) {
-                          return item.id === formState.values[educationYear];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(educationYear)}
-                        label="Education Year"
-                        required={
-                          !(
-                            formState.values[qualification] == "secondary" ||
-                            formState.values[qualification] ==
-                              "senior_secondary"
-                          )
-                        }
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError(educationYear)
-                            ? formState.errors[educationYear].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
+                {!formState.hideYear ? (
+                  <Grid item md={12} xs={12}>
+                    <Autocomplete
+                      id="education-list"
+                      className={classes.elementroot}
+                      options={genericConstants.EDUCATIONS}
+                      getOptionLabel={option => option.value}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(educationYear, event, value);
+                      }}
+                      value={
+                        genericConstants.EDUCATIONS[
+                          genericConstants.EDUCATIONS.findIndex(function (
+                            item
+                          ) {
+                            return item.id === formState.values[educationYear];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(educationYear)}
+                          label="Education Year"
+                          required={
+                            !(
+                              formState.values[qualification] == "secondary" ||
+                              formState.values[qualification] ==
+                                "senior_secondary"
+                            )
+                          }
+                          variant="outlined"
+                          name="tester"
+                          helperText={
+                            hasError(educationYear)
+                              ? formState.errors[educationYear].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                ) : null}
 
                 <Grid item md={12} xs={12}>
                   <Autocomplete
@@ -720,7 +756,7 @@ const AddEditEducation = props => {
                               : null
                           }
                           variant="outlined"
-                          disabled={!formState.isEditEducation}
+                          disabled={false}
                         />
                       </Grid>
                     </Grid>
