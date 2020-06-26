@@ -236,8 +236,8 @@ const ManageUser = props => {
       } else {
         defaultParams = {
           page: page,
-          pageSize: pageSize,
-          [SORT_FIELD_KEY]: "contact.user.username:asc"
+          pageSize: pageSize
+          // [SORT_FIELD_KEY]: "contact.user.username:asc"
         };
       }
       Object.keys(paramsForUsers).map(key => {
@@ -247,8 +247,8 @@ const ManageUser = props => {
     } else {
       paramsForUsers = {
         page: page,
-        pageSize: pageSize,
-        [SORT_FIELD_KEY]: "contact.user.username:asc"
+        pageSize: pageSize
+        // [SORT_FIELD_KEY]: "contact.user.username:asc"
       };
     }
     setFormState(formState => ({
