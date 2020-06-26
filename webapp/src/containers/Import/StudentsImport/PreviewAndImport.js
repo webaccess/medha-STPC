@@ -62,10 +62,6 @@ const PreviewAndImport = props => {
       selector: "State"
     },
     {
-      name: "District",
-      selector: "District"
-    },
-    {
       name: "Email",
       selector: "Email"
     },
@@ -74,8 +70,8 @@ const PreviewAndImport = props => {
       selector: "Qualification"
     },
     {
-      name: "Stream",
-      selector: "Stream"
+      name: "Year",
+      selector: "Year"
     }
   ];
   return (

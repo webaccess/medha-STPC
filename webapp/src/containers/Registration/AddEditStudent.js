@@ -125,8 +125,11 @@ const AddEditStudent = props => {
   const [stream, setStream] = useState(null);
 
   useEffect(() => {
-    console.log(props);
-    if (props.location && !props.location.dataForEdit) {
+    if (
+      props.location.pathname !== "/registration" &&
+      props.location &&
+      !props.location.dataForEdit
+    ) {
       history.push({
         pathname: routeConstants.VIEW_PROFILE
       });
@@ -415,7 +418,7 @@ const AddEditStudent = props => {
           let studentName =
             props.location["dataForEdit"]["first_name"] +
             " " +
-            props.location["dataForEdit"]["father_first_name"] +
+            props.location["dataForEdit"]["middlename"] +
             " " +
             props.location["dataForEdit"]["last_name"];
 
@@ -451,7 +454,7 @@ const AddEditStudent = props => {
           let studentName =
             props.location["dataForEdit"]["first_name"] +
             " " +
-            props.location["dataForEdit"]["father_first_name"] +
+            props.location["dataForEdit"]["middlename"] +
             " " +
             props.location["dataForEdit"]["last_name"];
           if (
@@ -536,7 +539,6 @@ const AddEditStudent = props => {
           strapiApiConstants.STRAPI_FUTURE_ASPIRATIONS
       )
       .then(res => {
-        console.log(res);
         const list = res.data.result.map(({ id, name }) => ({ id, name }));
         setFutureAspirationsList(list);
         if (formState.dataForEdit) {
