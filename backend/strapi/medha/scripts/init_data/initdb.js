@@ -1,7 +1,7 @@
 const bookshelf = require("../../config/bookshelf");
 const utils = require("../../config/utils");
 const { COUNTRIES } = require("./data");
-const otherStates = require("./states");
+// const otherStates = require("./states");
 
 (async () => {
   await countries();
@@ -9,8 +9,8 @@ const otherStates = require("./states");
   await states();
   console.log("\n");
   await districts();
-  console.log("\n");
-  await addStates();
+  // console.log("\n");
+  // await addStates();
   process.exit(0);
 })();
 
@@ -121,9 +121,11 @@ async function districts() {
                   .forge({
                     name: district.name,
                     state: state.id,
-                    abbreviation: district.abbreviation,
-                    identifier: district.identifier,
-                    is_active: district.is_active
+                    abbreviation:
+                      district.abbreviation || `${state.name}_${district.name}`,
+                    identifier:
+                      district.identifier || `${state.name}_${district.name}`,
+                    is_active: district.is_active || true
                   })
                   .save()
                   .then(() => {
@@ -142,29 +144,29 @@ async function districts() {
   });
 }
 
-async function addStates() {
-  const country = await bookshelf.model("country").where({ name: "India" });
-  await utils.asyncForEach(otherStates, async state => {
-    const isPresent = await bookshelf
-      .model("state")
-      .where({ name: state.name })
-      .fetch();
-    if (!isPresent) {
-      await bookshelf
-        .model("state")
-        .forge({
-          name: state.name,
-          abbreviation: state.code,
-          identifier: state.code,
-          is_active: true,
-          country: country.id
-        })
-        .save()
-        .then(() => {
-          console.log(`Added State ${state.name}`);
-        });
-    } else {
-      console.log(`Skipping State ${state.name}...`);
-    }
-  });
-}
+// async function addStates() {
+//   const country = await bookshelf.model("country").where({ name: "India" });
+//   await utils.asyncForEach(otherStates, async state => {
+//     const isPresent = await bookshelf
+//       .model("state")
+//       .where({ name: state.name })
+//       .fetch();
+//     if (!isPresent) {
+//       await bookshelf
+//         .model("state")
+//         .forge({
+//           name: state.name,
+//           abbreviation: state.code,
+//           identifier: state.code,
+//           is_active: true,
+//           country: country.id
+//         })
+//         .save()
+//         .then(() => {
+//           console.log(`Added State ${state.name}`);
+//         });
+//     } else {
+//       console.log(`Skipping State ${state.name}...`);
+//     }
+//   });
+// }
