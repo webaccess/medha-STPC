@@ -24,15 +24,15 @@ const instance = axios.create({
 
 module.exports = {
   sendOTP: async (mobileNo, OTP) => {
-    // const URL = `&mobile=+91${mobileNo}&otp=${OTP}`;
-    // await instance
-    //   .get(URL)
-    //   .then(({ data }) => {
-    //     console.log(data);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
-    // return;
+    const URL = `&mobile=+91${mobileNo}&otp=${OTP}`;
+    await instance
+      .get(URL)
+      .then(({ data }) => {
+        console.log(data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    return;
   }
 };

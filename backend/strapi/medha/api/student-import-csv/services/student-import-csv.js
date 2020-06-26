@@ -34,7 +34,8 @@ module.exports = {
           "Email",
           "Qualification",
           "Stream",
-          "Year"
+          "Year",
+          "Address"
         ])
       );
       return result;
