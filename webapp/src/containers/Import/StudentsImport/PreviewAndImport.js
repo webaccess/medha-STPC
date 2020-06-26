@@ -62,6 +62,10 @@ const PreviewAndImport = props => {
       selector: "State"
     },
     {
+      name: "District",
+      selector: "District"
+    },
+    {
       name: "Email",
       selector: "Email"
     },
