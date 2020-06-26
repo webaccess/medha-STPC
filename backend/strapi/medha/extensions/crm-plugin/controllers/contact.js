@@ -595,26 +595,26 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query, { limit: -1 });
 
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
-    }
+    // let sort;
+    // if (filters.sort) {
+    //   sort = filters.sort;
+    //   filters = _.omit(filters, ["sort"]);
+    // }
 
-    let individuals = await strapi.plugins[
+    return await strapi.plugins[
       "crm-plugin"
-    ].services.individual.fetchCollegeAdmins(orgId, filters);
+    ].services.individual.fetchCollegeAdmins(orgId, filters, page, pageSize);
 
     // Sorting ascending or descending on one or multiple fields
-    if (sort && sort.length) {
-      individuals = utils.sort(individuals, sort);
-    }
+    // if (sort && sort.length) {
+    //   individuals = utils.sort(individuals, sort);
+    // }
 
-    const response = utils.paginate(individuals, page, pageSize);
-    return {
-      result: response.result,
-      ...response.pagination
-    };
+    // const response = utils.paginate(individuals, page, pageSize);
+    // return {
+    //   result: response.result,
+    //   ...response.pagination
+    // };
   },
 
   /**

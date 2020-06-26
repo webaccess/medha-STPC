@@ -82,7 +82,6 @@ module.exports = {
       filters.where = [...orgQueryFilter];
     }
 
-    console.log(filters);
     const options = {
       withRelated: [
         "stream",
@@ -139,7 +138,47 @@ module.exports = {
     };
   },
 
-  fetchCollegeAdmins: async (orgId, filters) => {
+  fetchCollegeAdmins: async (orgId, filters, page, pageSize) => {
+    const collegeAdminFilter = [
+      { field: "organization.id", operator: "eq", value: orgId },
+      {
+        field: "contact.user.role.name",
+        operator: "eq",
+        value: ROLE_COLLEGE_ADMIN
+      }
+    ];
+
+    if (filters.where && filters.where.length > 0) {
+      filters.where = [...filters.where, ...collegeAdminFilter];
+    } else {
+      filters.where = [...collegeAdminFilter];
+    }
+
+    const options = {
+      withRelated: [
+        "contact.user",
+        "organization",
+        "contact.user.role",
+        "contact.user.state",
+        "contact.user.zone",
+        "contact.user.rpc"
+      ]
+    };
+
+    options.page = page;
+    options.pageSize =
+      pageSize == -1
+        ? await strapi
+            .query("individual", PLUGIN)
+            .model.query(
+              buildQuery({
+                model: strapi.query("individual", PLUGIN).model,
+                filters
+              })
+            )
+            .count()
+        : pageSize;
+
     const individuals = await strapi
       .query("individual", PLUGIN)
       .model.query(
@@ -148,37 +187,19 @@ module.exports = {
           filters
         })
       )
-      .fetchAll({
-        withRelated: [
-          "contact.user",
-          "organization",
-          "contact.user.role",
-          "contact.user.state",
-          "contact.user.zone",
-          "contact.user.rpc"
-        ]
-      })
-      .then(res => {
-        return res
-          .toJSON()
-          .filter(individual => {
-            if (
-              individual.organization !== null &&
-              individual.organization.id !== null
-            ) {
-              return individual.organization.id == orgId;
-            }
-          })
-          .reduce((result, individual) => {
-            const user = individual.contact && individual.contact.user;
-            if (user && user.role.name == ROLE_COLLEGE_ADMIN) {
-              individual.contact.user = sanitizeUser(individual.contact.user);
-              result.push(individual);
-            }
-            return result;
-          }, []);
-      });
+      .fetchPage(options);
 
-    return individuals;
+    const result = individuals.toJSON ? individuals.toJSON() : individuals;
+
+    result.forEach(record => {
+      if (record.contact) {
+        record.contact.user = sanitizeUser(record.contact.user);
+      }
+    });
+
+    return {
+      result,
+      ...individuals.pagination
+    };
   }
 };
