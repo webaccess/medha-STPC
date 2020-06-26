@@ -1,6 +1,7 @@
 const bookshelf = require("../../config/bookshelf");
 const utils = require("../../config/utils");
 const { COUNTRIES } = require("./data");
+const otherStates = require("./states");
 
 (async () => {
   await countries();
@@ -8,6 +9,8 @@ const { COUNTRIES } = require("./data");
   await states();
   console.log("\n");
   await districts();
+  console.log("\n");
+  await addStates();
   process.exit(0);
 })();
 
@@ -135,6 +138,33 @@ async function districts() {
           }
         }
       });
+    }
+  });
+}
+
+async function addStates() {
+  const country = await bookshelf.model("country").where({ name: "India" });
+  await utils.asyncForEach(otherStates, async state => {
+    const isPresent = await bookshelf
+      .model("state")
+      .where({ name: state.name })
+      .fetch();
+    if (!isPresent) {
+      await bookshelf
+        .model("state")
+        .forge({
+          name: state.name,
+          abbreviation: state.code,
+          identifier: state.code,
+          is_active: true,
+          country: country.id
+        })
+        .save()
+        .then(() => {
+          console.log(`Added State ${state.name}`);
+        });
+    } else {
+      console.log(`Skipping State ${state.name}...`);
     }
   });
 }
