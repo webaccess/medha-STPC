@@ -11,13 +11,9 @@ import AddEditStudent from "./AddEditStudent.js";
 import Layout from "../../hoc/Layout/Layout";
 /** For login */
 export default function RegistrationRoute(props) {
-  if (props.location.state) {
-    return (
-      <Layout>
-        <AddEditStudent {...props} />
-      </Layout>
-    );
-  } else {
-    return <Redirect to={{ pathname: routeConstants.SIGN_IN_URL }} />;
-  }
+  return (
+    <Layout>
+      <AddEditStudent {...props} />
+    </Layout>
+  );
 }
