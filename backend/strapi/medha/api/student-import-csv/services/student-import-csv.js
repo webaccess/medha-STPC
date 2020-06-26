@@ -28,6 +28,7 @@ module.exports = {
           "DOB",
           "Contact Number",
           "Alternate Contact",
+          "Address",
           "State",
           "District",
           "Email",
