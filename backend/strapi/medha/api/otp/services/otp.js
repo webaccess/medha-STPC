@@ -9,9 +9,8 @@
  * MSG91 API config
  */
 const MSG91_API_KEY = "272179AT97Fn0ix5r45cb0d12a";
-const MSG91_TEMPLATE_ID = "5e7dab9252a1b136f33de2d0";
 
-const MSG91_OTP_URL = `https://api.msg91.com/api/v5/otp?authkey=${MSG91_API_KEY}&template_id=${MSG91_TEMPLATE_ID}`;
+const MSG91_OTP_URL = `https://api.msg91.com/api/v5/otp?authkey=${MSG91_API_KEY}`;
 
 const axios = require("axios");
 
