@@ -29,6 +29,7 @@ module.exports = {
       .get(URL)
       .then(({ data }) => {
         console.log(data);
+        console.log(data);
       })
       .catch(error => {
         console.log(error);
