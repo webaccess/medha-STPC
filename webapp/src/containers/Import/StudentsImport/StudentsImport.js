@@ -275,7 +275,7 @@ const StudentsImport = props => {
     let ws = XLSX.utils.json_to_sheet(finalArray, ...headers);
     wb.SheetNames.push(workSheetName);
     wb.Sheets[workSheetName] = ws;
-    XLSX.writeFile(wb, "students.csv", { bookType: "csv" });
+    XLSX.writeFile(wb, "sample.csv", { bookType: "csv" });
 
     setLoaderStatus(false);
   };
