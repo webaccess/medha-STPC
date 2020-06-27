@@ -33,7 +33,8 @@ module.exports = {
           "Email",
           "Qualification",
           "Stream",
-          "Year"
+          "Year",
+          "Address"
         ])
       );
       return result;
@@ -408,7 +409,9 @@ module.exports = {
         message: "DOB is missing"
       };
     } else {
-      let isValidDate = Date.parse(record["DOB"]);
+      let isValidDate = Date.parse(
+        record["DOB"].replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")
+      );
 
       if (isNaN(isValidDate)) {
         return {

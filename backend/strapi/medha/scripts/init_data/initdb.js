@@ -118,9 +118,11 @@ async function districts() {
                   .forge({
                     name: district.name,
                     state: state.id,
-                    abbreviation: district.abbreviation,
-                    identifier: district.identifier,
-                    is_active: district.is_active
+                    abbreviation:
+                      district.abbreviation || `${state.name}_${district.name}`,
+                    identifier:
+                      district.identifier || `${state.name}_${district.name}`,
+                    is_active: district.is_active || true
                   })
                   .save()
                   .then(() => {

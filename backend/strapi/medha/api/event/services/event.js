@@ -38,6 +38,36 @@ module.exports = {
       rsfe => rsfe.contact.id
     );
 
+    /**
+     * Filtering student with user role
+     * then with organization Id
+     * then with is_verified to true
+     */
+
+    const contactFilter = [
+      { field: "user.role", operator: "eq", value: studentRole.id },
+      { field: "individual.organization", operator: "eq", value: collegeId },
+      { field: "individual.is_verified", operator: "eq", value: true },
+      { field: "id", operator: "nin", value: registeredStudentContactIds }
+    ];
+
+    if (filters.where && filters.where.length > 0) {
+      filters.where = [...filters.where, ...contactFilter];
+    } else {
+      filters.where = [...contactFilter];
+    }
+
+    const options = {
+      withRelated: [
+        "state",
+        "district",
+        "individual.stream",
+        "user",
+        "activityassignees",
+        "contacttags"
+      ]
+    };
+
     let response = await strapi
       .query("contact", PLUGIN)
       .model.query(
@@ -46,40 +76,18 @@ module.exports = {
           filters
         })
       )
-      .fetchAll({
-        withRelated: [
-          "state",
-          "district",
-          "individual.stream",
-          "user",
-          "activityassignees",
-          "contacttags"
-        ]
-      })
-      .then(model => model.toJSON());
-    /**
-     * Filtering student with user role
-     * then with organization Id
-     * then with is_verified to true
-     */
-    const filtered = response.reduce((result, contact) => {
-      const { user, individual } = contact;
-      if (
-        user &&
-        individual &&
-        user.role == studentRole.id &&
-        individual.organization == collegeId &&
-        individual.is_verified &&
-        !_.includes(registeredStudentContactIds, contact.id)
-      ) {
-        contact.user = sanitizeUser(user);
-        delete contact.activityassignees;
-        result.push(contact);
-      }
-      return result;
-    }, []);
+      .fetchAll(options);
 
-    return filtered;
+    let contacts = response.toJSON ? response.toJSON() : response;
+
+    contacts.forEach(contact => {
+      if (contact.user) {
+        contact.user = sanitizeUser(contact.user);
+      }
+      delete contact.activityassignees;
+    });
+
+    return contacts;
   },
 
   getEvents: async (college, events) => {

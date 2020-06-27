@@ -58,11 +58,11 @@ module.exports = {
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query, { limit: -1 });
 
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
-    }
+    // let sort;
+    // if (filters.sort) {
+    //   sort = filters.sort;
+    //   filters = _.omit(filters, ["sort"]);
+    // }
 
     const activityBatch = await strapi.query("activity-batch").findOne({ id });
     if (!activityBatch) {
@@ -75,7 +75,32 @@ module.exports = {
 
     const studentIds = activityBatchStudents.map(ab => ab.contact.id);
 
-    let students = await strapi
+    const acitivtyQuery = [{ field: "id", operator: "in", value: studentIds }];
+
+    if (filters.where && filters.where.length > 0) {
+      filters.where = [...filters.where, ...acitivtyQuery];
+    } else {
+      filters.where = [...acitivtyQuery];
+    }
+
+    const options = {
+      page
+    };
+
+    options.pageSize =
+      pageSize == -1
+        ? await strapi
+            .query("contact", PLUGIN)
+            .model.query(
+              buildQuery({
+                model: strapi.query("contact", PLUGIN).model,
+                filters
+              })
+            )
+            .count()
+        : pageSize;
+
+    const result = await strapi
       .query("contact", PLUGIN)
       .model.query(
         buildQuery({
@@ -83,14 +108,9 @@ module.exports = {
           filters
         })
       )
-      .fetchAll()
-      .then(model => model.toJSON());
+      .fetchPage(options);
 
-    students = students.filter(s => {
-      if (_.includes(studentIds, s.id)) {
-        return s;
-      }
-    });
+    const students = result.toJSON ? result.toJSON() : result;
 
     await utils.asyncForEach(students, async student => {
       const streamId = student.individual.stream;
@@ -103,16 +123,20 @@ module.exports = {
       student.activityBatch = activityBatch;
     });
 
-    // Sorting ascending or descending on one or multiple fields
-    if (sort && sort.length) {
-      students = utils.sort(students, sort);
-    }
-
-    const response = utils.paginate(students, page, pageSize);
     return {
-      result: response.result,
-      ...response.pagination
+      result: students,
+      ...result.pagination
     };
+    // Sorting ascending or descending on one or multiple fields
+    // if (sort && sort.length) {
+    //   students = utils.sort(students, sort);
+    // }
+
+    // const response = utils.paginate(students, page, pageSize);
+    // return {
+    //   result: response.result,
+    //   ...response.pagination
+    // };
   },
 
   async removeStudents(ctx) {

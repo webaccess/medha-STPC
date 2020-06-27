@@ -70,23 +70,53 @@ module.exports = {
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query, { limit: -1 });
 
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
-    }
-
     const event = await strapi.query("event").findOne({ id });
     if (!event) {
       return ctx.response.notFound("Event does not exist");
     }
+
+    const options = {
+      withRelated: [
+        "state",
+        "district",
+        "individual.stream",
+        "user",
+        "activityassignees",
+        "contacttags"
+      ]
+    };
 
     const registrations = await strapi
       .query("event-registration")
       .find({ event: event.id });
 
     const contactIds = registrations.map(r => r.contact.id);
-    let contact = await strapi
+
+    const contactIdsQuery = [
+      { field: "id", operator: "in", value: contactIds }
+    ];
+
+    if (filters.where && filters.where.length > 0) {
+      filters.where = [...filters.where, ...contactIdsQuery];
+    } else {
+      filters.where = [...contactIdsQuery];
+    }
+
+    options.page = page;
+    options.pageSize =
+      pageSize == -1
+        ? await strapi
+            .query("contact", PLUGIN)
+            .model.query(
+              buildQuery({
+                model: strapi.plugins["crm-plugin"].models["contact"],
+                filters
+              })
+            )
+            .count()
+        : pageSize;
+
+    const result = await strapi
       .query("contact", PLUGIN)
       .model.query(
         buildQuery({
@@ -94,48 +124,22 @@ module.exports = {
           filters
         })
       )
-      .fetchAll({
-        withRelated: [
-          "state",
-          "district",
-          "individual.stream",
-          "user",
-          "activityassignees",
-          "contacttags"
-        ]
-      })
-      .then(model => model.toJSON());
-    contact = contact
-      .map(contact => {
-        if (_.includes(contactIds, contact.id)) {
-          contact.user = sanitizeUser(contact.user);
-          return contact;
-        }
-      })
-      .filter(a => a);
+      .fetchPage(options);
 
-    let filtered = [];
-    await utils.asyncForEach(contact, async contact => {
-      if (_.includes(contactIds, contact.id)) {
-        const qualifications = await strapi
-          .query("education")
-          .find({ contact: contact.id }, []);
+    const contacts = result.toJSON ? result.toJSON() : result;
 
-        // contact.user = sanitizeUser(contact.user);
-        contact.qualifications = qualifications;
-        filtered.push(contact);
-      }
+    await utils.asyncForEach(contacts, async contact => {
+      const qualifications = await strapi
+        .query("education")
+        .find({ contact: contact.id }, []);
+
+      contact.user = sanitizeUser(contact.user);
+      contact.qualifications = qualifications;
     });
 
-    // Sorting ascending or descending on one or multiple fields
-    if (sort && sort.length) {
-      filtered = utils.sort(filtered, sort);
-    }
-
-    const response = utils.paginate(filtered, page, pageSize);
     return {
-      result: response.result,
-      ...response.pagination
+      result: contacts,
+      ...result.pagination
     };
   },
 
@@ -185,11 +189,11 @@ module.exports = {
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query, { limit: -1 });
 
-    let sort;
-    if (filters.sort) {
-      sort = filters.sort;
-      filters = _.omit(filters, ["sort"]);
-    }
+    // let sort;
+    // if (filters.sort) {
+    //   sort = filters.sort;
+    //   filters = _.omit(filters, ["sort"]);
+    // }
 
     const event = await strapi.query("event").findOne({ id });
     const college = await strapi
@@ -283,9 +287,9 @@ module.exports = {
     });
 
     // Sorting ascending or descending on one or multiple fields
-    if (sort && sort.length) {
-      filtered = utils.sort(filtered, sort);
-    }
+    // if (sort && sort.length) {
+    //   filtered = utils.sort(filtered, sort);
+    // }
 
     const response = utils.paginate(filtered, page, pageSize);
     return {

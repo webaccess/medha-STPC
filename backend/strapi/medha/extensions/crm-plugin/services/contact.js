@@ -3,6 +3,7 @@
 const utils = require("../../../config/utils");
 const bookshelf = require("../../../config/bookshelf");
 const { PLUGIN } = require("../../../config/constants");
+const { buildQuery } = require("strapi-utils");
 module.exports = {
   getEvents: async (contact, events) => {
     const filtered = events.filter(event => {
@@ -108,22 +109,39 @@ module.exports = {
       .query("role", "users-permissions")
       .findOne({ name: "Student" });
 
-    const response = await strapi
-      .query("user", "users-permissions")
-      .find({ role: studentRole.id }, [
+    const options = {
+      withRelated: [
         "contact",
         "contact.individual",
         "contact.individual.organization"
-      ]);
+      ]
+    };
 
-    const userIds = response
-      .filter(
-        user =>
-          user.contact.individual &&
-          user.contact.individual.organization &&
-          user.contact.individual.organization.contact == collegeId
+    const filters = {
+      start: 0,
+      limit: -1,
+      where: [
+        {
+          field: "contact.individual.organization.contact",
+          operator: "eq",
+          value: collegeId
+        },
+        { field: "role", operator: "eq", value: studentRole.id }
+      ]
+    };
+
+    const response = await strapi
+      .query("user", "users-permissions")
+      .model.query(
+        buildQuery({
+          model: strapi.query("user", "users-permissions").model,
+          filters
+        })
       )
-      .map(user => user.id);
+      .fetchAll(options)
+      .then(model => model.toJSON());
+
+    const userIds = response.map(user => user.id);
     return userIds;
   },
 
