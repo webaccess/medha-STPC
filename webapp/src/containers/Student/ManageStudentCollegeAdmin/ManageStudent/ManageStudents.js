@@ -50,6 +50,7 @@ const STREAM_FILTER = "stream.id";
 const VERIFIEDBYCOLLEGE = "is_verified";
 const SORT_FIELD_KEY = "_sort";
 const PHONE_FILTER = "contact.phone_contains";
+const EDUCATION_FILTER = "education.education_year_contains";
 
 const ManageStudents = props => {
   const history = useHistory();
@@ -695,7 +696,6 @@ const ManageStudents = props => {
     },
     {
       name: "Contact",
-      sortable: true,
       selector: "PhoneNumber",
       cell: row => <ToolTipComponent data={row.PhoneNumber} />
     },
@@ -1008,11 +1008,31 @@ const ManageStudents = props => {
                 />
               </Grid>
               <Grid item className={classes.paddingDate}>
-                <Autocomplete
+                {/* <Autocomplete
                   id="education-year-list"
                   options={genericConstants.EDUCATIONYEARLIST}
                   getOptionLabel={option => option.name}
-                  value={null}
+                  value={
+                    formState.isClearResetFilter
+                      ? null
+                      : genericConstants.EDUCATIONYEARLIST[
+                          genericConstants.EDUCATIONYEARLIST.findIndex(
+                            function (item, i) {
+                              return (
+                                item.id ===
+                                formState.filterDataParameters[EDUCATION_FILTER]
+                              );
+                            }
+                          )
+                        ] || null
+                  }
+                  onChange={(event, value) =>
+                    handleChangeAutoCompleteStream(
+                      EDUCATION_FILTER,
+                      event,
+                      value
+                    )
+                  }
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -1023,7 +1043,7 @@ const ManageStudents = props => {
                       className={classes.autoCompleteField}
                     />
                   )}
-                />
+                /> */}
               </Grid>
               <Grid item className={classes.paddingDate}>
                 <FormGroup row>

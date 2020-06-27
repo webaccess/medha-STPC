@@ -445,7 +445,7 @@ module.exports = {
           async question => {
             const role = await strapi
               .query("role", "users-permissions")
-              .findOne({ id: question.role });
+              .findOne({ id: question.role }, []);
             question.role = { id: role.id, name: role.name };
           }
         );

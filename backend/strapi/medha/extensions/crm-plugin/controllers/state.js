@@ -10,26 +10,63 @@ const utils = require("../../../config/utils.js");
 
 module.exports = {
   async find(ctx) {
-    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query, { limit: -1 });
+    if (ctx.state.user !== undefined) {
+      const { page, query, pageSize } = utils.getRequestParams(
+        ctx.request.query
+      );
+      const filters = convertRestQueryParams(query, { limit: -1 });
 
-    return strapi
-      .query("state", "crm-plugin")
-      .model.query(
-        buildQuery({
-          model: strapi.plugins["crm-plugin"].models["state"],
-          filters
-        })
-      )
-      .fetchAll()
-      .then(res => {
-        const data = res.toJSON();
-        const response = utils.paginate(data, page, pageSize);
-        return {
-          result: response.result,
-          ...response.pagination
-        };
-      });
+      const orgQueryFilter = [
+        { field: "name", operator: "eq", value: "Uttar Pradesh" }
+      ];
+
+      if (filters.where && filters.where.length > 0) {
+        filters.where = [...filters.where, ...orgQueryFilter];
+      } else {
+        filters.where = [...orgQueryFilter];
+      }
+
+      return strapi
+        .query("state", "crm-plugin")
+        .model.query(
+          buildQuery({
+            model: strapi.plugins["crm-plugin"].models["state"],
+            filters
+          })
+        )
+        .fetchAll()
+        .then(res => {
+          const data = res.toJSON();
+          const response = utils.paginate(data, page, pageSize);
+          return {
+            result: response.result,
+            ...response.pagination
+          };
+        });
+    } else {
+      const { page, query, pageSize } = utils.getRequestParams(
+        ctx.request.query
+      );
+      const filters = convertRestQueryParams(query, { limit: -1 });
+
+      return strapi
+        .query("state", "crm-plugin")
+        .model.query(
+          buildQuery({
+            model: strapi.plugins["crm-plugin"].models["state"],
+            filters
+          })
+        )
+        .fetchAll()
+        .then(res => {
+          const data = res.toJSON();
+          const response = utils.paginate(data, page, pageSize);
+          return {
+            result: response.result,
+            ...response.pagination
+          };
+        });
+    }
   },
   async findOne(ctx) {
     const { id } = ctx.params;

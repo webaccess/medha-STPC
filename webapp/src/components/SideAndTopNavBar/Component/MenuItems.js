@@ -119,6 +119,13 @@ const MenuItems = props => {
     return dataToReturn;
   };
   const menuItems = {
+    [roleConstants.DEPARTMENTADMIN]: [
+      {
+        name: "Dashboard",
+        link: routeConstants.DASHBOARD_URL,
+        Icon: <DashboardIcon />
+      }
+    ],
     [roleConstants.MEDHAADMIN]: [
       {
         name: "Dashboard",

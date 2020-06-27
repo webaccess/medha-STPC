@@ -161,6 +161,94 @@ module.exports = {
     );
   },
 
+  // getPLannedVsAchievedWorkshops: async orgId => {
+  //   return await strapi.services.dashboard.getPlannedVsAchieved(
+  //     orgId,
+  //     "PlannedVsAchieved",
+  //     "Workshop"
+  //   );
+  // },
+
+  // getPLannedVsAchievedIndustrialVisits: async orgId => {
+  //   return await strapi.services.dashboard.getPlannedVsAchieved(
+  //     orgId,
+  //     "IndustrialVisitPlannedVsAchieved",
+  //     "Industrial Visit"
+  //   );
+  // },
+
+  // getPlannedVsAchieved: async (
+  //   orgId,
+  //   key,
+  //   type
+  // ) => {
+  //   const country = await strapi
+  //     .query("country", PLUGIN)
+  //     .findOne({ name: "India" });
+
+  //   const org = await strapi
+  //     .query("contact", PLUGIN)
+  //     .findOne({ id: orgId }, [
+  //       "organization.rpc",
+  //       "organization.zone",
+  //       "state"
+  //     ]);
+
+  //   /** Get overall workshops */
+  //   let overallActivities;
+  //   overallActivities = await strapi.query("activity", PLUGIN).find({
+  //     contact: orgId,
+  //     "activitytype.name": type,
+
+  //   });
+
+  //   /** This gets activity ids */
+  //   const activityIds = overallActivities.map(activity => activity.id);
+
+  //   // Getting placement attendance for given list of events
+  //   const query = {};
+  //   query.activity_in = activityIds;
+  //   query.role = role.id;
+
+  //   const feedback = await strapi.query("feedback-set").find(query);
+
+  //   // Getting months between dates
+  //   const months = utils.getMonthsBetweenDates();
+
+  //   // Grouping feedback by month
+  //   const groupByMonth = _.groupBy(feedback, fb => {
+  //     const { activity } = fb;
+  //     return moment(activity.start_date_time).format("M yyyy");
+  //   });
+
+  //   const response = months.reduce((result, m) => {
+  //     const [month, year] = m.split(" ");
+  //     const data = groupByMonth[m];
+  //     result[m] = {
+  //       contact: orgId,
+  //       Month: parseInt(month),
+  //       Year: parseInt(year),
+  //       [key]: data ? data.length : 0,
+  //       rpc:
+  //         (org.organization &&
+  //           org.organization.rpc &&
+  //           org.organization.rpc.id) ||
+  //         "",
+  //       zone:
+  //         (org.organization &&
+  //           org.organization.zone &&
+  //           org.organization.zone.id) ||
+  //         "",
+  //       state: (org.state && org.state.id) || "",
+  //       country: country.id,
+  //       contact: org.id
+  //     };
+  //     return result;
+  //   }, {});
+
+  //   return response;
+  // },
+
   getUniqueStudents: async orgId => {
     const country = await strapi
       .query("country", PLUGIN)
@@ -206,15 +294,15 @@ module.exports = {
     months.map(m => {
       if (groupByMonth.hasOwnProperty(m)) {
         let finalArray = [];
-        let temp = [];
         groupByMonth[m].map(studentInfo => {
-          const isInArray =
-            finalArray.find(function (el) {
-              return el.contact.id === studentInfo.contact.id;
-            }) !== undefined;
-          if (!isInArray) {
+          let noOfInstancesPresent = 0;
+          groupByMonth[m].map(s => {
+            if (studentInfo.contact.id === s.contact.id) {
+              noOfInstancesPresent += 1;
+            }
+          });
+          if (noOfInstancesPresent === 1) {
             finalArray.push(studentInfo);
-            temp.push(studentInfo.contact.id);
           }
         });
         groupByMonth[m] = finalArray;
@@ -254,7 +342,7 @@ module.exports = {
 
     const role = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: roleName });
+      .findOne({ name: roleName }, []);
 
     const org = await strapi
       .query("contact", PLUGIN)
@@ -407,7 +495,7 @@ module.exports = {
 
     const role = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: roleName });
+      .findOne({ name: roleName }, []);
 
     const org = await strapi
       .query("contact", PLUGIN)
@@ -895,7 +983,7 @@ module.exports = {
 
     const role = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: roleName });
+      .findOne({ name: roleName }, []);
 
     const org = await strapi
       .query("contact", PLUGIN)
@@ -1027,7 +1115,6 @@ module.exports = {
      * Updating data for current month
      */
     await bookshelf.knex("dashboard_histories").truncate();
-
     const dashboardHistory = await strapi
       .query("dashboard-history")
       .create({ status: "pending" });
@@ -1071,7 +1158,15 @@ module.exports = {
         college.contact.id
       );
 
-      /** PlannedVsAttended */
+      // /** PlannedVsAttended Workshops*/
+      // let plannedVsAchievedWorkshops = await strapi.services.dashboard.getPLannedVsAchievedWorkshops(
+      //   college.contact.id
+      // );
+
+      // /** PlannedVsAttended Industrial visits*/
+      // let plannedVsAchievedIndustrial = await strapi.services.dashboard.getPLannedVsAchievedIndustrialVisits(
+      //   college.contact.id
+      // );
 
       /** Unique Students */
       let uniqueStudents = await strapi.services.dashboard.getUniqueStudents(

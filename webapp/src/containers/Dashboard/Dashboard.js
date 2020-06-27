@@ -261,7 +261,10 @@ const Dashboard = props => {
   };
 
   const prefillInitialDataRoleWise = () => {
-    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+    if (
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.DEPARTMENTADMIN
+    ) {
       formState.values = {};
     } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
       formState.values = {
@@ -292,7 +295,10 @@ const Dashboard = props => {
   const getInitialData = () => {
     setLoaderStatus(true);
     setYears(true);
-    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+    if (
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.DEPARTMENTADMIN
+    ) {
       fetchZoneRpcDistrictData();
     } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
       fetchAllRpc();
@@ -340,7 +346,7 @@ const Dashboard = props => {
   /** Fetch all rpc */
   const fetchAllRpc = async () => {
     await serviceProvider
-      .serviceProviderForGetRequest(RPCS, {}, {})
+      .serviceProviderForGetRequest(RPCS, { pageSize: -1 })
       .then(res => {
         setRpcs(res.data.result);
       })
@@ -611,7 +617,8 @@ const Dashboard = props => {
     setYears(true);
     if (
       auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
-      auth.getUserInfo().role.name === roleConstants.ZONALADMIN
+      auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
+      auth.getUserInfo().role.name === roleConstants.DEPARTMENTADMIN
     ) {
       setColleges([]);
     }
@@ -724,7 +731,9 @@ const Dashboard = props => {
           <Card className={classes.root} variant="outlined">
             <CardContent>
               <Grid container spacing={3} className={classes.formgrid}>
-                {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+                {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+                auth.getUserInfo().role.name ===
+                  roleConstants.DEPARTMENTADMIN ? (
                   <Grid item md={2} xs={12}>
                     <FormControl
                       variant="outlined"
@@ -761,7 +770,9 @@ const Dashboard = props => {
                 ) : null}
 
                 {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
-                auth.getUserInfo().role.name === roleConstants.ZONALADMIN ? (
+                auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
+                auth.getUserInfo().role.name ===
+                  roleConstants.DEPARTMENTADMIN ? (
                   <Grid item md={2} xs={12}>
                     <FormControl
                       variant="outlined"
@@ -798,6 +809,8 @@ const Dashboard = props => {
                 ) : null}
 
                 {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+                auth.getUserInfo().role.name ===
+                  roleConstants.DEPARTMENTADMIN ||
                 auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
                 (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
                   auth.getUserInfo().studentInfo.organization.contact.id ===

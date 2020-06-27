@@ -214,6 +214,12 @@ const AddEditActivity = props => {
     { name: "Industry Talk", id: "Industry Talk" }
   ];
 
+  const activityStatus = [
+    { name: "Scheduled", id: "scheduled" },
+    { name: "Completed", id: "completed" },
+    { name: "Cancelled", id: "cancelled" }
+  ];
+
   const [stream, setStream] = useState([]);
   const [isFailed, setIsFailed] = useState(false);
 

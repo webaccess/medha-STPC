@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "collectionName": "streams",
   "info": {
     "name": "Stream"
