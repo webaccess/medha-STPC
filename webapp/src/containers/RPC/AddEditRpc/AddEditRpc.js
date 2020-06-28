@@ -77,7 +77,7 @@ const AddEditRpc = props => {
     /* TO GET STATES AND COLLEGE IN AUTOCOMPLETE */
 
     let paramsForPageSize = {
-      pageSize: -1
+      name_contains: "Uttar Pradesh"
     };
 
     serviceProviders
