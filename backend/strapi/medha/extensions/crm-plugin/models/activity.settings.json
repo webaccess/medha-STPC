@@ -77,7 +77,8 @@
         "scheduled",
         "completed",
         "cancelled"
-      ]
+      ],
+      "default": "scheduled"
     }
   }
 }
