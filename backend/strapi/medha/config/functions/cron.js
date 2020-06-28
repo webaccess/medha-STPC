@@ -11,7 +11,7 @@
  */
 
 module.exports = {
-  "0 */3 * * *": async function () {
+  "0 3 * * *": async function () {
     strapi.log.info("Cron running");
     const allColleges = await strapi
       .query("organization", "crm-plugin")

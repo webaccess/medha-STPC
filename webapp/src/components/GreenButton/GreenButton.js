@@ -13,7 +13,7 @@ const GreenButton = props => {
         type={props.type ? props.type : "submit"}
         color={props.color ? props.color : "primary"}
         variant={props.variant ? props.variant : "contained"}
-        className={classes.routebtn}
+        className={props.className ? props.className : classes.routebtn}
         startIcon={props.startIcon}
         onClick={props.onClick}
         disabled={buttonDisabled}
