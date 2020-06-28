@@ -65,8 +65,16 @@ const LogIn = props => {
     errors: {},
     isSuccess: false,
     showPassword: false,
-    fromPasswordChangedPage: props.from.fromPasswordChangedPage ? true : false,
-    dataToShow: props.from.fromPasswordChangedPage ? props.from.dataToShow : ""
+    fromPasswordChangedPage: props.from
+      ? props.from.fromPasswordChangedPage
+        ? true
+        : false
+      : false,
+    dataToShow: props.from
+      ? props.from.fromPasswordChangedPage
+        ? props.from.dataToShow
+        : ""
+      : ""
   });
 
   function checkAllKeysPresent(obj) {
