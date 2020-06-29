@@ -119,6 +119,10 @@ const AddEditActivity = props => {
         formState.values["educationyear"] =
           props.location["dataForEdit"]["education_year"];
       }
+      if (props.location["dataForEdit"]["activity_status"]) {
+        formState.values["activitystatus"] =
+          props.location["dataForEdit"]["activity_status"];
+      }
       if (
         props.location["dataForEdit"]["question_set"] &&
         props.location["dataForEdit"]["question_set"]
@@ -416,7 +420,8 @@ const AddEditActivity = props => {
         stream.map(stream => stream.id),
         formState["dataForEdit"]["id"],
         formState.files,
-        formState.values["questionSet"]
+        formState.values["questionSet"],
+        formState.values["activitystatus"]
       );
       serviceProvider
         .serviceProviderForPutRequest(
@@ -1088,6 +1093,52 @@ const AddEditActivity = props => {
                     ) : null}
                   </Grid>
                 </Grid>
+                {formState.editActivity ? (
+                  <Grid container spacing={3} className={classes.formgrid}>
+                    <Grid item md={6} xs={12}>
+                      <Autocomplete
+                        id="combo-box-demo"
+                        className={classes.root}
+                        options={activityStatus}
+                        getOptionLabel={option => option.name}
+                        onChange={(event, value) => {
+                          handleChangeAutoComplete(
+                            "activitystatus",
+                            event,
+                            value
+                          );
+                        }}
+                        value={
+                          activityStatus[
+                            activityStatus.findIndex(function (item, i) {
+                              return (
+                                item.id === formState.values.activitystatus
+                              );
+                            })
+                          ] || null
+                        }
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            error={hasError("activitystatus")}
+                            label="Activity Status"
+                            variant="outlined"
+                            name="tester"
+                            helperText={
+                              hasError("activitystatus")
+                                ? formState.errors["activitystatus"].map(
+                                    error => {
+                                      return error + " ";
+                                    }
+                                  )
+                                : null
+                            }
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                ) : null}
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <TextField
