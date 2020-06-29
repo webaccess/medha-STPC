@@ -16,6 +16,8 @@ import useStyles from "../../ContainerStyles/ManagePageStyles";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
 import {
   Alert,
   Auth,
@@ -26,7 +28,8 @@ import {
 } from "../../../components";
 import ImportStudentsModal from "./PreviewAndImport";
 import LoaderContext from "../../../context/LoaderContext";
-import XLSX from "xlsx";
+import { Link } from "react-router-dom";
+import auth from "../../../components/Auth";
 
 const StudentsImport = props => {
   const classes = useStyles();
@@ -211,6 +214,71 @@ const StudentsImport = props => {
         setLoaderStatus(false);
       });
   };
+
+  const downloadSampleCsv = async () => {
+    const headers = [
+      "Name",
+      "Gender",
+      "DOB",
+      "Contact Number",
+      "Alternate Contact",
+      "Stream",
+      "Address",
+      "State",
+      "District",
+      "Email",
+      "Qualification"
+    ];
+    let finalArray = [];
+    if (
+      auth.getUserInfo().studentInfo.organization.stream_strength.length !== 0
+    ) {
+      auth
+        .getUserInfo()
+        .studentInfo.organization.stream_strength.map(stream => {
+          let json = {
+            Name: "test" + stream.id + " test" + stream.id,
+            Gender: "Male",
+            DOB: "01-01-2000",
+            "Contact Number":
+              Math.floor(1000000000 + Math.random() * 1000000000) + stream.id,
+            "Alternate Contact": "",
+            Stream: stream["stream"].name,
+            Address: "address_" + stream.id,
+            State: "Uttar Pradesh",
+            District: "Agra",
+            Email: "test" + stream.id + "@test.com",
+            Qualification: "undergraduate",
+            Year: "First"
+          };
+          finalArray.push(json);
+        });
+    } else {
+      let json = {
+        Name: "",
+        Gender: "",
+        DOB: "",
+        "Contact Number": "",
+        "Alternate Contact": "",
+        Stream: "",
+        Address: "",
+        State: "",
+        District: "",
+        Email: "",
+        Qualification: "",
+        Year: ""
+      };
+      finalArray.push(json);
+    }
+    let wb = XLSX.utils.book_new();
+    let workSheetName = "sample";
+    let ws = XLSX.utils.json_to_sheet(finalArray, ...headers);
+    wb.SheetNames.push(workSheetName);
+    wb.Sheets[workSheetName] = ws;
+    XLSX.writeFile(wb, "sample.csv", { bookType: "csv" });
+
+    setLoaderStatus(false);
+  };
   /** Columns to show in table */
   const column = [
     { name: "Name", selector: "imported_file.name" },
@@ -289,7 +357,11 @@ const StudentsImport = props => {
               each column (field). Each row equals one record.
             </p>
             <p>
-              Please <a href="/files/sample.csv">download</a> a sample CSV file.
+              Please{" "}
+              <Link href="#" onClick={downloadSampleCsv} variant="body2">
+                {"download"}
+              </Link>{" "}
+              a sample CSV file.
             </p>
           </Grid>
           <Grid>

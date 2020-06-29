@@ -107,7 +107,7 @@ module.exports = {
   getUsers: async collegeId => {
     const studentRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "Student" });
+      .findOne({ name: "Student" }, []);
 
     const options = {
       withRelated: [
@@ -154,7 +154,7 @@ module.exports = {
   getStudentsOfCollege: async collegeId => {
     const studentRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "Student" });
+      .findOne({ name: "Student" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -190,7 +190,7 @@ module.exports = {
   getCollegeAdminsFromCollege: async collegeId => {
     const collegeRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "College Admin" });
+      .findOne({ name: "College Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -228,7 +228,7 @@ module.exports = {
   getAllRpcs: async () => {
     const rpcRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "RPC Admin" });
+      .findOne({ name: "RPC Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -260,7 +260,7 @@ module.exports = {
   getAllZones: async () => {
     const zoneRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "Zonal Admin" });
+      .findOne({ name: "Zonal Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -292,7 +292,7 @@ module.exports = {
   getAllCollegeAdmins: async () => {
     const collegeRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "College Admin" });
+      .findOne({ name: "College Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -324,7 +324,7 @@ module.exports = {
   getCollegeAdmin: async collegeId => {
     const studentRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "College Admin" });
+      .findOne({ name: "College Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -354,7 +354,7 @@ module.exports = {
   getRpcAdmins: async rpcId => {
     const rpcRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "RPC Admin" });
+      .findOne({ name: "RPC Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -380,7 +380,7 @@ module.exports = {
   getZoneAdmins: async zoneId => {
     const zoneRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "Zonal Admin" });
+      .findOne({ name: "Zonal Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -414,7 +414,7 @@ module.exports = {
   getCollegeAdminsFromRPC: async rpcId => {
     const collegeRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "College Admin" });
+      .findOne({ name: "College Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")
@@ -440,7 +440,7 @@ module.exports = {
   getCollegeAdminsFromZone: async zoneId => {
     const collegeRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "College Admin" });
+      .findOne({ name: "College Admin" }, []);
 
     const response = await strapi
       .query("user", "users-permissions")

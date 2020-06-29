@@ -13,7 +13,7 @@ module.exports = {
   async requestOTP(ctx) {
     const num = ctx.request.body.contact_number;
     const OTP = Math.floor(100000 + Math.random() * 900000);
-    await strapi.services.otp.sendOTP(num, OTP);
+    //await strapi.services.otp.sendOTP(num, OTP);
     return await strapi
       .query("otp")
       .model.forge({ contact_number: num, otp: OTP })

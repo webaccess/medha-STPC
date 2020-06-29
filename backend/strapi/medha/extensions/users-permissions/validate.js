@@ -45,7 +45,7 @@ async function validate(params) {
 
   const role = await strapi
     .query("role", "users-permissions")
-    .findOne({ id: params.role });
+    .findOne({ id: params.role }, []);
 
   if (!role) {
     return { isError: true, error: "Role is invalid" };

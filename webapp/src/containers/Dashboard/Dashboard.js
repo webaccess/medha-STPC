@@ -12,6 +12,11 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import DashboardSchema from "./DashboardSchema";
 import * as formUtilities from "../../utilities/FormUtilities";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import * as FileSaver from "file-saver";
+import ReactExport from "react-export-excel";
+
+import * as XLSX from "xlsx";
 
 import {
   Grid,
@@ -29,11 +34,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as genericConstants from "../../constants/GenericConstants";
 import * as roleConstants from "../../constants/RoleConstants";
 import * as serviceProvider from "../../api/Axios";
-import { GrayButton, YellowButton } from "../../components";
+import { GrayButton, YellowButton, GreenButton } from "../../components";
 import SetIndexContext from "../../context/SetIndexContext";
 import { useContext } from "react";
 import auth from "../../components/Auth";
 import LoaderContext from "../../context/LoaderContext";
+let multiDataSet = [];
 
 /** Initialize months array */
 let tempMonthArray = [
@@ -78,6 +84,8 @@ let finalData = {
   PlacementCollegeFeedback: 0,
   SecondYear: 0
 };
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 
 /*** Initialize the filters */
 const state = "state";
@@ -121,7 +129,8 @@ const Dashboard = props => {
     indrows: [],
     placementrows: [],
     flag: true,
-    errors: {}
+    errors: {},
+    greenButtonChecker: true
   });
   setIndex(0);
   const setData = () => {
@@ -129,19 +138,31 @@ const Dashboard = props => {
     setFormState(formState => ({
       ...formState,
       zonerows: [
-        createDatazone("Overall Workshops", finalData.Workshops),
-        createDatazone("1st Year", finalData.FirstYear),
-        createDatazone("2nd Year", finalData.SecondYear),
-        createDatazone("Final Year", finalData.FinalYear),
-        createDatazone("Entrepreneurship", finalData.Entrepreneurship),
-        createDatazone("1st Year Attendance", finalData.FirstYearAttendance),
-        createDatazone("2nd Year Attendance", finalData.SecondYearAttendance),
-        createDatazone("Final Year Attendance", finalData.FinalYearAttendance),
-        createDatazone("Planned Vs Achieved", finalData.PlannedVsAchieved),
-        createDatazone("Unique Students", finalData.UniqueStudents),
-        createDatazone("Instittions touched", finalData.Institutionstouched),
-        createDatazone("Student Feedback", finalData.StudentFeedback),
-        createDatazone("TPO Feedback", finalData.TPOFeedback)
+        createDataWorkshop("Overall Workshops", finalData.Workshops),
+        createDataWorkshop("1st Year", finalData.FirstYear),
+        createDataWorkshop("2nd Year", finalData.SecondYear),
+        createDataWorkshop("Final Year", finalData.FinalYear),
+        createDataWorkshop("Entrepreneurship", finalData.Entrepreneurship),
+        createDataWorkshop(
+          "1st Year Attendance",
+          finalData.FirstYearAttendance
+        ),
+        createDataWorkshop(
+          "2nd Year Attendance",
+          finalData.SecondYearAttendance
+        ),
+        createDataWorkshop(
+          "Final Year Attendance",
+          finalData.FinalYearAttendance
+        ),
+        createDataWorkshop("Planned Vs Achieved", finalData.PlannedVsAchieved),
+        createDataWorkshop("Unique Students", finalData.UniqueStudents),
+        createDataWorkshop(
+          "Instittions touched",
+          finalData.Institutionstouched
+        ),
+        createDataWorkshop("Student Feedback", finalData.StudentFeedback),
+        createDataWorkshop("TPO Feedback", finalData.TPOFeedback)
       ],
       indrows: [
         createDataind("Industrial Visit", finalData.IndustrialVisits),
@@ -190,7 +211,6 @@ const Dashboard = props => {
     await serviceProvider
       .serviceProviderForGetRequest(STATUS_URL)
       .then(res => {
-        console.log(res);
         if (res.data.length) {
           let today = new Date();
           let updatedDate = new Date(res.data[0].created_at);
@@ -236,17 +256,6 @@ const Dashboard = props => {
             time: updatedTime,
             status: res.data[0].status
           }));
-
-          console.log(
-            days +
-              " days, " +
-              hours +
-              " hours, " +
-              minutes +
-              " minutes, " +
-              seconds +
-              " seconds ago updated"
-          );
         } else {
           setStatus(status => ({
             ...status,
@@ -261,7 +270,10 @@ const Dashboard = props => {
   };
 
   const prefillInitialDataRoleWise = () => {
-    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+    if (
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.DEPARTMENTADMIN
+    ) {
       formState.values = {};
     } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
       formState.values = {
@@ -292,7 +304,10 @@ const Dashboard = props => {
   const getInitialData = () => {
     setLoaderStatus(true);
     setYears(true);
-    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+    if (
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+      auth.getUserInfo().role.name === roleConstants.DEPARTMENTADMIN
+    ) {
       fetchZoneRpcDistrictData();
     } else if (auth.getUserInfo().role.name === roleConstants.ZONALADMIN) {
       fetchAllRpc();
@@ -325,8 +340,8 @@ const Dashboard = props => {
   };
 
   /** Get Data */
-  function createDatazone(zonename, zoneresult) {
-    return { zonename, zoneresult };
+  function createDataWorkshop(workshop, zoneresult) {
+    return { workshop, zoneresult };
   }
 
   function createDataind(industry, industryresult) {
@@ -337,10 +352,24 @@ const Dashboard = props => {
     return { placement, placementresult };
   }
 
+  const generateEntityDataForDownload = (name, result) => {
+    return [
+      { value: name, style: { font: { sz: "12" } } },
+      {
+        value: "" + result + "",
+        style: { font: { sz: "12" } }
+      }
+    ];
+  };
+
+  const generateHeaders = name => {
+    return [{ value: name, style: { font: { sz: "12", bold: true } } }];
+  };
+
   /** Fetch all rpc */
   const fetchAllRpc = async () => {
     await serviceProvider
-      .serviceProviderForGetRequest(RPCS, {}, {})
+      .serviceProviderForGetRequest(RPCS, { pageSize: -1 })
       .then(res => {
         setRpcs(res.data.result);
       })
@@ -429,6 +458,7 @@ const Dashboard = props => {
           Object.keys(finalData).map(data => {
             finalData[data] = res.data[data];
           });
+          setDataForDownload();
           setData();
         })
         .catch(error => {
@@ -436,6 +466,190 @@ const Dashboard = props => {
           console.log("error", error);
         });
     }
+  };
+
+  const setDataForDownload = async () => {
+    let month = "-";
+    let zone = "-";
+    let rpc = "-";
+    let college = "-";
+    if (formState.values.hasOwnProperty("zone")) {
+      for (let i in zones) {
+        if (zones[i]["id"] === formState.values.zone) {
+          zone = zones[i]["name"];
+          break;
+        }
+      }
+    }
+    if (formState.values.hasOwnProperty("rpc")) {
+      for (let i in rpcs) {
+        if (rpcs[i]["id"] === formState.values.rpc) {
+          rpc = rpcs[i]["name"];
+          break;
+        }
+      }
+    }
+    if (formState.values.hasOwnProperty("contact")) {
+      for (let i in colleges) {
+        if (colleges[i]["id"] === formState.values.contact) {
+          college = colleges[i]["name"];
+          break;
+        }
+      }
+    }
+    for (let i in tempMonthArray) {
+      if (tempMonthArray[i]["id"] === formState.values.Month) {
+        month = tempMonthArray[i]["name"];
+        break;
+      }
+    }
+    let roleName = auth.getUserInfo().role.name;
+    multiDataSet = [
+      {
+        columns: ["", ""],
+        data: [
+          [
+            { value: "Login Name", style: { font: { sz: "12", bold: true } } },
+            {
+              value: roleName,
+              style: { font: { sz: "12" } }
+            }
+          ],
+          [
+            { value: "Year", style: { font: { sz: "12", bold: true } } },
+            {
+              value: "" + formState.values.Year + "",
+              style: { font: { sz: "12" } }
+            }
+          ],
+          [
+            { value: "Month", style: { font: { sz: "12", bold: true } } },
+            { value: month, style: { font: { sz: "12" } } }
+          ],
+          [
+            { value: "Zone", style: { font: { sz: "12", bold: true } } },
+            { value: zone, style: { font: { sz: "12" } } }
+          ],
+          [
+            { value: "RPC", style: { font: { sz: "12", bold: true } } },
+            { value: rpc, style: { font: { sz: "12" } } }
+          ],
+          [
+            { value: "College", style: { font: { sz: "12", bold: true } } },
+            { value: college, style: { font: { sz: "12" } } }
+          ],
+
+          [{ value: "" }, { value: "" }],
+          generateHeaders("Headers"),
+          [{ value: "" }, { value: "" }],
+          generateEntityDataForDownload("Workshops", finalData.Workshops),
+          generateEntityDataForDownload(
+            "TPO Feedback",
+            finalData.TPOFeedback +
+              finalData.IndustrialVisitTPOFeedback +
+              finalData.PlacementTPOFeedback
+          ),
+          generateEntityDataForDownload(
+            "Student Feedback",
+            finalData.StudentFeedback +
+              finalData.IndustrialVisitStudentFeedback +
+              finalData.PlacementStudentFeedback
+          ),
+          generateEntityDataForDownload(
+            "Industrial Visits",
+            finalData.IndustrialVisits
+          ),
+          generateEntityDataForDownload("Hired", finalData.PlacementSelected),
+          [{ value: "" }, { value: "" }],
+          generateHeaders("Workshop"),
+          [{ value: "" }, { value: "" }],
+          generateEntityDataForDownload(
+            "Overall Workshops",
+            finalData.Workshops
+          ),
+          generateEntityDataForDownload("1st Year", finalData.FirstYear),
+          generateEntityDataForDownload("2nd Year", finalData.SecondYear),
+          generateEntityDataForDownload("Final Year", finalData.FinalYear),
+          generateEntityDataForDownload(
+            "Entrepreneurship",
+            finalData.Entrepreneurship
+          ),
+          generateEntityDataForDownload(
+            "1st Year Attendance",
+            finalData.FirstYearAttendance
+          ),
+          generateEntityDataForDownload(
+            "2nd Year Attendance",
+            finalData.SecondYearAttendance
+          ),
+          generateEntityDataForDownload(
+            "Final Year Attendance",
+            finalData.FinalYearAttendance
+          ),
+          generateEntityDataForDownload(
+            "Planned Vs Achieved",
+            finalData.PlannedVsAchieved
+          ),
+          generateEntityDataForDownload(
+            "Unique Students",
+            finalData.UniqueStudents
+          ),
+          generateEntityDataForDownload(
+            "Instittions touched",
+            finalData.Institutionstouched
+          ),
+          generateEntityDataForDownload(
+            "Student Feedback",
+            finalData.StudentFeedback
+          ),
+          generateEntityDataForDownload("TPO Feedback", finalData.TPOFeedback),
+          [{ value: "" }, { value: "" }],
+          generateHeaders("Industrial Visit"),
+          [{ value: "" }, { value: "" }],
+          generateEntityDataForDownload(
+            "Industrial Visit",
+            finalData.IndustrialVisits
+          ),
+          generateEntityDataForDownload(
+            "Attendance",
+            finalData.IndustrialVisitAttendance
+          ),
+          generateEntityDataForDownload(
+            "Planned Vs Achieved",
+            finalData.IndustrialVisitPlannedVsAchieved
+          ),
+          generateEntityDataForDownload(
+            "Student Feedback",
+            finalData.IndustrialVisitStudentFeedback
+          ),
+          generateEntityDataForDownload(
+            "TPO Feedback",
+            finalData.IndustrialVisitTPOFeedback
+          ),
+          [{ value: "" }, { value: "" }],
+          generateHeaders("Placement"),
+          [{ value: "" }, { value: "" }],
+          generateEntityDataForDownload("Placement", finalData.Placement),
+          generateEntityDataForDownload(
+            "Attended",
+            finalData.PlacementAttended
+          ),
+          generateEntityDataForDownload("Hired", finalData.PlacementSelected),
+          generateEntityDataForDownload(
+            "Student Feedback",
+            finalData.PlacementStudentFeedback
+          ),
+          generateEntityDataForDownload(
+            "TPO Feedback",
+            finalData.PlacementTPOFeedback
+          ),
+          generateEntityDataForDownload(
+            "College Feedback",
+            finalData.PlacementCollegeFeedback
+          )
+        ]
+      }
+    ];
   };
 
   async function fetchZoneRpcDistrictData() {
@@ -611,7 +825,8 @@ const Dashboard = props => {
     setYears(true);
     if (
       auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
-      auth.getUserInfo().role.name === roleConstants.ZONALADMIN
+      auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
+      auth.getUserInfo().role.name === roleConstants.DEPARTMENTADMIN
     ) {
       setColleges([]);
     }
@@ -622,7 +837,6 @@ const Dashboard = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
-
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -724,7 +938,9 @@ const Dashboard = props => {
           <Card className={classes.root} variant="outlined">
             <CardContent>
               <Grid container spacing={3} className={classes.formgrid}>
-                {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+                {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+                auth.getUserInfo().role.name ===
+                  roleConstants.DEPARTMENTADMIN ? (
                   <Grid item md={2} xs={12}>
                     <FormControl
                       variant="outlined"
@@ -761,7 +977,9 @@ const Dashboard = props => {
                 ) : null}
 
                 {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
-                auth.getUserInfo().role.name === roleConstants.ZONALADMIN ? (
+                auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
+                auth.getUserInfo().role.name ===
+                  roleConstants.DEPARTMENTADMIN ? (
                   <Grid item md={2} xs={12}>
                     <FormControl
                       variant="outlined"
@@ -798,6 +1016,8 @@ const Dashboard = props => {
                 ) : null}
 
                 {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
+                auth.getUserInfo().role.name ===
+                  roleConstants.DEPARTMENTADMIN ||
                 auth.getUserInfo().role.name === roleConstants.ZONALADMIN ||
                 (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN &&
                   auth.getUserInfo().studentInfo.organization.contact.id ===
@@ -981,11 +1201,18 @@ const Dashboard = props => {
                     className={classes.table}
                     aria-label="customized table"
                   >
+                    <TableHead>
+                      <TableRow>
+                        <StyledTableCell>Workshop</StyledTableCell>
+                        <StyledTableCell></StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+
                     <TableBody>
                       {formState.zonerows.map(zonerow => (
-                        <StyledTableRow key={zonerow.zonename}>
+                        <StyledTableRow key={zonerow.workshop}>
                           <StyledTableCell component="th" scope="zonerow">
-                            {zonerow.zonename}
+                            {zonerow.workshop}
                           </StyledTableCell>
                           <StyledTableCell align="right">
                             {zonerow.zoneresult}
@@ -1053,6 +1280,24 @@ const Dashboard = props => {
                     </TableBody>
                   </Table>
                 </TableContainer>
+              </Grid>
+              <Grid item className={classes.move_right}>
+                <ExcelFile
+                  element={
+                    <GreenButton
+                      variant="contained"
+                      color="secondary"
+                      className={classes.greenButton}
+                      startIcon={<GetAppIcon />}
+                      onClick={() => {}}
+                      greenButtonChecker={formState.greenButtonChecker}
+                    >
+                      Download
+                    </GreenButton>
+                  }
+                >
+                  <ExcelSheet dataSet={multiDataSet} name="Dashboard" />
+                </ExcelFile>
               </Grid>
             </CardContent>
           </Card>

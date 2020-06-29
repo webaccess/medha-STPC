@@ -4127,7 +4127,7 @@ const ROLES = {
       },
       {
         name: "activitytype",
-        action: [],
+        action: ["find", "findOne"],
         type: PLUGIN_NAME
       },
       {
@@ -4155,7 +4155,9 @@ const ROLES = {
           "getOrganizationActivities",
           "rpcevents",
           "getactivitiesforzonesrpcs",
-          "organizations"
+          "organizations",
+          "delete",
+          "deleteindividual"
         ],
         type: PLUGIN_NAME
       },
@@ -4533,13 +4535,39 @@ const ROLES = {
       {
         name: "dashboard-history",
         action: []
-      },
-      {
-        name: "dashboard-history",
-        action: []
       }
     ],
     grantAllPermissions: true
+  },
+  "Department Admin": {
+    controllers: [
+      {
+        name: "rpc",
+        action: ["find"]
+      },
+      {
+        name: "zone",
+        action: ["find"]
+      },
+      {
+        name: "contact",
+        action: ["organizations"],
+        type: PLUGIN_NAME
+      },
+      {
+        name: "state",
+        action: ["find", "zones", "rpcs"],
+        type: PLUGIN_NAME
+      },
+      {
+        name: "dashboard",
+        action: ["find"]
+      },
+      {
+        name: "dashboard-history",
+        action: ["find"]
+      }
+    ]
   }
 };
 

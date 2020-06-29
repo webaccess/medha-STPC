@@ -189,12 +189,6 @@ module.exports = {
     const { page, pageSize, query } = utils.getRequestParams(ctx.request.query);
     let filters = convertRestQueryParams(query, { limit: -1 });
 
-    // let sort;
-    // if (filters.sort) {
-    //   sort = filters.sort;
-    //   filters = _.omit(filters, ["sort"]);
-    // }
-
     const event = await strapi.query("event").findOne({ id });
     const college = await strapi
       .query("organization", PLUGIN)
@@ -318,7 +312,7 @@ module.exports = {
           async question => {
             const role = await strapi
               .query("role", "users-permissions")
-              .findOne({ id: question.role });
+              .findOne({ id: question.role }, []);
             question.role = { id: role.id, name: role.name };
           }
         );

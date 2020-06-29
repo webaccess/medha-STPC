@@ -28,13 +28,13 @@ module.exports = {
           "DOB",
           "Contact Number",
           "Alternate Contact",
+          "Address",
           "State",
           "District",
           "Email",
           "Qualification",
           "Stream",
-          "Year",
-          "Address"
+          "Year"
         ])
       );
       return result;
@@ -107,7 +107,7 @@ module.exports = {
     const districts = await strapi.query("district", PLUGIN).find({});
     const studentRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: ROLE_STUDENT });
+      .findOne({ name: ROLE_STUDENT }, []);
 
     const contactDetails = await strapi
       .query("contact", PLUGIN)

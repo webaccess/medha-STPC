@@ -592,14 +592,12 @@ const AddEditStudent = props => {
 
   const getStates = () => {
     axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES)
+      .get(
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_STATES +
+          "?pageSize=-1"
+      )
       .then(res => {
-        //   const sanitzedOptions = res.data.map(state => {
-        //     return {
-        //       id: state.id,
-        //       name: state.name
-        //     };
-        //   });
         setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
       });
   };
@@ -612,12 +610,6 @@ const AddEditStudent = props => {
           "?pageSize=-1"
       )
       .then(res => {
-        //   const sanitzedOptions = res.data.map(district => {
-        //     return {
-        //       id: district.id,
-        //       name: district.name
-        //     };
-        //   });
         setdistrictlist(
           res.data.result.map(({ id, name, state }) => ({
             id,

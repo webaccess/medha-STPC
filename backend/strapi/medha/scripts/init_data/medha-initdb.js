@@ -257,40 +257,42 @@ async function zones() {
 
     if (isCountryPresent) {
       await utils.asyncForEach(states, async s => {
-        const { zones } = s;
-        const isStatePresent = await bookshelf
-          .model("state")
-          .where({ name: s.name })
-          .fetch();
+        if (s.zones !== undefined && s.zones !== null && s.zones.length) {
+          const { zones } = s;
+          const isStatePresent = await bookshelf
+            .model("state")
+            .where({ name: s.name })
+            .fetch();
 
-        if (isStatePresent) {
-          const state = isStatePresent.toJSON
-            ? isStatePresent.toJSON()
-            : isStatePresent;
+          if (isStatePresent) {
+            const state = isStatePresent.toJSON
+              ? isStatePresent.toJSON()
+              : isStatePresent;
 
-          // Zones
+            // Zones
 
-          await utils.asyncForEach(zones, async zone => {
-            const isZonePresent = await bookshelf
-              .model("zone")
-              .where({ name: zone.name, state: state.id })
-              .fetch();
-
-            if (isZonePresent) {
-              console.log(`Skipping Zone ${zone.name}...`);
-            } else {
-              await bookshelf
+            await utils.asyncForEach(zones, async zone => {
+              const isZonePresent = await bookshelf
                 .model("zone")
-                .forge({
-                  name: zone.name,
-                  state: state.id
-                })
-                .save()
-                .then(() => {
-                  console.log(`Added Zone ${zone.name} to ${state.name}`);
-                });
-            }
-          });
+                .where({ name: zone.name, state: state.id })
+                .fetch();
+
+              if (isZonePresent) {
+                console.log(`Skipping Zone ${zone.name}...`);
+              } else {
+                await bookshelf
+                  .model("zone")
+                  .forge({
+                    name: zone.name,
+                    state: state.id
+                  })
+                  .save()
+                  .then(() => {
+                    console.log(`Added Zone ${zone.name} to ${state.name}`);
+                  });
+              }
+            });
+          }
         }
       });
     }
@@ -300,50 +302,52 @@ async function zones() {
 async function rpcs() {
   console.log("RPCs");
   await utils.asyncForEach(COUNTRIES, async c => {
-    const { states } = c;
-    const isCountryPresent = await bookshelf
-      .model("country")
-      .where({ name: c.name })
-      .fetch();
+    if (c.rpcs !== undefined && c.rpcs !== null && c.rpcs.length) {
+      const { states } = c;
+      const isCountryPresent = await bookshelf
+        .model("country")
+        .where({ name: c.name })
+        .fetch();
 
-    if (isCountryPresent) {
-      await utils.asyncForEach(states, async s => {
-        const { rpcs } = s;
-        const isStatePresent = await bookshelf
-          .model("state")
-          .where({ name: s.name })
-          .fetch();
+      if (isCountryPresent) {
+        await utils.asyncForEach(states, async s => {
+          const { rpcs } = s;
+          const isStatePresent = await bookshelf
+            .model("state")
+            .where({ name: s.name })
+            .fetch();
 
-        if (isStatePresent) {
-          const state = isStatePresent.toJSON
-            ? isStatePresent.toJSON()
-            : isStatePresent;
+          if (isStatePresent) {
+            const state = isStatePresent.toJSON
+              ? isStatePresent.toJSON()
+              : isStatePresent;
 
-          // RPCs
+            // RPCs
 
-          await utils.asyncForEach(rpcs, async rpc => {
-            const isRPCPresent = await bookshelf
-              .model("rpc")
-              .where({ name: rpc.name, state: state.id })
-              .fetch();
-
-            if (isRPCPresent) {
-              console.log(`Skipping RPC ${rpc.name}...`);
-            } else {
-              await bookshelf
+            await utils.asyncForEach(rpcs, async rpc => {
+              const isRPCPresent = await bookshelf
                 .model("rpc")
-                .forge({
-                  name: rpc.name,
-                  state: state.id
-                })
-                .save()
-                .then(() => {
-                  console.log(`Added RPC ${rpc.name} to ${state.name}`);
-                });
-            }
-          });
-        }
-      });
+                .where({ name: rpc.name, state: state.id })
+                .fetch();
+
+              if (isRPCPresent) {
+                console.log(`Skipping RPC ${rpc.name}...`);
+              } else {
+                await bookshelf
+                  .model("rpc")
+                  .forge({
+                    name: rpc.name,
+                    state: state.id
+                  })
+                  .save()
+                  .then(() => {
+                    console.log(`Added RPC ${rpc.name} to ${state.name}`);
+                  });
+              }
+            });
+          }
+        });
+      }
     }
   });
 }

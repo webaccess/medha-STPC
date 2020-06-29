@@ -58,7 +58,6 @@ const RequestOtp = props => {
         { contact_number: contactNumber }
       )
       .then(res => {
-        console.log(res);
         history.push("/verifyotp", { contactNumber: contactNumber });
         setLoaderStatus(false);
       })

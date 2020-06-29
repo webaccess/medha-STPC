@@ -2332,7 +2332,7 @@ module.exports = {
 
         const role = await strapi
           .query("role", "users-permissions")
-          .findOne({ id: stud.user.role });
+          .findOne({ id: stud.user.role }, []);
         if (role.name === "College Admin") {
           const organization = await strapi
             .query("organization", PLUGIN)
