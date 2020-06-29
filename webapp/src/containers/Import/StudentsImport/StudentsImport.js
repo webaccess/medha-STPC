@@ -22,7 +22,8 @@ import {
   Table,
   RetryIcon,
   DownloadIcon,
-  LinearProgressWithLabel
+  LinearProgressWithLabel,
+  DeleteGridIcon
 } from "../../../components";
 import ImportStudentsModal from "./PreviewAndImport";
 import LoaderContext from "../../../context/LoaderContext";
@@ -211,6 +212,33 @@ const StudentsImport = props => {
         setLoaderStatus(false);
       });
   };
+
+  const deleteFile = id => {
+    const URL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT_IMPORT_CSV;
+    setLoaderStatus(true);
+    serviceProviders
+      .serviceProviderForDeleteRequest(URL, id)
+      .then(() => {
+        setLoaderStatus(false);
+        setAlert(() => ({
+          isOpen: true,
+          message: "Record deleted successfully",
+          severity: "success"
+        }));
+        getImportHistory();
+      })
+      .catch(error => {
+        console.log(error);
+        setLoaderStatus(false);
+        setAlert(() => ({
+          isOpen: true,
+          message: "Something went wrong while deleting record",
+          severity: "error"
+        }));
+      });
+  };
+
   /** Columns to show in table */
   const column = [
     { name: "Name", selector: "imported_file.name" },
@@ -222,27 +250,36 @@ const StudentsImport = props => {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
-          {cell.pending != 0 ? (
+          <>
             <div className={classes.PaddingFirstActionButton}>
-              <RetryIcon
+              <DeleteGridIcon
                 id={cell.id}
                 value={cell.imported_file.name}
-                onClick={() => retry(cell.id, cell.imported_file.name)}
+                onClick={() => deleteFile(cell.id)}
               />
             </div>
-          ) : null}
-          {cell.error != 0 ? (
-            <div className={classes.PaddingActionButton}>
-              <DownloadIcon
-                id={cell.id}
-                value={cell.imported_file.name}
-                title="Download error file"
-                onClick={() =>
-                  downloadErrorFile(cell.id, cell.imported_file.name)
-                }
-              />
-            </div>
-          ) : null}
+            {cell.pending != 0 ? (
+              <div className={classes.PaddingActionButton}>
+                <RetryIcon
+                  id={cell.id}
+                  value={cell.imported_file.name}
+                  onClick={() => retry(cell.id, cell.imported_file.name)}
+                />
+              </div>
+            ) : null}
+            {cell.error != 0 ? (
+              <div className={classes.PaddingActionButton}>
+                <DownloadIcon
+                  id={cell.id}
+                  value={cell.imported_file.name}
+                  title="Download error file"
+                  onClick={() =>
+                    downloadErrorFile(cell.id, cell.imported_file.name)
+                  }
+                />
+              </div>
+            ) : null}
+          </>
         </div>
       ),
       width: "18%",
