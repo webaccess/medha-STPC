@@ -65,8 +65,16 @@ const LogIn = props => {
     errors: {},
     isSuccess: false,
     showPassword: false,
-    fromPasswordChangedPage: props.from.fromPasswordChangedPage ? true : false,
-    dataToShow: props.from.fromPasswordChangedPage ? props.from.dataToShow : ""
+    fromPasswordChangedPage: props.from
+      ? props.from.fromPasswordChangedPage
+        ? true
+        : false
+      : false,
+    dataToShow: props.from
+      ? props.from.fromPasswordChangedPage
+        ? props.from.dataToShow
+        : ""
+      : ""
   });
 
   function checkAllKeysPresent(obj) {
@@ -267,6 +275,15 @@ const LogIn = props => {
           }
           setOpenSpinner(false);
         } else if (response.data.user.role.name === roleConstants.MEDHAADMIN) {
+          if (response.data.user.blocked) {
+            moveToErrorPageForBlocked();
+          } else {
+            setUserData(response.data.jwt, response.data.user);
+          }
+          setOpenSpinner(false);
+        } else if (
+          response.data.user.role.name === roleConstants.DEPARTMENTADMIN
+        ) {
           if (response.data.user.blocked) {
             moveToErrorPageForBlocked();
           } else {

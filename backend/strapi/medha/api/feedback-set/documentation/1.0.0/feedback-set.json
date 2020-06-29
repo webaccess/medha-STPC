@@ -671,6 +671,9 @@
               },
               "cancelled": {
                 "type": "boolean"
+              },
+              "activity_status": {
+                "type": "string"
               }
             }
           },

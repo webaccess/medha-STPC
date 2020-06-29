@@ -50,7 +50,7 @@ const STATE_FILTER = "contact.user.state.id";
 const ZONE_FILTER = "contact.user.zone.id";
 const RPC_FILTER = "contact.user.rpc.id";
 const IPC_FILTER = "organization.id";
-const USER_FILTER = "contact.user.username_contains";
+const USER_FILTER = "contact.phone_contains";
 const ROLE_FILTER = "contact.user.role.id";
 
 const SORT_FIELD_KEY = "_sort";
@@ -285,10 +285,7 @@ const ManageUser = props => {
         var temp = {};
         temp["id"] = data[i]["id"];
         temp["contactId"] = data[i]["contact"]["id"];
-        temp["username"] =
-          data[i]["contact"]["user"] && data[i]["contact"]["user"]["username"]
-            ? data[i]["contact"]["user"]["username"]
-            : "";
+        temp["username"] = data[i]["contact"]["phone"];
         temp["blocked"] =
           data[i]["contact"]["user"]["blocked"] !== null &&
           data[i]["contact"]["user"]["blocked"]
@@ -827,37 +824,31 @@ const ManageUser = props => {
   const column = [
     {
       name: "Contact Number",
-      sortable: true,
       selector: "username",
       cell: row => <ToolTipComponent data={row.username} />
     },
     {
       name: "Role",
-      sortable: true,
       selector: "role",
       cell: row => <ToolTipComponent data={row.role} />
     },
     {
       name: "State",
-      sortable: true,
       selector: "state",
       cell: row => <ToolTipComponent data={row.state} />
     },
     {
       name: "Zone",
-      sortable: true,
       selector: "zone",
       cell: row => <ToolTipComponent data={row.zone} />
     },
     {
       name: "RPC",
-      sortable: true,
       selector: "rpc",
       cell: row => <ToolTipComponent data={row.rpc} />
     },
     {
       name: "IPC",
-      sortable: true,
       selector: "college",
       cell: row => <ToolTipComponent data={row.college} />
     },
@@ -907,22 +898,7 @@ const ManageUser = props => {
   ) => {
     if (column.selector === "username") {
       formState.filterDataParameters[SORT_FIELD_KEY] =
-        "contact.user.username:" + sortDirection;
-    } else if (column.selector === "role") {
-      formState.filterDataParameters[SORT_FIELD_KEY] =
-        "contact.user.role.name:" + sortDirection;
-    } else if (column.selector === "state") {
-      formState.filterDataParameters[SORT_FIELD_KEY] =
-        "contact.user.state.name:" + sortDirection;
-    } else if (column.selector === "zone") {
-      formState.filterDataParameters[SORT_FIELD_KEY] =
-        "contact.user.zone.name:" + sortDirection;
-    } else if (column.selector === "rpc") {
-      formState.filterDataParameters[SORT_FIELD_KEY] =
-        "contact.user.rpc.name:" + sortDirection;
-    } else if (column.selector === "college") {
-      formState.filterDataParameters[SORT_FIELD_KEY] =
-        "organization.name:" + sortDirection;
+        "contact.phone:" + sortDirection;
     }
 
     getUserData(perPage, page, formState.filterDataParameters);

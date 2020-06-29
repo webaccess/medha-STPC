@@ -67,7 +67,7 @@ const AddEditZone = props => {
 
   useEffect(() => {
     let paramsForPageSize = {
-      pageSize: -1
+      name_contains: "Uttar Pradesh"
     };
     serviceProviders
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)

@@ -26,7 +26,7 @@ module.exports = {
   getIndividuals: async (eventId, collegeId, filters) => {
     const studentRole = await strapi
       .query("role", "users-permissions")
-      .findOne({ name: "Student" });
+      .findOne({ name: "Student" }, []);
 
     const registeredStudentsForEvent = await strapi
       .query("event-registration")

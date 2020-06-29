@@ -1,7 +1,7 @@
 {
   "identifier": {
     "label": "Contact Number",
-    "id": "identifier",
+    "id": "contactnumber",
     "autoComplete": "Contact number",
     "required": true,
     "placeholder": "Contact Number",

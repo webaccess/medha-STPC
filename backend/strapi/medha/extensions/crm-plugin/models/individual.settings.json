@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "connection": "default",
   "collectionName": "individuals",
   "info": {
@@ -37,11 +38,15 @@
     },
     "gender": {
       "type": "enumeration",
-      "enum": ["male", "female", "other"],
+      "enum": [
+        "male",
+        "female",
+        "other"
+      ],
       "required": false
     },
     "roll_number": {
-      "type": "integer",
+      "type": "biginteger",
       "required": false
     },
     "organization": {

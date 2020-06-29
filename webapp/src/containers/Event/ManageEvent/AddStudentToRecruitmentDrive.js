@@ -206,7 +206,14 @@ const AddStudentToRecruitmentDrive = props => {
           : "";
         if (data[i]["qualifications"]) {
           for (let j in data[i]["qualifications"]) {
-            educationYear.push(data[i]["qualifications"][j]["education_year"]);
+            if (
+              data[i]["qualifications"][j]["pursuing"] &&
+              data[i]["qualifications"][j]["education_year"] !== null
+            ) {
+              educationYear.push(
+                data[i]["qualifications"][j]["education_year"]
+              );
+            }
           }
           individualStudentData["qualifications"] = educationYear;
         } else {

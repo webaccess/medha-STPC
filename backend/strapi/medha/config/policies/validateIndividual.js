@@ -20,7 +20,7 @@ module.exports = async (ctx, next) => {
 
     const role = await strapi
       .query("role", "users-permissions")
-      .findOne({ id: role_id });
+      .findOne({ id: role_id }, []);
 
     const individual = data;
 
@@ -146,7 +146,7 @@ module.exports = async (ctx, next) => {
 
     const role = await strapi
       .query("role", "users-permissions")
-      .findOne({ id: contact.user.role });
+      .findOne({ id: contact.user.role }, []);
 
     const individual = data;
 

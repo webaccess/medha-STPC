@@ -224,7 +224,7 @@ const AddEditCollege = props => {
   useEffect(() => {
     setLoaderStatus(true);
     let paramsForPageSize = {
-      pageSize: -1
+      name_contains: "Uttar Pradesh"
     };
 
     serviceProviders

@@ -214,9 +214,17 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   const getStates = () => {
-    serviceProvider.serviceProviderForGetRequest(STATES_URL).then(res => {
-      setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
-    });
+    serviceProvider
+      .serviceProviderForGetRequest(
+        STATES_URL,
+        {
+          pageSize: -1
+        },
+        {}
+      )
+      .then(res => {
+        setstatelist(res.data.result.map(({ id, name }) => ({ id, name })));
+      });
   };
 
   const getDistrict = () => {
