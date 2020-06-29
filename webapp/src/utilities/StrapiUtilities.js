@@ -471,7 +471,8 @@ export const editActivity = (
   streams,
   id,
   files,
-  question_set
+  question_set,
+  activitystatus
 ) => {
   const data = {
     title: title,
@@ -486,7 +487,8 @@ export const editActivity = (
     trainer_name: trainer_name,
     streams: streams,
     question_set: question_set,
-    id: id
+    id: id,
+    activity_status: activitystatus
   };
   const formdata = new FormData();
 

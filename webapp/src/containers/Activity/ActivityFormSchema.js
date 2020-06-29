@@ -83,6 +83,16 @@ const ActivityFormSchema = {
     type: "checkbox",
     validations: {}
   },
+  activitystatus: {
+    label: "activitystatus",
+    id: "activitystatus",
+    autoComplete: "activitystatus",
+    required: false,
+    placeholder: "activitystatus",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
   stream: {
     label: "Stream",
     id: "stream",
