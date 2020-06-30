@@ -194,7 +194,7 @@ const AddEditState = props => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
-          <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <form autoComplete="off" noValidate onSubmit={handleSubmit} id="form">
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
@@ -206,6 +206,7 @@ const AddEditState = props => {
                     placeholder={get(StateSchema[state], "placeholder")}
                     variant="outlined"
                     required
+                    id="test"
                     fullWidth
                     onChange={handleChange}
                     helperText={
@@ -224,6 +225,7 @@ const AddEditState = props => {
               <CardActions className={classes.btnspace}>
                 <YellowButton
                   type="submit"
+                  id="submit"
                   color="primary"
                   variant="contained"
                   onClick={() => {

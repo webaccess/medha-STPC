@@ -375,7 +375,7 @@ module.exports = {
         "trainer_name",
         "question_set",
         "description",
-        "cancelled"
+        "activity_status"
       ]);
 
       return await strapi
@@ -411,7 +411,7 @@ module.exports = {
         "trainer_name",
         "question_set",
         "description",
-        "cancelled"
+        "activity_status"
       ]);
       return await strapi
         .query("activity", PLUGIN)

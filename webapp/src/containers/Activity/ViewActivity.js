@@ -267,10 +267,10 @@ const ViewActivity = props => {
         var eventIndividualData = {};
         eventIndividualData["id"] = data[i]["id"];
 
-        eventIndividualData["status"] =
-          data[i]["cancelled"] === true
-            ? "Cancelled"
-            : getStatus(data[i]["start_date_time"], data[i]["end_date_time"]);
+        eventIndividualData["status"] = data[i]["activity_status"];
+        // data[i]["cancelled"] === true
+        //   ? "Cancelled"
+        //   : getStatus(data[i]["start_date_time"], data[i]["end_date_time"]);
         eventIndividualData["title"] = data[i]["title"] ? data[i]["title"] : "";
         eventIndividualData["activityType"] = data[i].activitytype.name;
         eventIndividualData["streams"] = data[i].streams;

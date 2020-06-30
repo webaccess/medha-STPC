@@ -161,7 +161,7 @@ module.exports = {
   async requestOTPForStudent(ctx) {
     const { contact_number } = ctx.request.body;
     const OTP = Math.floor(100000 + Math.random() * 900000);
-    await strapi.services.otp.sendOTP(contact_number, OTP);
+    //await strapi.services.otp.sendOTP(contact_number, OTP);
     await strapi
       .query("otp")
       .model.forge({ contact_number: contact_number, otp: OTP })
