@@ -357,11 +357,7 @@ const StudentsImport = props => {
               each column (field). Each row equals one record.
             </p>
             <p>
-              Please{" "}
-              <Link href="#" onClick={downloadSampleCsv} variant="body2">
-                {"download"}
-              </Link>{" "}
-              a sample CSV file.
+              Please <a href="/files/sample.csv">download</a> a sample CSV file.
             </p>
           </Grid>
           <Grid>

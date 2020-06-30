@@ -130,17 +130,6 @@ const AddEditActivity = props => {
         formState.values["questionSet"] =
           props.location["dataForEdit"]["question_set"]["id"];
       }
-      if (
-        props.location["dataForEdit"] &&
-        props.location["dataForEdit"]["cancelled"]
-      ) {
-        formState.values["cancelled"] = props.location["dataForEdit"][
-          "cancelled"
-        ]
-          ? true
-          : false;
-      }
-
       if (props.location["dataForEdit"]["description"]) {
         // formState.values["description"] = props["dataForEdit"]["description"];
         const blocksFromHtml = htmlToDraft(
@@ -414,7 +403,6 @@ const AddEditActivity = props => {
         formState.values[dateTo],
         formState.values["educationyear"],
         formState.values["address"],
-        formState.values["cancelled"] ? formState.values["cancelled"] : false,
         draftToHtml(convertToRaw(editorState.getCurrentContent())),
         formState.values["trainer"],
         stream.map(stream => stream.id),
@@ -456,8 +444,7 @@ const AddEditActivity = props => {
         formState.values["trainer"],
         stream.map(stream => stream.id),
         formState.files,
-        formState.values["questionSet"],
-        formState.values["cancelled"]
+        formState.values["questionSet"]
       );
       serviceProvider
         .serviceProviderForPostRequest(
@@ -1063,38 +1050,7 @@ const AddEditActivity = props => {
                       )}
                     />
                   </Grid>
-                  <Grid item md={6} xs={12}>
-                    {formState.editActivity ? (
-                      <FormGroup row>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              name={"cancelled"}
-                              checked={formState.values["cancelled"] || false}
-                              onChange={handleChange}
-                              value={formState.values["cancelled"] || false}
-                              error={hasError("cancelled")}
-                              helperText={
-                                hasError("cancelled")
-                                  ? formState.errors["cancelled"].map(error => {
-                                      return error + " ";
-                                    })
-                                  : null
-                              }
-                            />
-                          }
-                          label={
-                            formState.values["cancelled"]
-                              ? "Uncancelled"
-                              : "Cancelled"
-                          }
-                        />
-                      </FormGroup>
-                    ) : null}
-                  </Grid>
-                </Grid>
-                {formState.editActivity ? (
-                  <Grid container spacing={3} className={classes.formgrid}>
+                  {formState.editActivity ? (
                     <Grid item md={6} xs={12}>
                       <Autocomplete
                         id="combo-box-demo"
@@ -1137,8 +1093,8 @@ const AddEditActivity = props => {
                         )}
                       />
                     </Grid>
-                  </Grid>
-                ) : null}
+                  ) : null}
+                </Grid>
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <TextField

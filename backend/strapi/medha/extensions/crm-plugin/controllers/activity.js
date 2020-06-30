@@ -375,7 +375,6 @@ module.exports = {
         "trainer_name",
         "question_set",
         "description",
-        "cancelled",
         "activity_status"
       ]);
 
@@ -412,7 +411,6 @@ module.exports = {
         "trainer_name",
         "question_set",
         "description",
-        "cancelled",
         "activity_status"
       ]);
       return await strapi
