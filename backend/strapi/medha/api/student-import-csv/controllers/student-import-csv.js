@@ -432,5 +432,28 @@ module.exports = {
       completed: completed.length,
       total
     };
+  },
+
+  delete: async ctx => {
+    const { id } = ctx.params;
+
+    const record = await strapi.query("student-import-csv").findOne({ id });
+    if (!record) {
+      return ctx.response.notFound("Record does not exist");
+    }
+
+    const importFileId = record.imported_file && record.imported_file.id;
+    if (importFileId) {
+      await strapi.plugins[PLUGIN].services.contact.deleteDocument(
+        importFileId
+      );
+      await strapi.query("imported-records").delete({ student_import_csv: id });
+      await strapi.query("student-import-csv").delete({ id });
+      return {
+        result: "Success"
+      };
+    } else {
+      return ctx.response.badRequest("Something went wrong");
+    }
   }
 };

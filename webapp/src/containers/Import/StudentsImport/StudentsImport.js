@@ -7,7 +7,6 @@ import {
   Button,
   IconButton
 } from "@material-ui/core";
-//import CSVReader from "react-csv-reader";
 import { CSVReader } from "react-papaparse";
 import CloudUpload from "@material-ui/icons/CloudUpload";
 import CloseIcon from "@material-ui/icons/Close";
@@ -16,7 +15,6 @@ import useStyles from "../../ContainerStyles/ManagePageStyles";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import {
   Alert,
@@ -24,7 +22,8 @@ import {
   Table,
   RetryIcon,
   DownloadIcon,
-  LinearProgressWithLabel
+  LinearProgressWithLabel,
+  DeleteGridIcon
 } from "../../../components";
 import ImportStudentsModal from "./PreviewAndImport";
 import LoaderContext from "../../../context/LoaderContext";
@@ -215,6 +214,32 @@ const StudentsImport = props => {
       });
   };
 
+  const deleteFile = id => {
+    const URL =
+      strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STUDENT_IMPORT_CSV;
+    setLoaderStatus(true);
+    serviceProviders
+      .serviceProviderForDeleteRequest(URL, id)
+      .then(() => {
+        setLoaderStatus(false);
+        setAlert(() => ({
+          isOpen: true,
+          message: "Record deleted successfully",
+          severity: "success"
+        }));
+        getImportHistory();
+      })
+      .catch(error => {
+        console.log(error);
+        setLoaderStatus(false);
+        setAlert(() => ({
+          isOpen: true,
+          message: "Something went wrong while deleting record",
+          severity: "error"
+        }));
+      });
+  };
+
   const downloadSampleCsv = async () => {
     const headers = [
       "Name",
@@ -279,6 +304,7 @@ const StudentsImport = props => {
 
     setLoaderStatus(false);
   };
+
   /** Columns to show in table */
   const column = [
     { name: "Name", selector: "imported_file.name" },
@@ -290,27 +316,36 @@ const StudentsImport = props => {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
-          {cell.pending != 0 ? (
+          <>
             <div className={classes.PaddingFirstActionButton}>
-              <RetryIcon
+              <DeleteGridIcon
                 id={cell.id}
                 value={cell.imported_file.name}
-                onClick={() => retry(cell.id, cell.imported_file.name)}
+                onClick={() => deleteFile(cell.id)}
               />
             </div>
-          ) : null}
-          {cell.error != 0 ? (
-            <div className={classes.PaddingActionButton}>
-              <DownloadIcon
-                id={cell.id}
-                value={cell.imported_file.name}
-                title="Download error file"
-                onClick={() =>
-                  downloadErrorFile(cell.id, cell.imported_file.name)
-                }
-              />
-            </div>
-          ) : null}
+            {cell.pending != 0 ? (
+              <div className={classes.PaddingActionButton}>
+                <RetryIcon
+                  id={cell.id}
+                  value={cell.imported_file.name}
+                  onClick={() => retry(cell.id, cell.imported_file.name)}
+                />
+              </div>
+            ) : null}
+            {cell.error != 0 ? (
+              <div className={classes.PaddingActionButton}>
+                <DownloadIcon
+                  id={cell.id}
+                  value={cell.imported_file.name}
+                  title="Download error file"
+                  onClick={() =>
+                    downloadErrorFile(cell.id, cell.imported_file.name)
+                  }
+                />
+              </div>
+            ) : null}
+          </>
         </div>
       ),
       width: "18%",
@@ -357,7 +392,15 @@ const StudentsImport = props => {
               each column (field). Each row equals one record.
             </p>
             <p>
-              Please <a href="/files/sample.csv">download</a> a sample CSV file.
+              Please{" "}
+              <Link href="#" onClick={downloadSampleCsv} variant="body2">
+                {"download"}
+              </Link>{" "}
+              a sample CSV file. Also go through{" "}
+              <a href="/files/instructions.pdf" target="_blank">
+                instructions
+              </a>{" "}
+              before proceeding further.
             </p>
           </Grid>
           <Grid>
