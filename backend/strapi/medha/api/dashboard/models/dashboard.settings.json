@@ -83,10 +83,6 @@
       "type": "biginteger",
       "default": "0"
     },
-    "PlannedVsAchieved": {
-      "type": "biginteger",
-      "default": "0"
-    },
     "UniqueStudents": {
       "type": "biginteger",
       "default": "0"
@@ -96,10 +92,6 @@
       "default": "0"
     },
     "IndustrialVisitAttendance": {
-      "type": "biginteger",
-      "default": "0"
-    },
-    "IndustrialVisitPlannedVsAchieved": {
       "type": "biginteger",
       "default": "0"
     },
@@ -133,6 +125,22 @@
     },
     "Month": {
       "type": "integer"
+    },
+    "PlannedWorkshops": {
+      "type": "biginteger",
+      "default": "0"
+    },
+    "AchievedWorkshops": {
+      "type": "biginteger",
+      "default": "0"
+    },
+    "PlannedIndustrialVisit": {
+      "type": "biginteger",
+      "default": "0"
+    },
+    "AchievedIndustrialVisit": {
+      "type": "biginteger",
+      "default": "0"
     }
   }
 }

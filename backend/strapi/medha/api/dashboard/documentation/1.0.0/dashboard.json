@@ -798,10 +798,6 @@
             "type": "integer",
             "default": "0"
           },
-          "PlannedVsAchieved": {
-            "type": "integer",
-            "default": "0"
-          },
           "UniqueStudents": {
             "type": "integer",
             "default": "0"
@@ -811,10 +807,6 @@
             "default": "0"
           },
           "IndustrialVisitAttendance": {
-            "type": "integer",
-            "default": "0"
-          },
-          "IndustrialVisitPlannedVsAchieved": {
             "type": "integer",
             "default": "0"
           },
@@ -848,6 +840,22 @@
           },
           "Month": {
             "type": "integer"
+          },
+          "PlannedWorkshops": {
+            "type": "integer",
+            "default": "0"
+          },
+          "AchievedWorkshops": {
+            "type": "integer",
+            "default": "0"
+          },
+          "PlannedIndustrialVisit": {
+            "type": "integer",
+            "default": "0"
+          },
+          "AchievedIndustrialVisit": {
+            "type": "integer",
+            "default": "0"
           }
         }
       },
@@ -923,10 +931,6 @@
             "type": "integer",
             "default": "0"
           },
-          "PlannedVsAchieved": {
-            "type": "integer",
-            "default": "0"
-          },
           "UniqueStudents": {
             "type": "integer",
             "default": "0"
@@ -936,10 +940,6 @@
             "default": "0"
           },
           "IndustrialVisitAttendance": {
-            "type": "integer",
-            "default": "0"
-          },
-          "IndustrialVisitPlannedVsAchieved": {
             "type": "integer",
             "default": "0"
           },
@@ -973,6 +973,22 @@
           },
           "Month": {
             "type": "integer"
+          },
+          "PlannedWorkshops": {
+            "type": "integer",
+            "default": "0"
+          },
+          "AchievedWorkshops": {
+            "type": "integer",
+            "default": "0"
+          },
+          "PlannedIndustrialVisit": {
+            "type": "integer",
+            "default": "0"
+          },
+          "AchievedIndustrialVisit": {
+            "type": "integer",
+            "default": "0"
           }
         }
       }

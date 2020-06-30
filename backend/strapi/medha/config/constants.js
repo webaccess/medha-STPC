@@ -22,11 +22,9 @@ const DASHBOARDKEYS = [
   "FirstYearAttendance",
   "SecondYearAttendance",
   "FinalYearAttendance",
-  "PlannedVsAchieved",
   "UniqueStudents",
   "Institutionstouched",
   "IndustrialVisitAttendance",
-  "IndustrialVisitPlannedVsAchieved",
   "IndustrialVisitStudentFeedback",
   "IndustrialVisitTPOFeedback",
   "PlacementAttended",
@@ -34,7 +32,11 @@ const DASHBOARDKEYS = [
   "PlacementStudentFeedback",
   "PlacementTPOFeedback",
   "PlacementCollegeFeedback",
-  "SecondYear"
+  "SecondYear",
+  "AchievedIndustrialVisit",
+  "PlannedIndustrialVisit",
+  "AchievedWorkshops",
+  "PlannedWorkshops"
 ];
 
 module.exports = {

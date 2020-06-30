@@ -34,11 +34,9 @@ module.exports = {
       FirstYearAttendance: 0,
       SecondYearAttendance: 0,
       FinalYearAttendance: 0,
-      PlannedVsAchieved: 0,
       UniqueStudents: 0,
       Institutionstouched: 0,
       IndustrialVisitAttendance: 0,
-      IndustrialVisitPlannedVsAchieved: 0,
       IndustrialVisitStudentFeedback: 0,
       IndustrialVisitTPOFeedback: 0,
       PlacementAttended: 0,
@@ -46,7 +44,11 @@ module.exports = {
       PlacementStudentFeedback: 0,
       PlacementTPOFeedback: 0,
       PlacementCollegeFeedback: 0,
-      SecondYear: 0
+      SecondYear: 0,
+      AchievedIndustrialVisit: 0,
+      PlannedIndustrialVisit: 0,
+      AchievedWorkshops: 0,
+      PlannedWorkshops: 0
     };
     /** getting data for medha admin */
     if (role === ROLE_MEDHA_ADMIN) {
