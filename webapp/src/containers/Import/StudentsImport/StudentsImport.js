@@ -7,7 +7,6 @@ import {
   Button,
   IconButton
 } from "@material-ui/core";
-//import CSVReader from "react-csv-reader";
 import { CSVReader } from "react-papaparse";
 import CloudUpload from "@material-ui/icons/CloudUpload";
 import CloseIcon from "@material-ui/icons/Close";
@@ -16,7 +15,6 @@ import useStyles from "../../ContainerStyles/ManagePageStyles";
 import * as databaseUtilities from "../../../utilities/StrapiUtilities";
 import * as serviceProviders from "../../../api/Axios";
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
-import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import {
   Alert,
@@ -306,6 +304,7 @@ const StudentsImport = props => {
 
     setLoaderStatus(false);
   };
+
   /** Columns to show in table */
   const column = [
     { name: "Name", selector: "imported_file.name" },
@@ -397,7 +396,11 @@ const StudentsImport = props => {
               <Link href="#" onClick={downloadSampleCsv} variant="body2">
                 {"download"}
               </Link>{" "}
-              a sample CSV file.
+              a sample CSV file. Also go through{" "}
+              <a href="/files/instructions.pdf" target="_blank">
+                instructions
+              </a>{" "}
+              before proceeding further.
             </p>
           </Grid>
           <Grid>
