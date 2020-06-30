@@ -37,6 +37,7 @@ const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const SORT_FIELD_KEY = "_sort";
 const USER_FILTER = "name_contains";
+const MOBILE_NUMBER_FILTER = "phone_contains";
 const STREAM_FILTER = "individual.stream.id";
 
 const AddStudentToRecruitmentDrive = props => {
@@ -411,6 +412,10 @@ const AddStudentToRecruitmentDrive = props => {
       cell: row => <ToolTipComponent data={`${row.qualifications}`} />
     },
     {
+      name: "Mobile Number",
+      cell: row => <ToolTipComponent data={`${row.mobile}`} />
+    },
+    {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
@@ -436,7 +441,7 @@ const AddStudentToRecruitmentDrive = props => {
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [USER_FILTER]: event.target.value
+        [event.target.name]: event.target.value
       },
       isClearResetFilter: false
     }));
@@ -550,6 +555,7 @@ const AddStudentToRecruitmentDrive = props => {
                   label="Name"
                   margin="normal"
                   variant="outlined"
+                  name={USER_FILTER}
                   value={formState.filterDataParameters[USER_FILTER] || ""}
                   placeholder="Name"
                   className={classes.autoCompleteField}
@@ -605,6 +611,20 @@ const AddStudentToRecruitmentDrive = props => {
                       className={classes.autoCompleteField}
                     />
                   )}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="Mobile Number"
+                  margin="normal"
+                  variant="outlined"
+                  name={MOBILE_NUMBER_FILTER}
+                  value={
+                    formState.filterDataParameters[MOBILE_NUMBER_FILTER] || ""
+                  }
+                  placeholder="Mobile Number"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForStudentField}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
