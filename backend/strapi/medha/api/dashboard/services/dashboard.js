@@ -1120,7 +1120,11 @@ module.exports = {
 
     const activity = await strapi
       .query("activity", PLUGIN)
-      .find({ activitytype: activityType.id, activity_status: "scheduled" });
+      .find({
+        activitytype: activityType.id,
+        activity_status: "scheduled",
+        contact: orgId
+      });
 
     const months = utils.getMonthsBetweenDates();
 
@@ -1170,7 +1174,11 @@ module.exports = {
 
     const activity = await strapi
       .query("activity", PLUGIN)
-      .find({ activitytype: activityType.id, activity_status: "completed" });
+      .find({
+        activitytype: activityType.id,
+        activity_status: "completed",
+        contact: orgId
+      });
 
     const months = utils.getMonthsBetweenDates();
 
@@ -1220,7 +1228,11 @@ module.exports = {
 
     const activity = await strapi
       .query("activity", PLUGIN)
-      .find({ activitytype: activityType.id, activity_status: "scheduled" });
+      .find({
+        activitytype: activityType.id,
+        activity_status: "scheduled",
+        contact: orgId
+      });
 
     const months = utils.getMonthsBetweenDates();
 
@@ -1270,7 +1282,11 @@ module.exports = {
 
     const activity = await strapi
       .query("activity", PLUGIN)
-      .find({ activitytype: activityType.id, activity_status: "completed" });
+      .find({
+        activitytype: activityType.id,
+        activity_status: "completed",
+        contact: orgId
+      });
 
     const months = utils.getMonthsBetweenDates();
 
@@ -1373,7 +1389,7 @@ module.exports = {
       );
 
       /** Achieved Industrial visits*/
-      let AchievedIndustrialVisit = await strapi.services.dashboard.getAchievedIndustrialVisit(
+      let achievedIndustrialVisit = await strapi.services.dashboard.getAchievedIndustrialVisit(
         college.contact.id
       );
 
@@ -1469,7 +1485,11 @@ module.exports = {
         getPlacementStudentFeedbackCount,
         getPlacementTPOFeedbackCount,
         getPlacementCollegeFeedbackCount,
-        getIndustrialVisitAttendanceCount
+        getIndustrialVisitAttendanceCount,
+        plannedWorkshops,
+        achievedWorkshops,
+        plannedIndustrialVisit,
+        achievedIndustrialVisit
       );
       finalData = [...finalData, ...Object.values(finalJson)];
     });
