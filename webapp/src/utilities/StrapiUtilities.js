@@ -430,8 +430,7 @@ export const addActivity = (
   trainer_name,
   streams,
   files,
-  question_set,
-  cancelled
+  question_set
 ) => {
   const data = {
     title: title,
@@ -444,8 +443,7 @@ export const addActivity = (
     description: description,
     trainer_name: trainer_name,
     streams: streams,
-    question_set: question_set,
-    cancelled: cancelled
+    question_set: question_set
   };
 
   if (files) {
@@ -465,13 +463,13 @@ export const editActivity = (
   end_date_time,
   education_year,
   address,
-  cancelled,
   description,
   trainer_name,
   streams,
   id,
   files,
-  question_set
+  question_set,
+  activitystatus
 ) => {
   const data = {
     title: title,
@@ -481,12 +479,12 @@ export const editActivity = (
     end_date_time: end_date_time,
     education_year: education_year,
     address: address,
-    cancelled: cancelled,
     description: description,
     trainer_name: trainer_name,
     streams: streams,
     question_set: question_set,
-    id: id
+    id: id,
+    activity_status: activitystatus
   };
   const formdata = new FormData();
 

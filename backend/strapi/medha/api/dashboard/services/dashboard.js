@@ -1105,6 +1105,205 @@ module.exports = {
     }, {});
     return response;
   },
+  getPlannedWorkshops: async orgId => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const activityType = await strapi
+      .query("activitytype", PLUGIN)
+      .findOne({ name: "Workshop" });
+
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .find({ activitytype: activityType.id, activity_status: "scheduled" });
+
+    const months = utils.getMonthsBetweenDates();
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(activity, activity => {
+      const { created_at } = activity;
+      return moment(created_at).format("M yyyy");
+    });
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        PlannedWorkshops: data ? data.length : 0,
+
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || ""
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+  getAchievedWorkshops: async orgId => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const activityType = await strapi
+      .query("activitytype", PLUGIN)
+      .findOne({ name: "Workshop" });
+
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .find({ activitytype: activityType.id, activity_status: "completed" });
+
+    const months = utils.getMonthsBetweenDates();
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(activity, activity => {
+      const { created_at } = activity;
+      return moment(created_at).format("M yyyy");
+    });
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        AchievedWorkshops: data ? data.length : 0,
+
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || ""
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+  getPlannedIndustrialVisit: async orgId => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const activityType = await strapi
+      .query("activitytype", PLUGIN)
+      .findOne({ name: "Industrial Visit" });
+
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .find({ activitytype: activityType.id, activity_status: "scheduled" });
+
+    const months = utils.getMonthsBetweenDates();
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(activity, activity => {
+      const { created_at } = activity;
+      return moment(created_at).format("M yyyy");
+    });
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        PlannedIndustrialVisit: data ? data.length : 0,
+
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || ""
+      };
+      return result;
+    }, {});
+    return response;
+  },
+
+  getAchievedIndustrialVisit: async orgId => {
+    const org = await strapi
+      .query("contact", PLUGIN)
+      .findOne({ id: orgId }, [
+        "organization.rpc",
+        "organization.zone",
+        "state"
+      ]);
+
+    const activityType = await strapi
+      .query("activitytype", PLUGIN)
+      .findOne({ name: "Industrial Visit" });
+
+    const activity = await strapi
+      .query("activity", PLUGIN)
+      .find({ activitytype: activityType.id, activity_status: "completed" });
+
+    const months = utils.getMonthsBetweenDates();
+
+    // Grouping placements monthwise
+    const groupByMonth = _.groupBy(activity, activity => {
+      const { created_at } = activity;
+      return moment(created_at).format("M yyyy");
+    });
+    const response = months.reduce((result, m) => {
+      const [month, year] = m.split(" ");
+      const data = groupByMonth[m];
+      result[m] = {
+        contact: orgId,
+        Month: parseInt(month),
+        Year: parseInt(year),
+        AchievedIndustrialVisit: data ? data.length : 0,
+
+        rpc:
+          (org.organization &&
+            org.organization.rpc &&
+            org.organization.rpc.id) ||
+          "",
+        zone:
+          (org.organization &&
+            org.organization.zone &&
+            org.organization.zone.id) ||
+          "",
+        state: (org.state && org.state.id) || ""
+      };
+      return result;
+    }, {});
+    return response;
+  },
   createDashboardData: async colleges => {
     let finalData = [];
     let dataToReturn = [];
@@ -1155,6 +1354,26 @@ module.exports = {
       );
       /** Third Year Attendence */
       let thirdYearAttendence = await strapi.services.dashboard.getWorkshopThirdYearAttendenceCount(
+        college.contact.id
+      );
+
+      /** Planned Workshops*/
+      let plannedWorkshops = await strapi.services.dashboard.getPlannedWorkshops(
+        college.contact.id
+      );
+
+      /** Acheived Workshops*/
+      let achievedWorkshops = await strapi.services.dashboard.getAchievedWorkshops(
+        college.contact.id
+      );
+
+      /** Planned Industrial visits*/
+      let plannedIndustrialVisit = await strapi.services.dashboard.getPlannedIndustrialVisit(
+        college.contact.id
+      );
+
+      /** Achieved Industrial visits*/
+      let AchievedIndustrialVisit = await strapi.services.dashboard.getAchievedIndustrialVisit(
         college.contact.id
       );
 

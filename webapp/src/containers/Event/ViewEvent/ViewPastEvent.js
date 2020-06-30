@@ -33,6 +33,7 @@ import LoaderContext from "../../../context/LoaderContext";
 import { useContext } from "react";
 import NoFeedback from "../../Feedback/NoFeedback/NoFeedback";
 import CloseIcon from "@material-ui/icons/Close";
+import { STUDENT } from "../../../constants/RouteConstants";
 
 const EVENT_FILTER = "title_contains";
 const START_DATE_FILTER = "start_date_time_gte";
@@ -513,40 +514,42 @@ const ViewPastEvent = props => {
           <div className={classes.PaddingFirstActionButton}>
             <PastEventStatus style={cell.hasAttended} />
           </div>
-          {cell.giveFeedback ? (
-            <div className={classes.PaddingActionButton}>
-              <FeedBack
-                isGiveFeedback={true}
-                isEditFeedback={false}
-                cannotGiveFeedback={false}
-                id={cell.id}
-                value={cell.eventName}
-                onClick={() => giveFeedback(cell)}
-              />
-            </div>
-          ) : cell.editFeedback ? (
-            <div className={classes.PaddingActionButton}>
-              <FeedBack
-                isGiveFeedback={false}
-                isEditFeedback={true}
-                cannotGiveFeedback={false}
-                id={cell.id}
-                value={cell.eventName}
-                onClick={() => editFeedback(cell)}
-              />
-            </div>
-          ) : cell.cannotGiveFeedback ? (
-            <div className={classes.PaddingActionButton}>
-              <FeedBack
-                isGiveFeedback={false}
-                isEditFeedback={false}
-                cannotGiveFeedback={true}
-                isdisabled={true}
-                id={cell.id}
-                value={cell.eventName}
-                onClick={() => {}}
-              />
-            </div>
+          {auth.getUserInfo().role.name === roleConstants.STUDENT ? (
+            cell.giveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={true}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.eventName}
+                  onClick={() => giveFeedback(cell)}
+                />
+              </div>
+            ) : cell.editFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={true}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.eventName}
+                  onClick={() => editFeedback(cell)}
+                />
+              </div>
+            ) : cell.cannotGiveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={true}
+                  isdisabled={true}
+                  id={cell.id}
+                  value={cell.eventName}
+                  onClick={() => {}}
+                />
+              </div>
+            ) : null
           ) : null}
         </div>
       )

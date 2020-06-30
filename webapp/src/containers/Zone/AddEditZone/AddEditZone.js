@@ -278,6 +278,7 @@ const AddEditZone = props => {
                     error={hasError(zone)}
                     placeholder={get(AddZoneForm[zone], "placeholder")}
                     variant="outlined"
+                    id="test"
                     required
                     fullWidth
                     onChange={handleChange}
@@ -332,6 +333,7 @@ const AddEditZone = props => {
               <CardActions className={classes.btnspace}>
                 <YellowButton
                   type="submit"
+                  id="submit"
                   color="primary"
                   variant="contained"
                   onClick={() => {
