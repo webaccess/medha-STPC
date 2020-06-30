@@ -438,42 +438,44 @@ const PastActivities = props => {
           <div className={classes.PaddingFirstActionButton}>
             <PastEventStatus style={cell.hasAttended} />
           </div>
-          {cell.giveFeedback ? (
-            <div className={classes.PaddingActionButton}>
-              <FeedBack
-                isGiveFeedback={true}
-                isEditFeedback={false}
-                cannotGiveFeedback={false}
-                id={cell.id}
-                value={cell.title}
-                onClick={() => giveFeedback(cell)}
-              />
-            </div>
-          ) : cell.editFeedback ? (
-            <div className={classes.PaddingActionButton}>
-              <FeedBack
-                isGiveFeedback={false}
-                isEditFeedback={true}
-                cannotGiveFeedback={false}
-                id={cell.id}
-                value={cell.title}
-                onClick={() => {
-                  editFeedback(cell);
-                }}
-              />
-            </div>
-          ) : cell.cannotGiveFeedback ? (
-            <div className={classes.PaddingActionButton}>
-              <FeedBack
-                isGiveFeedback={false}
-                isEditFeedback={false}
-                cannotGiveFeedback={true}
-                isdisabled={true}
-                id={cell.id}
-                value={cell.title}
-                onClick={() => {}}
-              />
-            </div>
+          {auth.getUserInfo().role.name === roleConstants.STUDENT ? (
+            cell.giveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={true}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => giveFeedback(cell)}
+                />
+              </div>
+            ) : cell.editFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={true}
+                  cannotGiveFeedback={false}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => {
+                    editFeedback(cell);
+                  }}
+                />
+              </div>
+            ) : cell.cannotGiveFeedback ? (
+              <div className={classes.PaddingActionButton}>
+                <FeedBack
+                  isGiveFeedback={false}
+                  isEditFeedback={false}
+                  cannotGiveFeedback={true}
+                  isdisabled={true}
+                  id={cell.id}
+                  value={cell.title}
+                  onClick={() => {}}
+                />
+              </div>
+            ) : null
           ) : null}
         </div>
       ),

@@ -237,7 +237,9 @@ const AddEditCollege = props => {
         console.log("error", error);
       });
     serviceProviders
-      .serviceProviderForGetRequest(STREAMS_URL, paramsForPageSize)
+      .serviceProviderForGetRequest(STREAMS_URL, {
+        pageSize: -1
+      })
       .then(res => {
         setStreamsDataBackup(res.data.result);
       })
@@ -245,7 +247,9 @@ const AddEditCollege = props => {
         console.log("error", error);
       });
     serviceProviders
-      .serviceProviderForGetRequest(STREAMS_URL, paramsForPageSize)
+      .serviceProviderForGetRequest(STREAMS_URL, {
+        pageSize: -1
+      })
       .then(res => {
         let dataForEditing = res.data.result;
         if (formState.isEditCollege) {
