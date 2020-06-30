@@ -47,7 +47,7 @@ const AddEditZone = props => {
     counter: 0
   });
 
-  const [states, setStates] = useState([]);
+  const [states, setStates] = useState(props.option ? props.option : []);
 
   /** Part for editing college */
   if (formState.isEditZone && !formState.counter) {

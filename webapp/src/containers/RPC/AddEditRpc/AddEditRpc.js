@@ -32,8 +32,10 @@ const RPCS_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const AddEditRpc = props => {
   const history = useHistory();
   const classes = useStyles();
-  const [states, setStates] = useState([]);
-  const [getColleges, setGetColleges] = useState([]);
+  const [states, setStates] = useState(props.option ? props.option : []);
+  const [getColleges, setGetColleges] = useState(
+    props.collegeOption ? props.collegeOption : []
+  );
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const { setLoaderStatus } = useContext(LoaderContext);
@@ -402,7 +404,7 @@ const AddEditRpc = props => {
                 {formState.isEditRpc ? (
                   <Grid item md={12} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id={get(AddRpcSchema[collegeName], "id")}
                       options={getColleges}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {

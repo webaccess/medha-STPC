@@ -1,8 +1,6 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { shallow } from "enzyme";
 import AddEditZone from "./AddEditZone";
-import { BrowserRouter as Router } from "react-router-dom";
-
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
   useHistory: () => ({ push: jest.fn() })
@@ -22,6 +20,43 @@ describe("testing for zone", () => {
     });
     return wrapper.find(inputSelector);
   };
+
+  const simulateChangeOnAutoInput = (
+    wrapper,
+    inputSelector,
+    newValue,
+    newNameValue
+  ) => {
+    const input = wrapper.find(inputSelector);
+    input.simulate(
+      "change",
+
+      { newNameValue },
+      { id: parseInt(newValue) }
+    );
+    return wrapper.find(inputSelector);
+  };
+
+  it("test for  autocomplete field", () => {
+    const option = [
+      {
+        id: 1,
+        name: "Uttar pradesh"
+      },
+      {
+        id: 2,
+        name: "Maharashtra"
+      }
+    ];
+    const wrapper = shallow(<AddEditZone option={option} />);
+    const updatedNameInput = simulateChangeOnAutoInput(
+      wrapper,
+      "#states-filter",
+      "2"
+    );
+
+    expect(updatedNameInput.props().value.name).toEqual("Maharashtra");
+  });
 
   it("It has an input field", () => {
     const wrapper = shallow(<AddEditZone />);
