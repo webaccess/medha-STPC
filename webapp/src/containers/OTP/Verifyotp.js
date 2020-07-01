@@ -35,7 +35,6 @@ const VerifyOtp = props => {
   const classes = useStyles();
   const [error, setError] = useState("");
   const { layout: Layout } = props;
-  const [click, setclick] = useState(false);
 
   const validate = () => {
     setLoaderStatus(true);
@@ -77,7 +76,6 @@ const VerifyOtp = props => {
         { contact_number: props.location.state.contactNumber }
       )
       .then(res => {
-        setclick(true);
         setLoaderStatus(false);
       })
       .catch(err => {
@@ -142,16 +140,15 @@ const VerifyOtp = props => {
                           setotp(event.target.value);
                         }}
                       />
-                      {click ? null : (
-                        <Link
-                          href="javascript:void(0);"
-                          variant="body2"
-                          className={classes.linkColor}
-                          onClick={requestOtpAgain}
-                        >
-                          {authPageConstants.RESEND_OTP_BUTTON}
-                        </Link>
-                      )}
+                      <Link
+                        href="javascript:void(0);"
+                        variant="body2"
+                        className={classes.linkColor}
+                        onClick={requestOtpAgain}
+                      >
+                        {authPageConstants.RESEND_OTP_BUTTON}
+                      </Link>
+
                       <Button
                         color="primary"
                         type="submit"

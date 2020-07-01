@@ -183,18 +183,18 @@ const BlockUser = props => {
               >
                 <Grid item lg className={classes.deletemessage}>
                   {props.isUnBlocked
-                    ? "Are you sure you want to unblock user" +
+                    ? "Are you sure you want to unblock user " +
                       props.dataToBlockUserName
                     : null}
                   {props.isMultiUnblock
-                    ? "Are you sure you want to unblock the selected users"
+                    ? "Are you sure you want to unblock the selected users "
                     : null}
                   {props.isBlocked
-                    ? "Are you sure you want to block user" +
+                    ? "Are you sure you want to block user " +
                       props.dataToBlockUserName
                     : null}
                   {props.isMulBlocked
-                    ? "Are you sure you want to block the selected users"
+                    ? "Are you sure you want to block the selected users "
                     : null}
                 </Grid>
               </Grid>
