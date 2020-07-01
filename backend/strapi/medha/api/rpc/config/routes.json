@@ -45,7 +45,7 @@
       "path": "/rpcs/:id",
       "handler": "rpc.update",
       "config": {
-        "policies": ["updatePolicy"]
+        "policies": ["validate"]
       }
     },
     {

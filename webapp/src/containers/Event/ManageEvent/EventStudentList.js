@@ -47,6 +47,7 @@ const REGISTRATION_URL =
 const STUDENT_URL = strapiConstants.STRAPI_CONTACT_INDIVIDUAL;
 const SORT_FIELD_KEY = "_sort";
 const STUDENT_FILTER = "name_contains";
+const MOBILE_NUMBER_FILTER = "phone_contains";
 const STREAM_FILTER = "individual.stream.id";
 
 const StudentList = props => {
@@ -579,7 +580,7 @@ const StudentList = props => {
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [STUDENT_FILTER]: event.target.value
+        [event.target.name]: event.target.value
       }
     }));
     event.persist();
@@ -828,6 +829,7 @@ const StudentList = props => {
                   label="Name"
                   margin="normal"
                   variant="outlined"
+                  name={STUDENT_FILTER}
                   value={formState.filterDataParameters[STUDENT_FILTER] || ""}
                   placeholder="Name"
                   className={classes.autoCompleteField}
@@ -882,6 +884,20 @@ const StudentList = props => {
                       className={classes.autoCompleteField}
                     />
                   )}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="Mobile Number"
+                  margin="normal"
+                  variant="outlined"
+                  name={MOBILE_NUMBER_FILTER}
+                  value={
+                    formState.filterDataParameters[MOBILE_NUMBER_FILTER] || ""
+                  }
+                  placeholder="Mobile Number"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForStudentField}
                 />
               </Grid>
 

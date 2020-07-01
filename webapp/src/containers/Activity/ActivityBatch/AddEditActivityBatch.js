@@ -47,7 +47,7 @@ import { CompassCalibrationOutlined } from "@material-ui/icons";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
-
+const ACTIVITY_BATCH_PHONE_NUMBER_FILTER = "phone_contains";
 const AddEditActivityBatches = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
@@ -701,7 +701,7 @@ const AddEditActivityBatches = props => {
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [ACTIVITY_BATCH_STUDENT_FILTER]: event.target.value
+        [event.target.name]: event.target.value
       }
     }));
     event.persist();
@@ -846,12 +846,29 @@ const AddEditActivityBatches = props => {
                   label="Student Name"
                   margin="normal"
                   variant="outlined"
+                  name={ACTIVITY_BATCH_STUDENT_FILTER}
                   value={
                     formState.filterDataParameters[
                       ACTIVITY_BATCH_STUDENT_FILTER
                     ] || ""
                   }
                   placeholder="Student Name"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChnageActivityField}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="Phone"
+                  margin="normal"
+                  variant="outlined"
+                  name={ACTIVITY_BATCH_PHONE_NUMBER_FILTER}
+                  value={
+                    formState.filterDataParameters[
+                      ACTIVITY_BATCH_PHONE_NUMBER_FILTER
+                    ] || ""
+                  }
+                  placeholder="Phone"
                   className={classes.autoCompleteField}
                   onChange={handleFilterChnageActivityField}
                 />

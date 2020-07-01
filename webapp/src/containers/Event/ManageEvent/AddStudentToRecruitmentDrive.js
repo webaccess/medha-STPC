@@ -37,6 +37,7 @@ const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
 const SORT_FIELD_KEY = "_sort";
 const USER_FILTER = "name_contains";
+const MOBILE_NUMBER_FILTER = "phone_contains";
 const STREAM_FILTER = "individual.stream.id";
 
 const AddStudentToRecruitmentDrive = props => {
@@ -169,7 +170,10 @@ const AddStudentToRecruitmentDrive = props => {
             totalRows: res.data.rowCount,
             page: res.data.page,
             pageCount: res.data.pageCount,
-            dataToShow: eventData,
+            dataToShow:
+              eventData !== undefined && eventData.length > 0
+                ? eventData
+                : undefined,
             isDataLoading: false
           }));
         })
@@ -189,37 +193,39 @@ const AddStudentToRecruitmentDrive = props => {
       for (let i in data) {
         var individualStudentData = {};
         let educationYear = [];
-        individualStudentData["id"] = data[i]["id"];
-        individualStudentData["studentid"] = data[i]["individual"]["id"];
-        individualStudentData["user"] = data[i]["user"]
-          ? data[i]["user"]["username"]
-          : "";
-        individualStudentData["name"] = data[i]["name"];
-        individualStudentData["stream"] =
-          data[i]["individual"] &&
-          data[i]["individual"]["stream"] &&
-          data[i]["individual"]["stream"]["name"]
-            ? data[i]["individual"]["stream"]["name"]
+        if (data[i]["user"]["blocked"] !== true) {
+          individualStudentData["id"] = data[i]["id"];
+          individualStudentData["studentid"] = data[i]["individual"]["id"];
+          individualStudentData["user"] = data[i]["user"]
+            ? data[i]["user"]["username"]
             : "";
-        individualStudentData["mobile"] = data[i]["phone"]
-          ? data[i]["phone"]
-          : "";
-        if (data[i]["qualifications"]) {
-          for (let j in data[i]["qualifications"]) {
-            if (
-              data[i]["qualifications"][j]["pursuing"] &&
-              data[i]["qualifications"][j]["education_year"] !== null
-            ) {
-              educationYear.push(
-                data[i]["qualifications"][j]["education_year"]
-              );
+          individualStudentData["name"] = data[i]["name"];
+          individualStudentData["stream"] =
+            data[i]["individual"] &&
+            data[i]["individual"]["stream"] &&
+            data[i]["individual"]["stream"]["name"]
+              ? data[i]["individual"]["stream"]["name"]
+              : "";
+          individualStudentData["mobile"] = data[i]["phone"]
+            ? data[i]["phone"]
+            : "";
+          if (data[i]["qualifications"]) {
+            for (let j in data[i]["qualifications"]) {
+              if (
+                data[i]["qualifications"][j]["pursuing"] &&
+                data[i]["qualifications"][j]["education_year"] !== null
+              ) {
+                educationYear.push(
+                  data[i]["qualifications"][j]["education_year"]
+                );
+              }
             }
+            individualStudentData["qualifications"] = educationYear;
+          } else {
+            individualStudentData["qualifications"] = [];
           }
-          individualStudentData["qualifications"] = educationYear;
-        } else {
-          individualStudentData["qualifications"] = [];
+          x.push(individualStudentData);
         }
-        x.push(individualStudentData);
       }
       return x;
     }
@@ -411,6 +417,10 @@ const AddStudentToRecruitmentDrive = props => {
       cell: row => <ToolTipComponent data={`${row.qualifications}`} />
     },
     {
+      name: "Mobile Number",
+      cell: row => <ToolTipComponent data={`${row.mobile}`} />
+    },
+    {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>
@@ -436,7 +446,7 @@ const AddStudentToRecruitmentDrive = props => {
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [USER_FILTER]: event.target.value
+        [event.target.name]: event.target.value
       },
       isClearResetFilter: false
     }));
@@ -550,6 +560,7 @@ const AddStudentToRecruitmentDrive = props => {
                   label="Name"
                   margin="normal"
                   variant="outlined"
+                  name={USER_FILTER}
                   value={formState.filterDataParameters[USER_FILTER] || ""}
                   placeholder="Name"
                   className={classes.autoCompleteField}
@@ -605,6 +616,20 @@ const AddStudentToRecruitmentDrive = props => {
                       className={classes.autoCompleteField}
                     />
                   )}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  label="Mobile Number"
+                  margin="normal"
+                  variant="outlined"
+                  name={MOBILE_NUMBER_FILTER}
+                  value={
+                    formState.filterDataParameters[MOBILE_NUMBER_FILTER] || ""
+                  }
+                  placeholder="Mobile Number"
+                  className={classes.autoCompleteField}
+                  onChange={handleFilterChangeForStudentField}
                 />
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
