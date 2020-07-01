@@ -70,11 +70,9 @@ let finalData = {
   FirstYearAttendance: 0,
   SecondYearAttendance: 0,
   FinalYearAttendance: 0,
-  PlannedVsAchieved: 0,
   UniqueStudents: 0,
   Institutionstouched: 0,
   IndustrialVisitAttendance: 0,
-  IndustrialVisitPlannedVsAchieved: 0,
   IndustrialVisitStudentFeedback: 0,
   IndustrialVisitTPOFeedback: 0,
   PlacementAttended: 0,
@@ -82,7 +80,11 @@ let finalData = {
   PlacementStudentFeedback: 0,
   PlacementTPOFeedback: 0,
   PlacementCollegeFeedback: 0,
-  SecondYear: 0
+  SecondYear: 0,
+  AchievedIndustrialVisit: 0,
+  AchievedWorkshops: 0,
+  PlannedIndustrialVisit: 0,
+  PlannedWorkshops: 0
 };
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -155,7 +157,8 @@ const Dashboard = props => {
           "Final Year Attendance",
           finalData.FinalYearAttendance
         ),
-        createDataWorkshop("Planned Vs Achieved", finalData.PlannedVsAchieved),
+        createDataWorkshop("Planned", finalData.PlannedWorkshops),
+        createDataWorkshop("Achieved", finalData.AchievedWorkshops),
         createDataWorkshop("Unique Students", finalData.UniqueStudents),
         createDataWorkshop(
           "Instittions touched",
@@ -167,10 +170,8 @@ const Dashboard = props => {
       indrows: [
         createDataind("Industrial Visit", finalData.IndustrialVisits),
         createDataind("Attendance", finalData.IndustrialVisitAttendance),
-        createDataind(
-          "Planned Vs Achieved",
-          finalData.IndustrialVisitPlannedVsAchieved
-        ),
+        createDataind("Planned", finalData.PlannedIndustrialVisit),
+        createDataind("Achieved", finalData.AchievedIndustrialVisit),
         createDataind(
           "Student Feedback",
           finalData.IndustrialVisitStudentFeedback
@@ -586,9 +587,10 @@ const Dashboard = props => {
             "Final Year Attendance",
             finalData.FinalYearAttendance
           ),
+          generateEntityDataForDownload("Planned", finalData.PlannedWorkshops),
           generateEntityDataForDownload(
-            "Planned Vs Achieved",
-            finalData.PlannedVsAchieved
+            "Achieved",
+            finalData.AchievedWorkshops
           ),
           generateEntityDataForDownload(
             "Unique Students",
@@ -615,8 +617,12 @@ const Dashboard = props => {
             finalData.IndustrialVisitAttendance
           ),
           generateEntityDataForDownload(
-            "Planned Vs Achieved",
-            finalData.IndustrialVisitPlannedVsAchieved
+            "Planned",
+            finalData.PlannedIndustrialVisit
+          ),
+          generateEntityDataForDownload(
+            "Achieved",
+            finalData.AchievedIndustrialVisit
           ),
           generateEntityDataForDownload(
             "Student Feedback",

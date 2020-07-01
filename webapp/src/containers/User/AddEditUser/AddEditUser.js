@@ -383,7 +383,13 @@ const AddEditUser = props => {
     await serviceProvider
       .serviceProviderForGetRequest(COLLEGE_URL, params)
       .then(res => {
-        setColleges(res.data.result);
+        let collegeArray = [];
+        for (var i = 0; i < res.data.result.length; i++) {
+          if (res.data.result[i]["is_blocked"] === false) {
+            collegeArray.push(res.data.result[i]);
+          }
+        }
+        setColleges(collegeArray);
       })
       .catch(error => {
         console.log("error", error);

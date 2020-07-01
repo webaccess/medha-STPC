@@ -23,6 +23,7 @@ import LoaderContext from "../../../context/LoaderContext";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
+const ACTIVITY_BATCH_MOBILE_FILTER = "phone_contains";
 
 const AddEditActivityBatches = props => {
   const classes = useStyles();
@@ -98,7 +99,6 @@ const AddEditActivityBatches = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(ACTIVITY_BATCH_STUDENTS, params)
       .then(res => {
@@ -213,7 +213,7 @@ const AddEditActivityBatches = props => {
       ...formState,
       filterDataParameters: {
         ...formState.filterDataParameters,
-        [ACTIVITY_BATCH_STUDENT_FILTER]: event.target.value
+        [event.target.name]: event.target.value
       }
     }));
     event.persist();
@@ -293,6 +293,21 @@ const AddEditActivityBatches = props => {
                               ] || ""
                             }
                             name={ACTIVITY_BATCH_STUDENT_FILTER}
+                            className={classes.autoCompleteField}
+                            onChange={handleFilterChange}
+                          />
+                        </Grid>
+                        <Grid item className={classes.paddingDate}>
+                          <TextField
+                            label="Mobile Number"
+                            placeholder="Mobile Number"
+                            variant="outlined"
+                            value={
+                              formState.filterDataParameters[
+                                ACTIVITY_BATCH_MOBILE_FILTER
+                              ] || ""
+                            }
+                            name={ACTIVITY_BATCH_MOBILE_FILTER}
                             className={classes.autoCompleteField}
                             onChange={handleFilterChange}
                           />

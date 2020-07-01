@@ -54,32 +54,40 @@ const ViewStates = props => {
     filterDataParameters: {},
     isFilterSearch: false,
     /** This is when we return from edit page */
-    isDataEdited: props["location"]["fromEditState"]
-      ? props["location"]["isDataEdited"]
-      : false,
-    editedData: props["location"]["fromEditState"]
-      ? props["location"]["editedData"]
-      : {},
-    fromEditState: props["location"]["fromEditState"]
-      ? props["location"]["fromEditState"]
-      : false,
-    editedStateName: props["location"]["stateDataEdited"]
-      ? props["location"]["stateDataEdited"]["name"]
-      : "",
+    isDataEdited:
+      props["location"] && props["location"]["fromEditState"]
+        ? props["location"]["isDataEdited"]
+        : false,
+    editedData:
+      props["location"] && props["location"]["fromEditState"]
+        ? props["location"]["editedData"]
+        : {},
+    fromEditState:
+      props["location"] && props["location"]["fromEditState"]
+        ? props["location"]["fromEditState"]
+        : false,
+    editedStateName:
+      props["location"] && props["location"]["stateDataEdited"]
+        ? props["location"]["stateDataEdited"]["name"]
+        : "",
 
     /** This is when we return from add page */
-    isDataAdded: props["location"]["fromAddState"]
-      ? props["location"]["isDataAdded"]
-      : false,
-    addedData: props["location"]["fromAddState"]
-      ? props["location"]["addedData"]
-      : {},
-    fromAddState: props["location"]["fromAddState"]
-      ? props["location"]["fromAddState"]
-      : false,
-    addedStateName: props["location"]["addedStateData"]
-      ? props["location"]["addedStateData"]["name"]
-      : "",
+    isDataAdded:
+      props["location"] && props["location"]["fromAddState"]
+        ? props["location"]["isDataAdded"]
+        : false,
+    addedData:
+      props["location"] && props["location"]["fromAddState"]
+        ? props["location"]["addedData"]
+        : {},
+    fromAddState:
+      props["location"] && props["location"]["fromAddState"]
+        ? props["location"]["fromAddState"]
+        : false,
+    addedStateName:
+      props["location"] && props["location"]["addedStateData"]
+        ? props["location"]["addedStateData"]["name"]
+        : "",
     /** This is for delete */
     isDataDeleted: false,
     dataToEdit: {},
@@ -594,6 +602,7 @@ const ViewStates = props => {
                 <TextField
                   label={"Name"}
                   placeholder="Name"
+                  id="name"
                   value={formState.filterDataParameters[STATE_FILTER] || ""}
                   variant="outlined"
                   onChange={handleFilterChange}
