@@ -1118,13 +1118,10 @@ module.exports = {
       .query("activitytype", PLUGIN)
       .findOne({ name: "Workshop" });
 
-    const activity = await strapi
-      .query("activity", PLUGIN)
-      .find({
-        activitytype: activityType.id,
-        activity_status: "scheduled",
-        contact: orgId
-      });
+    const activity = await strapi.query("activity", PLUGIN).find({
+      activitytype: activityType.id,
+      contact: orgId
+    });
 
     const months = utils.getMonthsBetweenDates();
 
@@ -1172,13 +1169,11 @@ module.exports = {
       .query("activitytype", PLUGIN)
       .findOne({ name: "Workshop" });
 
-    const activity = await strapi
-      .query("activity", PLUGIN)
-      .find({
-        activitytype: activityType.id,
-        activity_status: "completed",
-        contact: orgId
-      });
+    const activity = await strapi.query("activity", PLUGIN).find({
+      activitytype: activityType.id,
+      activity_status: "completed",
+      contact: orgId
+    });
 
     const months = utils.getMonthsBetweenDates();
 
@@ -1226,13 +1221,10 @@ module.exports = {
       .query("activitytype", PLUGIN)
       .findOne({ name: "Industrial Visit" });
 
-    const activity = await strapi
-      .query("activity", PLUGIN)
-      .find({
-        activitytype: activityType.id,
-        activity_status: "scheduled",
-        contact: orgId
-      });
+    const activity = await strapi.query("activity", PLUGIN).find({
+      activitytype: activityType.id,
+      contact: orgId
+    });
 
     const months = utils.getMonthsBetweenDates();
 
@@ -1280,13 +1272,11 @@ module.exports = {
       .query("activitytype", PLUGIN)
       .findOne({ name: "Industrial Visit" });
 
-    const activity = await strapi
-      .query("activity", PLUGIN)
-      .find({
-        activitytype: activityType.id,
-        activity_status: "completed",
-        contact: orgId
-      });
+    const activity = await strapi.query("activity", PLUGIN).find({
+      activitytype: activityType.id,
+      activity_status: "completed",
+      contact: orgId
+    });
 
     const months = utils.getMonthsBetweenDates();
 

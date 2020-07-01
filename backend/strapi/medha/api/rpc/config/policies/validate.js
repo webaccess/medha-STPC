@@ -46,8 +46,7 @@ module.exports = async (ctx, next) => {
 
     const rpc = await strapi
       .query("rpc")
-      .find({ id_nin: [id], name: name, state: state });
-
+      .findOne({ id_nin: [id], name: name, state: state });
     if (rpc)
       return ctx.response.badRequest("Rpc can't be created with same name");
 
