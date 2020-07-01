@@ -66,7 +66,7 @@ const validation = (value, inputValidations = {}, type = "text") => {
         break;
       case "validateOtp":
         //change the value and condition for length after length of otp is decided
-        if (value.length !== 0 && value.length === validationValue.value) {
+        if (value.length !== 0 && value.length !== validationValue.value) {
           errors.push(validationValue.message);
         }
         break;

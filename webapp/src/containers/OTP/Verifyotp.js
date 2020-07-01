@@ -40,9 +40,11 @@ const VerifyOtp = props => {
   const validate = () => {
     setLoaderStatus(true);
     const error = validateInput(otp, form["otp"]["validations"]);
-
-    if (error[0]) setError(error);
-    else {
+    console.log(error);
+    if (error[0]) {
+      setError(error);
+      setLoaderStatus(false);
+    } else {
       axios
         .post(
           strapiApiConstants.STRAPI_DB_URL +
@@ -60,7 +62,7 @@ const VerifyOtp = props => {
         .catch(err => {
           if (err.response.data.message === "User already registered") {
             setError("User Already Registered");
-          } else if (err.response.date.message === "OTP is invalid")
+          } else if (err.response.data.message === "OTP is invalid")
             setError("Invalid OTP");
 
           setLoaderStatus(false);

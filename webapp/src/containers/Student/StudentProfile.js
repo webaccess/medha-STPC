@@ -439,7 +439,7 @@ const StudentProfile = props => {
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="rollNumber"
-                    label="College Roll Number"
+                    label="Enrollment Number"
                     defaultValue={formState.values.rollnumber}
                   />
                 </Grid>
