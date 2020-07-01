@@ -170,7 +170,10 @@ const AddStudentToRecruitmentDrive = props => {
             totalRows: res.data.rowCount,
             page: res.data.page,
             pageCount: res.data.pageCount,
-            dataToShow: eventData,
+            dataToShow:
+              eventData !== undefined && eventData.length > 0
+                ? eventData
+                : undefined,
             isDataLoading: false
           }));
         })
@@ -190,37 +193,39 @@ const AddStudentToRecruitmentDrive = props => {
       for (let i in data) {
         var individualStudentData = {};
         let educationYear = [];
-        individualStudentData["id"] = data[i]["id"];
-        individualStudentData["studentid"] = data[i]["individual"]["id"];
-        individualStudentData["user"] = data[i]["user"]
-          ? data[i]["user"]["username"]
-          : "";
-        individualStudentData["name"] = data[i]["name"];
-        individualStudentData["stream"] =
-          data[i]["individual"] &&
-          data[i]["individual"]["stream"] &&
-          data[i]["individual"]["stream"]["name"]
-            ? data[i]["individual"]["stream"]["name"]
+        if (data[i]["user"]["blocked"] !== true) {
+          individualStudentData["id"] = data[i]["id"];
+          individualStudentData["studentid"] = data[i]["individual"]["id"];
+          individualStudentData["user"] = data[i]["user"]
+            ? data[i]["user"]["username"]
             : "";
-        individualStudentData["mobile"] = data[i]["phone"]
-          ? data[i]["phone"]
-          : "";
-        if (data[i]["qualifications"]) {
-          for (let j in data[i]["qualifications"]) {
-            if (
-              data[i]["qualifications"][j]["pursuing"] &&
-              data[i]["qualifications"][j]["education_year"] !== null
-            ) {
-              educationYear.push(
-                data[i]["qualifications"][j]["education_year"]
-              );
+          individualStudentData["name"] = data[i]["name"];
+          individualStudentData["stream"] =
+            data[i]["individual"] &&
+            data[i]["individual"]["stream"] &&
+            data[i]["individual"]["stream"]["name"]
+              ? data[i]["individual"]["stream"]["name"]
+              : "";
+          individualStudentData["mobile"] = data[i]["phone"]
+            ? data[i]["phone"]
+            : "";
+          if (data[i]["qualifications"]) {
+            for (let j in data[i]["qualifications"]) {
+              if (
+                data[i]["qualifications"][j]["pursuing"] &&
+                data[i]["qualifications"][j]["education_year"] !== null
+              ) {
+                educationYear.push(
+                  data[i]["qualifications"][j]["education_year"]
+                );
+              }
             }
+            individualStudentData["qualifications"] = educationYear;
+          } else {
+            individualStudentData["qualifications"] = [];
           }
-          individualStudentData["qualifications"] = educationYear;
-        } else {
-          individualStudentData["qualifications"] = [];
+          x.push(individualStudentData);
         }
-        x.push(individualStudentData);
       }
       return x;
     }
