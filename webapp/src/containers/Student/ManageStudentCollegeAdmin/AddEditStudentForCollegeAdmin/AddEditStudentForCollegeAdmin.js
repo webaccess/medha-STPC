@@ -441,7 +441,7 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["physicallyHandicapped"] ? true : false,
         formState.values["college"],
         formState.values["stream"],
-        parseInt(formState.values["rollnumber"]),
+        formState.values["rollnumber"],
         formState.dataForEdit.id,
         formState.values["futureAspirations"],
         formState.files,
@@ -512,7 +512,7 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["physicallyHandicapped"] ? true : false,
         formState.values["college"],
         formState.values["stream"],
-        parseInt(formState.values["rollnumber"]),
+        formState.values["rollnumber"],
         formState.files,
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
