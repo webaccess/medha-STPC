@@ -218,7 +218,7 @@ module.exports = {
               percentage: null,
               pursuing: true,
               education_year: _.toLower(record["Year"]),
-              qualification: record["Qualification"]
+              qualification: _.toLower(record["Qualification"])
             };
 
             // Step 1 creating user
@@ -428,19 +428,19 @@ module.exports = {
       };
     }
 
-    if (!record["State"]) {
-      return {
-        isError: true,
-        message: "State is missing"
-      };
-    }
+    // if (!record["State"]) {
+    //   return {
+    //     isError: true,
+    //     message: "State is missing"
+    //   };
+    // }
 
-    if (!record["District"]) {
-      return {
-        isError: true,
-        message: "District is missing"
-      };
-    }
+    // if (!record["District"]) {
+    //   return {
+    //     isError: true,
+    //     message: "District is missing"
+    //   };
+    // }
 
     if (!record["Email"]) {
       return {
