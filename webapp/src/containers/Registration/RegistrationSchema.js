@@ -224,11 +224,11 @@ const RegistrationSchema = {
     required: true,
     placeholder: "rollnumber",
     autoFocus: true,
-    type: "integer",
+    type: "text",
     validations: {
       required: {
         value: "true",
-        message: "Email is required"
+        message: "Enrollment number is required"
       }
     }
   },
