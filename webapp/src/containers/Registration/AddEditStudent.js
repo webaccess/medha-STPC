@@ -396,7 +396,7 @@ const AddEditStudent = props => {
           : null,
         formState.values["college"],
         formState.values["stream"].id,
-        parseInt(formState.values["rollnumber"]),
+        formState.values["rollnumber"],
         formState.dataForEdit.id,
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
@@ -498,7 +498,7 @@ const AddEditStudent = props => {
         formState.values["physicallyHandicapped"],
         formState.values["college"],
         formState.values["stream"].id,
-        parseInt(formState.values["rollnumber"]),
+        formState.values["rollnumber"],
         formState.values.otp,
         formState.files,
         formState.values["futureAspirations"]

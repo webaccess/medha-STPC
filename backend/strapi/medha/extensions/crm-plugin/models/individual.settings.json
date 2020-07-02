@@ -45,10 +45,6 @@
       ],
       "required": false
     },
-    "roll_number": {
-      "type": "biginteger",
-      "required": false
-    },
     "organization": {
       "plugin": "crm-plugin",
       "model": "organization"
@@ -70,6 +66,9 @@
     },
     "future_aspirations": {
       "collection": "futureaspirations"
+    },
+    "roll_number": {
+      "type": "string"
     }
   }
 }
