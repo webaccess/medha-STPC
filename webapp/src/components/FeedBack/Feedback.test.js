@@ -3,7 +3,7 @@ import { shallow } from "enzyme";
 
 import Feedback from "./Feedback";
 
-describe("ContentPlaceholder Component Test Suite", () => {
+describe("Testing Feedback", () => {
   let props;
   let wrapper;
 

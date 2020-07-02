@@ -3,7 +3,7 @@ import { shallow } from "enzyme";
 
 import EditGridIcon from "./EditGridIcon";
 
-describe("ContentPlaceholder Component Test Suite", () => {
+describe("Testing EditGridIcon", () => {
   let props;
   let wrapper;
 
