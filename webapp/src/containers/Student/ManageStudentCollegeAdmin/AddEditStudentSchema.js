@@ -194,17 +194,17 @@ const RegistrationSchema = {
     }
   },
   rollnumber: {
-    label: "College Roll Number",
+    label: "Enrollment Number",
     id: "rollnumber",
     autoComplete: "rollnumber",
     required: true,
-    placeholder: "College Roll Number",
+    placeholder: "Enrollment Number",
     autoFocus: true,
     type: "integer",
     validations: {
       required: {
         value: "true",
-        message: "College Roll is required"
+        message: "Enrollment Number is required"
       }
     }
   },
