@@ -4,14 +4,19 @@ import { Tooltip, Typography } from "@material-ui/core";
 const EditGridIcon = props => {
   return (
     <Tooltip
+      id={"editGridIconToolTip"}
       title={
         props.title ? (
           <React.Fragment>
-            <Typography color="inherit">{props.title}</Typography>
+            <Typography id="editGridIconTypgraphy" color="inherit">
+              {props.title}
+            </Typography>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Typography color="inherit">Edit</Typography>
+            <Typography id="editGridIconTypgraphy" color="inherit">
+              Edit
+            </Typography>
           </React.Fragment>
         )
       }
