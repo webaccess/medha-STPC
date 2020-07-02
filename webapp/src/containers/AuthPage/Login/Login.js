@@ -414,6 +414,7 @@ const LogIn = props => {
                   className={classes.form}
                   noValidate
                   onSubmit={handleSignIn}
+                  id="form"
                 >
                   <TextField
                     id={get(form[identifier], "id")}

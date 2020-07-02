@@ -27,16 +27,11 @@ const RegistrationSchema = {
     label: "Middle Name",
     id: "middlename",
     autoComplete: "middlename",
-    required: true,
+    required: false,
     placeholder: "middlename",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Middle Name is required"
-      }
-    }
+    validations: {}
   },
   lastname: {
     label: "Last Name",
@@ -223,17 +218,17 @@ const RegistrationSchema = {
   //   validations: {}
   // },
   rollnumber: {
-    label: "Roll Number",
-    id: "rollnumber",
-    autoComplete: "rollnumber",
+    label: "Enrollment Number",
+    id: "Enrollmentnumber",
+    autoComplete: "Enrollment Number",
     required: true,
-    placeholder: "rollnumber",
+    placeholder: "Enrollment Number",
     autoFocus: true,
     type: "integer",
     validations: {
       required: {
         value: "true",
-        message: "Email is required"
+        message: "Enrollment Number is required"
       }
     }
   },
