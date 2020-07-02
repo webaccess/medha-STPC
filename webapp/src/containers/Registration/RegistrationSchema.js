@@ -27,16 +27,11 @@ const RegistrationSchema = {
     label: "Middle Name",
     id: "middlename",
     autoComplete: "middlename",
-    required: true,
+    required: false,
     placeholder: "middlename",
     autoFocus: true,
     type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Middle Name is required"
-      }
-    }
+    validations: {}
   },
   lastname: {
     label: "Last Name",

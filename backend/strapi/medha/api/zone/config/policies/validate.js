@@ -48,7 +48,7 @@ module.exports = async (ctx, next) => {
 
     const zone = await strapi
       .query("zone")
-      .find({ id_nin: [id], name: name, state: state });
+      .findOne({ id_nin: [id], name: name, state: state });
 
     if (zone)
       return ctx.response.badRequest("Zone can't be created with same name");
