@@ -1,6 +1,3 @@
-import React from "react";
-import { shallow, mount } from "enzyme";
-
 import validation from "./Validation";
 
 describe("Testing Validations", () => {
