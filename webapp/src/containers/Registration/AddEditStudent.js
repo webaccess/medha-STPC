@@ -557,7 +557,9 @@ const AddEditStudent = props => {
   const getColleges = () => {
     axios
       .get(
-        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_COLLEGES +
+          "?pageSize=-1"
       )
       .then(res => {
         setcollegelist(
@@ -925,7 +927,6 @@ const AddEditStudent = props => {
                     value={formState.values["middlename"]}
                     variant="outlined"
                     error={hasError("middlename")}
-                    required
                     fullWidth
                     onChange={handleChange}
                     helperText={
@@ -1290,7 +1291,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <TextField
-                    label="College Roll Number "
+                    label="Enrollment Number "
                     name="rollnumber"
                     value={formState.values["rollnumber"] || ""}
                     variant="outlined"
