@@ -220,14 +220,15 @@ module.exports = {
   async student(ctx) {
     const { id } = ctx.params;
     const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
+    let filters = convertRestQueryParams(query, { limit: -1 });
 
     const { student_id, stream_id } = query;
 
     const activity = await strapi.query("activity", PLUGIN).findOne({ id });
-
     if (!activity) {
       return ctx.response.notFound("Activity does not exist");
     }
+    const { education_year, academic_year } = activity;
 
     const collegeId = activity.contact && activity.contact.id;
     const college = await strapi
@@ -252,18 +253,75 @@ module.exports = {
       .query("activityassignee", PLUGIN)
       .find({ activity_batch_in: activityBatchIds });
 
+    const userIds = await strapi.plugins[
+      "crm-plugin"
+    ].services.contact.getUsers(collegeId);
+
+    // Filtering educations and get contactIds who is eligible
+    const educationFilter = {
+      start: 0,
+      limit: -1,
+      where: [
+        { field: "contact.user.id", operator: "in", value: userIds },
+        {
+          field: "education_year",
+          operator: "eq",
+          value: _.toLower(education_year)
+        },
+        {
+          field: "year_of_passing.id",
+          operator: "eq",
+          value: academic_year.id
+        }
+      ]
+    };
+
+    // Filtering student with respect to education
+    const educations = await strapi
+      .query("education")
+      .model.query(
+        buildQuery({
+          model: strapi.query("education").model,
+          filters: educationFilter
+        })
+      )
+      .fetchAll({ withRelated: [] })
+      .then(model => {
+        return model.toJSON().map(education => education.contact);
+      });
+
     let allStudents;
     if (activityBatch.length && activityBatchAttendance.length) {
-      // Only get college student for given college Id
-      // Get all student who are not in any activity batch
-      const userIds = await strapi.plugins[
-        "crm-plugin"
-      ].services.contact.getUsers(collegeId);
+      /**
+       * Get all student who fulfill education criteria
+       * then filter student who already present in different activity batch
+       * and individuals who are verified
+       */
+
       const studentIds = activityBatchAttendance.map(ab => ab.contact.id);
+
+      const studentFilter = [
+        { field: "id", operator: "in", value: educations },
+        { field: "id", operator: "nin", value: studentIds },
+        { field: "individual.is_verified", operator: "eq", value: true }
+      ];
+
+      if (filters.where && filters.where.length > 0) {
+        filters.where = [...filters.where, ...studentFilter];
+      } else {
+        filters.where = [...studentFilter];
+      }
 
       let students = await strapi
         .query("contact", PLUGIN)
-        .find({ user_in: userIds, id_nin: studentIds });
+        .model.query(
+          buildQuery({
+            model: strapi.query("contact", PLUGIN).model,
+            filters
+          })
+        )
+        .fetchAll()
+        .then(model => model.toJSON());
 
       students = students.map(student => {
         student.user = sanitizeUser(student.user);
@@ -272,15 +330,31 @@ module.exports = {
 
       allStudents = students;
     } else {
-      // Get all users Ids belongs to college
-      const userIds = await strapi.plugins[
-        "crm-plugin"
-      ].services.contact.getUsers(collegeId);
+      /**
+       * Filter students who has fulfilled education criteria and who are verified
+       */
+      const studentFilter = [
+        { field: "id", operator: "in", value: educations },
+        { field: "individual.is_verified", operator: "eq", value: true }
+      ];
+
+      if (filters.where && filters.where.length > 0) {
+        filters.where = [...filters.where, ...studentFilter];
+      } else {
+        filters.where = [...studentFilter];
+      }
 
       let students = await strapi
         .query("contact", PLUGIN)
-        .find({ user_in: userIds });
-
+        .model.query(
+          buildQuery({
+            model: strapi.query("contact", PLUGIN).model,
+            filters
+          })
+        )
+        .fetchAll()
+        .then(model => model.toJSON());
+      console.log(students.length);
       students = students.map(student => {
         student.user = sanitizeUser(student.user);
         return student;
@@ -289,8 +363,8 @@ module.exports = {
       allStudents = students;
     }
 
-    // Filter student with stream and education year
-    let isStreamEligible, isEducationEligible;
+    // Filter student with stream
+    let isStreamEligible;
 
     let filtered = [];
     await utils.asyncForEach(allStudents, async student => {
@@ -308,30 +382,7 @@ module.exports = {
         isStreamEligible = false;
       }
 
-      const educations = await strapi
-        .query("education")
-        .find({ contact: student.id });
-
-      const { education_year, academic_year } = activity;
-      isEducationEligible = true;
-
-      const isEducationPresent = educations.find(ah => {
-        if (
-          _.toLower(ah.education_year) == _.toLower(education_year) &&
-          ah.year_of_passing.id == academic_year.id
-        )
-          return ah;
-      });
-
-      if (!isEducationPresent) {
-        isEducationEligible = false;
-      }
-
-      if (
-        isStreamEligible &&
-        isEducationEligible &&
-        student.individual.is_verified
-      ) {
+      if (isStreamEligible) {
         filtered.push(student);
       }
     });

@@ -218,17 +218,17 @@ const RegistrationSchema = {
   //   validations: {}
   // },
   rollnumber: {
-    label: "Roll Number",
-    id: "rollnumber",
-    autoComplete: "rollnumber",
+    label: "Enrollment Number",
+    id: "Enrollmentnumber",
+    autoComplete: "Enrollment Number",
     required: true,
-    placeholder: "rollnumber",
+    placeholder: "Enrollment Number",
     autoFocus: true,
     type: "text",
     validations: {
       required: {
         value: "true",
-        message: "Enrollment number is required"
+        message: "Enrollment Number is required"
       }
     }
   },

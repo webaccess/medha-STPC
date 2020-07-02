@@ -189,11 +189,11 @@ const StudentProfileSchema = {
   //   validations: {}
   // },
   rollnumber: {
-    label: "Roll Number",
+    label: "Enrollment Number",
     id: "rollnumber",
     autoComplete: "rollnumber",
     required: true,
-    placeholder: "rollnumber",
+    placeholder: "Enrollment Number",
     autoFocus: true,
     type: "integer",
     validations: {}

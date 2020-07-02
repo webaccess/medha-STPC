@@ -45,13 +45,14 @@ module.exports = async (ctx, next) => {
       if (!individual.organization)
         return ctx.response.badRequest("College field is missing");
       if (!individual.roll_number)
-        return ctx.response.badRequest("Roll Number field is missing");
+        return ctx.response.badRequest("Enrollment Number field is missing");
       else {
         const user = await strapi.query("individual", PLUGIN).findOne({
           organization: individual.organization,
           roll_number: individual.roll_number
         });
-        if (user) return ctx.response.badRequest("Roll number already taken");
+        if (user)
+          return ctx.response.badRequest("Enrollment number already taken");
       }
 
       // if (!individual.username)
@@ -177,14 +178,15 @@ module.exports = async (ctx, next) => {
 
       if (!fromuser) {
         if (!individual.roll_number)
-          return ctx.response.badRequest("Roll Number field is missing");
+          return ctx.response.badRequest("Enrollment Number field is missing");
         else {
           const user = await strapi.query("individual", PLUGIN).findOne({
             id_nin: [contact.individual.id],
             organization: individual.organization,
             roll_number: individual.roll_number
           });
-          if (user) return ctx.response.badRequest("Roll number already taken");
+          if (user)
+            return ctx.response.badRequest("Enrollment number already taken");
         }
       }
       await next();
