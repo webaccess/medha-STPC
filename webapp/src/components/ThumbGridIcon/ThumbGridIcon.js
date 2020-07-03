@@ -7,7 +7,7 @@ const ThumbIcon = props => {
       title={
         props.style ? (
           <React.Fragment>
-            <Typography color="inherit">DeHire</Typography>
+            <Typography color="inherit">Dehire</Typography>
           </React.Fragment>
         ) : (
           <React.Fragment>
