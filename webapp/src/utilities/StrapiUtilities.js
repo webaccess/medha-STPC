@@ -392,7 +392,8 @@ export const addEducation = (
   board,
   otherQualification,
   marksObtained,
-  totalMarks
+  totalMarks,
+  otherboard
 ) => {
   return {
     year_of_passing: yearOfPassing,
@@ -404,7 +405,8 @@ export const addEducation = (
     board,
     other_qualification: otherQualification,
     marks_obtained: parseInt(marksObtained),
-    total_marks: parseInt(totalMarks)
+    total_marks: parseInt(totalMarks),
+    other_board: otherboard
   };
 };
 
