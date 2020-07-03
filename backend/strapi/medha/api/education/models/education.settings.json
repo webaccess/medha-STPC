@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "connection": "default",
   "collectionName": "educations",
   "info": {
@@ -28,6 +29,7 @@
       "type": "enumeration",
       "enum": [
         "secondary",
+        "graduation",
         "senior_secondary",
         "undergraduate",
         "postgraduate",
@@ -56,6 +58,9 @@
     },
     "total_marks": {
       "type": "integer"
+    },
+    "other_board": {
+      "type": "string"
     }
   }
 }

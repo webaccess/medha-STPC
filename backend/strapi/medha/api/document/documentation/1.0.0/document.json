@@ -626,6 +626,9 @@
               },
               "total_marks": {
                 "type": "integer"
+              },
+              "other_board": {
+                "type": "string"
               }
             }
           },

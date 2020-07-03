@@ -63,7 +63,8 @@ const AddEditEducation = props => {
     isSuccess: false,
     isEditEducation: props["editEducation"] ? props["editEducation"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0
+    counter: 0,
+    otherId: 0
   });
 
   const [boards, setBoards] = useState([]);
@@ -178,6 +179,19 @@ const AddEditEducation = props => {
     axios
       .get(url)
       .then(({ data }) => {
+        if (link === "boards") {
+          const id = data.result
+            .map(board => {
+              console.log(board);
+              if (board.name === "Other") return board.id;
+            })
+            .filter(c => c);
+
+          setFormState(formState => ({
+            ...formState,
+            otherId: id[0]
+          }));
+        }
         const list = data.result;
         setList(list);
       })
@@ -339,6 +353,24 @@ const AddEditEducation = props => {
       };
     }
 
+    if (formState.values[board] === formState.otherId) {
+      defaultSchema["otherboard"] = {
+        label: "Other Board",
+        id: "otherboard",
+        autoComplete: "otherboard",
+        required: true,
+        placeholder: "Other board",
+        autoFocus: true,
+        type: "text",
+        validations: {
+          required: {
+            value: "true",
+            message: "Other board is required"
+          }
+        }
+      };
+    }
+
     if (
       isQualificationReq == "secondary" ||
       isQualificationReq == "senior_secondary"
@@ -394,7 +426,8 @@ const AddEditEducation = props => {
       formState.values[board],
       formState.values["otherQualification"],
       formState.values[marksObtained],
-      formState.values[totalMarks]
+      formState.values[totalMarks],
+      formState.values["otherboard"]
     );
     // Adding student id to post data
     postData.contact = studentInfo;
@@ -752,7 +785,31 @@ const AddEditEducation = props => {
                     )}
                   />
                 </Grid>
-
+                {formState.values[board] == formState.otherId ? (
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      fullWidth
+                      id="otherboard"
+                      label="Other board"
+                      margin="normal"
+                      name="otherboard"
+                      onChange={handleChange}
+                      required
+                      type="text"
+                      value={formState.values["otherboard"] || ""}
+                      error={hasError("otherboard")}
+                      helperText={
+                        hasError("otherboard")
+                          ? formState.errors["otherboard"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                      className={classes.elementroot}
+                    />
+                  </Grid>
+                ) : null}
                 <Grid item md={12} xs={12}>
                   <div className={classes.FlexGrow}>
                     <Grid container>

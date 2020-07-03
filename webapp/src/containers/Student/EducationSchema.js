@@ -74,6 +74,16 @@ const EducationSchema = {
       }
     }
   },
+  otherboard: {
+    label: "Other Board",
+    id: "otherboard",
+    autoComplete: "otherboard",
+    required: true,
+    placeholder: "otherboard",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
   institute: {
     label: "Institute",
     id: "institute",
