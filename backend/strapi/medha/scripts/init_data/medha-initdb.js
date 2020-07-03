@@ -302,28 +302,28 @@ async function zones() {
 async function rpcs() {
   console.log("RPCs");
   await utils.asyncForEach(COUNTRIES, async c => {
-    if (c.rpcs !== undefined && c.rpcs !== null && c.rpcs.length) {
-      const { states } = c;
-      const isCountryPresent = await bookshelf
-        .model("country")
-        .where({ name: c.name })
-        .fetch();
+    const { states } = c;
+    const isCountryPresent = await bookshelf
+      .model("country")
+      .where({ name: c.name })
+      .fetch();
 
-      if (isCountryPresent) {
-        await utils.asyncForEach(states, async s => {
-          const { rpcs } = s;
-          const isStatePresent = await bookshelf
-            .model("state")
-            .where({ name: s.name })
-            .fetch();
+    if (isCountryPresent) {
+      await utils.asyncForEach(states, async s => {
+        const { rpcs } = s;
+        const isStatePresent = await bookshelf
+          .model("state")
+          .where({ name: s.name })
+          .fetch();
 
-          if (isStatePresent) {
-            const state = isStatePresent.toJSON
-              ? isStatePresent.toJSON()
-              : isStatePresent;
+        if (isStatePresent) {
+          const state = isStatePresent.toJSON
+            ? isStatePresent.toJSON()
+            : isStatePresent;
 
-            // RPCs
+          // RPCs
 
+          if (rpcs) {
             await utils.asyncForEach(rpcs, async rpc => {
               const isRPCPresent = await bookshelf
                 .model("rpc")
@@ -346,8 +346,8 @@ async function rpcs() {
               }
             });
           }
-        });
-      }
+        }
+      });
     }
   });
 }
