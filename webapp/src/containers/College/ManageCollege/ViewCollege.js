@@ -424,11 +424,25 @@ const ViewCollege = props => {
                                   />
                                 </Grid>
 
-                                <Grid item xs={6}>
+                                <Grid item xs={2}>
                                   <ReadOnlyTextField
-                                    id={"trength" + value.strength}
-                                    label="Strength"
-                                    defaultValue={value.strength}
+                                    id={"first_year_strength" + value.strength}
+                                    label="First Year Strength"
+                                    defaultValue={value.first_year_strength}
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <ReadOnlyTextField
+                                    id={"second_year_strength" + value.strength}
+                                    label="Second Year Strength"
+                                    defaultValue={value.second_year_strength}
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <ReadOnlyTextField
+                                    id={"third_year_strength" + value.strength}
+                                    label="Third Year Strength"
+                                    defaultValue={value.third_year_strength}
                                   />
                                 </Grid>
                               </Grid>

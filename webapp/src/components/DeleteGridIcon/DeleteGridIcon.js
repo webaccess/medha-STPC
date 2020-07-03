@@ -6,7 +6,7 @@ const DeleteGridIcon = props => {
     <Tooltip
       title={
         <React.Fragment>
-          <Typography color="inherit">Delete</Typography>
+          <Typography color="inherit">{props.title || "Delete"}</Typography>
         </React.Fragment>
       }
       placement="top"

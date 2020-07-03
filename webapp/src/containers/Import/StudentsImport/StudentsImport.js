@@ -320,6 +320,7 @@ const StudentsImport = props => {
             <div className={classes.PaddingFirstActionButton}>
               <DeleteGridIcon
                 id={cell.id}
+                title={"Clear history: Imported records will not be affected."}
                 value={cell.imported_file.name}
                 onClick={() => deleteFile(cell.id)}
               />

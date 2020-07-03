@@ -94,7 +94,20 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: "#f6c80a"
     }
   },
-
+  greenButton: {
+    backgroundColor: "#43a047",
+    color: "#fff",
+    borderRadius: "3px",
+    float: "right",
+    // padding: "0px 12px",
+    textTransform: "capitalize",
+    fontSize: "13px",
+    fontWeight: "700",
+    "&:hover": {
+      background: "#000",
+      color: "#fff"
+    }
+  },
   ProgressBar: {
     marginLeft: "2%",
     paddingRight: "20px",
