@@ -46,6 +46,7 @@ import ViewFeedBack from "../../containers/Feedback/ViewFeedback/ViewFeedback";
 import auth from "../../components/Auth";
 import AddEditFeedBack from "../Feedback/AddFeedback/AddFeedback";
 import NoFeedback from "../Feedback/NoFeedback/NoFeedback";
+import { startCase } from "lodash";
 
 const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
@@ -927,7 +928,7 @@ const ViewActivity = props => {
       name: "Status",
       sortable: true,
       selector: "status",
-      cell: row => <ToolTipComponent data={row.status} />
+      cell: row => <ToolTipComponent data={startCase(row.status)} />
     },
     {
       name: "Actions",
