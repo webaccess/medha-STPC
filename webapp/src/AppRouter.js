@@ -163,11 +163,10 @@ const AppRouter = props => {
           path={routeConstants.CHANGE_CONTACT_NUMBER}
         />
 
-        <RouteWithLayout
+        <Route
+          path={routeConstants.CHANGED_CONTACT_NUMBER}
           component={ContactChanged}
           exact
-          layout={Layout}
-          path={routeConstants.CHANGED_CONTACT_NUMBER}
         />
 
         <RequestOtp path={routeConstants.REQUEST_OTP} layout={Layout} exact />
