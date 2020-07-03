@@ -16,6 +16,7 @@ import {
   AlertMessage,
   ToolTipComponent
 } from "../../../../components";
+import _ from "lodash";
 import ApprovedStudents from "./ApprovedStudents";
 import DeleteStudents from "./DeleteStudents";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -23,7 +24,7 @@ import * as formUtilities from "../../../../utilities/FormUtilities";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as genericConstants from "../../../../constants/GenericConstants";
 import * as routeConstants from "../../../../constants/RouteConstants";
-
+import GetAppIcon from "@material-ui/icons/GetApp";
 import CloseIcon from "@material-ui/icons/Close";
 import {
   TextField,
@@ -42,6 +43,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import LoaderContext from "../../../../context/LoaderContext";
+import * as XLSX from "xlsx";
 
 const STREAMS_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS;
@@ -748,6 +750,75 @@ const ManageStudents = props => {
     }
   ];
 
+  const downloadStudentFile = () => {
+    const url =
+      strapiConstants.STRAPI_DB_URL +
+      strapiConstants.STRAPI_COLLEGES +
+      "/" +
+      auth.getUserInfo().studentInfo.organization.id +
+      "/" +
+      strapiConstants.STRAPI_STUDENTS +
+      "?pageSize=-1";
+    setLoaderStatus(true);
+    serviceProviders
+      .serviceProviderForGetRequest(url)
+      .then(({ data }) => {
+        setLoaderStatus(false);
+        if (data.result) {
+          let wb = XLSX.utils.book_new();
+
+          if (data) {
+            const student = _.reduce(
+              data.result,
+              (result, student) => {
+                const data = {
+                  "First Name": student.first_name,
+                  "Middle Name": student.middle_name,
+                  "Last Name": student.last_name,
+                  "Date Of Birth": new Date(student.date_of_birth),
+                  Stream: student.stream.name,
+                  "Enrollment Number": student.roll_number,
+                  College: student.organization.name,
+                  "Contact Number": student.contact.phone,
+                  "Father Name": student.father_full_name,
+                  "Mother Name": student.mother_full_name,
+                  Address: student.contact.address,
+                  Gender: student.gender
+                };
+
+                result.push(data);
+                return result;
+              },
+              []
+            );
+            const headers = [
+              "First Name",
+              "Middle Name",
+              "Last Name",
+              "Date Of Birth(MM/DD/YY)",
+              "Stream",
+              "Enrollment Number",
+              "College",
+              "Contact Number",
+              "Father Name",
+              "Mother Name",
+              "Address",
+              "Gender"
+            ];
+            let workSheetName = "Students";
+            let ws = XLSX.utils.json_to_sheet(student, ...headers);
+            wb.SheetNames.push(workSheetName);
+            wb.Sheets[workSheetName] = ws;
+
+            XLSX.writeFile(wb, "students.csv", { bookType: "csv" });
+          }
+        }
+      })
+      .catch(error => {
+        setLoaderStatus(false);
+      });
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -1148,6 +1219,16 @@ const ManageStudents = props => {
             modalClose={modalClose}
             clearSelectedRow={selectedRowCleared}
           />
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            className={classes.greenButton}
+            startIcon={<GetAppIcon />}
+            onClick={downloadStudentFile}
+            greenButtonChecker={formState.greenButtonChecker}
+          >
+            Download
+          </GreenButton>
         </Card>
       </Grid>
     </Grid>

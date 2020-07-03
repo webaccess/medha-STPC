@@ -4652,7 +4652,8 @@ const BOARDS = [
   "BIEAP",
   "BSEAP",
   "WBBSE",
-  "WBCSHE"
+  "WBCSHE",
+  "BTEUP"
 ];
 
 module.exports = {
