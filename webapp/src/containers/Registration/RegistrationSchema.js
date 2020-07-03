@@ -224,7 +224,7 @@ const RegistrationSchema = {
     required: true,
     placeholder: "Enrollment Number",
     autoFocus: true,
-    type: "integer",
+    type: "text",
     validations: {
       required: {
         value: "true",
