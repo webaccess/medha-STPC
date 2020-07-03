@@ -126,5 +126,8 @@ module.exports = {
   getErrorResponse,
   sort,
   merge: _.merge,
-  getMonthsBetweenDates
+  getMonthsBetweenDates,
+  lowerCase: _.lowerCase,
+  head: _.head,
+  last: _.last
 };
