@@ -22,8 +22,14 @@ module.exports = async (ctx, next) => {
       return ctx.response.badRequest("Year Of Passing is compulsory");
     }
 
-    if (!board) {
-      return ctx.response.badRequest("Board is compulsory");
+    if (
+      qualification == "secondary" &&
+      qualification == "senior_secondary" &&
+      !board
+    ) {
+      return ctx.response.badRequest(
+        "Board is compulsory for qualification 10th and 12th"
+      );
     }
 
     const _board = await strapi.query("board").findOne({ id: board });

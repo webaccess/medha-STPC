@@ -1154,6 +1154,18 @@ const ManageStudents = props => {
                   {genericConstants.RESET_BUTTON_TEXT}
                 </GrayButton>
               </Grid>
+              <Grid item className={classes.filterButtonsMargin}>
+                <GreenButton
+                  variant="contained"
+                  color="secondary"
+                  className={classes.greenButton}
+                  startIcon={<GetAppIcon />}
+                  onClick={downloadStudentFile}
+                  greenButtonChecker={formState.greenButtonChecker}
+                >
+                  Download
+                </GreenButton>
+              </Grid>
             </Grid>
           </CardContent>
         </Card>
@@ -1219,16 +1231,6 @@ const ManageStudents = props => {
             modalClose={modalClose}
             clearSelectedRow={selectedRowCleared}
           />
-          <GreenButton
-            variant="contained"
-            color="secondary"
-            className={classes.greenButton}
-            startIcon={<GetAppIcon />}
-            onClick={downloadStudentFile}
-            greenButtonChecker={formState.greenButtonChecker}
-          >
-            Download
-          </GreenButton>
         </Card>
       </Grid>
     </Grid>

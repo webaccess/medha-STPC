@@ -1,6 +1,14 @@
 const PLUGIN_NAME = "crm-plugin";
 
 const ACADEMIC_YEARS = [
+  { name: "AY 05-06", start_date: "2005-06-01", end_date: "2006-05-31" },
+  { name: "AY 06-07", start_date: "2006-06-01", end_date: "2007-05-31" },
+  { name: "AY 07-08", start_date: "2007-06-01", end_date: "2008-05-31" },
+  { name: "AY 08-09", start_date: "2008-06-01", end_date: "2009-05-31" },
+  { name: "AY 09-10", start_date: "2009-06-01", end_date: "2010-05-31" },
+  { name: "AY 10-11", start_date: "2010-06-01", end_date: "2011-05-31" },
+  { name: "AY 11-12", start_date: "2011-06-01", end_date: "2012-05-31" },
+  { name: "AY 12-13", start_date: "2012-06-01", end_date: "2013-05-31" },
   { name: "AY 13-14", start_date: "2013-06-01", end_date: "2014-05-31" },
   { name: "AY 14-15", start_date: "2014-06-01", end_date: "2015-05-31" },
   { name: "AY 15-16", start_date: "2015-06-01", end_date: "2016-05-31" },
@@ -12,7 +20,12 @@ const ACADEMIC_YEARS = [
   { name: "AY 21-22", start_date: "2021-06-01", end_date: "2022-05-31" },
   { name: "AY 22-23", start_date: "2022-06-01", end_date: "2023-05-31" },
   { name: "AY 23-24", start_date: "2023-06-01", end_date: "2024-05-31" },
-  { name: "AY 24-25", start_date: "2024-06-01", end_date: "2025-05-31" }
+  { name: "AY 24-25", start_date: "2024-06-01", end_date: "2025-05-31" },
+  { name: "AY 25-26", start_date: "2025-06-01", end_date: "2026-05-31" },
+  { name: "AY 26-27", start_date: "2026-06-01", end_date: "2027-05-31" },
+  { name: "AY 27-28", start_date: "2027-06-01", end_date: "2028-05-31" },
+  { name: "AY 28-29", start_date: "2028-06-01", end_date: "2029-05-31" },
+  { name: "AY 29-30", start_date: "2029-06-01", end_date: "2030-05-31" }
 ];
 
 const FUTURE_ASPIRATIONS = [
@@ -4256,6 +4269,16 @@ const ROLES = {
         action: ["create", "update", "delete"]
       },
       {
+        name: "otp",
+        action: [
+          "requestotp",
+          "validateotp",
+          "requestotpforstudent",
+          "checkotp",
+          "updatecontact"
+        ]
+      },
+      {
         name: "event",
         action: ["findone", "getquestionset"]
       },
@@ -4410,6 +4433,10 @@ const ROLES = {
       },
       {
         name: "activity-batch",
+        action: []
+      },
+      {
+        name: "otp",
         action: []
       },
       {
