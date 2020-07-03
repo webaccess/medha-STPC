@@ -177,12 +177,32 @@ const CollegeFormSchema = {
     type: "text",
     validations: {}
   },
-  strength: {
+  first_year_strength: {
     label: "Strength",
     id: "streams",
     autoComplete: "strength",
     required: false,
-    placeholder: "Enter Strength",
+    placeholder: "First Year Strength",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  second_year_strength: {
+    label: "Strength",
+    id: "streams",
+    autoComplete: "strength",
+    required: false,
+    placeholder: "Second Year Strength",
+    autoFocus: true,
+    type: "text",
+    validations: {}
+  },
+  third_year_strength: {
+    label: "Strength",
+    id: "streams",
+    autoComplete: "strength",
+    required: false,
+    placeholder: "Third Year Strength",
     autoFocus: true,
     type: "text",
     validations: {}
