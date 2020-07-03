@@ -171,7 +171,10 @@ const AddEditEducation = props => {
   }, [formState.values[qualification]]);
 
   const fetchDropdowns = (link, setList) => {
-    const url = strapiConstants.STRAPI_DB_URL + link;
+    const url =
+      strapiConstants.STRAPI_DB_URL +
+      link +
+      "?pageSize=-1&_sort=start_date:asc";
     axios
       .get(url)
       .then(({ data }) => {
