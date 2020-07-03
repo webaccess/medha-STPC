@@ -56,7 +56,9 @@ const regexForPercentage = new RegExp("^[1-9][0-9]*$");
 
 /** Dynamic Bar */
 const streams = "streams";
-const strength = "strength";
+const firstYearStrength = "first_year_strength";
+const secondYearStrength = "second_year_strength";
+const thirdYearStrength = "third_year_strength";
 
 const STATES_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
@@ -208,9 +210,15 @@ const AddEditCollege = props => {
           tempDynamicBarrValue["index"] = Math.random();
           tempDynamicBarrValue[streams] =
             props["dataForEdit"]["stream_strength"][i]["stream"]["id"];
-          tempDynamicBarrValue[strength] = props["dataForEdit"][
+          tempDynamicBarrValue[firstYearStrength] = props["dataForEdit"][
             "stream_strength"
-          ][i]["strength"].toString();
+          ][i]["first_year_strength"].toString();
+          tempDynamicBarrValue[secondYearStrength] = props["dataForEdit"][
+            "stream_strength"
+          ][i]["second_year_strength"].toString();
+          tempDynamicBarrValue[thirdYearStrength] = props["dataForEdit"][
+            "stream_strength"
+          ][i]["third_year_strength"].toString();
           dynamicBar.push(tempDynamicBarrValue);
         }
         formState.dynamicBar = dynamicBar;
@@ -726,13 +734,27 @@ const AddEditCollege = props => {
     formState.dynamicBar.map(value => {
       let valueToPutInDynmicBarError = {};
       valueToPutInDynmicBarError["index"] = value["index"];
-      /** Validate dynamikc bar */
-      if (value.hasOwnProperty(streams) && !value.hasOwnProperty(strength)) {
-        valueToPutInDynmicBarError[strength] =
-          "Strength is required as Stream is present";
+      /** Validate dyanmic bar */
+      if (
+        value.hasOwnProperty(streams) &&
+        (!value.hasOwnProperty(firstYearStrength) ||
+          !value.hasOwnProperty(secondYearStrength) ||
+          !value.hasOwnProperty(thirdYearStrength))
+      ) {
+        if (!value.hasOwnProperty(firstYearStrength))
+          valueToPutInDynmicBarError[firstYearStrength] = "Required";
+
+        if (!value.hasOwnProperty(secondYearStrength))
+          valueToPutInDynmicBarError[secondYearStrength] = "Required";
+
+        if (!value.hasOwnProperty(thirdYearStrength))
+          valueToPutInDynmicBarError[thirdYearStrength] = "Required";
+
         validationCounter += 1;
       } else if (
-        value.hasOwnProperty(strength) &&
+        value.hasOwnProperty(firstYearStrength) &&
+        value.hasOwnProperty(secondYearStrength) &&
+        value.hasOwnProperty(thirdYearStrength) &&
         !value.hasOwnProperty(streams)
       ) {
         valueToPutInDynmicBarError[streams] =
@@ -778,6 +800,8 @@ const AddEditCollege = props => {
         CollegeFormSchema
       );
     }
+
+    console.log(isDynamicBarValid);
     /** Check if both form and dynamicBar id valid */
     if (isValid && isDynamicBarValid) {
       postCollegeData();
@@ -816,9 +840,20 @@ const AddEditCollege = props => {
     let streamStrengthArrayValues = [];
     formState.dynamicBar.map(field => {
       let streamStrengthValue = {};
-      if (field.hasOwnProperty(streams) && field.hasOwnProperty(strength)) {
+      if (
+        field.hasOwnProperty(streams) &&
+        field.hasOwnProperty(firstYearStrength)
+      ) {
         streamStrengthValue["stream"] = field[streams];
-        streamStrengthValue["strength"] = parseInt(field[strength]);
+        streamStrengthValue["first_year_strength"] = parseInt(
+          field[firstYearStrength]
+        );
+        streamStrengthValue["second_year_strength"] = parseInt(
+          field[secondYearStrength]
+        );
+        streamStrengthValue["third_year_strength"] = parseInt(
+          field[thirdYearStrength]
+        );
         streamStrengthArrayValues.push(streamStrengthValue);
       }
     });
@@ -843,6 +878,7 @@ const AddEditCollege = props => {
       streamStrengthArray,
       formState.values[tpos] ? formState.values[tpos] : []
     );
+    console.log(postData);
     setLoaderStatus(true);
     if (formState.isEditCollege) {
       let EDIT_COLLEGE_URL =
@@ -1517,7 +1553,7 @@ const AddEditCollege = props => {
             ) : null}
 
             <Divider className={classes.divider} />
-            <Grid item xs={12} md={6} xl={3}>
+            <Grid item xs={12} md={10} xl={8}>
               <Grid container spacing={1} className={classes.formgrid}>
                 <Grid item md={12} xs={12} className={classes.streamcard}>
                   <Card className={classes.streamoffer}>
@@ -1530,7 +1566,9 @@ const AddEditCollege = props => {
 
                     {formState.dynamicBar.map((val, idx) => {
                       let streamId = `stream-${idx}`,
-                        strengthId = `strength-${idx}`;
+                        firstYearStrengthId = `first-year-strength-${idx}`,
+                        secondYearStrengthId = `second-year-strength-${idx}`,
+                        thirdYearStrengthId = `third-year-strength-${idx}`;
                       return (
                         <Card
                           id="outlined-stream-card"
@@ -1540,7 +1578,7 @@ const AddEditCollege = props => {
                         >
                           <CardContent>
                             <Grid container spacing={1}>
-                              <Grid item xs={5}>
+                              <Grid item xs={4}>
                                 <FormControl
                                   variant="outlined"
                                   fullWidth
@@ -1617,38 +1655,135 @@ const AddEditCollege = props => {
                                 </FormControl>
                               </Grid>
                               {/** Need to map streams with strength */}
-                              <Grid item xs={5}>
+                              <Grid item xs={2}>
                                 <TextField
-                                  label="Strength"
-                                  name={strengthId}
+                                  label="First Year Strength"
+                                  name={firstYearStrengthId}
                                   variant="outlined"
                                   fullWidth
                                   data-id={idx}
-                                  id={strengthId}
+                                  id={firstYearStrengthId}
                                   value={
-                                    formState.dynamicBar[idx][strength] || ""
+                                    formState.dynamicBar[idx][
+                                      firstYearStrength
+                                    ] || ""
                                   }
                                   error={
-                                    checkErrorInDynamicBar(strength, val)[
-                                      "error"
-                                    ]
+                                    checkErrorInDynamicBar(
+                                      firstYearStrength,
+                                      val
+                                    )["error"]
                                   }
                                   helperText={
-                                    checkErrorInDynamicBar(strength, val)[
-                                      "error"
-                                    ]
-                                      ? checkErrorInDynamicBar(strength, val)[
-                                          "value"
-                                        ]
+                                    checkErrorInDynamicBar(
+                                      firstYearStrength,
+                                      val
+                                    )["error"]
+                                      ? checkErrorInDynamicBar(
+                                          firstYearStrength,
+                                          val
+                                        )["value"]
                                       : null
                                   }
                                   placeholder={get(
-                                    CollegeFormSchema[strength],
+                                    CollegeFormSchema[firstYearStrength],
                                     "placeholder"
                                   )}
                                   onChange={event => {
                                     handleChangeForDynamicGrid(
-                                      strength,
+                                      firstYearStrength,
+                                      event,
+                                      null,
+                                      val,
+                                      false,
+                                      true
+                                    );
+                                  }}
+                                />
+                              </Grid>
+                              <Grid item xs={2}>
+                                <TextField
+                                  label="Second Year Strength"
+                                  name={secondYearStrengthId}
+                                  variant="outlined"
+                                  fullWidth
+                                  data-id={idx}
+                                  id={secondYearStrengthId}
+                                  value={
+                                    formState.dynamicBar[idx][
+                                      secondYearStrength
+                                    ] || ""
+                                  }
+                                  error={
+                                    checkErrorInDynamicBar(
+                                      secondYearStrength,
+                                      val
+                                    )["error"]
+                                  }
+                                  helperText={
+                                    checkErrorInDynamicBar(
+                                      secondYearStrength,
+                                      val
+                                    )["error"]
+                                      ? checkErrorInDynamicBar(
+                                          secondYearStrength,
+                                          val
+                                        )["value"]
+                                      : null
+                                  }
+                                  placeholder={get(
+                                    CollegeFormSchema[secondYearStrength],
+                                    "placeholder"
+                                  )}
+                                  onChange={event => {
+                                    handleChangeForDynamicGrid(
+                                      secondYearStrength,
+                                      event,
+                                      null,
+                                      val,
+                                      false,
+                                      true
+                                    );
+                                  }}
+                                />
+                              </Grid>
+                              <Grid item xs={2}>
+                                <TextField
+                                  label="Third Year Strength"
+                                  name={thirdYearStrengthId}
+                                  variant="outlined"
+                                  fullWidth
+                                  data-id={idx}
+                                  id={thirdYearStrengthId}
+                                  value={
+                                    formState.dynamicBar[idx][
+                                      thirdYearStrength
+                                    ] || ""
+                                  }
+                                  error={
+                                    checkErrorInDynamicBar(
+                                      thirdYearStrength,
+                                      val
+                                    )["error"]
+                                  }
+                                  helperText={
+                                    checkErrorInDynamicBar(
+                                      thirdYearStrength,
+                                      val
+                                    )["error"]
+                                      ? checkErrorInDynamicBar(
+                                          thirdYearStrength,
+                                          val
+                                        )["value"]
+                                      : null
+                                  }
+                                  placeholder={get(
+                                    CollegeFormSchema[thirdYearStrength],
+                                    "placeholder"
+                                  )}
+                                  onChange={event => {
+                                    handleChangeForDynamicGrid(
+                                      thirdYearStrength,
                                       event,
                                       null,
                                       val,

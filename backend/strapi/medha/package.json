@@ -17,6 +17,8 @@
     "buffer-from": "^1.1.1",
     "cross-env": "^7.0.2",
     "csv-parse": "^4.10.1",
+    "dotenv": "^8.2.0",
+    "find-config": "^1.0.0",
     "knex": "<0.20.0",
     "moment": "^2.27.0",
     "node-json-xlsx": "^0.2.2",

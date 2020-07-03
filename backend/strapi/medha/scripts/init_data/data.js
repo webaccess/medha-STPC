@@ -4256,6 +4256,16 @@ const ROLES = {
         action: ["create", "update", "delete"]
       },
       {
+        name: "otp",
+        action: [
+          "requestotp",
+          "validateotp",
+          "requestotpforstudent",
+          "checkotp",
+          "updatecontact"
+        ]
+      },
+      {
         name: "event",
         action: ["findone", "getquestionset"]
       },
@@ -4410,6 +4420,10 @@ const ROLES = {
       },
       {
         name: "activity-batch",
+        action: []
+      },
+      {
+        name: "otp",
         action: []
       },
       {
@@ -4652,7 +4666,8 @@ const BOARDS = [
   "BIEAP",
   "BSEAP",
   "WBBSE",
-  "WBCSHE"
+  "WBCSHE",
+  "BTEUP"
 ];
 
 module.exports = {

@@ -10,7 +10,13 @@
     "stream": {
       "model": "stream"
     },
-    "strength": {
+    "first_year_strength": {
+      "type": "integer"
+    },
+    "second_year_strength": {
+      "type": "integer"
+    },
+    "third_year_strength": {
       "type": "integer"
     }
   }
