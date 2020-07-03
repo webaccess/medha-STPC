@@ -4,6 +4,7 @@ import { Tooltip, Typography } from "@material-ui/core";
 const HowToReg = props => {
   return (
     <Tooltip
+      id="howToReg-id"
       title={
         props.style ? (
           <React.Fragment>
