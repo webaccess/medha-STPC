@@ -9,6 +9,7 @@ const bookshelf = require("../../../config/bookshelf.js");
 const {
   PLUGIN,
   ROLE_MEDHA_ADMIN,
+  ROLE_DEPARTMENT_ADMIN,
   ROLE_COLLEGE_ADMIN,
   ROLE_ZONAL_ADMIN
 } = require("../../../config/constants");
@@ -51,7 +52,7 @@ module.exports = {
       PlannedWorkshops: 0
     };
     /** getting data for medha admin */
-    if (role === ROLE_MEDHA_ADMIN) {
+    if (role === ROLE_MEDHA_ADMIN || role === ROLE_DEPARTMENT_ADMIN) {
       // _.assign(query, { state: "1" }, { country: "1" });
       const data = await bookshelf
         .model("dashboard")
@@ -65,6 +66,7 @@ module.exports = {
             parseInt(dataToReturn[key], 10) + parseInt(dashboardData[key], 10);
         });
       });
+
       return dataToReturn;
     } else if (role === ROLE_COLLEGE_ADMIN) {
       if (query.isRpc) {

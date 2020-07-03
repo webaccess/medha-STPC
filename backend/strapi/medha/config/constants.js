@@ -1,4 +1,5 @@
 const ROLE_MEDHA_ADMIN = "Medha Admin";
+const ROLE_DEPARTMENT_ADMIN = "Department Admin";
 const ROLE_ADMIN = "Admin";
 const ROLE_ZONAL_ADMIN = "Zonal Admin";
 const ROLE_RPC_ADMIN = "RPC Admin";
@@ -40,6 +41,7 @@ const DASHBOARDKEYS = [
 ];
 
 module.exports = {
+  ROLE_DEPARTMENT_ADMIN,
   ROLE_MEDHA_ADMIN,
   ROLE_ADMIN,
   ROLE_ZONAL_ADMIN,
