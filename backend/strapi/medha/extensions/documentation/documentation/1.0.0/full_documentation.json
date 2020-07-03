@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "06/30/2020 4:56:59 PM"
+    "x-generation-date": "07/03/2020 5:41:28 PM"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -15965,6 +15965,9 @@
               },
               "total_marks": {
                 "type": "integer"
+              },
+              "other_board": {
+                "type": "string"
               }
             }
           },
@@ -16103,6 +16106,7 @@
             "type": "string",
             "enum": [
               "secondary",
+              "graduation",
               "senior_secondary",
               "undergraduate",
               "postgraduate",
@@ -16213,6 +16217,9 @@
           },
           "total_marks": {
             "type": "integer"
+          },
+          "other_board": {
+            "type": "string"
           }
         }
       },
@@ -16236,6 +16243,7 @@
             "type": "string",
             "enum": [
               "secondary",
+              "graduation",
               "senior_secondary",
               "undergraduate",
               "postgraduate",
@@ -16263,6 +16271,9 @@
           },
           "total_marks": {
             "type": "integer"
+          },
+          "other_board": {
+            "type": "string"
           }
         }
       },
