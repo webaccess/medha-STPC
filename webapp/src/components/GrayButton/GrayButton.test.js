@@ -3,7 +3,7 @@ import { shallow } from "enzyme";
 
 import GrayButton from "./GrayButton";
 
-describe("ContentPlaceholder Component Test Suite", () => {
+describe("Testing GrayButton", () => {
   let props;
   let wrapper;
 

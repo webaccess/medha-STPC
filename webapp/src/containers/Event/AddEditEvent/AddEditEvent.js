@@ -1238,7 +1238,7 @@ const AddEditEvent = props => {
     <Grid>
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
-          {genericConstants.ADD_EVENT_TEXT}
+          {props["editEvent"] ? "Edit Event" : genericConstants.ADD_EVENT_TEXT}
         </Typography>
       </Grid>
       <Grid spacing={3}>
