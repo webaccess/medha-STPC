@@ -126,10 +126,10 @@ const AddEditUser = props => {
 
   /** Part for editing user */
   if (formState.isEditUser && !formState.counter) {
-    // setLoaderStatus(true);
-    if (props["dataForEdit"] !== undefined) {
+    setLoaderStatus(true);
+    if (props["dataForEdit"]) {
       formState.values[password] = undefined;
-      if (props["dataForEdit"]["first_name"] !== undefined) {
+      if (props["dataForEdit"]["first_name"]) {
         formState.values[firstname] = props["dataForEdit"]["first_name"];
       }
       if (props["dataForEdit"]["last_name"]) {
