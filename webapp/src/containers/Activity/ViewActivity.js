@@ -495,7 +495,9 @@ const ViewActivity = props => {
          * Create worksheet for every batch
          * Add students list for respective batch
          */
+        console.log(data);
         const headers = [
+          "Contact Number",
           "Enrollment Number",
           "Name",
           "College",
