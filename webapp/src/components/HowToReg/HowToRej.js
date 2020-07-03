@@ -7,11 +7,11 @@ const HowToReg = props => {
       title={
         props.style ? (
           <React.Fragment>
-            <Typography color="inherit">Absent</Typography>
+            <Typography color="inherit">Mark Absent</Typography>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Typography color="inherit">Present</Typography>
+            <Typography color="inherit">Mark Present</Typography>
           </React.Fragment>
         )
       }

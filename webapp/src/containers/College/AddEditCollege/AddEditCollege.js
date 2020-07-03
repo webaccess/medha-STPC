@@ -52,7 +52,7 @@ const principal = "principal";
 const tpos = "tpos";
 const district = "district";
 const block = "block";
-const regexForPercentage = new RegExp("^[1-9][0-9]*$");
+const regexForPercentage = new RegExp("^[0-9][0-9]*$");
 
 /** Dynamic Bar */
 const streams = "streams";
@@ -800,8 +800,6 @@ const AddEditCollege = props => {
         CollegeFormSchema
       );
     }
-
-    console.log(isDynamicBarValid);
     /** Check if both form and dynamicBar id valid */
     if (isValid && isDynamicBarValid) {
       postCollegeData();
