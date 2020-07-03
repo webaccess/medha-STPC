@@ -550,7 +550,9 @@ const ViewRpc = props => {
                 </IconButton>
               }
             >
-              An error has occured while updating RPC. Kindly, try again.
+              {props.location.editResponseMessage
+                ? props.location.editResponseMessage
+                : "An error has occured while updating RPC. Kindly, try again."}
             </Alert>
           </Collapse>
         ) : null}

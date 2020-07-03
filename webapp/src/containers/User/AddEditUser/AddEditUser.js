@@ -100,18 +100,28 @@ const AddEditUser = props => {
     touched: {},
     errors: {},
     isSuccess: false,
-    showPassword: false,
+    showPassword: props.showPassword ? props.showPassword : false,
     isEditUser: props["editUser"] ? props["editUser"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0,
+    counter: props.counter ? props.counter : 0,
     isCollegeAdmin:
-      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? true : false
+      auth.getUserInfo() !== undefined &&
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
+      auth.getUserInfo().role.name !== undefined &&
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+        ? true
+        : false
   });
-  const [states, setStates] = useState([]);
-  const [zones, setZones] = useState([]);
-  const [rpcs, setRpcs] = useState([]);
-  const [colleges, setColleges] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [states, setStates] = useState(
+    props.stateOption ? props.stateOption : []
+  );
+  const [zones, setZones] = useState(props.zoneOption ? props.zoneOption : []);
+  const [rpcs, setRpcs] = useState(props.rpcOption ? props.rpcOption : []);
+  const [colleges, setColleges] = useState(
+    props.collegeOption ? props.collegeOption : []
+  );
+  const [roles, setRoles] = useState(props.option ? props.option : []);
   const [isDisable, setIsDisable] = useState(false);
 
   /** Part for editing user */
@@ -723,6 +733,7 @@ const AddEditUser = props => {
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <TextField
+                      id={get(UserSchema[firstname], "id")}
                       label={get(UserSchema[firstname], "label")}
                       placeholder={get(UserSchema[firstname], "placeholder")}
                       name={firstname}
@@ -743,6 +754,7 @@ const AddEditUser = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <TextField
+                      id={get(UserSchema[lastname], "id")}
                       label={get(UserSchema[lastname], "label")}
                       placeholder={get(UserSchema[lastname], "placeholder")}
                       name={lastname}
@@ -765,6 +777,7 @@ const AddEditUser = props => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <TextField
+                      id={get(UserSchema[email], "id")}
                       label={get(UserSchema[email], "label")}
                       placeholder={get(UserSchema[email], "placeholder")}
                       name={email}
@@ -787,6 +800,7 @@ const AddEditUser = props => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <TextField
+                      id={get(UserSchema[contact], "id")}
                       label={get(UserSchema[contact], "label")}
                       placeholder={get(UserSchema[contact], "placeholder")}
                       name={contact}
@@ -897,8 +911,10 @@ const AddEditUser = props => {
                   <Grid item md={4} xs={12}>
                     <FormGroup row>
                       <FormControlLabel
+                        id="blocked"
                         control={
                           <Switch
+                            id="blocked"
                             name={blocked}
                             checked={formState.values[blocked] || false}
                             onChange={handleChange}
