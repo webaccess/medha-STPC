@@ -111,6 +111,7 @@ module.exports = {
           abt => abt.contact.id == student.id
         );
         return {
+          "Contact Number": student.phone,
           "Roll Number": roll_number,
           Name: `${first_name} ${last_name}`,
           College: organization.name,

@@ -300,6 +300,11 @@ const ViewEducation = props => {
       cell: cell => (cell.pursuing ? "Yes" : "No")
     },
     {
+      name: "Institute",
+      sortable: true,
+      cell: cell => (cell.institute ? cell.institute : "-")
+    },
+    {
       name: "Actions",
       cell: cell => (
         <div className={classes.DisplayFlex}>

@@ -25,6 +25,7 @@ import auth from "../../../components/Auth/Auth.js";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LoaderContext from "../../../context/LoaderContext";
 import axios from "axios";
+import moment from "moment";
 
 const yearOfPassing = "yearOfPassing";
 const educationYear = "educationYear";
@@ -83,12 +84,15 @@ const AddEditEducation = props => {
       totalMarks > 0
     ) {
       const marks = (marksObtained / totalMarks) * 100;
-
+      delete formState.errors[percentage];
       setFormState(formState => ({
         ...formState,
         values: {
           ...formState.values,
           percentage: marks
+        },
+        errors: {
+          ...formState.errors
         }
       }));
     }
@@ -100,6 +104,21 @@ const AddEditEducation = props => {
       delete formState.values["marksObtained"];
       delete formState.values["totalMarks"];
       delete formState.values["percentage"];
+      delete formState.values["board"];
+
+      const currentAcademicYear = getCurrentAcademicYear();
+      const undergraduate = genericConstants.QUALIFICATION_LIST.find(
+        q => q.id == "undergraduate"
+      );
+
+      if (currentAcademicYear) {
+        formState.values[yearOfPassing] = currentAcademicYear.id;
+      }
+
+      if (undergraduate) {
+        formState.values[qualification] = undergraduate.id;
+      }
+
       setFormState(formState => ({
         ...formState,
         values: {
@@ -135,6 +154,20 @@ const AddEditEducation = props => {
         }
       }));
     }
+
+    if (
+      formState.values[qualification] == "undergraduate" ||
+      formState.values[qualification] == "postgraduate"
+    ) {
+      delete formState.errors[board];
+      delete formState.values[board];
+      setFormState(formState => ({
+        ...formState,
+        errors: {
+          ...formState.errors
+        }
+      }));
+    }
   }, [formState.values[qualification]]);
 
   const fetchDropdowns = (link, setList) => {
@@ -142,7 +175,7 @@ const AddEditEducation = props => {
     axios
       .get(url)
       .then(({ data }) => {
-        const list = data.result.map(({ id, name }) => ({ id, name }));
+        const list = data.result;
         setList(list);
       })
       .catch(error => {
@@ -313,6 +346,16 @@ const AddEditEducation = props => {
       };
     }
 
+    if (
+      isQualificationReq == "undergraduate" ||
+      isQualificationReq == "postgraduate"
+    ) {
+      defaultSchema[board] = {
+        ...defaultSchema[board],
+        required: false
+      };
+    }
+
     if (isPursuing) {
       defaultSchema[percentage] = {
         ...defaultSchema[percentage],
@@ -324,6 +367,10 @@ const AddEditEducation = props => {
       };
       defaultSchema[totalMarks] = {
         ...defaultSchema[totalMarks],
+        required: false
+      };
+      defaultSchema[board] = {
+        ...defaultSchema[board],
         required: false
       };
     }
@@ -419,7 +466,7 @@ const AddEditEducation = props => {
 
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
-    if (eventName === qualification) {
+    if (eventName === qualification && value) {
       if (value.id === "secondary" || value.id === "senior_secondary") {
         EducationSchema.qualification.required = false;
         EducationSchema.qualification.validations = {};
@@ -463,6 +510,20 @@ const AddEditEducation = props => {
     handleSubmit(event);
   };
 
+  const getCurrentAcademicYear = () => {
+    return academicYears.find(ay => {
+      const { start_date, end_date } = ay;
+
+      const start = moment(start_date);
+      const end = moment(end_date);
+      const current = moment();
+
+      if (moment(current).isBetween(start, end)) {
+        return ay;
+      }
+    });
+  };
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -483,11 +544,32 @@ const AddEditEducation = props => {
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
+                  <FormGroup row>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          name={pursuing}
+                          checked={formState.values[pursuing] || false}
+                          onChange={handleChange}
+                          value={formState.values[pursuing] || false}
+                        />
+                      }
+                      label={
+                        formState.values[pursuing] === true
+                          ? "Pursuing"
+                          : "Not Pursuing"
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+
+                <Grid item md={12} xs={12}>
                   <Autocomplete
                     id="year-of-passing"
                     className={classes.elementroot}
                     options={academicYears}
                     getOptionLabel={option => option.name}
+                    disabled={!!formState.values[pursuing]}
                     onChange={(event, value) => {
                       handleChangeAutoComplete(yearOfPassing, event, value);
                     }}
@@ -653,7 +735,7 @@ const AddEditEducation = props => {
                         {...params}
                         error={hasError(board)}
                         label="Board"
-                        required
+                        required={!formState.values[pursuing]}
                         variant="outlined"
                         name="tester"
                         helperText={
@@ -667,25 +749,7 @@ const AddEditEducation = props => {
                     )}
                   />
                 </Grid>
-                <Grid item md={12} xs={12}>
-                  <FormGroup row>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          name={pursuing}
-                          checked={formState.values[pursuing] || false}
-                          onChange={handleChange}
-                          value={formState.values[pursuing] || false}
-                        />
-                      }
-                      label={
-                        formState.values[pursuing] === true
-                          ? "Pursuing"
-                          : "Not Pursuing"
-                      }
-                    />
-                  </FormGroup>
-                </Grid>
+
                 <Grid item md={12} xs={12}>
                   <div className={classes.FlexGrow}>
                     <Grid container>
@@ -756,7 +820,7 @@ const AddEditEducation = props => {
                               : null
                           }
                           variant="outlined"
-                          disabled={false}
+                          disabled={!!formState.values[pursuing]}
                         />
                       </Grid>
                     </Grid>
