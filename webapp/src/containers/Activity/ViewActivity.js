@@ -496,7 +496,7 @@ const ViewActivity = props => {
          * Add students list for respective batch
          */
         const headers = [
-          "Roll Number",
+          "Enrollment Number",
           "Name",
           "College",
           "Stream",

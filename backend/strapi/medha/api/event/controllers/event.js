@@ -218,6 +218,11 @@ module.exports = {
     );
     //Filter students who passes the given criteria for college
     let filtered = [];
+    const studentIds = students.map(student => student.id);
+
+    const allStudentEducations = await strapi
+      .query("education")
+      .find({ contact_in: studentIds });
 
     await utils.asyncForEach(students, async student => {
       /**Filtering stream */
@@ -237,9 +242,11 @@ module.exports = {
       }
 
       /** Filtering qualifications */
-      const studentEducations = await strapi
-        .query("education")
-        .find({ contact: student.id });
+      const studentEducations = allStudentEducations.filter(education => {
+        if (education.contact && education.contact.id == student.id) {
+          return education;
+        }
+      });
 
       const { qualifications } = event;
       isQualificationEligible = true;
