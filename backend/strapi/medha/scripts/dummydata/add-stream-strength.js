@@ -48,7 +48,9 @@ async function addStudentsOfAllColleges() {
         if (stream_list_avoid.indexOf(stream.id) !== -1) {
         } else {
           json.stream = stream.id;
-          json.strength = 120;
+          json.first_year_strength = 120;
+          json.second_year_strength = 120;
+          json.third_year_strength = 120;
           stream_strength.push(json);
         }
       });
@@ -56,7 +58,9 @@ async function addStudentsOfAllColleges() {
       await utils.asyncForEach(allStreams, async stream => {
         let json = {};
         json.stream = stream.id;
-        json.strength = 120;
+        json.first_year_strength = 120;
+        json.second_year_strength = 120;
+        json.third_year_strength = 120;
         stream_strength.push(json);
       });
     }

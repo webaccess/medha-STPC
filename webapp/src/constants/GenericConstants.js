@@ -94,7 +94,7 @@ export const ADD_ACTIVITY_BATCHES = "Add Activity Batch";
 
 export const ADD_STUDENT_TO_ACTIVITY_BATCH = "Add Students";
 export const DELETE_STUDENT_TO_ACTIVITY_BATCH = "Delete Students";
-export const VERIFY_STUDENT_TO_ACTIVITY_BATCH = "Verify Students";
+export const VERIFY_STUDENT_TO_ACTIVITY_BATCH = "Mark Attendence";
 
 export const NO_STUDENTS_DETAILS_FOUND = "No Students details found";
 
@@ -164,6 +164,7 @@ export const QUALIFICATION_LIST = [
   { name: "Secondary(10th)", id: "secondary" },
   { name: "Senior Secondary(12th)", id: "senior_secondary" },
   { name: "Undergraduate", id: "undergraduate" },
+  { name: "Graduation", id: "graduation" },
   { name: "Postgraduate", id: "postgraduate" },
   { name: "Others", id: "other" }
 ];

@@ -6,7 +6,9 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%"
   },
   elementroot: {
-    width: "30%"
+    [theme.breakpoints.up("lg")]: {
+      width: "30%"
+    }
   },
   DateMargin: {
     marginLeft: "6px"

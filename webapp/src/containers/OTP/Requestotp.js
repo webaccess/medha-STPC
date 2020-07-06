@@ -46,11 +46,6 @@ const RequestOtp = props => {
   };
 
   const postCall = () => {
-    console.log(
-      strapiApiConstants.STRAPI_DB_URL +
-        strapiApiConstants.STRAPI_REQUEST_STUDENT_OTP
-    );
-
     axios
       .post(
         strapiApiConstants.STRAPI_DB_URL +

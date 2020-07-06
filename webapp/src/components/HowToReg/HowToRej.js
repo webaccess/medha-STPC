@@ -4,14 +4,15 @@ import { Tooltip, Typography } from "@material-ui/core";
 const HowToReg = props => {
   return (
     <Tooltip
+      id="howToReg-id"
       title={
         props.style ? (
           <React.Fragment>
-            <Typography color="inherit">Absent</Typography>
+            <Typography color="inherit">Mark Absent</Typography>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Typography color="inherit">Present</Typography>
+            <Typography color="inherit">Mark Present</Typography>
           </React.Fragment>
         )
       }

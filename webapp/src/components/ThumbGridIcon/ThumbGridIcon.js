@@ -4,10 +4,11 @@ import { Tooltip, Typography } from "@material-ui/core";
 const ThumbIcon = props => {
   return (
     <Tooltip
+      id={"title-id"}
       title={
         props.style ? (
           <React.Fragment>
-            <Typography color="inherit">DeHire</Typography>
+            <Typography color="inherit">Dehire</Typography>
           </React.Fragment>
         ) : (
           <React.Fragment>

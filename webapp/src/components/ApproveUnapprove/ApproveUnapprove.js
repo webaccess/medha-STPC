@@ -4,6 +4,7 @@ import { Tooltip, Typography } from "@material-ui/core";
 const ApproveUnapprove = props => {
   return (
     <Tooltip
+      id={"title-id"}
       title={
         props.isApproved ? (
           <React.Fragment>

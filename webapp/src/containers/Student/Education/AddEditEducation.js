@@ -63,7 +63,8 @@ const AddEditEducation = props => {
     isSuccess: false,
     isEditEducation: props["editEducation"] ? props["editEducation"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
-    counter: 0
+    counter: 0,
+    otherId: 0
   });
 
   const [boards, setBoards] = useState([]);
@@ -168,6 +169,17 @@ const AddEditEducation = props => {
         }
       }));
     }
+
+    if (formState.values[qualification] === "other") {
+      delete formState.errors[educationYear];
+      delete formState.values[educationYear];
+      setFormState(formState => ({
+        ...formState,
+        errors: {
+          ...formState.errors
+        }
+      }));
+    }
   }, [formState.values[qualification]]);
 
   const fetchDropdowns = (link, setList) => {
@@ -178,6 +190,18 @@ const AddEditEducation = props => {
     axios
       .get(url)
       .then(({ data }) => {
+        if (link === "boards") {
+          const id = data.result
+            .map(board => {
+              if (board.name === "Other") return board.id;
+            })
+            .filter(c => c);
+
+          setFormState(formState => ({
+            ...formState,
+            otherId: id[0]
+          }));
+        }
         const list = data.result;
         setList(list);
       })
@@ -215,6 +239,10 @@ const AddEditEducation = props => {
           }));
         }
       }
+      if (props["dataForEdit"]["other_qualification"]) {
+        formState.values["otherQualification"] =
+          props["dataForEdit"]["other_qualification"];
+      }
       if (props["dataForEdit"]["institute"]) {
         formState.values[institute] = props["dataForEdit"]["institute"];
       }
@@ -224,6 +252,9 @@ const AddEditEducation = props => {
 
       if (props["dataForEdit"]["board"]) {
         formState.values[board] = props["dataForEdit"]["board"]["id"];
+      }
+      if (props["dataForEdit"]["other_board"]) {
+        formState.values["otherboard"] = props["dataForEdit"]["other_board"];
       }
 
       if (props["dataForEdit"]["marks_obtained"]) {
@@ -280,6 +311,7 @@ const AddEditEducation = props => {
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
     const schema = getSchema();
+
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -337,6 +369,28 @@ const AddEditEducation = props => {
           }
         }
       };
+      defaultSchema[educationYear] = {
+        ...defaultSchema[educationYear],
+        required: false
+      };
+    }
+
+    if (formState.values[board] === formState.otherId) {
+      defaultSchema["otherboard"] = {
+        label: "Other Board",
+        id: "otherboard",
+        autoComplete: "otherboard",
+        required: true,
+        placeholder: "Other board",
+        autoFocus: true,
+        type: "text",
+        validations: {
+          required: {
+            value: "true",
+            message: "Other board is required"
+          }
+        }
+      };
     }
 
     if (
@@ -351,6 +405,7 @@ const AddEditEducation = props => {
 
     if (
       isQualificationReq == "undergraduate" ||
+      isQualificationReq == "graduation" ||
       isQualificationReq == "postgraduate"
     ) {
       defaultSchema[board] = {
@@ -394,7 +449,8 @@ const AddEditEducation = props => {
       formState.values[board],
       formState.values["otherQualification"],
       formState.values[marksObtained],
-      formState.values[totalMarks]
+      formState.values[totalMarks],
+      formState.values["otherboard"]
     );
     // Adding student id to post data
     postData.contact = studentInfo;
@@ -477,6 +533,27 @@ const AddEditEducation = props => {
           ...formState,
           hideYear: true
         }));
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          hideYear: false
+        }));
+      }
+      if (value.id === "other") {
+        EducationSchema.qualification.required = false;
+        EducationSchema.qualification.validations = {};
+      } else if (
+        value.id == "undergraduate" ||
+        value.id === "graduation" ||
+        value.id === "postgraduate"
+      ) {
+        EducationSchema.qualification.required = true;
+        EducationSchema.qualification.validations = {
+          required: {
+            value: "true",
+            message: "Education year is required"
+          }
+        };
       }
     } else {
       EducationSchema.qualification.required = true;
@@ -752,7 +829,31 @@ const AddEditEducation = props => {
                     )}
                   />
                 </Grid>
-
+                {formState.values[board] == formState.otherId ? (
+                  <Grid item md={12} xs={12}>
+                    <TextField
+                      fullWidth
+                      id="otherboard"
+                      label="Other board"
+                      margin="normal"
+                      name="otherboard"
+                      onChange={handleChange}
+                      required
+                      type="text"
+                      value={formState.values["otherboard"] || ""}
+                      error={hasError("otherboard")}
+                      helperText={
+                        hasError("otherboard")
+                          ? formState.errors["otherboard"].map(error => {
+                              return error + " ";
+                            })
+                          : null
+                      }
+                      variant="outlined"
+                      className={classes.elementroot}
+                    />
+                  </Grid>
+                ) : null}
                 <Grid item md={12} xs={12}>
                   <div className={classes.FlexGrow}>
                     <Grid container>

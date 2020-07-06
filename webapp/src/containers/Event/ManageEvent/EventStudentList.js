@@ -55,8 +55,7 @@ const StudentList = props => {
   const history = useHistory();
   const classes = useStyles();
   const [streams, setStreams] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
+  const { setLoaderStatus } = useContext(LoaderContext);
   /** Value to set for event filter */
   const [value, setValue] = React.useState(null);
 
@@ -244,6 +243,13 @@ const StudentList = props => {
         } else {
           eventIndividualData["stream"] = "";
         }
+        eventIndividualData["college"] =
+          data[i]["individual"] &&
+          data[i]["individual"]["organization"] &&
+          data[i]["individual"]["organization"]["name"]
+            ? data[i]["individual"]["organization"]["name"]
+            : "";
+
         eventIndividualData["stream"] =
           data[i]["individual"] &&
           data[i]["individual"]["stream"] &&
@@ -536,9 +542,14 @@ const StudentList = props => {
     for (let i in value) {
       var eventIndividualData = {};
       eventIndividualData["Name"] = value[i]["name"];
-      eventIndividualData["Stream"] = value[i]["stream"];
-      eventIndividualData["Academic Year"] = value[i]["educations"];
       eventIndividualData["Mobile"] = value[i]["mobile"];
+      eventIndividualData["College Name"] = value[i]["college"];
+      eventIndividualData["Stream"] = value[i]["stream"];
+      if (value[i]["attaindance"]) {
+        eventIndividualData["Attended"] = "Yes";
+      } else {
+        eventIndividualData["Attended"] = "No";
+      }
       if (value[i]["hired"]) {
         eventIndividualData["Hired"] = "Yes";
       } else {

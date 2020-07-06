@@ -14,7 +14,10 @@ import {
   Collapse,
   Button,
   InputLabel,
-  ListItemIcon
+  ListItemIcon,
+  Divider,
+  Box,
+  Typography
 } from "@material-ui/core";
 import SwapHorizontalCircleOutlinedIcon from "@material-ui/icons/SwapHorizontalCircleOutlined";
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
@@ -27,6 +30,7 @@ import MenuItems from "./Component/MenuItems";
 import { Auth as auth, CustomRouterLink } from "../../components";
 import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
 import SetIndexContext from "../../context/SetIndexContext";
+import SmallLogo from "../SmallLogo/SmallLogo";
 
 const useDrawerStyles = makeStyles(theme => ({
   drawer: {
@@ -48,10 +52,33 @@ const useDrawerStyles = makeStyles(theme => ({
     margin: theme.spacing(0)
   },
   divider: {
-    margin: theme.spacing(2, 0)
+    margin: theme.spacing(4, 0)
   },
   nav: {
     marginBottom: theme.spacing(2)
+  },
+  logoBox: {
+    display: "flex",
+    padding: "16px",
+    justifyContent: "center"
+  },
+  userContentBox: {
+    padding: "16px",
+    textAlign: "center"
+  },
+  body2Style: {
+    fontSize: "14px",
+    lineHeight: "25px"
+  },
+  mainBox: {
+    marginRight: "50px",
+    marginLeft: "50px"
+  },
+  authStyle: {
+    padding: "16px"
+  },
+  dividerStyle: {
+    margin: theme.spacing(4, 0, 2, 0)
   }
 }));
 
@@ -179,6 +206,25 @@ function SideAndTopNavBar(props) {
     setSubListState({ ...subListState, [name]: !get(subListState, name) });
   };
 
+  const authMenuItems = [
+    {
+      name: "Auth",
+      Icon: <AccountCircleOutlinedIcon />,
+      items: [
+        {
+          name: "Change Password",
+          link: routeConstants.CHANGE_PASSWORD,
+          Icon: <SwapHorizontalCircleOutlinedIcon />
+        },
+        {
+          name: "Sign Out",
+          link: routeConstants.LOGOUT_URL,
+          Icon: <InputIcon />
+        }
+      ]
+    }
+  ];
+
   const inputs = get(
     MenuItems(),
     auth.getUserInfo() ? auth.getUserInfo()["role"]["name"] : "",
@@ -190,6 +236,11 @@ function SideAndTopNavBar(props) {
     return userInfo["first_name"]
       ? `${userInfo["first_name"]} ${userInfo["last_name"]}`
       : userInfo.username;
+  };
+
+  const role = () => {
+    const userInfo = auth.getUserInfo();
+    return userInfo["role"]["name"];
   };
 
   const drawer = (
@@ -279,6 +330,71 @@ function SideAndTopNavBar(props) {
           </div>
         );
       })}
+      <Hidden lgUp>
+        <Divider className={classes.dividerStyle} />
+        {authMenuItems.map(list => {
+          return (
+            <div key={list.name} className={listClasses.navigationpanel}>
+              {list.items != null ? (
+                <List
+                  {...rest}
+                  className={clsx(
+                    listClasses.root,
+                    className,
+                    listClasses.padding
+                  )}
+                >
+                  <ListItem
+                    className={listClasses.button}
+                    disableGutters
+                    key={list.name}
+                    onClick={e => handleClick(list.name)}
+                  >
+                    <ListItemIcon>{list.Icon}</ListItemIcon>
+                    {list.name}
+                    <div className={topBarClasses.flexGrow} />
+                    <div className={listClasses.expandPadding}>
+                      {get(subListState, list.name) ? (
+                        <ExpandLess />
+                      ) : (
+                        <ExpandMore />
+                      )}
+                    </div>
+                  </ListItem>
+                  <Collapse
+                    in={get(subListState, list.name)}
+                    timeout="auto"
+                    unmountOnExit
+                  >
+                    <List component="div" disablePadding>
+                      {list.items.map(subList => {
+                        return (
+                          <ListItem
+                            className={(listClasses.item, listClasses.nested)}
+                            disableGutters
+                            key={subList.name}
+                          >
+                            <Button
+                              activeClassName={listClasses.active}
+                              className={listClasses.button}
+                              component={CustomRouterLink}
+                              to={subList.link}
+                            >
+                              {subList.name}
+                            </Button>
+                          </ListItem>
+                        );
+                      })}
+                    </List>
+                  </Collapse>
+                </List>
+              ) : (
+                ""
+              )}
+            </div>
+          );
+        })}
+      </Hidden>
     </div>
   );
 
@@ -349,6 +465,25 @@ function SideAndTopNavBar(props) {
                     keepMounted: true // Better open performance on mobile.
                   }}
                 >
+                  <Hidden lgUp>
+                    <Box className={classes.mainBox}>
+                      <Box className={classes.logoBox}>
+                        <SmallLogo />
+                      </Box>
+                      <Box className={classes.userContentBox}>
+                        <Typography variant="h5" component="h5">
+                          {title()}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          className={classes.body2Style}
+                        >
+                          {role()}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Divider />
+                  </Hidden>
                   {drawer}
                 </Drawer>
               </Hidden>
