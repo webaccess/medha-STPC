@@ -15,11 +15,6 @@ const auth = {
     if (localStorage && localStorage.getItem(key)) {
       return localStorage.removeItem(key);
     }
-
-    if (sessionStorage && sessionStorage.getItem(key)) {
-      return sessionStorage.removeItem(key);
-    }
-
     return null;
   },
 
@@ -29,10 +24,6 @@ const auth = {
   clearAppStorage() {
     if (localStorage) {
       localStorage.clear();
-    }
-
-    if (sessionStorage) {
-      sessionStorage.clear();
     }
   },
 
@@ -53,11 +44,6 @@ const auth = {
     if (localStorage && localStorage.getItem(key)) {
       return parse(localStorage.getItem(key)) || null;
     }
-
-    if (sessionStorage && sessionStorage.getItem(key)) {
-      return parse(sessionStorage.getItem(key)) || null;
-    }
-
     return null;
   },
 
@@ -95,11 +81,6 @@ const auth = {
     if (isLocalStorage && localStorage) {
       return localStorage.setItem(key, stringify(value));
     }
-
-    if (sessionStorage) {
-      return sessionStorage.setItem(key, stringify(value));
-    }
-
     return null;
   },
 
