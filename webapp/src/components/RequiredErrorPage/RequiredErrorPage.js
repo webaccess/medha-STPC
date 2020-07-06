@@ -8,7 +8,11 @@ import { Redirect } from "react-router-dom";
 
 const RequiredErrorPage = props => {
   const classes = UseStyle();
-  if (props.location.from === "login") {
+  if (
+    props.location !== undefined &&
+    props.location.from !== undefined &&
+    props.location.from === "login"
+  ) {
     return (
       <div className={classes.root}>
         <Layout>
