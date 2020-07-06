@@ -44,7 +44,9 @@ describe("Testing HoeToReg", () => {
     };
     wrapper = shallow(<HowToReg {...props} />);
     const title = wrapper.find("#howToReg-id");
-    expect(title.prop("title").props.children.props.children).toBe("Absent");
+    expect(title.prop("title").props.children.props.children).toBe(
+      "Mark Absent"
+    );
   });
   it("Renders with title props as false", () => {
     props = {
@@ -54,6 +56,8 @@ describe("Testing HoeToReg", () => {
     };
     wrapper = shallow(<HowToReg {...props} />);
     const title = wrapper.find("#howToReg-id");
-    expect(title.prop("title").props.children.props.children).toBe("Present");
+    expect(title.prop("title").props.children.props.children).toBe(
+      "Mark Present"
+    );
   });
 });
