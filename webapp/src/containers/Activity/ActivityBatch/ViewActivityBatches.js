@@ -250,7 +250,6 @@ const ViewActivityBatches = props => {
   };
   const isDeleteCellCompleted = (status, activityBatch) => {
     formState.isDataDeleted = status;
-    console.log(activityBatch);
     if (status === true) {
       setAlert(() => ({
         isOpen: true,
@@ -267,7 +266,6 @@ const ViewActivityBatches = props => {
   };
 
   const handleDeleteActivityBatch = activityBatch => {
-    console.log(activityBatch);
     setFormState(formState => ({
       ...formState,
       dataToDelete: { ...activityBatch },

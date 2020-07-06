@@ -239,7 +239,6 @@ const StudentProfile = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       {success ? (
         <Collapse in={success}>
           <Alert

@@ -11,8 +11,6 @@ import AddEditStudent from "./AddEditStudent.js";
 import Layout from "../../hoc/Layout/Layout";
 /** For login */
 export default function RegistrationRoute(props) {
-  console.log(props);
-
   if (props.location.state && props.location.state.contactNumber) {
     return (
       <Layout>

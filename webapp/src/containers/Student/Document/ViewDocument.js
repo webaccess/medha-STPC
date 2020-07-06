@@ -293,8 +293,6 @@ const ViewDocument = props => {
     });
   };
 
-  console.log(formState.dataToDelete);
-
   const AlertAPIResponseMessage = () => {
     return (
       <Collapse in={alert.isOpen}>
