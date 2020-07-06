@@ -169,6 +169,17 @@ const AddEditEducation = props => {
         }
       }));
     }
+
+    if (formState.values[qualification] === "other") {
+      delete formState.errors[educationYear];
+      delete formState.values[educationYear];
+      setFormState(formState => ({
+        ...formState,
+        errors: {
+          ...formState.errors
+        }
+      }));
+    }
   }, [formState.values[qualification]]);
 
   const fetchDropdowns = (link, setList) => {
@@ -182,7 +193,6 @@ const AddEditEducation = props => {
         if (link === "boards") {
           const id = data.result
             .map(board => {
-              console.log(board);
               if (board.name === "Other") return board.id;
             })
             .filter(c => c);
@@ -229,6 +239,10 @@ const AddEditEducation = props => {
           }));
         }
       }
+      if (props["dataForEdit"]["other_qualification"]) {
+        formState.values["otherQualification"] =
+          props["dataForEdit"]["other_qualification"];
+      }
       if (props["dataForEdit"]["institute"]) {
         formState.values[institute] = props["dataForEdit"]["institute"];
       }
@@ -238,6 +252,9 @@ const AddEditEducation = props => {
 
       if (props["dataForEdit"]["board"]) {
         formState.values[board] = props["dataForEdit"]["board"]["id"];
+      }
+      if (props["dataForEdit"]["other_board"]) {
+        formState.values["otherboard"] = props["dataForEdit"]["other_board"];
       }
 
       if (props["dataForEdit"]["marks_obtained"]) {
@@ -294,6 +311,7 @@ const AddEditEducation = props => {
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
     const schema = getSchema();
+
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -351,6 +369,10 @@ const AddEditEducation = props => {
           }
         }
       };
+      defaultSchema[educationYear] = {
+        ...defaultSchema[educationYear],
+        required: false
+      };
     }
 
     if (formState.values[board] === formState.otherId) {
@@ -383,6 +405,7 @@ const AddEditEducation = props => {
 
     if (
       isQualificationReq == "undergraduate" ||
+      isQualificationReq == "graduation" ||
       isQualificationReq == "postgraduate"
     ) {
       defaultSchema[board] = {
@@ -510,6 +533,27 @@ const AddEditEducation = props => {
           ...formState,
           hideYear: true
         }));
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          hideYear: false
+        }));
+      }
+      if (value.id === "other") {
+        EducationSchema.qualification.required = false;
+        EducationSchema.qualification.validations = {};
+      } else if (
+        value.id == "undergraduate" ||
+        value.id === "graduation" ||
+        value.id === "postgraduate"
+      ) {
+        EducationSchema.qualification.required = true;
+        EducationSchema.qualification.validations = {
+          required: {
+            value: "true",
+            message: "Education year is required"
+          }
+        };
       }
     } else {
       EducationSchema.qualification.required = true;
