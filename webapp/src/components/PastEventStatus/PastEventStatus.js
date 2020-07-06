@@ -4,6 +4,7 @@ import { Tooltip, Typography } from "@material-ui/core";
 const PastEventStatus = props => {
   return (
     <Tooltip
+      id={"pastEvent-id"}
       title={
         props.style ? (
           <React.Fragment>
@@ -18,6 +19,7 @@ const PastEventStatus = props => {
       placement="top"
     >
       <i
+        id={props.id}
         className="material-icons"
         style={
           props.style

@@ -113,7 +113,7 @@ const RouteWithTabLayout = props => {
     };
 
     return (
-      <div className={classes.root}>
+      <div className={classes.root} id="handletabchange">
         <Typography className={classes.marginY} variant="h4">
           {title || ""}
         </Typography>
