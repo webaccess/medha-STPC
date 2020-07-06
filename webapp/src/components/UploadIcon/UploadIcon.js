@@ -4,6 +4,7 @@ import { Tooltip, Typography } from "@material-ui/core";
 const UploadIcon = props => {
   return (
     <Tooltip
+      id={"title-id"}
       title={
         <React.Fragment>
           <Typography color="inherit">{props.title}</Typography>

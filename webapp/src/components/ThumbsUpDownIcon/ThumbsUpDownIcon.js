@@ -4,6 +4,7 @@ import { Tooltip, Typography } from "@material-ui/core";
 const ThumbsUpDownIcon = props => {
   return (
     <Tooltip
+      id={"title-id"}
       title={
         props.title ? (
           <React.Fragment>
