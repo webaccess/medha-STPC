@@ -164,6 +164,7 @@ export const QUALIFICATION_LIST = [
   { name: "Secondary(10th)", id: "secondary" },
   { name: "Senior Secondary(12th)", id: "senior_secondary" },
   { name: "Undergraduate", id: "undergraduate" },
+  { name: "Graduation", id: "graduation" },
   { name: "Postgraduate", id: "postgraduate" },
   { name: "Others", id: "other" }
 ];

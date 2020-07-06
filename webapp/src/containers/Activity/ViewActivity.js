@@ -1401,95 +1401,97 @@ const ViewActivity = props => {
             </Grid>
           </CardContent>
         </Card>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-            />
+        <Card className={classes.tabledata} variant="outlined">
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
+                editEvent={editCell}
+                deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+              />
+            ) : (
+              <Spinner />
+            )
           ) : (
-            <Spinner />
-          )
-        ) : (
-          <div className={classes.noDataMargin}>No data to show</div>
-        )}
-        {/** Feedback modal calling */}
-        {feedbackState.isViewFeedback ? (
-          <ViewFeedBack
-            showModal={feedbackState.showModalFeedback}
-            modalClose={handleCloseModal}
-            Title={feedbackState.EventTitle}
-            id={feedbackState.eventId}
-            fromEvent={false}
-            fromActivity={true}
-            fromRPC={false}
-            fromZone={false}
-            fromCollegeAdmin={
-              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
-                ? true
-                : false
-            }
-            formSuperAdmin={
-              auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
-                ? true
-                : false
-            }
-            result={feedbackState.result}
-            dataToShow={feedbackState.ratings}
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}
+          {/** Feedback modal calling */}
+          {feedbackState.isViewFeedback ? (
+            <ViewFeedBack
+              showModal={feedbackState.showModalFeedback}
+              modalClose={handleCloseModal}
+              Title={feedbackState.EventTitle}
+              id={feedbackState.eventId}
+              fromEvent={false}
+              fromActivity={true}
+              fromRPC={false}
+              fromZone={false}
+              fromCollegeAdmin={
+                auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+                  ? true
+                  : false
+              }
+              formSuperAdmin={
+                auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
+                  ? true
+                  : false
+              }
+              result={feedbackState.result}
+              dataToShow={feedbackState.ratings}
+            />
+          ) : null}
+          {feedbackState.isGiveFeedback ? (
+            <AddEditFeedBack
+              isAddFeedback={true}
+              showModal={feedbackState.showModalFeedback}
+              modalClose={handleCloseFeedBackModal}
+              Title={feedbackState.EventTitle}
+              id={feedbackState.eventId}
+              entityQuestionSet={feedbackState.entityQuestionSet}
+              questionSetId={feedbackState.questionSetId}
+              fromEvent={false}
+              fromActivity={true}
+            />
+          ) : feedbackState.isEditFeedback ? (
+            <AddEditFeedBack
+              isEditFeedback={true}
+              showModal={feedbackState.showModalFeedback}
+              modalClose={handleCloseFeedBackModal}
+              Title={feedbackState.EventTitle}
+              id={feedbackState.eventId}
+              entityQuestionSet={feedbackState.entityQuestionSet}
+              questionSetId={feedbackState.questionSetId}
+              feedbackSetId={feedbackState.feedbackSetId}
+              fromEvent={false}
+              fromActivity={true}
+            />
+          ) : null}
+          {!feedbackState.isGiveFeedback &&
+          !feedbackState.isEditFeedback &&
+          !feedbackState.showModalFeedback &&
+          feedbackState.showErrorModalFeedback ? (
+            <NoFeedback
+              showModal={feedbackState.showErrorModalFeedback}
+              modalClose={handleCloseModal}
+              Title={feedbackState.EventTitle}
+              errorMessage={feedbackState.errorMessage}
+            />
+          ) : null}
+          <DeleteActivity
+            showModal={formState.showModalDelete}
+            closeModal={handleCloseDeleteModal}
+            activity={formState.dataToDelete}
+            deleteEvent={isDeleteCellCompleted}
           />
-        ) : null}
-        {feedbackState.isGiveFeedback ? (
-          <AddEditFeedBack
-            isAddFeedback={true}
-            showModal={feedbackState.showModalFeedback}
-            modalClose={handleCloseFeedBackModal}
-            Title={feedbackState.EventTitle}
-            id={feedbackState.eventId}
-            entityQuestionSet={feedbackState.entityQuestionSet}
-            questionSetId={feedbackState.questionSetId}
-            fromEvent={false}
-            fromActivity={true}
-          />
-        ) : feedbackState.isEditFeedback ? (
-          <AddEditFeedBack
-            isEditFeedback={true}
-            showModal={feedbackState.showModalFeedback}
-            modalClose={handleCloseFeedBackModal}
-            Title={feedbackState.EventTitle}
-            id={feedbackState.eventId}
-            entityQuestionSet={feedbackState.entityQuestionSet}
-            questionSetId={feedbackState.questionSetId}
-            feedbackSetId={feedbackState.feedbackSetId}
-            fromEvent={false}
-            fromActivity={true}
-          />
-        ) : null}
-        {!feedbackState.isGiveFeedback &&
-        !feedbackState.isEditFeedback &&
-        !feedbackState.showModalFeedback &&
-        feedbackState.showErrorModalFeedback ? (
-          <NoFeedback
-            showModal={feedbackState.showErrorModalFeedback}
-            modalClose={handleCloseModal}
-            Title={feedbackState.EventTitle}
-            errorMessage={feedbackState.errorMessage}
-          />
-        ) : null}
-        <DeleteActivity
-          showModal={formState.showModalDelete}
-          closeModal={handleCloseDeleteModal}
-          activity={formState.dataToDelete}
-          deleteEvent={isDeleteCellCompleted}
-        />
+        </Card>
       </Grid>
     </Grid>
   );

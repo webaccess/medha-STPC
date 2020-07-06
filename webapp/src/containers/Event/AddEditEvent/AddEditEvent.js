@@ -154,14 +154,20 @@ const AddEditEvent = props => {
   const inputLabel = React.useRef(null);
   const [questionSetData, setQuestionSetData] = useState([]);
   const [qualifications, setQualifications] = useState([
-    { id: 1, value: "SSC" },
-    { id: 2, value: "HSC" },
-    { id: 3, value: "Diploma" }
+    { id: 1, value: "secondary", name: "Secondary" },
+    { id: 2, value: "graduation", name: "Graduation" },
+    { id: 3, value: "senior_secondary", name: "Senior Secondary" },
+    { id: 4, value: "undergraduate", name: "Undergraduate" },
+    { id: 5, value: "postgraduate", name: "Postgraduate" },
+    { id: 6, value: "other", name: "Other" }
   ]);
   const [qualificationsDataBackup] = useState([
-    { id: 1, value: "SSC" },
-    { id: 2, value: "HSC" },
-    { id: 3, value: "Diploma" }
+    { id: 1, value: "secondary", name: "Secondary" },
+    { id: 2, value: "graduation", name: "Graduation" },
+    { id: 3, value: "senior_secondary", name: "Senior Secondary" },
+    { id: 4, value: "undergraduate", name: "Undergraduate" },
+    { id: 5, value: "postgraduate", name: "Postgraduate" },
+    { id: 6, value: "other", name: "Other" }
   ]);
   const [educations, setEducations] = useState([
     { id: 1, value: "First" },
@@ -1791,7 +1797,7 @@ const AddEditEvent = props => {
                                           ? true
                                           : false
                                       }
-                                      getOptionLabel={option => option.value}
+                                      getOptionLabel={option => option.name}
                                       onChange={(event, value) => {
                                         handleChangeForDynamicGrid(
                                           qualification,

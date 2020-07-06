@@ -80,6 +80,7 @@ module.exports = {
         "state",
         "district",
         "individual.stream",
+        "individual.organization",
         "user",
         "activityassignees",
         "contacttags"
