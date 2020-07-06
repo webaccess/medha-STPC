@@ -297,24 +297,38 @@ const AddEditFeedBack = props => {
                                                       {row.title}
                                                     </TableCell>
                                                     <TableCell align="right">
-                                                      <Rating
-                                                        name={row.id + ""}
-                                                        precision={1}
-                                                        value={
-                                                          formState
-                                                            .question_answers[
-                                                            row.id
-                                                          ] || null
-                                                        }
-                                                        onChange={event => {
-                                                          event.preventDefault();
-                                                          handleChangeRating(
-                                                            row.id,
-                                                            row.type,
-                                                            event.target.value
-                                                          );
-                                                        }}
-                                                      />
+                                                      {formState.isEditFeedback ? (
+                                                        <Rating
+                                                          name={row.id + ""}
+                                                          precision={1}
+                                                          value={
+                                                            formState
+                                                              .question_answers[
+                                                              row.id
+                                                            ] || null
+                                                          }
+                                                          readOnly
+                                                        />
+                                                      ) : (
+                                                        <Rating
+                                                          name={row.id + ""}
+                                                          precision={1}
+                                                          value={
+                                                            formState
+                                                              .question_answers[
+                                                              row.id
+                                                            ] || null
+                                                          }
+                                                          onChange={event => {
+                                                            event.preventDefault();
+                                                            handleChangeRating(
+                                                              row.id,
+                                                              row.type,
+                                                              event.target.value
+                                                            );
+                                                          }}
+                                                        />
+                                                      )}
                                                     </TableCell>
                                                   </React.Fragment>
                                                 ) : null}
@@ -347,6 +361,11 @@ const AddEditFeedBack = props => {
                                             margin: 8,
                                             width: "100%"
                                           }}
+                                          InputProps={{
+                                            readOnly: formState.isEditFeedback
+                                              ? true
+                                              : false
+                                          }}
                                           label={row.title}
                                           id={row.id + ""}
                                           rows={2}
@@ -369,14 +388,17 @@ const AddEditFeedBack = props => {
 
                           <Grid item xs={12} md={12}>
                             <CardActions justify="flex-end">
-                              <YellowButton
-                                type="submit"
-                                color="primary"
-                                variant="contained"
-                                onClick={handleSubmit}
-                              >
-                                {genericConstants.SAVE_BUTTON_TEXT}
-                              </YellowButton>
+                              {!formState.isEditFeedback ? (
+                                <YellowButton
+                                  type="submit"
+                                  color="primary"
+                                  variant="contained"
+                                  onClick={handleSubmit}
+                                >
+                                  {genericConstants.SAVE_BUTTON_TEXT}
+                                </YellowButton>
+                              ) : null}
+
                               <GrayButton
                                 type="submit"
                                 color="primary"
