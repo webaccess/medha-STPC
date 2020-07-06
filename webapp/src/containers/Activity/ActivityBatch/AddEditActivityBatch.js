@@ -215,8 +215,8 @@ const AddEditActivityBatches = props => {
 
         studentDataArray.push(tempIndividualStudentData);
       }
-      return studentDataArray;
     }
+    return studentDataArray;
   };
 
   /** Pagination */
@@ -905,25 +905,22 @@ const AddEditActivityBatches = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               {formState.dataToShow ? (
-                formState.dataToShow.length ? (
-                  <Table
-                    data={formState.dataToShow}
-                    column={column}
-                    defaultSortField="name"
-                    defaultSortAsc={formState.sortAscending}
-                    progressPending={formState.isDataLoading}
-                    paginationTotalRows={formState.totalRows}
-                    paginationRowsPerPageOptions={[10, 20, 50]}
-                    onChangeRowsPerPage={handlePerRowsChange}
-                    onChangePage={handlePageChange}
-                    onSelectedRowsChange={handleRowChange}
-                    clearSelectedRows={clearSelectedRows}
-                  />
-                ) : (
-                  <Spinner />
-                )
+                <Table
+                  data={formState.dataToShow}
+                  column={column}
+                  defaultSortField="name"
+                  defaultSortAsc={formState.sortAscending}
+                  progressPending={formState.isDataLoading}
+                  paginationTotalRows={formState.totalRows}
+                  paginationRowsPerPageOptions={[10, 20, 50]}
+                  onChangeRowsPerPage={handlePerRowsChange}
+                  onChangePage={handlePageChange}
+                  onSelectedRowsChange={handleRowChange}
+                  clearSelectedRows={clearSelectedRows}
+                  noDataComponent="No eligible student data found"
+                />
               ) : (
-                <div className={classes.noDataMargin}>No data to show</div>
+                <Spinner />
               )}
             </Grid>
           </CardContent>

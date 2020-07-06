@@ -340,27 +340,21 @@ const AddEditActivityBatches = props => {
                     </CardContent>
                   </Card>
                   {formState.dataToShow ? (
-                    formState.dataToShow.length ? (
-                      <Table
-                        data={formState.dataToShow}
-                        column={column}
-                        defaultSortField="name"
-                        defaultSortAsc={formState.sortAscending}
-                        progressPending={formState.isDataLoading}
-                        paginationTotalRows={formState.totalRows}
-                        paginationRowsPerPageOptions={[10, 20, 50]}
-                        onChangeRowsPerPage={handlePerRowsChange}
-                        onChangePage={handlePageChange}
-                        onSelectedRowsChange={handleRowChange}
-                        noDataComponent={
-                          genericConstants.NO_STUDENTS_DETAILS_FOUND
-                        }
-                      />
-                    ) : (
-                      <Spinner />
-                    )
+                    <Table
+                      data={formState.dataToShow}
+                      column={column}
+                      defaultSortField="name"
+                      defaultSortAsc={formState.sortAscending}
+                      progressPending={formState.isDataLoading}
+                      paginationTotalRows={formState.totalRows}
+                      paginationRowsPerPageOptions={[10, 20, 50]}
+                      onChangeRowsPerPage={handlePerRowsChange}
+                      onChangePage={handlePageChange}
+                      onSelectedRowsChange={handleRowChange}
+                      noDataComponent="No eligible student data found"
+                    />
                   ) : (
-                    <div className={classes.noDataMargin}>No data to show</div>
+                    <Spinner />
                   )}
                   <Card className={styles.noBorderNoShadow}>
                     <CardContent>

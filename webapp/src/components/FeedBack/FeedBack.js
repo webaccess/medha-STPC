@@ -7,7 +7,7 @@ const FeedBack = props => {
       <Tooltip
         title={
           <React.Fragment>
-            <Typography color="inherit">Give FeedBack</Typography>
+            <Typography color="inherit">Give feedback</Typography>
           </React.Fragment>
         }
         placement="top"
@@ -28,7 +28,7 @@ const FeedBack = props => {
       <Tooltip
         title={
           <React.Fragment>
-            <Typography color="inherit">Edit FeedBack</Typography>
+            <Typography color="inherit">View your feedback</Typography>
           </React.Fragment>
         }
         placement="top"
