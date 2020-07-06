@@ -25,7 +25,6 @@ describe("Testing PasswordInput", () => {
     };
     wrapper = shallow(<TextField {...props} />);
     const title = wrapper.find("#test");
-    console.log("title", title.props());
     expect(title.props().value).toBe("testValue");
     expect(title.props().autoFocus).toBe(true);
     expect(title.props().variant).toBe("outlined");
