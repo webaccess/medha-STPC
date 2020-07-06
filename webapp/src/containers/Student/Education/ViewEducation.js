@@ -290,7 +290,12 @@ const ViewEducation = props => {
     {
       name: "Board",
       sortable: true,
-      cell: cell => (cell.board ? cell.board.name : "-")
+      cell: cell =>
+        cell.board
+          ? cell.board.name === "Other"
+            ? cell.other_board
+            : cell.board.name
+          : "-"
     },
     { name: "Percentage", sortable: true, selector: "percentage" },
     {

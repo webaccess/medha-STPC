@@ -4658,7 +4658,7 @@ const PUBLIC_ROUTES = {
   ]
 };
 
-const ACTIVITY_TYPES = ["Training", "Workshop", "Industrial Visit"];
+const ACTIVITY_TYPES = ["Workshop", "Industrial Visit"];
 
 const BOARDS = [
   "CBSE",
