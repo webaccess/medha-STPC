@@ -5,6 +5,7 @@ import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import ChangePasswordStyles from "./ChangePasswordStyles";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import {
   YellowButton,
   GrayButton,
@@ -389,7 +390,11 @@ const ChangePassword = props => {
                   type="submit"
                   color="primary"
                   variant="contained"
-                  to={routeConstants.DASHBOARD_URL}
+                  to={
+                    auth.getUserInfo().role.name === roleConstants.STUDENT
+                      ? routeConstants.VIEW_PROFILE
+                      : routeConstants.DASHBOARD_URL
+                  }
                 >
                   {genericConstants.CANCEL_BUTTON_TEXT}
                 </GrayButton>

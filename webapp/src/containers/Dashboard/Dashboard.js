@@ -32,6 +32,7 @@ import {
 import * as strapiApiConstants from "../../constants/StrapiApiConstants";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as genericConstants from "../../constants/GenericConstants";
+import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
 import * as serviceProvider from "../../api/Axios";
 import { GrayButton, YellowButton, GreenButton } from "../../components";
@@ -39,6 +40,7 @@ import SetIndexContext from "../../context/SetIndexContext";
 import { useContext } from "react";
 import auth from "../../components/Auth";
 import LoaderContext from "../../context/LoaderContext";
+import { useHistory } from "react-router-dom";
 let multiDataSet = [];
 
 /** Initialize months array */
@@ -110,6 +112,7 @@ const RPCS = strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_RPCS;
 
 const Dashboard = props => {
   const { container, className, ...rest } = props;
+  const history = useHistory();
   const classes = useStyles();
   const inputLabel = React.useRef(null);
   const [zones, setZones] = useState([]);
@@ -199,11 +202,17 @@ const Dashboard = props => {
 
   /** Initial data bringing for all the filters role wise */
   useEffect(() => {
-    setLoaderStatus(true);
-    getStatusOfDashboard();
-    prefillInitialDataRoleWise();
-    setData();
-    getInitialData();
+    if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
+      history.push({
+        pathname: routeConstants.NOT_FOUND_URL
+      });
+    } else {
+      setLoaderStatus(true);
+      getStatusOfDashboard();
+      prefillInitialDataRoleWise();
+      setData();
+      getInitialData();
+    }
   }, []);
 
   const getStatusOfDashboard = async () => {
