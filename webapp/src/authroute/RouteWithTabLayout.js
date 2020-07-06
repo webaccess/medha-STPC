@@ -118,8 +118,9 @@ const RouteWithTabLayout = props => {
           {title || ""}
         </Typography>
         <StyledTabs
-          variant="fullWidth"
           value={selectedTab}
+          variant={window.screen.width > 420 ? "fullWidth" : "scrollable"}
+          scrollButtons="on"
           onChange={(event, value) => handleTabChange(value)}
         >
           {tabs.map((tab, index) => {
