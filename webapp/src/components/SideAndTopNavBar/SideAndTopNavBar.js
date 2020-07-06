@@ -233,7 +233,6 @@ function SideAndTopNavBar(props) {
 
   const title = () => {
     const userInfo = auth.getUserInfo();
-    console.log(userInfo);
     return userInfo["first_name"]
       ? `${userInfo["first_name"]} ${userInfo["last_name"]}`
       : userInfo.username;

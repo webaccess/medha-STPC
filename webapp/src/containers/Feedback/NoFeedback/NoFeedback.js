@@ -22,8 +22,6 @@ const NoFeedback = props => {
     props.modalClose();
   };
 
-  console.log("No feedback");
-
   return (
     <Modal
       aria-labelledby="transition-modal-title"
