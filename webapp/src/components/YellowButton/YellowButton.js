@@ -13,6 +13,7 @@ const YellowButton = props => {
       onClick={props.onClick}
       disabled={props.disabled}
       style={props.style}
+      fullWidth
     >
       {props.children}
     </Button>
