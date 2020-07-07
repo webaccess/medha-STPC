@@ -484,30 +484,41 @@ const ViewRpc = props => {
 
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_RPC_TEXT}
-        </Typography>
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Delete Selected RPC's
-        </GreenButton>
-        <GreenButton
-          variant="contained"
-          color="primary"
-          disableElevation
-          component={CustomRouterLink}
-          to={routeConstants.ADD_RPC}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_RPC_TEXT}
-        </GreenButton>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.VIEW_RPC_TEXT}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteMulUserById()}
+            startIcon={<DeleteIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            Delete Selected RPC's
+          </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            disableElevation
+            component={CustomRouterLink}
+            to={routeConstants.ADD_RPC}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+            style={{ margin: "2px" }}
+          >
+            {genericConstants.ADD_RPC_TEXT}
+          </GreenButton>
+        </Grid>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/** Delete rpc data */}

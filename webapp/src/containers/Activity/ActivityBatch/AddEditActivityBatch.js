@@ -698,6 +698,7 @@ const AddEditActivityBatches = props => {
         startIcon={<DeleteIcon />}
         greenButtonChecker={true}
         buttonDisabled={selectedStudents.length <= 0}
+        style={{ margin: "2px" }}
       >
         {genericConstants.DELETE_STUDENT_TO_ACTIVITY_BATCH}
       </GreenButton>
@@ -714,6 +715,7 @@ const AddEditActivityBatches = props => {
         startIcon={<VerifiedUserIcon />}
         greenButtonChecker={true}
         buttonDisabled={selectedStudents.length <= 0}
+        style={{ margin: "2px", marginRight: "15px" }}
       >
         {genericConstants.VERIFY_STUDENT_TO_ACTIVITY_BATCH}
       </GreenButton>
@@ -751,18 +753,27 @@ const AddEditActivityBatches = props => {
       <div className={classes.breadCrumbs}>
         {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
       </div>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {formState.isEditActivityBatch
-            ? formState.dataForEdit[activityBatchName]
-            : "New Batch"}
-        </Typography>
-        {formState.isEditActivityBatch ? (
-          <>
-            <MultiVerifyStudentButton />
-            <MultiDeleteStudentButton />
-          </>
-        ) : null}
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {formState.isEditActivityBatch
+              ? formState.dataForEdit[activityBatchName]
+              : "New Batch"}
+          </Typography>
+        </Grid>
+        <Grid item>
+          {formState.isEditActivityBatch ? (
+            <>
+              <MultiVerifyStudentButton />
+              <MultiDeleteStudentButton />
+            </>
+          ) : null}
+        </Grid>
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>

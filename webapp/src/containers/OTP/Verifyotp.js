@@ -10,7 +10,8 @@ import {
   CardMedia,
   Paper,
   Icon,
-  CardContent
+  CardContent,
+  Hidden
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import { Redirect } from "../../../node_modules/react-router-dom";
@@ -177,12 +178,13 @@ const VerifyOtp = props => {
                     </Grid>
                   </div>
                 </CardContent>
-
-                <CardMedia
-                  className={classes.cover}
-                  image={image}
-                  title="Live from space album cover"
-                />
+                <Hidden mdDown>
+                  <CardMedia
+                    className={classes.cover}
+                    image={image}
+                    title="Live from space album cover"
+                  />
+                </Hidden>
               </Paper>
             </div>
           </div>

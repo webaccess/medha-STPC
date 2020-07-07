@@ -434,32 +434,42 @@ const ViewStates = props => {
 
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_STATE_TEXT}
-        </Typography>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.VIEW_STATE_TEXT}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteMulUserById()}
+            startIcon={<DeleteIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            Delete Selected States
+          </GreenButton>
 
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Delete Selected States
-        </GreenButton>
-
-        <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={clearFilter}
-          disableElevation
-          to={routeConstants.ADD_STATES}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_STATE_TEXT}
-        </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            onClick={clearFilter}
+            disableElevation
+            to={routeConstants.ADD_STATES}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+            style={{ margin: "2px" }}
+          >
+            {genericConstants.ADD_STATE_TEXT}
+          </GreenButton>
+        </Grid>
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>

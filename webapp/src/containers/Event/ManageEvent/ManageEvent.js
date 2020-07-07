@@ -1097,33 +1097,44 @@ const ManageEvent = props => {
 
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          Manage Events
-        </Typography>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            Manage Events
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteMulUserById()}
+            startIcon={<DeleteIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            Delete Selected Event
+          </GreenButton>
 
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Delete Selected Event
-        </GreenButton>
-
-        <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={() => {}}
-          disableElevation
-          to={routeConstants.ADD_EVENT}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          Add Event
-        </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            onClick={() => {}}
+            disableElevation
+            to={routeConstants.ADD_EVENT}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+            style={{ margin: "2px" }}
+          >
+            Add Event
+          </GreenButton>
+        </Grid>
       </Grid>
+
       <Grid item xs={12} className={classes.formgrid}>
         {/** Feedback */}
 

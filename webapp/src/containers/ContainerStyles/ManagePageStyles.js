@@ -112,6 +112,11 @@ const useStyles = makeStyles(theme => ({
     marginLeft: "2%",
     paddingRight: "20px",
     marginTop: "8px"
+  },
+  flexGrow: {
+    display: "flex",
+    flexGrow: 1,
+    justifyContent: "flex-end"
   }
 
   /** */
