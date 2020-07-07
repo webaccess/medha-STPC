@@ -1380,30 +1380,40 @@ const AddEditStudentForCollegeAdmin = props => {
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton
-                  color="primary"
-                  type="submit"
-                  mfullWidth
-                  variant="contained"
-                  style={{ marginRight: "18px" }}
-                  onClick={event => {
-                    event.preventDefault();
-                    handleSubmit(event);
-                  }}
-                >
-                  <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
-                </YellowButton>
-                <GrayButton
-                  color="primary"
-                  type="submit"
-                  mfullWidth
-                  variant="contained"
-                  onClick={() => {
-                    history.push(routeConstants.MANAGE_STUDENT);
-                  }}
-                >
-                  <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
-                </GrayButton>
+                <Grid item xs={12}>
+                  <Grid item xs={12} md={6} xl={3}>
+                    <Grid container spacing={3}>
+                      <Grid item md={2} xs={12}>
+                        <YellowButton
+                          color="primary"
+                          type="submit"
+                          mfullWidth
+                          variant="contained"
+                          style={{ marginRight: "18px" }}
+                          onClick={event => {
+                            event.preventDefault();
+                            handleSubmit(event);
+                          }}
+                        >
+                          <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
+                        </YellowButton>
+                      </Grid>
+                      <Grid item md={2} xs={12}>
+                        <GrayButton
+                          color="primary"
+                          type="submit"
+                          mfullWidth
+                          variant="contained"
+                          onClick={() => {
+                            history.push(routeConstants.MANAGE_STUDENT);
+                          }}
+                        >
+                          <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                        </GrayButton>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardActions>
             </Grid>
           </form>

@@ -13,6 +13,7 @@ const GrayButton = props => {
       component={CustomRouterLink}
       to={props.to}
       className={classes.resetbtn}
+      fullWidth
     >
       {props.children}
     </Button>
@@ -23,6 +24,7 @@ const GrayButton = props => {
       variant={props.variant ? props.variant : "contained"}
       className={classes.resetbtn}
       onClick={props.onClick}
+      fullWidth
     >
       {props.children}
     </Button>
