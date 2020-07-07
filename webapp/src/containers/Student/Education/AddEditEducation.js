@@ -310,6 +310,7 @@ const AddEditEducation = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
+    setLoaderStatus(true);
     const schema = getSchema();
 
     let isValid = false;
@@ -344,6 +345,7 @@ const AddEditEducation = props => {
         isValid: false
       }));
     }
+    setLoaderStatus(false);
     event.preventDefault();
   };
 
@@ -466,6 +468,7 @@ const AddEditEducation = props => {
             history.push({
               pathname: routeConstants.VIEW_DOCUMENTS
             });
+            setLoaderStatus(false);
           } else {
             history.push({
               pathname: routeConstants.VIEW_EDUCATION,
@@ -498,6 +501,7 @@ const AddEditEducation = props => {
             history.push({
               pathname: routeConstants.VIEW_DOCUMENTS
             });
+            setLoaderStatus(false);
           } else {
             history.push({
               pathname: routeConstants.VIEW_EDUCATION,
@@ -606,6 +610,7 @@ const AddEditEducation = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {isSuccess ? (
           <Alert severity="success">
