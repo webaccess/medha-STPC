@@ -6,14 +6,17 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%"
   },
   elementroot: {
-    width: "30%"
+    [theme.breakpoints.up("lg")]: {
+      width: "30%"
+    }
   },
   btnspace: {
-    padding: "15px 18px 50px"
+    padding: "20px 18px 20px"
   },
   formgrid: {
-    marginTop: theme.spacing(2),
-    alignItems: "center"
+    marginTop: theme.spacing(0),
+    alignItems: "center",
+    marginBottom: "10px"
   },
   inputFile: {
     display: "none"
@@ -93,6 +96,9 @@ const useStyles = makeStyles(theme => ({
     objectFit: "contain",
     backgroundColor: "#666666",
     marginLeft: "16px"
+  },
+  CardActionGrid: {
+    backgroundColor: "#EEEEEE"
   }
 }));
 

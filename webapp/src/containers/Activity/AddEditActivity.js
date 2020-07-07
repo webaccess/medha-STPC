@@ -11,9 +11,7 @@ import {
   Collapse,
   FormHelperText,
   Button,
-  FormGroup,
-  FormControlLabel,
-  Switch
+  CardActions
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
 import CloseIcon from "@material-ui/icons/Close";
@@ -1154,58 +1152,72 @@ const AddEditActivity = props => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12} md={6} xl={3}>
-                {formState.editActivity ? (
-                  <Grid item md={12} xs={12} className={classes.btnspace}>
-                    <YellowButton
-                      color="primary"
-                      type="submit"
-                      mfullWidth
-                      variant="contained"
-                      style={{ marginRight: "18px" }}
-                      onClick={handleSubmit}
-                    >
-                      <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
-                    </YellowButton>
-                    <GrayButton
-                      color="primary"
-                      type="submit"
-                      mfullWidth
-                      variant="contained"
-                      onClick={() => {
-                        history.push(routeConstants.MANAGE_ACTIVITY);
-                      }}
-                    >
-                      <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
-                    </GrayButton>
-                  </Grid>
-                ) : (
-                  <Grid item md={12} xs={12} className={classes.btnspace}>
-                    <YellowButton
-                      color="primary"
-                      type="submit"
-                      mfullWidth
-                      variant="contained"
-                      style={{ marginRight: "18px" }}
-                      onClick={handleSubmit}
-                    >
-                      <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
-                    </YellowButton>
-                    <GrayButton
-                      color="primary"
-                      type="submit"
-                      mfullWidth
-                      variant="contained"
-                      onClick={() => {
-                        history.push(routeConstants.MANAGE_ACTIVITY);
-                      }}
-                    >
-                      <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
-                    </GrayButton>
-                  </Grid>
-                )}
-              </Grid>
             </CardContent>
+            <Grid item xs={12} className={classes.CardActionGrid}>
+              <CardActions className={classes.btnspace}>
+                <Grid item xs={12}>
+                  <Grid item xs={12} md={6} xl={3}>
+                    {formState.editActivity ? (
+                      <Grid container spacing={3}>
+                        <Grid item md={2} xs={12}>
+                          <YellowButton
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            style={{ marginRight: "18px" }}
+                            onClick={handleSubmit}
+                          >
+                            <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
+                          </YellowButton>
+                        </Grid>
+                        <Grid item md={2} xs={12}>
+                          <GrayButton
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            onClick={() => {
+                              history.push(routeConstants.MANAGE_ACTIVITY);
+                            }}
+                          >
+                            <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                          </GrayButton>
+                        </Grid>
+                      </Grid>
+                    ) : (
+                      <Grid container spacing={3}>
+                        <Grid item md={2} xs={12}>
+                          <YellowButton
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            style={{ marginRight: "18px" }}
+                            onClick={handleSubmit}
+                          >
+                            <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
+                          </YellowButton>
+                        </Grid>
+                        <Grid item md={2} xs={12}>
+                          <GrayButton
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            onClick={() => {
+                              history.push(routeConstants.MANAGE_ACTIVITY);
+                            }}
+                          >
+                            <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                          </GrayButton>
+                        </Grid>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Grid>
+              </CardActions>
+            </Grid>
           </form>
         </Card>
       </Grid>

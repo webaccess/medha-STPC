@@ -4,7 +4,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%"
   },
   btnspace: {
-    padding: "15px 18px 50px"
+    padding: "20px 18px 20px"
   },
   btnspaceadd: {
     padding: "0px 15px 15px"
@@ -70,7 +70,8 @@ const useStyles = makeStyles(theme => ({
     }
   },
   defaultMargin: {
-    margin: "2%"
+    marginTop: "5px",
+    marginBottom: "10px"
   },
   cardHeight: {
     height: "600px",

@@ -313,7 +313,7 @@ const ViewEvent = props => {
 
                         <Divider />
                       </Grid>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={8} xs={12}>
                         {ReactHtmlParser(formState.eventDetails["description"])}
                       </Grid>
                     </Grid>
