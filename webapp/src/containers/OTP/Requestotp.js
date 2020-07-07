@@ -12,7 +12,8 @@ import {
   CardMedia,
   Paper,
   Icon,
-  CardContent
+  CardContent,
+  Hidden
 } from "@material-ui/core";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import form from "./OTPform.json";
