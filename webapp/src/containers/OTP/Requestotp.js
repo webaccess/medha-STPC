@@ -122,12 +122,6 @@ const RequestOtp = props => {
                     >
                       {authPageConstants.SEND_OTP_BUTTON}
                     </Button>
-                    {/* <Backdrop
-                        className={classes.backdrop}
-                        open={openBackdrop}
-                      >
-                        <CircularProgress color="inherit" />
-                      </Backdrop> */}
                   </React.Fragment>
                   <Grid container>
                     <Grid item xs={12} style={{ textAlign: "center" }}>
@@ -147,7 +141,7 @@ const RequestOtp = props => {
                 <CardMedia
                   className={classes.cover}
                   image={image}
-                  title="Live from space album cover"
+                  title="UPSTPC"
                 />
               </Hidden>
             </Paper>

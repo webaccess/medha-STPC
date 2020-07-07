@@ -685,7 +685,6 @@ const AddEditEducation = props => {
                                   ? "Current Year"
                                   : "Year of passing"
                               }
-                              required
                               variant="outlined"
                               name="tester"
                               helperText={
@@ -733,7 +732,6 @@ const AddEditEducation = props => {
                               {...params}
                               error={hasError(qualification)}
                               label="Qualification"
-                              required
                               variant="outlined"
                               name="tester"
                               helperText={
@@ -760,7 +758,6 @@ const AddEditEducation = props => {
                             margin="normal"
                             name="otherQualification"
                             onChange={handleChange}
-                            required
                             type="text"
                             value={formState.values["otherQualification"] || ""}
                             error={hasError("otherQualification")}
@@ -810,14 +807,14 @@ const AddEditEducation = props => {
                                 {...params}
                                 error={hasError(educationYear)}
                                 label="Education Year"
-                                required={
-                                  !(
-                                    formState.values[qualification] ==
-                                      "secondary" ||
-                                    formState.values[qualification] ==
-                                      "senior_secondary"
-                                  )
-                                }
+                                // required={
+                                //   !(
+                                //     formState.values[qualification] ==
+                                //       "secondary" ||
+                                //     formState.values[qualification] ==
+                                //       "senior_secondary"
+                                //   )
+                                // }
                                 variant="outlined"
                                 name="tester"
                                 helperText={
@@ -857,7 +854,6 @@ const AddEditEducation = props => {
                               {...params}
                               error={hasError(board)}
                               label="Board"
-                              required={!formState.values[pursuing]}
                               variant="outlined"
                               name="tester"
                               helperText={
@@ -882,7 +878,6 @@ const AddEditEducation = props => {
                             margin="normal"
                             name="otherboard"
                             onChange={handleChange}
-                            required
                             type="text"
                             value={formState.values["otherboard"] || ""}
                             error={hasError("otherboard")}
@@ -907,7 +902,6 @@ const AddEditEducation = props => {
                           label={get(EducationSchema[marksObtained], "label")}
                           name={marksObtained}
                           onChange={handleChange}
-                          required
                           type={get(EducationSchema[marksObtained], "type")}
                           value={formState.values[marksObtained] || ""}
                           error={hasError(marksObtained)}
@@ -929,7 +923,6 @@ const AddEditEducation = props => {
                           label={get(EducationSchema[totalMarks], "label")}
                           name={totalMarks}
                           onChange={handleChange}
-                          required
                           type={get(EducationSchema[totalMarks], "type")}
                           value={formState.values[totalMarks] || ""}
                           error={hasError(totalMarks)}
@@ -953,7 +946,6 @@ const AddEditEducation = props => {
                           label={get(EducationSchema[percentage], "label")}
                           name={percentage}
                           onChange={handleChange}
-                          required
                           type={get(EducationSchema[percentage], "type")}
                           value={formState.values[percentage] || ""}
                           error={hasError(percentage)}
