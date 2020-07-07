@@ -9,7 +9,7 @@ import {
   IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-
+import _ from "lodash";
 import styles from "./Education.module.css";
 import useStyles from "../CommonStyles/ViewStyles.js";
 import * as serviceProviders from "../../../api/Axios";
@@ -139,6 +139,15 @@ const ViewEducation = props => {
     await serviceProviders
       .serviceProviderForGetRequest(STUDENT_EDUCATION_URL, params)
       .then(res => {
+        res.data.result.filter(education => {
+          genericConstants.QUALIFICATION_LIST.filter(qualification => {
+            if (qualification.id === education.qualification) {
+              education.qualification = qualification.name;
+            }
+            return qualification;
+          });
+          return education;
+        });
         formState.dataToShow = [];
         setFormState(formState => ({
           ...formState,
