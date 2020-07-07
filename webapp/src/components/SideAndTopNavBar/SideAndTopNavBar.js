@@ -466,40 +466,37 @@ function SideAndTopNavBar(props) {
                   variant="permanent"
                   open
                 >
-                  <Box className={classes.mainDesktopBox}>
-                    {auth.getUserInfo().role.name === "Student" &&
-                    auth.getUserInfo().studentInfo.profile_photo &&
-                    auth.getUserInfo().studentInfo.profile_photo.url ? (
-                      <Box className={classes.logoStudentBox}>
-                        <Avatar
-                          alt={title()}
-                          src={
-                            strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                            auth.getUserInfo().studentInfo.profile_photo.url
-                          }
-                          className={classes.avatarLogo}
-                        />
-                      </Box>
-                    ) : auth.getUserInfo().role.name === "Student" ? (
-                      <Box className={classes.logoStudentBox}>
-                        <Avatar
-                          alt={title()}
-                          src=""
-                          className={classes.avatarLogo}
-                        />
-                      </Box>
-                    ) : (
-                      <Box className={classes.logoBox}>
-                        <LargeLogo />
-                      </Box>
-                    )}
+                  {auth.getUserInfo().role.name === "Student" ? (
+                    <Box className={classes.mainDesktopBox}>
+                      {auth.getUserInfo().studentInfo.profile_photo &&
+                      auth.getUserInfo().studentInfo.profile_photo.url ? (
+                        <Box className={classes.logoStudentBox}>
+                          <Avatar
+                            alt={title()}
+                            src={
+                              strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                              auth.getUserInfo().studentInfo.profile_photo.url
+                            }
+                            className={classes.avatarLogo}
+                          />
+                        </Box>
+                      ) : (
+                        <Box className={classes.logoStudentBox}>
+                          <Avatar
+                            alt={title()}
+                            src=""
+                            className={classes.avatarLogo}
+                          />
+                        </Box>
+                      )}
 
-                    <Box className={classes.userContentBox}>
-                      <Typography variant="h5" component="h5">
-                        {title()}
-                      </Typography>
+                      <Box className={classes.userContentBox}>
+                        <Typography variant="h5" component="h5">
+                          {title()}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
+                  ) : null}
                   {drawer}
                 </Drawer>
               </Hidden>

@@ -464,29 +464,40 @@ const ViewZone = props => {
   const classes = useStyles();
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_ZONE_TEXT}
-        </Typography>
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Delete Selected Zones
-        </GreenButton>
-        <GreenButton
-          variant="contained"
-          color="primary"
-          disableElevation
-          to={routeConstants.ADD_ZONES}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_ZONE_TEXT}
-        </GreenButton>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.VIEW_ZONE_TEXT}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteMulUserById()}
+            startIcon={<DeleteIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            Delete Selected Zones
+          </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            disableElevation
+            to={routeConstants.ADD_ZONES}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+            style={{ margin: "2px" }}
+          >
+            {genericConstants.ADD_ZONE_TEXT}
+          </GreenButton>
+        </Grid>
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for edit */}

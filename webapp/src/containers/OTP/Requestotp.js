@@ -142,11 +142,13 @@ const RequestOtp = props => {
                 </div>
               </CardContent>
 
-              <CardMedia
-                className={classes.cover}
-                image={image}
-                title="Live from space album cover"
-              />
+              <Hidden mdDown>
+                <CardMedia
+                  className={classes.cover}
+                  image={image}
+                  title="Live from space album cover"
+                />
+              </Hidden>
             </Paper>
           </div>
         </div>
