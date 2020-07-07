@@ -238,17 +238,6 @@ const AddEditEducation = props => {
             hideYear: true
           }));
         }
-        // if (
-        //   formState.values[qualification] === "secondary" ||
-        //   formState.values[qualification] === "senior_secondary"
-        // ) {
-        //   EducationSchema.qualification.required = false;
-        //   EducationSchema.qualification.validations = {};
-        //   setFormState(formState => ({
-        //     ...formState,
-        //     hideYear: true
-        //   }));
-        // }
       }
       if (props["dataForEdit"]["other_qualification"]) {
         formState.values["otherQualification"] =
