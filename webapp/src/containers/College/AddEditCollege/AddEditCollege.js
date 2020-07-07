@@ -1807,15 +1807,23 @@ const AddEditCollege = props => {
                       );
                     })}
                     <div className={classes.btnspaceadd}>
-                      <YellowButton
-                        disabled={streamsData.length ? false : true}
-                        color="primary"
-                        variant="contained"
-                        className={classes.add_more_btn}
-                        onClick={addNewRow}
-                      >
-                        {genericConstants.ADD_MORE_TEXT}
-                      </YellowButton>
+                      <Grid item xs={12}>
+                        <Grid item xs={12} md={6} xl={3}>
+                          <Grid container spacing={3}>
+                            <Grid item md={3} xs={12}>
+                              <YellowButton
+                                disabled={streamsData.length ? false : true}
+                                color="primary"
+                                variant="contained"
+                                className={classes.add_more_btn}
+                                onClick={addNewRow}
+                              >
+                                {genericConstants.ADD_MORE_TEXT}
+                              </YellowButton>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
                     </div>
                   </Card>
                 </Grid>
@@ -1824,23 +1832,33 @@ const AddEditCollege = props => {
           </CardContent>
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>
-              <YellowButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                onClick={handleSubmit}
-                className={classes.submitbtn}
-              >
-                {genericConstants.SAVE_BUTTON_TEXT}
-              </YellowButton>
-              <GrayButton
-                color="primary"
-                variant="contained"
-                onClick={clickedCancelButton}
-                className={classes.resetbtn}
-              >
-                {genericConstants.CANCEL_BUTTON_TEXT}
-              </GrayButton>
+              <Grid item xs={12}>
+                <Grid item xs={12} md={6} xl={3}>
+                  <Grid container spacing={3}>
+                    <Grid item md={2} xs={12}>
+                      <YellowButton
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        onClick={handleSubmit}
+                        className={classes.submitbtn}
+                      >
+                        {genericConstants.SAVE_BUTTON_TEXT}
+                      </YellowButton>
+                    </Grid>
+                    <Grid item md={2} xs={12}>
+                      <GrayButton
+                        color="primary"
+                        variant="contained"
+                        onClick={clickedCancelButton}
+                        className={classes.resetbtn}
+                      >
+                        {genericConstants.CANCEL_BUTTON_TEXT}
+                      </GrayButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
             </CardActions>
           </Grid>
         </Card>
