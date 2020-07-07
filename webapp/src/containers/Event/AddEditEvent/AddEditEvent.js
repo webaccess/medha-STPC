@@ -1940,26 +1940,34 @@ const AddEditEvent = props => {
                         );
                       })}
                       <div className={classes.btnspaceadd}>
-                        <YellowButton
-                          type="button"
-                          color="primary"
-                          variant="contained"
-                          disabled={
-                            formState.isCollegeAdmin &&
-                            formState.isEditEvent &&
-                            formState.isCollegeAdminDoesNotHaveEditPreviliges
-                              ? true
-                              : qualifications.length
-                              ? false
-                              : true
-                          }
-                          className={classes.add_more_btn}
-                          onClick={e => {
-                            addNewRow(e, qualification);
-                          }}
-                        >
-                          {genericConstants.ADD_MORE_TEXT}
-                        </YellowButton>
+                        <Grid item xs={12}>
+                          <Grid item xs={12} md={6} xl={3}>
+                            <Grid container spacing={3}>
+                              <Grid item md={5} xs={12}>
+                                <YellowButton
+                                  type="button"
+                                  color="primary"
+                                  variant="contained"
+                                  disabled={
+                                    formState.isCollegeAdmin &&
+                                    formState.isEditEvent &&
+                                    formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                      ? true
+                                      : qualifications.length
+                                      ? false
+                                      : true
+                                  }
+                                  className={classes.add_more_btn}
+                                  onClick={e => {
+                                    addNewRow(e, qualification);
+                                  }}
+                                >
+                                  {genericConstants.ADD_MORE_TEXT}
+                                </YellowButton>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Grid>
                       </div>
                     </Card>
                   </Grid>
@@ -2157,26 +2165,34 @@ const AddEditEvent = props => {
                         );
                       })}
                       <div className={classes.btnspaceadd}>
-                        <YellowButton
-                          type="button"
-                          color="primary"
-                          disabled={
-                            formState.isCollegeAdmin &&
-                            formState.isEditEvent &&
-                            formState.isCollegeAdminDoesNotHaveEditPreviliges
-                              ? true
-                              : educations.length
-                              ? false
-                              : true
-                          }
-                          variant="contained"
-                          className={classes.add_more_btn}
-                          onClick={e => {
-                            addNewRow(e, education);
-                          }}
-                        >
-                          {genericConstants.ADD_MORE_TEXT}
-                        </YellowButton>
+                        <Grid item xs={12}>
+                          <Grid item xs={12} md={6} xl={3}>
+                            <Grid container spacing={3}>
+                              <Grid item md={5} xs={12}>
+                                <YellowButton
+                                  type="button"
+                                  color="primary"
+                                  disabled={
+                                    formState.isCollegeAdmin &&
+                                    formState.isEditEvent &&
+                                    formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                      ? true
+                                      : educations.length
+                                      ? false
+                                      : true
+                                  }
+                                  variant="contained"
+                                  className={classes.add_more_btn}
+                                  onClick={e => {
+                                    addNewRow(e, education);
+                                  }}
+                                >
+                                  {genericConstants.ADD_MORE_TEXT}
+                                </YellowButton>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Grid>
                       </div>
                     </Card>
                   </Grid>
@@ -2185,28 +2201,38 @@ const AddEditEvent = props => {
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  disabled={
-                    formState.isCollegeAdmin &&
-                    formState.isEditEvent &&
-                    formState.isCollegeAdminDoesNotHaveEditPreviliges
-                      ? true
-                      : false
-                  }
-                >
-                  {genericConstants.SAVE_BUTTON_TEXT}
-                </YellowButton>
-                <GrayButton
-                  type="button"
-                  color="primary"
-                  variant="contained"
-                  to={routeConstants.MANAGE_EVENT}
-                >
-                  {genericConstants.CANCEL_BUTTON_TEXT}
-                </GrayButton>
+                <Grid item xs={12}>
+                  <Grid item xs={12} md={6} xl={3}>
+                    <Grid container spacing={3}>
+                      <Grid item md={2} xs={12}>
+                        <YellowButton
+                          type="submit"
+                          color="primary"
+                          variant="contained"
+                          disabled={
+                            formState.isCollegeAdmin &&
+                            formState.isEditEvent &&
+                            formState.isCollegeAdminDoesNotHaveEditPreviliges
+                              ? true
+                              : false
+                          }
+                        >
+                          {genericConstants.SAVE_BUTTON_TEXT}
+                        </YellowButton>
+                      </Grid>
+                      <Grid item md={2} xs={12}>
+                        <GrayButton
+                          type="button"
+                          color="primary"
+                          variant="contained"
+                          to={routeConstants.MANAGE_EVENT}
+                        >
+                          {genericConstants.CANCEL_BUTTON_TEXT}
+                        </GrayButton>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardActions>
             </Grid>
           </form>
