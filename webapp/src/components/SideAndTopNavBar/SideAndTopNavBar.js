@@ -17,13 +17,14 @@ import {
   ListItemIcon,
   Divider,
   Box,
-  Typography
+  Typography,
+  Avatar
 } from "@material-ui/core";
 import SwapHorizontalCircleOutlinedIcon from "@material-ui/icons/SwapHorizontalCircleOutlined";
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
 import MenuIcon from "@material-ui/icons/Menu";
 import InputIcon from "@material-ui/icons/Input";
-
+import * as strapiApiConstants from "../../constants/StrapiApiConstants.js";
 import * as routeConstants from "../../constants/RouteConstants";
 import Logo from "../Logo/Logo";
 import MenuItems from "./Component/MenuItems";
@@ -31,6 +32,7 @@ import { Auth as auth, CustomRouterLink } from "../../components";
 import AccountCircleOutlinedIcon from "@material-ui/icons/AccountCircleOutlined";
 import SetIndexContext from "../../context/SetIndexContext";
 import SmallLogo from "../SmallLogo/SmallLogo";
+import LargeLogo from "../LargeLogo/LargeLogo";
 
 const useDrawerStyles = makeStyles(theme => ({
   drawer: {
@@ -62,6 +64,20 @@ const useDrawerStyles = makeStyles(theme => ({
     padding: "16px",
     justifyContent: "center"
   },
+  smallLogoBox: {
+    display: "flex",
+    padding: "10px",
+    justifyContent: "center"
+  },
+  logoStudentBox: {
+    display: "flex",
+    justifyContent: "center"
+  },
+  avatarLogo: {
+    height: "100px",
+    width: "100px",
+    backgroundColor: "#EDEDED"
+  },
   userContentBox: {
     padding: "16px",
     textAlign: "center"
@@ -79,6 +95,11 @@ const useDrawerStyles = makeStyles(theme => ({
   },
   dividerStyle: {
     margin: theme.spacing(4, 0, 2, 0)
+  },
+  mainDesktopBox: {
+    marginTop: "50px",
+    marginLeft: "43px",
+    marginRight: "50px"
   }
 }));
 
@@ -445,6 +466,40 @@ function SideAndTopNavBar(props) {
                   variant="permanent"
                   open
                 >
+                  <Box className={classes.mainDesktopBox}>
+                    {auth.getUserInfo().role.name === "Student" &&
+                    auth.getUserInfo().studentInfo.profile_photo &&
+                    auth.getUserInfo().studentInfo.profile_photo.url ? (
+                      <Box className={classes.logoStudentBox}>
+                        <Avatar
+                          alt={title()}
+                          src={
+                            strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                            auth.getUserInfo().studentInfo.profile_photo.url
+                          }
+                          className={classes.avatarLogo}
+                        />
+                      </Box>
+                    ) : auth.getUserInfo().role.name === "Student" ? (
+                      <Box className={classes.logoStudentBox}>
+                        <Avatar
+                          alt={title()}
+                          src=""
+                          className={classes.avatarLogo}
+                        />
+                      </Box>
+                    ) : (
+                      <Box className={classes.logoBox}>
+                        <LargeLogo />
+                      </Box>
+                    )}
+
+                    <Box className={classes.userContentBox}>
+                      <Typography variant="h5" component="h5">
+                        {title()}
+                      </Typography>
+                    </Box>
+                  </Box>
                   {drawer}
                 </Drawer>
               </Hidden>
@@ -465,25 +520,60 @@ function SideAndTopNavBar(props) {
                     keepMounted: true // Better open performance on mobile.
                   }}
                 >
-                  <Hidden lgUp>
-                    <Box className={classes.mainBox}>
+                  {/* <Hidden lgUp> */}
+                  <Box className={classes.mainBox}>
+                    {auth.getUserInfo().role.name === "Student" &&
+                    auth.getUserInfo().studentInfo.profile_photo &&
+                    auth.getUserInfo().studentInfo.profile_photo.url ? (
+                      <React.Fragment>
+                        <Box className={classes.smallLogoBox}>
+                          <SmallLogo />
+                        </Box>
+                        <Box className={classes.logoStudentBox}>
+                          <Avatar
+                            alt={title()}
+                            src={
+                              strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                              auth.getUserInfo().studentInfo.profile_photo.url
+                            }
+                            className={classes.avatarLogo}
+                          />
+                        </Box>
+                      </React.Fragment>
+                    ) : auth.getUserInfo().role.name === "Student" ? (
+                      <React.Fragment>
+                        <Box className={classes.smallLogoBox}>
+                          <SmallLogo />
+                        </Box>
+                        <Box className={classes.logoStudentBox}>
+                          <Avatar
+                            alt={title()}
+                            src=""
+                            className={classes.avatarLogo}
+                          />
+                        </Box>
+                      </React.Fragment>
+                    ) : (
                       <Box className={classes.logoBox}>
-                        <SmallLogo />
+                        <LargeLogo />
                       </Box>
-                      <Box className={classes.userContentBox}>
-                        <Typography variant="h5" component="h5">
-                          {title()}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          className={classes.body2Style}
-                        >
-                          {role()}
-                        </Typography>
-                      </Box>
+                    )}
+
+                    <Box className={classes.userContentBox}>
+                      <Typography variant="h5" component="h5">
+                        {title()}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        className={classes.body2Style}
+                      >
+                        {role()}
+                      </Typography>
                     </Box>
-                    <Divider />
-                  </Hidden>
+                  </Box>
+                  <Divider />
+                  {/* </Hidden> */}
+
                   {drawer}
                 </Drawer>
               </Hidden>
