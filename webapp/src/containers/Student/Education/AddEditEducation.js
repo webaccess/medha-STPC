@@ -238,6 +238,17 @@ const AddEditEducation = props => {
             hideYear: true
           }));
         }
+        // if (
+        //   formState.values[qualification] === "secondary" ||
+        //   formState.values[qualification] === "senior_secondary"
+        // ) {
+        //   EducationSchema.qualification.required = false;
+        //   EducationSchema.qualification.validations = {};
+        //   setFormState(formState => ({
+        //     ...formState,
+        //     hideYear: true
+        //   }));
+        // }
       }
       if (props["dataForEdit"]["other_qualification"]) {
         formState.values["otherQualification"] =
@@ -310,6 +321,7 @@ const AddEditEducation = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
+    setLoaderStatus(true);
     const schema = getSchema();
 
     let isValid = false;
@@ -344,6 +356,7 @@ const AddEditEducation = props => {
         isValid: false
       }));
     }
+    setLoaderStatus(false);
     event.preventDefault();
   };
 
@@ -466,6 +479,7 @@ const AddEditEducation = props => {
             history.push({
               pathname: routeConstants.VIEW_DOCUMENTS
             });
+            setLoaderStatus(false);
           } else {
             history.push({
               pathname: routeConstants.VIEW_EDUCATION,
@@ -498,6 +512,7 @@ const AddEditEducation = props => {
             history.push({
               pathname: routeConstants.VIEW_DOCUMENTS
             });
+            setLoaderStatus(false);
           } else {
             history.push({
               pathname: routeConstants.VIEW_EDUCATION,
@@ -606,6 +621,7 @@ const AddEditEducation = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {isSuccess ? (
           <Alert severity="success">
