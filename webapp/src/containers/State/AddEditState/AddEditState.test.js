@@ -40,4 +40,24 @@ describe("testing for state", () => {
     );
     expect(updatedNameInput.props().value).toEqual("maharashtra");
   });
+
+  it("Testt for Edit prefilled", () => {
+    const dataForEdit = {
+      name: "Uttar pradesh"
+    }
+    const wrapper = shallow(<AddEditState editState={true} dataForEdit={dataForEdit} />);
+    const input = wrapper.find("#test");
+    expect(input.props().value).toBe("Uttar pradesh")
+  });
+  it("Test for else condition of  Edit prefilled", () => {
+    const dataForEdit = {}
+    const wrapper = shallow(<AddEditState editState={true} dataForEdit={dataForEdit} />);
+    const input = wrapper.find("#test");
+    expect(input.props().value).toBe("")
+  })
+  it("Test for else condition of  Edit prefilled", () => {
+    const wrapper = shallow(<AddEditState editState={true} dataForEdit={undefined} />);
+    const input = wrapper.find("#test");
+    expect(input.props().value).toBe("")
+  })
 });
