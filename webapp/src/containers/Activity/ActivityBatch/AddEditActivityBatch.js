@@ -39,11 +39,11 @@ import DeleteActivityBatchStudents from "./DeleteActivityBatchStudents.js";
 import DeleteIcon from "@material-ui/icons/Delete";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import TickGridIcon from "../../../components/TickGridIcon";
-import CrossGridIcon from "../../../components/CrossGridIcon";
 import LoaderContext from "../../../context/LoaderContext";
 import moment from "moment";
 import auth from "../../../components/Auth";
 import { CompassCalibrationOutlined } from "@material-ui/icons";
+import "./AddStudentToActivityBatch.css";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
@@ -479,7 +479,6 @@ const AddEditActivityBatches = props => {
   };
 
   const checkDateTime = errors => {
-    console.log(errors);
     const DateFrom = new Date(formState.values["dateFrom"]).getTime();
     const DateTo = new Date(formState.values["dateTo"]).getTime();
     const startDate = formState.startDate.getTime();
@@ -663,16 +662,6 @@ const AddEditActivityBatches = props => {
               />
             </div>
           )}
-          {/* {!!cell.activityBatch.verified_by_college ? (
-            <div style={{ marginLeft: "8px" }}>
-              <CrossGridIcon
-                id={cell.id}
-                value={cell.name}
-                onClick={() => handleUnVerifyMultipleStudents([cell.id])}
-              />
-            </div>
-          ) : null} */}
-
           <div style={{ marginLeft: "8px" }}>
             <DeleteGridIcon
               id={cell.id}
@@ -749,7 +738,6 @@ const AddEditActivityBatches = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       <div className={classes.breadCrumbs}>
         {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
       </div>
