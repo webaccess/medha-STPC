@@ -906,44 +906,57 @@ const ManageUser = props => {
 
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.MANAGE_USER_TEXT}
-        </Typography>
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => blockMulUserById()}
-          startIcon={<BlockIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          {formState.bottonBlockUnblock}
-        </GreenButton>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.MANAGE_USER_TEXT}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => blockMulUserById()}
+            startIcon={<BlockIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            {formState.bottonBlockUnblock}
+          </GreenButton>
 
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          {genericConstants.DELETE_MULTI_USER_BUTTON}
-        </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteMulUserById()}
+            startIcon={<DeleteIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            {genericConstants.DELETE_MULTI_USER_BUTTON}
+          </GreenButton>
 
-        <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={clearFilter}
-          disableElevation
-          to={routeConstants.ADD_USER}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          {genericConstants.ADD_USER_TITLE}
-        </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            onClick={clearFilter}
+            disableElevation
+            to={routeConstants.ADD_USER}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px" }}
+          >
+            {genericConstants.ADD_USER_TITLE}
+          </GreenButton>
+        </Grid>
       </Grid>
+
       <Grid item xs={12} className={classes.formgrid}>
         {/** Error/Success messages to be shown for edit */}
         {formState.fromeditUser && formState.isDataEdited ? (

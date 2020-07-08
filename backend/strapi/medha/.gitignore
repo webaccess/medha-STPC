@@ -110,3 +110,5 @@ coverage
 exports
 .cache
 build
+prod-students.xlsx
+migrations.js

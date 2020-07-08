@@ -32,7 +32,7 @@ import {
   Spinner
 } from "../../../components";
 import { useHistory } from "react-router-dom";
-import { uniqBy, get } from "lodash";
+import { uniqBy, get, assign } from "lodash";
 import AddActivityBatchSchema from "./AddActivityBatchSchema.js";
 import AddStudentToActivityBatch from "./AddStudentToActivityBatch.js";
 import DeleteActivityBatchStudents from "./DeleteActivityBatchStudents.js";
@@ -86,7 +86,9 @@ const AddEditActivityBatches = props => {
     values: {},
     touched: {},
     errors: {},
-    counter: 0
+    counter: 0,
+    startDate: new Date(),
+    endDate: new Date()
   });
 
   if (formState.isEditActivityBatch && !formState.counter) {
@@ -147,6 +149,16 @@ const AddEditActivityBatches = props => {
         if (data.result == null) {
           history.push("/404");
         }
+        formState.values["dateFrom"] = new Date(data.result.start_date_time);
+        formState.values["dateTo"] = new Date(data.result.end_date_time);
+
+        setFormState(formState => ({
+          ...formState,
+          startDate: new Date(data.result.start_date_time),
+          endDate: new Date(data.result.end_date_time)
+        }));
+        // formState.startDate = new Date(data.result.start_date_time);
+        // formState.startDate = new Date(data.result.end_date_time);
         setActivityDetails(data.result);
       })
       .catch(error => {
@@ -215,8 +227,8 @@ const AddEditActivityBatches = props => {
 
         studentDataArray.push(tempIndividualStudentData);
       }
-      return studentDataArray;
     }
+    return studentDataArray;
   };
 
   /** Pagination */
@@ -433,6 +445,7 @@ const AddEditActivityBatches = props => {
         dateFrom,
         dateTo
       );
+      formState.errors = checkDateTime(formState.errors);
       /** Checks if the form is empty */
       if (formUtilities.checkEmpty(formState.errors)) {
         isValid = true;
@@ -451,6 +464,7 @@ const AddEditActivityBatches = props => {
         dateFrom,
         dateTo
       );
+      formState.errors = checkDateTime(formState.errors);
     }
     if (isValid) {
       /** CALL POST FUNCTION */
@@ -464,6 +478,30 @@ const AddEditActivityBatches = props => {
     event.preventDefault();
   };
 
+  const checkDateTime = errors => {
+    console.log(errors);
+    const DateFrom = new Date(formState.values["dateFrom"]).getTime();
+    const DateTo = new Date(formState.values["dateTo"]).getTime();
+    const startDate = formState.startDate.getTime();
+    const endDate = formState.endDate.getTime();
+
+    if (startDate > DateFrom) {
+      const obj = {
+        dateFrom: ["Start Date time can't be before Activity Start Date Time"]
+      };
+      errors.dateFrom = [
+        "Start Date time can't be before Activity Start Date Time"
+      ];
+    }
+
+    if (endDate < DateTo) {
+      const obj = {
+        dateTo: ["End Date time can't be after Activity End Date Time"]
+      };
+      errors.dateTo = ["End Date time can't be after Activity End Date Time"];
+    }
+    return errors;
+  };
   const handleDateChange = (datefrom, event) => {
     if (formState.errors.hasOwnProperty(datefrom)) {
       delete formState.errors[datefrom];
@@ -660,6 +698,7 @@ const AddEditActivityBatches = props => {
         startIcon={<DeleteIcon />}
         greenButtonChecker={true}
         buttonDisabled={selectedStudents.length <= 0}
+        style={{ margin: "2px" }}
       >
         {genericConstants.DELETE_STUDENT_TO_ACTIVITY_BATCH}
       </GreenButton>
@@ -676,6 +715,7 @@ const AddEditActivityBatches = props => {
         startIcon={<VerifiedUserIcon />}
         greenButtonChecker={true}
         buttonDisabled={selectedStudents.length <= 0}
+        style={{ margin: "2px", marginRight: "15px" }}
       >
         {genericConstants.VERIFY_STUDENT_TO_ACTIVITY_BATCH}
       </GreenButton>
@@ -709,21 +749,31 @@ const AddEditActivityBatches = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       <div className={classes.breadCrumbs}>
         {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
       </div>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {formState.isEditActivityBatch
-            ? formState.dataForEdit[activityBatchName]
-            : "New Batch"}
-        </Typography>
-        {formState.isEditActivityBatch ? (
-          <>
-            <MultiVerifyStudentButton />
-            <MultiDeleteStudentButton />
-          </>
-        ) : null}
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {formState.isEditActivityBatch
+              ? formState.dataForEdit[activityBatchName]
+              : "New Batch"}
+          </Typography>
+        </Grid>
+        <Grid item>
+          {formState.isEditActivityBatch ? (
+            <>
+              <MultiVerifyStudentButton />
+              <MultiDeleteStudentButton />
+            </>
+          ) : null}
+        </Grid>
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
@@ -905,25 +955,22 @@ const AddEditActivityBatches = props => {
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               {formState.dataToShow ? (
-                formState.dataToShow.length ? (
-                  <Table
-                    data={formState.dataToShow}
-                    column={column}
-                    defaultSortField="name"
-                    defaultSortAsc={formState.sortAscending}
-                    progressPending={formState.isDataLoading}
-                    paginationTotalRows={formState.totalRows}
-                    paginationRowsPerPageOptions={[10, 20, 50]}
-                    onChangeRowsPerPage={handlePerRowsChange}
-                    onChangePage={handlePageChange}
-                    onSelectedRowsChange={handleRowChange}
-                    clearSelectedRows={clearSelectedRows}
-                  />
-                ) : (
-                  <Spinner />
-                )
+                <Table
+                  data={formState.dataToShow}
+                  column={column}
+                  defaultSortField="name"
+                  defaultSortAsc={formState.sortAscending}
+                  progressPending={formState.isDataLoading}
+                  paginationTotalRows={formState.totalRows}
+                  paginationRowsPerPageOptions={[10, 20, 50]}
+                  onChangeRowsPerPage={handlePerRowsChange}
+                  onChangePage={handlePageChange}
+                  onSelectedRowsChange={handleRowChange}
+                  clearSelectedRows={clearSelectedRows}
+                  noDataComponent="No eligible student data found"
+                />
               ) : (
-                <div className={classes.noDataMargin}>No data to show</div>
+                <Spinner />
               )}
             </Grid>
           </CardContent>

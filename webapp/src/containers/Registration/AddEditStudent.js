@@ -23,7 +23,7 @@ import { Auth as auth, InlineDatePicker } from "../../components";
 import Spinner from "../../components/Spinner/Spinner.js";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
-
+import * as commonUtilities from "../../utilities/CommonUtilities";
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
 
@@ -45,6 +45,7 @@ import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
 import useStyles from "../ContainerStyles/AddEditPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
+import SetIndexContext from "../../context/SetIndexContext";
 
 const AddEditStudent = props => {
   let history = useHistory();
@@ -116,7 +117,7 @@ const AddEditStudent = props => {
   const [isFailed, setIsFailed] = useState(false);
 
   const classes = useStyles();
-
+  const { setIndex } = useContext(SetIndexContext);
   const [statelist, setstatelist] = useState([]);
   const [districtlist, setdistrictlist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
@@ -436,6 +437,9 @@ const AddEditStudent = props => {
               editedStudentName: studentName
             });
           } else {
+            if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
+              commonUtilities.updateUser();
+            }
             if (formState.flag === 1) {
               history.push({
                 pathname: routeConstants.VIEW_EDUCATION
@@ -447,6 +451,7 @@ const AddEditStudent = props => {
               });
             }
           }
+
           setLoaderStatus(false);
         })
         .catch(err => {
@@ -1477,40 +1482,54 @@ const AddEditStudent = props => {
             {formState.editStudent ? (
               <Grid item xs={12} className={classes.CardActionGrid}>
                 <CardActions className={classes.btnspace}>
-                  <YellowButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    style={{ marginRight: "18px" }}
-                    onClick={handleSubmit}
-                  >
-                    <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
-                  </YellowButton>
-                  <YellowButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    style={{ marginRight: "18px" }}
-                    onClick={saveAndNext}
-                  >
-                    <span>{genericConstants.SAVE_AND_NEXT_BUTTON_TEXT}</span>
-                  </YellowButton>
-                  <GrayButton
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    onClick={() => {
-                      auth.getUserInfo().role.name ===
-                      roleConstants.COLLEGEADMIN
-                        ? history.push(routeConstants.MANAGE_STUDENT)
-                        : history.push(routeConstants.VIEW_PROFILE);
-                    }}
-                  >
-                    <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
-                  </GrayButton>
+                  <Grid item xs={12}>
+                    <Grid item xs={12} md={6} xl={3}>
+                      <Grid container spacing={3}>
+                        <Grid item md={2} xs={12}>
+                          <YellowButton
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            style={{ marginRight: "18px" }}
+                            onClick={handleSubmit}
+                          >
+                            <span>{genericConstants.SAVE_BUTTON_TEXT}</span>
+                          </YellowButton>
+                        </Grid>
+                        <Grid item md={3} xs={12}>
+                          <YellowButton
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            style={{ marginRight: "18px" }}
+                            onClick={saveAndNext}
+                          >
+                            <span>
+                              {genericConstants.SAVE_AND_NEXT_BUTTON_TEXT}
+                            </span>
+                          </YellowButton>
+                        </Grid>
+                        <Grid item md={2} xs={12}>
+                          <GrayButton
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            onClick={() => {
+                              auth.getUserInfo().role.name ===
+                              roleConstants.COLLEGEADMIN
+                                ? history.push(routeConstants.MANAGE_STUDENT)
+                                : history.push(routeConstants.VIEW_PROFILE);
+                            }}
+                          >
+                            <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                          </GrayButton>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </CardActions>
               </Grid>
             ) : (

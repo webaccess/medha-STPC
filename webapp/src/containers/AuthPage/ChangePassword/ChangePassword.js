@@ -5,6 +5,7 @@ import useStyles from "../../ContainerStyles/AddEditPageStyles";
 import ChangePasswordStyles from "./ChangePasswordStyles";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import * as roleConstants from "../../../constants/RoleConstants";
 import {
   YellowButton,
   GrayButton,
@@ -382,17 +383,41 @@ const ChangePassword = props => {
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton type="submit" color="primary" variant="contained">
-                  {genericConstants.SAVE_BUTTON_TEXT}
-                </YellowButton>
-                <GrayButton
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  to={routeConstants.DASHBOARD_URL}
-                >
-                  {genericConstants.CANCEL_BUTTON_TEXT}
-                </GrayButton>
+                <Grid item xs={12} className={classes.CardActionGrid}>
+                  <CardActions className={classes.btnspace}>
+                    <Grid item xs={12}>
+                      <Grid item xs={12} md={6} xl={3}>
+                        <Grid container spacing={3}>
+                          <Grid item md={2} xs={12}>
+                            <YellowButton
+                              type="submit"
+                              color="primary"
+                              variant="contained"
+                            >
+                              {genericConstants.SAVE_BUTTON_TEXT}
+                            </YellowButton>
+                          </Grid>
+
+                          <Grid item md={2} xs={12}>
+                            <GrayButton
+                              type="submit"
+                              color="primary"
+                              variant="contained"
+                              to={
+                                auth.getUserInfo().role.name ===
+                                roleConstants.STUDENT
+                                  ? routeConstants.VIEW_PROFILE
+                                  : routeConstants.DASHBOARD_URL
+                              }
+                            >
+                              {genericConstants.CANCEL_BUTTON_TEXT}
+                            </GrayButton>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </CardActions>
+                </Grid>
               </CardActions>
             </Grid>
           </form>

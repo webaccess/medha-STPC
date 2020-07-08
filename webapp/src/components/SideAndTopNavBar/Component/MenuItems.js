@@ -210,7 +210,7 @@ const MenuItems = props => {
           {
             name: "Past Events",
             link: routeConstants.VIEW_PAST_EVENTS,
-            availableRoutes: [routeConstants.VIEW_PAST_ACTIVITIES]
+            availableRoutes: [routeConstants.VIEW_PAST_EVENTS]
           }
         ]
       },

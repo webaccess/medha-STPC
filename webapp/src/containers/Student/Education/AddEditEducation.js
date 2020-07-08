@@ -169,6 +169,17 @@ const AddEditEducation = props => {
         }
       }));
     }
+
+    if (formState.values[qualification] === "other") {
+      delete formState.errors[educationYear];
+      delete formState.values[educationYear];
+      setFormState(formState => ({
+        ...formState,
+        errors: {
+          ...formState.errors
+        }
+      }));
+    }
   }, [formState.values[qualification]]);
 
   const fetchDropdowns = (link, setList) => {
@@ -182,7 +193,6 @@ const AddEditEducation = props => {
         if (link === "boards") {
           const id = data.result
             .map(board => {
-              console.log(board);
               if (board.name === "Other") return board.id;
             })
             .filter(c => c);
@@ -229,6 +239,10 @@ const AddEditEducation = props => {
           }));
         }
       }
+      if (props["dataForEdit"]["other_qualification"]) {
+        formState.values["otherQualification"] =
+          props["dataForEdit"]["other_qualification"];
+      }
       if (props["dataForEdit"]["institute"]) {
         formState.values[institute] = props["dataForEdit"]["institute"];
       }
@@ -238,6 +252,9 @@ const AddEditEducation = props => {
 
       if (props["dataForEdit"]["board"]) {
         formState.values[board] = props["dataForEdit"]["board"]["id"];
+      }
+      if (props["dataForEdit"]["other_board"]) {
+        formState.values["otherboard"] = props["dataForEdit"]["other_board"];
       }
 
       if (props["dataForEdit"]["marks_obtained"]) {
@@ -293,7 +310,9 @@ const AddEditEducation = props => {
 
   /** Handle submit handles the submit and performs all the validations */
   const handleSubmit = event => {
+    setLoaderStatus(true);
     const schema = getSchema();
+
     let isValid = false;
     // /** Checkif all fields are present in the submitted form */
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -326,6 +345,7 @@ const AddEditEducation = props => {
         isValid: false
       }));
     }
+    setLoaderStatus(false);
     event.preventDefault();
   };
 
@@ -350,6 +370,10 @@ const AddEditEducation = props => {
             message: "Other qualification is required"
           }
         }
+      };
+      defaultSchema[educationYear] = {
+        ...defaultSchema[educationYear],
+        required: false
       };
     }
 
@@ -383,6 +407,7 @@ const AddEditEducation = props => {
 
     if (
       isQualificationReq == "undergraduate" ||
+      isQualificationReq == "graduation" ||
       isQualificationReq == "postgraduate"
     ) {
       defaultSchema[board] = {
@@ -443,6 +468,7 @@ const AddEditEducation = props => {
             history.push({
               pathname: routeConstants.VIEW_DOCUMENTS
             });
+            setLoaderStatus(false);
           } else {
             history.push({
               pathname: routeConstants.VIEW_EDUCATION,
@@ -475,6 +501,7 @@ const AddEditEducation = props => {
             history.push({
               pathname: routeConstants.VIEW_DOCUMENTS
             });
+            setLoaderStatus(false);
           } else {
             history.push({
               pathname: routeConstants.VIEW_EDUCATION,
@@ -510,6 +537,27 @@ const AddEditEducation = props => {
           ...formState,
           hideYear: true
         }));
+      } else {
+        setFormState(formState => ({
+          ...formState,
+          hideYear: false
+        }));
+      }
+      if (value.id === "other") {
+        EducationSchema.qualification.required = false;
+        EducationSchema.qualification.validations = {};
+      } else if (
+        value.id == "undergraduate" ||
+        value.id === "graduation" ||
+        value.id === "postgraduate"
+      ) {
+        EducationSchema.qualification.required = true;
+        EducationSchema.qualification.validations = {
+          required: {
+            value: "true",
+            message: "Education year is required"
+          }
+        };
       }
     } else {
       EducationSchema.qualification.required = true;
@@ -562,6 +610,7 @@ const AddEditEducation = props => {
 
   return (
     <Grid>
+      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {isSuccess ? (
           <Alert severity="success">
@@ -574,254 +623,285 @@ const AddEditEducation = props => {
           </Alert>
         ) : null}
       </Grid>
-      <Grid item xs={12} className={classes.formgrid}>
+      <Grid spacing={3} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
           <form autoComplete="off" noValidate>
             <CardContent>
-              <Grid container spacing={2}>
-                <Grid item md={12} xs={12}>
-                  <FormGroup row>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          name={pursuing}
-                          checked={formState.values[pursuing] || false}
-                          onChange={handleChange}
-                          value={formState.values[pursuing] || false}
-                        />
-                      }
-                      label={
-                        formState.values[pursuing] === true
-                          ? "Pursuing"
-                          : "Not Pursuing"
-                      }
-                    />
-                  </FormGroup>
-                </Grid>
+              <Grid item xs={8}>
+                <Grid container className={classes.formgridInputFile}>
+                  <Grid item xs={12} md={6} xl={3}>
+                    <Grid container spacing={3}>
+                      <Grid item md={12} xs={12}>
+                        <FormGroup row>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                name={pursuing}
+                                checked={formState.values[pursuing] || false}
+                                onChange={handleChange}
+                                value={formState.values[pursuing] || false}
+                              />
+                            }
+                            label={
+                              formState.values[pursuing] === true
+                                ? "Pursuing"
+                                : "Not Pursuing"
+                            }
+                          />
+                        </FormGroup>
+                      </Grid>
+                    </Grid>
 
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
-                    id="year-of-passing"
-                    className={classes.elementroot}
-                    options={academicYears}
-                    getOptionLabel={option => option.name}
-                    disabled={!!formState.values[pursuing]}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(yearOfPassing, event, value);
-                    }}
-                    value={
-                      academicYears[
-                        academicYears.findIndex(function (item) {
-                          return item.id === formState.values[yearOfPassing];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(yearOfPassing)}
-                        label={
-                          formState.values["pursuing"]
-                            ? "Current Year"
-                            : "Year of passing"
-                        }
-                        required
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError(yearOfPassing)
-                            ? formState.errors[yearOfPassing].map(error => {
-                                return error + " ";
+                    <Grid container spacing={3}>
+                      <Grid item md={12} xs={12}>
+                        <Autocomplete
+                          id="year-of-passing"
+                          // className={claselementrootses.}
+                          options={academicYears}
+                          getOptionLabel={option => option.name}
+                          disabled={!!formState.values[pursuing]}
+                          onChange={(event, value) => {
+                            handleChangeAutoComplete(
+                              yearOfPassing,
+                              event,
+                              value
+                            );
+                          }}
+                          value={
+                            academicYears[
+                              academicYears.findIndex(function (item) {
+                                return (
+                                  item.id === formState.values[yearOfPassing]
+                                );
                               })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
-                    className={classes.elementroot}
-                    id="qualification-list"
-                    options={genericConstants.QUALIFICATION_LIST}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(qualification, event, value);
-                    }}
-                    value={
-                      genericConstants.QUALIFICATION_LIST[
-                        genericConstants.QUALIFICATION_LIST.findIndex(function (
-                          item
-                        ) {
-                          return item.id === formState.values[qualification];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(qualification)}
-                        label="Qualification"
-                        required
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError(qualification)
-                            ? formState.errors[qualification].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                {formState.values[qualification] == "other" ? (
-                  <Grid item md={12} xs={12}>
-                    <TextField
-                      fullWidth
-                      id="otherQualification"
-                      label="Other Qualification"
-                      margin="normal"
-                      name="otherQualification"
-                      onChange={handleChange}
-                      required
-                      type="text"
-                      value={formState.values["otherQualification"] || ""}
-                      error={hasError("otherQualification")}
-                      helperText={
-                        hasError("otherQualification")
-                          ? formState.errors["otherQualification"].map(
-                              error => {
-                                return error + " ";
+                            ] || null
+                          }
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              error={hasError(yearOfPassing)}
+                              label={
+                                formState.values["pursuing"]
+                                  ? "Current Year"
+                                  : "Year of passing"
                               }
-                            )
-                          : null
-                      }
-                      variant="outlined"
-                      className={classes.elementroot}
-                    />
-                  </Grid>
-                ) : null}
-                {!formState.hideYear ? (
-                  <Grid item md={12} xs={12}>
-                    <Autocomplete
-                      id="education-list"
-                      className={classes.elementroot}
-                      options={genericConstants.EDUCATIONS}
-                      getOptionLabel={option => option.value}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(educationYear, event, value);
-                      }}
-                      value={
-                        genericConstants.EDUCATIONS[
-                          genericConstants.EDUCATIONS.findIndex(function (
-                            item
-                          ) {
-                            return item.id === formState.values[educationYear];
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(educationYear)}
-                          label="Education Year"
-                          required={
-                            !(
-                              formState.values[qualification] == "secondary" ||
-                              formState.values[qualification] ==
-                                "senior_secondary"
-                            )
-                          }
-                          variant="outlined"
-                          name="tester"
-                          helperText={
-                            hasError(educationYear)
-                              ? formState.errors[educationYear].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
+                              variant="outlined"
+                              name="tester"
+                              helperText={
+                                hasError(yearOfPassing)
+                                  ? formState.errors[yearOfPassing].map(
+                                      error => {
+                                        return error + " ";
+                                      }
+                                    )
+                                  : null
+                              }
+                            />
+                          )}
                         />
-                      )}
-                    />
-                  </Grid>
-                ) : null}
+                      </Grid>
+                    </Grid>
 
-                <Grid item md={12} xs={12}>
-                  <Autocomplete
-                    className={classes.elementroot}
-                    id="board-list"
-                    options={boards}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(board, event, value);
-                    }}
-                    value={
-                      boards[
-                        boards.findIndex(function (item) {
-                          return item.id === formState.values[board];
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(board)}
-                        label="Board"
-                        required={!formState.values[pursuing]}
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError(board)
-                            ? formState.errors[board].map(error => {
-                                return error + " ";
+                    <Grid container spacing={3}>
+                      <Grid item md={12} xs={12}>
+                        <Autocomplete
+                          // className={classes.elementroot}
+                          id="qualification-list"
+                          options={genericConstants.QUALIFICATION_LIST}
+                          getOptionLabel={option => option.name}
+                          onChange={(event, value) => {
+                            handleChangeAutoComplete(
+                              qualification,
+                              event,
+                              value
+                            );
+                          }}
+                          value={
+                            genericConstants.QUALIFICATION_LIST[
+                              genericConstants.QUALIFICATION_LIST.findIndex(
+                                function (item) {
+                                  return (
+                                    item.id === formState.values[qualification]
+                                  );
+                                }
+                              )
+                            ] || null
+                          }
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              error={hasError(qualification)}
+                              label="Qualification"
+                              variant="outlined"
+                              name="tester"
+                              helperText={
+                                hasError(qualification)
+                                  ? formState.errors[qualification].map(
+                                      error => {
+                                        return error + " ";
+                                      }
+                                    )
+                                  : null
+                              }
+                            />
+                          )}
+                        />
+                      </Grid>
+                    </Grid>
+                    {formState.values[qualification] == "other" ? (
+                      <Grid container spacing={3}>
+                        <Grid item md={12} xs={12}>
+                          <TextField
+                            fullWidth
+                            id="otherQualification"
+                            label="Other Qualification"
+                            margin="normal"
+                            name="otherQualification"
+                            onChange={handleChange}
+                            type="text"
+                            value={formState.values["otherQualification"] || ""}
+                            error={hasError("otherQualification")}
+                            helperText={
+                              hasError("otherQualification")
+                                ? formState.errors["otherQualification"].map(
+                                    error => {
+                                      return error + " ";
+                                    }
+                                  )
+                                : null
+                            }
+                            variant="outlined"
+                            // className={classes.elementroot}
+                          />
+                        </Grid>
+                      </Grid>
+                    ) : null}
+                    {!formState.hideYear ? (
+                      <Grid container spacing={3}>
+                        <Grid item md={12} xs={12}>
+                          <Autocomplete
+                            id="education-list"
+                            // className={classes.elementroot}
+                            options={genericConstants.EDUCATIONS}
+                            getOptionLabel={option => option.value}
+                            onChange={(event, value) => {
+                              handleChangeAutoComplete(
+                                educationYear,
+                                event,
+                                value
+                              );
+                            }}
+                            value={
+                              genericConstants.EDUCATIONS[
+                                genericConstants.EDUCATIONS.findIndex(function (
+                                  item
+                                ) {
+                                  return (
+                                    item.id === formState.values[educationYear]
+                                  );
+                                })
+                              ] || null
+                            }
+                            renderInput={params => (
+                              <TextField
+                                {...params}
+                                error={hasError(educationYear)}
+                                label="Education Year"
+                                // required={
+                                //   !(
+                                //     formState.values[qualification] ==
+                                //       "secondary" ||
+                                //     formState.values[qualification] ==
+                                //       "senior_secondary"
+                                //   )
+                                // }
+                                variant="outlined"
+                                name="tester"
+                                helperText={
+                                  hasError(educationYear)
+                                    ? formState.errors[educationYear].map(
+                                        error => {
+                                          return error + " ";
+                                        }
+                                      )
+                                    : null
+                                }
+                              />
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+                    ) : null}
+                    <Grid container spacing={3}>
+                      <Grid item md={12} xs={12}>
+                        <Autocomplete
+                          // className={classes.elementroot}
+                          id="board-list"
+                          options={boards}
+                          getOptionLabel={option => option.name}
+                          onChange={(event, value) => {
+                            handleChangeAutoComplete(board, event, value);
+                          }}
+                          value={
+                            boards[
+                              boards.findIndex(function (item) {
+                                return item.id === formState.values[board];
                               })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                {formState.values[board] == formState.otherId ? (
-                  <Grid item md={12} xs={12}>
-                    <TextField
-                      fullWidth
-                      id="otherboard"
-                      label="Other board"
-                      margin="normal"
-                      name="otherboard"
-                      onChange={handleChange}
-                      required
-                      type="text"
-                      value={formState.values["otherboard"] || ""}
-                      error={hasError("otherboard")}
-                      helperText={
-                        hasError("otherboard")
-                          ? formState.errors["otherboard"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      variant="outlined"
-                      className={classes.elementroot}
-                    />
-                  </Grid>
-                ) : null}
-                <Grid item md={12} xs={12}>
-                  <div className={classes.FlexGrow}>
-                    <Grid container>
-                      <Grid item>
+                            ] || null
+                          }
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              error={hasError(board)}
+                              label="Board"
+                              variant="outlined"
+                              name="tester"
+                              helperText={
+                                hasError(board)
+                                  ? formState.errors[board].map(error => {
+                                      return error + " ";
+                                    })
+                                  : null
+                              }
+                            />
+                          )}
+                        />
+                      </Grid>
+                    </Grid>
+                    {formState.values[board] == formState.otherId ? (
+                      <Grid container spacing={3}>
+                        <Grid item md={12} xs={12}>
+                          <TextField
+                            fullWidth
+                            id="otherboard"
+                            label="Other board"
+                            margin="normal"
+                            name="otherboard"
+                            onChange={handleChange}
+                            type="text"
+                            value={formState.values["otherboard"] || ""}
+                            error={hasError("otherboard")}
+                            helperText={
+                              hasError("otherboard")
+                                ? formState.errors["otherboard"].map(error => {
+                                    return error + " ";
+                                  })
+                                : null
+                            }
+                            variant="outlined"
+                            // className={classes.elementroot}
+                          />
+                        </Grid>
+                      </Grid>
+                    ) : null}
+                    <Grid container spacing={3}>
+                      <Grid item md={6} xs={12}>
                         <TextField
                           fullWidth
                           id={get(EducationSchema[marksObtained], "id")}
                           label={get(EducationSchema[marksObtained], "label")}
-                          margin="normal"
                           name={marksObtained}
                           onChange={handleChange}
-                          required
                           type={get(EducationSchema[marksObtained], "type")}
                           value={formState.values[marksObtained] || ""}
                           error={hasError(marksObtained)}
@@ -836,15 +916,13 @@ const AddEditEducation = props => {
                           disabled={!!formState.values[pursuing]}
                         />
                       </Grid>
-                      <Grid item style={{ marginLeft: "8px" }}>
+                      <Grid item md={6} xs={12}>
                         <TextField
                           fullWidth
                           id={get(EducationSchema[totalMarks], "id")}
                           label={get(EducationSchema[totalMarks], "label")}
-                          margin="normal"
                           name={totalMarks}
                           onChange={handleChange}
-                          required
                           type={get(EducationSchema[totalMarks], "type")}
                           value={formState.values[totalMarks] || ""}
                           error={hasError(totalMarks)}
@@ -859,16 +937,15 @@ const AddEditEducation = props => {
                           disabled={!!formState.values[pursuing]}
                         />
                       </Grid>
-
+                    </Grid>
+                    <Grid container spacing={3}>
                       <Grid item md={12} xs={12}>
                         <TextField
                           fullWidth
                           id={get(EducationSchema[percentage], "id")}
                           label={get(EducationSchema[percentage], "label")}
-                          margin="normal"
                           name={percentage}
                           onChange={handleChange}
-                          required
                           type={get(EducationSchema[percentage], "type")}
                           value={formState.values[percentage] || ""}
                           error={hasError(percentage)}
@@ -884,61 +961,76 @@ const AddEditEducation = props => {
                         />
                       </Grid>
                     </Grid>
-                  </div>
-                  <Grid item md={12} xs={12}>
-                    <TextField
-                      fullWidth
-                      id={institute}
-                      label="Institute"
-                      margin="normal"
-                      name={institute}
-                      onChange={handleChange}
-                      type="text"
-                      value={formState.values[institute] || ""}
-                      error={hasError(institute)}
-                      helperText={
-                        hasError(institute)
-                          ? formState.errors[institute].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                      variant="outlined"
-                      className={classes.elementroot}
-                    />
+                    <Grid container spacing={3}>
+                      <Grid item md={12} xs={12}>
+                        <TextField
+                          fullWidth
+                          id={institute}
+                          label="Institute"
+                          name={institute}
+                          onChange={handleChange}
+                          type="text"
+                          value={formState.values[institute] || ""}
+                          error={hasError(institute)}
+                          helperText={
+                            hasError(institute)
+                              ? formState.errors[institute].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          variant="outlined"
+                          // className={classes.elementroot}
+                        />
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
             </CardContent>
             <Grid item xs={12} className={classes.CardActionGrid}>
               <CardActions className={classes.btnspace}>
-                <YellowButton
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  style={{ marginRight: "18px" }}
-                  onClick={handleSubmit}
-                >
-                  {genericConstants.SAVE_BUTTON_TEXT}
-                </YellowButton>
-                <YellowButton
-                  color="primary"
-                  type="submit"
-                  mfullWidth
-                  variant="contained"
-                  style={{ marginRight: "18px" }}
-                  onClick={saveAndNext}
-                >
-                  <span>{genericConstants.SAVE_AND_NEXT_BUTTON_TEXT}</span>
-                </YellowButton>
-                <GrayButton
-                  type="submit"
-                  color="primary"
-                  variant="contained"
-                  to={routeConstants.VIEW_EDUCATION}
-                >
-                  {genericConstants.CANCEL_BUTTON_TEXT}
-                </GrayButton>
+                <Grid item xs={12}>
+                  <Grid item xs={12} md={6} xl={3}>
+                    <Grid container spacing={3}>
+                      <Grid item md={2} xs={12}>
+                        <YellowButton
+                          type="submit"
+                          color="primary"
+                          variant="contained"
+                          style={{ marginRight: "18px" }}
+                          onClick={handleSubmit}
+                        >
+                          {genericConstants.SAVE_BUTTON_TEXT}
+                        </YellowButton>
+                      </Grid>
+                      <Grid item md={3} xs={12}>
+                        <YellowButton
+                          color="primary"
+                          type="submit"
+                          mfullWidth
+                          variant="contained"
+                          style={{ marginRight: "18px" }}
+                          onClick={saveAndNext}
+                        >
+                          <span>
+                            {genericConstants.SAVE_AND_NEXT_BUTTON_TEXT}
+                          </span>
+                        </YellowButton>
+                      </Grid>
+                      <Grid item md={2} xs={12}>
+                        <GrayButton
+                          type="submit"
+                          color="primary"
+                          variant="contained"
+                          to={routeConstants.VIEW_EDUCATION}
+                        >
+                          {genericConstants.CANCEL_BUTTON_TEXT}
+                        </GrayButton>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </CardActions>
             </Grid>
           </form>

@@ -683,36 +683,47 @@ const StudentList = props => {
 
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          Event Students List
-        </Typography>
-        {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            Event Students List
+          </Typography>
+        </Grid>
+        <Grid item>
+          {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
+            <GreenButton
+              variant="contained"
+              color="secondary"
+              startIcon={<PersonAddIcon />}
+              onClick={() => toAddStudents()}
+              greenButtonChecker={formState.greenButtonChecker}
+              style={{ margin: "2px", marginRight: "15px" }}
+            >
+              Add Student
+            </GreenButton>
+          ) : null}
+
+          <ExportCSV
+            csvData={handleClickDownloadStudents(formState.dataToShow)}
+            fileName={formState.eventTitle}
+          />
           <GreenButton
             variant="contained"
-            color="secondary"
-            startIcon={<PersonAddIcon />}
-            onClick={() => toAddStudents()}
+            color="primary"
+            disableElevation
+            onClick={() => backToManageEvent()}
+            startIcon={<Icon>keyboard_arrow_left</Icon>}
             greenButtonChecker={formState.greenButtonChecker}
+            style={{ margin: "2px" }}
           >
-            Add Student
+            Back to listing
           </GreenButton>
-        ) : null}
-
-        <ExportCSV
-          csvData={handleClickDownloadStudents(formState.dataToShow)}
-          fileName={formState.eventTitle}
-        />
-        <GreenButton
-          variant="contained"
-          color="primary"
-          disableElevation
-          onClick={() => backToManageEvent()}
-          startIcon={<Icon>keyboard_arrow_left</Icon>}
-          greenButtonChecker={formState.greenButtonChecker}
-        >
-          Back to listing
-        </GreenButton>
+        </Grid>
       </Grid>
 
       {/** Error/Success messages to be shown for student */}

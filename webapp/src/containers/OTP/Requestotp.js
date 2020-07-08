@@ -12,7 +12,8 @@ import {
   CardMedia,
   Paper,
   Icon,
-  CardContent
+  CardContent,
+  Hidden
 } from "@material-ui/core";
 import * as authPageConstants from "../../constants/AuthPageConstants.js";
 import form from "./OTPform.json";
@@ -121,12 +122,6 @@ const RequestOtp = props => {
                     >
                       {authPageConstants.SEND_OTP_BUTTON}
                     </Button>
-                    {/* <Backdrop
-                        className={classes.backdrop}
-                        open={openBackdrop}
-                      >
-                        <CircularProgress color="inherit" />
-                      </Backdrop> */}
                   </React.Fragment>
                   <Grid container>
                     <Grid item xs={12} style={{ textAlign: "center" }}>
@@ -142,11 +137,13 @@ const RequestOtp = props => {
                 </div>
               </CardContent>
 
-              <CardMedia
-                className={classes.cover}
-                image={image}
-                title="Live from space album cover"
-              />
+              <Hidden mdDown>
+                <CardMedia
+                  className={classes.cover}
+                  image={image}
+                  title="UPSTPC"
+                />
+              </Hidden>
             </Paper>
           </div>
         </div>

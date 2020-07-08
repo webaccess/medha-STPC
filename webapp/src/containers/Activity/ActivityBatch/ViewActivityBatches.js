@@ -384,21 +384,29 @@ const ViewActivityBatches = props => {
       <div className={classes.breadCrumbs}>
         {activityDetails ? <Breadcrumbs list={breadcrumbs} /> : null}
       </div>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {`${activityDetails ? activityDetails.title : ""} batches`}
-        </Typography>
-
-        <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={handleAddActivityClick}
-          disableElevation
-          to={`/add-activity-batch/${activity}`}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_ACTIVITY_BATCHES}
-        </GreenButton>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {`${activityDetails ? activityDetails.title : ""} batches`}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            onClick={handleAddActivityClick}
+            disableElevation
+            to={`/add-activity-batch/${activity}`}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+          >
+            {genericConstants.ADD_ACTIVITY_BATCHES}
+          </GreenButton>
+        </Grid>
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
