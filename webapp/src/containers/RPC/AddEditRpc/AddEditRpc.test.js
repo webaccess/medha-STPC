@@ -2,6 +2,7 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import AddEditRpc from "./AddEditRpc";
 import { BrowserRouter as Router } from "react-router-dom";
+import * as serviceProviders from "../../../api/Axios";
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
@@ -101,4 +102,35 @@ describe("testing for zone", () => {
     );
     expect(updatedNameInput.props().value.name).toEqual("Mithibai");
   });
+
+  // it(" should properly render the component for edit", () => {
+  //   const data = [
+  //     {
+  //       id: 1,
+  //       name: "Uttar pradesh"
+  //     },
+  //     {
+  //       id: 2,
+  //       name: "Maharashtra"
+  //     }
+  //   ];
+  //   const statesSpyOn = jest
+  //     .spyOn(serviceProviders.serviceProviderForGetRequest, "get")
+  //     .mockImplementation(() => {
+  //       return new Promise(resolve => {
+  //         return resolve(data);
+  //       });
+  //     });
+
+  //   const wrapper = shallow(<AddEditRpc />);
+
+  //   expect(statesSpyOn).toBeCalled();
+  //   /** postSpy.mock.results.pop().value this gets the promise of the axios request */
+  //   const postPromise = statesSpyOn.mock.results.pop().value;
+
+  //   /** Check promise */
+  //   return postPromise.then(postResponse => {
+  //     console.log(postResponse);
+  //   });
+  // });
 });
