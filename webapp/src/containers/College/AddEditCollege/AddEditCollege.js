@@ -876,7 +876,6 @@ const AddEditCollege = props => {
       streamStrengthArray,
       formState.values[tpos] ? formState.values[tpos] : []
     );
-    console.log(postData);
     setLoaderStatus(true);
     if (formState.isEditCollege) {
       let EDIT_COLLEGE_URL =

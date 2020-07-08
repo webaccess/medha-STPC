@@ -742,10 +742,10 @@ const ManageStudents = props => {
           </div>
         </div>
       ),
-      width: "18%",
+      width: "20%",
       cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
+        width: "auto",
+        maxWidth: "auto"
       }
     }
   ];

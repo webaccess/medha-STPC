@@ -413,10 +413,10 @@ const ViewStates = props => {
           </div>
         </div>
       ),
-      width: "18%",
+      width: "20%",
       cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
+        width: "auto",
+        maxWidth: "auto"
       }
     }
   ];
@@ -605,7 +605,7 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-        <Card className={classes.filterButton}>
+        <Card className={classes.root} variant="outlined">
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
@@ -641,48 +641,50 @@ const ViewStates = props => {
             </Grid>
           </CardContent>
         </Card>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              onSelectedRowsChange={handleRowSelected}
-              defaultSortAsc={formState.sortAscending}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-              progressPending={formState.isDataLoading}
-              onSort={handleSort}
-              sortServer={true}
-              paginationDefaultPage={formState.page}
-              paginationPerPage={formState.pageSize}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              clearSelectedRows={formState.toggleCleared}
-            />
+        <Card className={classes.tabledata} variant="outlined">
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                defaultSortField="name"
+                onSelectedRowsChange={handleRowSelected}
+                defaultSortAsc={formState.sortAscending}
+                editEvent={editCell}
+                deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                onSort={handleSort}
+                sortServer={true}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
+              />
+            ) : (
+              <Spinner />
+            )
           ) : (
-            <Spinner />
-          )
-        ) : (
-          <div className={classes.noDataMargin}>No data to show</div>
-        )}{" "}
-        {formState.showModalDelete ? (
-          <DeleteState
-            showModal={formState.showModalDelete}
-            closeModal={handleCloseDeleteModal}
-            id={
-              formState.isMultiDelete
-                ? formState.MultiDeleteID
-                : formState.dataToDelete["id"]
-            }
-            modalClose={modalClose}
-            isMultiDelete={formState.isMultiDelete ? true : false}
-            dataToDelete={formState.dataToDelete}
-            clearSelectedRow={selectedRowCleared}
-          />
-        ) : null}
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}{" "}
+          {formState.showModalDelete ? (
+            <DeleteState
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              id={
+                formState.isMultiDelete
+                  ? formState.MultiDeleteID
+                  : formState.dataToDelete["id"]
+              }
+              modalClose={modalClose}
+              isMultiDelete={formState.isMultiDelete ? true : false}
+              dataToDelete={formState.dataToDelete}
+              clearSelectedRow={selectedRowCleared}
+            />
+          ) : null}
+        </Card>
       </Grid>
     </Grid>
   );
