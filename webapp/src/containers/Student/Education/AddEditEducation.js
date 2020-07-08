@@ -610,7 +610,6 @@ const AddEditEducation = props => {
 
   return (
     <Grid>
-      {console.log(formState)}
       <Grid item xs={12} className={classes.title}>
         {isSuccess ? (
           <Alert severity="success">

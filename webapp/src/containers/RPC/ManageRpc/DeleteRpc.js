@@ -107,7 +107,6 @@ const DeleteRpc = props => {
             ...formState,
             isValid: true
           }));
-          console.log(res);
           formState.isDeleteData = true;
           handleCloseModal("RPC's have been deleted successfully.");
         })

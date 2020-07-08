@@ -1069,8 +1069,8 @@ const ViewActivity = props => {
       ),
       width: "20%",
       cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
+        width: "auto",
+        maxWidth: "auto"
       }
     }
   ];
