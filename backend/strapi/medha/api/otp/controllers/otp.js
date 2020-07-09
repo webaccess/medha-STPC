@@ -44,7 +44,9 @@ module.exports = {
       })
       .fetch()
       .then(model => model);
-
+    if (!otpModel) {
+      return ctx.response.badRequest("OTP is invalid");
+    }
     const result = otpModel.toJSON ? otpModel.toJSON() : otpModel;
     let createdAt = new Date(result.created_at);
 
