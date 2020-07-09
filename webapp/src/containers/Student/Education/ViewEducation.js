@@ -142,7 +142,7 @@ const ViewEducation = props => {
         res.data.result.filter(education => {
           genericConstants.QUALIFICATION_LIST.filter(qualification => {
             if (qualification.id === education.qualification) {
-              education.qualification = qualification.name;
+              education.Qualification = qualification.name;
             }
             return qualification;
           });
@@ -294,7 +294,7 @@ const ViewEducation = props => {
       cell: cell =>
         cell.qualification == "other"
           ? cell.other_qualification
-          : cell.qualification
+          : cell.Qualification
     },
     {
       name: "Board",
@@ -338,10 +338,10 @@ const ViewEducation = props => {
           </div>
         </div>
       ),
-      width: "18%",
+      width: "20%",
       cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
+        width: "auto",
+        maxWidth: "auto"
       }
     }
   ];

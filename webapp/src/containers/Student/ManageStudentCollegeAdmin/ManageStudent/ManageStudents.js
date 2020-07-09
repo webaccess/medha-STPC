@@ -742,10 +742,10 @@ const ManageStudents = props => {
           </div>
         </div>
       ),
-      width: "18%",
+      width: "20%",
       cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
+        width: "auto",
+        maxWidth: "auto"
       }
     }
   ];
@@ -821,43 +821,55 @@ const ManageStudents = props => {
 
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.MANAGE_STUDENTS}
-        </Typography>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.MANAGE_STUDENTS}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            to={"/"}
+            onClick={() => approveUnapproveMultiStudent()}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            {formState.buttonToApproveUnapprove}
+          </GreenButton>
 
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          to={"/"}
-          onClick={() => approveUnapproveMultiStudent()}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          {formState.buttonToApproveUnapprove}
-        </GreenButton>
-
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          {genericConstants.DELETE_SELECTED_STUDENT}
-        </GreenButton>
-        <GreenButton
-          variant="contained"
-          color="primary"
-          disableElevation
-          greenButtonChecker={formState.greenButtonChecker}
-          onClick={() => addStudentsToCollege()}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_STUDENT_BUTTON_TEXT}
-        </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteMulUserById()}
+            startIcon={<DeleteIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            {genericConstants.DELETE_SELECTED_STUDENT}
+          </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            disableElevation
+            greenButtonChecker={formState.greenButtonChecker}
+            onClick={() => addStudentsToCollege()}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+            style={{ margin: "2px" }}
+          >
+            {genericConstants.ADD_STUDENT_BUTTON_TEXT}
+          </GreenButton>
+        </Grid>
       </Grid>
+
       {/** Error/Success messages to be shown for student */}
 
       <Grid item xs={12} className={classes.formgrid}>

@@ -32,6 +32,7 @@ const ExportCSV = ({ csvData, fileName }) => {
       startIcon={<GetAppIcon />}
       onClick={e => exportToCSV(csvData, fileName)}
       greenButtonChecker={formState.greenButtonChecker}
+      style={{ margin: "2px", marginRight: "15px" }}
     >
       Download List
     </GreenButton>
