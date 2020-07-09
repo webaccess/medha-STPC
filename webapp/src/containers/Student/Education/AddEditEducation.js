@@ -567,10 +567,10 @@ const AddEditEducation = props => {
           message: "Qualification is required"
         }
       };
-      setFormState(formState => ({
-        ...formState,
-        hideYear: false
-      }));
+      // setFormState(formState => ({
+      //   ...formState,
+      //   hideYear: false
+      // }));
     }
     setFormState(formState => ({
       ...formState,
