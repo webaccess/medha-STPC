@@ -79,6 +79,16 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#666666",
     marginLeft: "33%",
     borderRadius: "50%"
+  },
+  MakeElementCenter: {
+    display: "flex",
+    justifyContent: "center"
+  },
+  AvatarImage: {
+    height: "180px",
+    width: "180px",
+    margin: "20px",
+    backgroundColor: "#BDBDBD"
   }
 }));
 export default useStyles;

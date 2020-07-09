@@ -23,7 +23,7 @@ import { Auth as auth, InlineDatePicker } from "../../components";
 import Spinner from "../../components/Spinner/Spinner.js";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
-
+import * as commonUtilities from "../../utilities/CommonUtilities";
 import * as _ from "lodash";
 import * as genericConstants from "../../constants/GenericConstants.js";
 
@@ -45,6 +45,7 @@ import { useHistory } from "react-router-dom";
 import * as serviceProvider from "../../api/Axios.js";
 import useStyles from "../ContainerStyles/AddEditPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
+import SetIndexContext from "../../context/SetIndexContext";
 
 const AddEditStudent = props => {
   let history = useHistory();
@@ -116,7 +117,7 @@ const AddEditStudent = props => {
   const [isFailed, setIsFailed] = useState(false);
 
   const classes = useStyles();
-
+  const { setIndex } = useContext(SetIndexContext);
   const [statelist, setstatelist] = useState([]);
   const [districtlist, setdistrictlist] = useState([]);
   const [collegelist, setcollegelist] = useState([]);
@@ -436,6 +437,9 @@ const AddEditStudent = props => {
               editedStudentName: studentName
             });
           } else {
+            if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
+              commonUtilities.updateUser();
+            }
             if (formState.flag === 1) {
               history.push({
                 pathname: routeConstants.VIEW_EDUCATION
@@ -447,6 +451,7 @@ const AddEditStudent = props => {
               });
             }
           }
+
           setLoaderStatus(false);
         })
         .catch(err => {

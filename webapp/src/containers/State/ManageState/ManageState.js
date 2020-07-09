@@ -413,10 +413,10 @@ const ViewStates = props => {
           </div>
         </div>
       ),
-      width: "18%",
+      width: "20%",
       cellStyle: {
-        width: "18%",
-        maxWidth: "18%"
+        width: "auto",
+        maxWidth: "auto"
       }
     }
   ];
@@ -434,32 +434,42 @@ const ViewStates = props => {
 
   return (
     <Grid>
-      <Grid item xs={12} className={classes.title}>
-        <Typography variant="h4" gutterBottom>
-          {genericConstants.VIEW_STATE_TEXT}
-        </Typography>
+      <Grid
+        container
+        spacing={3}
+        justify="space-between"
+        className={classes.title}
+      >
+        <Grid item>
+          <Typography variant="h4" gutterBottom>
+            {genericConstants.VIEW_STATE_TEXT}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <GreenButton
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteMulUserById()}
+            startIcon={<DeleteIcon />}
+            greenButtonChecker={formState.greenButtonChecker}
+            buttonDisabled={formState.selectedRowFilter}
+            style={{ margin: "2px", marginRight: "15px" }}
+          >
+            Delete Selected States
+          </GreenButton>
 
-        <GreenButton
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteMulUserById()}
-          startIcon={<DeleteIcon />}
-          greenButtonChecker={formState.greenButtonChecker}
-          buttonDisabled={formState.selectedRowFilter}
-        >
-          Delete Selected States
-        </GreenButton>
-
-        <GreenButton
-          variant="contained"
-          color="primary"
-          onClick={clearFilter}
-          disableElevation
-          to={routeConstants.ADD_STATES}
-          startIcon={<AddCircleOutlineOutlinedIcon />}
-        >
-          {genericConstants.ADD_STATE_TEXT}
-        </GreenButton>
+          <GreenButton
+            variant="contained"
+            color="primary"
+            onClick={clearFilter}
+            disableElevation
+            to={routeConstants.ADD_STATES}
+            startIcon={<AddCircleOutlineOutlinedIcon />}
+            style={{ margin: "2px" }}
+          >
+            {genericConstants.ADD_STATE_TEXT}
+          </GreenButton>
+        </Grid>
       </Grid>
 
       <Grid item xs={12} className={classes.formgrid}>
@@ -595,7 +605,7 @@ const ViewStates = props => {
             </Alert>
           </Collapse>
         ) : null}
-        <Card className={classes.filterButton}>
+        <Card className={classes.root} variant="outlined">
           <CardContent className={classes.Cardtheming}>
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
@@ -631,48 +641,50 @@ const ViewStates = props => {
             </Grid>
           </CardContent>
         </Card>
-        {formState.dataToShow ? (
-          formState.dataToShow.length ? (
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              onSelectedRowsChange={handleRowSelected}
-              defaultSortAsc={formState.sortAscending}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-              progressPending={formState.isDataLoading}
-              onSort={handleSort}
-              sortServer={true}
-              paginationDefaultPage={formState.page}
-              paginationPerPage={formState.pageSize}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              clearSelectedRows={formState.toggleCleared}
-            />
+        <Card className={classes.tabledata} variant="outlined">
+          {formState.dataToShow ? (
+            formState.dataToShow.length ? (
+              <Table
+                data={formState.dataToShow}
+                column={column}
+                defaultSortField="name"
+                onSelectedRowsChange={handleRowSelected}
+                defaultSortAsc={formState.sortAscending}
+                editEvent={editCell}
+                deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                onSort={handleSort}
+                sortServer={true}
+                paginationDefaultPage={formState.page}
+                paginationPerPage={formState.pageSize}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
+              />
+            ) : (
+              <Spinner />
+            )
           ) : (
-            <Spinner />
-          )
-        ) : (
-          <div className={classes.noDataMargin}>No data to show</div>
-        )}{" "}
-        {formState.showModalDelete ? (
-          <DeleteState
-            showModal={formState.showModalDelete}
-            closeModal={handleCloseDeleteModal}
-            id={
-              formState.isMultiDelete
-                ? formState.MultiDeleteID
-                : formState.dataToDelete["id"]
-            }
-            modalClose={modalClose}
-            isMultiDelete={formState.isMultiDelete ? true : false}
-            dataToDelete={formState.dataToDelete}
-            clearSelectedRow={selectedRowCleared}
-          />
-        ) : null}
+            <div className={classes.noDataMargin}>No data to show</div>
+          )}{" "}
+          {formState.showModalDelete ? (
+            <DeleteState
+              showModal={formState.showModalDelete}
+              closeModal={handleCloseDeleteModal}
+              id={
+                formState.isMultiDelete
+                  ? formState.MultiDeleteID
+                  : formState.dataToDelete["id"]
+              }
+              modalClose={modalClose}
+              isMultiDelete={formState.isMultiDelete ? true : false}
+              dataToDelete={formState.dataToDelete}
+              clearSelectedRow={selectedRowCleared}
+            />
+          ) : null}
+        </Card>
       </Grid>
     </Grid>
   );

@@ -84,6 +84,20 @@ const useStyles = makeStyles(theme => ({
   },
   paddingDate: {
     paddingTop: "21px !important"
+  },
+  blockpanel: {
+    display: "flex",
+    position: "relative",
+    "& h2": {
+      flexGrow: "1"
+    }
+  },
+  crossbtn: {
+    position: "absolute",
+    top: "-7px",
+    right: "-7px",
+    padding: "0px",
+    color: "#fff"
   }
   /** */
 }));

@@ -13,7 +13,8 @@ import {
   CardActions,
   Grid,
   Collapse,
-  IconButton
+  IconButton,
+  Avatar
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
@@ -122,7 +123,6 @@ const StudentProfile = props => {
         await serviceProvider
           .serviceProviderForGetRequest(VIEW_STUDENT_URL)
           .then(res => {
-            console.log(res);
             const data = res.data.result;
             let date = new Date(data.date_of_birth);
             let year = date.getFullYear();
@@ -270,32 +270,42 @@ const StudentProfile = props => {
       <Grid spacing={3}>
         <Card>
           <CardContent>
-            <Grid item xs={12} md={6} xl={3}>
-              <Grid container className={classes.formgridInputFile}>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              xl={3}
+              className={classes.MakeElementCenter}
+            >
+              <Grid className={classes.formgridInputFile}>
                 <Grid item md={10} xs={12}>
-                  <div className={classes.imageDiv}>
-                    {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
-                    {formState.showEditPreview &&
-                    formState.details["profile_photo"] !== null &&
-                    formState.details["profile_photo"] !== undefined &&
-                    formState.details["profile_photo"] !== {} ? (
-                      <Img
-                        src={
-                          strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
-                          formState.details["profile_photo"]["url"]
-                        }
-                        loader={<Spinner />}
-                        className={classes.UploadImage}
-                      />
-                    ) : null}
-                    {formState.showNoImage ? (
-                      <Img
-                        src="/images/noImage.png"
-                        loader={<Spinner />}
-                        className={classes.UploadImage}
-                      />
-                    ) : null}
-                  </div>
+                  {/* <div className={classes.imageDiv}> */}
+                  {/* {formState.showEditPreview&&formState.dataForEdit.upload_logo===null? <div class={classes.DefaultNoImage}></div>:null} */}
+                  {formState.showEditPreview &&
+                  formState.details["profile_photo"] !== null &&
+                  formState.details["profile_photo"] !== undefined &&
+                  formState.details["profile_photo"] !== {} ? (
+                    // <Img
+                    //   src={
+                    //     strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                    //     formState.details["profile_photo"]["url"]
+                    //   }
+                    //   loader={<Spinner />}
+                    //   className={classes.UploadImage}
+                    // />
+
+                    <Avatar
+                      src={
+                        strapiApiConstants.STRAPI_DB_URL_WITHOUT_HASH +
+                        formState.details["profile_photo"]["url"]
+                      }
+                      className={classes.AvatarImage}
+                    />
+                  ) : null}
+                  {formState.showNoImage ? (
+                    <Avatar src="" className={classes.AvatarImage} />
+                  ) : null}
+                  {/* </div> */}
                 </Grid>
               </Grid>
             </Grid>

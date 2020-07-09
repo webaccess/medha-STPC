@@ -2,6 +2,7 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import AddEditRpc from "./AddEditRpc";
 import { BrowserRouter as Router } from "react-router-dom";
+import * as serviceProviders from "../../../api/Axios";
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
@@ -100,5 +101,89 @@ describe("testing for zone", () => {
       "2"
     );
     expect(updatedNameInput.props().value.name).toEqual("Mithibai");
+  });
+
+  it("Test for Edit pre-filled", () => {
+
+    const option = [
+      {
+        id: 1,
+        name: "Uttar pradesh"
+      },
+      {
+        id: 2,
+        name: "Maharashtra"
+      }
+    ];
+
+    const collegeOption = [
+      {
+        id: 1,
+        name: "SJCET"
+      },
+      {
+        id: 2,
+        name: "Mithibai"
+      }
+    ];
+
+    const dataForEdit = {
+      name: "Bariely",
+      state: {
+        id: 1
+      },
+      main_college: {
+        id: 1
+      }
+    }
+
+    const wrapper = shallow(<AddEditRpc editRpc={true} collegeOption={collegeOption} option={option} dataForEdit={dataForEdit} />);
+    const input = wrapper.find("#rpcname");
+    const selectStateField = wrapper.find("#statename");
+    const selectCollegeField = wrapper.find("#collegename");
+    expect(input.props().value).toBe("Bariely")
+    expect(selectStateField.props().value.name).toBe("Uttar pradesh")
+    expect(selectCollegeField.props().value.name).toBe("SJCET")
+  });
+
+
+
+  it("Test for else condition in Edit pre-filled", () => {
+
+    const option = [
+      {
+        id: 1,
+        name: "Uttar pradesh"
+      },
+      {
+        id: 2,
+        name: "Maharashtra"
+      }
+    ];
+
+    const collegeOption = [
+      {
+        id: 1,
+        name: "SJCET"
+      },
+      {
+        id: 2,
+        name: "Mithibai"
+      }
+    ];
+
+    const dataForEdit = {
+
+      state: {},
+      main_college: {}
+    }
+
+    const wrapper = shallow(<AddEditRpc editRpc={true} collegeOption={collegeOption} option={option} dataForEdit={dataForEdit} />);
+    const input = wrapper.find("#rpcname");
+    const selectStateField = wrapper.find("#statename");
+    const selectCollegeField = wrapper.find("#collegename");
+    expect(input.props().value).toBe("");
+    expect(selectStateField.props().value).toBe(null);
+    expect(selectCollegeField.props().value).toBe(null);
   });
 });

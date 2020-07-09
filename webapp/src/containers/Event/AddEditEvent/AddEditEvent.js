@@ -385,9 +385,12 @@ const AddEditEvent = props => {
     }
 
     let dataForEditing = [
-      { id: 1, value: "SSC" },
-      { id: 2, value: "HSC" },
-      { id: 3, value: "Diploma" }
+      { id: 1, value: "secondary", name: "Secondary" },
+      { id: 2, value: "graduation", name: "Graduation" },
+      { id: 3, value: "senior_secondary", name: "Senior Secondary" },
+      { id: 4, value: "undergraduate", name: "Undergraduate" },
+      { id: 5, value: "postgraduate", name: "Postgraduate" },
+      { id: 6, value: "other", name: "Other" }
     ];
     if (formState.isEditEvent) {
       let tempQualificationData = dataForEditing;

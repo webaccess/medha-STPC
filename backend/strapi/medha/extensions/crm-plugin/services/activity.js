@@ -95,6 +95,7 @@ module.exports = {
         .find({ id_in: studentIds }, [
           "individual",
           "individual.organization",
+          "individual.stream",
           "user"
         ]);
 
@@ -123,7 +124,6 @@ module.exports = {
           )
         };
       });
-
       result.push({
         workSheetName: name,
         workSheetData: studentData
