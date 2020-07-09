@@ -123,7 +123,6 @@ const StudentProfile = props => {
         await serviceProvider
           .serviceProviderForGetRequest(VIEW_STUDENT_URL)
           .then(res => {
-            console.log(res);
             const data = res.data.result;
             let date = new Date(data.date_of_birth);
             let year = date.getFullYear();

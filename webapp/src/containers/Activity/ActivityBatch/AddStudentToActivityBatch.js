@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
   Card,
   CardContent,
   Grid,
-  Typography
+  Typography,
+  Dialog,
+  IconButton
 } from "@material-ui/core";
 
+import CloseIcon from "@material-ui/icons/Close";
 import styles from "../Activity.module.css";
 import useStyles from "../ViewActivityStyles.js";
 import * as serviceProviders from "../../../api/Axios";
@@ -16,10 +19,9 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import { Table, Spinner, YellowButton, GrayButton } from "../../../components";
 import { uniqBy } from "lodash";
-import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import LoaderContext from "../../../context/LoaderContext";
+import "./AddStudentToActivityBatch.css";
 
 const ACTIVITY_BATCH_STUDENT_FILTER = "name_contains";
 const ACTIVITY_BATCH_STREAM_FILTER = "individual.stream.id";
@@ -231,7 +233,7 @@ const AddEditActivityBatches = props => {
   ];
 
   return (
-    <Modal
+    <Dialog
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       className={classes.modal}
@@ -379,7 +381,7 @@ const AddEditActivityBatches = props => {
           </div>
         </div>
       </Fade>
-    </Modal>
+    </Dialog>
   );
 };
 

@@ -14,9 +14,6 @@ describe("Testing Auth", () => {
   it(" renders without crashing when auth is not null and user is medha admin", () => {
     auth.setToken(medhaUser.jwt, true);
     auth.setUserInfo(medhaUser.user, true);
-    console.log(auth.getToken());
-    console.log(auth.get("jwt"));
-    console.log(localStorage.getItem("jwt"));
     expect(auth.clear("jwt")).toEqual(null);
   });
 
