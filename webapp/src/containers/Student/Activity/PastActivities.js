@@ -440,7 +440,7 @@ const PastActivities = props => {
           </div>
           {auth.getUserInfo().role.name === roleConstants.STUDENT ? (
             cell.giveFeedback ? (
-              <div className={classes.PaddingActionButton}>
+              <div className={classes.PaddingFeedbackButton}>
                 <FeedBack
                   isGiveFeedback={true}
                   isEditFeedback={false}
@@ -451,7 +451,7 @@ const PastActivities = props => {
                 />
               </div>
             ) : cell.editFeedback ? (
-              <div className={classes.PaddingActionButton}>
+              <div className={classes.PaddingFeedbackButton}>
                 <FeedBack
                   isGiveFeedback={false}
                   isEditFeedback={true}
@@ -464,7 +464,7 @@ const PastActivities = props => {
                 />
               </div>
             ) : cell.cannotGiveFeedback ? (
-              <div className={classes.PaddingActionButton}>
+              <div className={classes.PaddingFeedbackButton}>
                 <FeedBack
                   isGiveFeedback={false}
                   isEditFeedback={false}
