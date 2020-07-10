@@ -140,9 +140,12 @@ const EligibleActivity = props => {
     });
   };
   const getRemainingDays = data => {
-    let currentDate = new Date();
-    let startDate = new Date(data["activity_batch"]["start_date_time"]);
-    let remainingDays = startDate.getDay() - currentDate.getDay();
+    // let currentDate = new Date();
+    // let startDate = new Date(data["activity_batch"]["start_date_time"]);
+    // let remainingDays = startDate.getDay() - currentDate.getDay();
+    let currentDate = moment();
+    let startDate = moment(data["activity_batch"]["start_date_time"]);
+    let remainingDays = startDate.diff(currentDate, "days");
     if (remainingDays >= 1) return parseInt(remainingDays) + " Days to go";
     else return "Today";
   };
