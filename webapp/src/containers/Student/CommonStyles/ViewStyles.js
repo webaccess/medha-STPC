@@ -71,6 +71,10 @@ const useStyles = makeStyles(theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "#fff"
+  },
+  PaddingFeedbackButton: {
+    padding: "5px 8px 0px 8px",
+    cursor: "pointer"
   }
   /** */
 }));
