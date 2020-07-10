@@ -291,23 +291,34 @@ const ViewUser = props => {
           </CardContent>
           <Grid item xs={12} className={classes.CardActionGrid}>
             <CardActions className={classes.btnspace}>
-              <YellowButton
-                type="submit"
-                color="primary"
-                variant="contained"
-                onClick={editData}
-                className={classes.submitbtn}
-              >
-                Edit
-              </YellowButton>
-              <GrayButton
-                color="primary"
-                variant="contained"
-                to={routeConstants.MANAGE_USER}
-                className={classes.resetbtn}
-              >
-                Cancel
-              </GrayButton>
+              <Grid item xs={12}>
+                <Grid item xs={12} md={6} xl={3}>
+                  <Grid container spacing={3}>
+                    <Grid item md={2} xs={12}>
+                      <YellowButton
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        onClick={editData}
+                        className={classes.submitbtn}
+                      >
+                        Edit
+                      </YellowButton>
+                    </Grid>
+
+                    <Grid item md={2} xs={12}>
+                      <GrayButton
+                        color="primary"
+                        variant="contained"
+                        to={routeConstants.MANAGE_USER}
+                        className={classes.resetbtn}
+                      >
+                        Cancel
+                      </GrayButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
             </CardActions>
           </Grid>
         </Card>

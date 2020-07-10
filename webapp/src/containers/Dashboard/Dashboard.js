@@ -855,7 +855,7 @@ const Dashboard = props => {
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -873,7 +873,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -893,7 +893,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -913,7 +913,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -931,7 +931,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} md={6} xl={3} xs={12}>
+        <Grid item lg md={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
