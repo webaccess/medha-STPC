@@ -29,6 +29,7 @@ const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
 
 const AddEditZone = props => {
+
   const history = useHistory();
   const zone = "zoneName";
   const state = "stateName";
@@ -260,10 +261,10 @@ const AddEditZone = props => {
             {genericConstants.EDIT_ZONE_TEXT}
           </Typography>
         ) : (
-          <Typography variant="h4" gutterBottom>
-            {get(AddZoneForm[content], "title")}
-          </Typography>
-        )}
+            <Typography variant="h4" gutterBottom>
+              {get(AddZoneForm[content], "title")}
+            </Typography>
+          )}
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
@@ -285,8 +286,8 @@ const AddEditZone = props => {
                     helperText={
                       hasError(zone)
                         ? formState.errors[zone].map(error => {
-                            return error + " ";
-                          })
+                          return error + " ";
+                        })
                         : null
                     }
                     className={classes.elementroot}
@@ -303,9 +304,9 @@ const AddEditZone = props => {
                     }}
                     value={
                       states[
-                        states.findIndex(function (item, i) {
-                          return item.id === formState.values[state];
-                        })
+                      states.findIndex(function (item, i) {
+                        return item.id === formState.values[state];
+                      })
                       ] || null /** Please give a default " " blank value */
                     }
                     renderInput={params => (
@@ -318,8 +319,8 @@ const AddEditZone = props => {
                         helperText={
                           hasError(state)
                             ? formState.errors[state].map(error => {
-                                return error + " ";
-                              })
+                              return error + " ";
+                            })
                             : null
                         }
                       />

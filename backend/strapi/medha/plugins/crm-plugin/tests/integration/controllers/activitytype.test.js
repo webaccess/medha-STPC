@@ -1,83 +1,79 @@
 const request = require("co-supertest");
+var assert = require("chai").assert;
 
-const { JWT, SERVER_URL } = require("../config/config");
+const { SERVER_URL, PAYLOAD } = require("../config/config");
+const { JWT } = require("../config/JWT");
+let dataId;
 
 describe("Activitytype Module Endpoint", function () {
-  describe("Find Method", function () {
-    // case for empty params done here
-    describe("GET /crm-plugin/activitytypes", function () {
-      it("Empty params test case", function (done) {
-        request(SERVER_URL)
-          .get("/crm-plugin/activitytypes")
-          .set("Authorization", "Bearer " + JWT)
-          .expect(200)
-          .expect("Content-Type", /json/)
-          .end(function (err, res) {
-            done(err);
-          });
-      });
-    });
-  });
-
-  describe("FindOne Method", function () {
-    // case for empty params done here
-    describe("GET /crm-plugin/activitytypes/:id", function () {
-      it("Empty params test case", function (done) {
-        request(SERVER_URL)
-          .get("/crm-plugin/activitytypes")
-          .send({
-            id: 1,
-          })
-          .set("Authorization", "Bearer " + JWT)
-          .expect(200)
-          .expect("Content-Type", /json/)
-          .end(function (err, res) {
-            done(err);
-          });
-      });
-    });
-  });
+  // before(function (done) {
+  //   request(SERVER_URL)
+  //     .post("/auth/local")
+  //     .send(PAYLOAD)
+  //     .expect(200)
+  //     .expect("Content-Type", /json/)
+  //     .end(function (err, res) {
+  //       if (err) return done(err);
+  //       const response = res.body;
+  //       JWT = response["jwt"];
+  //       done();
+  //     });
+  // });
 
   describe("Create Method", function () {
     // case for empty,required and correct params for Create method done here
     describe("POST /crm-plugin/activitytypes/", function () {
-      it("Empty params test case", function (done) {
+      it("should not create an entry when empty params test case is executed", function (done) {
         request(SERVER_URL)
           .post("/crm-plugin/activitytypes")
           .send({})
           .set("Authorization", "Bearer " + JWT)
-          .expect(400)
-          .expect("Content-Type", /json/)
+          .expect(200)
           .end(function (err, res) {
-            done(err);
+            if (err) return done(err);
+            assert.isEmpty(
+              res.body,
+              "Empty response is expected when params are empty"
+            );
+            done();
           });
       });
 
-      it("Required params test case", function (done) {
+      it("should not create an entry when required params test case is executed", function (done) {
         request(SERVER_URL)
           .post("/crm-plugin/activitytypes")
           .send({
             is_active: true,
           })
           .set("Authorization", "Bearer " + JWT)
-          .expect(400)
-          .expect("Content-Type", /json/)
+          .expect(200)
           .end(function (err, res) {
-            done(err);
+            if (err) return done(err);
+            assert.isEmpty(
+              res.body,
+              "Empty response is expected when required params are missing"
+            );
+            done();
           });
       });
 
-      it("Correct params test case", function (done) {
+      it("should create an entry when correct params test case is executed", function (done) {
         request(SERVER_URL)
           .post("/crm-plugin/activitytypes")
           .send({
-            name: "Activity 1",
+            name: "Fishery",
           })
           .set("Authorization", "Bearer " + JWT)
           .expect(200)
-          .expect("Content-Type", /json/)
           .end(function (err, res) {
-            done(err);
+            if (err) return done(err);
+            assert.strictEqual(
+              res.body.name,
+              "Fishery",
+              "Object in response should not differ"
+            );
+            dataId = res.body.id;
+            done();
           });
       });
     });
@@ -86,18 +82,64 @@ describe("Activitytype Module Endpoint", function () {
   describe("Update Method", function () {
     // case for correct params done for update method
     describe("PUT /crm-plugin/activitytypes/:id", function () {
-      it("Updating params test case", function (done) {
-        const id = 1;
+      it("should update the data when correct params test case is executed", function (done) {
         request(SERVER_URL)
-          .put("/crm-plugin/activitytypes/" + id)
+          .put("/crm-plugin/activitytypes/" + dataId)
           .send({
-            name: "Activity 2",
+            name: "Agriculture",
           })
           .set("Authorization", "Bearer " + JWT)
           .expect(200)
-          .expect("Content-Type", /json/)
           .end(function (err, res) {
-            done(err);
+            if (err) return done(err);
+            assert.strictEqual(
+              res.body.name,
+              "Agriculture",
+              "Object in response should not differ"
+            );
+            done();
+          });
+      });
+    });
+  });
+
+  describe("Find Method", function () {
+    // case for empty params done here
+    describe("GET /crm-plugin/activitytypes", function () {
+      it("responds with all records when empty params test case is executed", function (done) {
+        request(SERVER_URL)
+          .get("/crm-plugin/activitytypes")
+          .set("Authorization", "Bearer " + JWT)
+          .expect(200)
+          .end(function (err, res) {
+            if (err) return done(err);
+            assert.isAtLeast(
+              res.body.length,
+              1,
+              "Find method should return atleast one response"
+            );
+            done();
+          });
+      });
+    });
+  });
+
+  describe("FindOne Method", function () {
+    // case for correct params done here
+    describe("GET /crm-plugin/activitytypes/:id", function () {
+      it("responds with matching records when correct params test case is executed", function (done) {
+        request(SERVER_URL)
+          .get("/crm-plugin/activitytypes/" + dataId)
+          .set("Authorization", "Bearer " + JWT)
+          .expect(200)
+          .end(function (err, res) {
+            if (err) return done(err);
+            assert.strictEqual(
+              res.body.name,
+              "Agriculture",
+              "FindOne Method should return response with same name"
+            );
+            done();
           });
       });
     });
@@ -106,14 +148,15 @@ describe("Activitytype Module Endpoint", function () {
   describe("Count Method", function () {
     // case for count done here
     describe("GET /crm-plugin/activitytypes/count", function () {
-      it("Empty params test case", function (done) {
+      it("should return data count when correct params test case is executed", function (done) {
         request(SERVER_URL)
           .get("/crm-plugin/activitytypes/count")
           .set("Authorization", "Bearer " + JWT)
           .expect(200)
-          .expect("Content-Type", "application/json; charset=utf-8")
           .end(function (err, res) {
-            done(err);
+            if (err) return done(err);
+            assert.isAtLeast(res.body, 1, "Count expected to be atleast 1");
+            done();
           });
       });
     });
@@ -122,15 +165,19 @@ describe("Activitytype Module Endpoint", function () {
   describe("Delete Method", function () {
     // case for correct params done here
     describe("DELETE /crm-plugin/activitytypes/:id", function () {
-      it("Correct params test case", function (done) {
-        const id = 1;
+      it("should delete entry when correct params test case is executed", function (done) {
         request(SERVER_URL)
-          .delete("/crm-plugin/activitytypes/" + id)
+          .delete("/crm-plugin/activitytypes/" + dataId)
           .set("Authorization", "Bearer " + JWT)
           .expect(200)
-          .expect("Content-Type", /json/)
           .end(function (err, res) {
-            done(err);
+            if (err) return done(err);
+            assert.strictEqual(
+              res.body.name,
+              "Agriculture",
+              "Object in response should not differ"
+            );
+            done();
           });
       });
     });

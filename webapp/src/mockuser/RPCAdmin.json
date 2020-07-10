@@ -1,0 +1,205 @@
+{
+  "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNTk0MjMzMjc2LCJleHAiOjE1OTY4MjUyNzZ9.faoYUFCAFZbNvMLh0O3pVoZWOQhqaBBdXZWwZEN8tOQ",
+  "user": {
+    "id": 3,
+    "username": "7710950931",
+    "email": "7710950931@gmail.com",
+    "provider": "local",
+    "confirmed": null,
+    "blocked": false,
+    "role": {
+      "id": 6,
+      "name": "College Admin",
+      "description": "College Admin",
+      "type": "College Admin"
+    },
+    "state": {
+      "id": 1,
+      "name": "Uttar Pradesh",
+      "is_active": true,
+      "abbreviation": "UP",
+      "identifier": "",
+      "country": 1,
+      "created_at": "2020-06-24T07:09:28.251Z",
+      "updated_at": "2020-06-24T07:09:28.251Z"
+    },
+    "zone": {
+      "id": 1,
+      "name": "West Zone - Daurala (Meerut)",
+      "state": 1,
+      "created_at": "2020-06-24T07:09:35.321Z",
+      "updated_at": "2020-06-24T07:09:35.321Z"
+    },
+    "rpc": {
+      "id": 1,
+      "name": "Agra",
+      "state": 1,
+      "main_college": 3,
+      "created_at": "2020-06-24T07:09:35.350Z",
+      "updated_at": "2020-06-24T08:50:17.773Z"
+    },
+    "contact": {
+      "id": 5,
+      "name": "College Admin",
+      "phone": "7710950931",
+      "phone_other": null,
+      "email": "7710950931@gmail.com",
+      "email_other": null,
+      "address_1": null,
+      "address_2": null,
+      "city": null,
+      "pincode": null,
+      "contact_type": "individual",
+      "organization": null,
+      "country": null,
+      "village": null,
+      "state": 1,
+      "district": null,
+      "individual": 3,
+      "user": 3,
+      "created_at": "2020-06-24T07:21:40.362Z",
+      "updated_at": "2020-07-05T14:19:38.824Z"
+    },
+    "created_at": "2020-06-24T07:21:40.358Z",
+    "updated_at": "2020-07-05T14:19:38.796Z",
+    "rpcAdminRole": {
+      "id": 5,
+      "name": "RPC Admin",
+      "description": "RPC Admin",
+      "type": "RPC Admin"
+    },
+    "studentInfo": {
+      "id": 3,
+      "first_name": "College",
+      "last_name": "Admin",
+      "contact": {
+        "id": 5,
+        "name": "College Admin",
+        "phone": "7710950931",
+        "phone_other": null,
+        "email": "7710950931@gmail.com",
+        "email_other": null,
+        "address_1": null,
+        "address_2": null,
+        "city": null,
+        "pincode": null,
+        "contact_type": "individual",
+        "organization": null,
+        "country": null,
+        "village": null,
+        "state": 1,
+        "district": null,
+        "individual": 3,
+        "user": 3,
+        "created_at": "2020-06-24T07:21:40.362Z",
+        "updated_at": "2020-07-05T14:19:38.824Z"
+      },
+      "stream": null,
+      "is_verified": null,
+      "is_physically_challenged": null,
+      "date_of_birth": null,
+      "gender": null,
+      "roll_number": null,
+      "organization": {
+        "id": 2,
+        "name": "Government Leather Institute, Agra",
+        "contact": {
+          "id": 3,
+          "name": "Government Leather Institute, Agra",
+          "phone": "0356273401",
+          "phone_other": null,
+          "email": "collegeemail2@gmail.com",
+          "email_other": null,
+          "address_1": "UP",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 2,
+          "country": null,
+          "village": null,
+          "state": {
+            "id": 1,
+            "name": "Uttar Pradesh",
+            "is_active": true,
+            "abbreviation": "UP",
+            "identifier": "",
+            "country": 1,
+            "created_at": "2020-06-24T07:09:28.251Z",
+            "updated_at": "2020-06-24T07:09:28.251Z"
+          },
+          "district": {
+            "id": 1,
+            "name": "Agra",
+            "is_active": true,
+            "abbreviation": "AG",
+            "identifier": null,
+            "state": 1,
+            "created_at": "2020-06-24T07:09:28.265Z",
+            "updated_at": "2020-06-24T07:09:28.265Z"
+          },
+          "individual": null,
+          "user": null,
+          "created_at": "2020-06-24T07:19:43.652Z",
+          "updated_at": "2020-06-24T07:19:43.652Z"
+        },
+        "zone": {
+          "id": 1,
+          "name": "West Zone - Daurala (Meerut)",
+          "state": 1,
+          "created_at": "2020-06-24T07:09:35.321Z",
+          "updated_at": "2020-06-24T07:09:35.321Z"
+        },
+        "rpc": {
+          "id": 1,
+          "name": "Agra",
+          "state": 1,
+          "main_college": 3,
+          "created_at": "2020-06-24T07:09:35.350Z",
+          "updated_at": "2020-06-24T08:50:17.773Z"
+        },
+        "college_code": "GLI34",
+        "principal": null,
+        "is_blocked": false,
+        "created_at": "2020-06-24T07:19:43.643Z",
+        "updated_at": "2020-06-24T07:19:43.654Z",
+        "stream_strength": [
+          {
+            "id": 4,
+            "stream": {
+              "id": 1,
+              "name": "Mechanical Engineering (Production)",
+              "created_at": "2020-06-24T07:09:35.408Z",
+              "updated_at": "2020-06-24T07:09:35.408Z"
+            },
+            "first_year_strength": 0,
+            "second_year_strength": 0,
+            "third_year_strength": 0
+          },
+          {
+            "id": 5,
+            "stream": {
+              "id": 2,
+              "name": "Computer Science And Engineering",
+              "created_at": "2020-06-24T07:09:35.414Z",
+              "updated_at": "2020-06-24T07:09:35.414Z"
+            },
+            "first_year_strength": 0,
+            "second_year_strength": 0,
+            "third_year_strength": 0
+          }
+        ],
+        "tpos": []
+      },
+      "father_full_name": null,
+      "mother_full_name": null,
+      "middle_name": null,
+      "created_at": "2020-06-24T07:21:40.361Z",
+      "updated_at": "2020-07-05T14:19:38.819Z",
+      "profile_photo": null,
+      "future_aspirations": []
+    },
+    "first_name": "College",
+    "last_name": "Admin"
+  }
+}

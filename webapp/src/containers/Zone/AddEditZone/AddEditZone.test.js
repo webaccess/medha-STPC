@@ -76,4 +76,115 @@ describe("testing for zone", () => {
     );
     expect(updatedNameInput.props().value).toEqual("maharashtra");
   });
+
+  it("test edit preFilled", () => {
+    const option = [
+      {
+        id: 1,
+        name: "Uttar pradesh"
+      },
+      {
+        id: 2,
+        name: "Maharashtra"
+      }
+    ];
+
+    const editZone = true;
+    // const counter = 0;
+    const dataForEdit = {
+      name: "West-UP",
+      state: {
+        id: 1
+      }
+    };
+
+    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={dataForEdit} option={option} />);
+
+    const input = wrapper.find("#test");
+    const selectInput = wrapper.find("#states-filter")
+    expect(input.props().value).toBe("West-UP")
+    expect(selectInput.props().value.name).toBe("Uttar pradesh")
+  });
+
+  it("test edit preFilled forelse statement", () => {
+    const option = [
+      {
+        id: 1,
+        name: "Uttar pradesh"
+      },
+      {
+        id: 2,
+        name: "Maharashtra"
+      }
+    ];
+
+    const editZone = true;
+    const dataForEdit = {
+      name: "West-UP",
+      state: {
+        id: 1
+      }
+    };
+
+    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={undefined} option={option} />);
+
+    const input = wrapper.find("#test");
+    const selectInput = wrapper.find("#states-filter")
+    expect(input.props().value).toBe("")
+    expect(selectInput.props().value).toBe(null)
+  });
+
+  it("test edit preFilled forelse statement", () => {
+    const option = [
+      {
+        id: 1,
+        name: "Uttar pradesh"
+      },
+      {
+        id: 2,
+        name: "Maharashtra"
+      }
+    ];
+
+    const editZone = true;
+    const dataForEdit = {
+
+      state: {
+        id: 1
+      }
+    };
+
+    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={dataForEdit} option={option} />);
+
+    const input = wrapper.find("#test");
+    const selectInput = wrapper.find("#states-filter")
+    expect(input.props().value).toBe("")
+    expect(selectInput.props().value.name).toBe("Uttar pradesh")
+  });
+
+  it("test edit preFilled forelse statement", () => {
+    const option = [
+      {
+        id: 1,
+        name: "Uttar pradesh"
+      },
+      {
+        id: 2,
+        name: "Maharashtra"
+      }
+    ];
+
+    const editZone = true;
+    const dataForEdit = {
+      name: "West-UP",
+      state: {}
+    };
+
+    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={dataForEdit} option={option} />);
+
+    const input = wrapper.find("#test");
+    const selectInput = wrapper.find("#states-filter")
+    expect(input.props().value).toBe("West-UP")
+    expect(selectInput.props().value).toBe(null)
+  });
 });

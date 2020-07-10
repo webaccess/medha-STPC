@@ -818,7 +818,6 @@ const AddEditStudentForCollegeAdmin = props => {
                       value={formState.values["middlename"]}
                       variant="outlined"
                       error={hasError("middlename")}
-                      required
                       fullWidth
                       onChange={handleChange}
                       helperText={
