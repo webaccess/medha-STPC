@@ -144,7 +144,10 @@ const AddEditEducation = props => {
   useEffect(() => {
     if (
       formState.values[qualification] == "secondary" ||
-      formState.values[qualification] == "senior_secondary"
+      formState.values[qualification] == "senior_secondary" ||
+      formState.values[qualification] === "graduation" ||
+      formState.values[qualification] === "postgraduate" ||
+      formState.values[qualification] === "other"
     ) {
       delete formState.errors[educationYear];
       delete formState.values[educationYear];
@@ -397,7 +400,10 @@ const AddEditEducation = props => {
 
     if (
       isQualificationReq == "secondary" ||
-      isQualificationReq == "senior_secondary"
+      isQualificationReq == "senior_secondary" ||
+      isQualificationReq === "graduation" ||
+      isQualificationReq === "postgraduate" ||
+      isQualificationReq === "other"
     ) {
       defaultSchema[educationYear] = {
         ...defaultSchema[educationYear],
@@ -530,7 +536,13 @@ const AddEditEducation = props => {
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
     if (eventName === qualification && value) {
-      if (value.id === "secondary" || value.id === "senior_secondary") {
+      if (
+        value.id === "secondary" ||
+        value.id === "senior_secondary" ||
+        value.id === "graduation" ||
+        value.id === "postgraduate" ||
+        value.id === "other"
+      ) {
         EducationSchema.qualification.required = false;
         EducationSchema.qualification.validations = {};
         setFormState(formState => ({
@@ -543,14 +555,7 @@ const AddEditEducation = props => {
           hideYear: false
         }));
       }
-      if (value.id === "other") {
-        EducationSchema.qualification.required = false;
-        EducationSchema.qualification.validations = {};
-      } else if (
-        value.id == "undergraduate" ||
-        value.id === "graduation" ||
-        value.id === "postgraduate"
-      ) {
+      if (value.id == "undergraduate") {
         EducationSchema.qualification.required = true;
         EducationSchema.qualification.validations = {
           required: {
@@ -567,10 +572,10 @@ const AddEditEducation = props => {
           message: "Qualification is required"
         }
       };
-      setFormState(formState => ({
-        ...formState,
-        hideYear: false
-      }));
+      // setFormState(formState => ({
+      //   ...formState,
+      //   hideYear: false
+      // }));
     }
     setFormState(formState => ({
       ...formState,
