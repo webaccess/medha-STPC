@@ -137,7 +137,6 @@ const Dashboard = props => {
     errors: {},
     greenButtonChecker: true
   });
-  setIndex(0);
   const setData = () => {
     setLoaderStatus(true);
     setFormState(formState => ({
@@ -1186,6 +1185,7 @@ const Dashboard = props => {
                 <Grid item md={2} xs={12} className={classes.dash_search_btn}>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
+                      id="handle_submit"
                       variant="contained"
                       color="primary"
                       disableElevation
