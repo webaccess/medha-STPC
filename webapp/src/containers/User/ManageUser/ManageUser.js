@@ -37,6 +37,7 @@ import BlockUser from "./BlockUser";
 import * as formUtilities from "../../../utilities/FormUtilities";
 import { setCollege, setRole } from "../../../utilities/StrapiUtilities";
 import LoaderContext from "../../../context/LoaderContext";
+import axios from "axios";
 
 const USER_URL =
   strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_VIEW_USERS;
@@ -140,12 +141,12 @@ const ManageUser = props => {
     toggleCleared: false
   });
 
-  const getFilterData = () => {
+  const getFilterData = async () => {
     let params = {
       pageSize: -1
     };
 
-    serviceProviders
+    await serviceProviders
       .serviceProviderForGetRequest(STATE_URL, params)
       .then(res => {
         setStates(res.data.result);
@@ -154,7 +155,7 @@ const ManageUser = props => {
         console.log("error");
       });
 
-    serviceProviders
+    await serviceProviders
       .serviceProviderForGetRequest(ROLE_URL, params)
       .then(res => {
         let rolesArray = [];
@@ -1154,6 +1155,7 @@ const ManageUser = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="contactNumberID"
                   label="Contact Number"
                   placeholder="Contact Number"
                   variant="outlined"

@@ -274,7 +274,6 @@ const LogIn = props => {
           }
           setOpenSpinner(false);
         } else if (response.data.user.role.name === roleConstants.MEDHAADMIN) {
-          console.log("here");
           if (response.data.user.blocked) {
             moveToErrorPageForBlocked();
           } else {

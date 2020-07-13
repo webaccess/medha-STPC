@@ -137,7 +137,6 @@ const Dashboard = props => {
     errors: {},
     greenButtonChecker: true
   });
-  setIndex(0);
   const setData = () => {
     setLoaderStatus(true);
     setFormState(formState => ({
@@ -855,7 +854,7 @@ const Dashboard = props => {
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -873,7 +872,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -893,7 +892,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -913,7 +912,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} sm={6} xl={3} xs={12}>
+        <Grid item lg sm={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -931,7 +930,7 @@ const Dashboard = props => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={2} md={6} xl={3} xs={12}>
+        <Grid item lg md={6} xl={3} xs={12}>
           <Card {...rest} className={clsx(classes.root, className)}>
             <CardHeader
               classes={{
@@ -1186,6 +1185,7 @@ const Dashboard = props => {
                 <Grid item md={2} xs={12} className={classes.dash_search_btn}>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
+                      id="handle_submit"
                       variant="contained"
                       color="primary"
                       disableElevation
