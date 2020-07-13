@@ -34,7 +34,7 @@ const DeleteUser = props => {
     formState.dataToDelete = props.dataToDelete;
   }
 
-  const handleCloseModal = (message = "") => {
+  const handleCloseModal = (message = "", count = 0) => {
     /** This event handles the scenario when the pop up is closed just by clicking outside the popup 
     to ensure that only string value is passed to message variable */
     if (typeof message !== "string") {
@@ -48,9 +48,9 @@ const DeleteUser = props => {
       stateCounter: 0
     }));
     if (formState.isDeleteData) {
-      props.closeModal(true, message);
+      props.closeModal(true, message, 0);
     } else {
-      props.closeModal(false, message);
+      props.closeModal(false, message, count);
     }
   };
 
@@ -78,10 +78,20 @@ const DeleteUser = props => {
         })
         .catch(error => {
           console.log("error", error);
-          formState.isDeleteData = false;
-          handleCloseModal(
-            "An error has occured while deleting users. Kindly, try again"
-          );
+          console.log(error.response.status);
+          if (error.response.status == 403) {
+            formState.isDeleteData = false;
+            console.log(error.response.data.message);
+            handleCloseModal(
+              error.response.data.message,
+              error.response.data.message[0]
+            );
+          } else {
+            formState.isDeleteData = false;
+            handleCloseModal(
+              "An error has occured while deleting users. Kindly, try again"
+            );
+          }
         });
     } else {
       let deleteArray = [];
@@ -105,12 +115,19 @@ const DeleteUser = props => {
         })
         .catch(error => {
           console.log("error", error);
-          formState.isDeleteData = false;
-          handleCloseModal(
-            "An error has occured while deleting user" +
-              formState.dataToDelete["name"] +
-              ". Kindly, try again"
-          );
+          console.log(error.response.status);
+          if (error.response.status == 403) {
+            formState.isDeleteData = false;
+            console.log(error.response.data.message);
+            handleCloseModal(error.response.data.message);
+          } else {
+            formState.isDeleteData = false;
+            handleCloseModal(
+              "An error has occured while deleting user" +
+                formState.dataToDelete["name"] +
+                ". Kindly, try again"
+            );
+          }
         });
     }
   };
