@@ -1107,7 +1107,7 @@ const ManageUser = props => {
 
         {formState.fromDeleteModal &&
         !formState.isDataDeleted &&
-        formState.count > 1 &&
+        formState.count > 0 &&
         formState.messageToShow !== "" ? (
           <Collapse in={open}>
             <Alert

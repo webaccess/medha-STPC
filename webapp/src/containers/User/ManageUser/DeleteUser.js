@@ -82,10 +82,7 @@ const DeleteUser = props => {
           if (error.response.status == 403) {
             formState.isDeleteData = false;
             console.log(error.response.data.message);
-            handleCloseModal(
-              error.response.data.message,
-              error.response.data.message[0]
-            );
+            handleCloseModal(error.response.data.message, 1);
           } else {
             formState.isDeleteData = false;
             handleCloseModal(
