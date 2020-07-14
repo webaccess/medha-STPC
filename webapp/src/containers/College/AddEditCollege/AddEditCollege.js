@@ -1809,22 +1809,16 @@ const AddEditCollege = props => {
                       );
                     })}
                     <div className={classes.btnspaceadd}>
-                      <Grid item xs={12}>
-                        <Grid item xs={12} md={6} xl={3}>
-                          <Grid container spacing={3}>
-                            <Grid item md={3} xs={12}>
-                              <YellowButton
-                                disabled={streamsData.length ? false : true}
-                                color="primary"
-                                variant="contained"
-                                className={classes.add_more_btn}
-                                onClick={addNewRow}
-                              >
-                                {genericConstants.ADD_MORE_TEXT}
-                              </YellowButton>
-                            </Grid>
-                          </Grid>
-                        </Grid>
+                      <Grid item xs={12} md={3} lg={2} xl={2}>
+                        <YellowButton
+                          disabled={streamsData.length ? false : true}
+                          color="primary"
+                          variant="contained"
+                          className={classes.add_more_btn}
+                          onClick={addNewRow}
+                        >
+                          {genericConstants.ADD_MORE_TEXT}
+                        </YellowButton>
                       </Grid>
                     </div>
                   </Card>
