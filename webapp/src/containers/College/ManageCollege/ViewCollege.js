@@ -416,7 +416,7 @@ const ViewCollege = props => {
                           <div key={value.id}>
                             <CardContent>
                               <Grid container spacing={1}>
-                                <Grid item xs={6}>
+                                <Grid item xs={12} md={4}>
                                   <ReadOnlyTextField
                                     id={"stream-" + value.stream.name}
                                     label="Stream"
@@ -424,24 +424,24 @@ const ViewCollege = props => {
                                   />
                                 </Grid>
 
-                                <Grid item xs={2}>
+                                <Grid item xs>
                                   <ReadOnlyTextField
                                     id={"first_year_strength" + value.strength}
-                                    label="First Year Strength"
+                                    label="1st Year Strength"
                                     defaultValue={value.first_year_strength}
                                   />
                                 </Grid>
-                                <Grid item xs={2}>
+                                <Grid item xs>
                                   <ReadOnlyTextField
                                     id={"second_year_strength" + value.strength}
-                                    label="Second Year Strength"
+                                    label="2nd Year Strength"
                                     defaultValue={value.second_year_strength}
                                   />
                                 </Grid>
-                                <Grid item xs={2}>
+                                <Grid item xs>
                                   <ReadOnlyTextField
                                     id={"third_year_strength" + value.strength}
-                                    label="Third Year Strength"
+                                    label="3rd Year Strength"
                                     defaultValue={value.third_year_strength}
                                   />
                                 </Grid>
