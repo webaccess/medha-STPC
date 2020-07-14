@@ -469,6 +469,9 @@ const ManageUser = props => {
     if (status) {
       getUserData(formState.pageSize, 1, formState.filterDataParameters);
     }
+    if (!status && count === 1) {
+      getUserData(formState.pageSize, 1, formState.filterDataParameters);
+    }
   };
 
   const modalClose = () => {
