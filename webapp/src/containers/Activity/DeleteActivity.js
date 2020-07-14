@@ -8,7 +8,7 @@ import * as strapiConstants from "../../constants/StrapiApiConstants";
 import useStyles from "./ActivityBatch/DeleteActivityBatchStudentStyles";
 import * as serviceProviders from "../../api/Axios";
 import * as genericConstants from "../../constants/GenericConstants";
-import { YellowButton } from "../../components";
+import { YellowButton, GrayButton } from "../../components";
 
 const DeleteActivity = props => {
   const { activity } = props;
@@ -31,6 +31,11 @@ const DeleteActivity = props => {
         props.deleteEvent(false, error);
         props.closeModal();
       });
+  };
+
+  const handleClose = async event => {
+    // props.clearSelectedRow(true);
+    props.closeModal();
   };
 
   const classes = useStyles();
@@ -56,17 +61,37 @@ const DeleteActivity = props => {
             <Grid item xs={12}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item lg className={classes.deletemessage}>
-                  Do you want to delete Activty?
+                  <p>Do you want to delete Activty {activity.title}?</p>
                 </Grid>
-                <Grid item xs>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item>
                   <YellowButton
                     type="submit"
                     color="primary"
                     variant="contained"
                     onClick={handleSubmit}
                   >
-                    {genericConstants.DELETE_TEXT}
+                    Ok
                   </YellowButton>
+                </Grid>
+                <Grid item>
+                  <GrayButton
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    onClick={handleClose}
+                  >
+                    Close
+                  </GrayButton>
                 </Grid>
               </Grid>
             </Grid>
