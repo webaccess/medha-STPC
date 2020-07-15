@@ -1,19 +1,12 @@
 import React, { useState as useStateMock } from "react";
-import { mount, shallow } from "enzyme";
-import ManageUser from "../ManageUser.js";
+import { mount } from "enzyme";
+import EventStudentList from "../EventStudentList.js";
 import { BrowserRouter as Router } from "react-router-dom";
 import auth from "../../../../components/Auth";
 import LoaderContext from "../../../../context/LoaderContext";
 import * as serviceProviders from "../../../../api/Axios";
-import * as strapiApiConstants from "../../../../constants/StrapiApiConstants";
 import * as medhaAdminUser from "../../../../mockuser/MedhaAdmin.json";
-import * as collegeAdminUser from "../../../../mockuser/CollegeAdmin.json";
-import * as StudentUser from "../../../../mockuser/StudentUser.json";
-import * as ZonalUser from "../../../../mockuser/ZonalAdminUser.json";
-import * as DepartmentAdmin from "../../../../mockuser/DepartmentAdmin.json";
-import * as RPCAdmin from "../../../../mockuser/RPCAdmin.json";
 import SetIndexContext from "../../../../context/SetIndexContext.js";
-import axios from "axios";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -29,29 +22,26 @@ jest.mock("react", () => ({
   useState: jest.fn()
 }));
 
-describe("Dashboard", () => {
+describe("Manage Event", () => {
   const setIndex = jest.fn();
   const setLoaderStatus = jest.fn();
-  const setYearData = jest.fn();
 
   beforeEach(() => {
     useStateMock.mockImplementation(init => [init, setIndex]);
     useStateMock.mockImplementation(init => [init, setLoaderStatus]);
   });
 
-  it("Should check Manage User page for medha admin", async () => {
+  it("Should check Manage Event page for medha admin", async () => {
     auth.setToken(medhaAdminUser.jwt, true);
     auth.setUserInfo(medhaAdminUser.user, true);
     let props = {
       location: {
-        fromeditUser: false,
-        editedUserName: null,
-        fromAddUser: false,
-        addedUserName: null
+        eventTitle: "Hello",
+        eventId: 1
       }
     };
 
-    const getStatusOfDashboardSpy = jest
+    const getManageUserSpy = jest
       .spyOn(serviceProviders, "serviceProviderForGetRequest")
       .mockImplementation(() => {
         return new Promise(resolve => {
@@ -60,26 +50,14 @@ describe("Dashboard", () => {
               result: [
                 {
                   id: 1,
-                  name: "Uttar Pradesh",
-                  is_active: true,
-                  abbreviation: "UP",
-                  identifier: "",
-                  country: {
-                    id: 1,
-                    name: "India",
-                    is_active: true,
-                    abbreviation: "IN",
-                    identifier: "IN",
-                    created_at: "2020-06-25T06:43:49.635Z",
-                    updated_at: "2020-06-25T06:43:49.635Z"
-                  },
-                  created_at: "2020-06-25T06:43:49.648Z",
-                  updated_at: "2020-06-25T06:43:49.648Z"
+                  name: "Mechanical Engineering (Production)",
+                  created_at: "2020-06-25T06:43:54.120Z",
+                  updated_at: "2020-06-25T06:43:54.120Z"
                 }
               ],
               page: 1,
-              pageSize: 1,
-              rowCount: 1,
+              pageSize: 52,
+              rowCount: 52,
               pageCount: 1
             }
           });
@@ -91,23 +69,24 @@ describe("Dashboard", () => {
       <LoaderContext.Provider value={{ setLoaderStatus }}>
         <SetIndexContext.Provider value={{ setIndex }}>
           <Router>
-            <ManageUser {...props} />
+            <EventStudentList {...props} />
           </Router>
         </SetIndexContext.Provider>
       </LoaderContext.Provider>
     );
 
     /** This actually checks whether the post method is called with proper url and request body */
-    expect(getStatusOfDashboardSpy.mock.calls).toEqual([
+    expect(getManageUserSpy.mock.calls).toEqual([
       [
-        process.env.REACT_APP_SERVER_URL + "crm-plugin/contact/get-individuals",
+        process.env.REACT_APP_SERVER_URL + "events/1/contact/individuals",
         {
+          _sort: "name:asc",
           page: 1,
           pageSize: 10
         }
       ],
       [
-        process.env.REACT_APP_SERVER_URL + "crm-plugin/states",
+        process.env.REACT_APP_SERVER_URL + "streams",
         {
           pageSize: -1
         }
@@ -115,7 +94,7 @@ describe("Dashboard", () => {
     ]);
 
     /** This actually checks whether the post method is called */
-    expect(getStatusOfDashboardSpy).toHaveBeenCalledTimes(2);
+    expect(getManageUserSpy).toHaveBeenCalledTimes(2);
     wrapper.unmount();
   });
 });

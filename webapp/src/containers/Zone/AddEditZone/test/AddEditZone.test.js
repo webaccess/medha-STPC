@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import AddEditZone from "./AddEditZone";
+import AddEditZone from "../AddEditZone";
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
   useHistory: () => ({ push: jest.fn() })
@@ -98,12 +98,18 @@ describe("testing for zone", () => {
       }
     };
 
-    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={dataForEdit} option={option} />);
+    const wrapper = shallow(
+      <AddEditZone
+        editZone={editZone}
+        dataForEdit={dataForEdit}
+        option={option}
+      />
+    );
 
     const input = wrapper.find("#test");
-    const selectInput = wrapper.find("#states-filter")
-    expect(input.props().value).toBe("West-UP")
-    expect(selectInput.props().value.name).toBe("Uttar pradesh")
+    const selectInput = wrapper.find("#states-filter");
+    expect(input.props().value).toBe("West-UP");
+    expect(selectInput.props().value.name).toBe("Uttar pradesh");
   });
 
   it("test edit preFilled forelse statement", () => {
@@ -126,12 +132,18 @@ describe("testing for zone", () => {
       }
     };
 
-    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={undefined} option={option} />);
+    const wrapper = shallow(
+      <AddEditZone
+        editZone={editZone}
+        dataForEdit={undefined}
+        option={option}
+      />
+    );
 
     const input = wrapper.find("#test");
-    const selectInput = wrapper.find("#states-filter")
-    expect(input.props().value).toBe("")
-    expect(selectInput.props().value).toBe(null)
+    const selectInput = wrapper.find("#states-filter");
+    expect(input.props().value).toBe("");
+    expect(selectInput.props().value).toBe(null);
   });
 
   it("test edit preFilled forelse statement", () => {
@@ -148,18 +160,23 @@ describe("testing for zone", () => {
 
     const editZone = true;
     const dataForEdit = {
-
       state: {
         id: 1
       }
     };
 
-    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={dataForEdit} option={option} />);
+    const wrapper = shallow(
+      <AddEditZone
+        editZone={editZone}
+        dataForEdit={dataForEdit}
+        option={option}
+      />
+    );
 
     const input = wrapper.find("#test");
-    const selectInput = wrapper.find("#states-filter")
-    expect(input.props().value).toBe("")
-    expect(selectInput.props().value.name).toBe("Uttar pradesh")
+    const selectInput = wrapper.find("#states-filter");
+    expect(input.props().value).toBe("");
+    expect(selectInput.props().value.name).toBe("Uttar pradesh");
   });
 
   it("test edit preFilled forelse statement", () => {
@@ -180,11 +197,17 @@ describe("testing for zone", () => {
       state: {}
     };
 
-    const wrapper = shallow(<AddEditZone editZone={editZone} dataForEdit={dataForEdit} option={option} />);
+    const wrapper = shallow(
+      <AddEditZone
+        editZone={editZone}
+        dataForEdit={dataForEdit}
+        option={option}
+      />
+    );
 
     const input = wrapper.find("#test");
-    const selectInput = wrapper.find("#states-filter")
-    expect(input.props().value).toBe("West-UP")
-    expect(selectInput.props().value).toBe(null)
+    const selectInput = wrapper.find("#states-filter");
+    expect(input.props().value).toBe("West-UP");
+    expect(selectInput.props().value).toBe(null);
   });
 });

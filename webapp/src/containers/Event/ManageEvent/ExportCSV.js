@@ -5,7 +5,7 @@ import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import LoaderContext from "../../../context/LoaderContext";
 
-const ExportCSV = ({ csvData, fileName }) => {
+const ExportCSV = ({ id, csvData, fileName }) => {
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
@@ -27,6 +27,7 @@ const ExportCSV = ({ csvData, fileName }) => {
 
   return (
     <GreenButton
+      id={id}
       variant="contained"
       color="secondary"
       startIcon={<GetAppIcon />}
