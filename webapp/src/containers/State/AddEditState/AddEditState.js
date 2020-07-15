@@ -10,6 +10,7 @@ import * as genericConstants from "../../../constants/GenericConstants";
 import * as serviceProviders from "../../../api/Axios";
 import { YellowButton, GrayButton } from "../../../components";
 import { useHistory } from "react-router-dom";
+import { Backdrop, CircularProgress } from "@material-ui/core";
 import {
   Card,
   CardContent,
@@ -32,6 +33,7 @@ const AddEditState = props => {
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
+    backDrop: false,
     isValid: false,
     values: {},
     touched: {},
@@ -71,7 +73,7 @@ const AddEditState = props => {
   };
 
   const setLoader = () => {
-    setLoaderStatus(true);
+    formState.backDrop = true;
   };
   const handleSubmit = event => {
     event.preventDefault();
@@ -106,7 +108,7 @@ const AddEditState = props => {
         ...formState,
         isValid: false
       }));
-      setLoaderStatus(false);
+      formState.backDrop = false;
     }
   };
 
@@ -233,7 +235,7 @@ const AddEditState = props => {
                           color="primary"
                           variant="contained"
                           onClick={() => {
-                            setLoaderStatus(true);
+                            setLoader();
                           }}
                         >
                           {genericConstants.SAVE_BUTTON_TEXT}
@@ -257,6 +259,9 @@ const AddEditState = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={formState.backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };

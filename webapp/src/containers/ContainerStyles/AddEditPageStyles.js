@@ -5,6 +5,10 @@ const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: "100%"
   },
+  backDrop: {
+    zIndex: theme.zIndex.drawer + 1000,
+    color: "#cdd4e1"
+  },
   elementroot: {
     [theme.breakpoints.up("lg")]: {
       width: "30%"

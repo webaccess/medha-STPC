@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import AddEditUser from "./AddEditUser";
+import AddEditUser from "../AddEditUser";
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
@@ -117,17 +117,6 @@ describe("testing for state", () => {
     const passwordfield = wrapper.find("#password");
     expect(passwordfield.props().type).toEqual("password");
   });
-  // it("test for  title edit user", () => {
-  //   const wrapper = shallow(<AddEditUser editUser={true} />);
-  //   const title = wrapper.find(".makeStyles-title-8");
-  //   expect(title.props().children.props.children).toEqual("Edit User");
-  // });
-
-  // it("test for  title edit user", () => {
-  //   const wrapper = shallow(<AddEditUser editUser={false} />);
-  //   const title = wrapper.find(".makeStyles-title-8");
-  //   expect(title.props().children.props.children).toEqual("Add User");
-  // });
 
   it("test for  autocomplete field", () => {
     const option = [
@@ -227,31 +216,4 @@ describe("testing for state", () => {
       "St. John college of engineering"
     );
   });
-
-  // it("test for  edit  pre-filled", () => {
-  //   const dataForEdit = {
-  //     id: 1,
-  //     first_name: "Mayank",
-  //     last_name: "surti",
-  //     contact: {
-  //       phone: "7977069203",
-  //       email: "mayank.surti@webaccessglobal.com"
-  //     }
-  //   };
-  //   const wrapper = shallow(
-  //     <AddEditUser
-  //       dataForEdit={dataForEdit}
-  //       editUser={true}
-  //       counter={0}
-  //     />
-  //   );
-  //   const firstName = wrapper.find("#firstname");
-  //   const lastName = wrapper.find("#lastname");
-  //   const phoneNumber = wrapper.find("#contact_number");
-  //   const email = wrapper.find("#email");
-  //   expect(firstName.props().value).toEqual("Mayank");
-  //   expect(lastName.props().value).toEqual("surti");
-  //   expect(phoneNumber.props().value).toEqual("7977069203");
-  //   expect(email.props().value).toEqual("mayank.surti@webaccessglobal.com");
-  // });
 });
