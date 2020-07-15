@@ -126,7 +126,6 @@ const DeleteZone = props => {
         }
       })
       .catch(error => {
-        console.log("errorZoneIdColleges", error);
         /** return error */
         dataToReturn = {
           status: false,
