@@ -95,13 +95,19 @@ const AddEditCollege = props => {
     showing: false,
     dataToShowForMultiSelect: [],
     isCollegeAdmin:
-      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? true : false
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+        ? true
+        : false
   });
   const { className, ...rest } = props;
   const [user, setUser] = useState([]);
-  const [states, setStates] = useState([]);
-  const [zones, setZones] = useState([]);
-  const [rpcs, setRpcs] = useState([]);
+  const [states, setStates] = useState(
+    props.stateOption ? props.stateOption : []
+  );
+  const [zones, setZones] = useState(props.zoneOption ? props.zoneOption : []);
+  const [rpcs, setRpcs] = useState(props.rpcOption ? props.rpcOption : []);
   const [districts, setDistricts] = useState([]);
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
@@ -111,6 +117,8 @@ const AddEditCollege = props => {
   const inputLabel = React.useRef(null);
   const [collegeInfo, setCollegeInfo] = useState({
     college:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().studentInfo &&
           auth.getUserInfo().studentInfo.organization
@@ -118,26 +126,40 @@ const AddEditCollege = props => {
           : {}
         : {},
     state:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().state
         : {},
     rpc:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().rpc
         : {},
     zone:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().zone
         : {}
   });
 
   React.useEffect(() => {
-    if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
+    if (
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
+      auth.getUserInfo().role.name === roleConstants.MEDHAADMIN
+    ) {
       setFormState(formState => ({
         ...formState,
         showing: true
       }));
-    } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+    } else if (
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
+      auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
+    ) {
       setFormState(formState => ({
         ...formState,
         showing: false
@@ -1403,8 +1425,13 @@ const AddEditCollege = props => {
                   </div>
                 </Grid>
               </Grid>
-              {(auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
-                auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) &&
+              {((auth.getUserInfo() !== null &&
+                auth.getUserInfo().role !== null &&
+                auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) ||
+                (auth.getUserInfo() !== null &&
+                  auth.getUserInfo().role !== null &&
+                  auth.getUserInfo().role.name ===
+                    roleConstants.COLLEGEADMIN)) &&
               formState.isEditCollege ? (
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
@@ -1466,8 +1493,12 @@ const AddEditCollege = props => {
                 ))}
               </Grid>
             ) : null}
-            {(auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
-              auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) &&
+            {((auth.getUserInfo() !== null &&
+              auth.getUserInfo().role !== null &&
+              auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) ||
+              (auth.getUserInfo() !== null &&
+                auth.getUserInfo().role !== null &&
+                auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN)) &&
             formState.isEditCollege ? (
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container className={classes.formgrid}>
