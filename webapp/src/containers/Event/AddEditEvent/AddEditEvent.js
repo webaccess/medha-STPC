@@ -1947,33 +1947,27 @@ const AddEditEvent = props => {
                         );
                       })}
                       <div className={classes.btnspaceadd}>
-                        <Grid item xs={12}>
-                          <Grid item xs={12} md={6} xl={3}>
-                            <Grid container spacing={3}>
-                              <Grid item md={5} xs={12}>
-                                <YellowButton
-                                  type="button"
-                                  color="primary"
-                                  variant="contained"
-                                  disabled={
-                                    formState.isCollegeAdmin &&
-                                    formState.isEditEvent &&
-                                    formState.isCollegeAdminDoesNotHaveEditPreviliges
-                                      ? true
-                                      : qualifications.length
-                                      ? false
-                                      : true
-                                  }
-                                  className={classes.add_more_btn}
-                                  onClick={e => {
-                                    addNewRow(e, qualification);
-                                  }}
-                                >
-                                  {genericConstants.ADD_MORE_TEXT}
-                                </YellowButton>
-                              </Grid>
-                            </Grid>
-                          </Grid>
+                        <Grid item xs={12} md={3} lg={3} xl={3}>
+                          <YellowButton
+                            type="button"
+                            color="primary"
+                            variant="contained"
+                            disabled={
+                              formState.isCollegeAdmin &&
+                              formState.isEditEvent &&
+                              formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                ? true
+                                : qualifications.length
+                                ? false
+                                : true
+                            }
+                            className={classes.add_more_btn}
+                            onClick={e => {
+                              addNewRow(e, qualification);
+                            }}
+                          >
+                            {genericConstants.ADD_MORE_TEXT}
+                          </YellowButton>
                         </Grid>
                       </div>
                     </Card>
@@ -2172,33 +2166,27 @@ const AddEditEvent = props => {
                         );
                       })}
                       <div className={classes.btnspaceadd}>
-                        <Grid item xs={12}>
-                          <Grid item xs={12} md={6} xl={3}>
-                            <Grid container spacing={3}>
-                              <Grid item md={5} xs={12}>
-                                <YellowButton
-                                  type="button"
-                                  color="primary"
-                                  disabled={
-                                    formState.isCollegeAdmin &&
-                                    formState.isEditEvent &&
-                                    formState.isCollegeAdminDoesNotHaveEditPreviliges
-                                      ? true
-                                      : educations.length
-                                      ? false
-                                      : true
-                                  }
-                                  variant="contained"
-                                  className={classes.add_more_btn}
-                                  onClick={e => {
-                                    addNewRow(e, education);
-                                  }}
-                                >
-                                  {genericConstants.ADD_MORE_TEXT}
-                                </YellowButton>
-                              </Grid>
-                            </Grid>
-                          </Grid>
+                        <Grid item xs={12} md={3} lg={3} xl={3}>
+                          <YellowButton
+                            type="button"
+                            color="primary"
+                            disabled={
+                              formState.isCollegeAdmin &&
+                              formState.isEditEvent &&
+                              formState.isCollegeAdminDoesNotHaveEditPreviliges
+                                ? true
+                                : educations.length
+                                ? false
+                                : true
+                            }
+                            variant="contained"
+                            className={classes.add_more_btn}
+                            onClick={e => {
+                              addNewRow(e, education);
+                            }}
+                          >
+                            {genericConstants.ADD_MORE_TEXT}
+                          </YellowButton>
                         </Grid>
                       </div>
                     </Card>

@@ -1469,50 +1469,53 @@ const AddEditCollege = props => {
             {(auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
               auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) &&
             formState.isEditCollege ? (
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
-                  <Autocomplete
-                    id={get(CollegeFormSchema[principal], "id")}
-                    options={user}
-                    getOptionLabel={option => option.contact.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete(principal, event, value);
-                    }}
-                    /** This is used to set the default value to the auto complete */
-                    value={
-                      user[
-                        user.findIndex(function (item, i) {
-                          return (
-                            item.contact.user.id === formState.values[principal]
-                          );
-                        })
-                      ] || null /** Please give a default " " blank value */
-                    }
-                    name={principal}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError(principal)}
-                        helperText={
-                          hasError(principal)
-                            ? formState.errors[principal].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                        placeholder={get(
-                          CollegeFormSchema[principal],
-                          "placeholder"
-                        )}
-                        value={option => option.id}
-                        name={principal}
-                        key={option => option.id}
-                        label={get(CollegeFormSchema[principal], "label")}
-                        variant="outlined"
-                      />
-                    )}
-                  />
-                  {/* </FormControl> */}
+              <Grid item xs={12} md={6} xl={3}>
+                <Grid container className={classes.formgrid}>
+                  <Grid item md={12} xs={12}>
+                    <Autocomplete
+                      id={get(CollegeFormSchema[principal], "id")}
+                      options={user}
+                      getOptionLabel={option => option.contact.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(principal, event, value);
+                      }}
+                      /** This is used to set the default value to the auto complete */
+                      value={
+                        user[
+                          user.findIndex(function (item, i) {
+                            return (
+                              item.contact.user.id ===
+                              formState.values[principal]
+                            );
+                          })
+                        ] || null /** Please give a default " " blank value */
+                      }
+                      name={principal}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          error={hasError(principal)}
+                          helperText={
+                            hasError(principal)
+                              ? formState.errors[principal].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
+                          placeholder={get(
+                            CollegeFormSchema[principal],
+                            "placeholder"
+                          )}
+                          value={option => option.id}
+                          name={principal}
+                          key={option => option.id}
+                          label={get(CollegeFormSchema[principal], "label")}
+                          variant="outlined"
+                        />
+                      )}
+                    />
+                    {/* </FormControl> */}
+                  </Grid>
                 </Grid>
               </Grid>
             ) : null}
@@ -1575,7 +1578,7 @@ const AddEditCollege = props => {
                         >
                           <CardContent>
                             <Grid container spacing={1}>
-                              <Grid item xs={4}>
+                              <Grid item xs={12} md={3}>
                                 <FormControl
                                   variant="outlined"
                                   fullWidth
@@ -1652,9 +1655,9 @@ const AddEditCollege = props => {
                                 </FormControl>
                               </Grid>
                               {/** Need to map streams with strength */}
-                              <Grid item xs={2}>
+                              <Grid item xs>
                                 <TextField
-                                  label="First Year Strength"
+                                  label="1st Year Strength"
                                   name={firstYearStrengthId}
                                   variant="outlined"
                                   fullWidth
@@ -1698,9 +1701,9 @@ const AddEditCollege = props => {
                                   }}
                                 />
                               </Grid>
-                              <Grid item xs={2}>
+                              <Grid item xs>
                                 <TextField
-                                  label="Second Year Strength"
+                                  label="2nd Year Strength"
                                   name={secondYearStrengthId}
                                   variant="outlined"
                                   fullWidth
@@ -1744,9 +1747,9 @@ const AddEditCollege = props => {
                                   }}
                                 />
                               </Grid>
-                              <Grid item xs={2}>
+                              <Grid item xs>
                                 <TextField
-                                  label="Third Year Strength"
+                                  label="3rd Year Strength"
                                   name={thirdYearStrengthId}
                                   variant="outlined"
                                   fullWidth
@@ -1790,7 +1793,7 @@ const AddEditCollege = props => {
                                   }}
                                 />
                               </Grid>
-                              <Grid item xs={2}>
+                              <Grid item xs={1}>
                                 {idx > 0 ? (
                                   <DeleteForeverOutlinedIcon
                                     onClick={e => clickOnDelete(val, idx)}
@@ -1806,22 +1809,16 @@ const AddEditCollege = props => {
                       );
                     })}
                     <div className={classes.btnspaceadd}>
-                      <Grid item xs={12}>
-                        <Grid item xs={12} md={6} xl={3}>
-                          <Grid container spacing={3}>
-                            <Grid item md={3} xs={12}>
-                              <YellowButton
-                                disabled={streamsData.length ? false : true}
-                                color="primary"
-                                variant="contained"
-                                className={classes.add_more_btn}
-                                onClick={addNewRow}
-                              >
-                                {genericConstants.ADD_MORE_TEXT}
-                              </YellowButton>
-                            </Grid>
-                          </Grid>
-                        </Grid>
+                      <Grid item xs={12} md={3} lg={2} xl={2}>
+                        <YellowButton
+                          disabled={streamsData.length ? false : true}
+                          color="primary"
+                          variant="contained"
+                          className={classes.add_more_btn}
+                          onClick={addNewRow}
+                        >
+                          {genericConstants.ADD_MORE_TEXT}
+                        </YellowButton>
                       </Grid>
                     </div>
                   </Card>

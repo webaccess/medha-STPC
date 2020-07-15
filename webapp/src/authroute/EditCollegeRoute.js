@@ -9,6 +9,9 @@ import * as routeConstants from "../constants/RouteConstants";
 
 const EditCollegeRoute = props => {
   if (auth.getToken() !== null) {
+    const user = auth.getUserInfo() || null;
+    const userRole = user && user.role ? user.role.name : null;
+
     if (props["location"] && props["location"]["dataForEdit"]) {
       return (
         <AddEditCollege
@@ -20,7 +23,10 @@ const EditCollegeRoute = props => {
       return (
         <Redirect
           to={{
-            pathname: routeConstants.MANAGE_COLLEGE,
+            pathname:
+              userRole == "Medha Admin"
+                ? routeConstants.MANAGE_COLLEGE
+                : routeConstants.VIEW_COLLEGE,
             state: { from: props.location }
           }}
         />
