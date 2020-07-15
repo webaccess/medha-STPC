@@ -102,7 +102,7 @@ export const serviceProviderForDeleteRequest = async (
   })
     .then(response => response)
     .catch(error => {
-      throw error;
+      return error;
     });
 };
 
@@ -151,6 +151,25 @@ export const serviceProviderForAllGetRequest = async (
     });
 };
 
+export const serviceProviderForDeleteOneRequest = async (
+  url,
+  id,
+  headers = {
+    "content-type": "application/json",
+    Authorization: `Bearer ${auth.getToken()}`
+  }
+) => {
+  const URL = url;
+  return await axios(URL + "/" + id, {
+    method: "Delete",
+    headers: headers
+  })
+    .then(response => response)
+    .catch(error => {
+      return null;
+    });
+};
+
 export const serviceProviderForAllDeleteRequest = async (
   url,
   arrayId,
@@ -161,7 +180,7 @@ export const serviceProviderForAllDeleteRequest = async (
 ) => {
   let temp = [];
   for (let i in arrayId) {
-    temp.push(serviceProviderForDeleteRequest(url, arrayId[i]));
+    temp.push(serviceProviderForDeleteOneRequest(url, arrayId[i]));
   }
   const URL = temp;
   // const URL1 = url1;
@@ -171,10 +190,10 @@ export const serviceProviderForAllDeleteRequest = async (
     })
     .then(response => {
       return response;
-    })
-    .catch(error => {
-      throw error;
     });
+  // .catch(error => {
+  //   throw error;
+  // });
 };
 
 export const serviceProviderForAllBlockRequest = async (
