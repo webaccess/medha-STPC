@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import clsx from "clsx";
 import { get } from "lodash";
 import axios from "axios";
@@ -45,6 +45,7 @@ import image from "../../../assets/images/login-img.png";
 import CardIcon from "../../../components/Card/CardIcon.js";
 import { useHistory } from "react-router-dom";
 import CloseIcon from "@material-ui/icons/Close";
+import SetIndexContext from "../../../context/SetIndexContext";
 const identifier = "identifier";
 const password = "password";
 
@@ -56,6 +57,7 @@ const LogIn = props => {
   const history = useHistory();
   const [ifSuccess, setIfSuccess] = React.useState(false);
   const [ifFailure, setIfFailure] = React.useState(false);
+  const { index, setIndex } = useContext(SetIndexContext);
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -246,6 +248,7 @@ const LogIn = props => {
         }
       )
       .then(response => {
+        setIndex(0);
         if (response.data.user.role.name === roleConstants.STUDENT) {
           /** This check whether the college is blocked or not then it checks whether the user is blocked or not */
           if (response.data.user.studentInfo.organization.is_blocked) {
