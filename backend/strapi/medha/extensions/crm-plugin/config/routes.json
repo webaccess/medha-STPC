@@ -24,12 +24,6 @@
     },
     {
       "method": "GET",
-      "path": "/contact/individual/:id/academic-history",
-      "handler": "contact.academicHistory",
-      "config": { "policies": ["global::isIndividual"] }
-    },
-    {
-      "method": "GET",
       "path": "/contact/individual/:id/education",
       "handler": "contact.education",
       "config": {

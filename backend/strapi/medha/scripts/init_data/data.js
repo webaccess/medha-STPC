@@ -3612,10 +3612,6 @@ const ROLES = {
   Admin: {
     controllers: [
       {
-        name: "academic-history",
-        action: ["find", "findone"]
-      },
-      {
         name: "academic-year",
         action: ["find", "findone"]
       },
@@ -3744,10 +3740,6 @@ const ROLES = {
   },
   "Zonal Admin": {
     controllers: [
-      {
-        name: "academic-history",
-        action: []
-      },
       {
         name: "academic-year",
         action: []
@@ -3884,10 +3876,6 @@ const ROLES = {
   },
   "RPC Admin": {
     controllers: [
-      {
-        name: "academic-history",
-        action: []
-      },
       {
         name: "academic-year",
         action: []
@@ -4027,10 +4015,6 @@ const ROLES = {
   },
   "College Admin": {
     controllers: [
-      {
-        name: "academic-history",
-        action: ["create", "update", "delete"]
-      },
       {
         name: "academic-year",
         action: ["find", "create", "update", "findone"]
@@ -4253,10 +4237,6 @@ const ROLES = {
   Student: {
     controllers: [
       {
-        name: "academic-history",
-        action: ["create", "update", "delete"]
-      },
-      {
         name: "academic-year",
         action: ["find", "findOne"]
       },
@@ -4423,10 +4403,6 @@ const ROLES = {
   },
   "Medha Admin": {
     controllers: [
-      {
-        name: "academic-history",
-        action: []
-      },
       {
         name: "academic-year",
         action: []

@@ -251,32 +251,6 @@ module.exports = {
       });
   },
 
-  academicHistory: async ctx => {
-    const { id } = ctx.params;
-    const { page, query, pageSize } = utils.getRequestParams(ctx.request.query);
-    const filters = convertRestQueryParams(query, { limit: -1 });
-
-    return strapi
-      .query("academic-history")
-      .model.query(
-        buildQuery({
-          model: strapi.models["academic-history"],
-          filters
-        })
-      )
-      .fetchAll()
-      .then(res => {
-        const data = res
-          .toJSON()
-          .filter(academicHistory => academicHistory.contact.id == id);
-        const response = utils.paginate(data, page, pageSize);
-        return {
-          result: response.result,
-          ...response.pagination
-        };
-      });
-  },
-
   /**
    * Student self registration and medha admin can create indivisuals
    */
