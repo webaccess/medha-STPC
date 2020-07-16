@@ -64,7 +64,7 @@ const StudentList = props => {
     registration: [],
     hireColor: {},
     greenButtonChecker: true,
-    dataToShow: [],
+    dataToShow: props.testDataToShow ? props.testDataToShow : [],
     tempData: [],
     eventTitle: props["location"]["eventTitle"],
     eventId: props["location"]["eventId"],
@@ -697,6 +697,7 @@ const StudentList = props => {
         <Grid item>
           {auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN ? (
             <GreenButton
+              id="addStudents"
               variant="contained"
               color="secondary"
               startIcon={<PersonAddIcon />}
@@ -709,10 +710,12 @@ const StudentList = props => {
           ) : null}
 
           <ExportCSV
+            id="exportCsv"
             csvData={handleClickDownloadStudents(formState.dataToShow)}
             fileName={formState.eventTitle}
           />
           <GreenButton
+            id="backToManageEvent"
             variant="contained"
             color="primary"
             disableElevation
@@ -848,6 +851,7 @@ const StudentList = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="studentName"
                   label="Name"
                   margin="normal"
                   variant="outlined"
@@ -910,6 +914,7 @@ const StudentList = props => {
               </Grid>
               <Grid item>
                 <TextField
+                  id="mobileNumberFilter"
                   label="Mobile Number"
                   margin="normal"
                   variant="outlined"
@@ -925,6 +930,7 @@ const StudentList = props => {
 
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFiter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -938,6 +944,7 @@ const StudentList = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="clearFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}

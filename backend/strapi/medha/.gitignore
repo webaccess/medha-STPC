@@ -112,3 +112,4 @@ exports
 build
 prod-students.xlsx
 migrations.js
+.env

@@ -45,14 +45,14 @@ const END_DATE_FILTER = "end_date_time_lt";
 const SORT_FIELD_KEY = "_sort";
 
 const ManageEvent = props => {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   const history = useHistory();
   const classes = useStyles();
   const [selectedRows, setSelectedRows] = useState([]);
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
-    dataToShow: [],
+    dataToShow: props.testDataToShow ? props.testDataToShow : [],
     tempData: [],
     events: [],
     greenButtonChecker: true,
@@ -1322,6 +1322,7 @@ const ManageEvent = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="eventName"
                   label="Name"
                   margin="normal"
                   variant="outlined"
@@ -1373,6 +1374,7 @@ const ManageEvent = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFiter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -1387,6 +1389,7 @@ const ManageEvent = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="clearFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}

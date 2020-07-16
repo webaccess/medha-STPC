@@ -1,0 +1,804 @@
+{
+  "result": [
+    {
+      "id": 9,
+      "title": "Dummy Event",
+      "start_date_time": "2020-07-03T08:30:00.000Z",
+      "end_date_time": "2020-07-03T10:30:00.000Z",
+      "address": "Online",
+      "description": "<ol>\n<li>This is a dummy event for testing the Placement Module.</li>\n<li>Please click on register once you have read through this event.</li>\n<li>Once registered, your attendances will be marked for this event</li>\n<li>Once the attendance is marked, you have to go to past events and click on give feedback</li>\n<li>There will be some questions for which you will have to provide ratings</li>\n<li>In the comment box give your feedback on the portal and click on submit</li>\n</ol>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 2,
+        "name": "Bundelkhand Zone - Jhansi",
+        "state": 1,
+        "created_at": "2020-06-25T06:43:54.052Z",
+        "updated_at": "2020-07-13T05:43:53.067Z"
+      },
+      "rpc": {
+        "id": 6,
+        "name": "Kanpur",
+        "state": 1,
+        "main_college": 19,
+        "created_at": "2020-06-25T06:43:54.093Z",
+        "updated_at": "2020-06-27T03:46:07.982Z"
+      },
+      "created_at": "2020-07-03T08:16:40.464Z",
+      "updated_at": "2020-07-03T08:16:40.500Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": {
+        "id": 189,
+        "name": "STPC logo",
+        "alternativeText": null,
+        "caption": null,
+        "width": 17992,
+        "height": 5073,
+        "formats": {
+          "large": {
+            "ext": ".png",
+            "url": "/uploads/large_STPC_logo_dffc7a5be9.png",
+            "hash": "large_STPC_logo_dffc7a5be9",
+            "mime": "image/png",
+            "size": 37.29,
+            "width": 1000,
+            "height": 282
+          },
+          "small": {
+            "ext": ".png",
+            "url": "/uploads/small_STPC_logo_dffc7a5be9.png",
+            "hash": "small_STPC_logo_dffc7a5be9",
+            "mime": "image/png",
+            "size": 17.36,
+            "width": 500,
+            "height": 141
+          },
+          "medium": {
+            "ext": ".png",
+            "url": "/uploads/medium_STPC_logo_dffc7a5be9.png",
+            "hash": "medium_STPC_logo_dffc7a5be9",
+            "mime": "image/png",
+            "size": 27.05,
+            "width": 750,
+            "height": 211
+          },
+          "thumbnail": {
+            "ext": ".png",
+            "url": "/uploads/thumbnail_STPC_logo_dffc7a5be9.png",
+            "hash": "thumbnail_STPC_logo_dffc7a5be9",
+            "mime": "image/png",
+            "size": 8.03,
+            "width": 245,
+            "height": 69
+          }
+        },
+        "hash": "STPC_logo_dffc7a5be9",
+        "ext": ".png",
+        "mime": "image/png",
+        "size": 674.92,
+        "url": "/uploads/STPC_logo_dffc7a5be9.png",
+        "previewUrl": null,
+        "provider": "local",
+        "provider_metadata": null,
+        "created_at": "2020-07-03T08:17:05.474Z",
+        "updated_at": "2020-07-03T08:17:05.474Z"
+      },
+      "streams": [
+        {
+          "id": 40,
+          "name": "Electronics Engineering (Micro Electronics)",
+          "created_at": "2020-06-25T06:43:54.315Z",
+          "updated_at": "2020-06-25T06:43:54.315Z"
+        },
+        {
+          "id": 1,
+          "name": "Mechanical Engineering (Production)",
+          "created_at": "2020-06-25T06:43:54.120Z",
+          "updated_at": "2020-06-25T06:43:54.120Z"
+        },
+        {
+          "id": 17,
+          "name": "Mechanical Engineering (Automobile)",
+          "created_at": "2020-06-25T06:43:54.202Z",
+          "updated_at": "2020-06-25T06:43:54.202Z"
+        },
+        {
+          "id": 46,
+          "name": "Diploma In Plastic Mould Technology",
+          "created_at": "2020-06-25T06:43:54.356Z",
+          "updated_at": "2020-06-25T06:43:54.356Z"
+        },
+        {
+          "id": 4,
+          "name": "Information Technology",
+          "created_at": "2020-06-25T06:43:54.134Z",
+          "updated_at": "2020-06-25T06:43:54.134Z"
+        },
+        {
+          "id": 23,
+          "name": "Mechanical Engineering",
+          "created_at": "2020-06-25T06:43:54.228Z",
+          "updated_at": "2020-06-25T06:43:54.228Z"
+        },
+        {
+          "id": 15,
+          "name": "Instrumentation And Control",
+          "created_at": "2020-06-25T06:43:54.191Z",
+          "updated_at": "2020-06-25T06:43:54.191Z"
+        },
+        {
+          "id": 22,
+          "name": "Chemical Engineering",
+          "created_at": "2020-06-25T06:43:54.224Z",
+          "updated_at": "2020-06-25T06:43:54.224Z"
+        },
+        {
+          "id": 21,
+          "name": "Textile Technology",
+          "created_at": "2020-06-25T06:43:54.219Z",
+          "updated_at": "2020-06-25T06:43:54.219Z"
+        },
+        {
+          "id": 6,
+          "name": "Electrical Engineering",
+          "created_at": "2020-06-25T06:43:54.143Z",
+          "updated_at": "2020-06-25T06:43:54.143Z"
+        },
+        {
+          "id": 5,
+          "name": "Civil Engineering",
+          "created_at": "2020-06-25T06:43:54.139Z",
+          "updated_at": "2020-06-25T06:43:54.139Z"
+        },
+        {
+          "id": 3,
+          "name": "Electronics Engineering",
+          "created_at": "2020-06-25T06:43:54.130Z",
+          "updated_at": "2020-06-25T06:43:54.130Z"
+        },
+        {
+          "id": 29,
+          "name": "Paint Technology",
+          "created_at": "2020-06-25T06:43:54.255Z",
+          "updated_at": "2020-06-25T06:43:54.255Z"
+        }
+      ],
+      "contacts": [
+        {
+          "id": 27,
+          "name": "Government Polytechnic Fatehpur",
+          "phone": "7805240603",
+          "phone_other": null,
+          "email": "gpfatehpur@yahoo.com",
+          "email_other": null,
+          "address_1": "GT Road, Fatehpur, Uttar Pradesh",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 14,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 25,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-06-29T06:23:21.480Z",
+          "updated_at": "2020-07-01T08:46:53.119Z"
+        },
+        {
+          "id": 19,
+          "name": "Government Polytechnic Kanpur",
+          "phone": "7388983695",
+          "phone_other": null,
+          "email": "gpknp@rediffmail.com",
+          "email_other": null,
+          "address_1": "GT Road Kanpur, Uttar Pradesh",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 6,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 40,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-06-26T07:17:36.274Z",
+          "updated_at": "2020-06-30T06:52:55.070Z"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "New Events",
+      "start_date_time": "2020-06-30T08:28:27.705Z",
+      "end_date_time": "2020-07-10T08:28:00.000Z",
+      "address": "mumbai",
+      "description": "<p>testing new events</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": null,
+      "rpc": null,
+      "created_at": "2020-06-30T08:31:07.146Z",
+      "updated_at": "2020-06-30T08:31:07.163Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": null,
+      "streams": [],
+      "contacts": []
+    },
+    {
+      "id": 7,
+      "title": "Past Events",
+      "start_date_time": "2020-06-01T08:31:00.000Z",
+      "end_date_time": "2020-06-20T08:31:00.000Z",
+      "address": "lucknow",
+      "description": "<p>testing past events</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": null,
+      "rpc": null,
+      "created_at": "2020-06-30T08:32:08.656Z",
+      "updated_at": "2020-06-30T08:32:08.668Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": null,
+      "streams": [],
+      "contacts": []
+    },
+    {
+      "id": 1,
+      "title": "Test Event 1",
+      "start_date_time": "2020-06-02T07:00:00.000Z",
+      "end_date_time": "2020-06-02T10:00:00.000Z",
+      "address": "UP",
+      "description": "<p>test description</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 1,
+        "name": "West Zone - Daurala (Meerut)",
+        "state": 1,
+        "created_at": "2020-06-25T06:43:54.044Z",
+        "updated_at": "2020-06-25T06:43:54.044Z"
+      },
+      "rpc": {
+        "id": 1,
+        "name": "Agra",
+        "state": 1,
+        "main_college": 2,
+        "created_at": "2020-06-25T06:43:54.071Z",
+        "updated_at": "2020-07-02T07:41:21.629Z"
+      },
+      "created_at": "2020-06-25T08:07:56.881Z",
+      "updated_at": "2020-06-25T08:07:56.899Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": null,
+      "streams": [],
+      "contacts": [
+        {
+          "id": 2,
+          "name": "Government Polytechnic, Mainpuri",
+          "phone": "0356273400",
+          "phone_other": null,
+          "email": "collegeemail1@gmail.com",
+          "email_other": null,
+          "address_1": "UP",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 1,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 49,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-06-25T07:12:00.664Z",
+          "updated_at": "2020-07-03T10:05:35.985Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Test Event 10",
+      "start_date_time": "2020-06-26T07:00:00.000Z",
+      "end_date_time": "2020-06-27T10:41:00.000Z",
+      "address": "UP",
+      "description": "<p>Test Description</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 1,
+        "name": "West Zone - Daurala (Meerut)",
+        "state": 1,
+        "created_at": "2020-06-25T06:43:54.044Z",
+        "updated_at": "2020-06-25T06:43:54.044Z"
+      },
+      "rpc": {
+        "id": 1,
+        "name": "Agra",
+        "state": 1,
+        "main_college": 2,
+        "created_at": "2020-06-25T06:43:54.071Z",
+        "updated_at": "2020-07-02T07:41:21.629Z"
+      },
+      "created_at": "2020-06-25T10:42:41.917Z",
+      "updated_at": "2020-06-25T10:42:41.931Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": null,
+      "streams": [],
+      "contacts": [
+        {
+          "id": 2,
+          "name": "Government Polytechnic, Mainpuri",
+          "phone": "0356273400",
+          "phone_other": null,
+          "email": "collegeemail1@gmail.com",
+          "email_other": null,
+          "address_1": "UP",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 1,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 49,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-06-25T07:12:00.664Z",
+          "updated_at": "2020-07-03T10:05:35.985Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Test Event 2",
+      "start_date_time": "2020-06-26T06:30:00.000Z",
+      "end_date_time": "2020-06-26T10:30:00.000Z",
+      "address": "UP",
+      "description": "<p>Test Description</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 1,
+        "name": "West Zone - Daurala (Meerut)",
+        "state": 1,
+        "created_at": "2020-06-25T06:43:54.044Z",
+        "updated_at": "2020-06-25T06:43:54.044Z"
+      },
+      "rpc": {
+        "id": 1,
+        "name": "Agra",
+        "state": 1,
+        "main_college": 2,
+        "created_at": "2020-06-25T06:43:54.071Z",
+        "updated_at": "2020-07-02T07:41:21.629Z"
+      },
+      "created_at": "2020-06-25T08:15:42.952Z",
+      "updated_at": "2020-06-25T08:15:42.962Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": {
+        "id": 3,
+        "name": "8",
+        "alternativeText": null,
+        "caption": null,
+        "width": 259,
+        "height": 195,
+        "formats": {
+          "thumbnail": {
+            "ext": ".png",
+            "url": "/uploads/thumbnail_8_f3bce8d41a.png",
+            "hash": "thumbnail_8_f3bce8d41a",
+            "mime": "image/png",
+            "size": 12.9,
+            "width": 207,
+            "height": 156
+          }
+        },
+        "hash": "8_f3bce8d41a",
+        "ext": ".png",
+        "mime": "image/png",
+        "size": 10.67,
+        "url": "/uploads/8_f3bce8d41a.png",
+        "previewUrl": null,
+        "provider": "local",
+        "provider_metadata": null,
+        "created_at": "2020-06-25T08:15:43.733Z",
+        "updated_at": "2020-06-25T08:15:43.733Z"
+      },
+      "streams": [],
+      "contacts": []
+    },
+    {
+      "id": 4,
+      "title": "Test Event 4",
+      "start_date_time": "2020-06-25T08:54:14.499Z",
+      "end_date_time": "2020-06-27T08:54:00.000Z",
+      "address": "UP",
+      "description": "<p>Test</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 1,
+        "name": "West Zone - Daurala (Meerut)",
+        "state": 1,
+        "created_at": "2020-06-25T06:43:54.044Z",
+        "updated_at": "2020-06-25T06:43:54.044Z"
+      },
+      "rpc": {
+        "id": 1,
+        "name": "Agra",
+        "state": 1,
+        "main_college": 2,
+        "created_at": "2020-06-25T06:43:54.071Z",
+        "updated_at": "2020-07-02T07:41:21.629Z"
+      },
+      "created_at": "2020-06-25T08:54:45.437Z",
+      "updated_at": "2020-06-25T08:54:45.455Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": null,
+      "streams": [],
+      "contacts": [
+        {
+          "id": 2,
+          "name": "Government Polytechnic, Mainpuri",
+          "phone": "0356273400",
+          "phone_other": null,
+          "email": "collegeemail1@gmail.com",
+          "email_other": null,
+          "address_1": "UP",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 1,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 49,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-06-25T07:12:00.664Z",
+          "updated_at": "2020-07-03T10:05:35.985Z"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Test New Event",
+      "start_date_time": "2020-07-03T10:29:52.729Z",
+      "end_date_time": "2020-07-31T10:29:00.000Z",
+      "address": "up",
+      "description": "<p>jghdfkj</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 7,
+        "name": "West Zone - Jhansi1",
+        "state": 1,
+        "created_at": "2020-06-29T07:04:15.892Z",
+        "updated_at": "2020-07-10T09:19:58.949Z"
+      },
+      "rpc": {
+        "id": 15,
+        "name": "Test_RPC1",
+        "state": 1,
+        "main_college": null,
+        "created_at": "2020-07-02T07:55:20.162Z",
+        "updated_at": "2020-07-02T07:55:20.164Z"
+      },
+      "created_at": "2020-07-03T10:36:40.487Z",
+      "updated_at": "2020-07-03T10:36:40.533Z",
+      "qualifications": [
+        {
+          "id": 1,
+          "qualification": "SSC",
+          "percentage": 56
+        }
+      ],
+      "educations": [
+        {
+          "id": 1,
+          "education_year": "Third",
+          "percentage": 58
+        }
+      ],
+      "upload_logo": null,
+      "streams": [
+        {
+          "id": 11,
+          "name": "Textile Design",
+          "created_at": "2020-06-25T06:43:54.173Z",
+          "updated_at": "2020-06-25T06:43:54.173Z"
+        }
+      ],
+      "contacts": [
+        {
+          "id": 200,
+          "name": "H.N.M.T",
+          "phone": "9632585230",
+          "phone_other": null,
+          "email": "college@gmail.com",
+          "email_other": null,
+          "address_1": "UP",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 25,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 24,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-07-03T10:08:24.405Z",
+          "updated_at": "2020-07-03T11:03:06.090Z"
+        },
+        {
+          "id": 203,
+          "name": "SSLL",
+          "phone": "1515151515",
+          "phone_other": null,
+          "email": "ssll@gmail.com",
+          "email_other": null,
+          "address_1": "UP",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 26,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 25,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-07-03T10:22:04.000Z",
+          "updated_at": "2020-07-03T10:22:04.000Z"
+        },
+        {
+          "id": 204,
+          "name": "Patkar college",
+          "phone": "9856659856",
+          "phone_other": null,
+          "email": "patkar@gmail.com",
+          "email_other": null,
+          "address_1": "up",
+          "address_2": null,
+          "city": null,
+          "pincode": null,
+          "contact_type": "organization",
+          "organization": 27,
+          "country": null,
+          "village": null,
+          "state": 1,
+          "district": 15,
+          "individual": null,
+          "user": null,
+          "created_at": "2020-07-03T10:24:11.945Z",
+          "updated_at": "2020-07-03T10:24:11.945Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Test event 3",
+      "start_date_time": "2020-06-26T07:30:00.000Z",
+      "end_date_time": "2020-06-26T09:30:00.000Z",
+      "address": "UP",
+      "description": "<p>test description</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 1,
+        "name": "West Zone - Daurala (Meerut)",
+        "state": 1,
+        "created_at": "2020-06-25T06:43:54.044Z",
+        "updated_at": "2020-06-25T06:43:54.044Z"
+      },
+      "rpc": {
+        "id": 1,
+        "name": "Agra",
+        "state": 1,
+        "main_college": 2,
+        "created_at": "2020-06-25T06:43:54.071Z",
+        "updated_at": "2020-07-02T07:41:21.629Z"
+      },
+      "created_at": "2020-06-25T08:19:49.661Z",
+      "updated_at": "2020-06-25T08:19:49.680Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": null,
+      "streams": [],
+      "contacts": []
+    },
+    {
+      "id": 12,
+      "title": "test2",
+      "start_date_time": "2020-07-10T10:16:55.463Z",
+      "end_date_time": "2020-07-10T10:16:55.463Z",
+      "address": "dfgfd",
+      "description": "<p>jhgfkj</p>\n",
+      "question_set": {
+        "id": 2,
+        "name": "Event Question Set",
+        "created_at": "2020-06-25T06:43:56.149Z",
+        "updated_at": "2020-06-25T06:43:56.149Z"
+      },
+      "state": {
+        "id": 1,
+        "name": "Uttar Pradesh",
+        "is_active": true,
+        "abbreviation": "UP",
+        "identifier": "",
+        "country": 1,
+        "created_at": "2020-06-25T06:43:49.649Z",
+        "updated_at": "2020-06-25T06:43:49.649Z"
+      },
+      "zone": {
+        "id": 7,
+        "name": "West Zone - Jhansi1",
+        "state": 1,
+        "created_at": "2020-06-29T07:04:15.892Z",
+        "updated_at": "2020-07-10T09:19:58.949Z"
+      },
+      "rpc": {
+        "id": 10,
+        "name": "Varanasi",
+        "state": 1,
+        "main_college": 26,
+        "created_at": "2020-06-25T06:43:54.115Z",
+        "updated_at": "2020-06-27T03:52:36.464Z"
+      },
+      "created_at": "2020-07-10T10:17:23.121Z",
+      "updated_at": "2020-07-10T10:17:23.147Z",
+      "qualifications": [],
+      "educations": [],
+      "upload_logo": null,
+      "streams": [],
+      "contacts": []
+    }
+  ],
+  "page": 1,
+  "pageSize": 10,
+  "rowCount": 10,
+  "pageCount": 1
+}

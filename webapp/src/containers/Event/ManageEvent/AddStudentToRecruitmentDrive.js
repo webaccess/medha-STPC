@@ -55,7 +55,7 @@ const AddStudentToRecruitmentDrive = props => {
     streams: [],
     alreadyRegisteredStudentsId: [],
     greenButtonChecker: true,
-    dataToShow: [],
+    dataToShow: props.testDataToShow ? props.testDataToShow : [],
     eventTitle: props["location"]["eventTitle"],
     eventId: props["location"]["eventId"],
     year: new Date(),
@@ -484,6 +484,7 @@ const AddStudentToRecruitmentDrive = props => {
         </Typography>
 
         <GreenButton
+          id="addStudents"
           variant="contained"
           color="secondary"
           onClick={() => addStudentsToEvent()}
@@ -493,6 +494,7 @@ const AddStudentToRecruitmentDrive = props => {
           Add Selected Student's
         </GreenButton>
         <GreenButton
+          id="backToStudentList"
           variant="contained"
           color="secondary"
           onClick={() => backToStudentList()}
@@ -557,6 +559,7 @@ const AddStudentToRecruitmentDrive = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="studentName"
                   label="Name"
                   margin="normal"
                   variant="outlined"
@@ -620,6 +623,7 @@ const AddStudentToRecruitmentDrive = props => {
               </Grid>
               <Grid item>
                 <TextField
+                  id="mobileNumberFilter"
                   label="Mobile Number"
                   margin="normal"
                   variant="outlined"
@@ -634,6 +638,7 @@ const AddStudentToRecruitmentDrive = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFiter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -647,6 +652,7 @@ const AddStudentToRecruitmentDrive = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="clearFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}
