@@ -147,6 +147,8 @@ const AddEditEducation = props => {
       formState.values[qualification] == "senior_secondary" ||
       formState.values[qualification] === "graduation" ||
       formState.values[qualification] === "postgraduate" ||
+      formState.values[qualification] === "diploma" ||
+      formState.values[qualification] === "iti" ||
       formState.values[qualification] === "other"
     ) {
       delete formState.errors[educationYear];
@@ -403,6 +405,8 @@ const AddEditEducation = props => {
       isQualificationReq == "senior_secondary" ||
       isQualificationReq === "graduation" ||
       isQualificationReq === "postgraduate" ||
+      isQualificationReq === "diploma" ||
+      isQualificationReq === "iti" ||
       isQualificationReq === "other"
     ) {
       defaultSchema[educationYear] = {
@@ -414,6 +418,8 @@ const AddEditEducation = props => {
     if (
       isQualificationReq == "undergraduate" ||
       isQualificationReq == "graduation" ||
+      isQualificationReq === "diploma" ||
+      isQualificationReq === "iti" ||
       isQualificationReq == "postgraduate"
     ) {
       defaultSchema[board] = {
@@ -541,6 +547,8 @@ const AddEditEducation = props => {
         value.id === "senior_secondary" ||
         value.id === "graduation" ||
         value.id === "postgraduate" ||
+        value.id === "diploma" ||
+        value.id === "iti" ||
         value.id === "other"
       ) {
         EducationSchema.qualification.required = false;
@@ -649,7 +657,7 @@ const AddEditEducation = props => {
                             label={
                               formState.values[pursuing] === true
                                 ? "Pursuing"
-                                : "Not Pursuing"
+                                : "Passed"
                             }
                           />
                         </FormGroup>

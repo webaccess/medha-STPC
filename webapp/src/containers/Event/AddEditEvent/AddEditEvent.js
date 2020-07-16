@@ -157,17 +157,21 @@ const AddEditEvent = props => {
     { id: 1, value: "secondary", name: "Secondary" },
     { id: 2, value: "graduation", name: "Graduation" },
     { id: 3, value: "senior_secondary", name: "Senior Secondary" },
+    { id: 4, name: "Diploma", value: "diploma" },
+    { id: 5, name: "ITI", value: "iti" },
     // { id: 4, value: "undergraduate", name: "Undergraduate" },
-    { id: 5, value: "postgraduate", name: "Postgraduate" },
-    { id: 6, value: "other", name: "Other" }
+    { id: 6, value: "postgraduate", name: "Postgraduate" },
+    { id: 7, value: "other", name: "Other" }
   ]);
   const [qualificationsDataBackup] = useState([
     { id: 1, value: "secondary", name: "Secondary" },
     { id: 2, value: "graduation", name: "Graduation" },
     { id: 3, value: "senior_secondary", name: "Senior Secondary" },
+    { id: 4, name: "Diploma", value: "diploma" },
+    { id: 5, name: "ITI", value: "iti" },
     // { id: 4, value: "undergraduate", name: "Undergraduate" },
-    { id: 5, value: "postgraduate", name: "Postgraduate" },
-    { id: 6, value: "other", name: "Other" }
+    { id: 6, value: "postgraduate", name: "Postgraduate" },
+    { id: 7, value: "other", name: "Other" }
   ]);
   const [educations, setEducations] = useState([
     { id: 1, value: "First" },
