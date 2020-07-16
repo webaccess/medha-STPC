@@ -104,6 +104,7 @@ const ManageUser = props => {
       ? props["location"]["addedUserName"]["username"]
       : "",
     isDataDeleted: false,
+    count: 0,
     dataToEdit: {},
     dataToDelete: {},
     showEditModal: false,
@@ -451,12 +452,13 @@ const ManageUser = props => {
   };
 
   /** This is used to handle the close modal event */
-  const handleCloseDeleteModal = (status, statusToShow = "") => {
+  const handleCloseDeleteModal = (status, statusToShow = "", count = 0) => {
     /** This restores all the data when we close the modal */
     //restoreData();
     setOpen(true);
     setFormState(formState => ({
       ...formState,
+      count: count,
       isDataDeleted: status,
       showModalDelete: false,
       fromDeleteModal: true,
@@ -465,6 +467,9 @@ const ManageUser = props => {
       dataToDelete: {}
     }));
     if (status) {
+      getUserData(formState.pageSize, 1, formState.filterDataParameters);
+    }
+    if (!status && count === 1) {
       getUserData(formState.pageSize, 1, formState.filterDataParameters);
     }
   };
@@ -1080,10 +1085,36 @@ const ManageUser = props => {
 
         {formState.fromDeleteModal &&
         !formState.isDataDeleted &&
+        formState.count < 1 &&
         formState.messageToShow !== "" ? (
           <Collapse in={open}>
             <Alert
               severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              {formState.messageToShow}
+            </Alert>
+          </Collapse>
+        ) : null}
+
+        {formState.fromDeleteModal &&
+        !formState.isDataDeleted &&
+        formState.count > 0 &&
+        formState.messageToShow !== "" ? (
+          <Collapse in={open}>
+            <Alert
+              severity="warning"
               action={
                 <IconButton
                   aria-label="close"

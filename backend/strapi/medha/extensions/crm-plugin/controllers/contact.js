@@ -2401,9 +2401,14 @@ module.exports = {
       return ctx.response.notFound(
         "Students with Id " + `${notStudent}` + " not found"
       );
-    else if (userId.length === 0)
-      return ctx.response.forbidden("Can't delete User");
-    else return utils.getFindOneResponse("success");
+    else if (id.length === 1) {
+      const stud = await strapi.query("contact", PLUGIN).findOne({ id: id[0] });
+      return ctx.response.forbidden(
+        "Cannot delete User with contact:" + stud.phone
+      );
+    } else if (id.length > 1) {
+      return ctx.response.forbidden(id.length + " users cannot be deleted");
+    } else return utils.getFindOneResponse("success");
   },
 
   deleteOrganization: async ctx => {
