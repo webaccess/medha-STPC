@@ -27,6 +27,20 @@ const useStyles = makeStyles(theme => ({
   edit_dialog: {
     padding: "15px 15px"
   },
+  blockpanel: {
+    display: "flex",
+    position: "relative",
+    "& h2": {
+      flexGrow: "1"
+    }
+  },
+  crossbtn: {
+    position: "absolute",
+    top: "-7px",
+    right: "-7px",
+    padding: "0px",
+    color: "#fff"
+  },
   deletemessage: {
     flex: "1 auto"
   },

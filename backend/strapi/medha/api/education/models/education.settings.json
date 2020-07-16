@@ -33,6 +33,8 @@
         "senior_secondary",
         "undergraduate",
         "postgraduate",
+        "diploma",
+        "iti",
         "other"
       ]
     },

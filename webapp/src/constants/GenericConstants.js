@@ -166,5 +166,7 @@ export const QUALIFICATION_LIST = [
   { name: "Undergraduate", id: "undergraduate" },
   { name: "Graduation", id: "graduation" },
   { name: "Postgraduate", id: "postgraduate" },
+  { name: "Diploma", id: "diploma" },
+  { name: "ITI", id: "iti" },
   { name: "Others", id: "other" }
 ];

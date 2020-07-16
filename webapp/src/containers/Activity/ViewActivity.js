@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   TextField,
@@ -9,6 +9,7 @@ import {
   Collapse,
   IconButton
 } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteActivity from "./DeleteActivity";
 import styles from "./Activity.module.css";
@@ -52,6 +53,7 @@ const ViewActivity = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   let history = useHistory();
+  const [selectedRows, setSelectedRows] = useState([]);
   const [formState, setFormState] = useState({
     dataToShow: [],
     activities: [],
@@ -62,6 +64,8 @@ const ViewActivity = props => {
     isFilterSearch: false,
     startDate: null,
     endDate: null,
+    greenButtonChecker: true,
+    selectedRowFilter: true,
     /** This is when we return from edit page */
     isDataEdited: props["location"]["fromEditActivity"]
       ? props["location"]["isDataEdited"]
@@ -84,6 +88,8 @@ const ViewActivity = props => {
       : false,
     /** This is for delete */
     isDataDeleted: false,
+    isMultiDelete: false,
+    MultiDeleteID: [],
     dataToEdit: {},
     dataToDelete: {},
     showModalDelete: false,
@@ -520,32 +526,62 @@ const ViewActivity = props => {
     setLoaderStatus(false);
   };
 
-  const handleCloseDeleteModal = () => {
+  const handleCloseDeleteModal = (count = 0) => {
     /** This restores all the data when we close the modal */
     setFormState(formState => ({
       ...formState,
       isDataDeleted: false,
-      showModalDelete: false
+      showModalDelete: false,
+      isMultiDelete: false,
+      MultiDeleteID: []
     }));
     if (formState.isDataDeleted) {
       getActivityData(formState.pageSize, formState.page);
-    } else {
+    } else if (!formState.isDataDeleted && count > 0) {
+      getActivityData(formState.pageSize, formState.page);
     }
   };
-  const isDeleteCellCompleted = (status, activity) => {
+  const isDeleteCellCompleted = (status, activity, ismultidelete = false) => {
     formState.isDataDeleted = status;
-    if (status === true) {
-      setAlert(() => ({
-        isOpen: true,
-        message: `Activity ${activity.title} Deleted Successfully`,
-        severity: "success"
-      }));
-    } else if (status === false) {
-      setAlert(() => ({
-        isOpen: true,
-        message: activity.response.data.message,
-        severity: "error"
-      }));
+    console.log(status);
+    console.log(activity);
+    console.log(ismultidelete);
+    if (ismultidelete) {
+      if (status === true && activity > 0) {
+        setAlert(() => ({
+          isOpen: true,
+          message: `${activity} Activities Deleted Successfully`,
+          severity: "success"
+        }));
+      } else if (status === false && activity === "warning") {
+        setAlert(() => ({
+          isOpen: true,
+          message:
+            "Activity cannot be deleted...Please remove activity batch from activity and try again",
+          severity: "warning"
+        }));
+      } else if (status === false && activity === "error") {
+        setAlert(() => ({
+          isOpen: true,
+          message:
+            "Activity cannot be deleted...Please remove activity batch from activity and try again",
+          severity: "error"
+        }));
+      }
+    } else {
+      if (status === true) {
+        setAlert(() => ({
+          isOpen: true,
+          message: `Activity ${activity.title} Deleted Successfully`,
+          severity: "success"
+        }));
+      } else if (status === false) {
+        setAlert(() => ({
+          isOpen: true,
+          message: activity.response.data.message,
+          severity: "error"
+        }));
+      }
     }
   };
 
@@ -554,6 +590,59 @@ const ViewActivity = props => {
       ...formState,
       dataToDelete: { ...activity },
       showModalDelete: true
+    }));
+  };
+
+  const modalClose = () => {
+    setFormState(formState => ({
+      ...formState,
+      showModalBlock: false,
+      showModalDelete: false,
+      MultiDeleteID: [],
+      dataToDelete: {}
+    }));
+  };
+
+  const selectedRowCleared = data => {
+    formState.toggleCleared = data;
+    setTimeout(() => {
+      setFormState(formState => ({
+        ...formState,
+        toggleCleared: false
+      }));
+    }, 2000);
+  };
+
+  const handleRowSelected = useCallback(state => {
+    if (state.selectedCount >= 1) {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: false,
+        toggleCleared: false
+      }));
+    } else {
+      setFormState(formState => ({
+        ...formState,
+        selectedRowFilter: true
+      }));
+    }
+    setSelectedRows(state.selectedRows);
+  }, []);
+  const deleteMulUserById = () => {
+    let arrayId = [];
+
+    selectedRows.forEach(d => {
+      arrayId.push(d.id);
+    });
+
+    setFormState(formState => ({
+      ...formState,
+      showEditModal: false,
+      showModalDelete: true,
+      isMultiDelete: true,
+      MultiDeleteID: arrayId,
+      fromAddEvent: false,
+      fromeditEvent: false
     }));
   };
 
@@ -1112,22 +1201,35 @@ const ViewActivity = props => {
         <Typography variant="h4" gutterBottom>
           {genericConstants.VIEW_ACTIVITY_TEXT}
         </Typography>
-
-        {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
-          <GreenButton
-            variant="contained"
-            color="primary"
-            onClick={handleAddActivityClick}
-            disableElevation
-            greenButtonChecker
-            to={routeConstants.ADD_ACTIVITY}
-            startIcon={<AddCircleOutlineOutlinedIcon />}
-          >
-            {genericConstants.ADD_ACTIVITY_TEXT}
-          </GreenButton>
-        ) : null}
+        <Grid item>
+          {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+            <GreenButton
+              variant="contained"
+              color="secondary"
+              onClick={() => deleteMulUserById()}
+              startIcon={<DeleteIcon />}
+              greenButtonChecker={formState.greenButtonChecker}
+              buttonDisabled={formState.selectedRowFilter}
+              style={{ margin: "2px", marginRight: "15px" }}
+            >
+              Delete Selected Event
+            </GreenButton>
+          ) : null}
+          {auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ? (
+            <GreenButton
+              variant="contained"
+              color="primary"
+              onClick={handleAddActivityClick}
+              disableElevation
+              greenButtonChecker
+              to={routeConstants.ADD_ACTIVITY}
+              startIcon={<AddCircleOutlineOutlinedIcon />}
+            >
+              {genericConstants.ADD_ACTIVITY_TEXT}
+            </GreenButton>
+          ) : null}
+        </Grid>
       </Grid>
-
       <Grid item xs={12} className={classes.formgrid}>
         {feedbackState.fromFeedBackModal && feedbackState.feedBackGiven ? (
           <Collapse in={open}>
@@ -1408,6 +1510,7 @@ const ViewActivity = props => {
                 column={column}
                 defaultSortField="name"
                 defaultSortAsc={formState.sortAscending}
+                onSelectedRowsChange={handleRowSelected}
                 editEvent={editCell}
                 deleteEvent={deleteCell}
                 progressPending={formState.isDataLoading}
@@ -1415,6 +1518,7 @@ const ViewActivity = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                clearSelectedRows={formState.toggleCleared}
               />
             ) : (
               <Spinner />
@@ -1484,12 +1588,28 @@ const ViewActivity = props => {
               errorMessage={feedbackState.errorMessage}
             />
           ) : null}
-          <DeleteActivity
-            showModal={formState.showModalDelete}
-            closeModal={handleCloseDeleteModal}
-            activity={formState.dataToDelete}
-            deleteEvent={isDeleteCellCompleted}
-          />
+          {formState.showModalDelete ? (
+            formState.isMultiDelete ? (
+              <DeleteActivity
+                showModal={formState.showModalDelete}
+                closeModal={handleCloseDeleteModal}
+                activity={formState.MultiDeleteID}
+                isMultiDelete={formState.isMultiDelete}
+                modalClose={modalClose}
+                deleteEvent={isDeleteCellCompleted}
+                clearSelectedRow={selectedRowCleared}
+              />
+            ) : (
+              <DeleteActivity
+                showModal={formState.showModalDelete}
+                closeModal={handleCloseDeleteModal}
+                activity={formState.dataToDelete}
+                modalClose={modalClose}
+                deleteEvent={isDeleteCellCompleted}
+                clearSelectedRow={selectedRowCleared}
+              />
+            )
+          ) : null}
         </Card>
       </Grid>
     </Grid>
