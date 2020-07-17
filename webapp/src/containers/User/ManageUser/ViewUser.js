@@ -214,7 +214,7 @@ const ViewUser = props => {
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
-                <Grid item md={6} xs={12}>
+                {/* <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="state"
                     label="State"
@@ -231,7 +231,7 @@ const ViewUser = props => {
                         : ""
                     }
                   />
-                </Grid>
+                </Grid> */}
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="zone"
@@ -250,8 +250,6 @@ const ViewUser = props => {
                     }
                   />
                 </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="rpc"
@@ -270,6 +268,8 @@ const ViewUser = props => {
                     }
                   />
                 </Grid>
+              </Grid>
+              <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="college"

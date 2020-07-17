@@ -76,14 +76,10 @@ const AddEditEducation = props => {
   }, []);
 
   useEffect(() => {
-    const marksObtained = formState.values["marksObtained"];
-    const totalMarks = formState.values["totalMarks"];
-    if (
-      marksObtained &&
-      totalMarks &&
-      marksObtained <= totalMarks &&
-      totalMarks > 0
-    ) {
+    const marksObtained = parseInt(formState.values["marksObtained"]);
+    const totalMarks = parseInt(formState.values["totalMarks"]);
+    console.log(formState.errors);
+    if (marksObtained > 0 && marksObtained <= totalMarks && totalMarks > 0) {
       const marks = (marksObtained / totalMarks) * 100;
       delete formState.errors[percentage];
       setFormState(formState => ({
@@ -91,6 +87,37 @@ const AddEditEducation = props => {
         values: {
           ...formState.values,
           percentage: marks
+        },
+        errors: {
+          ...formState.errors
+        }
+      }));
+    }
+
+    let updateState = false,
+      errorMessage = null;
+    if (marksObtained && totalMarks && marksObtained > totalMarks) {
+      updateState = true;
+      errorMessage = ["Marks Obtained should be less than total Marks"];
+    }
+
+    if (marksObtained <= 0) {
+      updateState = true;
+      errorMessage = ["Marks should be greater than 0"];
+    }
+
+    if (totalMarks <= 0) {
+      updateState = true;
+      errorMessage = ["Total Marks should be greater than 0"];
+    }
+
+    if (updateState) {
+      formState.errors[percentage] = errorMessage;
+      delete formState.values[percentage];
+      setFormState(formState => ({
+        ...formState,
+        values: {
+          ...formState.values
         },
         errors: {
           ...formState.errors
@@ -969,7 +996,7 @@ const AddEditEducation = props => {
                               : null
                           }
                           variant="outlined"
-                          disabled={!!formState.values[pursuing]}
+                          disabled
                         />
                       </Grid>
                     </Grid>

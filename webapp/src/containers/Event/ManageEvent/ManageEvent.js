@@ -335,7 +335,7 @@ const ManageEvent = props => {
           ) {
             colleges = true;
           }
-          if (state && rpc && zone && colleges) {
+          if (colleges) {
             eventIndividualData["IsEditable"] = true;
           } else {
             eventIndividualData["IsEditable"] = false;

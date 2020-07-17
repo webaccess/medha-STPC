@@ -40,7 +40,7 @@ const EducationSchema = {
     validations: {
       required: {
         value: "true",
-        message: "Percentage are required"
+        message: "Percentage is required"
       }
     }
   },
