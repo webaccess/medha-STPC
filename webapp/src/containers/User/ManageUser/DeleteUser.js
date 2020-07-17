@@ -77,11 +77,8 @@ const DeleteUser = props => {
           handleCloseModal("Users has been deleted successfully");
         })
         .catch(error => {
-          console.log("error", error);
-          console.log(error.response.status);
           if (error.response.status == 403) {
             formState.isDeleteData = false;
-            console.log(error.response.data.message);
             if (props.id.length == 1) {
               handleCloseModal(error.response.data.message);
             } else {
@@ -119,11 +116,8 @@ const DeleteUser = props => {
           );
         })
         .catch(error => {
-          console.log("error", error);
-          console.log(error.response.status);
           if (error.response.status == 403) {
             formState.isDeleteData = false;
-            console.log(error.response.data.message);
             handleCloseModal(error.response.data.message);
           } else {
             formState.isDeleteData = false;

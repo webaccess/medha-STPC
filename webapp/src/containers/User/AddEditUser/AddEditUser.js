@@ -17,7 +17,9 @@ import {
   FormHelperText,
   FormGroup,
   FormControlLabel,
-  Switch
+  Switch,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as roleConstants from "../../../constants/RoleConstants";
@@ -99,7 +101,11 @@ const AddEditUser = props => {
     values: {},
     touched: {},
     errors: {},
+    stateId: null,
     isSuccess: false,
+    isZoneBlocked: true,
+    isRPCBlocked: true,
+    isCollegeBlocked: true,
     showPassword: props.showPassword ? props.showPassword : false,
     isEditUser: props["editUser"] ? props["editUser"] : false,
     dataForEdit: props["dataForEdit"] ? props["dataForEdit"] : {},
@@ -116,6 +122,7 @@ const AddEditUser = props => {
   const [states, setStates] = useState(
     props.stateOption ? props.stateOption : []
   );
+  const [backdrop, setBackDrop] = useState(false);
   const [zones, setZones] = useState(props.zoneOption ? props.zoneOption : []);
   const [rpcs, setRpcs] = useState(props.rpcOption ? props.rpcOption : []);
   const [colleges, setColleges] = useState(
@@ -165,6 +172,51 @@ const AddEditUser = props => {
           props["dataForEdit"]["contact"]["user"]["role"]["id"];
       }
       if (
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] ===
+          roleConstants.STUDENT ||
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] ===
+          roleConstants.MEDHAADMIN ||
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] ===
+          roleConstants.DEPARTMENTADMIN
+      ) {
+        setFormState(formState => ({
+          ...formState,
+          isCollegeBlocked: true,
+          isRPCBlocked: true,
+          isZoneBlocked: true
+        }));
+      } else if (
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] ===
+        roleConstants.RPCADMIN
+      ) {
+        setFormState(formState => ({
+          ...formState,
+          isCollegeBlocked: true,
+          isRPCBlocked: false,
+          isZoneBlocked: true
+        }));
+      } else if (
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] ===
+        roleConstants.ZONALADMIN
+      ) {
+        setFormState(formState => ({
+          ...formState,
+          isCollegeBlocked: true,
+          isRPCBlocked: true,
+          isZoneBlocked: false
+        }));
+      } else if (
+        props["dataForEdit"]["contact"]["user"]["role"]["name"] ===
+        roleConstants.COLLEGEADMIN
+      ) {
+        setFormState(formState => ({
+          ...formState,
+          isCollegeBlocked: false,
+          isRPCBlocked: true,
+          isZoneBlocked: true
+        }));
+      }
+      if (
         props["dataForEdit"]["contact"] &&
         props["dataForEdit"]["contact"]["user"] &&
         props["dataForEdit"]["contact"]["user"]["role"] &&
@@ -179,6 +231,7 @@ const AddEditUser = props => {
         ) {
           formState.values[state] =
             props["dataForEdit"]["contact"]["state"]["id"];
+          formState.stateId = props["dataForEdit"]["contact"]["state"]["id"];
         } else {
           formState.values[state] = "";
         }
@@ -220,6 +273,8 @@ const AddEditUser = props => {
           props["dataForEdit"]["contact"]["user"]["state"]
         ) {
           formState.values[state] =
+            props["dataForEdit"]["contact"]["user"]["state"]["id"];
+          formState.stateId =
             props["dataForEdit"]["contact"]["user"]["state"]["id"];
         } else {
           formState.values[state] = "";
@@ -271,10 +326,27 @@ const AddEditUser = props => {
     let paramsForPageSize = {
       pageSize: -1
     };
+
+    serviceProvider
+      .serviceProviderForGetRequest(COLLEGE_URL, paramsForPageSize)
+      .then(res => {
+        setColleges(res.data.result);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
     serviceProvider
       .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
       .then(res => {
+        res.data.result.map(s => {
+          if (s.name === "Uttar Pradesh") {
+            formState.values[state] = s.id;
+            formState.stateId = s.id;
+          }
+        });
         setStates(res.data.result);
+        fetchZoneRpcDistrictData();
       })
       .catch(error => {
         console.log(error);
@@ -284,6 +356,7 @@ const AddEditUser = props => {
       .serviceProviderForGetRequest(ROLES_URL, paramsForPageSize)
       .then(res => {
         let roles = [];
+        let studentRole = null;
         for (let i in res.data.roles) {
           if (
             res.data.roles[i]["name"] !== "Admin" &&
@@ -298,7 +371,7 @@ const AddEditUser = props => {
             formState.isEditUser &&
             res.data.roles[i]["name"] === roleConstants.STUDENT
           ) {
-            roles.push(res.data.roles[i]);
+            studentRole = res.data.roles[i];
           }
           if (
             formState.dataForEdit["contact"] &&
@@ -312,23 +385,20 @@ const AddEditUser = props => {
             setIsDisable(false);
           }
         }
-        setRoles(roles);
+        if (
+          formState.isEditUser &&
+          formState.dataForEdit["contact"]["user"]["role"]["name"] ===
+            roleConstants.STUDENT
+        ) {
+          setRoles([studentRole]);
+        } else {
+          setRoles(roles);
+        }
       })
       .catch(error => {
         console.log(error);
       });
   }, []);
-
-  /** This gets data into zones, rpcs and districts when we change the state */
-  useEffect(() => {
-    if (
-      formState.values.hasOwnProperty(state) &&
-      formState.values[state] !== null &&
-      formState.values[state] !== undefined
-    ) {
-      fetchZoneRpcDistrictData();
-    }
-  }, [formState.values[state]]);
 
   /** Common function to get zones, rpcs after changing state */
   async function fetchZoneRpcDistrictData() {
@@ -376,36 +446,6 @@ const AddEditUser = props => {
     }
   }
 
-  useEffect(() => {
-    if (formState.values[zone] && formState.values[rpc]) {
-      fetchCollegeData();
-    }
-  }, [formState.values[zone], formState.values[rpc]]);
-
-  /** Function to get college data after selcting zones and rpc's */
-  async function fetchCollegeData() {
-    let params = {
-      "zone.id": formState.values[zone],
-      "rpc.id": formState.values[rpc],
-      pageSize: -1
-    };
-
-    await serviceProvider
-      .serviceProviderForGetRequest(COLLEGE_URL, params)
-      .then(res => {
-        let collegeArray = [];
-        for (var i = 0; i < res.data.result.length; i++) {
-          if (res.data.result[i]["is_blocked"] === false) {
-            collegeArray.push(res.data.result[i]);
-          }
-        }
-        setColleges(collegeArray);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-  }
-
   const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
     e.persist();
@@ -443,6 +483,16 @@ const AddEditUser = props => {
         },
         isStateClearFilter: false
       }));
+      if (eventName === college) {
+        setFormState(formState => ({
+          ...formState,
+          values: {
+            ...formState.values,
+            [zone]: value.zone.id,
+            [rpc]: value.rpc.id
+          }
+        }));
+      }
       if (eventName === state) {
         fetchZoneRpcDistrictData();
       }
@@ -471,13 +521,15 @@ const AddEditUser = props => {
         */
       }
       if (eventName === zone || eventName === rpc) {
-        setColleges([]);
+        setFormState(formState => ({
+          ...formState,
+          isCollegeBlocked: true
+        }));
         delete formState.values[college];
       }
       /** Clear dependent roles */
       if (eventName === role) {
         clearZoneRpcCollege();
-        delete formState.values[state];
         clearValidations();
       }
       setFormState(formState => ({
@@ -490,15 +542,22 @@ const AddEditUser = props => {
   };
 
   const clearZoneRpcCollege = () => {
-    setRpcs([]);
-    setZones([]);
-    setColleges([]);
+    setFormState(formState => ({
+      ...formState,
+      isCollegeBlocked: true,
+      isRPCBlocked: true,
+      isZoneBlocked: true
+    }));
     delete formState.values[zone];
     delete formState.values[rpc];
     delete formState.values[college];
   };
 
   const clearValidations = () => {
+    delete formState.errors[rpc];
+    delete formState.errors[state];
+    delete formState.errors[zone];
+    delete formState.errors[college];
     UserSchema[rpc]["required"] = false;
     UserSchema[state]["required"] = false;
     UserSchema[zone]["required"] = false;
@@ -509,7 +568,7 @@ const AddEditUser = props => {
     UserSchema[college]["validations"] = {};
   };
 
-  const setValidationsForDifferentRoles = roleId => {
+  const setValidationsForDifferentRoles = (roleId, forSubmit = false) => {
     let roleName = "";
     for (let i in roles) {
       if (roles[i]["id"] === roleId) {
@@ -517,35 +576,71 @@ const AddEditUser = props => {
         break;
       }
     }
-    if (
-      roleName === roleConstants.COLLEGEADMIN ||
-      roleName === roleConstants.STUDENT
-    ) {
-      UserSchema[rpc]["required"] = true;
+    if (roleName === roleConstants.COLLEGEADMIN) {
+      delete formState.errors[rpc];
+      delete formState.errors[zone];
       UserSchema[state]["required"] = true;
-      UserSchema[zone]["required"] = true;
       UserSchema[college]["required"] = true;
-      UserSchema[rpc]["validations"] = VALIDATIONFORRPC;
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
-      UserSchema[zone]["validations"] = VALIDATIONFORZONE;
       UserSchema[college]["validations"] = VALIDATIONFORCOLLEGE;
+
+      setFormState(formState => ({
+        ...formState,
+        isCollegeBlocked: false,
+        isRPCBlocked: true,
+        isZoneBlocked: true
+      }));
     } else if (roleName === roleConstants.RPCADMIN) {
+      delete formState.errors[zone];
+      delete formState.errors[college];
       UserSchema[rpc]["required"] = true;
       UserSchema[state]["required"] = true;
       UserSchema[rpc]["validations"] = VALIDATIONFORRPC;
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
+      setFormState(formState => ({
+        ...formState,
+        isCollegeBlocked: true,
+        isRPCBlocked: false,
+        isZoneBlocked: true
+      }));
     } else if (roleName === roleConstants.ZONALADMIN) {
+      delete formState.errors[state];
+      delete formState.errors[zone];
       UserSchema[state]["required"] = true;
       UserSchema[zone]["required"] = true;
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
       UserSchema[zone]["validations"] = VALIDATIONFORZONE;
-    } else if (roleName === roleConstants.MEDHAADMIN) {
+      setFormState(formState => ({
+        ...formState,
+        isCollegeBlocked: true,
+        isRPCBlocked: true,
+        isZoneBlocked: false
+      }));
+    } else if (
+      roleName === roleConstants.MEDHAADMIN ||
+      roleName === roleConstants.DEPARTMENTADMIN
+    ) {
       clearValidations();
+      setFormState(formState => ({
+        ...formState,
+        isCollegeBlocked: true,
+        isRPCBlocked: true,
+        isZoneBlocked: true
+      }));
+    } else if (roleName === roleConstants.STUDENT) {
+      clearValidations();
+      setFormState(formState => ({
+        ...formState,
+        isCollegeBlocked: true,
+        isRPCBlocked: true,
+        isZoneBlocked: true
+      }));
     }
   };
   const handleSubmit = event => {
     event.preventDefault();
-    setLoaderStatus(true);
+    setBackDrop(true);
+    formState.values[state] = formState.stateId;
     if (formState.isEditUser) {
       UserSchema[password]["required"] = false;
       UserSchema[password]["validations"] = {
@@ -555,7 +650,7 @@ const AddEditUser = props => {
         }
       };
       if (formState.values[role]) {
-        setValidationsForDifferentRoles(formState.values[role]);
+        setValidationsForDifferentRoles(formState.values[role], true);
       }
     } else {
       UserSchema[password]["required"] = true;
@@ -599,7 +694,7 @@ const AddEditUser = props => {
         isValid: true
       }));
     } else {
-      setLoaderStatus(false);
+      setBackDrop(false);
       setFormState(formState => ({
         ...formState,
         isValid: false
@@ -608,7 +703,7 @@ const AddEditUser = props => {
   };
 
   const postUserData = async () => {
-    setLoaderStatus(true);
+    setBackDrop(true);
     let postData = databaseUtilities.addUser(
       formState.values[contact],
       formState.values[email],
@@ -644,7 +739,7 @@ const AddEditUser = props => {
             editResponseMessage: "",
             editedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(error => {
           console.log("putErrorUSer", error, error.response);
@@ -666,7 +761,7 @@ const AddEditUser = props => {
             editResponseMessage: errorMessage ? errorMessage : "",
             editedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     } else {
       serviceProvider
@@ -680,7 +775,7 @@ const AddEditUser = props => {
             addResponseMessage: "",
             addedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(error => {
           console.log("errorUSer", error, error.response);
@@ -703,7 +798,7 @@ const AddEditUser = props => {
             addedData: {}
           });
         });
-      setLoaderStatus(false);
+      setBackDrop(false);
     }
   };
 
@@ -824,6 +919,7 @@ const AddEditUser = props => {
                       id={get(UserSchema[role], "id")}
                       className={classes.root}
                       options={roles}
+                      disabled={isDisable}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(role, event, value);
@@ -938,7 +1034,7 @@ const AddEditUser = props => {
 
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
-                  <Grid item md={6} xs={12}>
+                  {/* <Grid item md={6} xs={12}>
                     <Autocomplete
                       id={get(UserSchema[state], "id")}
                       className={classes.root}
@@ -974,19 +1070,19 @@ const AddEditUser = props => {
                         />
                       )}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id={get(UserSchema[zone], "id")}
                       className={classes.root}
-                      disabled={isDisable}
+                      disabled={isDisable || formState.isZoneBlocked}
                       options={zones}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(zone, event, value);
                       }}
                       value={
-                        isDisable
+                        isDisable || formState.isZoneBlocked
                           ? null
                           : zones[
                               zones.findIndex(function (item, i) {
@@ -1012,20 +1108,18 @@ const AddEditUser = props => {
                       )}
                     />
                   </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id={get(UserSchema[rpc], "id")}
                       className={classes.root}
-                      disabled={isDisable}
+                      disabled={isDisable || formState.isRPCBlocked}
                       options={rpcs}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(rpc, event, value);
                       }}
                       value={
-                        isDisable
+                        isDisable || formState.isRPCBlocked
                           ? null
                           : rpcs[
                               rpcs.findIndex(function (item, i) {
@@ -1051,18 +1145,20 @@ const AddEditUser = props => {
                       )}
                     />
                   </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id={get(UserSchema[college], "id")}
                       className={classes.root}
-                      disabled={isDisable}
+                      disabled={isDisable || formState.isCollegeBlocked}
                       options={colleges}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(college, event, value);
                       }}
                       value={
-                        isDisable
+                        isDisable || formState.isCollegeBlocked
                           ? null
                           : colleges[
                               colleges.findIndex(function (item, i) {
@@ -1123,6 +1219,9 @@ const AddEditUser = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={backdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };
