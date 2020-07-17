@@ -9,7 +9,9 @@ import {
   TextField,
   Typography,
   FormHelperText,
-  Button
+  Button,
+  FormControlLabel,
+  Checkbox
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
@@ -94,6 +96,8 @@ const AddEditEvent = props => {
     },
     touched: {},
     errors: {},
+    stateId: null,
+    setAllColleges: true,
     isSuccess: false,
     showPassword: false,
     isEditEvent: props["editEvent"] ? props["editEvent"] : false,
@@ -337,9 +341,14 @@ const AddEditEvent = props => {
             }
           }
         });
+        let setAllColleges = false;
+        if (collegeData.length === props["dataForEdit"]["contacts"].length) {
+          setAllColleges = true;
+        }
         setFormState(formState => ({
           ...formState,
-          dataToShowForCollegeMultiSelect: array
+          dataToShowForCollegeMultiSelect: array,
+          setAllColleges: setAllColleges
         }));
         let finalData = [];
         for (let i in props["dataForEdit"]["contacts"]) {
@@ -347,6 +356,19 @@ const AddEditEvent = props => {
         }
         formState.values[college] = finalData;
       }
+    } else {
+      let collegeArrayToSet = [];
+      collegeData.map(c => {
+        collegeArrayToSet.push(c.id);
+      });
+      setFormState(formState => ({
+        ...formState,
+        values: {
+          ...formState.values,
+          [college]: collegeArrayToSet
+        },
+        dataToShowForCollegeMultiSelect: collegeData
+      }));
     }
   };
 
@@ -363,6 +385,11 @@ const AddEditEvent = props => {
       serviceProvider
         .serviceProviderForGetRequest(STATES_URL, paramsForPageSize)
         .then(res => {
+          res.data.result.map(s => {
+            if (s.name === "Uttar Pradesh") {
+              formState.stateId = s.id;
+            }
+          });
           setStates(res.data.result);
         })
         .catch(error => {
@@ -497,18 +524,17 @@ const AddEditEvent = props => {
     }
     setLoaderStatus(false);
   }
+
+  useEffect(() => {}, []);
+
   useEffect(() => {
-    if (formState.values[zone] && formState.values[rpc]) {
-      fetchCollegeData();
-    }
-  }, [formState.values[zone], formState.values[rpc]]);
+    fetchCollegeData();
+  }, []);
 
   /** Function to get college data after selcting zones and rpc's */
   async function fetchCollegeData() {
     setLoaderStatus(true);
     let params = {
-      "zone.id": formState.values[zone],
-      "rpc.id": formState.values[rpc],
       pageSize: -1
     };
     if (!formState.isCollegeAdmin) {
@@ -902,6 +928,9 @@ const AddEditEvent = props => {
   /** Handle change for autocomplete fields */
   const handleChangeAutoComplete = (eventName, event, value) => {
     /**TO SET VALUES OF AUTOCOMPLETE */
+    if (formState.errors.hasOwnProperty(eventName)) {
+      delete formState.errors[eventName];
+    }
     if (value !== null) {
       setFormState(formState => ({
         ...formState,
@@ -945,8 +974,48 @@ const AddEditEvent = props => {
       /** This is used to remove clear out data form auto complete when we click cross icon of auto complete */
       delete formState.values[eventName];
     }
-    if (formState.errors.hasOwnProperty(eventName)) {
-      delete formState.errors[eventName];
+  };
+
+  const handleCheckBox = event => {
+    /** If the checkbox is checked */
+    if (!formState.setAllColleges) {
+      /** Delete current value */
+      delete formState.values[college];
+      /** Set validations */
+      EventSchema.college.required = false;
+      EventSchema.college.validations = {};
+      /** Delete if errors present */
+      delete formState.errors[college];
+      /** Set college list when all collgees check box is checked */
+      let collegeArrayToSet = [];
+      colleges.map(c => {
+        collegeArrayToSet.push(c.id);
+      });
+      setFormState(formState => ({
+        ...formState,
+        setAllColleges: !formState.setAllColleges,
+        values: {
+          ...formState.values,
+          [college]: collegeArrayToSet
+        },
+        dataToShowForCollegeMultiSelect: colleges
+      }));
+    } else {
+      delete formState.values[college];
+      EventSchema.college.required = true;
+      EventSchema.college.validations = {
+        required: {
+          value: "true",
+          message: "College is required"
+        }
+      };
+      /** Delete if errors present */
+      delete formState.errors[college];
+      setFormState(formState => ({
+        ...formState,
+        setAllColleges: !formState.setAllColleges,
+        dataToShowForCollegeMultiSelect: []
+      }));
     }
   };
 
@@ -956,6 +1025,8 @@ const AddEditEvent = props => {
     let isValid = false;
     if (formState.isCollegeAdmin && !formState.isEditEvent) {
       setDataForCollegeAdmin();
+    } else {
+      formState.values[state] = formState.stateId;
     }
     /** Validate DynamicGrid */
     let isDynamicBarValid;
@@ -1216,6 +1287,7 @@ const AddEditEvent = props => {
 
   const handleMultiSelectChange = (eventName, event, value) => {
     let multiarray = [];
+    delete formState.errors[eventName];
 
     if (eventName === college) {
       formState.dataToShowForCollegeMultiSelect = value;
@@ -1478,191 +1550,28 @@ const AddEditEvent = props => {
                     />
                   </Grid>
                 </Grid>
+                <Grid
+                  container
+                  spacing={3}
+                  className={classes.MarginBottom}
+                ></Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    {formState.isCollegeAdmin && !formState.isEditEvent ? (
-                      <ReadOnlyTextField
-                        id="StateName"
-                        label={get(EventSchema[state], "label")}
-                        defaultValue={collegeInfo.state.name}
-                      />
-                    ) : (
-                      <Autocomplete
-                        id="StateName"
-                        className={classes.root}
-                        options={states}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(state, event, value);
-                        }}
-                        disabled={
-                          formState.isCollegeAdmin && formState.isEditEvent
-                            ? true
-                            : false
-                        }
-                        value={
-                          states[
-                            states.findIndex(function (item, i) {
-                              return item.id === formState.values[state];
-                            })
-                          ] || null
-                        }
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            label={get(EventSchema[state], "label")}
-                            variant="outlined"
-                            placeholder={get(EventSchema[state], "placeholder")}
-                            error={hasError(state)}
-                            helperText={
-                              hasError(state)
-                                ? formState.errors[state].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
+                  {!formState.isCollegeAdmin ? (
+                    <Grid item md={12} xs={12}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={formState.setAllColleges}
+                            onChange={handleCheckBox}
+                            name="selectAllColleges"
+                            color="yellow"
                           />
-                        )}
-                      />
-                    )}
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    {formState.isCollegeAdmin && !formState.isEditEvent ? (
-                      <ReadOnlyTextField
-                        id="ZoneName"
-                        label={get(EventSchema[zone], "label")}
-                        defaultValue={collegeInfo.zone.name}
-                      />
-                    ) : (
-                      <Autocomplete
-                        id="ZoneName"
-                        className={classes.root}
-                        options={zones}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(zone, event, value);
-                        }}
-                        disabled={
-                          formState.isCollegeAdmin && formState.isEditEvent
-                            ? true
-                            : false
                         }
-                        value={
-                          zones[
-                            zones.findIndex(function (item, i) {
-                              return item.id === formState.values[zone];
-                            })
-                          ] || null
-                        }
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            label={get(EventSchema[zone], "label")}
-                            variant="outlined"
-                            placeholder={get(EventSchema[zone], "placeholder")}
-                            error={hasError(zone)}
-                            helperText={
-                              hasError(zone)
-                                ? formState.errors[zone].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                          />
-                        )}
+                        label="Select All Colleges"
                       />
-                    )}
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    {formState.isCollegeAdmin && !formState.isEditEvent ? (
-                      <ReadOnlyTextField
-                        id={get(EventSchema[rpcs], "id")}
-                        label={get(EventSchema[rpc], "label")}
-                        defaultValue={collegeInfo.rpc.name}
-                      />
-                    ) : (
-                      <Autocomplete
-                        id={get(EventSchema[rpcs], "id")}
-                        className={classes.root}
-                        options={rpcs}
-                        placeholder={get(EventSchema[rpcs], "placeholder")}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(rpc, event, value);
-                        }}
-                        disabled={
-                          formState.isCollegeAdmin && formState.isEditEvent
-                            ? true
-                            : false
-                        }
-                        value={
-                          rpcs[
-                            rpcs.findIndex(function (item, i) {
-                              return item.id === formState.values[rpc];
-                            })
-                          ] || null
-                        }
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            label={get(EventSchema[rpc], "label")}
-                            variant="outlined"
-                            placeholder={get(EventSchema[rpc], "placeholder")}
-                            error={hasError(rpc)}
-                            helperText={
-                              hasError(rpc)
-                                ? formState.errors[rpc].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                          />
-                        )}
-                      />
-                    )}
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id={get(EventSchema[questionSet], "id")}
-                      className={classes.root}
-                      options={questionSetData}
-                      placeholder={get(EventSchema[questionSet], "placeholder")}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(questionSet, event, value);
-                      }}
-                      value={
-                        questionSetData[
-                          questionSetData.findIndex(function (item, i) {
-                            return item.id === formState.values[questionSet];
-                          })
-                        ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label={get(EventSchema[questionSet], "label")}
-                          variant="outlined"
-                          placeholder={get(
-                            EventSchema[questionSet],
-                            "placeholder"
-                          )}
-                          error={hasError(questionSet)}
-                          helperText={
-                            hasError(questionSet)
-                              ? formState.errors[questionSet].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
+                    </Grid>
+                  ) : null}
+
                   <Grid item md={12} xs={12}>
                     {formState.isCollegeAdmin && !formState.isEditEvent ? (
                       <ReadOnlyTextField
@@ -1674,6 +1583,7 @@ const AddEditEvent = props => {
                       <Autocomplete
                         id={get(EventSchema[college], "id")}
                         multiple
+                        limitTags={2}
                         options={colleges}
                         getOptionLabel={option => option.name}
                         onChange={(event, value) => {
@@ -1682,7 +1592,8 @@ const AddEditEvent = props => {
                         filterSelectedOptions
                         name={college}
                         disabled={
-                          formState.isCollegeAdmin && formState.isEditEvent
+                          (formState.isCollegeAdmin && formState.isEditEvent) ||
+                          formState.setAllColleges
                             ? true
                             : false
                         }
@@ -1716,7 +1627,7 @@ const AddEditEvent = props => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={12} xs={12}>
+                  <Grid item md={6} xs={12}>
                     <Autocomplete
                       id={get(EventSchema[stream], "id")}
                       multiple
@@ -1752,6 +1663,44 @@ const AddEditEvent = props => {
                           key={option => option.id}
                           label={get(EventSchema[stream], "label")}
                           variant="outlined"
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <Autocomplete
+                      id={get(EventSchema[questionSet], "id")}
+                      className={classes.root}
+                      options={questionSetData}
+                      placeholder={get(EventSchema[questionSet], "placeholder")}
+                      getOptionLabel={option => option.name}
+                      onChange={(event, value) => {
+                        handleChangeAutoComplete(questionSet, event, value);
+                      }}
+                      value={
+                        questionSetData[
+                          questionSetData.findIndex(function (item, i) {
+                            return item.id === formState.values[questionSet];
+                          })
+                        ] || null
+                      }
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label={get(EventSchema[questionSet], "label")}
+                          variant="outlined"
+                          placeholder={get(
+                            EventSchema[questionSet],
+                            "placeholder"
+                          )}
+                          error={hasError(questionSet)}
+                          helperText={
+                            hasError(questionSet)
+                              ? formState.errors[questionSet].map(error => {
+                                  return error + " ";
+                                })
+                              : null
+                          }
                         />
                       )}
                     />
