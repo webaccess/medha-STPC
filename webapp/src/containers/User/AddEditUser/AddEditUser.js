@@ -234,7 +234,6 @@ const AddEditUser = props => {
           formState.stateId = props["dataForEdit"]["contact"]["state"]["id"];
         } else {
           formState.values[state] = "";
-          formState.stateId = null;
         }
 
         /** For populating zone */
@@ -279,7 +278,6 @@ const AddEditUser = props => {
             props["dataForEdit"]["contact"]["user"]["state"]["id"];
         } else {
           formState.values[state] = "";
-          formState.stateId = null;
         }
 
         /** For populating zone */
@@ -348,6 +346,7 @@ const AddEditUser = props => {
           }
         });
         setStates(res.data.result);
+        fetchZoneRpcDistrictData();
       })
       .catch(error => {
         console.log(error);
@@ -357,6 +356,7 @@ const AddEditUser = props => {
       .serviceProviderForGetRequest(ROLES_URL, paramsForPageSize)
       .then(res => {
         let roles = [];
+        let studentRole = null;
         for (let i in res.data.roles) {
           if (
             res.data.roles[i]["name"] !== "Admin" &&
@@ -371,7 +371,7 @@ const AddEditUser = props => {
             formState.isEditUser &&
             res.data.roles[i]["name"] === roleConstants.STUDENT
           ) {
-            roles.push(res.data.roles[i]);
+            studentRole = res.data.roles[i];
           }
           if (
             formState.dataForEdit["contact"] &&
@@ -385,23 +385,20 @@ const AddEditUser = props => {
             setIsDisable(false);
           }
         }
-        setRoles(roles);
+        if (
+          formState.isEditUser &&
+          formState.dataForEdit["contact"]["user"]["role"]["name"] ===
+            roleConstants.STUDENT
+        ) {
+          setRoles([studentRole]);
+        } else {
+          setRoles(roles);
+        }
       })
       .catch(error => {
         console.log(error);
       });
   }, []);
-
-  /** This gets data into zones, rpcs and districts when we change the state */
-  useEffect(() => {
-    if (
-      formState.values.hasOwnProperty(state) &&
-      formState.values[state] !== null &&
-      formState.values[state] !== undefined
-    ) {
-      fetchZoneRpcDistrictData();
-    }
-  }, [formState.values[state]]);
 
   /** Common function to get zones, rpcs after changing state */
   async function fetchZoneRpcDistrictData() {
@@ -533,7 +530,6 @@ const AddEditUser = props => {
       /** Clear dependent roles */
       if (eventName === role) {
         clearZoneRpcCollege();
-        delete formState.values[state];
         clearValidations();
       }
       setFormState(formState => ({
@@ -546,8 +542,6 @@ const AddEditUser = props => {
   };
 
   const clearZoneRpcCollege = () => {
-    setRpcs([]);
-    setZones([]);
     setFormState(formState => ({
       ...formState,
       isCollegeBlocked: true,
@@ -560,6 +554,10 @@ const AddEditUser = props => {
   };
 
   const clearValidations = () => {
+    delete formState.errors[rpc];
+    delete formState.errors[state];
+    delete formState.errors[zone];
+    delete formState.errors[college];
     UserSchema[rpc]["required"] = false;
     UserSchema[state]["required"] = false;
     UserSchema[zone]["required"] = false;
@@ -578,25 +576,13 @@ const AddEditUser = props => {
         break;
       }
     }
-    if (
-      roleName === roleConstants.COLLEGEADMIN ||
-      roleName === roleConstants.STUDENT
-    ) {
-      if (forSubmit) {
-        UserSchema[rpc]["required"] = true;
-        UserSchema[state]["required"] = true;
-        UserSchema[zone]["required"] = true;
-        UserSchema[college]["required"] = true;
-        UserSchema[rpc]["validations"] = VALIDATIONFORRPC;
-        UserSchema[state]["validations"] = VALIDATIONFORSTATE;
-        UserSchema[zone]["validations"] = VALIDATIONFORZONE;
-        UserSchema[college]["validations"] = VALIDATIONFORCOLLEGE;
-      } else {
-        UserSchema[state]["required"] = true;
-        UserSchema[college]["required"] = true;
-        UserSchema[state]["validations"] = VALIDATIONFORSTATE;
-        UserSchema[college]["validations"] = VALIDATIONFORCOLLEGE;
-      }
+    if (roleName === roleConstants.COLLEGEADMIN) {
+      delete formState.errors[rpc];
+      delete formState.errors[zone];
+      UserSchema[state]["required"] = true;
+      UserSchema[college]["required"] = true;
+      UserSchema[state]["validations"] = VALIDATIONFORSTATE;
+      UserSchema[college]["validations"] = VALIDATIONFORCOLLEGE;
 
       setFormState(formState => ({
         ...formState,
@@ -605,6 +591,8 @@ const AddEditUser = props => {
         isZoneBlocked: true
       }));
     } else if (roleName === roleConstants.RPCADMIN) {
+      delete formState.errors[zone];
+      delete formState.errors[college];
       UserSchema[rpc]["required"] = true;
       UserSchema[state]["required"] = true;
       UserSchema[rpc]["validations"] = VALIDATIONFORRPC;
@@ -616,6 +604,8 @@ const AddEditUser = props => {
         isZoneBlocked: true
       }));
     } else if (roleName === roleConstants.ZONALADMIN) {
+      delete formState.errors[state];
+      delete formState.errors[zone];
       UserSchema[state]["required"] = true;
       UserSchema[zone]["required"] = true;
       UserSchema[state]["validations"] = VALIDATIONFORSTATE;
@@ -626,7 +616,18 @@ const AddEditUser = props => {
         isRPCBlocked: true,
         isZoneBlocked: false
       }));
-    } else if (roleName === roleConstants.MEDHAADMIN) {
+    } else if (
+      roleName === roleConstants.MEDHAADMIN ||
+      roleName === roleConstants.DEPARTMENTADMIN
+    ) {
+      clearValidations();
+      setFormState(formState => ({
+        ...formState,
+        isCollegeBlocked: true,
+        isRPCBlocked: true,
+        isZoneBlocked: true
+      }));
+    } else if (roleName === roleConstants.STUDENT) {
       clearValidations();
       setFormState(formState => ({
         ...formState,
@@ -918,6 +919,7 @@ const AddEditUser = props => {
                       id={get(UserSchema[role], "id")}
                       className={classes.root}
                       options={roles}
+                      disabled={isDisable}
                       getOptionLabel={option => option.name}
                       onChange={(event, value) => {
                         handleChangeAutoComplete(role, event, value);
