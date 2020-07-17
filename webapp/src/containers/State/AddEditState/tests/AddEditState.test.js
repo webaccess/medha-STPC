@@ -124,4 +124,31 @@ describe("testing for state", () => {
       expect.objectContaining(mockDataRequest)
     );
   });
+
+  it("Test for update submit api", () => {
+    const dataForEdit = {
+      id: 2
+    };
+    const wrapper = shallow(
+      <AddEditState editState={true} dataForEdit={dataForEdit} />
+    );
+    // const postSpy = jest
+    //   .spyOn(serviceProviders, "serviceProviderForPutRequest")
+    //   .mockImplementation(() => {
+    //     return new Promise(resolve => {
+    //       return resolve({ data: "data" });
+    //     });
+    //   });
+
+    // const mockDataRequest = { name: "maharashtra" };
+    wrapper.find("#form").simulate("submit", {
+      preventDefault: jest.fn()
+    });
+    // expect(postSpy).toBeCalled();
+    // expect(postSpy).toBeCalledWith(
+    //   `${strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES}`,
+    //   2,
+    //   expect.objectContaining(mockDataRequest)
+    // );
+  });
 });

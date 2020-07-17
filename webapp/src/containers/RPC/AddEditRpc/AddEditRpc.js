@@ -21,6 +21,7 @@ import { Alert, GrayButton, YellowButton } from "../../../components";
 import { useHistory } from "react-router-dom";
 import LoaderContext from "../../../context/LoaderContext";
 import { useContext } from "react";
+import { Backdrop, CircularProgress } from "@material-ui/core";
 
 const rpcName = "rpcName";
 const stateName = "stateName";
@@ -38,8 +39,8 @@ const AddEditRpc = props => {
   );
   const [isSuccess, setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-  const { setLoaderStatus } = useContext(LoaderContext);
   const [formState, setFormState] = useState({
+    backDrop: false,
     isValid: false,
     values: {},
     touched: {},
@@ -216,7 +217,7 @@ const AddEditRpc = props => {
         ...formState,
         isValid: false
       }));
-      setLoaderStatus(false);
+      formState.backDrop = false;
     }
     event.preventDefault();
   };
@@ -235,7 +236,7 @@ const AddEditRpc = props => {
           postData
         )
         .then(res => {
-          setLoaderStatus(false);
+          formState.backDrop = false;
           history.push({
             pathname: routeConstants.MANAGE_RPC,
             fromEditRpc: true,
@@ -246,7 +247,7 @@ const AddEditRpc = props => {
           });
         })
         .catch(error => {
-          setLoaderStatus(false);
+          formState.backDrop = false;
           console.log("Put ERROR", error, error.response);
           let errorMessage;
 
@@ -271,7 +272,7 @@ const AddEditRpc = props => {
       serviceProviders
         .serviceProviderForPostRequest(RPCS_URL, postData)
         .then(res => {
-          setLoaderStatus(false);
+          formState.backDrop = false;
           history.push({
             pathname: routeConstants.MANAGE_RPC,
             fromAddRpc: true,
@@ -283,7 +284,7 @@ const AddEditRpc = props => {
         })
         .catch(error => {
           console.log(error, error.response);
-          setLoaderStatus(false);
+          formState.backDrop = false;
           let errorMessage;
 
           if (
@@ -331,7 +332,7 @@ const AddEditRpc = props => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
-          <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <form autoComplete="off" noValidate onSubmit={handleSubmit} id="form">
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
@@ -462,7 +463,7 @@ const AddEditRpc = props => {
                           color="primary"
                           variant="contained"
                           onClick={() => {
-                            setLoaderStatus(true);
+                            formState.backDrop = true;
                           }}
                         >
                           {genericConstants.SAVE_BUTTON_TEXT}
@@ -486,6 +487,9 @@ const AddEditRpc = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={formState.backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };

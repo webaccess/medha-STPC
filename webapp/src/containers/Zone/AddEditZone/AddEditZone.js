@@ -9,6 +9,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GrayButton, YellowButton } from "../../../components";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as routeConstants from "../../../constants/RouteConstants";
+import { Backdrop, CircularProgress } from "@material-ui/core";
 
 import {
   Card,
@@ -34,9 +35,9 @@ const AddEditZone = props => {
   const state = "stateName";
   const content = "content";
   const classes = useStyles();
-  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
+    backDrop: false,
     isValid: false,
     values: {},
     touched: {},
@@ -150,7 +151,7 @@ const AddEditZone = props => {
         ...formState,
         isValid: false
       }));
-      setLoaderStatus(false);
+      formState.backDrop = false;
     }
   };
 
@@ -167,7 +168,7 @@ const AddEditZone = props => {
           postData
         )
         .then(res => {
-          setLoaderStatus(false);
+          formState.backDrop = false;
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
             fromEditZone: true,
@@ -189,7 +190,7 @@ const AddEditZone = props => {
               errorMessage = error.response.data["message"];
             }
           }
-          setLoaderStatus(false);
+          formState.backDrop = false;
           console.log(error, error.response);
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
@@ -209,7 +210,7 @@ const AddEditZone = props => {
       serviceProviders
         .serviceProviderForPostRequest(ZONE_URL, postData)
         .then(res => {
-          setLoaderStatus(false);
+          formState.backDrop = false;
           history.push({
             pathname: routeConstants.MANAGE_ZONES,
             fromAddZone: true,
@@ -220,7 +221,7 @@ const AddEditZone = props => {
           });
         })
         .catch(error => {
-          setLoaderStatus(false);
+          formState.backDrop = false;
           console.log(error, error.response);
           let errorMessage;
 
@@ -267,7 +268,7 @@ const AddEditZone = props => {
       </Grid>
       <Grid item xs={12} className={classes.formgrid}>
         <Card className={classes.root} variant="outlined">
-          <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <form autoComplete="off" noValidate onSubmit={handleSubmit} id="form">
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
@@ -310,6 +311,7 @@ const AddEditZone = props => {
                     }
                     renderInput={params => (
                       <TextField
+                        id="state-filter-test-id"
                         {...params}
                         label={get(AddZoneForm[state], "label")}
                         variant="outlined"
@@ -341,7 +343,7 @@ const AddEditZone = props => {
                           color="primary"
                           variant="contained"
                           onClick={() => {
-                            setLoaderStatus(true);
+                            formState.backDrop = true;
                           }}
                         >
                           {genericConstants.SAVE_BUTTON_TEXT}
@@ -365,6 +367,9 @@ const AddEditZone = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={formState.backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };
