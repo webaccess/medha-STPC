@@ -170,3 +170,22 @@ export const QUALIFICATION_LIST = [
   { name: "ITI", id: "iti" },
   { name: "Others", id: "other" }
 ];
+
+export const ADDRESSES = [
+  {
+    type: "local",
+    address: "",
+    state: null,
+    district: null,
+    pincode: null,
+    city: null
+  },
+  {
+    type: "permanent",
+    address: "",
+    state: null,
+    district: null,
+    pincode: null,
+    city: null
+  }
+];

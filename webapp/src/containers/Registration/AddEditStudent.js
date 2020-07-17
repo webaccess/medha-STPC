@@ -15,7 +15,9 @@ import {
   Collapse,
   CardActions,
   FormHelperText,
-  Button
+  Button,
+  FormControlLabel,
+  Checkbox
 } from "@material-ui/core";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import CloseIcon from "@material-ui/icons/Close";
@@ -46,6 +48,7 @@ import * as serviceProvider from "../../api/Axios.js";
 import useStyles from "../ContainerStyles/AddEditPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
 import SetIndexContext from "../../context/SetIndexContext";
+import { concat } from "draft-js/lib/DefaultDraftBlockRenderMap";
 
 const AddEditStudent = props => {
   let history = useHistory();
@@ -97,7 +100,11 @@ const AddEditStudent = props => {
         ? true
         : false
       : false,
-    showNoImage: props.location.editStudent ? false : props.location.editStudent
+    showNoImage: props.location.editStudent
+      ? false
+      : props.location.editStudent,
+    addressSameAsLocal: false,
+    addresses: genericConstants.ADDRESSES
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
@@ -124,6 +131,8 @@ const AddEditStudent = props => {
   const [streamlist, setstreamlist] = useState([]);
   const [collegeStreamList, setCollegeStreamList] = useState([]);
   const [stream, setStream] = useState(null);
+
+  const [validateAddress, setValidateAddress] = useState([]);
 
   useEffect(() => {
     if (
@@ -168,6 +177,40 @@ const AddEditStudent = props => {
 
     setLoaderStatus(false);
   }, [formState.values["college"]]);
+
+  useEffect(() => {
+    if (formState.addressSameAsLocal) {
+      const address = formState.addresses.find(addr => addr.type == "local");
+      const copyAddresses = formState.addresses.map(addr => {
+        if (addr.type == "permanent") {
+          return { ...address, type: "permanent" };
+        } else {
+          return addr;
+        }
+      });
+
+      setFormState(formState => ({
+        ...formState,
+        addresses: copyAddresses
+      }));
+    } else {
+      const address = genericConstants.ADDRESSES.find(
+        addr => addr.type == "permanent"
+      );
+
+      const resetPermanentAddress = formState.addresses.map(addr => {
+        if (addr.type == "permanent") {
+          return address;
+        } else {
+          return addr;
+        }
+      });
+      setFormState(formState => ({
+        ...formState,
+        addresses: resetPermanentAddress
+      }));
+    }
+  }, [formState.addressSameAsLocal]);
 
   if (formState.dataForEdit && !formState.counter) {
     setLoaderStatus(true);
@@ -303,6 +346,7 @@ const AddEditStudent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
+    validateAddresses();
     setLoaderStatus(true);
     let schema;
     if (formState.editStudent) {
@@ -587,7 +631,7 @@ const AddEditStudent = props => {
         }));
         setstreamlist(list);
 
-        if (formState.dataForEdit) {
+        if (formState.dataForEdit && props.location["dataForEdit"]["stream"]) {
           const selectedStream = list.find(
             stream => stream.id == props.location["dataForEdit"]["stream"]["id"]
           );
@@ -766,6 +810,114 @@ const AddEditStudent = props => {
     });
   };
 
+  const handleStateAndDistrictChange = (type, value, idx) => {
+    formState.addresses[idx][type] = value && value.id;
+    if (type == "state") {
+      formState.addresses[idx]["district"] = null;
+    }
+    setFormState(formState => ({
+      ...formState
+    }));
+  };
+
+  const handleAddressChange = (idx, e, type) => {
+    e.persist();
+    console.log(e.target.value);
+
+    const addresses = formState.addresses.map((addr, index) => {
+      if (index == idx) {
+        return { ...addr, [type]: e.target.value };
+      } else {
+        return addr;
+      }
+    });
+
+    setFormState(formState => ({
+      ...formState,
+      addresses
+    }));
+  };
+
+  const validateAddresses = () => {
+    const addresses = formState.addresses;
+    let errors = [];
+    let isError = false;
+    addresses.forEach(addr => {
+      let errorObject = {};
+      if (!(addr.address && addr.address.length > 0)) {
+        isError = true;
+        errorObject["address"] = {
+          error: true,
+          message: "Address is required"
+        };
+      } else {
+        errorObject["address"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.state) {
+        isError = true;
+        errorObject["state"] = {
+          error: true,
+          message: "State is required"
+        };
+      } else {
+        errorObject["state"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.district) {
+        isError = true;
+        errorObject["district"] = {
+          error: true,
+          message: "District is required"
+        };
+      } else {
+        errorObject["district"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.city) {
+        isError = true;
+        errorObject["city"] = {
+          error: true,
+          message: "City is required"
+        };
+      } else {
+        errorObject["city"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.pincode) {
+        isError = true;
+        errorObject["pincode"] = {
+          error: true,
+          message: "Pincode is required"
+        };
+      } else {
+        errorObject["pincode"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      errors.push(errorObject);
+    });
+
+    setValidateAddress(errors);
+    return isError;
+  };
+
+  console.log(formState.addresses);
+  console.log(validateAddress);
   return (
     // <Layout>
     <Grid>
@@ -1003,98 +1155,183 @@ const AddEditStudent = props => {
                   />
                 </Grid>
               </Grid>
+              <Divider className={classes.divider} />
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
-                  <TextField
-                    label="Address"
-                    name="address"
-                    value={formState.values["address"] || ""}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    error={hasError("address")}
-                    helperText={
-                      hasError("address")
-                        ? formState.errors["address"].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={statelist}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete("state", event, value);
-                    }}
-                    value={
-                      statelist[
-                        statelist.findIndex(function (item, i) {
-                          return item.id === formState.values.state;
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError("state")}
-                        label="State"
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError("state")
-                            ? formState.errors["state"].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    className={classes.root}
-                    options={districtlist.filter(
-                      district => district.state === formState.values.state
-                    )}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete("district", event, value);
-                    }}
-                    value={
-                      districtlist[
-                        districtlist.findIndex(function (item, i) {
-                          return item.id === formState.values.district;
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError("district")}
-                        label="District"
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError("district")
-                            ? formState.errors["district"].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
+                {formState.addresses.map((addr, idx) => {
+                  return (
+                    <Grid item md={12} xs={12}>
+                      <Grid item md={12} xs={12} className={classes.streamcard}>
+                        <Card className={classes.streamoffer}>
+                          <InputLabel
+                            htmlFor="outlined-address-card"
+                            fullwidth={true.toString()}
+                          >
+                            {addr.type == "local"
+                              ? "Local Address"
+                              : "Permanent Address"}
+                          </InputLabel>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid
+                              item
+                              md={12}
+                              xs={12}
+                              style={{ marginTop: "8px" }}
+                            >
+                              <TextField
+                                label="Address"
+                                name="address"
+                                value={formState.addresses[idx].address || ""}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(idx, event, "address")
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["address"]["error"]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["address"][
+                                      "message"
+                                    ]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid item md={6} xs={12}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                className={classes.root}
+                                options={statelist}
+                                getOptionLabel={option => option.name}
+                                onChange={(event, value) => {
+                                  handleStateAndDistrictChange(
+                                    "state",
+                                    value,
+                                    idx
+                                  );
+                                }}
+                                value={
+                                  statelist[
+                                    statelist.findIndex(function (item, i) {
+                                      return (
+                                        item.id ===
+                                        formState.addresses[idx].state
+                                      );
+                                    })
+                                  ] || null
+                                }
+                                renderInput={params => (
+                                  <TextField
+                                    {...params}
+                                    label="State"
+                                    variant="outlined"
+                                    name="tester"
+                                    error={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["state"][
+                                          "error"
+                                        ]) ||
+                                      false
+                                    }
+                                    helperText={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["state"][
+                                          "message"
+                                        ]) ||
+                                      null
+                                    }
+                                  />
+                                )}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <TextField
+                                label="City"
+                                name="city"
+                                value={formState.addresses[idx].city || ""}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(idx, event, "city")
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["city"]["error"]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["city"]["message"]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <TextField
+                                label="Pincode"
+                                name="pincode"
+                                value={formState.addresses[idx].pincode || ""}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(idx, event, "pincode")
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["pincode"]["error"]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["pincode"][
+                                      "message"
+                                    ]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid item md={12} xs={12}>
+                            {addr.type == "local" ? (
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={formState.addressSameAsLocal}
+                                    onChange={event => {
+                                      setFormState(formState => ({
+                                        ...formState,
+                                        addressSameAsLocal: event.target.checked
+                                      }));
+                                    }}
+                                    name="addressSameAsLocal"
+                                    color="primary"
+                                  />
+                                }
+                                label="Permanent Address same as local Address?"
+                              />
+                            ) : null}
+                          </Grid>
+                        </Card>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Grid>
             <Divider className={classes.divider} />
