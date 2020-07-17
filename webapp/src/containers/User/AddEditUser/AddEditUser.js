@@ -17,7 +17,9 @@ import {
   FormHelperText,
   FormGroup,
   FormControlLabel,
-  Switch
+  Switch,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import * as genericConstants from "../../../constants/GenericConstants";
 import * as roleConstants from "../../../constants/RoleConstants";
@@ -120,6 +122,7 @@ const AddEditUser = props => {
   const [states, setStates] = useState(
     props.stateOption ? props.stateOption : []
   );
+  const [backdrop, setBackDrop] = useState(false);
   const [zones, setZones] = useState(props.zoneOption ? props.zoneOption : []);
   const [rpcs, setRpcs] = useState(props.rpcOption ? props.rpcOption : []);
   const [colleges, setColleges] = useState(
@@ -635,7 +638,7 @@ const AddEditUser = props => {
   };
   const handleSubmit = event => {
     event.preventDefault();
-    setLoaderStatus(true);
+    setBackDrop(true);
     formState.values[state] = formState.stateId;
     if (formState.isEditUser) {
       UserSchema[password]["required"] = false;
@@ -690,7 +693,7 @@ const AddEditUser = props => {
         isValid: true
       }));
     } else {
-      setLoaderStatus(false);
+      setBackDrop(false);
       setFormState(formState => ({
         ...formState,
         isValid: false
@@ -699,7 +702,7 @@ const AddEditUser = props => {
   };
 
   const postUserData = async () => {
-    setLoaderStatus(true);
+    setBackDrop(true);
     let postData = databaseUtilities.addUser(
       formState.values[contact],
       formState.values[email],
@@ -735,7 +738,7 @@ const AddEditUser = props => {
             editResponseMessage: "",
             editedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(error => {
           console.log("putErrorUSer", error, error.response);
@@ -757,7 +760,7 @@ const AddEditUser = props => {
             editResponseMessage: errorMessage ? errorMessage : "",
             editedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     } else {
       serviceProvider
@@ -771,7 +774,7 @@ const AddEditUser = props => {
             addResponseMessage: "",
             addedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(error => {
           console.log("errorUSer", error, error.response);
@@ -794,7 +797,7 @@ const AddEditUser = props => {
             addedData: {}
           });
         });
-      setLoaderStatus(false);
+      setBackDrop(false);
     }
   };
 
@@ -1214,6 +1217,9 @@ const AddEditUser = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={backdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };

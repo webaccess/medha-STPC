@@ -11,7 +11,9 @@ import {
   FormHelperText,
   Button,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
@@ -149,7 +151,7 @@ const AddEditEvent = props => {
         ? auth.getUserInfo().zone
         : {}
   });
-
+  const [backdrop, setBackDrop] = useState(false);
   const [states, setStates] = useState([]);
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
@@ -1021,7 +1023,7 @@ const AddEditEvent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    setLoaderStatus(true);
+    setBackDrop(true);
     let isValid = false;
     if (formState.isCollegeAdmin && !formState.isEditEvent) {
       setDataForCollegeAdmin();
@@ -1117,7 +1119,7 @@ const AddEditEvent = props => {
         ...formState,
         isValid: false
       }));
-      setLoaderStatus(false);
+      setBackDrop(false);
     }
   };
 
@@ -1173,7 +1175,7 @@ const AddEditEvent = props => {
               editedData: {}
             });
           }
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(error => {
           console.log("puterror", error);
@@ -1184,7 +1186,7 @@ const AddEditEvent = props => {
             editResponseMessage: "",
             editedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     } else {
       serviceProvider
@@ -1202,7 +1204,7 @@ const AddEditEvent = props => {
               addedData: {}
             });
           }
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(error => {
           console.log("posterror", error);
@@ -1213,7 +1215,7 @@ const AddEditEvent = props => {
             editResponseMessage: "",
             editedData: {}
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     }
   };
@@ -2182,6 +2184,9 @@ const AddEditEvent = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={backdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };
