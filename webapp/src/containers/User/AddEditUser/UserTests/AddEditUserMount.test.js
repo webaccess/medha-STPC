@@ -199,11 +199,7 @@ describe("testing for state", () => {
         </Router>
       </LoaderContext.Provider>
     );
-    console.log(
-      "mockcalls****",
-      getStatusOfDashboardSpy.mock.calls,
-      getStatusOfDashboardSpy.mock.results[0].value
-    );
+
     /** This actually checks whether the post method is called with proper url and request body */
     expect(getStatusOfDashboardSpy.mock.calls).toEqual([
       [
