@@ -1568,28 +1568,39 @@ const AddEditStudent = props => {
             ) : (
               <Grid item md={12} xs={12} className={classes.CardActionGrid}>
                 <CardActions className={classes.btnspace}>
-                  <YellowButton
-                    color="primary"
-                    id="submit"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    onClick={handleSubmit}
-                  >
-                    <span>{authPageConstants.REGISTER}</span>
-                  </YellowButton>
-                  <GrayButton
-                    id="cancel"
-                    color="primary"
-                    type="submit"
-                    mfullWidth
-                    variant="contained"
-                    onClick={() => {
-                      history.push(routeConstants.SIGN_IN_URL);
-                    }}
-                  >
-                    <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
-                  </GrayButton>
+                  <Grid item xs={12}>
+                    <Grid item xs={12} md={6} xl={3}>
+                      <Grid container spacing={3}>
+                        <Grid item md={2} xs={12}>
+                          <YellowButton
+                            id="submit"
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            onClick={handleSubmit}
+                          >
+                            <span>{authPageConstants.REGISTER}</span>
+                          </YellowButton>
+                        </Grid>
+
+                        <Grid item md={2} xs={12}>
+                          <GrayButton
+                            id="cancel"
+                            color="primary"
+                            type="submit"
+                            mfullWidth
+                            variant="contained"
+                            onClick={() => {
+                              history.push(routeConstants.SIGN_IN_URL);
+                            }}
+                          >
+                            <span>{genericConstants.CANCEL_BUTTON_TEXT}</span>
+                          </GrayButton>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </CardActions>
               </Grid>
             )}
