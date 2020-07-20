@@ -125,6 +125,8 @@ const AddEditEvent = props => {
     dynamicEducationBar: [{ index: Math.random() }],
     dynamicEducationBarError: [],
     isCollegeAdmin:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? true
         : false,
@@ -135,18 +137,26 @@ const AddEditEvent = props => {
 
   const [collegeInfo] = useState({
     college:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().studentInfo.organization
         : {},
     state:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().state
         : {},
     rpc:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().rpc
         : {},
     zone:
+      auth.getUserInfo() !== null &&
+      auth.getUserInfo().role !== null &&
       auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
         ? auth.getUserInfo().zone
         : {}
@@ -156,9 +166,13 @@ const AddEditEvent = props => {
   const [zones, setZones] = useState([]);
   const [rpcs, setRpcs] = useState([]);
   const [colleges, setColleges] = useState([]);
-  const [streams, setStreams] = useState([]);
+  const [streams, setStreams] = useState(
+    props.streamOption ? props.streamOption : []
+  );
   const inputLabel = React.useRef(null);
-  const [questionSetData, setQuestionSetData] = useState([]);
+  const [questionSetData, setQuestionSetData] = useState(
+    props.questionOption ? props.questionOption : []
+  );
   const [qualifications, setQualifications] = useState([
     { id: 1, value: "secondary", name: "Secondary" },
     { id: 2, value: "graduation", name: "Graduation" },
@@ -1488,6 +1502,7 @@ const AddEditEvent = props => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
+                      id={get(EventSchema[dateFrom], "id")}
                       onChange={event => {
                         handleDateChange(dateFrom, event);
                       }}
@@ -1508,6 +1523,7 @@ const AddEditEvent = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <CustomDateTimePicker
+                      id={get(EventSchema[dateTo], "id")}
                       onChange={event => {
                         handleDateChange(dateTo, event);
                       }}
