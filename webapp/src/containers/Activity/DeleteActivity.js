@@ -30,12 +30,10 @@ const DeleteActivity = props => {
         .then(
           axios.spread((...response) => {
             setLoaderStatus(false);
-            console.log({ deleteActivityThen: response });
             let count = 0;
             response.map(response => {
               if (response === null) count += 1;
             });
-            console.log(count);
             if (count === 0) {
               props.deleteEvent(true, activity.length, true);
               props.closeModal();

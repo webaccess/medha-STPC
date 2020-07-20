@@ -11,7 +11,9 @@ import {
   Collapse,
   FormHelperText,
   Button,
-  CardActions
+  CardActions,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import Spinner from "../../components/Spinner/Spinner.js";
 import CloseIcon from "@material-ui/icons/Close";
@@ -53,9 +55,8 @@ const AddEditActivity = props => {
   const dateFrom = "dateFrom";
   const dateTo = "dateTo";
 
-  const [editorState, setEditorState] = React.useState(
-    EditorState.createEmpty()
-  );
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [backDrop, setBackDrop] = useState(false);
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -74,6 +75,7 @@ const AddEditActivity = props => {
       ? props.location.dataForEdit
       : false,
     counter: 0,
+    testCounter: 0,
     stream: [],
     files: null,
     descriptionError: false,
@@ -216,11 +218,38 @@ const AddEditActivity = props => {
 
   const classes = useStyles();
 
-  const [collegelist, setcollegelist] = useState([]);
-  const [streamlist, setstreamlist] = useState([]);
-  const [collegeStreamList, setCollegeStreamList] = useState([]);
-  const [activityType, setActivityType] = useState([]);
-  const [questionSetData, setQuestionSetData] = useState([]);
+  const [collegelist, setcollegelist] = useState(
+    props.collegeListForTest ? props.collegeListForTest : []
+  );
+  const [streamlist, setstreamlist] = useState(
+    props.streamListForTest ? props.streamListForTest : []
+  );
+  const [collegeStreamList, setCollegeStreamList] = useState(
+    props.collegeStreamListForTest ? props.collegeStreamListForTest : []
+  );
+  const [activityType, setActivityType] = useState(
+    props.activityTypeListForTest ? props.activityTypeListForTest : []
+  );
+  const [questionSetData, setQuestionSetData] = useState(
+    props.questionSetListForTest ? props.questionSetListForTest : []
+  );
+
+  if (
+    !formState.dataForEdit &&
+    props.isDataForTesting &&
+    !formState.testCounter
+  ) {
+    const html = "<p>Test Data</p>";
+    const contentBlock = htmlToDraft(html);
+    if (contentBlock) {
+      const contentState = ContentState.createFromBlockArray(
+        contentBlock.contentBlocks
+      );
+      const editorState = EditorState.createWithContent(contentState);
+      setEditorState(editorState);
+      formState.testCounter += 1;
+    }
+  }
 
   useEffect(() => {
     serviceProvider
@@ -229,11 +258,9 @@ const AddEditActivity = props => {
         setQuestionSetData(res.data);
       })
       .catch(error => {});
-    setLoaderStatus(true);
     getColleges();
     getStreams();
     getActivityTypes();
-    setLoaderStatus(false);
   }, []);
 
   const getActivityTypes = async () => {
@@ -299,7 +326,7 @@ const AddEditActivity = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    setLoaderStatus(true);
+    setBackDrop(true);
 
     let isValid = false;
     let checkAllFieldsValid = formUtilities.checkAllKeysPresent(
@@ -381,7 +408,7 @@ const AddEditActivity = props => {
         isValid: true
       }));
     } else {
-      setLoaderStatus(false);
+      setBackDrop(false);
       setFormState(formState => ({
         ...formState,
         isValid: false
@@ -423,11 +450,11 @@ const AddEditActivity = props => {
             editedData: response.data,
             fromEditActivity: true
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(err => {
           setIsFailed(true);
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     } else {
       postData = databaseUtilities.addActivity(
@@ -456,11 +483,11 @@ const AddEditActivity = props => {
             addedData: data,
             fromAddActivity: true
           });
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(err => {
           setIsFailed(true);
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     }
   };
@@ -609,7 +636,6 @@ const AddEditActivity = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -841,6 +867,7 @@ const AddEditActivity = props => {
                         </InputLabel>
                         <div className="rdw-root">
                           <Editor
+                            id="description-editor"
                             editorState={editorState}
                             toolbarClassName="rdw-toolbar"
                             wrapperClassName="rdw-wrapper"
@@ -927,6 +954,7 @@ const AddEditActivity = props => {
                       variant="outlined"
                       required
                       fullWidth
+                      id="addressId"
                       onChange={handleChange}
                       error={hasError("address")}
                       helperText={
@@ -943,7 +971,7 @@ const AddEditActivity = props => {
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={12} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id="collegeId"
                       className={classes.root}
                       options={collegelist}
                       getOptionLabel={option => option.name}
@@ -981,7 +1009,7 @@ const AddEditActivity = props => {
                   <Grid item md={12} xs={12} className={classes.root}>
                     <Autocomplete
                       multiple={true}
-                      id="tags-outlined"
+                      id="collegeStreamID"
                       required
                       options={collegeStreamList}
                       getOptionLabel={option => option.name}
@@ -1016,7 +1044,7 @@ const AddEditActivity = props => {
                 <Grid container spacing={3} className={classes.formgrid}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id="combo-box-demo"
+                      id="educationYearId"
                       className={classes.root}
                       options={educationyearlist}
                       getOptionLabel={option => option.name}
@@ -1098,6 +1126,7 @@ const AddEditActivity = props => {
                     <TextField
                       label="Trainer Name"
                       name="trainer"
+                      id="trainerId"
                       value={formState.values["trainer"] || ""}
                       variant="outlined"
                       required
@@ -1115,7 +1144,7 @@ const AddEditActivity = props => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
-                      id={"question_set"}
+                      id="question_set"
                       className={classes.root}
                       options={questionSetData}
                       placeholder={"Select Question Set"}
@@ -1189,6 +1218,7 @@ const AddEditActivity = props => {
                       <Grid container spacing={3}>
                         <Grid item md={2} xs={12}>
                           <YellowButton
+                            id="submitActivity"
                             color="primary"
                             type="submit"
                             mfullWidth
@@ -1221,6 +1251,9 @@ const AddEditActivity = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };

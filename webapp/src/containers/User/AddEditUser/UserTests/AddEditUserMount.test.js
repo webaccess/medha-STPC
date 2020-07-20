@@ -203,6 +203,12 @@ describe("testing for state", () => {
     /** This actually checks whether the post method is called with proper url and request body */
     expect(getStatusOfDashboardSpy.mock.calls).toEqual([
       [
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES,
+        {
+          pageSize: -1
+        }
+      ],
+      [
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
         {
           pageSize: -1
@@ -217,7 +223,7 @@ describe("testing for state", () => {
     ]);
 
     // // /** This actually checks whether the post method is called */
-    expect(getStatusOfDashboardSpy).toHaveBeenCalledTimes(2);
+    expect(getStatusOfDashboardSpy).toHaveBeenCalledTimes(3);
     wrapper.unmount();
   });
 });

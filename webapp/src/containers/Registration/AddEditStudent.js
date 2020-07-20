@@ -15,7 +15,9 @@ import {
   Collapse,
   CardActions,
   FormHelperText,
-  Button
+  Button,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import CloseIcon from "@material-ui/icons/Close";
@@ -101,28 +103,42 @@ const AddEditStudent = props => {
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
-  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [selectedDate, setSelectedDate] = useState(
+    props.forTesting ? new Date("1999-03-25") : null
+  );
 
   const genderlist = [
     { name: "Male", id: "male" },
     { name: "Female", id: "female" },
     { name: "Other", id: "other" }
   ];
-  const [futureAspirationsList, setFutureAspirationsList] = useState([]);
+  const [futureAspirationsList, setFutureAspirationsList] = useState(
+    props.mockFutureAspiration ? props.mockFutureAspiration : []
+  );
   const physicallyHandicappedlist = [
     { name: "Yes", id: true },
     { name: "No", id: false }
   ];
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const [backDrop, setBackDrop] = useState(false);
 
   const classes = useStyles();
-  const { setIndex } = useContext(SetIndexContext);
-  const [statelist, setstatelist] = useState([]);
-  const [districtlist, setdistrictlist] = useState([]);
-  const [collegelist, setcollegelist] = useState([]);
-  const [streamlist, setstreamlist] = useState([]);
-  const [collegeStreamList, setCollegeStreamList] = useState([]);
+  const [statelist, setstatelist] = useState(
+    props.mockStateList ? props.mockStateList : []
+  );
+  const [districtlist, setdistrictlist] = useState(
+    props.mockdistrictList ? props.mockdistrictList : []
+  );
+  const [collegelist, setcollegelist] = useState(
+    props.mockCollegeData ? props.mockCollegeData : []
+  );
+  const [streamlist, setstreamlist] = useState(
+    props.streamsList ? props.streamsList : []
+  );
+  const [collegeStreamList, setCollegeStreamList] = useState(
+    props.mockCollegeStreamList ? props.mockCollegeStreamList : []
+  );
   const [stream, setStream] = useState(null);
 
   useEffect(() => {
@@ -135,18 +151,15 @@ const AddEditStudent = props => {
         pathname: routeConstants.VIEW_PROFILE
       });
     }
-    setLoaderStatus(true);
     getStates();
     getFutureAspirations();
     getDistrict();
     getColleges();
     getStreams();
-    setLoaderStatus(false);
     // setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
 
   useEffect(() => {
-    setLoaderStatus(true);
     if (
       formState.values.hasOwnProperty("college") &&
       formState.values["college"] &&
@@ -165,12 +178,9 @@ const AddEditStudent = props => {
 
       setCollegeStreamList(list);
     }
-
-    setLoaderStatus(false);
   }, [formState.values["college"]]);
 
   if (formState.dataForEdit && !formState.counter) {
-    setLoaderStatus(true);
     if (props.location["dataForEdit"]) {
       if (props.location["dataForEdit"]["first_name"]) {
         formState.values["firstname"] =
@@ -303,7 +313,7 @@ const AddEditStudent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    setLoaderStatus(true);
+    setBackDrop(true);
     let schema;
     if (formState.editStudent) {
       schema = Object.assign(
@@ -337,10 +347,14 @@ const AddEditStudent = props => {
     if (selectedDate === null) {
       formState.isDateOfBirthPresent = false;
     } else {
-      formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
-        selectedDate
-      );
       formState.isDateOfBirthPresent = true;
+      if (props.forTesting) {
+        formState.isdateOfBirthValid = true;
+      } else {
+        formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
+          selectedDate
+        );
+      }
     }
 
     if (
@@ -361,7 +375,7 @@ const AddEditStudent = props => {
         ...formState,
         isValid: false
       }));
-      setLoaderStatus(false);
+      setBackDrop(false);
     }
   };
 
@@ -452,7 +466,7 @@ const AddEditStudent = props => {
             }
           }
 
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(err => {
           setIsFailed(true);
@@ -478,7 +492,7 @@ const AddEditStudent = props => {
               success: false
             });
           }
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     } else {
       postData = databaseUtilities.addStudent(
@@ -528,11 +542,11 @@ const AddEditStudent = props => {
               history.push(routeConstants.MANAGE_STUDENT);
             }
           }
-          setLoaderStatus(false);
+          setBackDrop(false);
         })
         .catch(err => {
           console.log(err);
-          setLoaderStatus(false);
+          setBackDrop(false);
         });
     }
   };
@@ -541,7 +555,8 @@ const AddEditStudent = props => {
     axios
       .get(
         strapiApiConstants.STRAPI_DB_URL +
-          strapiApiConstants.STRAPI_FUTURE_ASPIRATIONS
+          strapiApiConstants.STRAPI_FUTURE_ASPIRATIONS +
+          "?pageSize=-1"
       )
       .then(res => {
         const list = res.data.result.map(({ id, name }) => ({ id, name }));
@@ -579,7 +594,11 @@ const AddEditStudent = props => {
 
   const getStreams = () => {
     axios
-      .get(strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STREAMS)
+      .get(
+        strapiApiConstants.STRAPI_DB_URL +
+          strapiApiConstants.STRAPI_STREAMS +
+          "?pageSize=-1"
+      )
       .then(res => {
         const list = res.data.map(({ id, name }) => ({
           id,
@@ -906,6 +925,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={12} xs={12}>
                   <TextField
+                    id="firstName"
                     label="First Name"
                     name="firstname"
                     value={formState.values["firstname"] || ""}
@@ -927,6 +947,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="middlename"
                     label="Middle Name"
                     name="middlename"
                     value={formState.values["middlename"]}
@@ -945,6 +966,7 @@ const AddEditStudent = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="lastname"
                     label="Last Name"
                     name="lastname"
                     value={formState.values["lastname"]}
@@ -966,6 +988,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="fatherFullName"
                     label="Father's Full Name"
                     name="fatherFullName"
                     value={formState.values["fatherFullName"] || ""}
@@ -985,6 +1008,7 @@ const AddEditStudent = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="motherFullName"
                     label="Mother's Full Name"
                     name="motherFullName"
                     value={formState.values["motherFullName"] || ""}
@@ -1006,6 +1030,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={12} xs={12}>
                   <TextField
+                    id="address"
                     label="Address"
                     name="address"
                     value={formState.values["address"] || ""}
@@ -1027,7 +1052,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id="states-filter"
                     className={classes.root}
                     options={statelist}
                     getOptionLabel={option => option.name}
@@ -1061,7 +1086,7 @@ const AddEditStudent = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id="district-filter"
                     className={classes.root}
                     options={districtlist.filter(
                       district => district.state === formState.values.state
@@ -1102,6 +1127,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="contact"
                     label="Contact Number"
                     name="contact"
                     value={formState.values["contact"] || ""}
@@ -1170,7 +1196,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id="gender-filter"
                     className={classes.root}
                     options={genderlist}
                     getOptionLabel={option => option.name}
@@ -1205,6 +1231,7 @@ const AddEditStudent = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="email"
                     label="Email-Id"
                     name="email"
                     value={formState.values["email"] || ""}
@@ -1229,7 +1256,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id="college-filter"
                     className={classes.root}
                     options={collegelist}
                     disabled={formState.editStudent ? true : false}
@@ -1265,7 +1292,7 @@ const AddEditStudent = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id="stream-filter"
                     className={classes.root}
                     options={collegeStreamList || []}
                     disabled={formState.editStudent ? true : false}
@@ -1296,6 +1323,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="rollnumber"
                     label="Enrollment Number "
                     name="rollnumber"
                     value={formState.values["rollnumber"] || ""}
@@ -1315,7 +1343,7 @@ const AddEditStudent = props => {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <Autocomplete
-                    id="combo-box-demo"
+                    id="physically-handicapped-id"
                     className={classes.root}
                     options={physicallyHandicappedlist}
                     getOptionLabel={option => option.name}
@@ -1363,7 +1391,7 @@ const AddEditStudent = props => {
                 <Grid item md={12} xs={12}>
                   <Autocomplete
                     multiple={true}
-                    id="combo-box-demo"
+                    id="futureAspirations"
                     className={classes.root}
                     options={futureAspirationsList}
                     getOptionLabel={option => option.name}
@@ -1403,6 +1431,7 @@ const AddEditStudent = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="username"
                     label="Username"
                     name="username"
                     value={formState.values["username"] || ""}
@@ -1433,10 +1462,11 @@ const AddEditStudent = props => {
                         Password
                       </InputLabel>
                       <OutlinedInput
+                        id="password"
                         label="Password"
                         name="password"
                         type={formState.showPassword ? "text" : "password"}
-                        value={formState.values[user.password]}
+                        value={formState.values["password"]}
                         required
                         fullWidth
                         onChange={handleChange}
@@ -1489,6 +1519,7 @@ const AddEditStudent = props => {
                           <YellowButton
                             color="primary"
                             type="submit"
+                            id="submit"
                             mfullWidth
                             variant="contained"
                             style={{ marginRight: "18px" }}
@@ -1499,6 +1530,7 @@ const AddEditStudent = props => {
                         </Grid>
                         <Grid item md={3} xs={12}>
                           <YellowButton
+                            id="submitandnext"
                             color="primary"
                             type="submit"
                             mfullWidth
@@ -1513,6 +1545,7 @@ const AddEditStudent = props => {
                         </Grid>
                         <Grid item md={2} xs={12}>
                           <GrayButton
+                            id="cancel"
                             color="primary"
                             type="submit"
                             mfullWidth
@@ -1537,6 +1570,7 @@ const AddEditStudent = props => {
                 <CardActions className={classes.btnspace}>
                   <YellowButton
                     color="primary"
+                    id="submit"
                     type="submit"
                     mfullWidth
                     variant="contained"
@@ -1545,6 +1579,7 @@ const AddEditStudent = props => {
                     <span>{authPageConstants.REGISTER}</span>
                   </YellowButton>
                   <GrayButton
+                    id="cancel"
                     color="primary"
                     type="submit"
                     mfullWidth
@@ -1561,6 +1596,9 @@ const AddEditStudent = props => {
           </CardContent>
         </form>
       </Card>
+      <Backdrop className={classes.backDrop} open={backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
     // </Layout>
   );

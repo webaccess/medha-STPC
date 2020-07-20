@@ -392,7 +392,6 @@ describe("testing for zone", () => {
       </Router>
     );
 
-    console.log("useeffectmount", getStatusOfDashboardSpy.mock.calls);
     /** This actually checks whether the post method is called with proper url and request body */
     expect(getStatusOfDashboardSpy.mock.calls).toEqual([
       [
