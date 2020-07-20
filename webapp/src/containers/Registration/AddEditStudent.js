@@ -119,7 +119,6 @@ const AddEditStudent = props => {
     { name: "Yes", id: true },
     { name: "No", id: false }
   ];
-  const [setIsSuccess] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [backDrop, setBackDrop] = useState(false);
 
@@ -430,16 +429,15 @@ const AddEditStudent = props => {
           EDIT_URL
         )
         .then(response => {
+          if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
+            commonUtilities.updateUser();
+          }
           let studentName =
             props.location["dataForEdit"]["first_name"] +
             " " +
             props.location["dataForEdit"]["middlename"] +
             " " +
             props.location["dataForEdit"]["last_name"];
-
-          setIsSuccess(true);
-          setFormState({ ...formState, isSuccess: true });
-
           if (
             auth.getUserInfo().role.name === roleConstants.MEDHAADMIN ||
             auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN
@@ -451,9 +449,6 @@ const AddEditStudent = props => {
               editedStudentName: studentName
             });
           } else {
-            if (auth.getUserInfo().role.name === roleConstants.STUDENT) {
-              commonUtilities.updateUser();
-            }
             if (formState.flag === 1) {
               history.push({
                 pathname: routeConstants.VIEW_EDUCATION
