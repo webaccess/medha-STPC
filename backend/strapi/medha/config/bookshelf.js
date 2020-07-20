@@ -3,9 +3,9 @@ const knex = require("knex")({
   connection: {
     host: "127.0.0.1",
     port: "5432",
-    user: "medha",
+    user: "postgres",
     password: "root",
-    database: "medha-CRM"
+    database: "medha"
   }
 });
 

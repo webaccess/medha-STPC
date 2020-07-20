@@ -471,3 +471,276 @@ export const questionSet = [
     activities: []
   }
 ];
+
+export const manageZoneData = {
+  result: [
+    {
+      id: 2,
+      name: "Bundelkhand Zone - Jhansi",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      created_at: "2020-06-25T07:00:17.248Z",
+      updated_at: "2020-06-25T07:00:17.248Z"
+    },
+    {
+      id: 3,
+      name: "Central Zone - Lucknow",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      created_at: "2020-06-25T07:00:17.255Z",
+      updated_at: "2020-06-25T07:00:17.255Z"
+    },
+    {
+      id: 4,
+      name: "East Zone - Varanasi",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      created_at: "2020-06-25T07:00:17.263Z",
+      updated_at: "2020-06-25T07:00:17.263Z"
+    },
+    {
+      id: 1,
+      name: "West Zone - Daurala (Meerut)",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      created_at: "2020-06-25T07:00:17.240Z",
+      updated_at: "2020-06-25T07:00:17.240Z"
+    }
+  ],
+  page: 1,
+  pageSize: 10,
+  rowCount: 4,
+  pageCount: 1
+};
+
+export const mockManageRPCData = {
+  result: [
+    {
+      id: 1,
+      name: "Agra",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: {
+        id: 1,
+        name: "Government Polytechnic, Mainpuri",
+        phone: "0356273400",
+        phone_other: null,
+        email: "collegeemail1@gmail.com",
+        email_other: null,
+        address_1: "Government Polytechnic, Mainpuri",
+        address_2: null,
+        city: null,
+        pincode: null,
+        contact_type: "organization",
+        organization: 1,
+        country: 1,
+        village: null,
+        state: 1,
+        district: null,
+        individual: null,
+        user: null,
+        created_at: "2020-06-25T07:04:15.407Z",
+        updated_at: "2020-07-03T15:42:01.848Z"
+      },
+      created_at: "2020-06-25T07:00:17.282Z",
+      updated_at: "2020-07-17T06:48:58.616Z"
+    },
+    {
+      id: 2,
+      name: "Bareilly",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.290Z",
+      updated_at: "2020-06-25T07:00:17.290Z"
+    },
+    {
+      id: 3,
+      name: "Ghaziabad",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.297Z",
+      updated_at: "2020-06-25T07:00:17.297Z"
+    },
+    {
+      id: 4,
+      name: "Gorakhpur",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.304Z",
+      updated_at: "2020-06-25T07:00:17.304Z"
+    },
+    {
+      id: 5,
+      name: "Jhansi",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.313Z",
+      updated_at: "2020-06-25T07:00:17.313Z"
+    },
+    {
+      id: 6,
+      name: "Kanpur",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.324Z",
+      updated_at: "2020-06-25T07:00:17.324Z"
+    },
+    {
+      id: 7,
+      name: "Lucknow",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.331Z",
+      updated_at: "2020-06-25T07:00:17.331Z"
+    },
+    {
+      id: 8,
+      name: "Moradabad",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.337Z",
+      updated_at: "2020-06-25T07:00:17.337Z"
+    },
+    {
+      id: 9,
+      name: "Prayagraj",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.344Z",
+      updated_at: "2020-06-25T07:00:17.344Z"
+    },
+    {
+      id: 12,
+      name: "Test",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-07-17T06:49:09.375Z",
+      updated_at: "2020-07-17T06:49:09.511Z"
+    }
+  ],
+  page: 1,
+  pageSize: 10,
+  rowCount: 12,
+  pageCount: 2
+};

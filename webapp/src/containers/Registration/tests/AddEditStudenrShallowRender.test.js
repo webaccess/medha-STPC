@@ -351,7 +351,6 @@ describe("Add Edit Student simulate field changes", () => {
     wrapper.find("#submitandnext").simulate("click", {
       preventDefault: jest.fn()
     });
-    console.log(wrapper.find("#stream-filter").props());
     // expect(updateFuture.props().value.name).toEqual("Private Jobs");
   });
 });
