@@ -31,8 +31,8 @@ module.exports = async (ctx, next) => {
         return ctx.response.badRequest("First Name field is missing");
       if (!individual.last_name)
         return ctx.response.badRequest("Last Name field is missing");
-      if (!individual.address_1)
-        return ctx.response.badRequest("Address field is missing");
+      if (!individual.addresses)
+        return ctx.response.badRequest("Addresses field is missing");
       if (!individual.father_full_name)
         return ctx.response.badRequest("Father's Full Name field is missing");
       if (!individual.mother_full_name)
@@ -96,8 +96,6 @@ module.exports = async (ctx, next) => {
         return ctx.response.badRequest("First Name field is missing");
       if (!individual.last_name)
         return ctx.response.badRequest("Last Name field is missing");
-      // if (!individual.address_1)
-      //   return ctx.response.badRequest("Address field is missing");
       if (!individual.username)
         return ctx.response.badRequest("Username field is missing");
       else {

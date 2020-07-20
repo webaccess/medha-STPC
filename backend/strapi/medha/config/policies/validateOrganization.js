@@ -10,7 +10,7 @@ module.exports = async (ctx, next) => {
   const {
     name,
     college_code,
-    address_1,
+    addresses,
     email,
     rpc,
     zone,
@@ -31,7 +31,8 @@ module.exports = async (ctx, next) => {
     if (!college_code)
       return ctx.response.badRequest("College code is missing");
 
-    if (!address_1) return ctx.response.badRequest("Address field is missing");
+    if (!addresses)
+      return ctx.response.badRequest("Addresses field is missing");
     if (!zone) return ctx.response.badRequest("Zone field is missing");
     if (!rpc) return ctx.response.badRequest("RPC field is missing");
 

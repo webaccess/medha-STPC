@@ -41,11 +41,16 @@ module.exports = {
     const contactReqBody = _.pick(ctx.request.body, [
       "name",
       "phone",
-      "email",
-      "state",
-      "address_1",
-      "district"
+      "email"
+      // "state",
+      // "address_1",
+      // "district"
     ]);
+
+    const addressBody = ctx.request.body.addresses || [];
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
 
     await bookshelf
       .transaction(async t => {
@@ -144,7 +149,7 @@ module.exports = {
           .query("contact", PLUGIN)
           .model.forge(contactReqBody)
           .save(null, { transacting: t })
-          .then(model => model.toJSON())
+          .then(model => model)
           .catch(error => {
             console.log(error);
             return null;
@@ -154,12 +159,35 @@ module.exports = {
           return Promise.reject("Something went wrong while creating Contact");
         }
 
+        const contactJSON = contact.toJSON ? contact.toJSON() : contact;
+        if (addressesBody.length > 0) {
+          // Add addresses
+          const addresses = await Promise.all(
+            addressBody.map(addr => {
+              const body = { ...addr, country: country.id };
+              body.contact = contactJSON.id;
+              return strapi
+                .query("address", PLUGIN)
+                .model.forge(body)
+                .save(null, { transacting: t })
+                .then(model => model.toJSON())
+                .catch(error => null);
+            })
+          );
+
+          if (addresses.some(addr => addr == null)) {
+            return Promise.reject(
+              "Something went wrong while creating Address"
+            );
+          }
+        }
+
         await orgModel.save(
-          { contact: contact.id },
+          { contact: contactJSON.id },
           { transacting: t, require: false }
         );
 
-        return new Promise(resolve => resolve(contact));
+        return new Promise(resolve => resolve(contactJSON));
       })
       .then(success => {
         return ctx.send(utils.getFindOneResponse(success));
@@ -337,14 +365,20 @@ module.exports = {
 
     const contactBody = _.pick(data, [
       "phone",
-      "email",
-      "address_1",
-      "state",
-      "district"
+      "email"
+      // "address_1",
+      // "state",
+      // "district"
     ]);
+
+    const country = await strapi
+      .query("country", PLUGIN)
+      .findOne({ name: "India" });
 
     contactBody.name = `${individualRequestBody.first_name} ${individualRequestBody.last_name}`;
     contactBody.contact_type = "individual";
+
+    const addressesBody = data["addresses"] || [];
 
     await bookshelf
       .transaction(async t => {
@@ -436,6 +470,29 @@ module.exports = {
         // Mapping user and individual relations
         const contactResponse = contact.toJSON ? contact.toJSON() : contact;
 
+        // Step 4 creating address details
+        if (addressesBody.length > 0) {
+          const addresses = await Promise.all(
+            addressesBody.map(addr => {
+              const body = { ...addr };
+              body.country = country.id;
+              body.contact = contactResponse.id;
+              return strapi
+                .query("address", PLUGIN)
+                .model.forge(body)
+                .save(null, { transacting: t })
+                .then(model => model.toJSON())
+                .catch(() => null);
+            })
+          );
+
+          if (addresses.some(addr => addr == null)) {
+            return Promise.reject(
+              "Something went wrong while creating Address"
+            );
+          }
+        }
+
         await user.save(
           { contact: contactResponse.id },
           { transacting: t, require: false }
@@ -482,6 +539,7 @@ module.exports = {
         "contact",
         "contact.state",
         "contact.district",
+        "contact.addresses",
         "zone",
         "rpc",
         "principal.contact",
@@ -513,6 +571,7 @@ module.exports = {
         "contact.user.zone",
         "contact.user.rpc",
         "contact.district",
+        "contact.addresses",
         "contact.state",
         "stream",
         "profile_photo",
@@ -1925,11 +1984,13 @@ module.exports = {
     const contactReqBody = _.pick(ctx.request.body, [
       "name",
       "phone",
-      "email",
-      "state",
-      "address_1",
-      "district"
+      "email"
+      // "state",
+      // "address_1",
+      // "district"
     ]);
+
+    const addressBody = ctx.request.body.addresses || [];
 
     await bookshelf
       .transaction(async t => {
@@ -2040,7 +2101,7 @@ module.exports = {
           .query("contact", PLUGIN)
           .model.where({ id: id })
           .save(contactReqBody, { transacting: t, patch: true })
-          .then(model => model.toJSON())
+          .then(model => model)
           .catch(error => {
             console.log(error);
             return null;
@@ -2050,7 +2111,47 @@ module.exports = {
           return Promise.reject("Something went wrong while creating Contact");
         }
 
-        return new Promise(resolve => resolve(contact));
+        const contactJSON = contact.toJSON ? contact.toJSON() : contact;
+        if (addressBody.length > 0) {
+          if (contactJSON.addresses && contactJSON.addresses.length > 0) {
+            const addresses = await Promise.all(
+              addressBody.map(addr => {
+                return strapi
+                  .query("address", PLUGIN)
+                  .model.where({ id: addr.id })
+                  .save({ ...addr }, { transacting: t, patch: true })
+                  .then(model => model.toJSON())
+                  .catch(() => null);
+              })
+            );
+
+            if (addresses.some(addr => addr == null)) {
+              return Promise.reject(
+                "Something went wrong while updating address"
+              );
+            }
+          } else {
+            const addresses = await Promise.all(
+              addressBody.map(addr => {
+                addr.contact = contactJSON.id;
+                return strapi
+                  .query("address", PLUGIN)
+                  .model.forge(addr)
+                  .save(null, { transacting: t })
+                  .then(model => model.toJSON())
+                  .catch(() => null);
+              })
+            );
+
+            if (addresses.some(addr => addr == null)) {
+              return Promise.reject(
+                "Something went wrong while creating address"
+              );
+            }
+          }
+        }
+
+        return new Promise(resolve => resolve(contactJSON));
       })
       .then(success => {
         return ctx.send(utils.getFindOneResponse(success));
@@ -2151,14 +2252,16 @@ module.exports = {
 
     const contactBody = _.pick(data, [
       "phone",
-      "email",
-      "address_1",
-      "state",
-      "district"
+      "email"
+      // "address_1",
+      // "state",
+      // "district"
     ]);
 
     contactBody.name = `${individualRequestBody.first_name} ${individualRequestBody.last_name}`;
     contactBody.contact_type = "individual";
+
+    const addressBody = data["addresses"] || [];
 
     await bookshelf
       .transaction(async t => {
@@ -2245,6 +2348,47 @@ module.exports = {
 
         if (!contact) {
           return Promise.reject("Something went wrong while updating Contact");
+        }
+
+        const contactJSON = contact.toJSON ? contact.toJSON() : contact;
+
+        if (addressBody.length > 0) {
+          if (contactJSON.addresses && contactJSON.addresses.length > 0) {
+            const addresses = await Promise.all(
+              addressBody.map(addr => {
+                return strapi
+                  .query("address", PLUGIN)
+                  .model.where({ id: addr.id })
+                  .save({ ...addr }, { transacting: t, patch: true })
+                  .then(model => model.toJSON())
+                  .catch(() => null);
+              })
+            );
+
+            if (addresses.some(addr => addr == null)) {
+              return Promise.reject(
+                "Something went wrong while updating address"
+              );
+            }
+          } else {
+            const addresses = await Promise.all(
+              addressBody.map(addr => {
+                addr.contact = contactJSON.id;
+                return strapi
+                  .query("address", PLUGIN)
+                  .model.forge(addr)
+                  .save(null, { transacting: t })
+                  .then(model => model.toJSON())
+                  .catch(() => null);
+              })
+            );
+
+            if (addresses.some(addr => addr == null)) {
+              return Promise.reject(
+                "Something went wrong while creating address"
+              );
+            }
+          }
         }
 
         // Add user object
