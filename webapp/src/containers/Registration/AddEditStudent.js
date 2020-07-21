@@ -179,38 +179,40 @@ const AddEditStudent = props => {
   }, [formState.values["college"]]);
 
   useEffect(() => {
-    if (formState.addressSameAsLocal) {
-      const address = formState.addresses.find(
-        addr => addr.address_type == "Temporary"
-      );
-      const copyAddresses = formState.addresses.map(addr => {
-        if (addr.address_type == "Permanent") {
-          return { ...address, address_type: "Permanent" };
-        } else {
-          return addr;
-        }
-      });
+    if (!formState.editStudent) {
+      if (formState.addressSameAsLocal) {
+        const address = formState.addresses.find(
+          addr => addr.address_type == "Temporary"
+        );
+        const copyAddresses = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return { ...address, address_type: "Permanent" };
+          } else {
+            return addr;
+          }
+        });
 
-      setFormState(formState => ({
-        ...formState,
-        addresses: copyAddresses
-      }));
-    } else {
-      const address = genericConstants.ADDRESSES.find(
-        addr => addr.address_type == "Permanent"
-      );
+        setFormState(formState => ({
+          ...formState,
+          addresses: copyAddresses
+        }));
+      } else {
+        const address = genericConstants.ADDRESSES.find(
+          addr => addr.address_type == "Permanent"
+        );
 
-      const resetPermanentAddress = formState.addresses.map(addr => {
-        if (addr.address_type == "Permanent") {
-          return address;
-        } else {
-          return addr;
-        }
-      });
-      setFormState(formState => ({
-        ...formState,
-        addresses: resetPermanentAddress
-      }));
+        const resetPermanentAddress = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return address;
+          } else {
+            return addr;
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          addresses: resetPermanentAddress
+        }));
+      }
     }
   }, [formState.addressSameAsLocal]);
 
@@ -259,13 +261,13 @@ const AddEditStudent = props => {
         formState.values["college"] =
           props.location["dataForEdit"]["organization"]["id"];
       }
-      if (
-        props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["state"]
-      ) {
-        formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["state"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"] &&
+      //   props.location["dataForEdit"]["contact"]["state"]
+      // ) {
+      //   formState.values["state"] =
+      //     props.location["dataForEdit"]["contact"]["state"]["id"];
+      // }
       if (
         props.location["dataForEdit"]["stream"] &&
         props.location["dataForEdit"]["stream"]["id"]
@@ -273,13 +275,13 @@ const AddEditStudent = props => {
         formState.values["stream"] = props.location["dataForEdit"]["stream"];
       }
 
-      if (
-        props.location["dataForEdit"]["contact"]["district"] &&
-        props.location["dataForEdit"]["contact"]["district"]["id"]
-      ) {
-        formState.values["district"] =
-          props.location["dataForEdit"]["contact"]["district"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"]["district"] &&
+      //   props.location["dataForEdit"]["contact"]["district"]["id"]
+      // ) {
+      //   formState.values["district"] =
+      //     props.location["dataForEdit"]["contact"]["district"]["id"];
+      // }
 
       if (props.location["dataForEdit"]["father_full_name"]) {
         formState.values["fatherFullName"] =
@@ -289,10 +291,10 @@ const AddEditStudent = props => {
         formState.values["motherFullName"] =
           props.location["dataForEdit"]["mother_full_name"];
       }
-      if (props.location["dataForEdit"]["contact"]["address_1"]) {
-        formState.values["address"] =
-          props.location["dataForEdit"]["contact"]["address_1"];
-      }
+      // if (props.location["dataForEdit"]["contact"]["address_1"]) {
+      //   formState.values["address"] =
+      //     props.location["dataForEdit"]["contact"]["address_1"];
+      // }
       if (props.location["dataForEdit"]["gender"]) {
         formState.values["gender"] = props.location["dataForEdit"]["gender"];
       }
@@ -333,6 +335,17 @@ const AddEditStudent = props => {
         //      formState.values["files"] =
         //        props.location["dataForEdit"]["upload_logo"]["name"];
       }
+
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["addresses"] &&
+        props.location["dataForEdit"]["contact"]["addresses"].length > 0
+      ) {
+        formState.addresses =
+          props.location["dataForEdit"]["contact"]["addresses"];
+      } else {
+        formState.addresses = genericConstants.ADDRESSES;
+      }
     }
     formState.counter += 1;
   }
@@ -348,7 +361,7 @@ const AddEditStudent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    validateAddresses();
+    const isValidAddress = validateAddresses();
     setLoaderStatus(true);
     let schema;
     if (formState.editStudent) {
@@ -389,11 +402,12 @@ const AddEditStudent = props => {
       formState.isDateOfBirthPresent = true;
     }
 
+    console.log(formState);
     if (
       isValid &&
       formState.isDateOfBirthPresent &&
       formState.isdateOfBirthValid &&
-      !validateAddresses()
+      isValidAddress
     ) {
       /** CALL POST FUNCTION */
       postStudentData();
@@ -817,6 +831,7 @@ const AddEditStudent = props => {
     if (type == "state") {
       formState.addresses[idx]["district"] = null;
     }
+    validateAddresses();
     setFormState(formState => ({
       ...formState
     }));
@@ -833,7 +848,7 @@ const AddEditStudent = props => {
         return addr;
       }
     });
-
+    validateAddresses();
     setFormState(formState => ({
       ...formState,
       addresses
@@ -915,7 +930,7 @@ const AddEditStudent = props => {
     });
 
     setValidateAddress(errors);
-    return isError;
+    return !isError;
   };
 
   console.log(formState.addresses);
@@ -1269,6 +1284,57 @@ const AddEditStudent = props => {
                               />
                             </Grid>
                             <Grid item md={6} xs={12}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                className={classes.root}
+                                options={districtlist.filter(
+                                  district =>
+                                    district.state ===
+                                    formState.addresses[idx].state
+                                )}
+                                getOptionLabel={option => option.name}
+                                onChange={(event, value) => {
+                                  handleStateAndDistrictChange(
+                                    "district",
+                                    value,
+                                    idx
+                                  );
+                                }}
+                                value={
+                                  districtlist[
+                                    districtlist.findIndex(function (item, i) {
+                                      return (
+                                        item.id ===
+                                        formState.addresses[idx].district
+                                      );
+                                    })
+                                  ] || null
+                                }
+                                renderInput={params => (
+                                  <TextField
+                                    {...params}
+                                    label="District"
+                                    variant="outlined"
+                                    name="tester"
+                                    error={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["district"][
+                                          "error"
+                                        ]) ||
+                                      false
+                                    }
+                                    helperText={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["district"][
+                                          "message"
+                                        ]) ||
+                                      null
+                                    }
+                                  />
+                                )}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
                               <TextField
                                 label="City"
                                 name="city"
@@ -1318,7 +1384,8 @@ const AddEditStudent = props => {
                             </Grid>
                           </Grid>
                           <Grid item md={12} xs={12}>
-                            {addr.address_type == "Temporary" ? (
+                            {!formState.editStudent &&
+                            addr.address_type == "Temporary" ? (
                               <FormControlLabel
                                 control={
                                   <Checkbox

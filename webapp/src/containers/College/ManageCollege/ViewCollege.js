@@ -298,7 +298,7 @@ const ViewCollege = props => {
                               <ReadOnlyTextField
                                 id="State"
                                 label={State}
-                                defaultValue={states && states.name}
+                                defaultValue={(states && states.name) || ""}
                               />
                             </Grid>
                             <Grid item md={6} xs={12}>
@@ -344,7 +344,9 @@ const ViewCollege = props => {
                               <ReadOnlyTextField
                                 id="District"
                                 label={"District"}
-                                defaultValue={districts && districts.name}
+                                defaultValue={
+                                  (districts && districts.name) || ""
+                                }
                               />
                             </Grid>
                           </Grid>

@@ -129,38 +129,40 @@ const AddEditStudentForCollegeAdmin = props => {
   const [validateAddress, setValidateAddress] = useState([]);
 
   useEffect(() => {
-    if (formState.addressSameAsLocal) {
-      const address = formState.addresses.find(
-        addr => addr.address_type == "Temporary"
-      );
-      const copyAddresses = formState.addresses.map(addr => {
-        if (addr.address_type == "Permanent") {
-          return { ...address, address_type: "Permanent" };
-        } else {
-          return addr;
-        }
-      });
+    if (!formState.editStudent) {
+      if (formState.addressSameAsLocal) {
+        const address = formState.addresses.find(
+          addr => addr.address_type == "Temporary"
+        );
+        const copyAddresses = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return { ...address, address_type: "Permanent" };
+          } else {
+            return addr;
+          }
+        });
 
-      setFormState(formState => ({
-        ...formState,
-        addresses: copyAddresses
-      }));
-    } else {
-      const address = genericConstants.ADDRESSES.find(
-        addr => addr.address_type == "Permanent"
-      );
+        setFormState(formState => ({
+          ...formState,
+          addresses: copyAddresses
+        }));
+      } else {
+        const address = genericConstants.ADDRESSES.find(
+          addr => addr.address_type == "Permanent"
+        );
 
-      const resetPermanentAddress = formState.addresses.map(addr => {
-        if (addr.address_type == "Permanent") {
-          return address;
-        } else {
-          return addr;
-        }
-      });
-      setFormState(formState => ({
-        ...formState,
-        addresses: resetPermanentAddress
-      }));
+        const resetPermanentAddress = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return address;
+          } else {
+            return addr;
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          addresses: resetPermanentAddress
+        }));
+      }
     }
   }, [formState.addressSameAsLocal]);
 
@@ -318,25 +320,25 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["contact"] =
           props.location["dataForEdit"]["contact"]["phone"];
       }
-      if (
-        props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["state"]
-      ) {
-        formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["state"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"] &&
+      //   props.location["dataForEdit"]["contact"]["state"]
+      // ) {
+      //   formState.values["state"] =
+      //     props.location["dataForEdit"]["contact"]["state"]["id"];
+      // }
       if (props.location["dataForEdit"]["stream"]) {
         formState.values["stream"] =
           props.location["dataForEdit"]["stream"]["id"];
       }
 
-      if (
-        props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["district"]
-      ) {
-        formState.values["district"] =
-          props.location["dataForEdit"]["contact"]["district"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"] &&
+      //   props.location["dataForEdit"]["contact"]["district"]
+      // ) {
+      //   formState.values["district"] =
+      //     props.location["dataForEdit"]["contact"]["district"]["id"];
+      // }
       if (props.location["dataForEdit"]["father_full_name"]) {
         formState.values["fatherFullName"] =
           props.location["dataForEdit"]["father_full_name"];
@@ -345,10 +347,10 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["motherFullName"] =
           props.location["dataForEdit"]["mother_full_name"];
       }
-      if (props.location["dataForEdit"]["contact"]["address_1"]) {
-        formState.values["address"] =
-          props.location["dataForEdit"]["contact"]["address_1"];
-      }
+      // if (props.location["dataForEdit"]["contact"]["address_1"]) {
+      //   formState.values["address"] =
+      //     props.location["dataForEdit"]["contact"]["address_1"];
+      // }
       if (props.location["dataForEdit"]["gender"]) {
         formState.values["gender"] = props.location["dataForEdit"]["gender"];
       }
@@ -380,6 +382,17 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.previewFile = props.location["dataForEdit"]["profile_photo"];
         //      formState.values["files"] =
         //        props.location["dataForEdit"]["upload_logo"]["name"];
+      }
+
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["addresses"] &&
+        props.location["dataForEdit"]["contact"]["addresses"].length > 0
+      ) {
+        formState.addresses =
+          props.location["dataForEdit"]["contact"]["addresses"];
+      } else {
+        formState.addresses = genericConstants.ADDRESSES;
       }
     }
     formState.counter += 1;
@@ -731,6 +744,7 @@ const AddEditStudentForCollegeAdmin = props => {
     if (type == "state") {
       formState.addresses[idx]["district"] = null;
     }
+    validateAddresses();
     setFormState(formState => ({
       ...formState
     }));
@@ -747,7 +761,7 @@ const AddEditStudentForCollegeAdmin = props => {
         return addr;
       }
     });
-
+    validateAddresses();
     setFormState(formState => ({
       ...formState,
       addresses
@@ -1269,7 +1283,8 @@ const AddEditStudentForCollegeAdmin = props => {
                               </Grid>
                             </Grid>
                             <Grid item md={12} xs={12}>
-                              {addr.address_type == "Temporary" ? (
+                              {!formState.editStudent &&
+                              addr.address_type == "Temporary" ? (
                                 <FormControlLabel
                                   control={
                                     <Checkbox
