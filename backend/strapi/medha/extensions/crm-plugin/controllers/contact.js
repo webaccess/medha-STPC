@@ -29,6 +29,7 @@ module.exports = {
    * Map contact with organization
    */
   createOrganization: async ctx => {
+    console.log("in create organization");
     const organizationReqBody = _.pick(ctx.request.body, [
       "name",
       "college_code",
@@ -48,6 +49,7 @@ module.exports = {
     ]);
 
     const addressBody = ctx.request.body.addresses || [];
+
     const country = await strapi
       .query("country", PLUGIN)
       .findOne({ name: "India" });
@@ -72,7 +74,7 @@ module.exports = {
         }
 
         const org = orgModel.toJSON ? orgModel.toJSON() : orgModel;
-
+        console.log("addressBody1");
         /**
          * Add this to policy
          */
@@ -144,7 +146,7 @@ module.exports = {
 
         contactReqBody.organization = org.id;
         contactReqBody.contact_type = "organization";
-
+        console.log("addressBody2");
         const contact = await strapi
           .query("contact", PLUGIN)
           .model.forge(contactReqBody)
@@ -158,14 +160,15 @@ module.exports = {
         if (!contact) {
           return Promise.reject("Something went wrong while creating Contact");
         }
-
+        console.log("addressBody3");
         const contactJSON = contact.toJSON ? contact.toJSON() : contact;
-        if (addressesBody.length > 0) {
+        if (addressBody.length > 0) {
           // Add addresses
           const addresses = await Promise.all(
             addressBody.map(addr => {
               const body = { ...addr, country: country.id };
               body.contact = contactJSON.id;
+              console.log(body);
               return strapi
                 .query("address", PLUGIN)
                 .model.forge(body)
@@ -181,12 +184,12 @@ module.exports = {
             );
           }
         }
-
+        console.log("addressBody4");
         await orgModel.save(
           { contact: contactJSON.id },
           { transacting: t, require: false }
         );
-
+        console.log("addressBody5");
         return new Promise(resolve => resolve(contactJSON));
       })
       .then(success => {
