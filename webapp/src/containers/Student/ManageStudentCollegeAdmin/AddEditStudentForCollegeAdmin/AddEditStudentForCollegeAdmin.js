@@ -13,7 +13,9 @@ import {
   FormHelperText,
   CardActions,
   Button,
-  Divider
+  Divider,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import AddOutlinedIcon from "@material-ui/icons/AddOutlined";
 import { Auth as auth, InlineDatePicker } from "../../../../components";
@@ -43,8 +45,10 @@ const DISTRICTS_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DISTRICTS;
 
 const AddEditStudentForCollegeAdmin = props => {
-  const { setLoaderStatus } = useContext(LoaderContext);
-  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [selectedDate, setSelectedDate] = useState(
+    props.forTestingDate ? new Date("1999-03-25") : null
+  );
+  const [backDrop, setBackDrop] = useState(false);
 
   const defaultParams = {
     pageSize: -1
@@ -114,10 +118,19 @@ const AddEditStudentForCollegeAdmin = props => {
 
   const { layout: Layout } = props;
   const classes = useStyles();
-  const [statelist, setstatelist] = useState([]);
-  const [districtlist, setdistrictlist] = useState([]);
-  const [streamlist, setStreamlist] = useState([]);
-  const [futureAspirant, setFutureAspirant] = useState([]);
+
+  const [statelist, setstatelist] = useState(
+    props.mockStateList ? props.mockStateList : []
+  );
+  const [districtlist, setdistrictlist] = useState(
+    props.mockdistrictList ? props.mockdistrictList : []
+  );
+  const [streamlist, setStreamlist] = useState(
+    props.mockstreamList ? props.mockstreamList : []
+  );
+  const [futureAspirant, setFutureAspirant] = useState(
+    props.mockFutureAspiration ? props.mockFutureAspiration : []
+  );
   const [collegelist] = useState([auth.getUserInfo().studentInfo.organization]);
 
   useEffect(() => {
@@ -358,7 +371,7 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   const handleSubmit = event => {
-    setLoaderStatus(true);
+    setBackDrop(true);
     let schema;
     if (formState.editStudent) {
       schema = Object.assign({}, _.omit(registrationSchema, ["otp"]));
@@ -396,12 +409,15 @@ const AddEditStudentForCollegeAdmin = props => {
     if (selectedDate === null) {
       formState.isDateOfBirthPresent = false;
     } else {
-      formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
-        selectedDate
-      );
       formState.isDateOfBirthPresent = true;
+      if (props.forTestingDate) {
+        formState.isdateOfBirthValid = true;
+      } else {
+        formState.isdateOfBirthValid = formUtilities.validateDateOfBirth(
+          selectedDate
+        );
+      }
     }
-
     if (
       isValid &&
       formState.isDateOfBirthPresent &&
@@ -416,7 +432,7 @@ const AddEditStudentForCollegeAdmin = props => {
         isValid: true
       }));
     } else {
-      setLoaderStatus(false);
+      setBackDrop(false);
       setFormState(formState => ({
         ...formState,
         isValid: false
@@ -474,7 +490,7 @@ const AddEditStudentForCollegeAdmin = props => {
           EDIT_URL
         )
         .then(response => {
-          setLoaderStatus(false);
+          setBackDrop(false);
           if (formState.flag === 1) {
             history.push({
               pathname: routeConstants.VIEW_EDUCATION
@@ -490,7 +506,7 @@ const AddEditStudentForCollegeAdmin = props => {
           }
         })
         .catch(err => {
-          setLoaderStatus(false);
+          setBackDrop(false);
           console.log(JSON.stringify(err));
           history.push({
             pathname: routeConstants.MANAGE_STUDENT,
@@ -537,7 +553,7 @@ const AddEditStudentForCollegeAdmin = props => {
       serviceProvider
         .serviceProviderForPostRequest(url, postData)
         .then(response => {
-          setLoaderStatus(false);
+          setBackDrop(false);
           history.push({
             pathname: routeConstants.MANAGE_STUDENT,
             fromAddStudent: true,
@@ -553,7 +569,7 @@ const AddEditStudentForCollegeAdmin = props => {
           });
         })
         .catch(error => {
-          setLoaderStatus(false);
+          setBackDrop(false);
           let errorMessage;
 
           if (
@@ -691,7 +707,6 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -794,6 +809,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["firstname"],
                         "placeholder"
                       )}
+                      id="firstName"
                       value={formState.values["firstname"] || ""}
                       variant="outlined"
                       error={hasError("firstname")}
@@ -815,6 +831,7 @@ const AddEditStudentForCollegeAdmin = props => {
                     <TextField
                       label="Middle Name"
                       name="middlename"
+                      id="middlename"
                       value={formState.values["middlename"]}
                       variant="outlined"
                       error={hasError("middlename")}
@@ -837,6 +854,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["lastname"],
                         "placeholder"
                       )}
+                      id="lastname"
                       value={formState.values["lastname"] || ""}
                       variant="outlined"
                       required
@@ -862,6 +880,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["fatherFullName"],
                         "placeholder"
                       )}
+                      id="fatherFullName"
                       value={formState.values["fatherFullName"] || ""}
                       variant="outlined"
                       required
@@ -885,6 +904,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["motherFullName"],
                         "placeholder"
                       )}
+                      id="motherFullName"
                       value={formState.values["motherFullName"] || ""}
                       variant="outlined"
                       required
@@ -910,6 +930,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["address"],
                         "placeholder"
                       )}
+                      id="address"
                       value={formState.values["address"] || ""}
                       variant="outlined"
                       required
@@ -1086,6 +1107,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["contact"],
                         "placeholder"
                       )}
+                      id="contact"
                       name="contact"
                       value={formState.values["contact"] || ""}
                       variant="outlined"
@@ -1163,6 +1185,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["email"],
                         "placeholder"
                       )}
+                      id="email"
                       name="email"
                       value={formState.values["email"] || ""}
                       variant="outlined"
@@ -1267,6 +1290,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         registrationSchema["rollnumber"],
                         "placeholder"
                       )}
+                      id="rollnumber"
                       name="rollnumber"
                       value={formState.values["rollnumber"] || ""}
                       variant="outlined"
@@ -1300,9 +1324,10 @@ const AddEditStudentForCollegeAdmin = props => {
                           registrationSchema["password"],
                           "placeholder"
                         )}
+                        id="password"
                         name="password"
                         type={formState.showPassword ? "text" : "password"}
-                        value={formState.values[user.password]}
+                        value={formState.values["password"]}
                         required
                         fullWidth
                         onChange={handleChange}
@@ -1346,7 +1371,7 @@ const AddEditStudentForCollegeAdmin = props => {
                   {formState.editStudent ? (
                     <Grid item md={6} xs={12}>
                       <Autocomplete
-                        id={get(registrationSchema["futureAspirations"], "id")}
+                        id="futureAspirations"
                         multiple
                         options={futureAspirant}
                         getOptionLabel={option => option.name}
@@ -1399,6 +1424,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         <YellowButton
                           color="primary"
                           type="submit"
+                          id="submit"
                           mfullWidth
                           variant="contained"
                           style={{ marginRight: "18px" }}
@@ -1414,6 +1440,7 @@ const AddEditStudentForCollegeAdmin = props => {
                         <YellowButton
                           color="primary"
                           type="submit"
+                          id="submitandnext"
                           mfullWidth
                           variant="contained"
                           style={{ marginRight: "18px" }}
@@ -1445,6 +1472,9 @@ const AddEditStudentForCollegeAdmin = props => {
           </form>
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
     // </Layout>
   );

@@ -204,7 +204,9 @@ describe("testing for state", () => {
     expect(getStatusOfDashboardSpy.mock.calls).toEqual([
       [
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_COLLEGES,
-        { pageSize: -1 }
+        {
+          pageSize: -1
+        }
       ],
       [
         strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES,
@@ -220,7 +222,7 @@ describe("testing for state", () => {
       ]
     ]);
 
-    // // // /** This actually checks whether the post method is called */
+    // // /** This actually checks whether the post method is called */
     expect(getStatusOfDashboardSpy).toHaveBeenCalledTimes(3);
     wrapper.unmount();
   });

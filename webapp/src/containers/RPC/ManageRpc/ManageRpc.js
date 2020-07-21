@@ -114,19 +114,7 @@ const ViewRpc = props => {
     toggleCleared: false
   });
   useEffect(() => {
-    let paramsForPageSize = {
-      pageSize: -1
-    };
-    serviceProviders
-      .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          rpcFilter: res.data.result
-        }));
-      })
-      .catch(error => [console.log("error", error)]);
-
+    console.log("manageRPC");
     getRpcStateData(10, 1);
   }, []);
 

@@ -227,7 +227,10 @@ describe("test for edit college ", () => {
           pageSize: -1
         }
       ],
-      ["https://medha-devlopment.wastaging.com/streams", { pageSize: -1 }]
+      [
+        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STREAMS,
+        { pageSize: -1 }
+      ]
     ]);
 
     // /** This actually checks whether the post method is called */
