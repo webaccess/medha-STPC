@@ -20,6 +20,7 @@ module.exports = {
         "contact.user.state",
         "contact.user.zone",
         "contact.user.rpc",
+        "contact.addresses",
         "organization.zone",
         "organization.rpc",
         "organization.contact",
@@ -90,7 +91,8 @@ module.exports = {
         "contact.user.role",
         "contact.user.state",
         "contact.user.zone",
-        "contact.user.rpc"
+        "contact.user.rpc",
+        "contact.addresses"
       ]
     };
 
@@ -161,7 +163,8 @@ module.exports = {
         "contact.user.role",
         "contact.user.state",
         "contact.user.zone",
-        "contact.user.rpc"
+        "contact.user.rpc",
+        "contact.addresses"
       ]
     };
 
