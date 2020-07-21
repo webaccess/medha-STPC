@@ -14,6 +14,7 @@ import {
   Grid,
   Collapse,
   IconButton,
+  InputLabel,
   Avatar
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
@@ -74,7 +75,9 @@ const StudentProfile = props => {
     eventId: props["location"]["eventId"],
     eventTitle: props["location"]["eventTitle"],
     showEditPreview: false,
-    showNoImage: true
+    showNoImage: true,
+    addressSameAsLocal: false,
+    addresses: genericConstants.ADDRESSES
   });
   const classes = useStyles();
   const { setIndex } = useContext(SetIndexContext);
@@ -351,7 +354,7 @@ const StudentProfile = props => {
                   />
                 </Grid>
               </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
+              {/* <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={12} xs={12}>
                   <ReadOnlyTextField
                     id="address"
@@ -359,8 +362,87 @@ const StudentProfile = props => {
                     defaultValue={formState.values.address}
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
               <Grid container spacing={3} className={classes.MarginBottom}>
+                {formState.addresses.map((addr, idx) => {
+                  return (
+                    <Grid item md={12} xs={12}>
+                      <Grid item md={12} xs={12} className={classes.streamcard}>
+                        <Card className={classes.streamoffer}>
+                          <InputLabel
+                            htmlFor="outlined-address-card"
+                            fullwidth={true.toString()}
+                          >
+                            {addr.address_type == "Temporary"
+                              ? "Local Address"
+                              : "Permanent Address"}
+                          </InputLabel>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid
+                              item
+                              md={12}
+                              xs={12}
+                              style={{ marginTop: "8px" }}
+                            >
+                              <ReadOnlyTextField
+                                id="address"
+                                label="Address"
+                                defaultValue={
+                                  formState.addresses[idx].address || ""
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="state"
+                                label="State"
+                                defaultValue={formState.addresses[idx].state}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="city"
+                                label="City"
+                                defaultValue={
+                                  formState.addresses[idx].city || ""
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="pincode"
+                                label="Pincode"
+                                defaultValue={
+                                  formState.addresses[idx].pincode || ""
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="district"
+                                label="District"
+                                defaultValue={formState.values.district}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Card>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+
+              {/* <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="state"
@@ -375,7 +457,7 @@ const StudentProfile = props => {
                     defaultValue={formState.values.district}
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.MarginBottom}>
