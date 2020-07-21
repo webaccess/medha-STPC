@@ -6,7 +6,9 @@ import {
   Grid,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import useStyles from "../../ContainerStyles/ManagePageStyles";
 import {
@@ -39,19 +41,17 @@ const SORT_FIELD_KEY = "_sort";
 
 const ViewRpc = props => {
   /** Value to set for Rpc filter */
-  const [value, setValue] = React.useState(null);
-
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
   const [rpcsFilter, setRpcsFilter] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const { setLoaderStatus } = useContext(LoaderContext);
+  const [backDrop, setBackDrop] = useState(false);
 
   const [formState, setFormState] = useState({
     filterRpc: "",
-    dataToShow: [],
+    dataToShow: props.testingRPCData ? props.testingRPCData : [],
     tempData: [],
     zones: [],
     rpcs: [],
@@ -114,19 +114,6 @@ const ViewRpc = props => {
     toggleCleared: false
   });
   useEffect(() => {
-    let paramsForPageSize = {
-      pageSize: -1
-    };
-    serviceProviders
-      .serviceProviderForGetRequest(RPC_URL, paramsForPageSize)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          rpcFilter: res.data.result
-        }));
-      })
-      .catch(error => [console.log("error", error)]);
-
     getRpcStateData(10, 1);
   }, []);
 
@@ -286,7 +273,7 @@ const ViewRpc = props => {
   };
 
   const getDataForEdit = async id => {
-    setLoaderStatus(true);
+    setBackDrop(true);
     let paramsForRpcs = {
       id: id
     };
@@ -303,13 +290,12 @@ const ViewRpc = props => {
       .catch(error => {
         console.log("error", error);
       });
-    setLoaderStatus(false);
+    setBackDrop(false);
   };
 
   /** ---------Delete -------- */
 
   const deleteCell = event => {
-    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -324,7 +310,6 @@ const ViewRpc = props => {
       fromEditRpc: false,
       isMultiDelete: false
     }));
-    setLoaderStatus(false);
   };
 
   /** This is used to handle the close modal event */
@@ -497,6 +482,7 @@ const ViewRpc = props => {
         </Grid>
         <Grid item>
           <GreenButton
+            id="deleteMulUsers"
             variant="contained"
             color="secondary"
             onClick={() => deleteMulUserById()}
@@ -665,6 +651,7 @@ const ViewRpc = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="name"
                   label={"Name"}
                   placeholder="Name"
                   variant="outlined"
@@ -674,6 +661,7 @@ const ViewRpc = props => {
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFilter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -687,6 +675,7 @@ const ViewRpc = props => {
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="cancelFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}
@@ -702,6 +691,7 @@ const ViewRpc = props => {
           {formState.dataToShow ? (
             formState.dataToShow.length ? (
               <Table
+                id="ManageTableID"
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"
@@ -744,6 +734,9 @@ const ViewRpc = props => {
           ) : null}
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };

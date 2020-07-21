@@ -543,9 +543,6 @@ const ViewActivity = props => {
   };
   const isDeleteCellCompleted = (status, activity, ismultidelete = false) => {
     formState.isDataDeleted = status;
-    console.log(status);
-    console.log(activity);
-    console.log(ismultidelete);
     if (ismultidelete) {
       if (status === true && activity > 0) {
         setAlert(() => ({

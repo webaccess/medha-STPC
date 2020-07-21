@@ -14,8 +14,8 @@ import {
   Grid,
   Collapse,
   IconButton,
-  Avatar,
-  InputLabel
+  InputLabel,
+  Avatar
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
@@ -149,7 +149,11 @@ const StudentProfile = props => {
               ...formState,
               details: data,
               showEditPreview: data.profile_photo ? true : false,
-              showNoImage: data.profile_photo ? false : true
+              showNoImage: data.profile_photo ? false : true,
+              addresses:
+                data.contact.addresses.length > 0
+                  ? data.contact.addresses
+                  : genericConstants.ADDRESSES
             });
             setUser({
               ...user,
@@ -352,7 +356,7 @@ const StudentProfile = props => {
                 </Grid>
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
-                {formState.values.addresses.map((addr, idx) => {
+                {formState.addresses.map((addr, idx) => {
                   return (
                     <Grid item md={12} xs={12}>
                       <Grid item md={12} xs={12} className={classes.streamcard}>

@@ -1,0 +1,51 @@
+{
+  "result": [
+    {
+      "id": 1,
+      "event": {
+        "id": 1,
+        "title": "Test Event",
+        "start_date_time": "2020-06-02T03:30:00.000Z",
+        "end_date_time": "2020-06-03T07:00:00.000Z",
+        "address": "UP",
+        "description": "<p>Test Event</p>\n",
+        "question_set": 2,
+        "state": 1,
+        "zone": null,
+        "rpc": null,
+        "created_at": "2020-06-24T08:28:22.562Z",
+        "updated_at": "2020-06-24T08:28:22.576Z",
+        "qualifications": [],
+        "educations": [],
+        "upload_logo": null
+      },
+      "contact": {
+        "id": 20,
+        "name": "First Last",
+        "phone": "1764679768",
+        "phone_other": null,
+        "email": "yogesh.dalvi856@gmail.com",
+        "email_other": null,
+        "address_1": "UP",
+        "address_2": null,
+        "city": null,
+        "pincode": null,
+        "contact_type": "individual",
+        "organization": null,
+        "country": null,
+        "village": null,
+        "state": 5,
+        "district": 116,
+        "individual": 13,
+        "user": 13,
+        "created_at": "2020-06-25T07:11:06.774Z",
+        "updated_at": "2020-07-03T08:28:49.950Z"
+      },
+      "is_attendance_verified": true,
+      "is_hired_at_event": true,
+      "is_plan_on_attending": false,
+      "created_at": "2020-06-24T08:36:23.932Z",
+      "updated_at": "2020-06-24T08:41:06.531Z"
+    }
+  ]
+}

@@ -185,6 +185,7 @@ const DeleteRpc = props => {
 
   return (
     <Modal
+      id="deleteRPCID"
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       className={classes.modal}
@@ -236,6 +237,7 @@ const DeleteRpc = props => {
               >
                 <Grid item>
                   <YellowButton
+                    id="submitDeleteRpc"
                     type="submit"
                     color="primary"
                     variant="contained"
@@ -246,6 +248,7 @@ const DeleteRpc = props => {
                 </Grid>
                 <Grid item>
                   <GrayButton
+                    id="cancelCloseModal"
                     type="submit"
                     color="primary"
                     variant="contained"

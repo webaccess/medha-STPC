@@ -78,7 +78,6 @@ const AddEditEducation = props => {
   useEffect(() => {
     const marksObtained = parseInt(formState.values["marksObtained"]);
     const totalMarks = parseInt(formState.values["totalMarks"]);
-    console.log(formState.errors);
     if (marksObtained > 0 && marksObtained <= totalMarks && totalMarks > 0) {
       const marks = (marksObtained / totalMarks) * 100;
       delete formState.errors[percentage];
