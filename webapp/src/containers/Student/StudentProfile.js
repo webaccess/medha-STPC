@@ -14,7 +14,8 @@ import {
   Grid,
   Collapse,
   IconButton,
-  Avatar
+  Avatar,
+  InputLabel
 } from "@material-ui/core";
 import * as routeConstants from "../../constants/RouteConstants";
 import * as roleConstants from "../../constants/RoleConstants";
@@ -39,9 +40,6 @@ const StudentProfile = props => {
     lastname: "",
     fatherFullName: "",
     motherFullName: "",
-    address: "",
-    district: null,
-    state: null,
     email: "",
     contact: "",
     username: "",
@@ -51,13 +49,16 @@ const StudentProfile = props => {
     college: null,
     stream: null,
     rollnumber: null,
-    futureAspirations: null
+    futureAspirations: null,
+    addresses: []
   });
   const { setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
     isValid: false,
-    values: {},
+    values: {
+      addresses: []
+    },
     touched: {},
     details: {},
     isSuccess: false,
@@ -159,23 +160,19 @@ const StudentProfile = props => {
                   ? data.contact.user.email
                   : ""
                 : "",
-              state: data.contact
-                ? data.contact.state
-                  ? data.contact.state.name
-                  : ""
-                : "",
               college: data.organization.name,
               contact: data.contact.phone ? data.contact.phone : "",
               fatherFullName: data.father_full_name,
               motherFullName: data.mother_full_name,
-              address: data.contact.address_1,
               rollnumber: data.roll_number ? data.roll_number.toString() : "",
               dataofbirth: dt + "/" + month + "/" + year,
               gender: data.gender,
-              district: data.contact.district ? data.contact.district.name : "",
               stream: data.stream ? data.stream.name : "",
               physicallyHandicapped: data.is_physically_challenged,
-              futureAspirations: data.future_aspirations ? futureaspiration : ""
+              futureAspirations: data.future_aspirations
+                ? futureaspiration
+                : "",
+              addresses: (data.contact && data.contact.addresses) || []
             });
             setLoaderStatus(false);
           })
@@ -237,6 +234,7 @@ const StudentProfile = props => {
     }
   };
 
+  console.log(formState.values.addresses);
   return (
     <Grid>
       {success ? (
@@ -352,29 +350,76 @@ const StudentProfile = props => {
                 </Grid>
               </Grid>
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
-                  <ReadOnlyTextField
-                    id="address"
-                    label="Address"
-                    defaultValue={formState.values.address}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
-                  <ReadOnlyTextField
-                    id="state"
-                    label="State"
-                    defaultValue={formState.values.state}
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <ReadOnlyTextField
-                    id="district"
-                    label="District"
-                    defaultValue={formState.values.district}
-                  />
-                </Grid>
+                {formState.values.addresses.map((addr, idx) => {
+                  return (
+                    <Grid item md={12} xs={12}>
+                      <Grid item md={12} xs={12} className={classes.streamcard}>
+                        <Card className={classes.streamoffer}>
+                          <InputLabel
+                            htmlFor="outlined-address-card"
+                            fullwidth={true.toString()}
+                          >
+                            {addr.address_type == "Temporary"
+                              ? "Local Address"
+                              : "Permanent Address"}
+                          </InputLabel>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                            style={{ marginTop: "8px" }}
+                          >
+                            <Grid item md={12} xs={12}>
+                              <ReadOnlyTextField
+                                id={"address" + idx}
+                                label="Address"
+                                defaultValue={addr.address_line_1}
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id={"state" + idx}
+                                label="State"
+                                defaultValue={
+                                  (addr.state && addr.state.name) || ""
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id={"district" + idx}
+                                label="District"
+                                defaultValue={
+                                  (addr.district && addr.district.name) || ""
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id={"city" + idx}
+                                label="City"
+                                defaultValue={addr.city}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id={"pincode" + idx}
+                                label="Pincode"
+                                defaultValue={addr.pincode}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Card>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Grid>
             <Grid item xs={12} md={6} xl={3}>
