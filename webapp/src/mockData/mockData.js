@@ -472,6 +472,420 @@ export const questionSet = [
   }
 ];
 
+export const mockLocationDataForAddZone = {
+  pathname: "/manage-zones",
+  fromAddZone: true,
+  isDataAdded: true,
+  addedZoneData: {
+    id: 5,
+    name: "test",
+    state: {
+      id: 1,
+      name: "Uttar Pradesh",
+      is_active: true,
+      abbreviation: "UP",
+      identifier: "",
+      country: 1,
+      created_at: "2020-06-25T07:00:12.504Z",
+      updated_at: "2020-06-25T07:00:12.504Z"
+    },
+    created_at: "2020-07-21T08:09:29.593Z",
+    updated_at: "2020-07-21T08:09:29.676Z"
+  },
+  addResponseMessage: "",
+  addedData: {},
+  search: "",
+  hash: "",
+  key: "zlqmp3"
+};
+
+export const mockLocationDataForAddRPC = {
+  pathname: "/manage-rpc",
+  fromAddRpc: true,
+  isDataAdded: true,
+  addedRPCData: {
+    id: 13,
+    name: "test",
+    state: {
+      id: 1,
+      name: "Uttar Pradesh",
+      is_active: true,
+      abbreviation: "UP",
+      identifier: "",
+      country: 1,
+      created_at: "2020-06-25T07:00:12.504Z",
+      updated_at: "2020-06-25T07:00:12.504Z"
+    },
+    main_college: null,
+    created_at: "2020-07-21T12:05:36.171Z",
+    updated_at: "2020-07-21T12:05:36.317Z"
+  },
+  addResponseMessage: "",
+  addedData: {},
+  search: "",
+  hash: "",
+  key: "p1uh0d"
+};
+
+export const mockLocationDataForEditRPC = {
+  pathname: "/manage-rpc",
+  fromEditRpc: true,
+  isDataEdited: true,
+  editedRPCData: {
+    id: 13,
+    name: "testabc",
+    state: {
+      id: 1,
+      name: "Uttar Pradesh",
+      is_active: true,
+      abbreviation: "UP",
+      identifier: "",
+      country: 1,
+      created_at: "2020-06-25T07:00:12.504Z",
+      updated_at: "2020-06-25T07:00:12.504Z"
+    },
+    main_college: null,
+    created_at: "2020-07-21T12:05:36.171Z",
+    updated_at: "2020-07-21T12:07:24.553Z"
+  },
+  editResponseMessage: "",
+  editedData: {},
+  search: "",
+  hash: "",
+  key: "wolun3"
+};
+
+export const mockFilterResultRPCData = {
+  result: [
+    {
+      id: 4,
+      name: "Gorakhpur",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.304Z",
+      updated_at: "2020-06-25T07:00:17.304Z"
+    },
+    {
+      id: 1,
+      name: "Agra",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: {
+        id: 1,
+        name: "Government Polytechnic, Mainpuri",
+        phone: "0356273400",
+        phone_other: null,
+        email: "collegeemail1@gmail.com",
+        email_other: null,
+        address_1: "Government Polytechnic, Mainpuri",
+        address_2: null,
+        city: null,
+        pincode: null,
+        contact_type: "organization",
+        organization: 1,
+        country: 1,
+        village: null,
+        state: 1,
+        district: null,
+        individual: null,
+        user: null,
+        created_at: "2020-06-25T07:04:15.407Z",
+        updated_at: "2020-07-03T15:42:01.848Z"
+      },
+      created_at: "2020-06-25T07:00:17.282Z",
+      updated_at: "2020-07-17T06:48:58.616Z"
+    },
+    {
+      id: 9,
+      name: "Prayagraj",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.344Z",
+      updated_at: "2020-06-25T07:00:17.344Z"
+    },
+    {
+      id: 8,
+      name: "Moradabad",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.337Z",
+      updated_at: "2020-06-25T07:00:17.337Z"
+    },
+    {
+      id: 3,
+      name: "Ghaziabad",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.297Z",
+      updated_at: "2020-06-25T07:00:17.297Z"
+    },
+    {
+      id: 6,
+      name: "Kanpur",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.324Z",
+      updated_at: "2020-06-25T07:00:17.324Z"
+    },
+    {
+      id: 2,
+      name: "Bareilly",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.290Z",
+      updated_at: "2020-06-25T07:00:17.290Z"
+    },
+    {
+      id: 5,
+      name: "Jhansi",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: null,
+      created_at: "2020-06-25T07:00:17.313Z",
+      updated_at: "2020-06-25T07:00:17.313Z"
+    },
+    {
+      id: 10,
+      name: "Varanasi",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      main_college: {
+        id: 7,
+        name: "Government Polytechnic, Sinduria, Sonbhadra ",
+        phone: "0356273546",
+        phone_other: null,
+        email: "CollegeEmail147@gmail.com",
+        email_other: null,
+        address_1: "Government Polytechnic, Sinduria, Sonbhadra ",
+        address_2: null,
+        city: null,
+        pincode: null,
+        contact_type: "organization",
+        organization: 7,
+        country: 1,
+        village: null,
+        state: 1,
+        district: null,
+        individual: null,
+        user: null,
+        created_at: "2020-06-25T07:04:15.562Z",
+        updated_at: "2020-06-25T07:04:15.562Z"
+      },
+      created_at: "2020-06-25T07:00:17.351Z",
+      updated_at: "2020-07-17T05:58:44.904Z"
+    }
+  ],
+  page: 1,
+  pageSize: 10,
+  rowCount: 9,
+  pageCount: 1
+};
+
+export const mockTempDataForRPC = [
+  {
+    id: 1,
+    name: "Agra",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 2,
+    name: "Bareilly",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 3,
+    name: "Ghaziabad",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 4,
+    name: "Gorakhpur",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 5,
+    name: "Jhansi",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 6,
+    name: "Kanpur",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 7,
+    name: "Lucknow",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 8,
+    name: "Moradabad",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 9,
+    name: "Prayagraj",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 12,
+    name: "Test",
+    state: "Uttar Pradesh"
+  }
+];
+
+export const mockLocationDataForEditedZone = {
+  pathname: "/manage-zones",
+  fromEditZone: true,
+  isDataEdited: true,
+  editedZoneData: {
+    id: 5,
+    name: "test",
+    state: {
+      id: 1,
+      name: "Uttar Pradesh",
+      is_active: true,
+      abbreviation: "UP",
+      identifier: "",
+      country: 1,
+      created_at: "2020-06-25T07:00:12.504Z",
+      updated_at: "2020-06-25T07:00:12.504Z"
+    },
+    created_at: "2020-07-21T08:09:29.593Z",
+    updated_at: "2020-07-21T08:11:23.367Z"
+  },
+  editResponseMessage: "",
+  editedData: {},
+  search: "",
+  hash: "",
+  key: "y82evo"
+};
+
+export const mockZoneFilterData = {
+  result: [
+    {
+      id: 2,
+      name: "Bundelkhand Zone - Jhansi",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      created_at: "2020-06-25T07:00:17.248Z",
+      updated_at: "2020-07-21T06:58:45.484Z"
+    }
+  ],
+  page: 1,
+  pageSize: 10,
+  rowCount: 1,
+  pageCount: 1
+};
+export const mockTempZoneData = [
+  {
+    id: 2,
+    name: "Bundelkhand Zone - Jhansi",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 3,
+    name: "Central Zone - Lucknow",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 4,
+    name: "East Zone - Varanasi",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 1,
+    name: "West Zone - Daurala (Meerut)",
+    state: "Uttar Pradesh"
+  }
+];
+
 export const manageZoneData = {
   result: [
     {
