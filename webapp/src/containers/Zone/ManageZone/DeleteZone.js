@@ -189,6 +189,7 @@ const DeleteZone = props => {
   const classes = useStyles();
   return (
     <Modal
+      id="deleteZoneID"
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       className={classes.modal}
@@ -240,6 +241,7 @@ const DeleteZone = props => {
               >
                 <Grid item>
                   <YellowButton
+                    id="submitDeleteZone"
                     type="submit"
                     color="primary"
                     variant="contained"
@@ -250,6 +252,7 @@ const DeleteZone = props => {
                 </Grid>
                 <Grid item>
                   <GrayButton
+                    id="cancelCloseModal"
                     type="submit"
                     color="primary"
                     variant="contained"

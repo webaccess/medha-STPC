@@ -28,7 +28,6 @@ const simulateChangeOnCollegeMultiSelectInput = (
   newNameValue
 ) => {
   const input = wrapper.find(inputSelector);
-  console.log("valuearray", newValue[1], newValue[0]);
   // for (var i = 0; i < newValue.length; i++) {
   input.simulate(
     "change",
@@ -132,7 +131,6 @@ describe("test for fields ", () => {
       "#dateFrom",
       "Mon Jul 06 2020 15:38:00 GMT+0530 (India Standard Time)"
     );
-    console.log("updatedDateInput", updatedDateInput.props());
     expect(updatedDateInput.props().value).toEqual(
       "Mon Jul 06 2020 15:38:00 GMT+0530 (India Standard Time)"
     );
@@ -181,7 +179,6 @@ describe("test for fields ", () => {
         }
       ]
     );
-    console.log("college", updatedCollegeInput.props().value[0].contact);
     expect(updatedCollegeInput.props().value[0].contact.id).toEqual(2);
     expect(updatedCollegeInput.props().value[1].contact.id).toEqual(3);
   });
@@ -213,7 +210,6 @@ describe("test for fields ", () => {
         }
       ]
     );
-    console.log("colleg123123123e", updatedStreamInput.props());
     expect(updatedStreamInput.props().value[0].id).toEqual(2);
     expect(updatedStreamInput.props().value[1].id).toEqual(3);
   });

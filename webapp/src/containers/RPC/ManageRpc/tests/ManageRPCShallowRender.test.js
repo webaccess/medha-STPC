@@ -1,6 +1,6 @@
 import React, { useState as useStateMock } from "react";
 import { shallow, mount } from "enzyme";
-import ManageZone from "../ManageZone.js";
+import ManageRpc from "../ManageRpc.js";
 import { BrowserRouter as Router } from "react-router-dom";
 import LoaderContext from "../../../../context/LoaderContext";
 import SetIndexContext from "../../../../context/SetIndexContext.js";
@@ -17,29 +17,30 @@ jest.mock("react-router", () => ({
 jest.mock("axios");
 jest.mock("../../../../api/Axios");
 
-describe("Manage Zone shallow render", () => {
+describe("Manage RPC shallow render", () => {
   it("test the component for initial render with data to show", () => {
     auth.setToken(medhaAdminUser.jwt, true);
     auth.setUserInfo(medhaAdminUser.user, true);
     const props = {
       location: {
-        pathname: "/manage-zones",
+        pathname: "/manage-rpc",
         search: "",
         hash: "",
         state: null,
-        key: "r57y9u"
+        key: "wxxain"
       },
-      testingZoneData: mockData.mockTempZoneData
+      testingRPCData: mockData.mockTempDataForRPC
     };
 
     //jest.spyOn(React, "useState").mockImplementation(setYearDataUseState);
-    let wrapper = shallow(<ManageZone {...props} />);
+    let wrapper = shallow(<ManageRpc {...props} />);
     /** Simulating table fields */
     wrapper.find("#ManageTableID").props().onChangeRowsPerPage(20, 1);
     wrapper
       .find("#ManageTableID")
       .props()
       .editEvent({
+        persist: jest.fn(),
         target: {
           id: 1
         }
@@ -78,17 +79,17 @@ describe("Manage Zone shallow render", () => {
     auth.setUserInfo(medhaAdminUser.user, true);
     const props = {
       location: {
-        pathname: "/manage-zones",
+        pathname: "/manage-rpc",
         search: "",
         hash: "",
         state: null,
-        key: "r57y9u"
+        key: "wxxain"
       },
-      testingZoneData: mockData.mockTempZoneData
+      testingRPCData: mockData.mockTempDataForRPC
     };
 
     //jest.spyOn(React, "useState").mockImplementation(setYearDataUseState);
-    let wrapper = shallow(<ManageZone {...props} />);
+    let wrapper = shallow(<ManageRpc {...props} />);
 
     wrapper.find("#name").simulate("change", {
       target: {
@@ -100,13 +101,13 @@ describe("Manage Zone shallow render", () => {
       .mockImplementation(() => {
         return new Promise(resolve => {
           return resolve({
-            data: mockData.mockZoneFilterData
+            data: mockData.mockFilterResultRPCData
           });
         });
       });
-    expect(filterGetSpy).toBeCalled();
     expect(wrapper.find("#name").props().value).toEqual("test");
-    wrapper.find("#submitFilter").simulate("click", {});
+    wrapper.find("#submitFilter").simulate("click", { persist: jest.fn() });
+    expect(filterGetSpy).toBeCalled();
     wrapper.find("#cancelFilter").simulate("click", {});
   });
 
@@ -115,35 +116,34 @@ describe("Manage Zone shallow render", () => {
     auth.setUserInfo(medhaAdminUser.user, true);
     const props = {
       location: {
-        pathname: "/manage-zones",
+        pathname: "/manage-rpc",
         search: "",
         hash: "",
         state: null,
-        key: "r57y9u"
+        key: "wxxain"
       },
-      testingZoneData: mockData.mockTempZoneData
+      testingRPCData: mockData.mockTempDataForRPC
     };
 
     //jest.spyOn(React, "useState").mockImplementation(setYearDataUseState);
-    let wrapper = shallow(<ManageZone {...props} />);
+    let wrapper = shallow(<ManageRpc {...props} />);
 
     wrapper.find("#name").simulate("change", {
       target: {
         value: "test"
       }
     });
-    const filterGetSpy = jest
+    jest
       .spyOn(serviceProviders, "serviceProviderForGetRequest")
       .mockImplementation(() => {
         return new Promise(resolve => {
           return resolve({
-            data: mockData.mockZoneFilterData
+            data: mockData.mockFilterResultRPCData
           });
         });
       });
-    expect(filterGetSpy).toBeCalled();
     expect(wrapper.find("#name").props().value).toEqual("test");
-    wrapper.find("#submitFilter").simulate("click", {});
+    wrapper.find("#submitFilter").simulate("click", { persist: jest.fn() });
     wrapper
       .find("#ManageTableID")
       .props()
@@ -154,6 +154,7 @@ describe("Manage Zone shallow render", () => {
       .find("#ManageTableID")
       .props()
       .editEvent({
+        persist: jest.fn(),
         target: {
           id: 1
         }
@@ -170,25 +171,25 @@ describe("Manage Zone shallow render", () => {
     wrapper.find("#ManageTableID").props().onChangePage(2);
   });
 
-  it("should render component after zone has been added", () => {
+  it("should render component after rpc has been added", () => {
     auth.setToken(medhaAdminUser.jwt, true);
     auth.setUserInfo(medhaAdminUser.user, true);
     const props = {
-      location: mockData.mockLocationDataForAddZone,
-      testingZoneData: mockData.mockTempZoneData
+      location: mockData.mockLocationDataForAddRPC,
+      testingRPCData: mockData.mockTempDataForRPC
     };
 
-    shallow(<ManageZone {...props} />);
+    shallow(<ManageRpc {...props} />);
   });
 
-  it("should render component after zone has been edited", () => {
+  it("should render component after rpc has been edited", () => {
     auth.setToken(medhaAdminUser.jwt, true);
     auth.setUserInfo(medhaAdminUser.user, true);
     const props = {
-      location: mockData.mockLocationDataForEditedZone,
-      testingZoneData: mockData.mockTempZoneData
+      location: mockData.mockLocationDataForEditRPC,
+      testingRPCData: mockData.mockTempDataForRPC
     };
 
-    shallow(<ManageZone {...props} />);
+    shallow(<ManageRpc {...props} />);
   });
 });
