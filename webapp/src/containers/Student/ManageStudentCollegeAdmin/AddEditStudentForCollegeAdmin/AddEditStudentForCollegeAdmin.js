@@ -130,10 +130,12 @@ const AddEditStudentForCollegeAdmin = props => {
 
   useEffect(() => {
     if (formState.addressSameAsLocal) {
-      const address = formState.addresses.find(addr => addr.type == "local");
+      const address = formState.addresses.find(
+        addr => addr.address_type == "Temporary"
+      );
       const copyAddresses = formState.addresses.map(addr => {
-        if (addr.type == "permanent") {
-          return { ...address, type: "permanent" };
+        if (addr.address_type == "Permanent") {
+          return { ...address, address_type: "Permanent" };
         } else {
           return addr;
         }
@@ -145,11 +147,11 @@ const AddEditStudentForCollegeAdmin = props => {
       }));
     } else {
       const address = genericConstants.ADDRESSES.find(
-        addr => addr.type == "permanent"
+        addr => addr.address_type == "Permanent"
       );
 
       const resetPermanentAddress = formState.addresses.map(addr => {
-        if (addr.type == "permanent") {
+        if (addr.address_type == "Permanent") {
           return address;
         } else {
           return addr;
@@ -272,23 +274,6 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   const getDistrict = () => {
-    // let params = {
-    //   pageSize: -1,
-    //   "state.id": formState.values["state"]
-    // };
-
-    // if (formState.values["state"] !== undefined) {
-    //   serviceProvider
-    //     .serviceProviderForGetRequest(DISTRICTS_URL, params)
-    //     .then(res => {
-    //       setdistrictlist(
-    //         res.data.result.map(({ id, name }) => ({ id, name }))
-    //       );
-    //     })
-    //     .catch(error => {
-    //       console.log("error", error);
-    //     });
-    // }
     Axios.get(
       strapiApiConstants.STRAPI_DB_URL +
         strapiApiConstants.STRAPI_DISTRICTS +
@@ -417,7 +402,6 @@ const AddEditStudentForCollegeAdmin = props => {
         _.omit(registrationSchema, ["futureAspirations"])
       );
     }
-    validateAddresses();
     formState.values = Object.assign(
       {},
       _.omit(formState.values, ["username"])
@@ -452,10 +436,12 @@ const AddEditStudentForCollegeAdmin = props => {
       formState.isDateOfBirthPresent = true;
     }
 
+    const isValidAddress = validateAddresses();
     if (
       isValid &&
       formState.isDateOfBirthPresent &&
-      formState.isdateOfBirthValid
+      formState.isdateOfBirthValid &&
+      !isValidAddress
     ) {
       /** CALL POST FUNCTION */
       postStudentData();
@@ -476,6 +462,8 @@ const AddEditStudentForCollegeAdmin = props => {
 
   const postStudentData = () => {
     let postData;
+    const addresses = formState.addresses;
+
     if (formState.editStudent) {
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
@@ -483,9 +471,6 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"] ? formState.values["state"] : null,
-        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -502,7 +487,8 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.dataForEdit.id,
         formState.values["futureAspirations"],
         formState.files,
-        formState.values["password"] ? formState.values["password"] : undefined
+        formState.values["password"] ? formState.values["password"] : undefined,
+        addresses
       );
 
       let studentName =
@@ -559,9 +545,6 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"] ? formState.values["state"] : null,
-        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -579,7 +562,8 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.files,
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
-          : null
+          : null,
+        addresses
       );
       let url =
         strapiApiConstants.STRAPI_DB_URL +
@@ -776,14 +760,14 @@ const AddEditStudentForCollegeAdmin = props => {
     let isError = false;
     addresses.forEach(addr => {
       let errorObject = {};
-      if (!(addr.address && addr.address.length > 0)) {
+      if (!(addr.address_line_1 && addr.address_line_1.length > 0)) {
         isError = true;
-        errorObject["address"] = {
+        errorObject["address_line_1"] = {
           error: true,
           message: "Address is required"
         };
       } else {
-        errorObject["address"] = {
+        errorObject["address_line_1"] = {
           error: false,
           message: null
         };
@@ -849,7 +833,6 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   console.log(formState.addresses);
-  console.log(districtlist);
 
   return (
     <Grid>
@@ -1076,7 +1059,7 @@ const AddEditStudentForCollegeAdmin = props => {
                               htmlFor="outlined-address-card"
                               fullwidth={true.toString()}
                             >
-                              {addr.type == "local"
+                              {addr.address_type == "Temporary"
                                 ? "Local Address"
                                 : "Permanent Address"}
                             </InputLabel>
@@ -1094,23 +1077,30 @@ const AddEditStudentForCollegeAdmin = props => {
                                 <TextField
                                   label="Address"
                                   name="address"
-                                  value={formState.addresses[idx].address || ""}
+                                  value={
+                                    formState.addresses[idx].address_line_1 ||
+                                    ""
+                                  }
                                   variant="outlined"
                                   required
                                   fullWidth
                                   onChange={event =>
-                                    handleAddressChange(idx, event, "address")
+                                    handleAddressChange(
+                                      idx,
+                                      event,
+                                      "address_line_1"
+                                    )
                                   }
                                   error={
                                     (validateAddress[idx] &&
-                                      validateAddress[idx]["address"][
+                                      validateAddress[idx]["address_line_1"][
                                         "error"
                                       ]) ||
                                     false
                                   }
                                   helperText={
                                     (validateAddress[idx] &&
-                                      validateAddress[idx]["address"][
+                                      validateAddress[idx]["address_line_1"][
                                         "message"
                                       ]) ||
                                     null
@@ -1279,7 +1269,7 @@ const AddEditStudentForCollegeAdmin = props => {
                               </Grid>
                             </Grid>
                             <Grid item md={12} xs={12}>
-                              {addr.type == "local" ? (
+                              {addr.address_type == "Temporary" ? (
                                 <FormControlLabel
                                   control={
                                     <Checkbox
