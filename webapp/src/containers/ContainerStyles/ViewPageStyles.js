@@ -44,10 +44,16 @@ const useStyles = makeStyles(theme => ({
   },
   streamoffer: {
     borderRadius: "0px",
-    boxShadow: "none !important"
+    boxShadow: "none !important",
+    "& > :first-child": {
+      position: "absolute",
+      top: "-8px",
+      backgroundColor: "#fff"
+    }
   },
   streamcardcontent: {
     boxShadow: "none",
+    borderBottom: "1px solid #ccc",
     marginBottom: "15px",
     borderRadius: "0px"
   },

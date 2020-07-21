@@ -29,21 +29,21 @@ const CollegeFormSchema = {
       }
     }
   },
-  address: {
-    label: "Address",
-    id: "address",
-    autoComplete: "address",
-    required: true,
-    placeholder: "College Address",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Address is required"
-      }
-    }
-  },
+  // address: {
+  //   label: "Address",
+  //   id: "address",
+  //   autoComplete: "address",
+  //   required: true,
+  //   placeholder: "College Address",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "Address is required"
+  //     }
+  //   }
+  // },
   state: {
     label: "State",
     id: "state",

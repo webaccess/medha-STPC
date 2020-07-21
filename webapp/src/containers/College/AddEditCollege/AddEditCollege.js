@@ -94,6 +94,7 @@ const AddEditCollege = props => {
     isStateClearFilter: false,
     showing: false,
     dataToShowForMultiSelect: [],
+    addresses: genericConstants.COLLEGE_ADDRESSES,
     isCollegeAdmin:
       auth.getUserInfo() !== null &&
       auth.getUserInfo().role !== null &&
@@ -114,6 +115,7 @@ const AddEditCollege = props => {
   const [isGetAdminData, setIsGetAdminData] = useState(false);
   const [tpoData, setTpoData] = useState([]);
   const [principalData, setPrincipalData] = useState([]);
+  const [validateAddress, setValidateAddress] = useState([]);
   const inputLabel = React.useRef(null);
   const [collegeInfo, setCollegeInfo] = useState({
     college:
@@ -178,8 +180,10 @@ const AddEditCollege = props => {
         formState.values[collegeCode] = props["dataForEdit"]["college_code"];
       }
       if (props["dataForEdit"]["contact"]) {
-        formState.values[address] =
-          props["dataForEdit"]["contact"]["address_1"];
+        formState.addresses =
+          props["dataForEdit"]["contact"]["addresses"].length > 0
+            ? props["dataForEdit"]["contact"]["addresses"]
+            : genericConstants.COLLEGE_ADDRESSES;
       }
       if (props["dataForEdit"]["contact"]) {
         formState.values[contactNumber] =
@@ -193,8 +197,7 @@ const AddEditCollege = props => {
         props["dataForEdit"]["contact"] &&
         props["dataForEdit"]["contact"]["state"]
       ) {
-        formState.values[state] =
-          props["dataForEdit"]["contact"]["state"]["id"];
+        formState.values["state"] = props["dataForEdit"]["contact"]["state"];
       }
       if (
         props["dataForEdit"]["contact"] &&
@@ -207,10 +210,10 @@ const AddEditCollege = props => {
         formState.values[block] = props["dataForEdit"]["blocked"];
       }
       if (props["dataForEdit"]["zone"]) {
-        formState.values[zone] = props["dataForEdit"]["zone"]["id"];
+        formState.values["zone"] = props["dataForEdit"]["zone"]["id"];
       }
       if (props["dataForEdit"]["rpc"]) {
-        formState.values[rpc] = props["dataForEdit"]["rpc"]["id"];
+        formState.values["rpc"] = props["dataForEdit"]["rpc"]["id"];
       }
       if (
         props["dataForEdit"]["principal"] &&
@@ -262,6 +265,18 @@ const AddEditCollege = props => {
       .then(res => {
         formState.states = res.data.result;
         setStates(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+    let params = {
+      pageSize: -1,
+      "state.id": formState.values[state]
+    };
+    serviceProviders
+      .serviceProviderForGetRequest(DISTRICTS_URL, params)
+      .then(res => {
+        setDistricts(res.data.result);
       })
       .catch(error => {
         console.log("error", error);
@@ -793,6 +808,7 @@ const AddEditCollege = props => {
   };
 
   const handleSubmit = event => {
+    validateAddresses();
     /** Validate DynamicGrid */
     let isDynamicBarValid;
     isDynamicBarValid = validateDynamicGridValues();
@@ -882,11 +898,12 @@ const AddEditCollege = props => {
 
   const postCollegeData = async () => {
     let streamStrengthArray = [];
+    const adressess = formState.addresses;
     streamStrengthArray = getDynamicBarData();
     let postData = databaseUtilities.addCollege(
       formState.values[collegeName],
       formState.values[collegeCode],
-      formState.values[address],
+      adressess,
       formState.values[contactNumber],
       formState.values[collegeEmail].toLowerCase(),
       formState.values[block] ? formState.values[block] : false,
@@ -997,6 +1014,132 @@ const AddEditCollege = props => {
     }
   };
 
+  const handleStateAndDistrictChange = (type, value, idx) => {
+    console.log(value);
+    formState.addresses[idx][type] = value && value.id;
+    if (type == "state" && formState.isCollegeAdmin) {
+      formState.values["state"] = value && value.id;
+      setDistricts([]);
+      delete formState.values[district];
+    }
+    if (type == "state" && !formState.isCollegeAdmin) {
+      formState.addresses[idx]["district"] = null;
+      formState.values["district"] = null;
+      formState.values["state"] = value && value.id;
+
+      setRpcs([]);
+      setZones([]);
+      setDistricts([]);
+      delete formState.values[zone];
+      delete formState.values[rpc];
+      delete formState.values[district];
+    }
+    if (type == "district") {
+      formState.values["district"] = value && value.id;
+    }
+    setFormState(formState => ({
+      ...formState
+    }));
+  };
+
+  const handleAddressChange = (idx, e, type) => {
+    e.persist();
+    console.log(e.target.value);
+
+    const addresses = formState.addresses.map((addr, index) => {
+      if (index == idx) {
+        return { ...addr, [type]: e.target.value };
+      } else {
+        return addr;
+      }
+    });
+
+    setFormState(formState => ({
+      ...formState,
+      addresses
+    }));
+  };
+
+  const validateAddresses = () => {
+    const addresses = formState.addresses;
+    let errors = [];
+    let isError = false;
+    addresses.forEach(addr => {
+      let errorObject = {};
+      if (!(addr.address_line_1 && addr.address_line_1.length > 0)) {
+        console.log(addr.address_line_1);
+        console.log(addr.address_line_1.length);
+        isError = true;
+        errorObject["address_line_1"] = {
+          error: true,
+          message: "Address is required"
+        };
+      } else {
+        errorObject["address_line_1"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.state) {
+        isError = true;
+        errorObject["state"] = {
+          error: true,
+          message: "State is required"
+        };
+      } else {
+        errorObject["state"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.district) {
+        isError = true;
+        errorObject["district"] = {
+          error: true,
+          message: "District is required"
+        };
+      } else {
+        errorObject["district"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.city) {
+        isError = true;
+        errorObject["city"] = {
+          error: true,
+          message: "City is required"
+        };
+      } else {
+        errorObject["city"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.pincode) {
+        isError = true;
+        errorObject["pincode"] = {
+          error: true,
+          message: "Pincode is required"
+        };
+      } else {
+        errorObject["pincode"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      errors.push(errorObject);
+    });
+
+    setValidateAddress(errors);
+    return isError;
+  };
+
   const clickedCancelButton = () => {
     if (auth.getUserInfo().role.name === roleConstants.MEDHAADMIN) {
       history.push({
@@ -1010,6 +1153,8 @@ const AddEditCollege = props => {
   };
   return (
     <Grid>
+      {console.log(formState)}
+      {console.log(collegeInfo)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.isEditCollege
@@ -1073,252 +1218,8 @@ const AddEditCollege = props => {
                   />
                 </Grid>
               </Grid>
-
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
-                  {formState.isCollegeAdmin ? (
-                    <ReadOnlyTextField
-                      id="StateName"
-                      label={get(CollegeFormSchema[state], "label")}
-                      defaultValue={collegeInfo.state.name}
-                    />
-                  ) : (
-                    <FormControl
-                      variant="outlined"
-                      fullWidth
-                      className={classes.formControl}
-                    >
-                      <InputLabel ref={inputLabel} id="state-label">
-                        {/* State */}
-                      </InputLabel>
-                      <Autocomplete
-                        id={get(CollegeFormSchema[state], "id")}
-                        options={states}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(state, event, value);
-                        }}
-                        /** This is used to set the default value to the auto complete */
-                        value={
-                          states[
-                            states.findIndex(function (item, i) {
-                              return item.id === formState.values[state];
-                            })
-                          ] || null
-                        }
-                        name={state}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            error={hasError(state)}
-                            required
-                            helperText={
-                              hasError(state)
-                                ? formState.errors[state].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            placeholder={get(
-                              CollegeFormSchema[state],
-                              "placeholder"
-                            )}
-                            value={option => option.id}
-                            name={state}
-                            key={option => option.id}
-                            label={get(CollegeFormSchema[state], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  {formState.isCollegeAdmin ? (
-                    <ReadOnlyTextField
-                      id="ZoneName"
-                      label={get(CollegeFormSchema[zone], "label")}
-                      defaultValue={collegeInfo.zone.name}
-                    />
-                  ) : (
-                    <FormControl
-                      variant="outlined"
-                      fullWidth
-                      className={classes.formControl}
-                    >
-                      <InputLabel ref={inputLabel} id="zone-label">
-                        {/* Zone */}
-                      </InputLabel>
-
-                      <Autocomplete
-                        id={get(CollegeFormSchema[zone], "id")}
-                        options={zones ? zones : <CircularProgress />}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(zone, event, value);
-                        }}
-                        /** This is used to set the default value to the auto complete */
-                        value={
-                          formState.isStateClearFilter
-                            ? null
-                            : zones[
-                                zones.findIndex(function (item, i) {
-                                  return item.id === formState.values[zone];
-                                })
-                              ] ||
-                              null /** Please give a default " " blank value */
-                        }
-                        name={zone}
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            required
-                            error={hasError(zone)}
-                            helperText={
-                              hasError(zone)
-                                ? formState.errors[zone].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            placeholder={get(
-                              CollegeFormSchema[zone],
-                              "placeholder"
-                            )}
-                            value={option => option.id}
-                            name={rpc}
-                            key={option => option.id}
-                            label={get(CollegeFormSchema[zone], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </FormControl>
-                  )}
-                </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
-                  {formState.isCollegeAdmin ? (
-                    <ReadOnlyTextField
-                      id={get(CollegeFormSchema[rpcs], "id")}
-                      label={get(CollegeFormSchema[rpc], "label")}
-                      defaultValue={collegeInfo.rpc.name}
-                    />
-                  ) : (
-                    <FormControl
-                      variant="outlined"
-                      fullWidth
-                      className={classes.formControl}
-                    >
-                      <InputLabel ref={inputLabel} id="rpcs-label">
-                        {/* RPCs */}
-                      </InputLabel>
-
-                      <Autocomplete
-                        id={get(CollegeFormSchema[rpc], "id")}
-                        options={rpcs}
-                        getOptionLabel={option => option.name}
-                        onChange={(event, value) => {
-                          handleChangeAutoComplete(rpc, event, value);
-                        }}
-                        name={rpc}
-                        /** This is used to set the default value to the auto complete */
-                        value={
-                          formState.isStateClearFilter
-                            ? null
-                            : rpcs[
-                                rpcs.findIndex(function (item, i) {
-                                  return item.id === formState.values[rpc];
-                                })
-                              ] ||
-                              null /** Please give a default " " blank value */
-                        }
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            required
-                            error={hasError(rpc)}
-                            helperText={
-                              hasError(rpc)
-                                ? formState.errors[rpc].map(error => {
-                                    return error + " ";
-                                  })
-                                : null
-                            }
-                            placeholder={get(
-                              CollegeFormSchema[rpc],
-                              "placeholder"
-                            )}
-                            value={option => option.id}
-                            name={rpc}
-                            key={option => option.id}
-                            label={get(CollegeFormSchema[rpc], "label")}
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                    className={classes.formControl}
-                  >
-                    <InputLabel ref={inputLabel} id="districts-label">
-                      {/* Districts */}
-                    </InputLabel>
-
-                    <Autocomplete
-                      id={get(CollegeFormSchema[district], "id")}
-                      options={districts}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(district, event, value);
-                      }}
-                      name={district}
-                      /** This is used to set the default value to the auto complete */
-                      value={
-                        formState.isStateClearFilter
-                          ? null
-                          : districts[
-                              districts.findIndex(function (item, i) {
-                                return item.id === formState.values[district];
-                              })
-                            ] ||
-                            null /** Please give a default " " blank value */
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError(district)}
-                          helperText={
-                            hasError(district)
-                              ? formState.errors[district].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                          placeholder={get(
-                            CollegeFormSchema[district],
-                            "placeholder"
-                          )}
-                          value={option => option.id}
-                          name={district}
-                          key={option => option.id}
-                          label={get(CollegeFormSchema[district], "label")}
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </FormControl>
-                </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
+                {/* <Grid item md={12} xs={12}>
                   <TextField
                     fullWidth
                     id={get(CollegeFormSchema[address], "id")}
@@ -1338,7 +1239,399 @@ const AddEditCollege = props => {
                     }
                     variant="outlined"
                   />
-                </Grid>
+                </Grid> */}
+                {formState.addresses.map((addr, idx) => {
+                  return (
+                    <Grid item md={12} xs={12}>
+                      <Grid item md={12} xs={12} className={classes.streamcard}>
+                        <Card className={classes.streamoffer}>
+                          <InputLabel
+                            htmlFor="outlined-address-card"
+                            fullwidth={true.toString()}
+                          >
+                            {addr.address_type == "Temporary"
+                              ? "Local Address"
+                              : "Permanent Address"}
+                          </InputLabel>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid
+                              item
+                              md={12}
+                              xs={12}
+                              style={{ marginTop: "8px" }}
+                            >
+                              <TextField
+                                label="Address"
+                                name="address"
+                                value={
+                                  formState.addresses[idx].address_line_1 || ""
+                                }
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(
+                                    idx,
+                                    event,
+                                    "address_line_1"
+                                  )
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["address_line_1"][
+                                      "error"
+                                    ]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["address_line_1"][
+                                      "message"
+                                    ]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid item md={6} xs={12}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                className={classes.root}
+                                options={states}
+                                getOptionLabel={option => option.name}
+                                onChange={(event, value) => {
+                                  handleStateAndDistrictChange(
+                                    "state",
+                                    value,
+                                    idx
+                                  );
+                                }}
+                                value={
+                                  states[
+                                    states.findIndex(function (item, i) {
+                                      return (
+                                        item.id ===
+                                        formState.addresses[idx].state
+                                      );
+                                    })
+                                  ] || null
+                                }
+                                renderInput={params => (
+                                  <TextField
+                                    {...params}
+                                    label="State"
+                                    variant="outlined"
+                                    name="tester"
+                                    error={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["state"][
+                                          "error"
+                                        ]) ||
+                                      false
+                                    }
+                                    helperText={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["state"][
+                                          "message"
+                                        ]) ||
+                                      null
+                                    }
+                                  />
+                                )}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <TextField
+                                label="City"
+                                name="city"
+                                value={formState.addresses[idx].city || ""}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(idx, event, "city")
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["city"]["error"]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["city"]["message"]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <TextField
+                                label="Pincode"
+                                name="pincode"
+                                value={formState.addresses[idx].pincode || ""}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(idx, event, "pincode")
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["pincode"]["error"]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["pincode"][
+                                      "message"
+                                    ]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+
+                            <Grid item md={6} xs={12}>
+                              {formState.isCollegeAdmin ? (
+                                <ReadOnlyTextField
+                                  id="ZoneName"
+                                  label={get(CollegeFormSchema[zone], "label")}
+                                  defaultValue={collegeInfo.zone.name}
+                                />
+                              ) : (
+                                <FormControl
+                                  variant="outlined"
+                                  fullWidth
+                                  className={classes.formControl}
+                                >
+                                  <InputLabel ref={inputLabel} id="zone-label">
+                                    {/* Zone */}
+                                  </InputLabel>
+
+                                  <Autocomplete
+                                    id={get(CollegeFormSchema[zone], "id")}
+                                    options={
+                                      zones ? zones : <CircularProgress />
+                                    }
+                                    getOptionLabel={option => option.name}
+                                    onChange={(event, value) => {
+                                      handleChangeAutoComplete(
+                                        zone,
+                                        event,
+                                        value
+                                      );
+                                    }}
+                                    /** This is used to set the default value to the auto complete */
+                                    value={
+                                      formState.isStateClearFilter
+                                        ? null
+                                        : zones[
+                                            zones.findIndex(function (item, i) {
+                                              return (
+                                                item.id ===
+                                                formState.values[zone]
+                                              );
+                                            })
+                                          ] ||
+                                          null /** Please give a default " " blank value */
+                                    }
+                                    name={zone}
+                                    renderInput={params => (
+                                      <TextField
+                                        {...params}
+                                        required
+                                        error={hasError(zone)}
+                                        helperText={
+                                          hasError(zone)
+                                            ? formState.errors[zone].map(
+                                                error => {
+                                                  return error + " ";
+                                                }
+                                              )
+                                            : null
+                                        }
+                                        placeholder={get(
+                                          CollegeFormSchema[zone],
+                                          "placeholder"
+                                        )}
+                                        value={option => option.id}
+                                        name={rpc}
+                                        key={option => option.id}
+                                        label={get(
+                                          CollegeFormSchema[zone],
+                                          "label"
+                                        )}
+                                        variant="outlined"
+                                      />
+                                    )}
+                                  />
+                                </FormControl>
+                              )}
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              {formState.isCollegeAdmin ? (
+                                <ReadOnlyTextField
+                                  id={get(CollegeFormSchema[rpcs], "id")}
+                                  label={get(CollegeFormSchema[rpc], "label")}
+                                  defaultValue={collegeInfo.rpc.name}
+                                />
+                              ) : (
+                                <FormControl
+                                  variant="outlined"
+                                  fullWidth
+                                  className={classes.formControl}
+                                >
+                                  <InputLabel ref={inputLabel} id="rpcs-label">
+                                    {/* RPCs */}
+                                  </InputLabel>
+
+                                  <Autocomplete
+                                    id={get(CollegeFormSchema[rpc], "id")}
+                                    options={rpcs}
+                                    getOptionLabel={option => option.name}
+                                    onChange={(event, value) => {
+                                      handleChangeAutoComplete(
+                                        rpc,
+                                        event,
+                                        value
+                                      );
+                                    }}
+                                    name={rpc}
+                                    /** This is used to set the default value to the auto complete */
+                                    value={
+                                      formState.isStateClearFilter
+                                        ? null
+                                        : rpcs[
+                                            rpcs.findIndex(function (item, i) {
+                                              return (
+                                                item.id ===
+                                                formState.values[rpc]
+                                              );
+                                            })
+                                          ] ||
+                                          null /** Please give a default " " blank value */
+                                    }
+                                    renderInput={params => (
+                                      <TextField
+                                        {...params}
+                                        required
+                                        error={hasError(rpc)}
+                                        helperText={
+                                          hasError(rpc)
+                                            ? formState.errors[rpc].map(
+                                                error => {
+                                                  return error + " ";
+                                                }
+                                              )
+                                            : null
+                                        }
+                                        placeholder={get(
+                                          CollegeFormSchema[rpc],
+                                          "placeholder"
+                                        )}
+                                        value={option => option.id}
+                                        name={rpc}
+                                        key={option => option.id}
+                                        label={get(
+                                          CollegeFormSchema[rpc],
+                                          "label"
+                                        )}
+                                        variant="outlined"
+                                      />
+                                    )}
+                                  />
+                                </FormControl>
+                              )}
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <FormControl
+                                variant="outlined"
+                                fullWidth
+                                className={classes.formControl}
+                              >
+                                <InputLabel
+                                  ref={inputLabel}
+                                  id="districts-label"
+                                >
+                                  {/* Districts */}
+                                </InputLabel>
+
+                                <Autocomplete
+                                  id={get(CollegeFormSchema[district], "id")}
+                                  options={districts}
+                                  getOptionLabel={option => option.name}
+                                  onChange={(event, value) => {
+                                    handleStateAndDistrictChange(
+                                      "district",
+                                      value,
+                                      idx
+                                    );
+                                  }}
+                                  name={district}
+                                  /** This is used to set the default value to the auto complete */
+                                  value={
+                                    formState.isStateClearFilter
+                                      ? null
+                                      : districts[
+                                          districts.findIndex(function (
+                                            item,
+                                            i
+                                          ) {
+                                            return (
+                                              item.id ===
+                                              formState.addresses[idx].district
+                                            );
+                                          })
+                                        ] ||
+                                        null /** Please give a default " " blank value */
+                                  }
+                                  renderInput={params => (
+                                    <TextField
+                                      {...params}
+                                      error={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["district"][
+                                            "error"
+                                          ]) ||
+                                        false
+                                      }
+                                      helperText={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["district"][
+                                            "message"
+                                          ]) ||
+                                        null
+                                      }
+                                      placeholder={get(
+                                        CollegeFormSchema[district],
+                                        "placeholder"
+                                      )}
+                                      value={option => option.id}
+                                      name={district}
+                                      key={option => option.id}
+                                      label={get(
+                                        CollegeFormSchema[district],
+                                        "label"
+                                      )}
+                                      variant="outlined"
+                                    />
+                                  )}
+                                />
+                              </FormControl>
+                            </Grid>
+                          </Grid>
+                        </Card>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Grid>
             <Divider className={classes.divider} />

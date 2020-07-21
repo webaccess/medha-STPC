@@ -46,6 +46,8 @@ const ViewCollege = props => {
   const [open, setOpen] = useState(true);
   const history = useHistory();
   const classes = useStyles();
+  const [districts, setDistricts] = useState({});
+  const [states, setStates] = useState({});
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
@@ -62,12 +64,43 @@ const ViewCollege = props => {
       : false,
     editedCollegeName: props["location"]["editedCollegeData"]
       ? props["location"]["editedCollegeData"]["name"]
-      : ""
+      : "",
+    addresses: genericConstants.COLLEGE_ADDRESSES
   });
 
   useEffect(() => {
     getCollegeData();
   }, []);
+
+  async function getstatesdistrict(stateid, districtid) {
+    if (stateid && districtid != null) {
+      const STATES_URL =
+        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
+
+      const DISTRICTS_URL =
+        strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_DISTRICTS;
+
+      await serviceProviders
+        .serviceProviderForGetOneRequest(STATES_URL, stateid)
+        .then(res => {
+          formState.states = res.data.result;
+
+          setStates(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+
+      await serviceProviders
+        .serviceProviderForGetOneRequest(DISTRICTS_URL, districtid)
+        .then(res => {
+          setDistricts(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
+  }
 
   async function getCollegeData() {
     setLoaderStatus(true);
@@ -95,11 +128,20 @@ const ViewCollege = props => {
           let viewData = res.data.result;
           let dataConverter = [];
           dataConverter = convertStudentData(viewData.tpos);
+
           setFormState(formState => ({
             ...formState,
             collegeDetails: viewData,
-            tpoData: dataConverter
+            tpoData: dataConverter,
+            addresses:
+              viewData.contact.addresses.length > 0
+                ? viewData.contact.addresses
+                : genericConstants.COLLEGE_ADDRESSES
           }));
+          getstatesdistrict(
+            viewData.contact.addresses[0].state,
+            viewData.contact.addresses[0].district
+          );
         })
         .catch(error => {
           console.log("error", error, error.reponse);
@@ -192,6 +234,7 @@ const ViewCollege = props => {
         ) : null}
       </Grid>
       <Grid spacing={3}>
+        {console.log(formState)}
         <Card>
           <CardContent>
             <Grid item xs={12} md={6} xl={3}>
@@ -213,7 +256,106 @@ const ViewCollege = props => {
               </Grid>
 
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
+                {formState.addresses.map((addr, idx) => {
+                  return (
+                    <Grid item md={12} xs={12}>
+                      <Grid item md={12} xs={12} className={classes.streamcard}>
+                        <Card className={classes.streamoffer}>
+                          <InputLabel
+                            htmlFor="outlined-address-card"
+                            fullwidth={true.toString()}
+                          >
+                            {addr.address_type == "Temporary"
+                              ? "Local Address"
+                              : "Permanent Address"}
+                          </InputLabel>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid
+                              item
+                              md={12}
+                              xs={12}
+                              style={{ marginTop: "8px" }}
+                            >
+                              <ReadOnlyTextField
+                                id="CollegeAddress"
+                                label={CollegeAddress}
+                                defaultValue={
+                                  formState.addresses[idx].address_line_1 || ""
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="State"
+                                label={State}
+                                defaultValue={(states && states.name) || ""}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="City"
+                                label={"City"}
+                                defaultValue={
+                                  formState.addresses[idx].city || ""
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="Pincode"
+                                label={"Pincode"}
+                                defaultValue={
+                                  formState.addresses[idx].pincode || ""
+                                }
+                              />
+                            </Grid>
+
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="Zone"
+                                label={Zone}
+                                defaultValue={
+                                  formState.collegeDetails.zone &&
+                                  formState.collegeDetails.zone.name
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="RPCName"
+                                label={RPCName}
+                                defaultValue={
+                                  formState.collegeDetails.rpc &&
+                                  formState.collegeDetails.rpc.name
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
+                                id="District"
+                                label={"District"}
+                                defaultValue={
+                                  (districts && districts.name) || ""
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                        </Card>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
+                {/* <Grid item md={6} xs={12}>
                   <ReadOnlyTextField
                     id="State"
                     label={State}
@@ -258,9 +400,9 @@ const ViewCollege = props => {
                         : ""
                     }
                   />
-                </Grid>
+                </Grid> */}
               </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
+              {/* <Grid container spacing={3} className={classes.MarginBottom}>
                 <Grid item md={12} xs={12}>
                   <ReadOnlyTextField
                     id="CollegeAddress"
@@ -272,7 +414,7 @@ const ViewCollege = props => {
                     }
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
             <Divider className={classes.divider} />
             <Grid item xs={12} md={6} xl={3}>

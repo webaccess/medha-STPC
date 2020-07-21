@@ -132,7 +132,7 @@ export const addCollege = (
   return {
     name: name,
     college_code: college_code,
-    address_1: address,
+    addresses: address,
     phone: contact_number,
     email: college_email,
     is_blocked: blocked,

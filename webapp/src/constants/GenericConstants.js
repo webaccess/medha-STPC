@@ -189,3 +189,14 @@ export const ADDRESSES = [
     city: null
   }
 ];
+
+export const COLLEGE_ADDRESSES = [
+  {
+    address_type: "Permanent",
+    address_line_1: "",
+    state: null,
+    district: null,
+    pincode: null,
+    city: null
+  }
+];
