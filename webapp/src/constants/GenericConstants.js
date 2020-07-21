@@ -173,16 +173,16 @@ export const QUALIFICATION_LIST = [
 
 export const ADDRESSES = [
   {
-    type: "local",
-    address: "",
+    address_type: "Temporary",
+    address_line_1: "",
     state: null,
     district: null,
     pincode: null,
     city: null
   },
   {
-    type: "permanent",
-    address: "",
+    address_type: "Permanent",
+    address_line_1: "",
     state: null,
     district: null,
     pincode: null,

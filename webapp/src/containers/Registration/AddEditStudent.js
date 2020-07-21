@@ -180,10 +180,12 @@ const AddEditStudent = props => {
 
   useEffect(() => {
     if (formState.addressSameAsLocal) {
-      const address = formState.addresses.find(addr => addr.type == "local");
+      const address = formState.addresses.find(
+        addr => addr.address_type == "Temporary"
+      );
       const copyAddresses = formState.addresses.map(addr => {
-        if (addr.type == "permanent") {
-          return { ...address, type: "permanent" };
+        if (addr.address_type == "Permanent") {
+          return { ...address, address_type: "Permanent" };
         } else {
           return addr;
         }
@@ -195,11 +197,11 @@ const AddEditStudent = props => {
       }));
     } else {
       const address = genericConstants.ADDRESSES.find(
-        addr => addr.type == "permanent"
+        addr => addr.address_type == "Permanent"
       );
 
       const resetPermanentAddress = formState.addresses.map(addr => {
-        if (addr.type == "permanent") {
+        if (addr.address_type == "Permanent") {
           return address;
         } else {
           return addr;
@@ -390,7 +392,8 @@ const AddEditStudent = props => {
     if (
       isValid &&
       formState.isDateOfBirthPresent &&
-      formState.isdateOfBirthValid
+      formState.isdateOfBirthValid &&
+      !validateAddresses()
     ) {
       /** CALL POST FUNCTION */
       postStudentData();
@@ -417,6 +420,7 @@ const AddEditStudent = props => {
 
   const postStudentData = () => {
     let postData;
+    const addresses = formState.addresses;
     if (formState.editStudent) {
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
@@ -424,9 +428,6 @@ const AddEditStudent = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"] ? formState.values["state"] : null,
-        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -446,7 +447,9 @@ const AddEditStudent = props => {
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
           : null,
-        formState.files
+        formState.files,
+        null,
+        addresses
       );
       let EDIT_STUDENT_URL =
         strapiApiConstants.STRAPI_DB_URL +
@@ -531,9 +534,6 @@ const AddEditStudent = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -552,7 +552,9 @@ const AddEditStudent = props => {
         formState.files,
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
-          : null
+          : null,
+        null,
+        addresses
       );
 
       axios
@@ -844,14 +846,14 @@ const AddEditStudent = props => {
     let isError = false;
     addresses.forEach(addr => {
       let errorObject = {};
-      if (!(addr.address && addr.address.length > 0)) {
+      if (!(addr.address_line_1 && addr.address_line_1.length > 0)) {
         isError = true;
-        errorObject["address"] = {
+        errorObject["address_line_1"] = {
           error: true,
           message: "Address is required"
         };
       } else {
-        errorObject["address"] = {
+        errorObject["address_line_1"] = {
           error: false,
           message: null
         };
@@ -1166,7 +1168,7 @@ const AddEditStudent = props => {
                             htmlFor="outlined-address-card"
                             fullwidth={true.toString()}
                           >
-                            {addr.type == "local"
+                            {addr.address_type == "Temporary"
                               ? "Local Address"
                               : "Permanent Address"}
                           </InputLabel>
@@ -1184,21 +1186,29 @@ const AddEditStudent = props => {
                               <TextField
                                 label="Address"
                                 name="address"
-                                value={formState.addresses[idx].address || ""}
+                                value={
+                                  formState.addresses[idx].address_line_1 || ""
+                                }
                                 variant="outlined"
                                 required
                                 fullWidth
                                 onChange={event =>
-                                  handleAddressChange(idx, event, "address")
+                                  handleAddressChange(
+                                    idx,
+                                    event,
+                                    "address_line_1"
+                                  )
                                 }
                                 error={
                                   (validateAddress[idx] &&
-                                    validateAddress[idx]["address"]["error"]) ||
+                                    validateAddress[idx]["address_line_1"][
+                                      "error"
+                                    ]) ||
                                   false
                                 }
                                 helperText={
                                   (validateAddress[idx] &&
-                                    validateAddress[idx]["address"][
+                                    validateAddress[idx]["address_line_1"][
                                       "message"
                                     ]) ||
                                   null
@@ -1308,7 +1318,7 @@ const AddEditStudent = props => {
                             </Grid>
                           </Grid>
                           <Grid item md={12} xs={12}>
-                            {addr.type == "local" ? (
+                            {addr.address_type == "Temporary" ? (
                               <FormControlLabel
                                 control={
                                   <Checkbox
