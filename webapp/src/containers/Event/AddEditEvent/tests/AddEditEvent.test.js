@@ -95,12 +95,12 @@ const simulateChangeOnDynamicGridInput = (
   input.simulate(
     "change",
     { persist: jest.fn() },
-    { id: parseInt(selectedValueForAutoComplete) },
+    selectedValueForAutoComplete,
     dynamicGridValue,
     isAutoComplete,
     isTextBox
   );
-  // return wrapper.find(inputSelector);
+  return wrapper.find(inputSelector);
 };
 
 describe("test for fields ", () => {
@@ -179,6 +179,8 @@ describe("test for fields ", () => {
         }
       ]
     );
+
+
     expect(updatedCollegeInput.props().value[0].contact.id).toEqual(2);
     expect(updatedCollegeInput.props().value[1].contact.id).toEqual(3);
   });
@@ -242,12 +244,13 @@ describe("test for fields ", () => {
       wrapper,
       "#qualification-0",
       "sdcscsd3",
-      "3",
+      { id: 1, name: "Secondary", value: "secondary" },
       {
         index: 0.8407492409363633
       },
       true,
       false
     );
+    expect(updatedNameInput.props().value.name).toEqual("Secondary");
   });
 });
