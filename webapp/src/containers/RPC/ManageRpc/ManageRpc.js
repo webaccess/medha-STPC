@@ -38,7 +38,6 @@ const RPC_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_RPCS;
 const SORT_FIELD_KEY = "_sort";
 
 const ViewRpc = props => {
-  console.log("manage rpc", props);
   /** Value to set for Rpc filter */
   const [value, setValue] = React.useState(null);
 

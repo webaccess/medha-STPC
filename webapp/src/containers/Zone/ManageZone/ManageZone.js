@@ -31,7 +31,6 @@ const ZONES_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_ZONES;
 
 const SORT_FIELD_KEY = "_sort";
 const ViewZone = props => {
-  console.log("manage zone", props);
   const [open, setOpen] = React.useState(true);
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
