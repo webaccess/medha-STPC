@@ -472,6 +472,107 @@ export const questionSet = [
   }
 ];
 
+export const mockLocationDataForAddZone = {
+  pathname: "/manage-zones",
+  fromAddZone: true,
+  isDataAdded: true,
+  addedZoneData: {
+    id: 5,
+    name: "test",
+    state: {
+      id: 1,
+      name: "Uttar Pradesh",
+      is_active: true,
+      abbreviation: "UP",
+      identifier: "",
+      country: 1,
+      created_at: "2020-06-25T07:00:12.504Z",
+      updated_at: "2020-06-25T07:00:12.504Z"
+    },
+    created_at: "2020-07-21T08:09:29.593Z",
+    updated_at: "2020-07-21T08:09:29.676Z"
+  },
+  addResponseMessage: "",
+  addedData: {},
+  search: "",
+  hash: "",
+  key: "zlqmp3"
+};
+
+export const mockLocationDataForEditedZone = {
+  pathname: "/manage-zones",
+  fromEditZone: true,
+  isDataEdited: true,
+  editedZoneData: {
+    id: 5,
+    name: "test",
+    state: {
+      id: 1,
+      name: "Uttar Pradesh",
+      is_active: true,
+      abbreviation: "UP",
+      identifier: "",
+      country: 1,
+      created_at: "2020-06-25T07:00:12.504Z",
+      updated_at: "2020-06-25T07:00:12.504Z"
+    },
+    created_at: "2020-07-21T08:09:29.593Z",
+    updated_at: "2020-07-21T08:11:23.367Z"
+  },
+  editResponseMessage: "",
+  editedData: {},
+  search: "",
+  hash: "",
+  key: "y82evo"
+};
+
+export const mockZoneFilterData = {
+  result: [
+    {
+      id: 2,
+      name: "Bundelkhand Zone - Jhansi",
+      state: {
+        id: 1,
+        name: "Uttar Pradesh",
+        is_active: true,
+        abbreviation: "UP",
+        identifier: "",
+        country: 1,
+        created_at: "2020-06-25T07:00:12.504Z",
+        updated_at: "2020-06-25T07:00:12.504Z"
+      },
+      created_at: "2020-06-25T07:00:17.248Z",
+      updated_at: "2020-07-21T06:58:45.484Z"
+    }
+  ],
+  page: 1,
+  pageSize: 10,
+  rowCount: 1,
+  pageCount: 1
+};
+export const mockTempZoneData = [
+  {
+    id: 2,
+    name: "Bundelkhand Zone - Jhansi",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 3,
+    name: "Central Zone - Lucknow",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 4,
+    name: "East Zone - Varanasi",
+    state: "Uttar Pradesh"
+  },
+  {
+    id: 1,
+    name: "West Zone - Daurala (Meerut)",
+    state: "Uttar Pradesh"
+  }
+];
+
 export const manageZoneData = {
   result: [
     {

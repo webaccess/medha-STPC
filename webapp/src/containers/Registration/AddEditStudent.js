@@ -101,7 +101,6 @@ const AddEditStudent = props => {
       : false,
     showNoImage: props.location.editStudent ? false : props.location.editStudent
   });
-  const { setLoaderStatus } = useContext(LoaderContext);
 
   const [selectedDate, setSelectedDate] = useState(
     props.forTesting ? new Date("1999-03-25") : null

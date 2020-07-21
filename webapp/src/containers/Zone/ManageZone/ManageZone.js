@@ -8,7 +8,9 @@ import {
   Typography,
   Collapse,
   IconButton,
-  Tooltip
+  Tooltip,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 
 import * as strapiConstants from "../../../constants/StrapiApiConstants";
@@ -35,10 +37,10 @@ const ViewZone = props => {
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
   const [zonesFilter, setZonesFilter] = useState([]);
-  const { setLoaderStatus } = useContext(LoaderContext);
+  const [backDrop, setBackDrop] = useState(false);
   const [formState, setFormState] = useState({
     filterZone: "",
-    dataToShow: [],
+    dataToShow: props.testingZoneData ? props.testingZoneData : [],
     tempData: [],
     zones: [],
     zonesFilter: [],
@@ -242,7 +244,7 @@ const ViewZone = props => {
   */
 
   const getDataForEdit = async id => {
-    setLoaderStatus(true);
+    setBackDrop(true);
     let paramsForZones = {
       id: id
     };
@@ -259,14 +261,13 @@ const ViewZone = props => {
       .catch(error => {
         console.log("error", error);
       });
-    setLoaderStatus(false);
+    setBackDrop(false);
   };
   const editCell = event => {
     getDataForEdit(event.target.id);
   };
 
   const deleteCell = event => {
-    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -281,7 +282,6 @@ const ViewZone = props => {
       fromEditZone: false,
       isMultiDelete: false
     }));
-    setLoaderStatus(false);
   };
 
   /** This is used to handle the close modal event */
@@ -476,6 +476,7 @@ const ViewZone = props => {
         </Grid>
         <Grid item>
           <GreenButton
+            id="deleteMulUsers"
             variant="contained"
             color="secondary"
             onClick={() => deleteMulUserById()}
@@ -487,6 +488,7 @@ const ViewZone = props => {
             Delete Selected Zones
           </GreenButton>
           <GreenButton
+            id="addZones"
             variant="contained"
             color="primary"
             disableElevation
@@ -644,6 +646,7 @@ const ViewZone = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="name"
                   label={"Name"}
                   placeholder="Name"
                   variant="outlined"
@@ -653,6 +656,7 @@ const ViewZone = props => {
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFilter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -663,6 +667,7 @@ const ViewZone = props => {
               </Grid>
               <Grid className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="cancelFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}
@@ -678,6 +683,7 @@ const ViewZone = props => {
           {formState.dataToShow ? (
             formState.dataToShow.length ? (
               <Table
+                id="ManageTableID"
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"
@@ -720,6 +726,9 @@ const ViewZone = props => {
           ) : null}
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };
