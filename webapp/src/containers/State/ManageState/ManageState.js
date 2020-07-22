@@ -147,7 +147,7 @@ const ViewStates = props => {
       isDataLoading: true
     }));
     await serviceProviders
-      .serviceProviderForGetRequest(STATES_URL, paramsForState)
+      .serviceProviderForGetRequest(STATES_URL, paramsForState, {})
       .then(res => {
         formState.dataToShow = [];
         let tempCollegeData = [];
@@ -253,7 +253,7 @@ const ViewStates = props => {
       id: id
     };
     await serviceProviders
-      .serviceProviderForGetRequest(STATES_URL, paramsForStates)
+      .serviceProviderForGetRequest(STATES_URL, paramsForStates, {})
       .then(res => {
         let editData = res.data.result[0];
         /** move to edit page */
@@ -372,11 +372,7 @@ const ViewStates = props => {
   };
 
   const filterStateData = () => {
-    getStateData(
-      formState.pageSize,
-      formState.page,
-      formState.filterDataParameters
-    );
+    getStateData(10, 1, formState.filterDataParameters);
   };
 
   const selectedRowCleared = data => {
