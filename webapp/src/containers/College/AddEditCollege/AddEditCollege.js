@@ -193,19 +193,19 @@ const AddEditCollege = props => {
         formState.values[collegeEmail] =
           props["dataForEdit"]["contact"]["email"];
       }
-      if (
-        props["dataForEdit"]["contact"] &&
-        props["dataForEdit"]["contact"]["state"]
-      ) {
-        formState.values["state"] = props["dataForEdit"]["contact"]["state"];
-      }
-      if (
-        props["dataForEdit"]["contact"] &&
-        props["dataForEdit"]["contact"]["district"]
-      ) {
-        formState.values[district] =
-          props["dataForEdit"]["contact"]["district"]["id"];
-      }
+      // if (
+      //   props["dataForEdit"]["contact"] &&
+      //   props["dataForEdit"]["contact"]["state"]
+      // ) {
+      //   formState.values["state"] = props["dataForEdit"]["contact"]["state"];
+      // }
+      // if (
+      //   props["dataForEdit"]["contact"] &&
+      //   props["dataForEdit"]["contact"]["district"]
+      // ) {
+      //   formState.values[district] =
+      //     props["dataForEdit"]["contact"]["district"]["id"];
+      // }
       if (props["dataForEdit"]["blocked"]) {
         formState.values[block] = props["dataForEdit"]["blocked"];
       }
@@ -269,18 +269,19 @@ const AddEditCollege = props => {
       .catch(error => {
         console.log("error", error);
       });
-    let params = {
-      pageSize: -1,
-      "state.id": formState.values[state]
-    };
-    serviceProviders
-      .serviceProviderForGetRequest(DISTRICTS_URL, params)
-      .then(res => {
-        setDistricts(res.data.result);
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
+
+    // let params = {
+    //   pageSize: -1,
+    //   "state.name": "Uttar Pradesh"
+    // };
+    // serviceProviders
+    //   .serviceProviderForGetRequest(DISTRICTS_URL, params)
+    //   .then(res => {
+    //     setDistricts(res.data.result);
+    //   })
+    //   .catch(error => {
+    //     console.log("error", error);
+    //   });
     serviceProviders
       .serviceProviderForGetRequest(STREAMS_URL, {
         pageSize: -1
@@ -405,18 +406,19 @@ const AddEditCollege = props => {
 
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
-    if (formState.values[state]) {
+    if (formState.addresses[0][state]) {
+      console.log("state changed");
       fetchZoneRpcDistrictData();
     }
     return () => {};
-  }, [formState.values[state]]);
+  }, [formState.addresses[0][state]]);
 
   /** Common function to get zones, rpcs, districts after changing state */
   async function fetchZoneRpcDistrictData() {
     let zones_url =
       STATES_URL +
       "/" +
-      formState.values[state] +
+      formState.addresses[0][state] +
       "/" +
       strapiConstants.STRAPI_ZONES;
 
@@ -432,7 +434,7 @@ const AddEditCollege = props => {
     let rpcs_url =
       STATES_URL +
       "/" +
-      formState.values[state] +
+      formState.addresses[0][state] +
       "/" +
       strapiConstants.STRAPI_RPCS;
 
@@ -448,22 +450,33 @@ const AddEditCollege = props => {
       .catch(error => {
         console.log("error", error);
       });
-
     let params = {
       pageSize: -1,
-      "state.id": formState.values[state]
+      "state.name": "Uttar Pradesh"
     };
+    serviceProviders
+      .serviceProviderForGetRequest(DISTRICTS_URL, params)
+      .then(res => {
+        setDistricts(res.data.result);
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+    // let params = {
+    //   pageSize: -1,
+    //   "state.id": formState.values[state]
+    // };
 
-    if (formState.values[state] !== undefined) {
-      await serviceProviders
-        .serviceProviderForGetRequest(DISTRICTS_URL, params)
-        .then(res => {
-          setDistricts(res.data.result);
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    }
+    // if (formState.values[state] !== undefined) {
+    //   await serviceProviders
+    //     .serviceProviderForGetRequest(DISTRICTS_URL, params)
+    //     .then(res => {
+    //       setDistricts(res.data.result);
+    //     })
+    //     .catch(error => {
+    //       console.log("error", error);
+    //     });
+    // }
   }
 
   /** This gets Principal Email and contact number*/
@@ -808,7 +821,7 @@ const AddEditCollege = props => {
   };
 
   const handleSubmit = event => {
-    validateAddresses();
+    const isValidAddress = validateAddresses();
     /** Validate DynamicGrid */
     let isDynamicBarValid;
     isDynamicBarValid = validateDynamicGridValues();
@@ -839,7 +852,7 @@ const AddEditCollege = props => {
       );
     }
     /** Check if both form and dynamicBar id valid */
-    if (isValid && isDynamicBarValid) {
+    if (isValid && isDynamicBarValid && isValidAddress) {
       postCollegeData();
       /** Set state to reload form */
       setFormState(formState => ({
@@ -1018,25 +1031,19 @@ const AddEditCollege = props => {
     console.log(value);
     formState.addresses[idx][type] = value && value.id;
     if (type == "state" && formState.isCollegeAdmin) {
-      formState.values["state"] = value && value.id;
-      setDistricts([]);
-      delete formState.values[district];
+      formState.addresses[idx]["district"] = null;
     }
+
     if (type == "state" && !formState.isCollegeAdmin) {
       formState.addresses[idx]["district"] = null;
-      formState.values["district"] = null;
-      formState.values["state"] = value && value.id;
 
       setRpcs([]);
       setZones([]);
       setDistricts([]);
       delete formState.values[zone];
       delete formState.values[rpc];
-      delete formState.values[district];
     }
-    if (type == "district") {
-      formState.values["district"] = value && value.id;
-    }
+    validateAddresses();
     setFormState(formState => ({
       ...formState
     }));
@@ -1053,7 +1060,7 @@ const AddEditCollege = props => {
         return addr;
       }
     });
-
+    validateAddresses();
     setFormState(formState => ({
       ...formState,
       addresses
@@ -1137,7 +1144,7 @@ const AddEditCollege = props => {
     });
 
     setValidateAddress(errors);
-    return isError;
+    return !isError;
   };
 
   const clickedCancelButton = () => {
@@ -1153,8 +1160,6 @@ const AddEditCollege = props => {
   };
   return (
     <Grid>
-      {console.log(formState)}
-      {console.log(collegeInfo)}
       <Grid item xs={12} className={classes.title}>
         <Typography variant="h4" gutterBottom>
           {formState.isEditCollege
@@ -1251,7 +1256,7 @@ const AddEditCollege = props => {
                           >
                             {addr.address_type == "Temporary"
                               ? "Local Address"
-                              : "Permanent Address"}
+                              : "Address"}
                           </InputLabel>
                           <Grid
                             container
@@ -1265,7 +1270,7 @@ const AddEditCollege = props => {
                               style={{ marginTop: "8px" }}
                             >
                               <TextField
-                                label="Address"
+                                label="Address Line "
                                 name="address"
                                 value={
                                   formState.addresses[idx].address_line_1 || ""

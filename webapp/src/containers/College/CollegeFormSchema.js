@@ -44,21 +44,21 @@ const CollegeFormSchema = {
   //     }
   //   }
   // },
-  state: {
-    label: "State",
-    id: "state",
-    autoComplete: "state",
-    required: true,
-    placeholder: "Choose State",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "State is required"
-      }
-    }
-  },
+  // state: {
+  //   label: "State",
+  //   id: "state",
+  //   autoComplete: "state",
+  //   required: true,
+  //   placeholder: "Choose State",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "State is required"
+  //     }
+  //   }
+  // },
   zone: {
     label: "Zone",
     id: "zone",
