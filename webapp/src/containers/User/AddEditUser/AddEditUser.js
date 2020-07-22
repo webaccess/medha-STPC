@@ -35,9 +35,7 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
-import LoaderContext from "../../../context/LoaderContext";
 import { YellowButton, GrayButton, Auth as auth } from "../../../components";
-import { et } from "date-fns/locale";
 
 /** Constants  declaration */
 const firstname = "firstname";
@@ -52,6 +50,7 @@ const rpc = "rpc";
 const role = "role";
 const college = "college";
 const blocked = "blocked";
+let stateId = null;
 
 /** URLS */
 const USERS_URL =
@@ -92,16 +91,15 @@ let VALIDATIONFORCOLLEGE = {
 };
 
 const AddEditUser = props => {
+  //  console.log(props);
   /** Initializing all the hooks */
   const classes = useStyles();
   const history = useHistory();
-  const { setLoaderStatus } = useContext(LoaderContext);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
     touched: {},
     errors: {},
-    stateId: null,
     isSuccess: false,
     isZoneBlocked: props.isZoneBlocked === "false" ? false : true,
     isRPCBlocked: props.isRPCBlocked === "false" ? false : true,
@@ -133,7 +131,6 @@ const AddEditUser = props => {
 
   /** Part for editing user */
   if (formState.isEditUser && !formState.counter) {
-    setLoaderStatus(true);
     if (props["dataForEdit"]) {
       formState.values[password] = undefined;
       if (props["dataForEdit"]["first_name"]) {
@@ -231,7 +228,6 @@ const AddEditUser = props => {
         ) {
           formState.values[state] =
             props["dataForEdit"]["contact"]["state"]["id"];
-          formState.stateId = props["dataForEdit"]["contact"]["state"]["id"];
         } else {
           formState.values[state] = "";
         }
@@ -273,8 +269,6 @@ const AddEditUser = props => {
           props["dataForEdit"]["contact"]["user"]["state"]
         ) {
           formState.values[state] =
-            props["dataForEdit"]["contact"]["user"]["state"]["id"];
-          formState.stateId =
             props["dataForEdit"]["contact"]["user"]["state"]["id"];
         } else {
           formState.values[state] = "";
@@ -341,12 +335,25 @@ const AddEditUser = props => {
       .then(res => {
         res.data.result.map(s => {
           if (s.name === "Uttar Pradesh") {
-            formState.values[state] = s.id;
-            formState.stateId = s.id;
+            stateId = s.id;
+            let zones_url =
+              STATES_URL +
+              "/" +
+              stateId +
+              "/" +
+              strapiApiConstants.STRAPI_ZONES;
+
+            serviceProvider
+              .serviceProviderForGetRequest(zones_url)
+              .then(res => {
+                setZones(res.data.result);
+              })
+              .catch(error => {
+                console.log("error", error);
+              });
           }
         });
         setStates(res.data.result);
-        fetchZoneRpcDistrictData();
       })
       .catch(error => {
         console.log(error);
@@ -400,52 +407,6 @@ const AddEditUser = props => {
       });
   }, []);
 
-  /** Common function to get zones, rpcs after changing state */
-  async function fetchZoneRpcDistrictData() {
-    if (
-      formState.values.hasOwnProperty(state) &&
-      formState.values[state] !== null &&
-      formState.values[state] !== undefined &&
-      formState.values[state] !== ""
-    ) {
-      let zones_url =
-        STATES_URL +
-        "/" +
-        formState.values[state] +
-        "/" +
-        strapiApiConstants.STRAPI_ZONES;
-
-      await serviceProvider
-        .serviceProviderForGetRequest(zones_url)
-        .then(res => {
-          setZones(res.data.result);
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-
-      let rpcs_url =
-        STATES_URL +
-        "/" +
-        formState.values[state] +
-        "/" +
-        strapiApiConstants.STRAPI_RPCS;
-
-      await serviceProvider
-        .serviceProviderForGetRequest(rpcs_url)
-        .then(res => {
-          if (Array.isArray(res.data)) {
-            setRpcs(res.data[0].result);
-          } else {
-            setRpcs(res.data.result);
-          }
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    }
-  }
-
   const handleChange = e => {
     /** TO SET VALUES IN FORMSTATE */
     e.persist();
@@ -492,9 +453,6 @@ const AddEditUser = props => {
             [rpc]: value.rpc.id
           }
         }));
-      }
-      if (eventName === state) {
-        fetchZoneRpcDistrictData();
       }
       /** Get dependent roles */
       if (eventName === role) {
@@ -640,7 +598,7 @@ const AddEditUser = props => {
   const handleSubmit = event => {
     event.preventDefault();
     setBackDrop(true);
-    formState.values[state] = formState.stateId;
+    formState.values[state] = stateId;
     if (formState.isEditUser) {
       UserSchema[password]["required"] = false;
       UserSchema[password]["validations"] = {
@@ -742,7 +700,6 @@ const AddEditUser = props => {
           setBackDrop(false);
         })
         .catch(error => {
-          console.log("putErrorUSer", error, error.response);
           let errorMessage;
 
           if (
@@ -778,7 +735,6 @@ const AddEditUser = props => {
           setBackDrop(false);
         })
         .catch(error => {
-          console.log("errorUSer", error, error.response);
           let errorMessage;
 
           if (
@@ -811,6 +767,7 @@ const AddEditUser = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -822,7 +779,12 @@ const AddEditUser = props => {
       </Grid>
       <Grid spacing={3}>
         <Card>
-          <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <form
+            id="userForm"
+            autoComplete="off"
+            noValidate
+            onSubmit={handleSubmit}
+          >
             <CardContent>
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
@@ -1034,43 +996,6 @@ const AddEditUser = props => {
 
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container spacing={3} className={classes.formgrid}>
-                  {/* <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id={get(UserSchema[state], "id")}
-                      className={classes.root}
-                      disabled={isDisable}
-                      options={states}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(state, event, value);
-                      }}
-                      value={
-                        isDisable
-                          ? null
-                          : states[
-                              states.findIndex(function (item, i) {
-                                return item.id === formState.values[state];
-                              })
-                            ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label={get(UserSchema[state], "label")}
-                          placeholder={get(UserSchema[state], "placeholder")}
-                          variant="outlined"
-                          error={hasError(state)}
-                          helperText={
-                            hasError(state)
-                              ? formState.errors[state].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid> */}
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id={get(UserSchema[zone], "id")}
@@ -1108,45 +1033,6 @@ const AddEditUser = props => {
                       )}
                     />
                   </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id={get(UserSchema[rpc], "id")}
-                      className={classes.root}
-                      disabled={isDisable || formState.isRPCBlocked}
-                      options={rpcs}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete(rpc, event, value);
-                      }}
-                      value={
-                        isDisable || formState.isRPCBlocked
-                          ? null
-                          : rpcs[
-                              rpcs.findIndex(function (item, i) {
-                                return item.id === formState.values[rpc];
-                              })
-                            ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label={get(UserSchema[rpc], "label")}
-                          placeholder={get(UserSchema[rpc], "placeholder")}
-                          variant="outlined"
-                          error={hasError(rpc)}
-                          helperText={
-                            hasError(rpc)
-                              ? formState.errors[rpc].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>
                     <Autocomplete
                       id={get(UserSchema[college], "id")}
