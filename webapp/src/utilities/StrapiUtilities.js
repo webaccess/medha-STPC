@@ -224,9 +224,6 @@ export const addStudent = (
   lastname,
   fatherfullname,
   motherfullname,
-  address,
-  state,
-  district,
   email,
   contactNumber,
   username,
@@ -240,7 +237,8 @@ export const addStudent = (
   otp,
   files,
   futureAspirations = [],
-  isStudent = true
+  isStudent = true,
+  addresses
 ) => {
   const data = {
     phone: contactNumber,
@@ -254,9 +252,6 @@ export const addStudent = (
     last_name: lastname,
     father_full_name: fatherfullname,
     mother_full_name: motherfullname,
-    address_1: address,
-    state: state,
-    district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
@@ -264,7 +259,8 @@ export const addStudent = (
     is_physically_challenged: physicallyHandicapped,
     future_aspirations: futureAspirations,
     role: 7,
-    isStudent: true
+    isStudent: true,
+    addresses
   };
   if (files) {
     const formdata = new FormData();

@@ -244,6 +244,7 @@ const ManageCollege = props => {
   /** Converting college unstructured data into structred flat format for passing it into datatable */
   const convertCollegeData = data => {
     let collegeDataArray = [];
+    console.log(data[0]);
     if (data.length > 0) {
       for (let i in data) {
         var tempIndividualCollegeData = {};
@@ -251,10 +252,16 @@ const ManageCollege = props => {
         tempIndividualCollegeData["contactId"] = data[i]["contact"]["id"];
         tempIndividualCollegeData["blocked"] = data[i]["is_blocked"];
         tempIndividualCollegeData["name"] = data[i]["name"];
+        // tempIndividualCollegeData["state"] =
+        //   data[i]["contact"]["state"] !== null
+        //     ? data[i]["contact"]["state"]["name"]
+        //     : "";
+        const addresses =
+          (data[i]["contact"]["addresses"] &&
+            data[i]["contact"]["addresses"]) ||
+          null;
         tempIndividualCollegeData["state"] =
-          data[i]["contact"]["state"] !== null
-            ? data[i]["contact"]["state"]["name"]
-            : "";
+          addresses && addresses.length > 0 ? addresses[0].state.name : null;
         tempIndividualCollegeData["rpc"] = data[i]["rpc"]
           ? data[i]["rpc"]["name"]
           : "";
