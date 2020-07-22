@@ -85,7 +85,7 @@ const AddEditEducation = props => {
         ...formState,
         values: {
           ...formState.values,
-          percentage: marks
+          percentage: marks.toFixed(2)
         },
         errors: {
           ...formState.errors
