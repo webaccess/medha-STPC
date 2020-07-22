@@ -1355,6 +1355,82 @@ const AddEditCollege = props => {
                               />
                             </Grid>
                             <Grid item md={6} xs={12}>
+                              <FormControl
+                                variant="outlined"
+                                fullWidth
+                                className={classes.formControl}
+                              >
+                                <InputLabel
+                                  ref={inputLabel}
+                                  id="districts-label"
+                                >
+                                  {/* Districts */}
+                                </InputLabel>
+
+                                <Autocomplete
+                                  id={get(CollegeFormSchema[district], "id")}
+                                  options={districts}
+                                  getOptionLabel={option => option.name}
+                                  onChange={(event, value) => {
+                                    handleStateAndDistrictChange(
+                                      "district",
+                                      value,
+                                      idx
+                                    );
+                                  }}
+                                  name={district}
+                                  /** This is used to set the default value to the auto complete */
+                                  value={
+                                    formState.isStateClearFilter
+                                      ? null
+                                      : districts[
+                                          districts.findIndex(function (
+                                            item,
+                                            i
+                                          ) {
+                                            return (
+                                              item.id ===
+                                              formState.addresses[idx].district
+                                            );
+                                          })
+                                        ] ||
+                                        null /** Please give a default " " blank value */
+                                  }
+                                  renderInput={params => (
+                                    <TextField
+                                      {...params}
+                                      error={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["district"][
+                                            "error"
+                                          ]) ||
+                                        false
+                                      }
+                                      helperText={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["district"][
+                                            "message"
+                                          ]) ||
+                                        null
+                                      }
+                                      placeholder={get(
+                                        CollegeFormSchema[district],
+                                        "placeholder"
+                                      )}
+                                      value={option => option.id}
+                                      name={district}
+                                      key={option => option.id}
+                                      label={get(
+                                        CollegeFormSchema[district],
+                                        "label"
+                                      )}
+                                      variant="outlined"
+                                    />
+                                  )}
+                                />
+                              </FormControl>
+                            </Grid>
+                            <Grid item md={6} xs={12}>
                               <TextField
                                 label="City"
                                 name="city"
@@ -1554,82 +1630,6 @@ const AddEditCollege = props => {
                                   />
                                 </FormControl>
                               )}
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                              <FormControl
-                                variant="outlined"
-                                fullWidth
-                                className={classes.formControl}
-                              >
-                                <InputLabel
-                                  ref={inputLabel}
-                                  id="districts-label"
-                                >
-                                  {/* Districts */}
-                                </InputLabel>
-
-                                <Autocomplete
-                                  id={get(CollegeFormSchema[district], "id")}
-                                  options={districts}
-                                  getOptionLabel={option => option.name}
-                                  onChange={(event, value) => {
-                                    handleStateAndDistrictChange(
-                                      "district",
-                                      value,
-                                      idx
-                                    );
-                                  }}
-                                  name={district}
-                                  /** This is used to set the default value to the auto complete */
-                                  value={
-                                    formState.isStateClearFilter
-                                      ? null
-                                      : districts[
-                                          districts.findIndex(function (
-                                            item,
-                                            i
-                                          ) {
-                                            return (
-                                              item.id ===
-                                              formState.addresses[idx].district
-                                            );
-                                          })
-                                        ] ||
-                                        null /** Please give a default " " blank value */
-                                  }
-                                  renderInput={params => (
-                                    <TextField
-                                      {...params}
-                                      error={
-                                        (validateAddress[idx] &&
-                                          validateAddress[idx]["district"][
-                                            "error"
-                                          ]) ||
-                                        false
-                                      }
-                                      helperText={
-                                        (validateAddress[idx] &&
-                                          validateAddress[idx]["district"][
-                                            "message"
-                                          ]) ||
-                                        null
-                                      }
-                                      placeholder={get(
-                                        CollegeFormSchema[district],
-                                        "placeholder"
-                                      )}
-                                      value={option => option.id}
-                                      name={district}
-                                      key={option => option.id}
-                                      label={get(
-                                        CollegeFormSchema[district],
-                                        "label"
-                                      )}
-                                      variant="outlined"
-                                    />
-                                  )}
-                                />
-                              </FormControl>
                             </Grid>
                           </Grid>
                         </Card>

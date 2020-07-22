@@ -302,6 +302,15 @@ const ViewCollege = props => {
                             </Grid>
                             <Grid item md={6} xs={12}>
                               <ReadOnlyTextField
+                                id="District"
+                                label={"District"}
+                                defaultValue={
+                                  (districts && districts.name) || ""
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <ReadOnlyTextField
                                 id="City"
                                 label={"City"}
                                 defaultValue={
@@ -336,15 +345,6 @@ const ViewCollege = props => {
                                 defaultValue={
                                   formState.collegeDetails.rpc &&
                                   formState.collegeDetails.rpc.name
-                                }
-                              />
-                            </Grid>
-                            <Grid item md={6} xs={12}>
-                              <ReadOnlyTextField
-                                id="District"
-                                label={"District"}
-                                defaultValue={
-                                  (districts && districts.name) || ""
                                 }
                               />
                             </Grid>
