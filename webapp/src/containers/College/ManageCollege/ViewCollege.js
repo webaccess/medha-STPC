@@ -234,7 +234,6 @@ const ViewCollege = props => {
         ) : null}
       </Grid>
       <Grid spacing={3}>
-        {console.log(formState)}
         <Card>
           <CardContent>
             <Grid item xs={12} md={6} xl={3}>
@@ -267,7 +266,7 @@ const ViewCollege = props => {
                           >
                             {addr.address_type == "Temporary"
                               ? "Local Address"
-                              : "Permanent Address"}
+                              : "Address"}
                           </InputLabel>
                           <Grid
                             container
@@ -282,7 +281,7 @@ const ViewCollege = props => {
                             >
                               <ReadOnlyTextField
                                 id="CollegeAddress"
-                                label={CollegeAddress}
+                                label={"Address Line"}
                                 defaultValue={
                                   formState.addresses[idx].address_line_1 || ""
                                 }

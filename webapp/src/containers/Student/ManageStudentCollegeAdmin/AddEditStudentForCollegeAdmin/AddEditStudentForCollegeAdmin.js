@@ -864,7 +864,6 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   console.log(formState.addresses);
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>

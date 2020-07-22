@@ -79,6 +79,9 @@ const StudentProfile = props => {
     addressSameAsLocal: false,
     addresses: genericConstants.ADDRESSES
   });
+
+  const [districts, setDistricts] = useState([]);
+  const [states, setStates] = useState([]);
   const classes = useStyles();
   const { setIndex } = useContext(SetIndexContext);
   setIndex(0);
@@ -102,6 +105,71 @@ const StudentProfile = props => {
       values: user
     }));
   }, [user]);
+
+  async function getstatesdistrict(addresses, data) {
+    if (addresses.length > 0) {
+      const STATES_URL =
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
+
+      const DISTRICTS_URL =
+        strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_DISTRICTS;
+      let params = {
+        pageSize: -1
+      };
+
+      await serviceProvider
+        .serviceProviderForGetRequest(STATES_URL, params, {})
+        .then(res => {
+          const state = res.data.result;
+          addresses = addresses.map((addr, idx) => {
+            if (addr.state != null) {
+              state.map(state => {
+                if (addr.state === state.id) {
+                  addr.state = state;
+                }
+                return state;
+              });
+            }
+            return addr;
+          });
+
+          setStates(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+
+      await serviceProvider
+        .serviceProviderForGetRequest(DISTRICTS_URL, params, {})
+        .then(res => {
+          const district = res.data.result;
+          addresses = addresses.map((addr, idx) => {
+            if (addr.district != null) {
+              district.map(district => {
+                if (addr.district === district.id) {
+                  addr.district = district;
+                }
+                return district;
+              });
+            }
+            return addr;
+          });
+          setDistricts(res.data.result);
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+      console.log(addresses);
+    }
+    setFormState({
+      ...formState,
+      details: data,
+      showEditPreview: data.profile_photo ? true : false,
+      showNoImage: data.profile_photo ? false : true,
+      addresses: addresses.length > 0 ? addresses : genericConstants.ADDRESSES
+    });
+  }
+
   async function handleSetDetails() {
     let paramsForEvent = null;
     if (auth.getUserInfo() && auth.getUserInfo().role) {
@@ -144,17 +212,8 @@ const StudentProfile = props => {
                 return value;
               });
             }
+            getstatesdistrict(data.contact.addresses, data);
 
-            setFormState({
-              ...formState,
-              details: data,
-              showEditPreview: data.profile_photo ? true : false,
-              showNoImage: data.profile_photo ? false : true,
-              addresses:
-                data.contact.addresses.length > 0
-                  ? data.contact.addresses
-                  : genericConstants.ADDRESSES
-            });
             setUser({
               ...user,
               firstname: data.first_name,
@@ -204,6 +263,8 @@ const StudentProfile = props => {
         dataForEdit: formState.details
       });
     } else if (auth.getUserInfo().role.name === roleConstants.COLLEGEADMIN) {
+      console.log("in college admin role");
+      console.log(formState);
       history.push({
         pathname: routeConstants.EDIT_PROFILE,
         dataForEdit: formState.details,
@@ -240,7 +301,6 @@ const StudentProfile = props => {
     }
   };
 
-  console.log(formState.values.addresses);
   return (
     <Grid>
       {success ? (
