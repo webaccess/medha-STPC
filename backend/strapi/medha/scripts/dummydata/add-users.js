@@ -4,6 +4,23 @@ const bookshelf = require("../../config/bookshelf");
 const utils = require("../../config/utils");
 var noOfUsersPerEntity = 2;
 
+const addressBody = [
+  {
+    address_line_1: "West UP",
+    address_line_2: "users address",
+    address_type: "Permanent",
+    pincode: "411058",
+    city: "Pune"
+  },
+  {
+    address_line_1: "West UP",
+    address_line_2: "users address",
+    address_type: "Temporary",
+    pincode: "411058",
+    city: "Pune"
+  }
+];
+
 (async () => {
   await addMedhaAdmin();
   console.log("\n");
@@ -74,10 +91,7 @@ async function addZonalAdmins() {
         name: "Zonal Admin",
         contact_type: "individual",
         phone: stringPhoneNumber,
-        email: stringPhoneNumber + "@gmail.com",
-        address_1: "UP",
-        state: null,
-        district: null
+        email: stringPhoneNumber + "@gmail.com"
       };
 
       await fucntionToAddUser(
@@ -158,10 +172,7 @@ async function addCollegeAdmins() {
         name: "College Admin",
         contact_type: "individual",
         phone: stringPhoneNumber,
-        email: stringPhoneNumber + "@gmail.com",
-        address_1: "UP",
-        state: null,
-        district: null
+        email: stringPhoneNumber + "@gmail.com"
       };
 
       await fucntionToAddUser(
@@ -233,10 +244,7 @@ async function addMedhaAdmin() {
       name: "Medha Admin",
       contact_type: "individual",
       phone: stringPhoneNumber,
-      email: stringPhoneNumber + "@gmail.com",
-      address_1: "UP",
-      state: 1,
-      district: null
+      email: stringPhoneNumber + "@gmail.com"
     };
 
     await fucntionToAddUser(
@@ -262,6 +270,12 @@ async function fucntionToAddUser(
   contactBody,
   EntityToAdd
 ) {
+  const country = await bookshelf
+    .model("country")
+    .where({ name: "India" })
+    .fetch()
+    .then(model => model.toJSON());
+
   await bookshelf
     .transaction(async t => {
       // Step 1 creating user object
@@ -319,6 +333,24 @@ async function fucntionToAddUser(
 
       // Mapping user and individual relations
       const contactResponse = contact.toJSON ? contact.toJSON() : contact;
+
+      const addresses = await Promise.all(
+        addressBody.map(addr => {
+          const body = { ...addr };
+          body.country = country.id;
+          body.contact = contactResponse.id;
+          return bookshelf
+            .model("address")
+            .forge(body)
+            .save(null, { transacting: t })
+            .then(model => model.toJSON())
+            .catch(() => null);
+        })
+      );
+
+      if (addresses.some(addr => addr == null)) {
+        return Promise.reject("Something went wrong while creating address");
+      }
 
       await user.save(
         { contact: contactResponse.id },

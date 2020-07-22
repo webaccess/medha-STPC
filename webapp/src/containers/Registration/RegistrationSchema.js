@@ -78,41 +78,6 @@ const RegistrationSchema = {
       }
     }
   },
-  address: {
-    label: "Address",
-    id: "address",
-    autoComplete: "address",
-    required: true,
-    placeholder: "address",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Address is required"
-      }
-    }
-  },
-  state: {
-    label: "State",
-    id: "state",
-    autoComplete: "state",
-    required: false,
-    placeholder: "state",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
-  district: {
-    label: "District",
-    id: "district",
-    autoComplete: "district",
-    required: false,
-    placeholder: "district",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
   contact: {
     label: "Contact",
     id: "contact",
@@ -132,21 +97,6 @@ const RegistrationSchema = {
       }
     }
   },
-  // dateofbirth: {
-  //   label: "Date Of Birth",
-  //   id: "dateofbirth",
-  //   autoComplete: "dateofbirth",
-  //   required: true,
-  //   placeholder: "Date of Birth",
-  //   autoFocus: true,
-  //   type: "text",
-  //   validations: {
-  //     required: {
-  //       value: "true",
-  //       message: "Date of Birth is required"
-  //     }
-  //   }
-  // },
   gender: {
     label: "Gender",
     id: "gender",
@@ -207,16 +157,6 @@ const RegistrationSchema = {
     type: "text",
     validations: {}
   },
-  // currentacademicyear: {
-  //   label: "Current Academic Year",
-  //   id: "currentacademicyear",
-  //   autoComplete: "currentacademicyear",
-  //   required: true,
-  //   placeholder: "currentacademicyear",
-  //   autoFocus: true,
-  //   type: "text",
-  //   validations: {}
-  // },
   rollnumber: {
     label: "Enrollment Number",
     id: "Enrollmentnumber",

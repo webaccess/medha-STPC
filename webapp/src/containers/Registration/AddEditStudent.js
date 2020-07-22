@@ -16,6 +16,8 @@ import {
   CardActions,
   FormHelperText,
   Button,
+  FormControlLabel,
+  Checkbox,
   Backdrop,
   CircularProgress
 } from "@material-ui/core";
@@ -48,6 +50,7 @@ import * as serviceProvider from "../../api/Axios.js";
 import useStyles from "../ContainerStyles/AddEditPageStyles.js";
 import LoaderContext from "../../context/LoaderContext";
 import SetIndexContext from "../../context/SetIndexContext";
+import { concat } from "draft-js/lib/DefaultDraftBlockRenderMap";
 
 const AddEditStudent = props => {
   let history = useHistory();
@@ -99,7 +102,11 @@ const AddEditStudent = props => {
         ? true
         : false
       : false,
-    showNoImage: props.location.editStudent ? false : props.location.editStudent
+    showNoImage: props.location.editStudent
+      ? false
+      : props.location.editStudent,
+    addressSameAsLocal: false,
+    addresses: genericConstants.ADDRESSES
   });
 
   const [selectedDate, setSelectedDate] = useState(
@@ -139,6 +146,8 @@ const AddEditStudent = props => {
   );
   const [stream, setStream] = useState(null);
 
+  const [validateAddress, setValidateAddress] = useState([]);
+
   useEffect(() => {
     if (
       props.location.pathname !== "/registration" &&
@@ -177,6 +186,44 @@ const AddEditStudent = props => {
       setCollegeStreamList(list);
     }
   }, [formState.values["college"]]);
+
+  useEffect(() => {
+    if (!formState.editStudent) {
+      if (formState.addressSameAsLocal) {
+        const address = formState.addresses.find(
+          addr => addr.address_type == "Temporary"
+        );
+        const copyAddresses = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return { ...address, address_type: "Permanent" };
+          } else {
+            return addr;
+          }
+        });
+
+        setFormState(formState => ({
+          ...formState,
+          addresses: copyAddresses
+        }));
+      } else {
+        const address = genericConstants.ADDRESSES.find(
+          addr => addr.address_type == "Permanent"
+        );
+
+        const resetPermanentAddress = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return address;
+          } else {
+            return addr;
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          addresses: resetPermanentAddress
+        }));
+      }
+    }
+  }, [formState.addressSameAsLocal]);
 
   if (formState.dataForEdit && !formState.counter) {
     if (props.location["dataForEdit"]) {
@@ -222,13 +269,13 @@ const AddEditStudent = props => {
         formState.values["college"] =
           props.location["dataForEdit"]["organization"]["id"];
       }
-      if (
-        props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["state"]
-      ) {
-        formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["state"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"] &&
+      //   props.location["dataForEdit"]["contact"]["state"]
+      // ) {
+      //   formState.values["state"] =
+      //     props.location["dataForEdit"]["contact"]["state"]["id"];
+      // }
       if (
         props.location["dataForEdit"]["stream"] &&
         props.location["dataForEdit"]["stream"]["id"]
@@ -236,13 +283,13 @@ const AddEditStudent = props => {
         formState.values["stream"] = props.location["dataForEdit"]["stream"];
       }
 
-      if (
-        props.location["dataForEdit"]["contact"]["district"] &&
-        props.location["dataForEdit"]["contact"]["district"]["id"]
-      ) {
-        formState.values["district"] =
-          props.location["dataForEdit"]["contact"]["district"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"]["district"] &&
+      //   props.location["dataForEdit"]["contact"]["district"]["id"]
+      // ) {
+      //   formState.values["district"] =
+      //     props.location["dataForEdit"]["contact"]["district"]["id"];
+      // }
 
       if (props.location["dataForEdit"]["father_full_name"]) {
         formState.values["fatherFullName"] =
@@ -252,10 +299,10 @@ const AddEditStudent = props => {
         formState.values["motherFullName"] =
           props.location["dataForEdit"]["mother_full_name"];
       }
-      if (props.location["dataForEdit"]["contact"]["address_1"]) {
-        formState.values["address"] =
-          props.location["dataForEdit"]["contact"]["address_1"];
-      }
+      // if (props.location["dataForEdit"]["contact"]["address_1"]) {
+      //   formState.values["address"] =
+      //     props.location["dataForEdit"]["contact"]["address_1"];
+      // }
       if (props.location["dataForEdit"]["gender"]) {
         formState.values["gender"] = props.location["dataForEdit"]["gender"];
       }
@@ -296,6 +343,17 @@ const AddEditStudent = props => {
         //      formState.values["files"] =
         //        props.location["dataForEdit"]["upload_logo"]["name"];
       }
+
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["addresses"] &&
+        props.location["dataForEdit"]["contact"]["addresses"].length > 0
+      ) {
+        formState.addresses =
+          props.location["dataForEdit"]["contact"]["addresses"];
+      } else {
+        formState.addresses = genericConstants.ADDRESSES;
+      }
     }
     formState.counter += 1;
   }
@@ -311,6 +369,7 @@ const AddEditStudent = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
+    const isValidAddress = validateAddresses();
     setBackDrop(true);
     let schema;
     if (formState.editStudent) {
@@ -355,10 +414,12 @@ const AddEditStudent = props => {
       }
     }
 
+    console.log(formState);
     if (
       isValid &&
       formState.isDateOfBirthPresent &&
-      formState.isdateOfBirthValid
+      formState.isdateOfBirthValid &&
+      isValidAddress
     ) {
       /** CALL POST FUNCTION */
       postStudentData();
@@ -385,6 +446,7 @@ const AddEditStudent = props => {
 
   const postStudentData = () => {
     let postData;
+    const addresses = formState.addresses;
     if (formState.editStudent) {
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
@@ -392,9 +454,6 @@ const AddEditStudent = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"] ? formState.values["state"] : null,
-        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -414,7 +473,9 @@ const AddEditStudent = props => {
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
           : null,
-        formState.files
+        formState.files,
+        null,
+        addresses
       );
       let EDIT_STUDENT_URL =
         strapiApiConstants.STRAPI_DB_URL +
@@ -495,9 +556,6 @@ const AddEditStudent = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"],
-        formState.values["district"],
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -516,7 +574,9 @@ const AddEditStudent = props => {
         formState.files,
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
-          : null
+          : null,
+        null,
+        addresses
       );
 
       axios
@@ -600,7 +660,7 @@ const AddEditStudent = props => {
         }));
         setstreamlist(list);
 
-        if (formState.dataForEdit) {
+        if (formState.dataForEdit && props.location["dataForEdit"]["stream"]) {
           const selectedStream = list.find(
             stream => stream.id == props.location["dataForEdit"]["stream"]["id"]
           );
@@ -779,6 +839,115 @@ const AddEditStudent = props => {
     });
   };
 
+  const handleStateAndDistrictChange = (type, value, idx) => {
+    formState.addresses[idx][type] = value && value.id;
+    if (type == "state") {
+      formState.addresses[idx]["district"] = null;
+    }
+    validateAddresses();
+    setFormState(formState => ({
+      ...formState
+    }));
+  };
+
+  const handleAddressChange = (idx, e, type) => {
+    e.persist();
+    console.log(e.target.value);
+
+    const addresses = formState.addresses.map((addr, index) => {
+      if (index == idx) {
+        return { ...addr, [type]: e.target.value };
+      } else {
+        return addr;
+      }
+    });
+    validateAddresses();
+    setFormState(formState => ({
+      ...formState,
+      addresses
+    }));
+  };
+
+  const validateAddresses = () => {
+    const addresses = formState.addresses;
+    let errors = [];
+    let isError = false;
+    addresses.forEach(addr => {
+      let errorObject = {};
+      if (!(addr.address_line_1 && addr.address_line_1.length > 0)) {
+        isError = true;
+        errorObject["address_line_1"] = {
+          error: true,
+          message: "Address is required"
+        };
+      } else {
+        errorObject["address_line_1"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.state) {
+        isError = true;
+        errorObject["state"] = {
+          error: true,
+          message: "State is required"
+        };
+      } else {
+        errorObject["state"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.district) {
+        isError = true;
+        errorObject["district"] = {
+          error: true,
+          message: "District is required"
+        };
+      } else {
+        errorObject["district"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.city) {
+        isError = true;
+        errorObject["city"] = {
+          error: true,
+          message: "City is required"
+        };
+      } else {
+        errorObject["city"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.pincode) {
+        isError = true;
+        errorObject["pincode"] = {
+          error: true,
+          message: "Pincode is required"
+        };
+      } else {
+        errorObject["pincode"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      errors.push(errorObject);
+    });
+
+    setValidateAddress(errors);
+    return !isError;
+  };
+
+  console.log(formState.addresses);
+  console.log(validateAddress);
   return (
     // <Layout>
     <Grid>
@@ -1021,99 +1190,243 @@ const AddEditStudent = props => {
                   />
                 </Grid>
               </Grid>
+              <Divider className={classes.divider} />
               <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={12} xs={12}>
-                  <TextField
-                    id="address"
-                    label="Address"
-                    name="address"
-                    value={formState.values["address"] || ""}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    onChange={handleChange}
-                    error={hasError("address")}
-                    helperText={
-                      hasError("address")
-                        ? formState.errors["address"].map(error => {
-                            return error + " ";
-                          })
-                        : null
-                    }
-                  />
-                </Grid>
-              </Grid>
-              <Grid container spacing={3} className={classes.MarginBottom}>
-                <Grid item md={6} xs={12}>
-                  <Autocomplete
-                    id="states-filter"
-                    className={classes.root}
-                    options={statelist}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete("state", event, value);
-                    }}
-                    value={
-                      statelist[
-                        statelist.findIndex(function (item, i) {
-                          return item.id === formState.values.state;
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError("state")}
-                        label="State"
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError("state")
-                            ? formState.errors["state"].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <Autocomplete
-                    id="district-filter"
-                    className={classes.root}
-                    options={districtlist.filter(
-                      district => district.state === formState.values.state
-                    )}
-                    getOptionLabel={option => option.name}
-                    onChange={(event, value) => {
-                      handleChangeAutoComplete("district", event, value);
-                    }}
-                    value={
-                      districtlist[
-                        districtlist.findIndex(function (item, i) {
-                          return item.id === formState.values.district;
-                        })
-                      ] || null
-                    }
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        error={hasError("district")}
-                        label="District"
-                        variant="outlined"
-                        name="tester"
-                        helperText={
-                          hasError("district")
-                            ? formState.errors["district"].map(error => {
-                                return error + " ";
-                              })
-                            : null
-                        }
-                      />
-                    )}
-                  />
-                </Grid>
+                {formState.addresses.map((addr, idx) => {
+                  return (
+                    <Grid item md={12} xs={12}>
+                      <Grid item md={12} xs={12} className={classes.streamcard}>
+                        <Card className={classes.streamoffer}>
+                          <InputLabel
+                            htmlFor="outlined-address-card"
+                            fullwidth={true.toString()}
+                          >
+                            {addr.address_type == "Temporary"
+                              ? "Local Address"
+                              : "Permanent Address"}
+                          </InputLabel>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid
+                              item
+                              md={12}
+                              xs={12}
+                              style={{ marginTop: "8px" }}
+                            >
+                              <TextField
+                                label="Address"
+                                name="address"
+                                value={
+                                  formState.addresses[idx].address_line_1 || ""
+                                }
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(
+                                    idx,
+                                    event,
+                                    "address_line_1"
+                                  )
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["address_line_1"][
+                                      "error"
+                                    ]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["address_line_1"][
+                                      "message"
+                                    ]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            spacing={3}
+                            className={classes.MarginBottom}
+                          >
+                            <Grid item md={6} xs={12}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                className={classes.root}
+                                options={statelist}
+                                getOptionLabel={option => option.name}
+                                onChange={(event, value) => {
+                                  handleStateAndDistrictChange(
+                                    "state",
+                                    value,
+                                    idx
+                                  );
+                                }}
+                                value={
+                                  statelist[
+                                    statelist.findIndex(function (item, i) {
+                                      return (
+                                        item.id ===
+                                        formState.addresses[idx].state
+                                      );
+                                    })
+                                  ] || null
+                                }
+                                renderInput={params => (
+                                  <TextField
+                                    {...params}
+                                    label="State"
+                                    variant="outlined"
+                                    name="tester"
+                                    error={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["state"][
+                                          "error"
+                                        ]) ||
+                                      false
+                                    }
+                                    helperText={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["state"][
+                                          "message"
+                                        ]) ||
+                                      null
+                                    }
+                                  />
+                                )}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                className={classes.root}
+                                options={districtlist.filter(
+                                  district =>
+                                    district.state ===
+                                    formState.addresses[idx].state
+                                )}
+                                getOptionLabel={option => option.name}
+                                onChange={(event, value) => {
+                                  handleStateAndDistrictChange(
+                                    "district",
+                                    value,
+                                    idx
+                                  );
+                                }}
+                                value={
+                                  districtlist[
+                                    districtlist.findIndex(function (item, i) {
+                                      return (
+                                        item.id ===
+                                        formState.addresses[idx].district
+                                      );
+                                    })
+                                  ] || null
+                                }
+                                renderInput={params => (
+                                  <TextField
+                                    {...params}
+                                    label="District"
+                                    variant="outlined"
+                                    name="tester"
+                                    error={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["district"][
+                                          "error"
+                                        ]) ||
+                                      false
+                                    }
+                                    helperText={
+                                      (validateAddress[idx] &&
+                                        validateAddress[idx]["district"][
+                                          "message"
+                                        ]) ||
+                                      null
+                                    }
+                                  />
+                                )}
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <TextField
+                                label="City"
+                                name="city"
+                                value={formState.addresses[idx].city || ""}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(idx, event, "city")
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["city"]["error"]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["city"]["message"]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                            <Grid item md={6} xs={12}>
+                              <TextField
+                                label="Pincode"
+                                name="pincode"
+                                value={formState.addresses[idx].pincode || ""}
+                                variant="outlined"
+                                required
+                                fullWidth
+                                onChange={event =>
+                                  handleAddressChange(idx, event, "pincode")
+                                }
+                                error={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["pincode"]["error"]) ||
+                                  false
+                                }
+                                helperText={
+                                  (validateAddress[idx] &&
+                                    validateAddress[idx]["pincode"][
+                                      "message"
+                                    ]) ||
+                                  null
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                          <Grid item md={12} xs={12}>
+                            {!formState.editStudent &&
+                            addr.address_type == "Temporary" ? (
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={formState.addressSameAsLocal}
+                                    onChange={event => {
+                                      setFormState(formState => ({
+                                        ...formState,
+                                        addressSameAsLocal: event.target.checked
+                                      }));
+                                    }}
+                                    name="addressSameAsLocal"
+                                    color="primary"
+                                  />
+                                }
+                                label="Permanent Address same as local Address?"
+                              />
+                            ) : null}
+                          </Grid>
+                        </Card>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Grid>
             <Divider className={classes.divider} />

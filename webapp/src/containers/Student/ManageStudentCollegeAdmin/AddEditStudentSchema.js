@@ -69,41 +69,41 @@ const RegistrationSchema = {
       }
     }
   },
-  address: {
-    label: "Address",
-    id: "address",
-    autoComplete: "address",
-    required: true,
-    placeholder: "Address",
-    autoFocus: true,
-    type: "text",
-    validations: {
-      required: {
-        value: "true",
-        message: "Address is required"
-      }
-    }
-  },
-  state: {
-    label: "State",
-    id: "state",
-    autoComplete: "state",
-    required: false,
-    placeholder: "State",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
-  district: {
-    label: "District",
-    id: "district",
-    autoComplete: "district",
-    required: false,
-    placeholder: "District",
-    autoFocus: true,
-    type: "text",
-    validations: {}
-  },
+  // address: {
+  //   label: "Address",
+  //   id: "address",
+  //   autoComplete: "address",
+  //   required: true,
+  //   placeholder: "Address",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {
+  //     required: {
+  //       value: "true",
+  //       message: "Address is required"
+  //     }
+  //   }
+  // },
+  // state: {
+  //   label: "State",
+  //   id: "state",
+  //   autoComplete: "state",
+  //   required: false,
+  //   placeholder: "State",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {}
+  // },
+  // district: {
+  //   label: "District",
+  //   id: "district",
+  //   autoComplete: "district",
+  //   required: false,
+  //   placeholder: "District",
+  //   autoFocus: true,
+  //   type: "text",
+  //   validations: {}
+  // },
   dateofbirth: {
     label: "Date of Birth",
     id: "dateOfBirth",

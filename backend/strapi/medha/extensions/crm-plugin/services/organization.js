@@ -13,8 +13,7 @@ module.exports = {
       )
       .fetchAll({
         withRelated: [
-          "contact.state",
-          "contact.district",
+          "contact.addresses",
           "zone",
           "rpc",
           "tpos",

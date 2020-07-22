@@ -14,6 +14,8 @@ import {
   CardActions,
   Button,
   Divider,
+  FormControlLabel,
+  Checkbox,
   Backdrop,
   CircularProgress
 } from "@material-ui/core";
@@ -38,6 +40,7 @@ import LoaderContext from "../../../../context/LoaderContext";
 import { get } from "lodash";
 import Img from "react-image";
 import Spinner from "../../../../components/Spinner/Spinner.js";
+import Axios from "axios";
 
 const STATES_URL =
   strapiApiConstants.STRAPI_DB_URL + strapiApiConstants.STRAPI_STATES;
@@ -113,7 +116,11 @@ const AddEditStudentForCollegeAdmin = props => {
         ? true
         : false
       : false,
-    showNoImage: props.location.editStudent ? false : props.location.editStudent
+    showNoImage: props.location.editStudent
+      ? false
+      : props.location.editStudent,
+    addressSameAsLocal: false,
+    addresses: genericConstants.ADDRESSES
   });
 
   const { layout: Layout } = props;
@@ -132,6 +139,45 @@ const AddEditStudentForCollegeAdmin = props => {
     props.mockFutureAspiration ? props.mockFutureAspiration : []
   );
   const [collegelist] = useState([auth.getUserInfo().studentInfo.organization]);
+  const [validateAddress, setValidateAddress] = useState([]);
+
+  useEffect(() => {
+    if (!formState.editStudent) {
+      if (formState.addressSameAsLocal) {
+        const address = formState.addresses.find(
+          addr => addr.address_type == "Temporary"
+        );
+        const copyAddresses = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return { ...address, address_type: "Permanent" };
+          } else {
+            return addr;
+          }
+        });
+
+        setFormState(formState => ({
+          ...formState,
+          addresses: copyAddresses
+        }));
+      } else {
+        const address = genericConstants.ADDRESSES.find(
+          addr => addr.address_type == "Permanent"
+        );
+
+        const resetPermanentAddress = formState.addresses.map(addr => {
+          if (addr.address_type == "Permanent") {
+            return address;
+          } else {
+            return addr;
+          }
+        });
+        setFormState(formState => ({
+          ...formState,
+          addresses: resetPermanentAddress
+        }));
+      }
+    }
+  }, [formState.addressSameAsLocal]);
 
   useEffect(() => {
     if (!formState.editStudent && !formState.addStudent) {
@@ -168,6 +214,7 @@ const AddEditStudentForCollegeAdmin = props => {
     getFutureAspirant();
     getStates();
     getStreams();
+    getDistrict();
   }, []);
 
   const getFutureAspirant = () => {
@@ -242,31 +289,20 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   const getDistrict = () => {
-    let params = {
-      pageSize: -1,
-      "state.id": formState.values["state"]
-    };
-
-    if (formState.values["state"] !== undefined) {
-      serviceProvider
-        .serviceProviderForGetRequest(DISTRICTS_URL, params)
-        .then(res => {
-          setdistrictlist(
-            res.data.result.map(({ id, name }) => ({ id, name }))
-          );
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    }
+    Axios.get(
+      strapiApiConstants.STRAPI_DB_URL +
+        strapiApiConstants.STRAPI_DISTRICTS +
+        "?pageSize=-1"
+    ).then(res => {
+      setdistrictlist(
+        res.data.result.map(({ id, name, state }) => ({
+          id,
+          name,
+          state: state.id
+        }))
+      );
+    });
   };
-
-  useEffect(() => {
-    if (formState.values["state"]) {
-      getDistrict();
-    }
-    return () => {};
-  }, [formState.values["state"]]);
 
   if (formState.dataForEdit && !formState.counter) {
     if (props.location["dataForEdit"]) {
@@ -297,25 +333,25 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["contact"] =
           props.location["dataForEdit"]["contact"]["phone"];
       }
-      if (
-        props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["state"]
-      ) {
-        formState.values["state"] =
-          props.location["dataForEdit"]["contact"]["state"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"] &&
+      //   props.location["dataForEdit"]["contact"]["state"]
+      // ) {
+      //   formState.values["state"] =
+      //     props.location["dataForEdit"]["contact"]["state"]["id"];
+      // }
       if (props.location["dataForEdit"]["stream"]) {
         formState.values["stream"] =
           props.location["dataForEdit"]["stream"]["id"];
       }
 
-      if (
-        props.location["dataForEdit"]["contact"] &&
-        props.location["dataForEdit"]["contact"]["district"]
-      ) {
-        formState.values["district"] =
-          props.location["dataForEdit"]["contact"]["district"]["id"];
-      }
+      // if (
+      //   props.location["dataForEdit"]["contact"] &&
+      //   props.location["dataForEdit"]["contact"]["district"]
+      // ) {
+      //   formState.values["district"] =
+      //     props.location["dataForEdit"]["contact"]["district"]["id"];
+      // }
       if (props.location["dataForEdit"]["father_full_name"]) {
         formState.values["fatherFullName"] =
           props.location["dataForEdit"]["father_full_name"];
@@ -324,10 +360,10 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["motherFullName"] =
           props.location["dataForEdit"]["mother_full_name"];
       }
-      if (props.location["dataForEdit"]["contact"]["address_1"]) {
-        formState.values["address"] =
-          props.location["dataForEdit"]["contact"]["address_1"];
-      }
+      // if (props.location["dataForEdit"]["contact"]["address_1"]) {
+      //   formState.values["address"] =
+      //     props.location["dataForEdit"]["contact"]["address_1"];
+      // }
       if (props.location["dataForEdit"]["gender"]) {
         formState.values["gender"] = props.location["dataForEdit"]["gender"];
       }
@@ -359,6 +395,17 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.previewFile = props.location["dataForEdit"]["profile_photo"];
         //      formState.values["files"] =
         //        props.location["dataForEdit"]["upload_logo"]["name"];
+      }
+
+      if (
+        props.location["dataForEdit"]["contact"] &&
+        props.location["dataForEdit"]["contact"]["addresses"] &&
+        props.location["dataForEdit"]["contact"]["addresses"].length > 0
+      ) {
+        formState.addresses =
+          props.location["dataForEdit"]["contact"]["addresses"];
+      } else {
+        formState.addresses = genericConstants.ADDRESSES;
       }
     }
     formState.counter += 1;
@@ -418,10 +465,13 @@ const AddEditStudentForCollegeAdmin = props => {
         );
       }
     }
+
+    const isValidAddress = validateAddresses();
     if (
       isValid &&
       formState.isDateOfBirthPresent &&
-      formState.isdateOfBirthValid
+      formState.isdateOfBirthValid &&
+      !isValidAddress
     ) {
       /** CALL POST FUNCTION */
       postStudentData();
@@ -442,6 +492,8 @@ const AddEditStudentForCollegeAdmin = props => {
 
   const postStudentData = () => {
     let postData;
+    const addresses = formState.addresses;
+
     if (formState.editStudent) {
       postData = databaseUtilities.editStudent(
         formState.values["firstname"],
@@ -449,9 +501,6 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"] ? formState.values["state"] : null,
-        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -468,7 +517,8 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.dataForEdit.id,
         formState.values["futureAspirations"],
         formState.files,
-        formState.values["password"] ? formState.values["password"] : undefined
+        formState.values["password"] ? formState.values["password"] : undefined,
+        addresses
       );
 
       let studentName =
@@ -525,9 +575,6 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.values["lastname"],
         formState.values["fatherFullName"],
         formState.values["motherFullName"],
-        formState.values["address"],
-        formState.values["state"] ? formState.values["state"] : null,
-        formState.values["district"] ? formState.values["district"] : null,
         formState.values["email"],
         formState.values["contact"],
         formState.values["contact"],
@@ -545,7 +592,8 @@ const AddEditStudentForCollegeAdmin = props => {
         formState.files,
         formState.values["futureAspirations"]
           ? formState["futureAspirations"]
-          : null
+          : null,
+        addresses
       );
       let url =
         strapiApiConstants.STRAPI_DB_URL +
@@ -707,6 +755,116 @@ const AddEditStudentForCollegeAdmin = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
+
+  const handleStateAndDistrictChange = (type, value, idx) => {
+    formState.addresses[idx][type] = value && value.id;
+    if (type == "state") {
+      formState.addresses[idx]["district"] = null;
+    }
+    validateAddresses();
+    setFormState(formState => ({
+      ...formState
+    }));
+  };
+
+  const handleAddressChange = (idx, e, type) => {
+    e.persist();
+    console.log(e.target.value);
+
+    const addresses = formState.addresses.map((addr, index) => {
+      if (index == idx) {
+        return { ...addr, [type]: e.target.value };
+      } else {
+        return addr;
+      }
+    });
+    validateAddresses();
+    setFormState(formState => ({
+      ...formState,
+      addresses
+    }));
+  };
+
+  const validateAddresses = () => {
+    const addresses = formState.addresses;
+    let errors = [];
+    let isError = false;
+    addresses.forEach(addr => {
+      let errorObject = {};
+      if (!(addr.address_line_1 && addr.address_line_1.length > 0)) {
+        isError = true;
+        errorObject["address_line_1"] = {
+          error: true,
+          message: "Address is required"
+        };
+      } else {
+        errorObject["address_line_1"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.state) {
+        isError = true;
+        errorObject["state"] = {
+          error: true,
+          message: "State is required"
+        };
+      } else {
+        errorObject["state"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.district) {
+        isError = true;
+        errorObject["district"] = {
+          error: true,
+          message: "District is required"
+        };
+      } else {
+        errorObject["district"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.city) {
+        isError = true;
+        errorObject["city"] = {
+          error: true,
+          message: "City is required"
+        };
+      } else {
+        errorObject["city"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      if (!addr.pincode) {
+        isError = true;
+        errorObject["pincode"] = {
+          error: true,
+          message: "Pincode is required"
+        };
+      } else {
+        errorObject["pincode"] = {
+          error: false,
+          message: null
+        };
+      }
+
+      errors.push(errorObject);
+    });
+
+    setValidateAddress(errors);
+    return isError;
+  };
+
+  console.log(formState.addresses);
+
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>
@@ -921,113 +1079,258 @@ const AddEditStudentForCollegeAdmin = props => {
                     />
                   </Grid>
                 </Grid>
+                <Divider className={classes.divider} />
                 <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={12} xs={12}>
-                    <TextField
-                      label={get(registrationSchema["address"], "label")}
-                      name="address"
-                      placeholder={get(
-                        registrationSchema["address"],
-                        "placeholder"
-                      )}
-                      id="address"
-                      value={formState.values["address"] || ""}
-                      variant="outlined"
-                      required
-                      fullWidth
-                      onChange={handleChange}
-                      error={hasError("address")}
-                      helperText={
-                        hasError("address")
-                          ? formState.errors["address"].map(error => {
-                              return error + " ";
-                            })
-                          : null
-                      }
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3} className={classes.MarginBottom}>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="states-filter"
-                      className={classes.root}
-                      options={statelist}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete("state", event, value);
-                      }}
-                      value={
-                        formState.isStateClearFilter
-                          ? null
-                          : statelist[
-                              statelist.findIndex(function (item, i) {
-                                return item.id === formState.values.state;
-                              })
-                            ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError("state")}
-                          label={get(registrationSchema["state"], "label")}
-                          placeholder={get(
-                            registrationSchema["state"],
-                            "placeholder"
-                          )}
-                          variant="outlined"
-                          name="state"
-                          helperText={
-                            hasError("state")
-                              ? formState.errors["state"].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <Autocomplete
-                      id="district-filter"
-                      className={classes.root}
-                      options={districtlist}
-                      getOptionLabel={option => option.name}
-                      onChange={(event, value) => {
-                        handleChangeAutoComplete("district", event, value);
-                      }}
-                      value={
-                        formState.isStateClearFilter
-                          ? null
-                          : districtlist[
-                              districtlist.findIndex(function (item, i) {
-                                return item.id === formState.values.district;
-                              })
-                            ] || null
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          error={hasError("district")}
-                          label={get(registrationSchema["district"], "label")}
-                          placeholder={get(
-                            registrationSchema["district"],
-                            "placeholder"
-                          )}
-                          variant="outlined"
-                          name="district"
-                          helperText={
-                            hasError("district")
-                              ? formState.errors["district"].map(error => {
-                                  return error + " ";
-                                })
-                              : null
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
+                  {formState.addresses.map((addr, idx) => {
+                    return (
+                      <Grid item md={12} xs={12}>
+                        <Grid
+                          item
+                          md={12}
+                          xs={12}
+                          className={classes.streamcard}
+                        >
+                          <Card className={classes.streamoffer}>
+                            <InputLabel
+                              htmlFor="outlined-address-card"
+                              fullwidth={true.toString()}
+                            >
+                              {addr.address_type == "Temporary"
+                                ? "Local Address"
+                                : "Permanent Address"}
+                            </InputLabel>
+                            <Grid
+                              container
+                              spacing={3}
+                              className={classes.MarginBottom}
+                            >
+                              <Grid
+                                item
+                                md={12}
+                                xs={12}
+                                style={{ marginTop: "8px" }}
+                              >
+                                <TextField
+                                  label="Address"
+                                  name="address"
+                                  value={
+                                    formState.addresses[idx].address_line_1 ||
+                                    ""
+                                  }
+                                  variant="outlined"
+                                  required
+                                  fullWidth
+                                  onChange={event =>
+                                    handleAddressChange(
+                                      idx,
+                                      event,
+                                      "address_line_1"
+                                    )
+                                  }
+                                  error={
+                                    (validateAddress[idx] &&
+                                      validateAddress[idx]["address_line_1"][
+                                        "error"
+                                      ]) ||
+                                    false
+                                  }
+                                  helperText={
+                                    (validateAddress[idx] &&
+                                      validateAddress[idx]["address_line_1"][
+                                        "message"
+                                      ]) ||
+                                    null
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                            <Grid
+                              container
+                              spacing={3}
+                              className={classes.MarginBottom}
+                            >
+                              <Grid item md={6} xs={12}>
+                                <Autocomplete
+                                  id="combo-box-demo"
+                                  className={classes.root}
+                                  options={statelist}
+                                  getOptionLabel={option => option.name}
+                                  onChange={(event, value) => {
+                                    handleStateAndDistrictChange(
+                                      "state",
+                                      value,
+                                      idx
+                                    );
+                                  }}
+                                  value={
+                                    statelist[
+                                      statelist.findIndex(function (item, i) {
+                                        return (
+                                          item.id ===
+                                          formState.addresses[idx].state
+                                        );
+                                      })
+                                    ] || null
+                                  }
+                                  renderInput={params => (
+                                    <TextField
+                                      {...params}
+                                      label="State"
+                                      variant="outlined"
+                                      name="tester"
+                                      error={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["state"][
+                                            "error"
+                                          ]) ||
+                                        false
+                                      }
+                                      helperText={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["state"][
+                                            "message"
+                                          ]) ||
+                                        null
+                                      }
+                                    />
+                                  )}
+                                />
+                              </Grid>
+                              <Grid item md={6} xs={12}>
+                                <Autocomplete
+                                  id="combo-box-demo"
+                                  className={classes.root}
+                                  options={districtlist.filter(
+                                    district =>
+                                      district.state ===
+                                      formState.addresses[idx].state
+                                  )}
+                                  getOptionLabel={option => option.name}
+                                  onChange={(event, value) => {
+                                    handleStateAndDistrictChange(
+                                      "district",
+                                      value,
+                                      idx
+                                    );
+                                  }}
+                                  value={
+                                    districtlist[
+                                      districtlist.findIndex(function (
+                                        item,
+                                        i
+                                      ) {
+                                        return (
+                                          item.id ===
+                                          formState.addresses[idx].district
+                                        );
+                                      })
+                                    ] || null
+                                  }
+                                  renderInput={params => (
+                                    <TextField
+                                      {...params}
+                                      label="District"
+                                      variant="outlined"
+                                      name="tester"
+                                      error={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["district"][
+                                            "error"
+                                          ]) ||
+                                        false
+                                      }
+                                      helperText={
+                                        (validateAddress[idx] &&
+                                          validateAddress[idx]["district"][
+                                            "message"
+                                          ]) ||
+                                        null
+                                      }
+                                    />
+                                  )}
+                                />
+                              </Grid>
+                              <Grid item md={6} xs={12}>
+                                <TextField
+                                  label="City"
+                                  name="city"
+                                  value={formState.addresses[idx].city || ""}
+                                  variant="outlined"
+                                  required
+                                  fullWidth
+                                  onChange={event =>
+                                    handleAddressChange(idx, event, "city")
+                                  }
+                                  error={
+                                    (validateAddress[idx] &&
+                                      validateAddress[idx]["city"]["error"]) ||
+                                    false
+                                  }
+                                  helperText={
+                                    (validateAddress[idx] &&
+                                      validateAddress[idx]["city"][
+                                        "message"
+                                      ]) ||
+                                    null
+                                  }
+                                />
+                              </Grid>
+                              <Grid item md={6} xs={12}>
+                                <TextField
+                                  label="Pincode"
+                                  name="pincode"
+                                  value={formState.addresses[idx].pincode || ""}
+                                  variant="outlined"
+                                  required
+                                  fullWidth
+                                  onChange={event =>
+                                    handleAddressChange(idx, event, "pincode")
+                                  }
+                                  error={
+                                    (validateAddress[idx] &&
+                                      validateAddress[idx]["pincode"][
+                                        "error"
+                                      ]) ||
+                                    false
+                                  }
+                                  helperText={
+                                    (validateAddress[idx] &&
+                                      validateAddress[idx]["pincode"][
+                                        "message"
+                                      ]) ||
+                                    null
+                                  }
+                                  inputProps={{ maxLength: 6, minLength: 6 }}
+                                />
+                              </Grid>
+                            </Grid>
+                            <Grid item md={12} xs={12}>
+                              {!formState.editStudent &&
+                              addr.address_type == "Temporary" ? (
+                                <FormControlLabel
+                                  control={
+                                    <Checkbox
+                                      checked={formState.addressSameAsLocal}
+                                      onChange={event => {
+                                        setFormState(formState => ({
+                                          ...formState,
+                                          addressSameAsLocal:
+                                            event.target.checked
+                                        }));
+                                      }}
+                                      name="addressSameAsLocal"
+                                      color="primary"
+                                    />
+                                  }
+                                  label="Permanent Address same as local Address?"
+                                />
+                              ) : null}
+                            </Grid>
+                          </Card>
+                        </Grid>
+                      </Grid>
+                    );
+                  })}
                 </Grid>
                 <Grid container spacing={3} className={classes.MarginBottom}>
                   <Grid item md={6} xs={12}>

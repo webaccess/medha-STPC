@@ -132,7 +132,7 @@ export const addCollege = (
   return {
     name: name,
     college_code: college_code,
-    address_1: address,
+    addresses: address,
     phone: contact_number,
     email: college_email,
     is_blocked: blocked,
@@ -280,9 +280,6 @@ export const addStudentFromCollege = (
   lastname,
   fatherfullname,
   motherfullname,
-  address,
-  state,
-  district,
   email,
   contactNumber,
   userName,
@@ -294,7 +291,8 @@ export const addStudentFromCollege = (
   stream = null,
   rollNumber = null,
   files,
-  futureAspirations
+  futureAspirations,
+  addresses
 ) => {
   const data = {
     phone: contactNumber,
@@ -307,9 +305,6 @@ export const addStudentFromCollege = (
     last_name: lastname,
     father_full_name: fatherfullname,
     mother_full_name: motherfullname,
-    address_1: address,
-    state: state,
-    district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
@@ -317,7 +312,8 @@ export const addStudentFromCollege = (
     is_physically_challenged: physicallyHandicapped,
     future_aspirations: futureAspirations,
     role: 7,
-    isStudent: true
+    isStudent: true,
+    addresses
   };
 
   if (files) {
@@ -334,9 +330,6 @@ export const editStudent = (
   lastname,
   fatherfullname,
   motherfullname,
-  address,
-  state,
-  district,
   email,
   contactNumber,
   userName,
@@ -349,7 +342,8 @@ export const editStudent = (
   id,
   futureAspirations = [],
   files,
-  password = undefined
+  password = undefined,
+  addresses
 ) => {
   const data = {
     phone: contactNumber,
@@ -361,9 +355,6 @@ export const editStudent = (
     last_name: lastname,
     father_full_name: fatherfullname,
     mother_full_name: motherfullname,
-    address_1: address,
-    state: state,
-    district: district,
     date_of_birth: dateofbirth,
     stream: stream,
     gender: gender,
@@ -372,7 +363,8 @@ export const editStudent = (
     id: id,
     password: password,
     future_aspirations: futureAspirations,
-    isStudent: true
+    isStudent: true,
+    addresses
   };
 
   if (files) {

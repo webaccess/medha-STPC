@@ -77,8 +77,7 @@ module.exports = {
 
     const options = {
       withRelated: [
-        "state",
-        "district",
+        "addresses",
         "individual.stream",
         "individual.organization",
         "user",

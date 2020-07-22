@@ -170,3 +170,33 @@ export const QUALIFICATION_LIST = [
   { name: "ITI", id: "iti" },
   { name: "Others", id: "other" }
 ];
+
+export const ADDRESSES = [
+  {
+    address_type: "Temporary",
+    address_line_1: "",
+    state: null,
+    district: null,
+    pincode: null,
+    city: null
+  },
+  {
+    address_type: "Permanent",
+    address_line_1: "",
+    state: null,
+    district: null,
+    pincode: null,
+    city: null
+  }
+];
+
+export const COLLEGE_ADDRESSES = [
+  {
+    address_type: "Permanent",
+    address_line_1: "",
+    state: null,
+    district: null,
+    pincode: null,
+    city: null
+  }
+];

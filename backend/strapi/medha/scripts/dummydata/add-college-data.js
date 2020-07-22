@@ -45,12 +45,18 @@ async function collegeData() {
       const contactReqBody = {
         name: c["College Name"],
         phone: c["Phone Number"],
-        email: c["Email Address"],
-        state: 1,
-        country: 1,
-        address_1: c["Address"],
-        district: null
+        email: c["Email Address"]
       };
+
+      const addressBody = [
+        {
+          state: 1,
+          country: 1,
+          address_line_1: c["Address"],
+          district: null,
+          address_type: "Permanent"
+        }
+      ];
 
       await bookshelf
         .transaction(async t => {
@@ -74,9 +80,6 @@ async function collegeData() {
           }
 
           const org = orgModel.toJSON ? orgModel.toJSON() : orgModel;
-          // await orgModel
-          //   .related("stream_strength")
-          //   .create(ctx.request.body.stream_strength);
 
           contactReqBody.organization = org.id;
           contactReqBody.contact_type = "organization";
@@ -94,6 +97,25 @@ async function collegeData() {
           if (!contact) {
             return Promise.reject(
               "Something went wrong while creating Contact"
+            );
+          }
+
+          const addresses = await Promise.all(
+            addressBody.map(addr => {
+              const body = { ...addr };
+              body.contact = contact.id;
+              return bookshelf
+                .model("address")
+                .forge(body)
+                .save(null, { transacting: t })
+                .then(model => model.toJSON())
+                .catch(() => null);
+            })
+          );
+
+          if (addresses.some(addr => addr == null)) {
+            return Promise.reject(
+              "Something went wrong while creating address"
             );
           }
 

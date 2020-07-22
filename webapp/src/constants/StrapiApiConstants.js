@@ -45,7 +45,6 @@ export const STRAPI_UPLOAD = "upload";
 export const STRAPI_DELETE_UPLOAD = "file";
 export const STRAPI_ACADEMIC_YEARS = "academic-years";
 export const STRAPI_ACADEMIC_HISTORY = "academic-histories";
-export const STRAPI_STUDENT_ACADEMIC_HISTORY = "academic-history";
 export const STRAPI_EVENTS = "events";
 export const STRAPI_ACTIVITY = "crm-plugin/activities";
 export const STRAPI_PAST_ACTIVITY = "past-activities";
