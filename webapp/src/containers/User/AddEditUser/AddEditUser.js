@@ -91,7 +91,6 @@ let VALIDATIONFORCOLLEGE = {
 };
 
 const AddEditUser = props => {
-  //  console.log(props);
   /** Initializing all the hooks */
   const classes = useStyles();
   const history = useHistory();
@@ -767,7 +766,6 @@ const AddEditUser = props => {
   };
 
   const hasError = field => (formState.errors[field] ? true : false);
-
   return (
     <Grid>
       <Grid item xs={12} className={classes.title}>

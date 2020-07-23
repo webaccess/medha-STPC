@@ -6,7 +6,9 @@ import {
   CardContent,
   Grid,
   Collapse,
-  IconButton
+  IconButton,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import _ from "lodash";
@@ -38,6 +40,7 @@ const ViewEducation = props => {
   const [open, setOpen] = React.useState(true);
   const classes = useStyles();
   const history = useHistory();
+  const [backDrop, setBackDrop] = useState(false);
   const [formState, setFormState] = useState({
     dataToShow: [],
     educations: [],
@@ -99,18 +102,6 @@ const ViewEducation = props => {
   const EDUCATION_FILTER = "qualification_contains";
 
   useEffect(() => {
-    serviceProviders
-      .serviceProviderForGetRequest(STUDENT_EDUCATION_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          educationFilter: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-
     getEducationData(10, 1);
   }, []);
 
@@ -244,7 +235,6 @@ const ViewEducation = props => {
   };
 
   const deleteCell = event => {
-    setLoaderStatus(true);
     setFormState(formState => ({
       ...formState,
       dataToDelete: {
@@ -253,7 +243,6 @@ const ViewEducation = props => {
       },
       showModalDelete: true
     }));
-    setLoaderStatus(false);
   };
 
   const handleFilterChangeForQualificationField = event => {
@@ -377,198 +366,191 @@ const ViewEducation = props => {
   };
 
   return (
-    <Card style={{ padding: "8px" }}>
-      <CardContent className={classes.Cardtheming}>
-        <Grid>
-          <Grid item xs={12} className={classes.title}>
-            <GreenButton
-              variant="contained"
-              color="primary"
-              onClick={handleAddEducationClick}
-              disableElevation
-              startIcon={<AddCircleOutlineOutlinedIcon />}
-              to={routeConstants.ADD_EDUCATION}
-            >
-              {genericConstants.ADD_EDUCATION_TEXT}
-            </GreenButton>
-          </Grid>
+    <React.Fragment>
+      <Card style={{ padding: "8px" }}>
+        <CardContent className={classes.Cardtheming}>
+          <Grid>
+            <Grid item xs={12} className={classes.title}>
+              <GreenButton
+                variant="contained"
+                color="primary"
+                onClick={handleAddEducationClick}
+                disableElevation
+                startIcon={<AddCircleOutlineOutlinedIcon />}
+                to={routeConstants.ADD_EDUCATION}
+              >
+                {genericConstants.ADD_EDUCATION_TEXT}
+              </GreenButton>
+            </Grid>
 
-          <Grid item xs={12} className={classes.formgrid}>
-            {/** Error/Success messages to be shown for edit */}
-            {formState.fromEditEducation && formState.isDataEdited ? (
-              <Collapse in={open}>
-                <Alert
-                  severity="success"
-                  action={
-                    <IconButton
-                      aria-label="close"
-                      color="inherit"
-                      size="small"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
-                      <CloseIcon fontSize="inherit" />
-                    </IconButton>
-                  }
-                >
-                  Education edited successfully.
-                  {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
-                </Alert>
-              </Collapse>
-            ) : null}
-            {formState.fromEditEducation && !formState.isDataEdited ? (
-              <Collapse in={open}>
-                <Alert
-                  severity="error"
-                  action={
-                    <IconButton
-                      aria-label="close"
-                      color="inherit"
-                      size="small"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
-                      <CloseIcon fontSize="inherit" />
-                    </IconButton>
-                  }
-                >
-                  {formState.responseError}
-                  {/* {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE} */}
-                </Alert>
-              </Collapse>
-            ) : null}
+            <Grid item xs={12} className={classes.formgrid}>
+              {/** Error/Success messages to be shown for edit */}
+              {formState.fromEditEducation && formState.isDataEdited ? (
+                <Collapse in={open}>
+                  <Alert
+                    severity="success"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    Education edited successfully.
+                    {/* {genericConstants.ALERT_SUCCESS_DATA_EDITED_MESSAGE} */}
+                  </Alert>
+                </Collapse>
+              ) : null}
+              {formState.fromEditEducation && !formState.isDataEdited ? (
+                <Collapse in={open}>
+                  <Alert
+                    severity="error"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    {formState.responseError}
+                    {/* {genericConstants.ALERT_ERROR_DATA_EDITED_MESSAGE} */}
+                  </Alert>
+                </Collapse>
+              ) : null}
 
-            {/** Error/Success messages to be shown for add */}
-            {formState.fromAddEducation && formState.isDataAdded ? (
-              <Collapse in={open}>
-                <Alert
-                  severity="success"
-                  action={
-                    <IconButton
-                      aria-label="close"
-                      color="inherit"
-                      size="small"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
-                      <CloseIcon fontSize="inherit" />
-                    </IconButton>
-                  }
-                >
-                  Education added successfully.
-                  {/* {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE} */}
-                </Alert>
-              </Collapse>
-            ) : null}
-            {formState.fromAddEducation && !formState.isDataAdded ? (
-              <Collapse in={open}>
-                <Alert
-                  severity="error"
-                  action={
-                    <IconButton
-                      aria-label="close"
-                      color="inherit"
-                      size="small"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
-                      <CloseIcon fontSize="inherit" />
-                    </IconButton>
-                  }
-                >
-                  {formState.responseError}
-                  {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
-                </Alert>
-              </Collapse>
-            ) : null}
-            <AlertAPIResponseMessage />
-            <Card className={styles.filterButton}>
-              <CardContent className={classes.Cardtheming}>
-                <Grid className={classes.filterOptions} container spacing={1}>
-                  <Grid item>
-                    <TextField
-                      label="Qualification"
-                      margin="normal"
-                      variant="outlined"
-                      value={
-                        formState.filterDataParameters[EDUCATION_FILTER] || ""
-                      }
-                      placeholder="Qualification"
-                      className={classes.autoCompleteField}
-                      onChange={handleFilterChangeForQualificationField}
-                    />
-                    {/* <Autocomplete
-                      id="combo-box-demo"
-                      options={formState.educationFilter}
-                      className={classes.autoCompleteField}
-                      getOptionLabel={option => option.qualification}
-                      onChange={(event, value) =>
-                        handleChangeAutoComplete(EDUCATION_FILTER, event, value)
-                      }
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          label="Qualification"
-                          className={classes.autoCompleteField}
-                          variant="outlined"
-                        />
-                      )}
-                    /> */}
+              {/** Error/Success messages to be shown for add */}
+              {formState.fromAddEducation && formState.isDataAdded ? (
+                <Collapse in={open}>
+                  <Alert
+                    severity="success"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    Education added successfully.
+                    {/* {genericConstants.ALERT_SUCCESS_DATA_ADDED_MESSAGE} */}
+                  </Alert>
+                </Collapse>
+              ) : null}
+              {formState.fromAddEducation && !formState.isDataAdded ? (
+                <Collapse in={open}>
+                  <Alert
+                    severity="error"
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                  >
+                    {formState.responseError}
+                    {/* {genericConstants.ALERT_ERROR_DATA_ADDED_MESSAGE} */}
+                  </Alert>
+                </Collapse>
+              ) : null}
+              <AlertAPIResponseMessage />
+              <Card className={styles.filterButton}>
+                <CardContent className={classes.Cardtheming}>
+                  <Grid className={classes.filterOptions} container spacing={1}>
+                    <Grid item>
+                      <TextField
+                        id="qualification"
+                        label="Qualification"
+                        margin="normal"
+                        variant="outlined"
+                        value={
+                          formState.filterDataParameters[EDUCATION_FILTER] || ""
+                        }
+                        placeholder="Qualification"
+                        className={classes.autoCompleteField}
+                        onChange={handleFilterChangeForQualificationField}
+                      />
+                    </Grid>
+                    <Grid item className={classes.filterButtonsMargin}>
+                      <YellowButton
+                        id="submitFilter"
+                        variant="contained"
+                        color="primary"
+                        disableElevation
+                        onClick={event => {
+                          event.persist();
+                          searchFilter();
+                        }}
+                      >
+                        {genericConstants.SEARCH_BUTTON_TEXT}
+                      </YellowButton>
+                    </Grid>
+                    <Grid item className={classes.filterButtonsMargin}>
+                      <GrayButton
+                        id="cancelFilter"
+                        variant="contained"
+                        color="primary"
+                        onClick={clearFilter}
+                        disableElevation
+                      >
+                        {genericConstants.RESET_BUTTON_TEXT}
+                      </GrayButton>
+                    </Grid>
                   </Grid>
-                  <Grid item className={classes.filterButtonsMargin}>
-                    <YellowButton
-                      variant="contained"
-                      color="primary"
-                      disableElevation
-                      onClick={event => {
-                        event.persist();
-                        searchFilter();
-                      }}
-                    >
-                      {genericConstants.SEARCH_BUTTON_TEXT}
-                    </YellowButton>
-                  </Grid>
-                  <Grid item className={classes.filterButtonsMargin}>
-                    <GrayButton
-                      variant="contained"
-                      color="primary"
-                      onClick={clearFilter}
-                      disableElevation
-                    >
-                      {genericConstants.RESET_BUTTON_TEXT}
-                    </GrayButton>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-            <Table
-              data={formState.dataToShow}
-              column={column}
-              defaultSortField="name"
-              defaultSortAsc={formState.sortAscending}
-              editEvent={editCell}
-              deleteEvent={deleteCell}
-              progressPending={formState.isDataLoading}
-              paginationTotalRows={formState.totalRows}
-              paginationRowsPerPageOptions={[10, 20, 50]}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              noDataComponent="No education details found"
-            />
-            <DeleteEducation
-              showModal={formState.showModalDelete}
-              closeModal={handleCloseDeleteModal}
-              data={formState.dataToDelete}
-              deleteEvent={isDeleteCellCompleted}
-            />
+                </CardContent>
+              </Card>
+              <Table
+                id="ManageTableID"
+                data={formState.dataToShow}
+                column={column}
+                defaultSortField="name"
+                defaultSortAsc={formState.sortAscending}
+                editEvent={editCell}
+                deleteEvent={deleteCell}
+                progressPending={formState.isDataLoading}
+                paginationTotalRows={formState.totalRows}
+                paginationRowsPerPageOptions={[10, 20, 50]}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                noDataComponent="No education details found"
+              />
+              <DeleteEducation
+                id="deleteEducation"
+                showModal={formState.showModalDelete}
+                closeModal={handleCloseDeleteModal}
+                data={formState.dataToDelete}
+                deleteEvent={isDeleteCellCompleted}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      <Backdrop className={classes.backDrop} open={backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </React.Fragment>
   );
 };
 
