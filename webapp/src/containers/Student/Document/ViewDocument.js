@@ -85,18 +85,6 @@ const ViewDocument = props => {
   const DOCUMENT_FILTER = "name_contains";
 
   useEffect(() => {
-    serviceProviders
-      .serviceProviderForGetRequest(STUDENT_DOCUMENT_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          documentFilters: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-
     getDocuments();
   }, []);
 
@@ -204,7 +192,8 @@ const ViewDocument = props => {
   };
 
   const viewCell = item => {
-    if (item.url) window.open(`${strapiConstants.STRAPI_DB_URL}${item.url}`);
+    if (item.url)
+      window.open(`${strapiConstants.STRAPI_DB_URL_WITHOUT_HASH}${item.url}`);
   };
 
   /** Columns to show in table */
@@ -386,6 +375,7 @@ const ViewDocument = props => {
                 <Grid className={classes.filterOptions} container spacing={1}>
                   <Grid item>
                     <TextField
+                      id="name"
                       label="Name"
                       margin="normal"
                       variant="outlined"
@@ -399,6 +389,7 @@ const ViewDocument = props => {
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
+                      id="submitFilter"
                       variant="contained"
                       color="primary"
                       disableElevation
@@ -412,6 +403,7 @@ const ViewDocument = props => {
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <GrayButton
+                      id="cancelFilter"
                       variant="contained"
                       color="primary"
                       onClick={clearFilter}
@@ -424,6 +416,7 @@ const ViewDocument = props => {
               </CardContent>
             </Card>
             <Table
+              id="ManageTableID"
               data={formState.dataToShow}
               column={column}
               defaultSortField="name"
