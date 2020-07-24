@@ -117,7 +117,8 @@ describe("testing for zone", () => {
           _sort: "name:ASC",
           page: 1,
           pageSize: 10
-        }
+        },
+        {}
       ]
     ]);
 
