@@ -8,7 +8,9 @@ import {
   Tooltip,
   Typography,
   Collapse,
-  IconButton
+  IconButton,
+  Backdrop,
+  CircularProgress
 } from "@material-ui/core";
 import {
   Table,
@@ -47,7 +49,7 @@ const ViewPastEvent = props => {
   const { setLoaderStatus } = useContext(LoaderContext);
   const [statusFilter, setStatusFilter] = useState([]);
   const [formState, setFormState] = useState({
-    PastEvent: [],
+    PastEvent: props.mockPastEventData ? props.mockPastEventData : [],
     /** Pagination and sorting data */
     isDataLoading: false,
     pageSize: "",
@@ -78,7 +80,6 @@ const ViewPastEvent = props => {
 
   useEffect(() => {
     getStatusFilterData();
-
     getPastEvent(10, 1);
   }, []);
 
@@ -157,7 +158,6 @@ const ViewPastEvent = props => {
             let tempPastEventData = [];
             let pastEventData = res.data.result;
             tempPastEventData = convertPastEventData(pastEventData);
-
             setFormState(formState => ({
               ...formState,
               PastEvent: tempPastEventData,
@@ -785,6 +785,7 @@ const ViewPastEvent = props => {
           {formState.PastEvent ? (
             formState.PastEvent.length ? (
               <Table
+                id="ManageTableID"
                 data={formState.PastEvent}
                 column={column}
                 defaultSortField="start_date_time"
@@ -798,6 +799,8 @@ const ViewPastEvent = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                onGiveFeedback={giveFeedback}
+                onEditFeedback={editFeedback}
               />
             ) : (
               <Spinner />
