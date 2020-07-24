@@ -52,6 +52,14 @@ describe("Add Edit Student from College Admin", () => {
       }
     };
 
+    jest.spyOn(axios, "get").mockImplementation(() => {
+      return new Promise(resolve => {
+        return resolve({
+          data: []
+        });
+      });
+    });
+
     const getAddEditStudentFromCollegeAdminSpy = jest
       .spyOn(serviceProviders, "serviceProviderForGetRequest")
       .mockImplementation(() => {
@@ -98,6 +106,13 @@ describe("Add Edit Student from College Admin", () => {
       location:
         mockStudentFromCollege.mockLocationDataForEditStudentFromCollegeAdmin
     };
+    jest.spyOn(axios, "get").mockImplementation(() => {
+      return new Promise(resolve => {
+        return resolve({
+          data: []
+        });
+      });
+    });
 
     let wrapper = mount(
       <LoaderContext.Provider value={{ setLoaderStatus }}>

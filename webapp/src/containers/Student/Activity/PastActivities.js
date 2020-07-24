@@ -40,7 +40,7 @@ const PastActivities = props => {
   const classes = useStyles();
   const history = useHistory();
   const [formState, setFormState] = useState({
-    dataToShow: [],
+    dataToShow: props.mockPastActivityData ? props.mockPastActivityData : [],
     activities: [],
     activitiesFilter: [],
     filterDataParameters: {},
@@ -81,18 +81,6 @@ const PastActivities = props => {
   const ACTIVITY_FILTER = "title_contains";
   const ACTIVITY_STATUS = "status";
   useEffect(() => {
-    serviceProviders
-      .serviceProviderForGetRequest(STUDENT_ACTIVITY_URL)
-      .then(res => {
-        setFormState(formState => ({
-          ...formState,
-          activitiesFilter: res.data.result
-        }));
-      })
-      .catch(error => {
-        console.log("error-->>", error);
-      });
-
     getPastActivities(10, 1);
   }, []);
 
@@ -602,6 +590,7 @@ const PastActivities = props => {
             </Card>
             {formState.dataToShow.length ? (
               <Table
+                id="ManageTableID"
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"
@@ -611,6 +600,8 @@ const PastActivities = props => {
                 paginationRowsPerPageOptions={[10, 20, 50]}
                 onChangeRowsPerPage={handlePerRowsChange}
                 onChangePage={handlePageChange}
+                onGiveFeedback={giveFeedback}
+                onEditFeedback={editFeedback}
                 noDataComponent="No Past Activities found"
               />
             ) : (
