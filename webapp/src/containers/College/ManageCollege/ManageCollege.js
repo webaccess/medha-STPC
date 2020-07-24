@@ -244,7 +244,7 @@ const ManageCollege = props => {
   /** Converting college unstructured data into structred flat format for passing it into datatable */
   const convertCollegeData = data => {
     let collegeDataArray = [];
-    console.log(data[0]);
+
     if (data.length > 0) {
       for (let i in data) {
         var tempIndividualCollegeData = {};

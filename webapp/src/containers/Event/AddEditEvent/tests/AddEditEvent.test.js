@@ -1,6 +1,7 @@
 import React, { useContext, useState as useStateMock } from "react";
 import { shallow, mount } from "enzyme";
 import AddEditEvent from "../AddEditEvent";
+import * as serviceProviders from "../../../../api/Axios";
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
@@ -180,7 +181,6 @@ describe("test for fields ", () => {
       ]
     );
 
-
     expect(updatedCollegeInput.props().value[0].contact.id).toEqual(2);
     expect(updatedCollegeInput.props().value[1].contact.id).toEqual(3);
   });
@@ -252,5 +252,143 @@ describe("test for fields ", () => {
       false
     );
     expect(updatedNameInput.props().value.name).toEqual("Secondary");
+  });
+
+  it("test for submit button", () => {
+    // const editorState = "Test event description";
+    const props = {
+      collegeOption: [
+        {
+          contact: {
+            id: 1,
+            name: "Government Polytechnic, Mainpuri"
+          }
+        },
+        {
+          contact: {
+            id: 2,
+            name: "Government Leather Institute, Agra"
+          }
+        }
+      ],
+      streamOption: [
+        {
+          id: 1,
+          name: "Mechanical Engineering (Production)"
+        },
+        {
+          id: 2,
+          name: "Computer Science And Engineering"
+        },
+        {
+          id: 3,
+          name: "Electronics Engineering"
+        }
+      ],
+
+      questionOption: [
+        {
+          id: 1,
+          name: "Activity Question Set"
+        },
+        {
+          id: 2,
+          name: "Event Question Set"
+        }
+      ],
+      isDataForTesting: true
+    };
+    const wrapper = shallow(
+      <AddEditEvent
+        {...props}
+        // editorState={editorState}
+      />
+    );
+    const postSpy = jest
+      .spyOn(serviceProviders, "serviceProviderForPostRequest")
+      .mockImplementation(() => {
+        return new Promise(resolve => {
+          return resolve({ data: "data" });
+        });
+      });
+
+    const updatedNameInput = simulateChangeOnInput(
+      wrapper,
+      "#eventname",
+      "TCS Drive 2020",
+      "eventName"
+    );
+    expect(updatedNameInput.props().value).toEqual("TCS Drive 2020");
+    const updatedAddressInput = simulateChangeOnInput(
+      wrapper,
+      "#address",
+      "Powai",
+      "address"
+    );
+    expect(updatedAddressInput.props().value).toEqual("Powai");
+    const updatedDateInput = simulateChangeOnDate(
+      wrapper,
+      "#dateFrom",
+      "Mon Jul 06 2020 15:38:00 GMT+0530 (India Standard Time)"
+    );
+    expect(updatedDateInput.props().value).toEqual(
+      "Mon Jul 06 2020 15:38:00 GMT+0530 (India Standard Time)"
+    );
+    const updatedDateToInput = simulateChangeOnDate(
+      wrapper,
+      "#dateTo",
+      "Thu Jul 09 2020 15:51:00 GMT+0530 (India Standard Time)"
+    );
+    expect(updatedDateToInput.props().value).toEqual(
+      "Thu Jul 09 2020 15:51:00 GMT+0530 (India Standard Time)"
+    );
+    const updatedCollegeInput = simulateChangeOnCollegeMultiSelectInput(
+      wrapper,
+      "#college",
+      [
+        {
+          contact: {
+            id: 2
+          }
+        },
+        {
+          contact: {
+            id: 3
+          }
+        }
+      ]
+    );
+
+    expect(updatedCollegeInput.props().value[0].contact.id).toEqual(2);
+    expect(updatedCollegeInput.props().value[1].contact.id).toEqual(3);
+
+    const updatedStreamInput = simulateChangeOnStreamMultiSelectInput(
+      wrapper,
+      "#stream",
+      [
+        {
+          id: 2
+        },
+        {
+          id: 3
+        }
+      ]
+    );
+    expect(updatedStreamInput.props().value[0].id).toEqual(2);
+    expect(updatedStreamInput.props().value[1].id).toEqual(3);
+    const updatedNameQuestionSetInput = simulateChangeOnAutoInput(
+      wrapper,
+      "#question_set",
+      "1"
+    );
+
+    expect(updatedNameQuestionSetInput.props().value.name).toEqual(
+      "Activity Question Set"
+    );
+    //mockdata
+    wrapper.find("#form").simulate("submit", {
+      preventDefault: jest.fn()
+    });
+    // console.log("eventPostSpy", postSpy.mock);
   });
 });

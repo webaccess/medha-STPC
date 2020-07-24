@@ -1344,7 +1344,7 @@ const AddEditEvent = props => {
       </Grid>
       <Grid spacing={3}>
         <Card>
-          <form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <form autoComplete="off" noValidate onSubmit={handleSubmit} id="form">
             <CardContent>
               <Grid item xs={12} md={6} xl={3}>
                 <Grid container className={classes.formgridInputFile}>
