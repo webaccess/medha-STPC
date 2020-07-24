@@ -76,9 +76,9 @@ const ADD_COLLEGES_URL =
 const AddEditCollege = props => {
   const history = useHistory();
   const classes = useStyles();
-  const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
+    backDrop: false,
     isValid: false,
     values: {},
     adminValues: {},
@@ -109,7 +109,9 @@ const AddEditCollege = props => {
   );
   const [zones, setZones] = useState(props.zoneOption ? props.zoneOption : []);
   const [rpcs, setRpcs] = useState(props.rpcOption ? props.rpcOption : []);
-  const [districts, setDistricts] = useState([]);
+  const [districts, setDistricts] = useState(
+    props.districtOption ? props.districtOption : []
+  );
   const [streamsData, setStreamsData] = useState([]);
   const [streamsDataBackup, setStreamsDataBackup] = useState([]);
   const [isGetAdminData, setIsGetAdminData] = useState(false);
@@ -171,7 +173,7 @@ const AddEditCollege = props => {
 
   /** Part for editing college */
   if (formState.isEditCollege && !formState.counter) {
-    setLoaderStatus(true);
+    formState.backDrop = true;
     if (props["dataForEdit"]) {
       if (props["dataForEdit"]["name"]) {
         formState.values[collegeName] = props["dataForEdit"]["name"];
@@ -248,6 +250,7 @@ const AddEditCollege = props => {
         }
         formState.dynamicBar = dynamicBar;
       }
+      formState.backDrop = false;
 
       formState.counter += 1;
     }
@@ -255,7 +258,7 @@ const AddEditCollege = props => {
 
   /** Here we initialize our data and bring users, states and streams*/
   useEffect(() => {
-    setLoaderStatus(true);
+    formState.backDrop = true;
     let paramsForPageSize = {
       name_contains: "Uttar Pradesh"
     };
@@ -315,7 +318,7 @@ const AddEditCollege = props => {
       .catch(error => {
         console.log("error", error);
       });
-    setLoaderStatus(false);
+    formState.backDrop = false;
   }, []);
 
   /** Gets data for Principals and tpos */
@@ -407,7 +410,6 @@ const AddEditCollege = props => {
   /** This gets data into zones, rpcs and districts when we change the state */
   useEffect(() => {
     if (formState.addresses[0][state]) {
-      console.log("state changed");
       fetchZoneRpcDistrictData();
     }
     return () => {};
@@ -928,7 +930,7 @@ const AddEditCollege = props => {
       streamStrengthArray,
       formState.values[tpos] ? formState.values[tpos] : []
     );
-    setLoaderStatus(true);
+    formState.backDrop = true;
     if (formState.isEditCollege) {
       let EDIT_COLLEGE_URL =
         strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_CONTACT_URL;
@@ -963,8 +965,7 @@ const AddEditCollege = props => {
               editedData: {}
             });
           }
-
-          setLoaderStatus(false);
+          formState.backDrop = false;
         })
         .catch(error => {
           console.log(error.response);
@@ -986,7 +987,7 @@ const AddEditCollege = props => {
             editResponseMessage: errorMessage ? errorMessage : "",
             editedData: {}
           });
-          setLoaderStatus(false);
+          formState.backDrop = false;
         });
     } else {
       serviceProviders
@@ -1000,7 +1001,7 @@ const AddEditCollege = props => {
             addResponseMessage: "",
             addedData: {}
           });
-          setLoaderStatus(false);
+          formState.backDrop = false;
         })
         .catch(error => {
           console.log("errorCollege", error, error.response);
@@ -1022,26 +1023,29 @@ const AddEditCollege = props => {
             addResponseMessage: errorMessage ? errorMessage : "",
             addedData: {}
           });
-          setLoaderStatus(false);
+          formState.backDrop = false;
         });
     }
   };
 
   const handleStateAndDistrictChange = (type, value, idx) => {
-    console.log(value);
     formState.addresses[idx][type] = value && value.id;
     if (type == "state" && formState.isCollegeAdmin) {
       formState.addresses[idx]["district"] = null;
     }
 
     if (type == "state" && !formState.isCollegeAdmin) {
-      formState.addresses[idx]["district"] = null;
+      if (props.isCollegeAdmin) {
+        formState.addresses[idx]["district"] = null;
+      } else {
+        formState.addresses[idx]["district"] = null;
 
-      setRpcs([]);
-      setZones([]);
-      setDistricts([]);
-      delete formState.values[zone];
-      delete formState.values[rpc];
+        setRpcs([]);
+        setZones([]);
+        setDistricts([]);
+        delete formState.values[zone];
+        delete formState.values[rpc];
+      }
     }
     validateAddresses();
     setFormState(formState => ({
@@ -1051,7 +1055,6 @@ const AddEditCollege = props => {
 
   const handleAddressChange = (idx, e, type) => {
     e.persist();
-    console.log(e.target.value);
 
     const addresses = formState.addresses.map((addr, index) => {
       if (index == idx) {
@@ -1074,8 +1077,6 @@ const AddEditCollege = props => {
     addresses.forEach(addr => {
       let errorObject = {};
       if (!(addr.address_line_1 && addr.address_line_1.length > 0)) {
-        console.log(addr.address_line_1);
-        console.log(addr.address_line_1.length);
         isError = true;
         errorObject["address_line_1"] = {
           error: true,
@@ -1169,6 +1170,7 @@ const AddEditCollege = props => {
       </Grid>
       <Grid spacing={3}>
         <Card>
+          {/* <form id="form" autoComplete="off" noValidate onSubmit={handleSubmit}> */}
           <CardContent>
             <Grid item xs={12} md={6} xl={3}>
               <Grid container spacing={3} className={classes.formgrid}>
@@ -1270,6 +1272,7 @@ const AddEditCollege = props => {
                               style={{ marginTop: "8px" }}
                             >
                               <TextField
+                                id="address"
                                 label="Address Line "
                                 name="address"
                                 value={
@@ -1309,7 +1312,7 @@ const AddEditCollege = props => {
                           >
                             <Grid item md={6} xs={12}>
                               <Autocomplete
-                                id="combo-box-demo"
+                                id="state"
                                 className={classes.root}
                                 options={states}
                                 getOptionLabel={option => option.name}
@@ -1432,6 +1435,7 @@ const AddEditCollege = props => {
                             </Grid>
                             <Grid item md={6} xs={12}>
                               <TextField
+                                id="city"
                                 label="City"
                                 name="city"
                                 value={formState.addresses[idx].city || ""}
@@ -1455,6 +1459,7 @@ const AddEditCollege = props => {
                             </Grid>
                             <Grid item md={6} xs={12}>
                               <TextField
+                                id="pincode"
                                 label="Pincode"
                                 name="pincode"
                                 value={formState.addresses[idx].pincode || ""}
@@ -1672,6 +1677,7 @@ const AddEditCollege = props => {
               <Grid container spacing={3} className={classes.formgrid}>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    id="contact_number"
                     fullWidth
                     label={get(CollegeFormSchema[contactNumber], "label")}
                     name={contactNumber}
@@ -2162,6 +2168,7 @@ const AddEditCollege = props => {
                   <Grid container spacing={3}>
                     <Grid item md={2} xs={12}>
                       <YellowButton
+                        id="submit"
                         type="submit"
                         color="primary"
                         variant="contained"
@@ -2186,8 +2193,12 @@ const AddEditCollege = props => {
               </Grid>
             </CardActions>
           </Grid>
+          {/* </form> */}
         </Card>
       </Grid>
+      <Backdrop className={classes.backDrop} open={formState.backDrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 };

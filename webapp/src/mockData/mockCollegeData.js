@@ -4757,3 +4757,181 @@ export const mockCollegeListWithStreams = [
     ]
   }
 ];
+
+export const editCollegeData = {
+  id: 1,
+  name: "Government Polytechnic, Mainpuri",
+  contact: {
+    id: 2,
+    name: "Government Polytechnic, Mainpuri",
+    phone: "0356273400",
+    phone_other: null,
+    email: "collegeemail1@gmail.com",
+    email_other: null,
+    address_1: "UP",
+    address_2: null,
+    city: null,
+    pincode: null,
+    contact_type: "organization",
+    organization: 1,
+    country: null,
+    village: null,
+    state: 1,
+    district: 49,
+    individual: null,
+    user: null,
+    created_at: "2020-06-24T07:18:46.694Z",
+    updated_at: "2020-07-22T15:48:41.028Z",
+    addresses: [
+      {
+        id: 1,
+        address_line_1: "Mainpuri",
+        address_line_2: null,
+        address_type: "Permanent",
+        city: "manipuri",
+        pincode: "401111",
+        country: null,
+        district: 3,
+        state: 1,
+        contact: 2,
+        created_at: "2020-07-22T15:15:08.066Z",
+        updated_at: "2020-07-22T15:15:08.066Z"
+      }
+    ]
+  },
+  zone: {
+    id: 1,
+    name: "West Zone - Daurala (Meerut)",
+    state: 1,
+    created_at: "2020-06-24T07:09:35.322Z",
+    updated_at: "2020-06-24T07:09:35.322Z"
+  },
+  rpc: {
+    id: 1,
+    name: "Agra",
+    state: 1,
+    main_college: 3,
+    created_at: "2020-06-24T07:09:35.351Z",
+    updated_at: "2020-06-24T08:50:17.773Z"
+  },
+  college_code: "GPM23",
+  principal: {
+    id: 2,
+    username: "7710950932",
+    email: "7710950932@gmail.com",
+    provider: "local",
+    password: "$2a$10$6daODNS9.BImv/pvhR41eO0I5uoL3YQudoPaJQV8o7u1gypVSXYne",
+    resetPasswordToken: null,
+    confirmed: null,
+    blocked: false,
+    role: 6,
+    state: 1,
+    zone: 1,
+    rpc: 1,
+    contact: {
+      id: 4,
+      name: "College Admin",
+      phone: "7710950932",
+      phone_other: null,
+      email: "7710950932@gmail.com",
+      email_other: null,
+      address_1: null,
+      address_2: null,
+      city: null,
+      pincode: null,
+      contact_type: "individual",
+      organization: null,
+      country: null,
+      village: null,
+      state: 1,
+      district: null,
+      individual: 2,
+      user: 2,
+      created_at: "2020-06-24T07:20:32.867Z",
+      updated_at: "2020-06-24T07:20:32.867Z"
+    },
+    created_at: "2020-06-24T07:20:32.864Z",
+    updated_at: "2020-06-24T07:20:32.869Z"
+  },
+  is_blocked: true,
+  created_at: "2020-06-24T07:18:46.679Z",
+  updated_at: "2020-07-22T15:48:45.599Z",
+  stream_strength: [
+    {
+      id: 16,
+      stream: {
+        id: 2,
+        name: "Computer Science And Engineering",
+        created_at: "2020-06-24T07:09:35.414Z",
+        updated_at: "2020-06-24T07:09:35.414Z"
+      },
+      first_year_strength: 0,
+      second_year_strength: 0,
+      third_year_strength: 0
+    },
+    {
+      id: 17,
+      stream: {
+        id: 1,
+        name: "Mechanical Engineering (Production)",
+        created_at: "2020-06-24T07:09:35.408Z",
+        updated_at: "2020-06-24T07:09:35.408Z"
+      },
+      first_year_strength: 0,
+      second_year_strength: 0,
+      third_year_strength: 0
+    },
+    {
+      id: 18,
+      stream: {
+        id: 3,
+        name: "Electronics Engineering",
+        created_at: "2020-06-24T07:09:35.419Z",
+        updated_at: "2020-06-24T07:09:35.419Z"
+      },
+      first_year_strength: 0,
+      second_year_strength: 0,
+      third_year_strength: 0
+    }
+  ],
+  tpos: [
+    {
+      id: 2,
+      username: "7710950932",
+      email: "7710950932@gmail.com",
+      provider: "local",
+      password: "$2a$10$6daODNS9.BImv/pvhR41eO0I5uoL3YQudoPaJQV8o7u1gypVSXYne",
+      resetPasswordToken: null,
+      confirmed: null,
+      blocked: false,
+      role: 6,
+      state: 1,
+      zone: 1,
+      rpc: 1,
+      contact: {
+        id: 4,
+        name: "College Admin",
+        phone: "7710950932",
+        phone_other: null,
+        email: "7710950932@gmail.com",
+        email_other: null,
+        address_1: null,
+        address_2: null,
+        city: null,
+        pincode: null,
+        contact_type: "individual",
+        organization: null,
+        country: null,
+        village: null,
+        state: 1,
+        district: null,
+        individual: 2,
+        user: 2,
+        created_at: "2020-06-24T07:20:32.867Z",
+        updated_at: "2020-06-24T07:20:32.867Z"
+      },
+      created_at: "2020-06-24T07:20:32.864Z",
+      updated_at: "2020-06-24T07:20:32.869Z"
+    }
+  ]
+};

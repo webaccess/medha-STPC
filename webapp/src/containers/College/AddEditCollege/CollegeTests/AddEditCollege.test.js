@@ -7,6 +7,7 @@ import LoaderContext from "../../../../context/LoaderContext";
 import * as serviceProviders from "../../../../api/Axios";
 import * as medhaAdminUser from "../../../../mockuser/MedhaAdmin.json";
 import * as strapiConstants from "../../../../constants/StrapiApiConstants";
+import * as collegeData from "../../../../mockData/mockCollegeData";
 
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
@@ -23,57 +24,7 @@ describe("test for edit college ", () => {
     useStateMock.mockImplementation(init => [init, setLoaderStatus]);
   });
   it("mount test", () => {
-    const dataForEdit = {
-      name: "SJCET",
-      college_code: "SJ12",
-      contact: {
-        address_1: "Palghar",
-        email: "sjcet@gmail.com",
-        contact: {
-          state: {
-            id: 1
-          },
-          district: {
-            id: 1
-          }
-        }
-      },
-      blocked: true,
-      zone: {
-        id: 1
-      },
-      rpc: {
-        id: 1
-      },
-      stream_strength: [
-        {
-          first_year_strength: 0,
-          second_year_strength: 0,
-          id: 4,
-          third_year_strength: 0,
-          stream: {
-            id: 1,
-            name: "Mechanical Engineering (Production)"
-          }
-        },
-
-        {
-          first_year_strength: 0,
-          second_year_strength: 0,
-          id: 5,
-          third_year_strength: 0,
-          stream: {
-            id: 2,
-            name: "Computer Science And Engineering"
-          }
-        }
-      ],
-      principal: {
-        contact: {
-          user: "Mayank"
-        }
-      }
-    };
+    const dataForEdit = collegeData.editCollegeData;
 
     const zoneOption = [
       {
@@ -233,7 +184,7 @@ describe("test for edit college ", () => {
       ]
     ]);
 
-    // /** This actually checks whether the post method is called */
+    // // /** This actually checks whether the post method is called */
     expect(getStatusOfDashboardSpy).toHaveBeenCalledTimes(3);
     wrapper.unmount();
   });
