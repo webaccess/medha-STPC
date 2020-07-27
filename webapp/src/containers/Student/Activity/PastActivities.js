@@ -107,7 +107,6 @@ const PastActivities = props => {
       ...formState,
       isDataLoading: true
     }));
-
     await serviceProviders
       .serviceProviderForGetRequest(STUDENT_ACTIVITY_URL, params)
       .then(res => {
@@ -531,6 +530,7 @@ const PastActivities = props => {
                 <Grid className={classes.filterOptions} container spacing={1}>
                   <Grid item>
                     <TextField
+                      id="name-filter"
                       label="Name"
                       margin="normal"
                       variant="outlined"
@@ -564,6 +564,7 @@ const PastActivities = props => {
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <YellowButton
+                      id="submitFilter"
                       variant="contained"
                       color="primary"
                       disableElevation
@@ -577,6 +578,7 @@ const PastActivities = props => {
                   </Grid>
                   <Grid item className={classes.filterButtonsMargin}>
                     <GrayButton
+                      id="clearFilter"
                       variant="contained"
                       color="primary"
                       onClick={clearFilter}

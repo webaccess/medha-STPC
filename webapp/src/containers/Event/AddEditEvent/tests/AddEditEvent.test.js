@@ -92,7 +92,6 @@ const simulateChangeOnDynamicGridInput = (
   isTextBox
 ) => {
   const input = wrapper.find(inputSelector);
-
   input.simulate(
     "change",
     { persist: jest.fn() },
@@ -101,6 +100,27 @@ const simulateChangeOnDynamicGridInput = (
     isAutoComplete,
     isTextBox
   );
+  return wrapper.find(inputSelector);
+};
+
+const simulateChangePercentageOnDynamicGridInput = (
+  wrapper,
+  inputSelector,
+  event,
+  selectedValueForAutoComplete,
+  dynamicGridValue,
+  isAutoComplete,
+  isTextBox
+) => {
+  const input = wrapper.find(inputSelector);
+  input.simulate("change", {
+    persist: jest.fn(),
+    target: { value: event },
+    selectedValueForAutoComplete,
+    dynamicGridValue,
+    isAutoComplete,
+    isTextBox
+  });
   return wrapper.find(inputSelector);
 };
 
@@ -254,6 +274,28 @@ describe("test for fields ", () => {
     expect(updatedNameInput.props().value.name).toEqual("Secondary");
   });
 
+  // it("It has an input field of dynamic grid for percentage", () => {
+  //   const wrapper = shallow(<AddEditEvent />);
+  //   // const abc = wrapper.find("#percentage-0");
+  //   // console.log("abcabc**", abc.debug());
+  //   // const xyz = abc.find("#percentage-0");
+  //   // console.log("xyzxyz**", xyz.debug());
+  //   const updatedNameInput = simulateChangePercentageOnDynamicGridInput(
+  //     wrapper,
+  //     "#percentage-0",
+  //     "60",
+  //     null,
+  //     {
+  //       index: 0.8407492409363633,
+  //       percentage: "60"
+  //     },
+  //     false,
+  //     true
+  //   );
+  //   console.log("updatePercentage", updatedNameInput.props());
+  //   expect(updatedNameInput.props().value).toEqual("60");
+  // });
+
   it("test for submit button", () => {
     // const editorState = "Test event description";
     const props = {
@@ -389,6 +431,5 @@ describe("test for fields ", () => {
     wrapper.find("#form").simulate("submit", {
       preventDefault: jest.fn()
     });
-    // console.log("eventPostSpy", postSpy.mock);
   });
 });

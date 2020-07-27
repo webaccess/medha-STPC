@@ -1,3 +1,163 @@
+export const mockdataForEditingFeedbackActivity = {
+  id: 14,
+  activity: {
+    id: 4,
+    title: "Career Awareness 1",
+    start_date_time: "2020-06-02T08:32:00.000Z",
+    end_date_time: "2020-06-18T08:32:00.000Z",
+    activitytype: 2,
+    academic_year: 8,
+    contact: 50,
+    education_year: "First",
+    address: "UP",
+    trainer_name: "Yogesh",
+    question_set: 1,
+    description: "<p>Career Awareness 1</p>\n",
+    cancelled: null,
+    created_at: "2020-06-24T08:33:04.528Z",
+    updated_at: "2020-07-27T10:48:39.091Z",
+    activity_status: null,
+    upload_logo: null
+  },
+  event: null,
+  contact: {
+    id: 52,
+    name: "viranch dave",
+    phone: "7548520100",
+    phone_other: null,
+    email: "viranch@gmail.com",
+    email_other: null,
+    address_1: null,
+    address_2: null,
+    city: null,
+    pincode: null,
+    contact_type: "individual",
+    organization: null,
+    country: null,
+    village: null,
+    state: null,
+    district: null,
+    individual: 46,
+    user: 47,
+    created_at: "2020-07-27T10:46:04.808Z",
+    updated_at: "2020-07-27T10:46:04.808Z"
+  },
+  question_set: {
+    id: 1,
+    name: "Activity Question Set",
+    created_at: "2020-06-24T07:09:37.048Z",
+    updated_at: "2020-06-24T07:09:37.048Z"
+  },
+  role: {
+    id: 7,
+    name: "Student",
+    description: "Student",
+    type: "Student"
+  },
+  created_at: "2020-07-27T11:51:39.407Z",
+  updated_at: "2020-07-27T11:51:39.407Z",
+  questions: [
+    {
+      id: 1,
+      title: "The objectives of the training were met?",
+      type: "Rating",
+      question_set: 1,
+      role: {
+        id: 7,
+        name: "Student",
+        description: "Student",
+        type: "Student"
+      },
+      created_at: "2020-06-24T07:09:37.053Z",
+      updated_at: "2020-06-24T07:09:37.053Z",
+      answer_int: 1,
+      answer_text: null
+    },
+    {
+      id: 2,
+      title: "The presentation materials were relevant?",
+      type: "Rating",
+      question_set: 1,
+      role: {
+        id: 7,
+        name: "Student",
+        description: "Student",
+        type: "Student"
+      },
+      created_at: "2020-06-24T07:09:37.060Z",
+      updated_at: "2020-06-24T07:09:37.060Z",
+      answer_int: 4,
+      answer_text: null
+    },
+    {
+      id: 3,
+      title:
+        "The trainers were well prepared and able to answer any questions?",
+      type: "Rating",
+      question_set: 1,
+      role: {
+        id: 7,
+        name: "Student",
+        description: "Student",
+        type: "Student"
+      },
+      created_at: "2020-06-24T07:09:37.063Z",
+      updated_at: "2020-06-24T07:09:37.063Z",
+      answer_int: 4,
+      answer_text: null
+    },
+    {
+      id: 4,
+      title:
+        "The pace of the course was appropriate to the content and attendees?",
+      type: "Rating",
+      question_set: 1,
+      role: {
+        id: 7,
+        name: "Student",
+        description: "Student",
+        type: "Student"
+      },
+      created_at: "2020-06-24T07:09:37.066Z",
+      updated_at: "2020-06-24T07:09:37.066Z",
+      answer_int: 3,
+      answer_text: null
+    },
+    {
+      id: 5,
+      title: "The venue was appropriate for the training?",
+      type: "Rating",
+      question_set: 1,
+      role: {
+        id: 7,
+        name: "Student",
+        description: "Student",
+        type: "Student"
+      },
+      created_at: "2020-06-24T07:09:37.070Z",
+      updated_at: "2020-06-24T07:09:37.070Z",
+      answer_int: 5,
+      answer_text: null
+    },
+    {
+      id: 6,
+      title: "Comments",
+      type: "Comment",
+      question_set: 1,
+      role: {
+        id: 7,
+        name: "Student",
+        description: "Student",
+        type: "Student"
+      },
+      created_at: "2020-06-24T07:09:37.073Z",
+      updated_at: "2020-06-24T07:09:37.073Z",
+      answer_int: null,
+      answer_text: "Good"
+    }
+  ]
+};
+
 export const mockDataForEditingFeedback = {
   result: {
     id: 2,
@@ -468,6 +628,111 @@ export const mockDataForPAstActiviy = {
       },
       isFeedbackProvided: true,
       feedbackSetId: 11,
+      hasAttended: true
+    }
+  ],
+  page: 1,
+  pageSize: 10,
+  rowCount: 1,
+  pageCount: 1
+};
+
+export const mockDataForStudentPastActivity = {
+  result: [
+    {
+      id: 4,
+      title: "Career Awareness 1",
+      start_date_time: "2020-06-02T08:32:00.000Z",
+      end_date_time: "2020-06-18T08:32:00.000Z",
+      activitytype: {
+        id: 2,
+        name: "Workshop",
+        is_active: true,
+        created_at: "2020-06-24T07:09:36.955Z",
+        updated_at: "2020-06-24T07:09:36.955Z"
+      },
+      activity_batch: {
+        id: 7,
+        name: "Bach 1",
+        activity: 4,
+        start_date_time: "2020-06-02T08:32:00.000Z",
+        end_date_time: "2020-06-18T08:32:00.000Z",
+        created_at: "2020-07-27T10:53:27.458Z",
+        updated_at: "2020-07-27T10:53:27.458Z"
+      },
+      academic_year: {
+        id: 8,
+        name: "AY 20-21",
+        start_date: "2020-06-01",
+        end_date: "2021-05-31",
+        created_at: "2020-06-24T07:09:35.214Z",
+        updated_at: "2020-06-24T07:09:35.214Z"
+      },
+      contact: {
+        id: 50,
+        name: "St.john college of engineering and technology",
+        phone: "1525252020",
+        phone_other: null,
+        email: "sjcet@gmail.com",
+        email_other: null,
+        address_1: null,
+        address_2: null,
+        city: null,
+        pincode: null,
+        contact_type: "organization",
+        organization: 6,
+        country: null,
+        village: null,
+        state: null,
+        district: null,
+        individual: null,
+        user: null,
+        created_at: "2020-07-24T07:14:55.646Z",
+        updated_at: "2020-07-24T07:18:31.467Z"
+      },
+      education_year: "First",
+      address: "UP",
+      trainer_name: "Yogesh",
+      question_set: {
+        id: 1,
+        name: "Activity Question Set",
+        created_at: "2020-06-24T07:09:37.048Z",
+        updated_at: "2020-06-24T07:09:37.048Z"
+      },
+      description: "<p>Career Awareness 1</p>\n",
+      cancelled: null,
+      created_at: "2020-06-24T08:33:04.528Z",
+      updated_at: "2020-07-27T10:48:39.091Z",
+      activity_status: null,
+      upload_logo: null,
+      activityassignees: [
+        {
+          id: 27,
+          activity: 4,
+          contact: 52,
+          activity_batch: 7,
+          is_verified_by_college: false,
+          created_at: "2020-07-27T10:53:27.465Z",
+          updated_at: "2020-07-27T10:53:27.465Z"
+        }
+      ],
+      streams: [
+        {
+          id: 1,
+          name: "Mechanical Engineering (Production)",
+          created_at: "2020-06-24T07:09:35.408Z",
+          updated_at: "2020-06-24T07:09:35.408Z"
+        },
+        {
+          id: 2,
+          name: "Computer Science And Engineering",
+          created_at: "2020-06-24T07:09:35.414Z",
+          updated_at: "2020-06-24T07:09:35.414Z"
+        }
+      ],
+
+      isFeedbackProvided: true,
+      feedbackSetId: null,
       hasAttended: true
     }
   ],
