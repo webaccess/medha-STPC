@@ -46,8 +46,10 @@ const SORT_FIELD_KEY = "_sort";
 const ViewPastEvent = props => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const { setLoaderStatus } = useContext(LoaderContext);
-  const [statusFilter, setStatusFilter] = useState([]);
+  let { setLoaderStatus } = useContext(LoaderContext);
+  const [statusFilter, setStatusFilter] = useState(
+    props.isTesting ? genericConstants.EVENT_STATUS : []
+  );
   const [formState, setFormState] = useState({
     PastEvent: props.mockPastEventData ? props.mockPastEventData : [],
     /** Pagination and sorting data */
@@ -77,6 +79,12 @@ const ViewPastEvent = props => {
     successErrorMessage: "",
     errorMessage: ""
   });
+
+  if (props.isTesting) {
+    setLoaderStatus = () => {
+      return true;
+    };
+  }
 
   useEffect(() => {
     getStatusFilterData();
@@ -671,6 +679,7 @@ const ViewPastEvent = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="name"
                   label="Name"
                   margin="normal"
                   variant="outlined"
@@ -756,6 +765,7 @@ const ViewPastEvent = props => {
 
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFiter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -770,6 +780,7 @@ const ViewPastEvent = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="clearFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}

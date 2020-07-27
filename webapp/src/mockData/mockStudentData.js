@@ -1,3 +1,321 @@
+export const mockDataForEditingFeedback = {
+  result: {
+    id: 2,
+    activity: null,
+    event: {
+      id: 1,
+      title: "test",
+      start_date_time: "2020-06-25T08:50:16.140Z",
+      end_date_time: "2020-06-27T08:50:00.000Z",
+      address: "UP",
+      description: "<p>qhdbjhd</p>\n",
+      question_set: 2,
+      state: 1,
+      zone: 1,
+      rpc: 1,
+      created_at: "2020-06-25T08:50:41.339Z",
+      updated_at: "2020-07-16T18:31:05.579Z",
+      qualifications: [],
+      educations: [],
+      upload_logo: null
+    },
+    contact: {
+      id: 20,
+      name: "First Last",
+      phone: "1764679768",
+      phone_other: null,
+      email: "yogesh.dalvi856@gmail.com",
+      email_other: null,
+      address_1: "UP",
+      address_2: null,
+      city: null,
+      pincode: null,
+      contact_type: "individual",
+      organization: null,
+      country: null,
+      village: null,
+      state: 1,
+      district: 116,
+      individual: 13,
+      user: 13,
+      created_at: "2020-06-25T07:11:06.775Z",
+      updated_at: "2020-07-22T18:11:01.709Z"
+    },
+    question_set: {
+      id: 2,
+      name: "Event Question Set",
+      created_at: "2020-06-25T07:00:20.054Z",
+      updated_at: "2020-06-25T07:00:20.054Z"
+    },
+    role: {
+      id: 7,
+      name: "Student",
+      description: "Student",
+      type: "Student"
+    },
+    created_at: "2020-06-28T07:25:21.018Z",
+    updated_at: "2020-06-28T07:25:21.018Z",
+    questions: [
+      {
+        id: 13,
+        title: "How professional was the recruiter?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student",
+          description: "Student",
+          type: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.062Z",
+        updated_at: "2020-06-25T07:00:20.062Z",
+        answer_int: 4,
+        answer_text: null
+      },
+      {
+        id: 14,
+        title:
+          "How clearly did the recruiter explain the details of the job to you?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student",
+          description: "Student",
+          type: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.069Z",
+        updated_at: "2020-06-25T07:00:20.069Z",
+        answer_int: 4,
+        answer_text: null
+      },
+      {
+        id: 15,
+        title:
+          "There was adequate opportunity for interaction with other staff during the placement ?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student",
+          description: "Student",
+          type: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.077Z",
+        updated_at: "2020-06-25T07:00:20.077Z",
+        answer_int: 4,
+        answer_text: null
+      },
+      {
+        id: 16,
+        title: "Faculty was friendly, helpful and knowledgeable ?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student",
+          description: "Student",
+          type: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.087Z",
+        updated_at: "2020-06-25T07:00:20.087Z",
+        answer_int: 4,
+        answer_text: null
+      },
+      {
+        id: 17,
+        title: "The venue was appropriate for the event?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student",
+          description: "Student",
+          type: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.093Z",
+        updated_at: "2020-06-25T07:00:20.093Z",
+        answer_int: 4,
+        answer_text: null
+      },
+      {
+        id: 18,
+        title: "Comments",
+        type: "Comment",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student",
+          description: "Student",
+          type: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.099Z",
+        updated_at: "2020-06-25T07:00:20.099Z",
+        answer_int: null,
+        answer_text: "1764679029"
+      }
+    ]
+  }
+};
+
+export const mockDataForgivingFeedback = {
+  result: {
+    id: 2,
+    name: "Event Question Set",
+    created_at: "2020-06-25T07:00:20.054Z",
+    updated_at: "2020-06-25T07:00:20.054Z",
+    questions: [
+      {
+        id: 13,
+        title: "How professional was the recruiter?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.062Z",
+        updated_at: "2020-06-25T07:00:20.062Z"
+      },
+      {
+        id: 14,
+        title:
+          "How clearly did the recruiter explain the details of the job to you?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.069Z",
+        updated_at: "2020-06-25T07:00:20.069Z"
+      },
+      {
+        id: 15,
+        title:
+          "There was adequate opportunity for interaction with other staff during the placement ?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.077Z",
+        updated_at: "2020-06-25T07:00:20.077Z"
+      },
+      {
+        id: 16,
+        title: "Faculty was friendly, helpful and knowledgeable ?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.087Z",
+        updated_at: "2020-06-25T07:00:20.087Z"
+      },
+      {
+        id: 17,
+        title: "The venue was appropriate for the event?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.093Z",
+        updated_at: "2020-06-25T07:00:20.093Z"
+      },
+      {
+        id: 18,
+        title: "Comments",
+        type: "Comment",
+        question_set: 2,
+        role: {
+          id: 7,
+          name: "Student"
+        },
+        created_at: "2020-06-25T07:00:20.099Z",
+        updated_at: "2020-06-25T07:00:20.099Z"
+      },
+      {
+        id: 19,
+        title: "College Feedback?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 6,
+          name: "College Admin"
+        },
+        created_at: "2020-06-25T07:00:20.110Z",
+        updated_at: "2020-06-25T07:00:20.110Z"
+      },
+      {
+        id: 20,
+        title: "Comments",
+        type: "Comment",
+        question_set: 2,
+        role: {
+          id: 6,
+          name: "College Admin"
+        },
+        created_at: "2020-06-25T07:00:20.117Z",
+        updated_at: "2020-06-25T07:00:20.117Z"
+      },
+      {
+        id: 21,
+        title: "RPC Feedback?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 5,
+          name: "RPC Admin"
+        },
+        created_at: "2020-06-25T07:00:20.123Z",
+        updated_at: "2020-06-25T07:00:20.123Z"
+      },
+      {
+        id: 22,
+        title: "Comments",
+        type: "Comment",
+        question_set: 2,
+        role: {
+          id: 5,
+          name: "RPC Admin"
+        },
+        created_at: "2020-06-25T07:00:20.130Z",
+        updated_at: "2020-06-25T07:00:20.130Z"
+      },
+      {
+        id: 23,
+        title: "Zone Feedback?",
+        type: "Rating",
+        question_set: 2,
+        role: {
+          id: 4,
+          name: "Zonal Admin"
+        },
+        created_at: "2020-06-25T07:00:20.136Z",
+        updated_at: "2020-06-25T07:00:20.136Z"
+      },
+      {
+        id: 24,
+        title: "Comments",
+        type: "Comment",
+        question_set: 2,
+        role: {
+          id: 4,
+          name: "Zonal Admin"
+        },
+        created_at: "2020-06-25T07:00:20.146Z",
+        updated_at: "2020-06-25T07:00:20.146Z"
+      }
+    ],
+    activities: []
+  }
+};
+
 export const mockTempDataForPastActivity = [
   {
     id: 3,
