@@ -55,7 +55,7 @@ const ViewActivity = props => {
   let history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
   const [formState, setFormState] = useState({
-    dataToShow: [],
+    dataToShow: props.viewData ? props.viewData : [],
     activities: [],
     activityFilter: [],
     errors: {},
@@ -105,7 +105,10 @@ const ViewActivity = props => {
     activityID: "",
     showViewFeedbackModal: false
   });
-  const [activityType, setActivityType] = useState([]);
+
+  const [activityType, setActivityType] = useState(
+    props.activityType ? props.activityType : []
+  );
   const educationyearlist = [
     { name: "First", id: "First" },
     { name: "Second", id: "Second" },
@@ -132,9 +135,9 @@ const ViewActivity = props => {
     /** showAddEditModalFeedback this flags enables the add/edit feedback modal. */
     showAddEditModalFeedback: false,
     /** Below three flags are used to identify whether to give, edit or to view feedback. */
-    isGiveFeedback: false,
-    isEditFeedback: false,
-    isViewFeedback: false,
+    isGiveFeedback: props.isGiveFeedback ? props.isGiveFeedback : false,
+    isEditFeedback: props.isEditFeedback ? props.isEditFeedback : false,
+    isViewFeedback: props.isViewFeedback ? props.isViewFeedback : false,
 
     /** This has the question set for adding feedback and also for editing feedback with answers also (for editing) */
     entityQuestionSet: [],
@@ -145,7 +148,12 @@ const ViewActivity = props => {
     result: {}
   });
 
-  const { setLoaderStatus } = useContext(LoaderContext);
+  let { setLoaderStatus } = useContext(LoaderContext);
+  if (props.isTesting) {
+    setLoaderStatus = () => {
+      return true;
+    };
+  }
 
   const [alert, setAlert] = useState({
     isOpen: false,
@@ -254,17 +262,6 @@ const ViewActivity = props => {
       .catch(error => {
         console.log("error", error);
       });
-  };
-
-  const getStatus = (start_date, end_date) => {
-    let current_date = new Date().toISOString();
-    if (current_date >= start_date && current_date <= end_date) {
-      return "Ongoing";
-    } else if (current_date > end_date) {
-      return "Completed";
-    } else if (current_date < start_date) {
-      return "Upcoming";
-    }
   };
 
   const convertactivityData = data => {
@@ -1369,6 +1366,7 @@ const ViewActivity = props => {
             <Grid className={classes.filterOptions} container spacing={1}>
               <Grid item>
                 <TextField
+                  id="name"
                   label="Activity Name"
                   margin="normal"
                   variant="outlined"
@@ -1415,7 +1413,7 @@ const ViewActivity = props => {
               </Grid>
               <Grid item className={classes.paddingDate}>
                 <Autocomplete
-                  id="Education Year"
+                  id="Education_Year"
                   className={classes.root}
                   options={educationyearlist}
                   getOptionLabel={option => option.name}
@@ -1475,6 +1473,7 @@ const ViewActivity = props => {
 
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFiter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -1488,6 +1487,7 @@ const ViewActivity = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="clearFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}
@@ -1503,6 +1503,7 @@ const ViewActivity = props => {
           {formState.dataToShow ? (
             formState.dataToShow.length ? (
               <Table
+                id="ManageTableID"
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"

@@ -72,7 +72,7 @@ describe("Manage Past activity", () => {
       .mockImplementation(() => {
         return new Promise(resolve => {
           return resolve({
-            data: mockStudentData.mockDataForPastEvents
+            data: mockStudentData.mockDataForStudentPastActivity
           });
         });
       });
@@ -135,13 +135,13 @@ describe("Manage Past Event UnSuccessfull api calls", () => {
     auth.setUserInfo(studentUser.user, true);
     let props = {
       location: {
-        pathname: "/past-events",
+        pathname: "/past-activities",
         search: "",
         hash: "",
         key: "65lh3d"
       },
       isTesting: true,
-      mockPastEventData: mockStudentData.mockTempDataForPastActivity
+      mockPastActivityData: mockStudentData.mockTempDataForPastActivity
     };
 
     jest
@@ -162,7 +162,7 @@ describe("Manage Past Event UnSuccessfull api calls", () => {
 
     let wrapper = shallow(<PastActivities {...props} />);
     /** Simulating table events without filter */
-    // wrapper.find("#ManageTableID").props().onGiveFeedback({ id: 1 });
-    // wrapper.find("#ManageTableID").props().onEditFeedback({ id: 1 });
+    wrapper.find("#ManageTableID").props().onGiveFeedback({ id: 1 });
+    wrapper.find("#ManageTableID").props().onEditFeedback({ id: 1 });
   });
 });
