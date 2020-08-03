@@ -69,7 +69,7 @@ const ManageUser = props => {
   const { loaderStatus, setLoaderStatus } = useContext(LoaderContext);
 
   const [formState, setFormState] = useState({
-    dataToShow: [],
+    dataToShow: props.userData ? props.userData : [],
     tempData: [],
     users: [],
     states: [],
@@ -78,38 +78,46 @@ const ManageUser = props => {
     roles: [],
     filterDataParameters: {},
     /** This is when we return from edit page */
-    isDataEdited: props["location"]["fromeditUser"]
-      ? props["location"]["isDataEdited"]
-      : false,
-    editedData: props["location"]["fromeditUser"]
-      ? props["location"]["editedData"]
-      : {},
-    fromeditUser: props["location"]["fromeditUser"]
-      ? props["location"]["fromeditUser"]
-      : false,
-    editedUserName: props["location"]["editedUserName"]
-      ? props["location"]["editedUserName"]["username"]
-      : "",
+    isDataEdited:
+      props["location"] && props["location"]["isDataEdited"]
+        ? props["location"]["isDataEdited"]
+        : false,
+    editedData:
+      props["location"] && props["location"]["editedData"]
+        ? props["location"]["editedData"]
+        : {},
+    fromeditUser:
+      props["location"] && props["location"]["fromeditUser"]
+        ? props["location"]["fromeditUser"]
+        : false,
+    editedUserName:
+      props["location"] && props["location"]["editedUserName"]
+        ? props["location"]["editedUserName"]["username"]
+        : "",
     /** This is when we return from add page */
-    isDataAdded: props["location"]["fromAddUser"]
-      ? props["location"]["isDataAdded"]
-      : false,
-    addedData: props["location"]["fromAddUser"]
-      ? props["location"]["addedData"]
-      : {},
-    fromAddUser: props["location"]["fromAddUser"]
-      ? props["location"]["fromAddUser"]
-      : false,
-    addedUserName: props["location"]["addedUserName"]
-      ? props["location"]["addedUserName"]["username"]
-      : "",
+    isDataAdded:
+      props["location"] && props["location"]["isDataAdded"]
+        ? props["location"]["isDataAdded"]
+        : false,
+    addedData:
+      props["location"] && props["location"]["addedData"]
+        ? props["location"]["addedData"]
+        : {},
+    fromAddUser:
+      props["location"] && props["location"]["fromAddUser"]
+        ? props["location"]["fromAddUser"]
+        : false,
+    addedUserName:
+      props["location"] && props["location"]["addedUserName"]
+        ? props["location"]["addedUserName"]["username"]
+        : "",
     isDataDeleted: false,
     count: 0,
     dataToEdit: {},
     dataToDelete: {},
     showEditModal: false,
-    showModalDelete: false,
-    isMultiDelete: false,
+    showModalDelete: props.showModalDelete ? props.showModalDelete : false,
+    isMultiDelete: props.isMultiDelete ? props.isMultiDelete : false,
     MultiDeleteID: [],
     isBlocked: false,
     isUnBlocked: false,
@@ -119,7 +127,7 @@ const ManageUser = props => {
     dataToBlock: {},
     showModalBlock: false,
     isUserBlocked: false,
-    isMulBlocked: false,
+    isMulBlocked: props.isMulBlocked ? props.isMulBlocked : false,
     isMulUnBlocked: false,
     MultiBlockUser: {},
     bottonBlockUnblock: "Block Selected User",
@@ -1362,6 +1370,7 @@ const ManageUser = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFilter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -1375,6 +1384,7 @@ const ManageUser = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="clearFilter"
                   variant="contained"
                   color="primary"
                   onClick={refreshPage}
@@ -1390,6 +1400,7 @@ const ManageUser = props => {
           {formState.dataToShow ? (
             formState.dataToShow.length ? (
               <Table
+                id="ManageTableID"
                 data={formState.dataToShow}
                 column={column}
                 onSelectedRowsChange={handleRowSelected}

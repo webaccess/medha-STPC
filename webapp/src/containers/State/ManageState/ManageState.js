@@ -44,15 +44,20 @@ const ViewStates = props => {
   const classes = useStyles();
   const history = useHistory();
   const [selectedRows, setSelectedRows] = useState([]);
-  const { setLoaderStatus } = useContext(LoaderContext);
+  let { setLoaderStatus } = useContext(LoaderContext);
+  if (props.isTesting) {
+    setLoaderStatus = () => {
+      return true;
+    };
+  }
 
   /** Form state variables */
   const [formState, setFormState] = useState({
     filterState: "",
-    dataToShow: [],
+    dataToShow: props.stateData ? props.stateData : [],
     states: [],
     filterDataParameters: {},
-    isFilterSearch: false,
+    isFilterSearch: props.isFilterSearch ? props.isFilterSearch : false,
     /** This is when we return from edit page */
     isDataEdited:
       props["location"] && props["location"]["fromEditState"]
@@ -92,10 +97,10 @@ const ViewStates = props => {
     isDataDeleted: false,
     dataToEdit: {},
     dataToDelete: {},
-    showModalDelete: false,
+    showModalDelete: props.showModalDelete ? props.showModalDelete : false,
     isClearResetFilter: false,
-    isMultiDelete: false,
-    MultiDeleteID: [],
+    isMultiDelete: props.isMultiDelete ? props.isMultiDelete : false,
+    MultiDeleteID: props.MultiDeleteID ? props.MultiDeleteID : [],
     greenButtonChecker: true,
     selectedRowFilter: true,
     /** Pagination and sortinig data */
@@ -289,7 +294,7 @@ const ViewStates = props => {
       messageToShow: "",
       fromAddState: false,
       fromEditState: false,
-      isMultiDelete: false
+      isMultiDelete: props.isMultiDelete ? props.isMultiDelete : false
     }));
   };
 
@@ -616,6 +621,7 @@ const ViewStates = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <YellowButton
+                  id="submitFilter"
                   variant="contained"
                   color="primary"
                   disableElevation
@@ -626,6 +632,7 @@ const ViewStates = props => {
               </Grid>
               <Grid item className={classes.filterButtonsMargin}>
                 <GrayButton
+                  id="clearFilter"
                   variant="contained"
                   color="primary"
                   onClick={clearFilter}
@@ -641,6 +648,7 @@ const ViewStates = props => {
           {formState.dataToShow ? (
             formState.dataToShow.length ? (
               <Table
+                id="ManageTableID"
                 data={formState.dataToShow}
                 column={column}
                 defaultSortField="name"

@@ -14,6 +14,7 @@ import * as DepartmentAdmin from "../../../../mockuser/DepartmentAdmin.json";
 import * as RPCAdmin from "../../../../mockuser/RPCAdmin.json";
 import SetIndexContext from "../../../../context/SetIndexContext.js";
 import axios from "axios";
+import * as mockData from "../MockData/MockData";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -56,32 +57,7 @@ describe("Dashboard", () => {
       .mockImplementation(() => {
         return new Promise(resolve => {
           return resolve({
-            data: {
-              result: [
-                {
-                  id: 1,
-                  name: "Uttar Pradesh",
-                  is_active: true,
-                  abbreviation: "UP",
-                  identifier: "",
-                  country: {
-                    id: 1,
-                    name: "India",
-                    is_active: true,
-                    abbreviation: "IN",
-                    identifier: "IN",
-                    created_at: "2020-06-25T06:43:49.635Z",
-                    updated_at: "2020-06-25T06:43:49.635Z"
-                  },
-                  created_at: "2020-06-25T06:43:49.648Z",
-                  updated_at: "2020-06-25T06:43:49.648Z"
-                }
-              ],
-              page: 1,
-              pageSize: 1,
-              rowCount: 1,
-              pageCount: 1
-            }
+            data: mockData.userData
           });
         });
       });
