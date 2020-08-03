@@ -22,7 +22,7 @@ const STATE_URL = strapiConstants.STRAPI_DB_URL + strapiConstants.STRAPI_STATES;
 const STATE_ID = "state";
 
 const DeleteState = props => {
-  const { setLoaderStatus } = useContext(LoaderContext);
+  let { setLoaderStatus } = useContext(LoaderContext);
   const [open, setOpen] = React.useState(false);
   const [formState, setFormState] = useState({
     isDeleteData: false,
@@ -31,6 +31,11 @@ const DeleteState = props => {
     values: {},
     dataToDelete: {}
   });
+  if (props.isTesting) {
+    setLoaderStatus = () => {
+      return true;
+    };
+  }
 
   /** This is called when we open the modal */
   if (props.showModal && !formState.stateCounter) {
@@ -274,6 +279,7 @@ const DeleteState = props => {
                 >
                   <Grid item>
                     <YellowButton
+                      id="submitDeleteState"
                       type="submit"
                       color="primary"
                       variant="contained"

@@ -193,6 +193,7 @@ const DeleteUser = props => {
               >
                 <Grid item>
                   <YellowButton
+                    id="submitDeleteUser"
                     type="submit"
                     color="primary"
                     variant="contained"
