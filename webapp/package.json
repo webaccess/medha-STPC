@@ -19,7 +19,7 @@
     "html-to-draftjs": "^1.5.0",
     "jest-localstorage-mock": "^2.4.2",
     "jest-mock-axios": "^4.2.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "markdown-draft-js": "^2.2.0",
     "material-table": "^1.57.2",
     "material-ui-flat-pagination": "^4.1.0",
