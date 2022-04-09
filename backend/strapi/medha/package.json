@@ -18,7 +18,7 @@
     "cross-env": "^7.0.2",
     "csv-parse": "^4.10.1",
     "knex": "<0.20.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "node-json-xlsx": "^0.2.2",
     "node-xlsx": "^0.15.0",
     "pg": "latest",
